@@ -1,0 +1,9 @@
+#pause
+$Menus, util
+dataset: Menus
+visible: 0,2
+layout:
+  ©ifra stavke: CMENU 150 || Tip: MENUTYPE 100
+  Izbornik: PARENTMENU+Menus 150 || Poredak: CSORT 100
+  Metoda: METHOD 400
+  Opis stavke: OPIS 400

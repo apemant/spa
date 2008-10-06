@@ -1,0 +1,30 @@
+[PropertyInfo]
+dataSet,StorageDataSet,false,false, , ,false,<default>
+datumDoSQL,String,false,false, , ,true,<default>
+dm,hr.restart.baza.dM,false,false, , ,false,<default>
+dwin,hr.restart.sisfun.raDelayWindow,false,false, , ,false,<default>
+fake,boolean,false,false, , ,true,<default>
+jbIspis,JButton,false,false, , ,false,<default>
+jlDATUMDO,JLabel,false,false, , ,false,<default>
+jlDATUMKNJ,JLabel,false,false, , ,false,<default>
+jp,JPanel,false,false, , ,false,<default>
+jpCommon,JPanel,false,false, , ,false,<default>
+jpGetVrnal,jpGetVrsteNaloga,false,false, , ,false,<default>
+jtDATUMDO,JraTextField,false,false, , ,false,<default>
+jtDATUMKNJ,JraTextField,false,false, , ,false,<default>
+knjizenje,raKnjizenje,false,false, , ,true,<default>
+ld,lookupData,false,false, , ,false,<default>
+okpanel,OKpanel,false,false, , ,false,<default>
+processMessage,String,false,false, , ,true,<default>
+progSteps,int,false,false, , ,false,<default>
+rcbNK,raComboBox,false,false, , ,false,<default>
+status,raStatusBar,false,false, , ,true,<default>
+steps,int,false,false, , ,true,<default>
+ut,Util,false,false, , ,false,<default>
+vl,Valid,false,false, , ,false,<default>
+xYLCommon,XYLayout,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

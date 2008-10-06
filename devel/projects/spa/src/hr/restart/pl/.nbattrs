@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE attributes PUBLIC "-//NetBeans//DTD DefaultAttributes 1.0//EN" "http://www.netbeans.org/dtds/attributes-1_0.dtd">
+<attributes version="1.0">
+    <fileobject name="frmEvidencijaDjel.java">
+        <attr name="class_dependency_hr.restart.util.raFrame" stringvalue="frmEvidencijaDjel"/>
+    </fileobject>
+    <fileobject name="frmGrizvOdb.java">
+        <attr name="class_dependency_hr.restart.util.raMatPodaci" stringvalue="frmGrizvOdb"/>
+    </fileobject>
+    <fileobject name="frmGrizvPrim.java">
+        <attr name="class_dependency_hr.restart.util.raMatPodaci" stringvalue="frmGrizvPrim"/>
+    </fileobject>
+    <fileobject name="frmGrizvZnac.java">
+        <attr name="class_dependency_hr.restart.util.raMatPodaci" stringvalue="frmGrizvOdb"/>
+    </fileobject>
+    <fileobject name="frmIzvjDef.java">
+        <attr name="class_dependency_hr.restart.util.raMasterDetail" stringvalue="frmIzvjDef"/>
+    </fileobject>
+    <fileobject name="frmPL.java">
+        <attr name="class_dependency_hr.restart.util.startFrame" stringvalue="frmPL"/>
+    </fileobject>
+    <fileobject name="frmRadnicipl.java">
+        <attr name="class_dependency_hr.restart.util.raMatPodaci" stringvalue="frmRadnicipl"/>
+        <attr name="class_dependency_javax.swing.JPanel" stringvalue="frmRadnicipl.jpNoTableGetRadnici"/>
+    </fileobject>
+    <fileobject name="frmZnacRad.java">
+        <attr name="class_dependency_hr.restart.util.raMatPodaci" stringvalue="frmZnacRad"/>
+    </fileobject>
+    <fileobject name="jpGrizvZnac.java">
+        <attr name="class_dependency_javax.swing.JPanel" stringvalue="jpGrizvOdb"/>
+    </fileobject>
+    <fileobject name="jpRadnicipl.java">
+        <attr name="class_dependency_javax.swing.JPanel" stringvalue="jpRadnicipl"/>
+    </fileobject>
+    <fileobject name="jpZnacRad.java">
+        <attr name="class_dependency_javax.swing.JPanel" stringvalue="jpZnacRad"/>
+    </fileobject>
+    <fileobject name="repMatKnjigDjel.java">
+        <attr name="class_dependency_hr.restart.util.reports.raReportData" stringvalue="repMatKnjigDjel"/>
+    </fileobject>
+</attributes>

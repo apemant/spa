@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+
+<!--
+
+ 1. THIS SCRIPT IS USING A PROPERTIES FILE IN THE SAME DIRECTORY CALLED ant-global.properties
+ 	you have to rename the sample file to the exact name and update your personal data.
+
+ 2. for using the cvs commands you should initialize the CVSROOT
+
+-->
+
+<project name="global" default="usage" basedir=".">
+	<tstamp>
+		<format property="build.date" pattern="yyyy-MM-dd_hh.mm_aa"/>
+	</tstamp>
+
+        <target name="usage">
+
+        <echo message=""/>
+        <echo message="Usage:"/>
+        <echo message="------"/>
+		<echo message=""/>
+		<echo message="ant cvsget.spa           -&gt; get the spa project from cvs !!!INTO ${devel.root}/../devel subdir!!!"/>		
+   		<echo message="ant cvsget.ant-tasks     -&gt; get the ant-tasks project from cvs !!!INTO ${devel.root}/../devel subdir!!!"/>
+        <echo message=""/>
+		<echo message="------"/>
+		
+		<echo message="SPA PROJECT COMMANDS"/>
+		<echo message="ant spa.compile          -&gt; build classes for the spa project"/>
+		<echo message="ant spa.jar              -&gt; build jars for the spa project"/>
+       	<echo message="ant spa.deploy           -&gt; prepare all spa project jars for deploy (lib)"/>
+   		<echo message="ant spa.doc              -&gt; makes javadoc for spa project"/>
+        <echo message="ant spa.run              -&gt; run the spa project with the jar"/>
+		<echo message="ant spa.run.local        -&gt; run the spa project with the classes"/>
+		<echo message="ant spa.run.deploy       -&gt; prepare all spa project jars for deploy and runs with them"/>
+        <echo message="ant spa.nonJava          -&gt; copy non java files needed by the spa project"/>		
+		<echo message="ant spa.clean            -&gt; erase classes in the spa project"/>
+		<echo message="ant spa.delete           -&gt; erase the whole project spa"/>
+		<echo message="ant spa.patch            -&gt; apply a new patch to the spa project"/>		
+		<echo message="ant spa.pogodak          -&gt; alter aplication jar for POGODAK branding"/>		
+			
+        <echo message="------"/>
+       	<echo message="ANT-TASKS PROJECT COMMANDS"/>
+		<echo message="ant ant-tasks.make       -&gt; build classes and jar for ant tasks"/>
+       	<echo message="ant ant-tasks.doc        -&gt; makes javadoc for ant-tasks project"/>
+       	<echo message="ant ant-tasks.test       -&gt; build and test ant tasks"/>
+
+        </target>
+
+        <!-- [INIT] = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =  -->
+        <target name="init">
+                <echo message="Initializing global properties..."/>
+	        <property file="ant-global.properties"/>
+                <property environment="env"/>
+			
+			<condition property="devel_root_set">
+				<isset property="DEVEL_ROOT"/>
+			</condition>
+			<condition property="devel_root_location" value="../">
+				<isfalse value="${devel_root_set}"/>
+			</condition>
+			<condition property="devel_root_location" value="${DEVEL_ROOT}">
+				<istrue value="${devel_root_set}"/>
+			</condition>
+            <property name="devel.root" location="${devel_root_location}"/>                
+			<echo message="devel.root = ${devel.root}"/>
+			
+                <property name="projects.dir" location="${devel.root}/projects"/>                		
+        </target>
+	
+	<!-- [GETCVS] = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =  -->		
+	<target name="cvsget.spa" depends="init"> 		
+		<cvs cvsRoot="${CVSROOT}"
+		package="devel/projects/spa"
+		dest="${devel.root}/../"/>
+    	</target>
+
+	<target name="cvsget.ant-tasks" depends="init"> 		
+		<cvs cvsRoot="${CVSROOT}"
+		package="devel/projects/ant-tasks"
+		dest="${devel.root}/../"/>
+    	</target>
+
+	<!-- [SPA] = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =  -->        
+	<target name="spa.jar" depends="init">
+                <ant dir="${projects.dir}/spa" target="jar"/>
+        </target>
+	<target name="spa.deploy" depends="init">
+        <ant dir="${projects.dir}/spa" target="deploy"/>
+    </target>
+	
+    <target name="spa.pogodak" depends="init">
+    	<ant dir="${projects.dir}/spa" target="pogodak"/>
+    </target>
+
+	<target name="spa.run.deploy" depends="init">
+                <ant dir="${projects.dir}/spa" target="run.deploy"/>
+        </target>
+	<target name="spa.compile" depends="init">
+                <ant dir="${projects.dir}/spa" target="compile"/>
+        </target>
+
+	<target name="spa.patch" depends="init">
+                <ant dir="${projects.dir}/spa" target="patch"/>
+        </target>	
+	
+	<target name="spa.clean" depends="init">
+                <ant dir="${projects.dir}/spa" target="clean"/>
+        </target>
+	
+	<target name="spa.delete" depends="init">
+                <ant dir="${projects.dir}/spa" target="delete"/>
+        </target>
+	
+	<target name="spa.nonJava" depends="init">
+                <ant dir="${projects.dir}/spa" target="nonJava"/>
+        </target>
+	
+	<target name="spa.run.local" depends="init">
+                <ant dir="${projects.dir}/spa" target="run.local"/>
+        </target>
+	
+	<target name="spa.run" depends="init">
+                <ant dir="${projects.dir}/spa" target="run"/>
+        </target>
+
+	<target name="spa.doc" depends="init">
+                <ant dir="${projects.dir}/spa" target="doc"/>
+        </target>
+	
+	<target name="spa.ws.jar" depends="init">
+                <ant dir="${projects.dir}/spa" target="ws.jar"/>
+    </target>
+	<target name="spa.server-proxy-driver.jar" depends="init">
+                <ant dir="${projects.dir}/spa" target="server-proxy-driver.jar"/>
+    </target>
+	<target name="spa.deploy.apple" depends="init">
+    <ant dir="${projects.dir}/spa" target="deploy.apple"/>
+	</target>
+	
+	<target name="spa.startup" depends="init">
+    <ant dir="${projects.dir}/spa" target="startup"/>
+	</target>
+
+	<!-- [ANT-TASKS] = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =  -->
+	<target name="ant-tasks.make" depends="init">
+		<ant dir="${projects.dir}/ant-tasks" target="jar"/>
+	</target>
+	
+	<target name="ant-tasks.doc" depends="init">
+		<ant dir="${projects.dir}/ant-tasks" target="doc"/>
+	</target>
+
+	<target name="ant-tasks.test" depends="init">
+		<ant dir="${projects.dir}/ant-tasks" target="test"/>
+	</target>
+
+</project>
+

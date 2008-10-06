@@ -1,0 +1,11 @@
+[PropertyInfo]
+batch_index,String,false,false, , ,true,<default>
+keyDelimiter,String,false,false, , ,false,<default>
+replicator,raReplicator,false,false, , ,false,<default>
+replMap,TreeMap,false,false, , ,false,<default>
+success,boolean,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

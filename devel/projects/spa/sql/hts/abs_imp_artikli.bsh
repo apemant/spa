@@ -1,0 +1,24 @@
+ABSprod = orac.getData("productwithsizes.sql","");
+arts = Artikli.getDataModule().copyDataSet();
+newa = Artikli.getDataModule().getTempSet("0=1");
+newa.open();
+arts.open();
+arts.setSort(new SortDescriptor(new String[] {"CART"}));
+arts.last();
+int lca = arts.getInt("CART");
+dupli = new HashSet();
+for (ABSprod.first(); ABSprod.inBounds(); ABSprod.next()) {
+  prodcode = ABSprod.getString("PRODUCTCODE").trim();
+  if (!Valid.getValid().chkExistsSQL(arts, "CART1", prodcode) && !dupli.contains(prodcode)) {
+    dupli.add(prodcode);
+    newa.insertRow(false);
+    raVariant.copyTo(ABSprod, newa, "cart1,nazart,cgrart");
+    lca++;
+    newa.setInt("CART",lca);
+    newa.setString("BC", newa.getString("CART1"));
+    newa.setString("JM","kom");
+    newa.setString("CPOR","1");
+    newa.post();
+  }
+}
+newa.saveChanges();

@@ -1,0 +1,56 @@
+[PropertyInfo]
+brojKonta,String,false,false, , ,true,<default>
+CArtikla,String,false,false, , ,true,<default>
+CGrupe,String,false,false, , ,true,<default>
+CLokacije,String,false,false, , ,true,<default>
+CObjekt,String,false,false, , ,true,<default>
+colname,String[],false,false, , ,false,<default>
+COrg,String,false,false, , ,true,<default>
+COrgNaz,String,false,false, , ,true,<default>
+CPartner,String,false,false, , ,true,<default>
+CPromjene,String,false,false, , ,true,<default>
+CRadnik,String,false,false, , ,true,<default>
+CSkupine,String,false,false, , ,true,<default>
+data,java.util.Enumeration,false,false, , ,true,<default>
+datAkt,String,false,false, , ,true,<default>
+datLikvidacije,String,false,false, , ,true,<default>
+datNab,String,false,false, , ,true,<default>
+datPromjene,String,false,false, , ,true,<default>
+datumIsp,String,false,false, , ,true,<default>
+datumPromjene,String,false,false, , ,true,<default>
+dm,hr.restart.baza.dM,false,false, , ,false,<default>
+dobavljac,String,false,false, , ,true,<default>
+dokument,String,false,false, , ,true,<default>
+ds,DataSet,false,false, , ,false,<default>
+firstLine,String,false,false, , ,true,<default>
+invBroj,String,false,false, , ,true,<default>
+ispDug,double,false,false, , ,true,<default>
+ispPot,double,false,false, , ,true,<default>
+main,_Main,false,false, , ,false,<default>
+nabVrijed,BigDecimal,false,false, , ,true,<default>
+nazAmGrup,String,false,false, , ,true,<default>
+nazArt,String,false,false, , ,true,<default>
+nazKonta,String,false,false, , ,true,<default>
+nazLokacije,String,false,false, , ,true,<default>
+nazRevSk,String,false,false, , ,true,<default>
+nazSredstva,String,false,false, , ,true,<default>
+objekt,String,false,false, , ,true,<default>
+osnDug,double,false,false, , ,true,<default>
+osnPot,double,false,false, , ,true,<default>
+porijeklo,String,false,false, , ,true,<default>
+radnik,String,false,false, , ,true,<default>
+rbr,String,false,false, , ,true,<default>
+rdu,raDateUtil,false,false, , ,false,<default>
+rpm,repMemo,false,false, , ,false,<default>
+ru,repUtil,false,false, , ,false,<default>
+saldo,double,false,false, , ,true,<default>
+secondLine,String,false,false, , ,true,<default>
+ST,hr.restart.util.sysoutTEST,false,false, , ,false,<default>
+status,String,false,false, , ,true,<default>
+thirdLine,String,false,false, , ,true,<default>
+val,hr.restart.util.Valid,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

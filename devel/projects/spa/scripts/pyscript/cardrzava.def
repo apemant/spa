@@ -1,0 +1,7 @@
+#pause
+$Cardrzava
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CSIFDRV;alpha;3;pkey;;Šifra države
+COZNDRV;alpha;3;;;Oznaka države
+Naziv;alpha;80;;;Naziv carinarnice

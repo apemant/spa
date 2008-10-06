@@ -1,0 +1,20 @@
+
+$Knjigod, sisfun
+dataset: Knjigod
+visible: 0, 1
+layout:
+  Knjigovodstvo: CORG+NAZORG+Knjig 75+270
+  Godina: GOD 75
+focus: CORG, GOD
+check: CORG, GOD
+unique: CORG
+
+$Usersklad, sisfun
+dataset: Usersklad
+visible: 0, 1
+layout:
+  Korisnik: CUSER+NAZIV+Useri 100+275
+  Skladište: CSKL+NAZSKL+Sklad 100+275
+focus: CUSER, CSKL
+check: CUSER, CSKL
+unique: CUSER

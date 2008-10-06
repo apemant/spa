@@ -1,0 +1,11 @@
+#pause
+$CarTG
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CTG;alpha;10;pkey;;Tarifni broj
+NAZIV;alpha;80;;;Naziv
+OPIS;alpha;80;;;Opis
+CJMCAROZN;alpha;10;;;Oznaka mjerne jedinice
+KVOTA;numeric;17,3;;;Kvota
+STOPA1;numeric;17,3;;;Stopa 1
+STOPA2;numeric;17,3;;;Stopa 2

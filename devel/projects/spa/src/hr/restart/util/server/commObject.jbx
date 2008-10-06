@@ -1,0 +1,10 @@
+[PropertyInfo]
+invoker,Object,false,false, , ,true,<default>
+methodToInvoke,String,false,false, , ,true,<default>
+parameters,Object[],false,false, , ,true,<default>
+parameterTypes,Class[],false,false, , ,true,<default>
+[IconNames]
+
+
+
+

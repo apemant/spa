@@ -1,0 +1,6 @@
+#pause
+$Carnacpl
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CCARNACPL;alpha;10;pkey;;Šifra naèina plaæanja ili osiguranja plaæanja
+NAZIV;alpha;80;;;Naziv 

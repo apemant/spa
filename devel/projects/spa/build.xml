@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="run.local" name="spa">
+	
+	<property name="patch.dir" value="patch"/>
+	<property name="classes.dir" value="classes"/>
+
+	<target name="init">
+		<ant dir="${devel.root}/build" target="ant-tasks.make"/>
+		<taskdef name="mfparser" classname="hr.restart.util.ant.ManifestParser" classpath="${projects.dir}/ant-tasks/jars/ra-ant-tasks.jar"/>
+		<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${projects.dir}/ant-tasks/thirdparty-jars/ant-contrib-0.6.jar"/>
+		<property name="src.dir" value="src"/>
+		<property name="doc.dir" value="docs"/>
+		<property name="spa.jar.dir" value="spa-jars"/>
+		<property name="images.dir" value="images"/>
+		<property name="thirdparty.jar.dir" value="thirdparty-jars"/>
+
+		<mkdir dir="${classes.dir}"/>
+
+		<path id="project.classpath">
+			<fileset dir="${thirdparty.jar.dir}">
+				<include name="*.jar"/>
+			</fileset>
+
+			
+		</path>
+	</target>
+
+
+	<target name="compile" depends="init">
+<!--		<depend srcdir="${src.dir}" destdir="${classes.dir}"/> -->
+<!--		<delete dir="${src.dir}/hr/restart/db/replication"/> -->
+		<javac 	fork="yes"
+				destdir="${classes.dir}"
+				srcdir="${src.dir}"
+				classpathref="project.classpath"
+				verbose="no"
+				deprecation="true"
+				executable="${JAVA_COMPILER}"
+				encoding="Cp1250"
+				memorymaximumsize="${MAX_MEMORY}">
+
+		</javac>
+	</target>
+	
+	<target name="prejar" depends="compile,nonJava"/>
+	
+	<target name="jar" depends="prejar">
+
+		<mkdir dir="${spa.jar.dir}"/>
+<!--
+		<tstamp>
+			<format property="date" pattern="MM/dd/yyyy hh:mm aa"/>
+		</tstamp>
+-->
+
+		<jar jarfile="${spa.jar.dir}/ra-spa.jar" basedir="${classes.dir}">
+
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<section name="common">
+					<attribute name="Title" value="Sustav poslovnih aplikacija (ra-spa.jar)"/>
+					<attribute name="Date" value="${build.date}"/>
+					<attribute name="Version" value="${buildVersion}"/>
+					<attribute name="Vendor" value="Rest Art d.o.o. www.rest-art.hr"/>
+				</section>
+			</manifest>
+		</jar>
+
+	</target>
+	<target name="prepare.first.deploy">
+		<mkdir dir="lib"/>
+		<jar jarfile="lib/ra-spa.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<section name="common">
+					<attribute name="Title" value="Dummy ra-spa.jar"/>
+					<attribute name="Date" value="before.first.build"/>
+					<attribute name="Version" value="before.first.build"/>
+					<attribute name="Vendor" value="Rest Art d.o.o. www.rest-art.hr"/>
+				</section>
+			</manifest>
+		</jar>
+	</target>
+	<target name="lastbuildversion" depends="init">
+		<!--
+		<unjar src="lib/ra-spa.jar" dest="tmp">
+		    <patternset>
+		        <include name="META-INF/MANIFEST.MF"/>
+		    </patternset>
+		</unjar>
+		<property file="tmp/META-INF/MANIFEST.MF"/>
+		<property name="last.build.version" value="${Version}"/>
+		<delete dir="tmp"/>
+		-->
+		<mfparser
+			jarfile="${projects.dir}/spa/lib/ra-spa.jar"
+			section="common"
+			attribute="Version"
+		    addproperty="last.build.version"
+	  	/>
+	</target>
+	
+	<target name="deploy" depends="jar,lastbuildversion">
+		<mkdir dir="lib"/>
+		<copy todir="lib.${last.build.version}">
+			<fileset dir="lib"/>
+		</copy>
+		<mkdir dir="lib"/>
+		<copy todir="lib">
+			<fileset dir="${thirdparty.jar.dir}">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${spa.jar.dir}">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+		<!-- make versions file -->
+		<java classname="hr.restart.ftpVersionWorker" fork="yes">
+			<classpath>
+				<fileset dir="lib">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+			<arg value="lib"/>
+		</java>
+	</target>
+		
+    <target name="nonJava" depends="init" description="Copy nonJava files classes">
+        <mkdir dir="${classes.dir}/hr/restart/util/images"/>
+        <copy todir="${classes.dir}">
+            <fileset dir="${src.dir}" includes="**/*.template, **/*.sav, **/*.txt hr/restart/util/images/*"/>
+        </copy>
+<!--        <copy todir="${classes.dir}/hr/restart/util/images">
+            <fileset dir="${images.dir}"/>
+        </copy> -->
+
+        <!--copy todir="${classes.dir}">
+            <fileset dir="conf"/>
+        </copy-->
+
+    </target>
+
+  <target name="pogodak" depends="init" description="Copy pogodak branding images to classes">
+      <mkdir dir="branding"/>
+  		<unjar src="${spa.jar.dir}/ra-spa.jar" dest="branding"/>
+  	<delete file="branding/hr/restart/util/images/splash.jpg"/>
+  	<delete file="branding/hr/restart/util/images/pogodak.gif"/>
+      <copy todir="branding/hr/restart/util/images">
+          <fileset dir="pogodak"/>
+      </copy>
+  		<jar destfile="${spa.jar.dir}/ra-spa-pogodak.jar" basedir="branding">
+  			<manifest>
+  				<attribute name="Built-By" value="${user.name}"/>
+  				<section name="common">
+  					<attribute name="Title" value="Sustav poslovnih aplikacija (ra-spa.jar)"/>
+  					<attribute name="Date" value="${build.date}"/>
+  					<attribute name="Version" value="${buildVersion}"/>
+  					<attribute name="Vendor" value="Rest Art www.rest-art.hr Pogodak! www.pogodak.hr"/>
+  				</section>
+  			</manifest>  			
+  		</jar>
+  </target>
+
+	<target name="run.deploy" depends="deploy">
+		<path id="run.deploy.classpath">
+			<fileset dir="lib">
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+		<java
+			fork="yes"
+			classpathref="run.deploy.classpath"
+			classname="hr.restart.start"
+			jvm="${JAVA_EXECUTABLE}"
+			maxmemory="${MAX_MEMORY}">
+		</java>
+	</target>
+
+	<target name="listFiles">
+		<path id="cls.dir" path="${classes.dir}"/>
+		<pathconvert 
+			dirsep="${file.separator}" 
+			pathsep="${path.separator}" 
+			refid="cls.dir" 
+			property="classes.fullpath"/>
+			
+		<propertyregex
+			property="pack.name"
+			input="${param}"
+			regexp="([^\.]*)\/([^\.]*)\/([^\.]*)"
+			select="\0"/>
+		
+
+		
+		<propertyregex
+			property="file.name"
+			input="${param}"
+			regexp="([^\.]*)\/([^\.]*)\/([^\.]*)"
+			select="\3"/>
+		
+		<propertyregex
+			property="file.extension"
+			input="${param}"
+			regexp="([^\.]*).([^\.]*)"
+			select="\2"/>
+					
+		<propertyregex
+			property="directory"
+			input="${param}"
+			regexp="${classes.fullpath}/([^\.]*)\/([^\.]*)"
+			select="\1"/>
+
+		<switch value="${pack.name}">
+			<default>
+				<!--<echo message="Selected file ${pack.name}"/>-->
+
+				<copy file="${pack.name}.${file.extension}" tofile="${patch.dir}/classes/${directory}/${file.name}.${file.extension}"/>
+			</default>
+		</switch>
+	</target>
+
+	<!--end list-->
+	<target name="prepatch" depends="init">
+		<taskdef name="filechooser" classname="hr.restart.util.ant.FileChooserInput" classpath="${projects.dir}/ant-tasks/jars/ra-ant-tasks.jar"/>
+		<filechooser
+			fileextension="ra-spa.jar"
+			defaultpath="${projects.dir}/spa"
+		    addproperty="ra-spa-path"
+		/>
+
+		<unjar src="${ra-spa-path}" dest="${classes.dir}"/>
+<!--
+		<path id="rspath" path="${ra-spa-path}"/>
+		<pathconvert 
+			dirsep="-" 
+			pathsep="-" 
+			refid="rspath" 
+			property="patch.name.suffix"/>
+-->
+		<mfparser 
+			jarfile="${ra-spa-path}"
+			section="common"
+			attribute="Version"
+		    addproperty="patch.name.suffix"
+	  	/>
+	</target>
+	
+	<target name="patch" depends="prepatch">
+
+<!--it's better to keep old patches 	
+		<delete dir="${patch.dir}"/>
+-->
+		<mkdir dir="${patch.dir}"/>
+
+		<tstamp>
+			<format property="start" pattern="MM/dd/yyyy hh:mm aa"/>
+		</tstamp>
+
+		<echo message="updating ... started at : ${start}"/>
+		<antcall target="prejar"/>
+<!--
+		<javac 	fork="yes"
+			destdir="${classes.dir}"
+			srcdir="${src.dir}"
+			classpathref="project.classpath"
+			verbose="no"
+			deprecation="true"
+			executable="${JAVA_COMPILER}"
+			encoding="Cp1250"
+			memorymaximumsize="${MAX_MEMORY}">
+		</javac>
+-->
+		<echo message="Comparing files ... date after ..."/>
+		<foreach target="listFiles" param="param">
+   			<path id="3">
+				<fileset dir="${classes.dir}" includes="*/**/*">
+					<date datetime="${start}" when="after"/>
+				</fileset>
+			</path>
+		</foreach>
+
+		<echo message="Comparing files ... date equal ..."/>
+		<foreach target="listFiles" param="param">
+   			<path id="4">
+				<fileset dir="${classes.dir}" includes="*/**/*">
+					<date datetime="${start}" when="equal"/>
+				</fileset>
+			</path>
+		</foreach>
+
+		<jar jarfile="${patch.dir}/patch${build.date}-against${patch.name.suffix}.jar" basedir="${patch.dir}/classes">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<section name="common">
+					<attribute name="Title" value="Patch za SPA patch-against${patch.name.suffix}.jar"/>
+					<attribute name="Date" value="${build.date}"/>
+					<attribute name="Version" value="1.0.1.${build.date} against ${ra-spa-path}"/>
+					<attribute name="Vendor" value="Rest Art d.o.o. www.rest-art.hr"/>
+				</section>
+			</manifest>
+		</jar>
+		<delete dir="${patch.dir}/classes"/>
+	</target>
+
+
+
+	<target name="clean" depends="init">
+		<delete dir="${classes.dir}"/>
+		<!--<delete dir="${javadoc.dir}"/>-->
+		<delete dir="${spa.jar.dir}"/>
+    	</target>
+
+	<target name="delete" depends="init,clean">
+		<delete dir="${projects.dir}/${ant.project.name}"/>
+	</target>
+
+	<target name="run" depends="init,jar">
+
+		<path id="run.classpath">
+			<fileset dir="${spa.jar.dir}">
+				<include name="*.jar"/>
+			</fileset>
+
+			<path refid="project.classpath"/>
+		</path>
+
+		<java
+			fork="yes"
+			classpathref="run.classpath"
+			classname="hr.restart.start"
+			jvm="${JAVA_EXECUTABLE}"
+			maxmemory="${MAX_MEMORY}"
+			dir="${STARTDIR_SPA_RUN}">
+			<arg value="${ARG_SPA_RUN1}"/>
+			<arg value="${ARG_SPA_RUN2}"/>
+			<arg value="${ARG_SPA_RUN3}"/>
+			<arg value="${ARG_SPA_RUN4}"/>
+			<arg value="${ARG_SPA_RUN5}"/>
+		</java>
+
+	</target>
+
+	<target name="run.local" depends="init,compile,nonJava">
+
+		<path id="run.classpath">
+			<pathelement path="${classes.dir}"/>
+			<pathelement path="conf"/>
+			<path refid="project.classpath"/>
+			
+		</path>
+		
+		<java fork="yes"
+			classpathref="run.classpath"
+			classname="hr.restart.start"
+			jvm="${JAVA_EXECUTABLE}"
+			maxmemory="${MAX_MEMORY}"
+			dir="${STARTDIR_SPA_RUN_LOCAL}">
+			<arg value="direct"/>
+			<arg value="${ARG_SPA_RUN_LOCAL1}"/>
+			<arg value="${ARG_SPA_RUN_LOCAL2}"/>
+			<arg value="${ARG_SPA_RUN_LOCAL3}"/>
+			<arg value="${ARG_SPA_RUN_LOCAL4}"/>
+			<arg value="${ARG_SPA_RUN_LOCAL5}"/>
+		</java>
+
+	</target>
+	<target name="run.sqlpilot" depends="init,compile,nonJava">
+
+		<path id="run.classpath">
+			<pathelement path="${classes.dir}"/>
+			<path refid="project.classpath"/>
+			
+			
+			
+		</path>
+
+		<java
+			fork="yes"
+			classpathref="run.classpath"
+			classname="hr.restart.start"
+			jvm="${JAVA_EXECUTABLE}"
+			maxmemory="${MAX_MEMORY}">
+
+			<arg value="direct"/>
+
+			<arg value="-RPilot"/>
+		</java>
+
+	</target>
+	
+	<target name="ftpStart" description="Neovisno bildaj ftpStart.jar">
+    <property file="../../build/ant-global.properties"/>
+		<delete dir="ftpstart.tmp"/>
+		<delete dir="ftpstart.cls"/>
+		<delete file="ftpStart.jar"/>
+		
+		<mkdir dir="ftpstart.tmp/hr/restart/db"/>
+		<mkdir dir="ftpstart.tmp/hr/restart/util"/>
+		<mkdir dir="ftpstart.tmp/hr/restart/util/images"/>
+		<mkdir dir="ftpstart.cls"/>
+		
+		<copy file="src/hr/restart/db/ftpTransfer.java" todir="ftpstart.tmp/hr/restart/db"/>
+		<copy file="src/hr/restart/ftpStart.java" todir="ftpstart.tmp/hr/restart"/>
+		<copy file="src/hr/restart/ftpVersionNotifier.java" todir="ftpstart.tmp/hr/restart"/>
+		<copy file="src/hr/restart/ftpVersionWorker.java" todir="ftpstart.tmp/hr/restart"/>
+		<copy file="src/hr/restart/raSplashWorker.java" todir="ftpstart.tmp/hr/restart"/>
+		<copy file="src/hr/restart/util/FileHandler.java" todir="ftpstart.tmp/hr/restart/util"/>
+		<copy file="src/hr/restart/util/VarStr.java" todir="ftpstart.tmp/hr/restart/util"/>
+		<copy file="src/hr/restart/util/Encrypter.java" todir="ftpstart.tmp/hr/restart/util"/>
+		<copy file="src/hr/restart/util/versions/raVersionInfo.java" todir="ftpstart.tmp/hr/restart/util/versions"/>
+		
+		<unjar src="thirdparty-jars/NetComponents.jar" dest="ftpstart.cls"/>
+		
+		<javac fork="yes"
+			srcdir="ftpstart.tmp" 
+			destdir="ftpstart.cls" 
+			classpath="ftpstart.cls"
+			executable="${JAVA_COMPILER}"
+			encoding="Cp1250"
+		/>
+		<copy file="src/hr/restart/util/images/splash.jpg" todir="ftpstart.cls/hr/restart/util/images"/>
+		
+		<jar file="ftpStart.jar" basedir="ftpstart.cls">
+			<manifest>
+				<attribute name="Main-Class" value="hr.restart.ftpStart"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="startup" depends="init" description="Neovisno bildaj startup.jar">
+		<mkdir dir="${spa.jar.dir}"/>
+		<delete dir="startup.tmp"/>
+		<delete dir="startup.cls"/>
+		<delete file="startup.jar"/>
+
+		<mkdir dir="startup.tmp/hr/restart/db"/>
+		<mkdir dir="startup.tmp/hr/restart/util"/>
+		<mkdir dir="startup.tmp/hr/restart/util/images"/>
+		<mkdir dir="startup.tmp/hr/restart/startup"/>
+		<mkdir dir="startup.cls"/>
+		<!--ftpStart -->
+		<copy file="src/hr/restart/db/ftpTransfer.java" todir="startup.tmp/hr/restart/db"/>
+		<copy file="src/hr/restart/ftpStart.java" todir="startup.tmp/hr/restart"/>
+		<copy file="src/hr/restart/ftpVersionNotifier.java" todir="startup.tmp/hr/restart"/>
+		<copy file="src/hr/restart/ftpVersionWorker.java" todir="startup.tmp/hr/restart"/>
+		<copy file="src/hr/restart/raSplashWorker.java" todir="startup.tmp/hr/restart"/>
+		<copy file="src/hr/restart/util/FileHandler.java" todir="startup.tmp/hr/restart/util"/>
+		<copy file="src/hr/restart/util/Encrypter.java" todir="startup.tmp/hr/restart/util"/>
+		<copy file="src/hr/restart/util/VarStr.java" todir="startup.tmp/hr/restart/util"/>
+		<unjar src="thirdparty-jars/NetComponents.jar" dest="startup.cls"/>
+		<!--startup -->
+		<copy file="src/hr/restart/startup/Main.java" todir="startup.tmp/hr/restart/startup"/>
+		<!--apple -->
+		<unjar src="${spa.jar.dir}/ra-spa-apple.jar" dest="startup.cls"/>
+		
+		<javac srcdir="startup.tmp" destdir="startup.cls" classpath="startup.cls"/>
+		
+		<copy file="images/splash.jpg" todir="startup.cls/hr/restart/util/images"/>
+		
+		<jar file="${spa.jar.dir}/startup.jar" basedir="startup.cls">
+			<manifest>
+				<attribute name="Main-Class" value="hr.restart.startup.Main"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	
+	
+	<target name="doc" depends="init">
+        <mkdir dir="${doc.dir}"/>
+        <javadoc destdir="${doc.dir}" 
+        	encoding="Cp1250"
+            packagenames="*"
+            maxmemory="512m"
+            use="true"
+        	private="true"
+
+        	author="true"
+           version="true"
+        	windowtitle="Rest Art API">
+        	
+            <sourcepath>
+                <pathelement location="${src.dir}"/>
+            </sourcepath>
+            <classpath>
+                <fileset dir="${thirdparty.jar.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javadoc>
+	</target>
+	
+	
+	<target name="ws.jar" depends="compile">
+
+			<mkdir dir="${spa.jar.dir}"/>
+
+			<jar jarfile="${spa.jar.dir}/spa-repl-ws.jar">
+				<fileset dir="${classes.dir}">
+					<include name="hr/restart/db/replication/ws/Receiver.class"/>
+					<include name="hr/restart/db/replication/ws/Sender.class"/>
+				</fileset>
+			</jar>
+
+	</target>
+	
+	<target name="server-proxy-driver.jar" depends="compile">
+
+			<mkdir dir="${spa.jar.dir}"/>
+
+			<jar jarfile="${spa.jar.dir}/spa-server-proxy-driver.jar">
+				<fileset dir="${classes.dir}">
+					<include name="hr/restart/db/replication/server/logging/**"/>
+				</fileset>
+			</jar>
+
+	</target>
+	<target name="deploy.apple" depends="init">
+		<mkdir dir="${classes.dir}.apple"/>
+		<javac 	fork="yes"
+				destdir="${classes.dir}.apple"
+				srcdir="${src.dir}.apple"
+				classpathref="project.classpath"
+				classpath="${classes.dir}"
+				verbose="no"
+				deprecation="true"
+				executable="${JAVA_COMPILER}"
+				encoding="Cp1250"
+				memorymaximumsize="${MAX_MEMORY}">
+		</javac>
+
+		<mkdir dir="${spa.jar.dir}"/>
+		<jar jarfile="${spa.jar.dir}/ra-spa-apple.jar" basedir="${classes.dir}.apple">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<section name="common">
+					<attribute name="Title" value="SPA Apple extensions (ra-spa-apple.jar)"/>
+					<attribute name="Date" value="${build.date}"/>
+					<attribute name="Version" value="${buildVersion}"/>
+					<attribute name="Vendor" value="Rest Art d.o.o. www.rest-art.hr"/>
+				</section>
+			</manifest>
+		</jar>
+		<mkdir dir="lib"/>
+		<copy file="${spa.jar.dir}/ra-spa-apple.jar" todir="lib"/>
+	</target>
+</project>

@@ -1,0 +1,6 @@
+#pause
+$Cardozvole
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CDOZ;alpha;10;pkey;;Šifra dozvole
+NAZIV;alpha;100;;;Naziv 

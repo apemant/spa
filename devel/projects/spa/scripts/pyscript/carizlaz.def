@@ -1,0 +1,22 @@
+#pause
+$Carizlaz
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CUSER;alpha;15;;;Operater;
+ID_IZLAZ_ZAG;int;8;pkey;;Brojaè autonumber;*
+CBRDOK;alpha;30;;;Broj dokumenta
+DATDOK;date;8;;;Datum dokumenta
+CPAR;int;5;;;Principal
+#ODOB;alpha;30;;;Odobrenje
+#DATODOB;date;8;;;Datum odobrenja
+CSKL;alpha;12;;;Skladište
+RACPRI;alpha;30;;;Raèun principala
+#BRNAZK;alpha;30;;;Broj nadzorne knjige
+#DATNAZK;date;8;;;Datum nadzorna knjige
+#CPAR1PP;alpha;10;;;Šifra pariteta za prvo podpolje
+OZNVAL;alpha;3;;;Valuta
+TECAJ;numeric;17,6;;;Iznos teèaja
+#BRUTOKG;numeric;17,3;;;Bruto težina (kg)
+#PRS;alpha;80;;;Prijevozno sredstvo
+ODGOSOBA;alpha;80;;;Odgovorna osoba
+COMMENT;alpha;500;;;Komentar

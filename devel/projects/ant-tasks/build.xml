@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="jar" name="ant-tasks">
+	<target name="init">
+		<property name="src.dir" value="src"/>
+		<property name="classes.dir" value="classes"/>
+		<property name="jars.dir" value="jars"/>
+		<property name="doc.dir" value="docs"/>
+		<property name="thirdparty.jar.dir" value="thirdparty-jars"/>
+		
+		<mkdir dir="${classes.dir}"/>
+		<path id="project.classpath">
+			<fileset dir="${thirdparty.jar.dir}">
+				<include name="*.jar"/>
+			</fileset>
+		</path>		
+	</target>
+	
+	<target name="compile" depends="init">
+		<javac 	fork="yes"
+				destdir="${classes.dir}"
+				srcdir="${src.dir}"
+				classpathref="project.classpath"
+				verbose="no"
+				deprecation="true"
+				executable="${JAVA_COMPILER}"
+				encoding="Cp1250"
+				memorymaximumsize="${MAX_MEMORY}"/>		
+	</target>
+	<target name="jar" depends="compile">
+		<mkdir dir="${jars.dir}"/>
+		<jar jarfile="${jars.dir}/ra-ant-tasks.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<section name="common">
+					<attribute name="Title" value="Ant tasks for building Rest Art's products"/>
+					<attribute name="Date" value="${build.date}"/>
+					<attribute name="Version" value="0.1.${build.date}"/>
+					<attribute name="Vendor" value="Rest Art d.o.o. www.rest-art.hr"/>
+				</section>
+			</manifest>
+		</jar>		
+	</target>
+	
+	<target name="doc" depends="init">
+        <mkdir dir="${doc.dir}"/>
+        <javadoc destdir="${doc.dir}" 
+        	encoding="Cp1250"
+            packagenames="*"
+            maxmemory="512m"
+            use="true"
+        	private="true"
+
+        	author="true"
+           	version="true"
+        	windowtitle="Rest Art ANT-TASKS API">
+        	
+            <sourcepath>
+                <pathelement location="${src.dir}"/>
+            </sourcepath>
+            <classpath>
+                <fileset dir="${thirdparty.jar.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javadoc>
+	</target>
+	
+	<target name="test" depends="jar">
+<!--
+		<taskdef name="filechooser" classname="hr.restart.util.ant.FileChooserInput" classpath="${projects.dir}/ant-tasks/jars/ra-ant-tasks.jar"/>
+		<filechooser
+			fileextension="ra-spa.jar"
+			defaultpath="${projects.dir}/spa"
+		    addproperty="file.path"
+		  />
+		<echo message="${file.path}"/>
+-->
+		<taskdef name="mfparser" classname="hr.restart.util.ant.ManifestParser" classpath="${projects.dir}/ant-tasks/jars/ra-ant-tasks.jar"/>
+		<mfparser
+			jarfile="${projects.dir}/spa/lib/ra-spa.jar"
+			section="common"
+			attribute="Version"
+		    addproperty="mf.version"
+		  />
+		<echo message="${mf.version}"/>
+
+	</target>
+</project>

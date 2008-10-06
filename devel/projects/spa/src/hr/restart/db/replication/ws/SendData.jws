@@ -1,0 +1,51 @@
+//package hr.restart.db.replication.ws;
+
+import hr.restart.db.replication.ws.Receiver;
+import hr.restart.db.replication.server.logging.DriverProxy;
+
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+/**
+* @author dgradecak
+*
+*/
+public class SendData {
+
+   static Receiver inserter = null;
+   
+   static {
+       main(null);
+   }
+   
+   public static void main(String[] args) {
+       
+   
+	    try {
+	        System.out.println("(MAIN) started");
+	        
+	            
+	                final BeanFactory beanFactory = new ClassPathXmlApplicationContext("replication.xml");
+	                
+	                DriverProxy proxy = (DriverProxy)beanFactory.getBean("DriverProxy");	                
+	                inserter = (Receiver)beanFactory.getBean("Receiver");
+	                
+	                //DriverManager.registerDriver(proxy);
+	                //inserter.init();
+	
+	         System.out.println("(MAIN) finished");
+	    } catch (BeansException e) {
+	        e.printStackTrace();
+	        throw new RuntimeException(e.getMessage());
+	    }
+   }
+   
+   synchronized public boolean insert(String name, String txt[]) throws SQLException{   
+   		DriverProxy.setSender(name.toUpperCase());
+   		return inserter.execute(txt);
+   }
+}

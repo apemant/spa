@@ -1,0 +1,14 @@
+[PropertyInfo]
+colNames,String[],false,false,colNames,colNames,true,<default>
+exceptionMsg,String,false,false,exceptionMsg,exceptionMsg,true,<default>
+keys,String[],false,false,keys,keys,true,<default>
+metadata,java.sql.ResultSetMetaData,false,false, , ,false, 
+query,String,false,false,query,query,true,<default>
+rows,java.util.Hashtable,false,false,rows,rows,true,<default>
+tableName,String,false,false,tableName,tableName,true,<default>
+identifier,String,false,false,identifier,identifier,true,<default>
+[IconNames]
+
+
+
+

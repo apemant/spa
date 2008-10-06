@@ -1,0 +1,6 @@
+#pause
+$Carugovor
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CUGOVOR;alpha;4;pkey;;Šifra ugovora
+NAZIV;alpha;80;;;Naziv

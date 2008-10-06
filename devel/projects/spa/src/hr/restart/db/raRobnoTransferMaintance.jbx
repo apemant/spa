@@ -1,0 +1,23 @@
+[PropertyInfo]
+addr,String,false,false, , ,false,<default>
+datumdo,java.sql.Timestamp,false,false, , ,false,<default>
+dm,dM,false,false, , ,false,<default>
+fileNamesForReturn,String[],false,false, , ,true,<default>
+fileToSend,String,false,false, , ,false,<default>
+folder,String,false,false, , ,false,<default>
+fT,ftpTransfer,false,false, , ,false,<default>
+ID_trans,String,false,false, , ,false,<default>
+IDFileName,String,false,false, , ,true,<default>
+lastfile,String,false,false, , ,false,<default>
+lastversion,int,false,false, , ,false,<default>
+localfolder,String,false,false, , ,false,<default>
+passwd,String,false,false, , ,false,<default>
+port,int,false,false, , ,false,<default>
+rC,raCompress,false,false, , ,false,<default>
+repldef,QueryDataSet,false,false, , ,false,<default>
+username,String,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

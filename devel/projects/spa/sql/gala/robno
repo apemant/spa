@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="Windows-1250"?>
+<reportext>
+  <dat><![CDATA[
+cij</sep>Cijenik ugostiteljskih artikala</sep>cijenik2.sql</sep>robno</sep>
+mR1</sep>Maloprodaja R1 artikli</sep>gala.sql</sep>robno</sep>
+_kavaIZD</sep>Pregled prometa kave - tro�kovi</sep>_kavaizd.sql</sep>robno</sep>
+pregpor</sep>Pregled poreza u ugostiteljstvu</sep>pregpor.sql</sep>robno</sep>
+_kavaDOKI</sep>Pregled prometa kave - veleprodaja i maloprodaja</sep>_kavadoki.sql</sep>robno</sep>
+_kavaOTR</sep>Pregled prometa kave - otpisi</sep>_kavaotr.sql</sep>robno</sep>
+_kavaIZLAZ</sep>Pregled prometa kave - izlazi ukupno</sep>_kavaizlaz.sql</sep>robno</sep>
+_kavaUGO</sep>Pregled prometa kave - ugostiteljstvo</sep>_kavaugo.sql</sep>robno</sep>
+ukizlaz</sep>Pregled izlaza po skladi�tima</sep>_ukizlaz.sql</sep>robno</sep>
+_kapsuleizla</sep>Pregled prometa kave u kapsulama - izlazi ukupno</sep>_kapsuleizlaz.sql</sep>robno</sep>
+
+  ]]></dat>
+
+  <sql file="cijenik2.sql"><![CDATA[
+<#>
+<#title>CIJENIK
+SELECT cart, nazart, jm, mc FROM Artikli WHERE vrart = 'A' order by cart
+
+  ]]></sql>
+
+  <sql file="gala.sql"><![CDATA[
+<#>
+<#00sklad>Skladi�te;S;getSklad;CSKL, NAZSKL;1,2;;12
+<#groups>CKUPAC+IME+JMBG+getKupci
+<#visible>2,4,5,6,7,8,9
+<#03datfrom>Datum;F;;;;;12
+<#01partn>Partner;S;getPartneri;CPAR,NAZPAR;1,2;;12
+<#03datto>;T;;;;;12
+<#title>Prodaja artikala u maloprodaji na R1 od $03datfrom do $03datto
+SELECT doki.ckupac, doki.cskl, doki.brdok, doki.vrdok, doki.datdok, stdoki.cart1, stdoki.nazart, stdoki.jm, stdoki.kol, stdoki.iprodsp
+
+FROM doki,stdoki
+WHERE doki.cskl = stdoki.cskl
+AND doki.vrdok = stdoki.vrdok
+AND doki.god = stdoki.god
+AND doki.brdok = stdoki.brdok
+AND doki.god = '2006'
+
+
+
+and doki.cskl='$00sklad' 
+AND DOKI.CKUPAC=$01partn 
+and doki.datdok between $03datfrom and $03datto
+
+  ]]></sql>
+
+  <sql file="_kavaizd.sql"><![CDATA[
+<#>
+<#datfrom>datfrom;F;;;;;0
+<#sums>INAB
+<#title>Pregled tro�kova kave od $datfrom do $datto
+<#datto>datto;T;;;;;0
+select max(cart1) as CART1, max(nazart) as NAZART, sum(kol) as KOL, max(jm) as JM, sum(inab) as INAB from doki,stdoki,artikli where artikli.cart=stdoki.cart and artikli.cgrart in ('01','0101') and doki.vrdok in ('IZD') and doki.datdok between $datfrom and $datto and doki.vrdok=stdoki.vrdok and doki.cskl=stdoki.cskl and doki.god=stdoki.god and doki.brdok=stdoki.brdok group by cart
+
+  ]]></sql>
+
+  <sql file="pregpor.sql"><![CDATA[
+<#>
+<#datdokfrom>Datum;F;;;;;0
+<#coj>Organizacijska jedinica;S;getAllOrgstruktura;CORG, NAZIV;0,1;;0
+<#sums>IPRODBP, POR1, POR2
+<#datdokto>Datum;T;;;;;0
+<#title>Pregled poreza u ugostiteljstvu za OJ $coj u periodu $datdokfrom - $datdokto
+SELECT max(cgrart) as cgrart, max(nazgrart) as nazgrart, sum(iprodbp) as iprodbp, sum(por1) as por1, sum(por2) as por2 from stdoki, doki, artikli, grupart WHERE artikli.cgrart=grupart.cgrart and stdoki.cskl=doki.cskl and stdoki.brdok=doki.brdok and stdoki.vrdok=doki.vrdok and stdoki.god=doki.god and stdoki.cskl=$coj and datdok between $datdokfrom and $datdokto and stdoki.cart=artikli.cart and stdoki.vrdok='POS' group by cgrart 
+
+  ]]></sql>
+
+  <sql file="_kavadoki.sql"><![CDATA[
+<#>
+<#datfrom>datfrom;F;;;;;0
+<#sums>INAB
+<#title>Pregled prodaje kave u veleprodaji i maloprodaji od $datfrom do $datto
+<#datto>datto;T;;;;;0
+select max(cart1) as CART1, max(nazart) as NAZART, sum(kol) as KOL, max(jm) as JM, sum(inab) as INAB from doki,stdoki,artikli where artikli.cart=stdoki.cart and artikli.cgrart in ('01','0101') and doki.vrdok in ('ROT','POD','GOT') and doki.datdok between $datfrom and $datto and doki.vrdok=stdoki.vrdok and doki.cskl=stdoki.cskl and doki.god=stdoki.god and doki.brdok=stdoki.brdok group by cart
+
+  ]]></sql>
+
+  <sql file="_kavaotr.sql"><![CDATA[
+<#>
+<#datfrom>datfrom;F;;;;;0
+<#sums>INAB
+<#title>Pregled otpisa kave od $datfrom do $datto
+<#datto>datto;T;;;;;0
+select max(cart1) as CART1, max(nazart) as NAZART, sum(kol) as KOL, max(jm) as JM, sum(inab) as INAB from doki,stdoki,artikli where artikli.cart=stdoki.cart and artikli.cgrart in ('01','0101') and doki.vrdok in ('OTR') and doki.datdok between $datfrom and $datto and doki.vrdok=stdoki.vrdok and doki.cskl=stdoki.cskl and doki.god=stdoki.god and doki.brdok=stdoki.brdok group by cart
+
+  ]]></sql>
+
+  <sql file="_kavaizlaz.sql"><![CDATA[
+<#>
+<#datfrom>datfrom;F;;;;;0
+<#sums>INAB
+<#title>Pregled izlaza kave od $datfrom do $datto
+<#datto>datto;T;;;;;0
+select max(cart1) as CART1, max(nazart) as NAZART, sum(kol) as KOL, max(jm) as JM, sum(inab) as INAB from doki,stdoki,artikli where artikli.cart=stdoki.cart and artikli.cgrart in ('01','0101') and doki.vrdok in ('OTR', 'GOT', 'ROT', 'POD', 'IZD','OTP','PRV','INM') and doki.datdok between $datfrom and $datto and doki.vrdok=stdoki.vrdok and doki.cskl=stdoki.cskl and doki.god=stdoki.god and doki.brdok=stdoki.brdok group by cart
+
+  ]]></sql>
+
+  <sql file="_kavaugo.sql"><![CDATA[
+<#>
+<#datfrom>datfrom;F;;;;;0
+<#sums>INAB
+<#title>Pregled izlaza za ugostiteljstvo od $datfrom do $datto
+<#datto>datto;T;;;;;0
+select max(cart1) as CART1, max(nazart) as NAZART, sum(kol) as KOL, max(jm) as JM, sum(inabiz) as INAB from meskla,stmeskla,artikli where artikli.cart=stmeskla.cart and artikli.cgrart in ('01','0101') and meskla.vrdok in ('MEI') and meskla.datdok between $datfrom and $datto and meskla.vrdok=stmeskla.vrdok and meskla.csklul=stmeskla.csklul and meskla.cskliz=stmeskla.cskliz and meskla.god=stmeskla.god and meskla.brdok=stmeskla.brdok group by cart
+
+  ]]></sql>
+
+  <sql file="_ukizlaz.sql"><![CDATA[
+<#>
+<#datto>datto;T;;;;;0
+<#cskl>Skladi�te;S;getSklad;CSKL,NAZSKL;0,1,2,3;;12
+<#sums>INAB
+<#datfrom>datfrom;F;;;;;0
+<#title>Pregled za skladi�te $cskl od $datfrom do $datto
+select max(cart1) as CART1, max(nazart) as NAZART, sum(kol) as KOL, max(jm) as JM, sum(inab) as INAB from doki,stdoki,artikli where artikli.cart=stdoki.cart and doki.cskl=$cskl and artikli.cgrart in ('01','0101') and doki.vrdok in ('OTR', 'GOT', 'ROT', 'POD', 'IZD','OTP','PRV','INM') and doki.datdok between $datfrom and $datto and doki.vrdok=stdoki.vrdok and doki.cskl=stdoki.cskl and doki.god=stdoki.god and doki.brdok=stdoki.brdok group by cart
+
+  ]]></sql>
+
+  <sql file="_kapsuleizlaz.sql"><![CDATA[
+<#>
+<#datfrom>datfrom;F;;;;;0
+<#sums>INAB
+<#title>Pregled izlaza kave u kapsulama od $datfrom do $datto
+<#datto>datto;T;;;;;0
+select max(cart1) as CART1, max(artikli.nazart) as NAZART, sum(kol) as KOL, max(jm) as JM, sum(inab) as INAB from doki,stdoki,artikli where artikli.cart=stdoki.cart and artikli.cgrart in ('02') and doki.vrdok in ('OTR', 'GOT', 'ROT', 'POD', 'IZD','OTP','PRV','INM') and doki.datdok between $datfrom and $datto and doki.vrdok=stdoki.vrdok and doki.cskl=stdoki.cskl and doki.god=stdoki.god and doki.brdok=stdoki.brdok group by cart
+
+  ]]></sql>
+
+</reportext>

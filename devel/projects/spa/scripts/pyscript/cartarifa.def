@@ -1,0 +1,9 @@
+#pause
+$Cartarifa
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CTG;alpha;10;pkey;;Šifra tarifne grupe;
+CUGOVOR;alpha;4;pkey;;Šifra ugovora;
+KVOTA;numeric;17,3;;;Carinska kvota;
+STOPA1;numeric;17,2;;;Stopa 1
+STOPA2;numeric;17,2;;;Stopa 2

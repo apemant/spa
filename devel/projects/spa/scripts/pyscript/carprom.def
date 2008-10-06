@@ -1,0 +1,27 @@
+#pause
+$Carulaz
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+ID;int;8;pkey;;Brojaè autonumber;*
+CBRDOK;alpha;30;;;Broj dokumenta
+DATDOK;date;8;;;Datum dokumenta
+CPAR;int;5;;; Principal
+ODOB;alpha;30;;;Odobrenje
+DATODOB;date;8;;;Datum odobrenja
+CSKL;alpha;12;;;Skladište
+RACPRI;alpha;30;;;Raèun principala
+BRNAZK;alpha;30;;;Broj nadzorne knjige
+DATNAZK;date;8;;;Datum nadzorna knjige
+JCD_CCAR_PRET;alpha;20;;;Šifra carinarnice (prethodni)
+JCD_BROJ_PRET;alpha;30;;;Broj JCD (prethodni)
+JCD_DATUM_PRET;date;8;;;Datum JCD (prethodni)
+CCAR_PROV;alpha;20;;;Šifra carinarnice (provozni)
+JCD_BROJ_PROV;alpha;30;;;Broj JCD (provozni)
+JCD_DATUM_PROV;date;8;;;Datum JCD (provozni)
+CPAR1PP;alpha;10;;;Šifra pariteta za prvo podpolje
+OZNVAL:alpha;3;;;Valuta
+TECAJ:numeric;17,2;;;Iznos teèaja
+BROTOKG   Brutokg
+PRS;alpha;80;;;Prijevozno sredstvo
+ODGOSOBA:alpha;80;;;Odgovorna osoba
+COMENT:alpha;500;;;Komentar

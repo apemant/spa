@@ -1,0 +1,14 @@
+[PropertyInfo]
+colB,ColumnsBean,false,false, , ,true,<default>
+hasLived,boolean,false,false, , ,false,<default>
+interTitle,String,false,false, , ,false,<default>
+JTPProvider,repDynamicProvider,false,false, , ,false,<default>
+JTPProviderHidden,JTablePrintProvider,false,false, , ,false,<default>
+reportRunner,hr.restart.util.reports.raRunReport,false,false, , ,true,<default>
+RTitle,String,false,false, , ,true,<default>
+rTitle,String,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

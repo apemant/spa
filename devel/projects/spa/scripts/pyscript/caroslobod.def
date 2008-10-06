@@ -1,0 +1,6 @@
+#pause
+$Caroslobod
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+COSLO;alpha;10;pkey;;Šifra osloboðenja
+Naziv;alpha;100;;;Naziv 

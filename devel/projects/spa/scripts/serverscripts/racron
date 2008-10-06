@@ -1,0 +1,103 @@
+#!/bin/bash
+
+pid=$(ps -ef |grep raCron |awk '{print $2" "$3"#"}' |grep 1# |awk '{print $1}')
+racron_start() {
+  if [ "$pid" != "" ]; then
+    echo "raCron is already running at PID $pid"
+  else
+    racron_force_start
+  fi
+}
+
+racron_force_start() {
+###########################################################################
+# najsigurnije je postaviti se u radni direktorij gdje je i properties file 
+# i skripta za podizanje i pod njim lib sa jarovima
+###########################################################################
+    cd /home/andrej/javarun
+
+###########################################################################
+# mjesto gdje se nalaze jarovi
+###########################################################################
+    RALIB=lib/*.jar
+
+    # ovo radi starter.exe :)
+    RACLPATH=$(ls -1 $RALIB|tr "\n" ":")
+
+###########################################################################
+# za testiranje neka gleda i u klase 
+###########################################################################
+    RACLPATH=/home/andrej/proj/SPA.classes:$RACLPATH
+
+###########################################################################
+# gdje je java executable
+###########################################################################
+    JAVBIN=java
+
+###########################################################################
+# startna klasa ...
+###########################################################################
+    STARTCLS=hr.restart.util.raCron
+
+    RCMD="$JAVBIN -cp $RACLPATH $STARTCLS $1 $2 $3 $4"
+
+###########################################################################
+# dobro je ispisati komandu radi debugiranja
+###########################################################################
+    #echo $RCMD
+
+###########################################################################
+# egzekucija (& - background)
+###########################################################################
+    $RCMD &
+}
+
+racron_status() {
+  if [ "$pid" != "" ]; then
+    echo "raCron is running at pid $pid"
+  else
+    echo "raCron is not running"
+  fi
+}
+
+racron_stop() {
+  if [ "$pid" != "" ]; then
+    kill -9 $pid
+  else
+    echo "raCron is not running"
+  fi
+}
+
+racron_restart() {
+  if [ "$pid" != "" ]; then
+    echo "killing raCron at pid $pid softly"
+    kill $pid
+  else
+    racron_start
+  fi
+}
+
+### da bi radilo u /etc/init.d
+
+case "$1" in
+'start')
+  racron_start
+  ;;
+'stop')
+  racron_stop
+  ;;
+'restart')
+#kad raCron zove ovu skriptu dogodi se sranje jer jos nisu pomrli svi procesi 
+#pa onda kontrola u racron_start ne starta (raCron is allready running)
+#potrebno je u cron.properties upisati "cron.runcmd=/etc/init.d/racron force"
+  racron_restart
+  ;;
+'status')
+  racron_status
+  ;;
+'force')
+  racron_force_start
+  ;;
+*)
+  racron_start 
+esac

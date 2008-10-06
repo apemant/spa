@@ -1,0 +1,6 @@
+#pause
+$Carinarnica
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CCAR;alpha;20;pkey;;Šifra carinarnice
+Naziv;alpha;80;;;Naziv carinarnice

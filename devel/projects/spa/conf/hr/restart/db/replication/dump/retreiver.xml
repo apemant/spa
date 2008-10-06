@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC  "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	
+	<bean id="Retriever" class="hr.restart.db.replication.dump.Retreiver" init-method="init" >
+			
+		<property name="resource"><ref bean="WSRetreiver"/></property>		
+		<property name="id"><value>GALA1</value></property>
+
+		<property name="jdbcLogProperties">
+			<props>				
+				<prop key="url">jdbc:interbase://161.53.200.99/home/interbase/daniel/client1/client_logging.gdb</prop>				  
+				<prop key="user">SYSDBA</prop>
+				<prop key="password">masterkey</prop>				
+				<prop key="driver">interbase.interclient.Driver</prop>				
+			</props>
+		</property>
+		
+		<property name="jdbcProperties">
+			<props>				
+				<prop key="url">jdbc:interbase://161.53.200.99/home/interbase/daniel/client1/client.gdb</prop>				  
+				<prop key="user">SYSDBA</prop>
+				<prop key="password">masterkey</prop>				
+				<prop key="driver">interbase.interclient.Driver</prop>				
+			</props>
+		</property>
+		
+		<property name="transactionManagerClass"><value>org.objectweb.jotm.Current</value></property>				
+		
+	</bean>
+	
+	<bean id="WSRetreiver" class="hr.restart.db.replication.dump.WSRetreiver" init-method="init">
+
+				<property name="wsdl"><value>http://161.53.200.11:8080/axis/hr/restart/db/replication/ws/ReceiveData.jws</value></property>
+				<property name="operation"><value>receive</value></property>
+	</bean>
+
+</beans>

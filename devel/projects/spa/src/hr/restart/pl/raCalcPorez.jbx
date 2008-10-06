@@ -1,0 +1,11 @@
+[PropertyInfo]
+limits,BigDecimal[],false,false, , ,false,<default>
+oldosn,BigDecimal,false,false, , ,true,<default>
+oldpor,BigDecimal[],false,false, , ,false,<default>
+stope,BigDecimal[],false,false, , ,false,<default>
+ulaz,BigDecimal,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

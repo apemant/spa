@@ -1,0 +1,8 @@
+#pause
+$Menus, md
+CMENU;alpha;50;pkey;;Sifra
+CSORT;integer;6;;;Redoslijed
+PARENTCMENU;alpha;50;pkey;;Parent
+MENUTYPE;alpha;1;;;Tip
+METHOD;alpha;80;;;Metoda
+                       

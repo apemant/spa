@@ -1,0 +1,34 @@
+[PropertyInfo]
+dm,hr.restart.baza.dM,false,false, , ,false,<default>
+jbCOrg,JraButton,false,false, , ,false,<default>
+jcbInvBr,JCheckBox,false,false, , ,false,<default>
+jlNaziv,JLabel,false,false, , ,false,<default>
+jlOrgjJed,JLabel,false,false, , ,false,<default>
+jlSifra,JLabel,false,false, , ,false,<default>
+jp,JPanel,false,false, , ,false,<default>
+jPanel1,JPanel,false,false, , ,false,<default>
+jPanel2,JPanel,false,false, , ,false,<default>
+jrbIspAmGr,JRadioButton,false,false, , ,false,<default>
+jrbIspAtrikl,JRadioButton,false,false, , ,false,<default>
+jrbIspKont,JRadioButton,false,false, , ,false,<default>
+jrbIspRevSk,JRadioButton,false,false, , ,false,<default>
+jrbLokacije,JRadioButton,false,false, , ,false,<default>
+jrbPocStanje,JRadioButton,false,false, , ,false,<default>
+jrbStNaDan,JRadioButton,false,false, , ,false,<default>
+jrbTrStanje,JRadioButton,false,false, , ,false,<default>
+jrfCOrg,JlrNavField,false,false, , ,false,<default>
+jrfCOrgNaz,JlrNavField,false,false, , ,false,<default>
+jtfStNaDan,JTextField,false,false, , ,false,<default>
+radioButton,int,false,false, , ,true,<default>
+rcc,hr.restart.util.raCommonClass,false,false, , ,false,<default>
+selectedRB,int,false,false, , ,false,<default>
+titledBorder1,TitledBorder,false,false, , ,false,<default>
+titledBorder2,TitledBorder,false,false, , ,false,<default>
+xYLayout1,XYLayout,false,false, , ,false,<default>
+xYLayout2,XYLayout,false,false, , ,false,<default>
+xYLayout3,XYLayout,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

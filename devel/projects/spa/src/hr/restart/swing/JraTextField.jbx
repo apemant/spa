@@ -1,0 +1,19 @@
+[PropertyInfo]
+columnName,String,false,false, , ,true,<default>
+dataBinder,DBTextDataBinder,false,false, , ,true,<default>
+dataSet,DataSet,false,false, , ,true,<default>
+enableClearAll,boolean,false,false, , ,true,<default>
+enablePopupMenu,boolean,false,false, , ,true,<default>
+enableUndoRedo,boolean,false,false, , ,true,<default>
+helpText,String,false,false,helpText,helpText,true,<default>
+nextFocusOnEnter,boolean,false,false, , ,true,<default>
+postOnFocusLost,boolean,false,false, , ,true,<default>
+postOnRowPosted,boolean,false,false, , ,true,<default>
+txtBefore,String,false,false, , ,true,<default>
+valueChanged,boolean,false,false, , ,true,<default>
+helpImage,javax.swing.ImageIcon,false,false,helpImage,helpImage,true,<default>
+[IconNames]
+
+
+
+

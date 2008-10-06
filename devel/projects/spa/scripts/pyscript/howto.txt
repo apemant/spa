@@ -1,0 +1,5 @@
+cmd 
+doci u folder sa skriptom
+\python22\python.exe parsetables.py neki.def
+
+umjesto kreator.txt puknuti u Console creator

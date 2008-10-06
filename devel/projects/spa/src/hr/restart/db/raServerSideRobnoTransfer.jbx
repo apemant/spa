@@ -1,0 +1,12 @@
+[PropertyInfo]
+destf,File,false,false, , ,false,<default>
+newZipFilesExist,boolean,false,false, , ,true,<default>
+raspakiraniFileovi,ArrayList,false,false, , ,false,<default>
+rCP,raCompress,false,false, , ,false,<default>
+zipFiles,String[],false,false, , ,true,<default>
+zipFiles4Batch,String[],false,false, , ,true,<default>
+[IconNames]
+
+
+
+

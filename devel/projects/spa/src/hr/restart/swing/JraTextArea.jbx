@@ -1,0 +1,9 @@
+[PropertyInfo]
+jtborder,JTextField,false,false, , ,false,<default>
+writtenRows,int,false,false, , ,true,<default>
+rowsText,int,false,false,rowsText,rowsText,true,<default>
+[IconNames]
+
+
+
+

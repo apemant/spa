@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="Windows-1250"?>
+<reportext>
+  <dat><![CDATA[
+1</sep>Kartica GK za konto i org.jedinicu</sep>gkkartica_konto_oj.sql</sep>gk</sep>
+3</sep>Kartica GK za org. jedinicu po kontima</sep>gkkartica_oj_pokontima.sql</sep>gk</sep>
+2</sep>Kartica GK za org. jedinicu</sep>gkkartica_oj.sql</sep>gk</sep>
+
+  ]]></dat>
+
+  <sql file="gkkartica_konto_oj.sql"><![CDATA[
+<#>
+<#groups>
+<#datdokfrom>Datum knji�enja;F;;;
+<#title>Kartica konta $brojkonta za oj $coj u periodu $datdokfrom - $datdokto
+<#orders>
+<#brojkonta>Konto;S;getAllKonta;BROJKONTA, NAZIVKONTA;0,1
+<#sums>ID,IP,DEVID,DEVIP
+<#visible>$default
+<#datdokto>Datum knji�enja;T;;;
+<#coj>Organizacijska jedinica;S;getAllOrgstruktura;CORG, NAZIV;0,1
+SELECT brojkonta, corg, datumknj, id, ip, devid, devip, oznval, opis FROM Gkstavke WHERE brojkonta=$brojkonta and corg=$coj and datumknj between $datdokfrom and $datdokto
+
+  ]]></sql>
+
+  <sql file="gkkartica_oj_pokontima.sql"><![CDATA[
+<#>
+<#groups>BROJKONTA+NAZIVKONTA+getAllKonta
+<#datdokfrom>Datum knji�enja;F;;;
+<#title>Kartica GK za org. jedinicu $coj po kontima u periodu $datdokfrom - $datdokto
+<#orders>
+<#visible>$default
+<#sums>ID,IP,DEVID,DEVIP
+<#datdokto>Datum knji�enja;T;;;
+<#coj>Organizacijska jedinica;S;getAllOrgstruktura;CORG, NAZIV;0,1
+SELECT brojkonta, corg, datumknj, id, ip, devid, devip, oznval, opis FROM Gkstavkerad WHERE corg=$coj and datumknj between $datdokfrom and $datdokto
+
+  ]]></sql>
+
+  <sql file="gkkartica_oj.sql"><![CDATA[
+<#>
+<#groups>
+<#datdokfrom>Datum knji�enja;F;;;
+<#title>Konto kartica za OJ $coj u periodu $datdokfrom - $datdokto
+<#orders>
+<#sums>ID,IP,DEVID,DEVIP
+<#visible>$default
+<#datdokto>Datum knji�enja;T;;;
+<#coj>Organizacijska jedinica;S;getAllOrgstruktura;CORG, NAZIV;0,1
+SELECT brojkonta, corg, datumknj, id, ip, devid, devip, oznval, opis FROM Gkstavke WHERE corg=$coj and datumknj between $datdokfrom and $datdokto
+
+  ]]></sql>
+
+</reportext>

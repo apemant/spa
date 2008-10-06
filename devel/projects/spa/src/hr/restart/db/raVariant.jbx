@@ -1,0 +1,20 @@
+[PropertyInfo]
+object,Object,false,false, , ,true,<default>
+vBigDecimal,java.math.BigDecimal,false,false, , ,false, 
+vBoolean,boolean,false,false, , ,false, 
+vByte,byte,false,false, , ,false, 
+vByteArray,byte[],false,false, , ,false, 
+vDate,java.sql.Date,false,false, , ,false, 
+vDouble,double,false,false, , ,false, 
+vFloat,float,false,false, , ,false, 
+vInt,int,false,false, , ,false, 
+vLong,long,false,false, , ,false, 
+vShort,short,false,false, , ,false, 
+vString,String,false,false, , ,false, 
+vTime,java.sql.Time,false,false, , ,false, 
+vTimestamp,java.sql.Timestamp,false,false, , ,false, 
+[IconNames]
+
+
+
+

@@ -1,0 +1,19 @@
+#pause
+$VTPred
+ID_STAVKA;alpha;50;pkey;;id_stavka predatnice
+MAT_I;numeric;17,2;;;Iznos materijala
+MAT_F;numeric;12,6;;;Faktor mnozenja MAT
+MAT_FI;numeric;17,2;;;Rezultirajuci iznos MAT
+PRO_I;numeric;17,2;;;Iznos proizvoda
+PRO_F;numeric;12,6;;;Faktor mnozenja PRO
+PRO_FI;numeric;17,2;;;Rezultirajuci iznos PRO
+ROB_I;numeric;17,2;;;Iznos robe
+ROB_F;numeric;12,6;;;Faktor mnozenja ROB
+ROB_FI;numeric;17,2;;;Rezultirajuci iznos ROB
+USL_I;numeric;17,2;;;Iznos usluga
+USL_F;numeric;12,6;;;Faktor mnozenja USL
+USL_FI;numeric;17,2;;;Rezultirajuci iznos USL
+POL_I;numeric;17,2;;;Iznos POL
+POL_F;numeric;12,6;;;Faktor mnozenja POL
+POL_FI;numeric;17,2;;;Rezultirajuci iznos POL
+TOTAL;numeric;17,2;;;Suma svih _FI

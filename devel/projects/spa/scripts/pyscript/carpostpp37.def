@@ -1,0 +1,6 @@
+#pause
+$Carpostpp37
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+Cpp37;alpha;10;pkey;;Šifra carinskog postupka pp37
+Naziv;alpha;100;;;Naziv 

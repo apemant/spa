@@ -1,0 +1,44 @@
+#pause
+$Repgk
+LOKK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CREPGK;integer;8;pkey;;Oznaka
+TITLE;alpha;200;;;Naslov
+HEADER1;alpha;50;;;Zaglavlje 1. iznosa 
+HEADER2;alpha;50;;;Zaglavlje 2. iznosa 
+HEADER3;alpha;50;;;Zaglavlje 3. iznosa 
+PARAMS;alpha;20;;;Parametri
+
+$Detrepgk
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CREPGK;integer;8;pkey;;Izvještaj
+RBSREPGK;integer;8;pkey;;Oznaka stavke izvještaja
+DESCRIPTION;alpha;200;;;Opis
+KTO1;alpha;200;;;Formula za 1. iznos
+KTO2;alpha;200;;;Formula za 2. iznos
+KTO3;alpha;200;;;Formula za 3. iznos
+PARAMS;alpha;20;;;Parametri
+
+$Repgkdata
+LOKK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CREPGK;integer;8;pkey;;Izvještaj
+DATREPGK;date;8;pkey;;Datum
+COMMENT;alpha;200;;;Komentar
+DAT1_FROM;date;8;;;OD za 1.iznos
+DAT1_TO;date;8;;;DO za 1.iznos
+DAT2_FROM;date;8;;;OD za 2.iznos
+DAT2_TO;date;8;;;DO za 2.iznos
+DAT3_FROM;date;8;;;OD za 3.iznos
+DAT3_TO;date;8;;;DO za 3.iznos
+PARAMS;alpha;20;;;Parametri
+
+$Detrepgkdata
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CREPGK;integer;8;pkey;;Izvještaj
+RBSREPGK;integer;8;pkey;;Oznaka stavke izvještaja
+DATREPGK;date;8;pkey;;Datum
+VAL1;numeric;17,2;;0;Iznos 1
+VAL2;numeric;17,2;;0;Iznos 2
+VAL3;numeric;17,2;;0;Iznos 3
+PARAMS;alpha;20;;;Parametri

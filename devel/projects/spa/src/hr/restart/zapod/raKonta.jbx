@@ -1,0 +1,11 @@
+[PropertyInfo]
+KARAKTERISTIKA,String,false,false, , ,false,<default>
+lastSearchedKonto,String,false,false, , ,false,<default>
+ORGSTR,String,false,false, , ,false,<default>
+SALDAK,String,false,false, , ,false,<default>
+VRSTAKONTA,String,false,false,VRSTAKONTA,VRSTAKONTA,true,<default>
+[IconNames]
+
+
+
+

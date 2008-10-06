@@ -1,0 +1,10 @@
+                        PREGLED UKUPNIH IZDVAJANJA PO ...                       
+ŠIF NAZIV                 IZNOS TROŠKOVA S 
+  1 Carina                       180132.38 
+  2 Prijevoz - domaæi            154701.08 
+  3 Prijevoz - ino                53050.00 
+  4 Bankovna provizija           107406.28 
+  5 Špedicija                     95275.94 
+  6 Atestiranje                   11000.00 
+  7 Ostalo                           75.00 
+  8 Naknada za garanciju          14400.00 

@@ -1,0 +1,10 @@
+$KoloneknjUI, kolknj
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CKOLONE;numeric;2;pkey;;Oznaka
+NAZIVKOLONE;alpha;50;;;Naziv
+URAIRA;alpha;1;pkey;;Ulazna/izlazna
+DUGPOT;alpha;1;;;Dugovna/potrazna
++
++ulazne:URAIRA='U'
++izlazne:URAIRA='I'

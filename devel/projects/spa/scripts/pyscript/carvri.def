@@ -1,0 +1,6 @@
+#pause
+$Carvri
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CVRI;alpha;10;pkey;;Šifra vrijednosti
+NAZIV;alpha;80;;;Naziv 

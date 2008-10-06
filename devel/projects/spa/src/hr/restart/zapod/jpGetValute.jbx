@@ -1,0 +1,17 @@
+[PropertyInfo]
+borderVisible,boolean,false,false,borderVisible,borderVisible,true,<default>
+doGetTecaj,boolean,false,false,doGetTecaj,doGetTecaj,true,<default>
+raDataSet,com.borland.dx.dataset.DataSet,false,false, , ,true,<default>
+tecaj,void,false,false, , ,true,<default>
+tecajDate,java.sql.Timestamp,false,false,tecajDate,tecajDate,true,<default>
+tecajDB,java.math.BigDecimal,false,false, , ,true,<default>
+tecajTip,int,false,false,tecajTip,tecajTip,true,<default>
+tecajUI,java.math.BigDecimal,false,false, , ,true,<default>
+tecajVisible,boolean,false,false,tecajVisible,tecajVisible,true,<default>
+varTecaj,java.math.BigDecimal,false,false,varTecaj,varTecaj,true,<default>
+tecajEditable,boolean,false,false,tecajEditable,tecajEditable,true,<default>
+[IconNames]
+
+
+
+

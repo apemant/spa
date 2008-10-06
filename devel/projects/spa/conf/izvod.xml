@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC  "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="FP" class="hr.restart.util.textconv.FileParser">
+		<property name="lineDefs">
+			<list>
+				<ref local="slog5"/>
+				<ref local="slog7"/>
+			</list>
+		</property>
+	</bean>
+<!-- S L O G  5 -->	
+	<bean id="slog5" class="hr.restart.util.textconv.Line">
+		<property name="columns">
+			<map>
+				<entry key="OZNTRA">
+					<ref local="colOZNTRA"/>
+				</entry>
+				<entry key="ZIROPAR">
+					<ref local="colZIROPAR"/>
+				</entry>
+				<entry key="VBDIPAR">
+					<ref local="colVBDIPAR"/>
+				</entry>
+				<entry key="NAZPAR">
+					<ref local="colNAZPAR"/>
+				</entry>
+				<entry key="MJESTOPAR">
+					<ref local="colMJESTOPAR"/>
+				</entry>
+				<entry key="IZNOS">
+					<ref local="colIZNOS"/>
+				</entry>
+				<entry key="PNBZ">
+					<ref local="colPNBZ"/>
+				</entry>
+				<entry key="PNBO">
+					<ref local="colPNBO"/>
+				</entry>
+				<entry key="SVRHA">
+					<ref local="colSVRHA"/>
+				</entry>
+				<entry key="DATUM">
+					<ref local="colDATUM"/>
+				</entry>
+			</map>
+		</property>
+		<property name="lineVerifier">
+			<ref local="line5Verifier"/>
+		</property>
+	</bean>
+	<bean id="colOZNTRA" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>OZNTRA</value>
+		</property>
+		<property name="beginIndex">
+			<value>1</value>
+		</property>
+		<property name="endIndex">
+			<value>2</value>
+		</property>
+	</bean>	
+	<bean id="colVBDIPAR" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>VBDIPAR</value>
+		</property>
+		<property name="beginIndex">
+			<value>198</value>
+		</property>
+		<property name="endIndex">
+			<value>204</value>
+		</property>
+	</bean>		
+	<bean id="colZIROPAR" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>ZIROPAR</value>
+		</property>
+		<property name="beginIndex">
+			<value>3</value>
+		</property>
+		<property name="endIndex">
+			<value>20</value>
+		</property>
+	</bean>
+	<bean id="colNAZPAR" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>NAZPAR</value>
+		</property>
+		<property name="beginIndex">
+			<value>21</value>
+		</property>
+		<property name="endIndex">
+			<value>55</value>
+		</property>
+	</bean>
+	<bean id="colMJESTOPAR" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>MJESTOPAR</value>
+		</property>
+		<property name="beginIndex">
+			<value>56</value>
+		</property>
+		<property name="endIndex">
+			<value>65</value>
+		</property>
+	</bean>
+	<bean id="colIZNOS" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>0</value>
+		</property>
+		<property name="format">
+			<value>-NNNNNNNNNNNN</value>
+		</property>
+		<property name="id">
+			<value>IZNOS</value>
+		</property>
+		<property name="beginIndex">
+			<value>66</value>
+		</property>
+		<property name="endIndex">
+			<value>78</value>
+		</property>
+	</bean>	
+	<bean id="colPNBZ" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>PNBZ</value>
+		</property>
+		<property name="beginIndex">
+			<value>79</value>
+		</property>
+		<property name="endIndex">
+			<value>102</value>
+		</property>
+	</bean>
+	<bean id="colPNBO" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>PNBO</value>
+		</property>
+		<property name="beginIndex">
+			<value>103</value>
+		</property>
+		<property name="endIndex">
+			<value>126</value>
+		</property>
+	</bean>
+	<bean id="colSVRHA" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>SVRHA</value>
+		</property>
+		<property name="beginIndex">
+			<value>129</value>
+		</property>
+		<property name="endIndex">
+			<value>164</value>
+		</property>
+	</bean>
+	<bean id="colDATUM" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>1</value>
+		</property>
+		<property name="format">
+			<value>DDMMYYYY</value>
+		</property>
+		<property name="id">
+			<value>DATUM</value>
+		</property>
+		<property name="beginIndex">
+			<value>211</value>
+		</property>
+		<property name="endIndex">
+			<value>218</value>
+		</property>
+	</bean>
+	
+	
+	<bean id="line5Verifier" class="hr.restart.util.textconv.BshLineVerifier">
+		<property name="verifyStatement">
+			<value>
+				result = line.getContent().substring(249).equals("5");
+			</value>
+		</property>
+	</bean>
+	
+<!-- S L O G  7 -->
+	<bean id="slog7" class="hr.restart.util.textconv.Line">
+		<property name="columns">
+			<map>
+				<entry key="VBDIKOR">
+					<ref local="colVBDIKOR"/>
+				</entry>
+				<entry key="ZIROKOR">
+					<ref local="colZIROKOR"/>
+				</entry>
+				<entry key="RBIZV">
+					<ref local="colRBIZV"/>
+				</entry>
+				<entry key="PRSTANJE">
+					<ref local="colPRSTANJE"/>
+				</entry>
+				<entry key="SUMID">
+					<ref local="colSUMID"/>
+				</entry>				
+				<entry key="SUMIP">
+					<ref local="colSUMIP"/>
+				</entry>
+				<entry key="NOVOSTANJE">
+					<ref local="colNOVOSTANJE"/>
+				</entry>
+				<entry key="BROJSTAVKI">
+					<ref local="colBROJSTAVKI"/>
+				</entry>
+				<entry key="DATUMIZV">
+					<ref local="colDATUMIZV"/>
+				</entry>
+			</map>
+		</property>
+		<property name="lineVerifier">
+			<ref local="line7Verifier"/>
+		</property>
+	</bean>
+	
+	<bean id="colVBDIKOR" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>VBDIKOR</value>
+		</property>
+		<property name="beginIndex">
+			<value>200</value>
+		</property>
+		<property name="endIndex">
+			<value>206</value>
+		</property>
+	</bean>	
+	<bean id="colZIROKOR" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>ZIROKOR</value>
+		</property>
+		<property name="beginIndex">
+			<value>1</value>
+		</property>
+		<property name="endIndex">
+			<value>18</value>
+		</property>
+	</bean>	
+	
+	<bean id="colRBIZV" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>0</value>
+		</property>
+		<property name="id">
+			<value>RBIZV</value>
+		</property>
+		<property name="beginIndex">
+			<value>54</value>
+		</property>
+		<property name="endIndex">
+			<value>56</value>
+		</property>
+	</bean>
+	
+	<bean id="colPRSTANJE" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>0</value>
+		</property>
+		<property name="id">
+			<value>PRSTANJE</value>
+		</property>
+		<property name="beginIndex">
+			<value>63</value>
+		</property>
+		<property name="endIndex">
+			<value>77</value>
+		</property>
+	</bean>	
+	<bean id="colSUMID" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>0</value>
+		</property>
+		<property name="id">
+			<value>SUMID</value>
+		</property>
+		<property name="beginIndex">
+			<value>78</value>
+		</property>
+		<property name="endIndex">
+			<value>92</value>
+		</property>
+	</bean>
+	<bean id="colSUMIP" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>0</value>
+		</property>
+		<property name="id">
+			<value>SUMIP</value>
+		</property>
+		<property name="beginIndex">
+			<value>93</value>
+		</property>
+		<property name="endIndex">
+			<value>107</value>
+		</property>
+	</bean>
+	<bean id="colNOVOSTANJE" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>0</value>
+		</property>
+		<property name="id">
+			<value>NOVOSTANJE</value>
+		</property>
+		<property name="beginIndex">
+			<value>108</value>
+		</property>
+		<property name="endIndex">
+			<value>122</value>
+		</property>
+	</bean>
+	<bean id="colBROJSTAVKI" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>0</value>
+		</property>
+		<property name="id">
+			<value>BROJSTAVKI</value>
+		</property>
+		<property name="beginIndex">
+			<value>127</value>
+		</property>
+		<property name="endIndex">
+			<value>132</value>
+		</property>
+	</bean>
+	<bean id="colDATUMIZV" class="hr.restart.util.textconv.FixedWidthColumn">
+		<property name="type">
+			<value>1</value>
+		</property>
+		<property name="format">
+			<value>DDMMYYYY</value>
+		</property>
+		<property name="id">
+			<value>DATUMIZV</value>
+		</property>
+		<property name="beginIndex">
+			<value>192</value>
+		</property>
+		<property name="endIndex">
+			<value>199</value>
+		</property>
+	</bean>
+	
+	<bean id="line7Verifier" class="hr.restart.util.textconv.BshLineVerifier">
+		<property name="verifyStatement">
+			<value>
+				result = line.getContent().substring(249).equals("7");
+			</value>
+		</property>
+	</bean>
+	
+</beans>

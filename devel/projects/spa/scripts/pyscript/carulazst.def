@@ -1,0 +1,31 @@
+#pause
+$Carulazst
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+ID_ULAZ_ZAG;int;8;;;Brojaè autonumber zaglavlja;*
+ID_ULAZ_STAV;int;8;pkey;;Brojaè autonumber stavaka;*
+RBR;short;4;;;Rbr
+CTG;alpha;10;;;Tarifni broj
+STOPA1;numeric;17,3;;;Stopa
+CART;int;8;;;Šifra
+CART1;alpha;20;;;Kataloški broj
+BC;alpha;20;;;Barcode
+NAZART;alpha;50;;;Naziv
+JM;alpha;3;;;Jm
+CSIFDRV;alpha;3;;;Porijeklo
+PREF;alpha;10;;;Preferencijal
+CPOTPOR;alpha;10;;;Potvrda o porijeklu
+KOL;numeric;17,3;;;Kolièina 
+NETTO_KG;numeric;17,3;;;Netto kg
+KOL_KOM;numeric;17,3;;;Kolièina (kom)
+CIJENA_VAL;numeric;17,2;;;Cijena valutna
+VRIJEDNOST_VAL;numeric;17,2;;;Vrijednost valutna
+TROSKOVI_VAL;numeric;17,2;;;Troškovi valutni
+TROS1_KN;numeric;17,2;;;Troškovi kunski1
+TROS2_KN;numeric;17,2;;;Troškovi kunski2
+
+
+
+
+
+

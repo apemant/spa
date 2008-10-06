@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC  "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	
+	<bean id="DriverProxy" class="hr.restart.db.replication.logging.DriverProxy">
+	<!-- constructor-arg><value>interbase.interclient.Driver</value></constructor-arg-->
+			
+		<!-- property name="logDataBaseName"><value>jdbc:interbase://161.53.200.99/home/interbase/daniel-test.gdb</value></property-->
+		<property name="logDataBaseName"><value>jdbc:interbase://161.53.200.99/shared/files/ai_baze/logging.gdb</value></property>
+		<property name="logDriverClass"><value>interbase.interclient.Driver</value></property>
+		<property name="passLOG"><value>masterkey</value></property>
+		<property name="userLOG"><value>SYSDBA</value></property>
+  	    <property name="insertStatement"><value>INSERT INTO ra_log (LOG_ID,LOG_TS,LOG_SQL,LOG_TXID) VALUES ( gen_id(log_id,1),CURRENT_TIMESTAMP, ?, ?)</value></property>
+        <property name="commitStatement"><value>INSERT INTO ra_commit_log (COMMIT_ID,COMMIT_TS,LOG_TXID,COMMIT_STATUS,SENDER_ID) VALUES (gen_id(commit_id,1), CURRENT_TIMESTAMP, ?, '0', ?)</value></property>
+					 	
+		<property name="transactionManagerClass"><value>org.objectweb.jotm.Current</value></property>				
+		<property name="sender">
+			<value>ANDREJ_LOCAL_RA</value>
+		</property>
+	</bean>
+
+</beans>

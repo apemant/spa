@@ -1,0 +1,5 @@
+$Transdata
+IMETAB;alpha;20;pkey;;Tablica
+KOLONA;alpha;20;pkey;;Kolona
+SDAT;alpha;20;pkey;;Stara vrijednost
+NDAT;alpha;20;;;Nova vrijednost

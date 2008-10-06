@@ -1,0 +1,54 @@
+[PropertyInfo]
+border1,Border,false,false, , ,false,<default>
+column1,Column,false,false, , ,false,<default>
+column2,Column,false,false, , ,false,<default>
+datumDo,String,false,false, , ,false,<default>
+datumOd,String,false,false, , ,false,<default>
+defQDS,QueryDataSet,false,false, , ,false,<default>
+defValues,void,false,false, , ,true,<default>
+dm,hr.restart.baza.dM,false,false, , ,false,<default>
+fake,StorageDataSet,false,false, , ,false,<default>
+IB,int,false,false, , ,false,<default>
+jbCOrg,JraButton,false,false, , ,false,<default>
+jbKonto,JraButton,false,false, , ,false,<default>
+jcbCorg,JCheckBox,false,false, , ,false,<default>
+jcbCorgPN,JCheckBox,false,false, , ,false,<default>
+jcbInvBr,JCheckBox,false,false, , ,false,<default>
+jcbKonto,JCheckBox,false,false, , ,false,<default>
+jcbKontoPN,JCheckBox,false,false, , ,false,<default>
+jLabel1,JLabel,false,false, , ,false,<default>
+jlKonto,JLabel,false,false, , ,false,<default>
+jlNaziv,JLabel,false,false, , ,false,<default>
+jlOrgjJed,JLabel,false,false, , ,false,<default>
+jlSifra,JLabel,false,false, , ,false,<default>
+jlVrIspisa,JLabel,false,false, , ,false,<default>
+jp,JPanel,false,false, , ,false,<default>
+jPanel2,JPanel,false,false, , ,false,<default>
+jrfCOrg,JlrNavField,false,false, , ,false,<default>
+jrfCOrgNaz,JlrNavField,false,false, , ,false,<default>
+jrfKonto,JlrNavField,false,false, , ,false,<default>
+jrfNazKonto,JlrNavField,false,false, , ,false,<default>
+jtfPocDatum,JraTextField,false,false, , ,false,<default>
+jtfZavDatum,JraTextField,false,false, , ,false,<default>
+knjOrgStr,hr.restart.zapod.OrgStr,false,false, , ,false,<default>
+KO,int,false,false, , ,false,<default>
+main,hr.restart.robno._Main,false,false, , ,false,<default>
+OJ,int,false,false, , ,false,<default>
+qds,QueryDataSet,false,false, , ,false,<default>
+rcc,hr.restart.util.raCommonClass,false,false, , ,false,<default>
+selectedRB,int,false,false, , ,false,<default>
+sume,double[],false,false, , ,false,<default>
+tds,TableDataSet,false,false, , ,false,<default>
+temp,Column,false,false, , ,false,<default>
+temp1,Column,false,false, , ,false,<default>
+tempQds,QueryDataSet,false,false, , ,false,<default>
+titledBorder1,TitledBorder,false,false, , ,false,<default>
+titledBorder2,TitledBorder,false,false, , ,false,<default>
+util,hr.restart.robno.Util,false,false, , ,false,<default>
+xYLayout1,XYLayout,false,false, , ,false,<default>
+xYLayout3,XYLayout,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

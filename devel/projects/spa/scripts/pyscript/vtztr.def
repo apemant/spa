@@ -1,0 +1,29 @@
+$VTZtr
+CSKL;alpha;12;pkey;;Skladište
+VRDOK;alpha;3;pkey;;Vrsta dokumenta
+GOD;alpha;4;pkey;;Godina
+BRDOK;integer;6;pkey;;Broj dokumenta
+RBR;integer;4;pkey;;Rbr stavke dokumenta (0 - zaglavlje)
+LRBR;integer;4;pkey;;Rbr stavke troškova
+CZT;integer;2;;;Zavisni trošak
+CPAR;integer;6;;;Partner
+IZT;numeric;17,2;;;Iznos troškova stavke
+PZT;numeric;17,7;;;Postotno optereæenje
+PRPOR;numeric;17,2;;;Iznos pretporeza;
+BRRAC;alpha;20;;;Broj raèuna
+DATRAC;date;8;;;Datum raèuna
+ULDOK;alpha;20;;;Ulazni dokument
+DATDOSP;date;8;;;Datum dospjeæa
+
+$VTZtrt
+DODKEY;integer;4;pkey;;Privremeni kljuè
+LRBR;integer;4;pkey;;Rbr stavke troškova
+CZT;integer;2;;;Zavisni trošak
+CPAR;integer;6;;;Partner
+IZT;numeric;17,2;;;Iznos troškova stavke
+PZT;numeric;8,2;;;Postotno optereæenje
+PRPOR;numeric;17,2;;;Iznos pretporeza;
+BRRAC;alpha;20;;;Broj raèuna
+DATRAC;date;8;;;Datum raèuna
+ULDOK;alpha;20;;;Ulazni dokument
+DATDOSP;date;8;;;Datum dospjeæa

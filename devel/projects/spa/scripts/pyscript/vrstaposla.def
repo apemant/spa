@@ -1,0 +1,7 @@
+#pause
+$Vrstaposla
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CVRPOS;alpha;10;pkey;;Šifra vrste posla
+Naziv;alpha;100;;;Naziv 
+CVRPOSPRIP;alpha;10;;;Pripadnost vrsti posla

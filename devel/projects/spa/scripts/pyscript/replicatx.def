@@ -1,0 +1,3 @@
+#pause
+$Replication_TX, rtx
+LAST_TX;numeric;6;pkey;;Zadnja TX

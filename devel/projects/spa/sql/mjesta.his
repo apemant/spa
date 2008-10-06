@@ -1,0 +1,43 @@
+<#>
+<#groups>
+<#sums>
+<#orders>
+<#visible>$default
+<#title>$default
+CREATE GENERATOR mygen
+<#>
+<#groups>
+<#sums>
+<#orders>
+<#visible>$default
+<#title>$default
+insert into mjesta
+SELECT 'N','D',gen_id(mygen, 1), MIN(mj), pbr, '385' from partneri GROUP BY pbr having pbr >= 10000
+<#>
+<#groups>
+<#sums>
+<#orders>
+<#visible>$default
+<#title>$default
+UPDATE Partneri SET cmjesta = (SELECT cmjesta FROM Mjesta WHERE mjesta.pbr=partneri.pbr) WHERE EXISTS (SELECT cmjesta FROM Mjesta WHERE mjesta.pbr=partneri.pbr)
+<#>
+<#groups>
+<#sums>
+<#orders>
+<#visible>$default
+<#title>$default
+SELECT * FROM Mjesta
+<#>
+<#groups>
+<#sums>
+<#orders>
+<#visible>$default
+<#title>$default
+SELECT * FROM Partneri
+<#>
+<#groups>
+<#sums>
+<#orders>
+<#visible>$default
+<#title>$default
+DROP GENERATOR mygen

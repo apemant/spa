@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC  "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="Sender" class="hr.restart.db.replication.ws.Sender" init-method="init">
+
+		<property name="driver"><value>interbase.interclient.Driver</value></property>
+		<property name="dbUrl"><value>jdbc:interbase://161.53.200.99/home/interbase/daniel/server/server_logging.gdb</value></property>		
+		
+		<property name="jdbcProps">
+			<props>
+					<prop key="user">SYSDBA</prop>
+					<prop key="password">masterkey</prop>
+					<prop key="charSet">Cp1250</prop>
+			</props>
+		</property>
+	</bean>
+	
+</beans>

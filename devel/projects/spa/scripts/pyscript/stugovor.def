@@ -1,0 +1,31 @@
+#pause
+$stugovor
+CUGOVOR;alpha;13;pkey;;Broj ugovora
+RBR;short;4;;;Rbr
+RBSID;integer;6;pkey;;ID_stavke;*
+CART;int;8;;;Šifra
+CART1;alpha;20;;;Oznaka
+BC;alpha;20;;;Barcode
+NAZART;alpha;50;;;Naziv
+OZNVAL;:alpha;3;;;Valuta
+TECAJ;numeric;17,2;;;Iznos teèaja
+JM;alpha;3;;;Jm
+KOL;numeric;17,3;;;Kolièina
+VAL_VC;numeric;17,4;;;Veleprodajna cijena
+VAL_MC;numeric;17,4;;;Maloprodajna cijena
+FC;numeric;17,2;;;Cijena 
+UPRAB;numeric;8,2;;;Posto rabata
+UIRAB;numeric;17,2;;;Iznos rabata
+FVC;numeric;17,2;;;Cijena bez poreza
+UPPOR;numeric;8,2;;;Posto poreza
+POR1;numeric;17,2;;;Porez 1
+POR2;numeric;17,2;;;Porez 2
+POR3;numeric;17,2;;;Porez 3
+IPRODBP;numeric;17,2;;;Iznos bez poreza
+FMC;numeric;17,2;;;Cijena s porezom
+IPRODSP;numeric;17,2;;;Iznos s porezom
+CSKLART;alpha;12;;;Skladište
+MANIPULATIVNI;alpha;50;;;Manipulativni troškovi
+IMINIZNOSBP;numeric;17,2;;;Minimalni iznos bez poreza
+STATUSMAN;alpha;1;N;;Obraèunavanje man. troškovi
+STATUSPON;alpha;1;N;;Poništavanje varijabilnih troškova

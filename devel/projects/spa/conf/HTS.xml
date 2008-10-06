@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC  "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- PARTNERI -->
+	<bean id="FPP" class="hr.restart.util.textconv.FileParser">
+		<property name="charset">
+			<value>Cp1250</value>
+		</property>
+		<property name="lineDefs">
+			<list>
+				<ref local="partner"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="partner" class="hr.restart.util.textconv.Line" >
+		<property name="columns">
+			<map>
+				<entry key="CPAR">
+					<ref local="colCPAR"/>
+				</entry>
+				<entry key="NAZPAR">
+					<ref local="colNAZPAR"/>
+				</entry>
+				<entry key="ADR">
+					<ref local="colADR"/>
+				</entry>
+				<entry key="PBR">
+					<ref local="colPBR"/>
+				</entry>
+				<entry key="MJ">
+					<ref local="colMJ"/>
+				</entry>
+				<entry key="TEL">
+					<ref local="colTEL"/>
+				</entry>
+				<entry key="MB">
+					<ref local="colMB"/>
+				</entry>
+				<entry key="ZR">
+					<ref local="colZR"></ref>
+				</entry>
+				<entry key="KO">
+					<ref local="colKO"></ref>
+				</entry>
+				<entry key="EMADR">
+					<ref local="colEMADR"/>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="colCPAR" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>0</value>
+		</property>
+		<property name="id">
+			<value>CPAR</value>
+		</property>
+		<property name="ordinal">
+			<value>1</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+	
+	<bean id="colNAZPAR" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>NAZPAR</value>
+		</property>
+		<property name="ordinal">
+			<value>32</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+
+	<bean id="colADR" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>ADR</value>
+		</property>
+		<property name="ordinal">
+			<value>3</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+	
+	<bean id="colPBR" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>PBR</value>
+		</property>
+		<property name="ordinal">
+			<value>4</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+	
+	<bean id="colMJ" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>MJ</value>
+		</property>
+		<property name="ordinal">
+			<value>5</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+
+	<bean id="colTEL" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>TEL</value>
+		</property>
+		<property name="ordinal">
+			<value>7</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+	
+	<bean id="colMB" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>MB</value>
+		</property>
+		<property name="ordinal">
+			<value>10</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+
+	<bean id="colZR" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>ZR</value>
+		</property>
+		<property name="ordinal">
+			<value>37</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+
+	<bean id="colKO" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>KO</value>
+		</property>
+		<property name="ordinal">
+			<value>16</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+
+	<bean id="colEMADR" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>EMADR</value>
+		</property>
+		<property name="ordinal">
+			<value>36</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+
+	<!-- SKSTAVKE -->
+	<bean id="FPS" class="hr.restart.util.textconv.FileParser">
+		<property name="charset">
+			<value>Cp1250</value>
+		</property>
+		<property name="lineDefs">
+			<list>
+				<ref local="master"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="master" class="hr.restart.util.textconv.Line">
+		<property name="columns">
+			<map>
+				<entry key="CPAR">
+					<ref local="skCPAR"/>
+				</entry>
+				<entry key="BROJDOK">
+					<ref local="skBROJDOK"/>
+				</entry>
+				<entry key="DATDOK">
+					<ref local="skDATDOK"/>
+				</entry>
+				<entry key="ID">
+					<ref local="skID"/>
+				</entry>
+				<entry key="DANIDOSP">
+					<ref local="skDANIDOSP"/>
+				</entry>
+			</map>
+		</property>	
+		<property name="lineVerifier">
+			<ref local="masterVerifier"/>
+		</property>
+	</bean>
+	
+	<bean id="masterVerifier" class="hr.restart.util.textconv.BshLineVerifier">
+		<property name="verifyStatement">
+			<value>
+				result = line.getContent().substring(0,2).equals("IH");
+			</value>
+		</property>
+	</bean>
+
+	
+	<bean id="skCPAR" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>0</value>
+		</property>
+		<property name="id">
+			<value>CPAR</value>
+		</property>
+		<property name="ordinal">
+			<value>4</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+
+	<bean id="skDATDOK" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>1</value>
+		</property>
+		<property name="id">
+			<value>DATDOK</value>
+		</property>
+		<property name="ordinal">
+			<value>5</value>
+		</property>
+		<property name="format">
+			<value>DD-MM-YYYY</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+	
+	<bean id="skBROJDOK" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>4</value>
+		</property>
+		<property name="id">
+			<value>BROJDOK</value>
+		</property>
+		<property name="ordinal">
+			<value>9</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+	
+	<bean id="skID" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>2</value>
+		</property>
+		<property name="id">
+			<value>ID</value>
+		</property>
+		<property name="ordinal">
+			<value>8</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+		<property name="format">
+			<value>NNNNNNNNNNNNNNNNNNN,NN</value>
+		</property>
+		<property name="formater">
+			<ref local="BDFormater"></ref>
+		</property>
+
+	</bean>
+	
+	<bean id="skDANIDOSP" class="hr.restart.util.textconv.SeparatedColumn">
+		<property name="type">
+			<value>0</value>
+		</property>
+		<property name="id">
+			<value>DANIDOSP</value>
+		</property>
+		<property name="ordinal">
+			<value>15</value>
+		</property>
+		<property name="separator">
+			<value>;</value>
+		</property>
+	</bean>
+	
+	<bean id="BDFormater" class="hr.restart.util.textconv.DefaultColumnFormater">
+		<property name="decimaldot">
+			<value>,</value>
+		</property>
+	</bean>
+</beans>

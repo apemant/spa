@@ -1,0 +1,5 @@
+import hr.restart.db.raVariant;
+if (orac != null) orac = new hr.restart.db.OraCustomConnection("jdbc:oracle:thin:@//192.168.1.1:1521/ABS1","abssolute","abssolute");
+//orac = new hr.restart.db.OraCustomConnection("jdbc:oracle:thin:@//192.168.1.160:1521/XE","abssolute","abssolute");
+//raVariant.setDebug(true);
+

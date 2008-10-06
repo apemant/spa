@@ -1,0 +1,170 @@
+/****license*****************************************************************
+**   file: repKartica.java
+**   Copyright 2006 Rest Art
+**
+**   Licensed under the Apache License, Version 2.0 (the "License");
+**   you may not use this file except in compliance with the License.
+**   You may obtain a copy of the License at
+**
+**       http://www.apache.org/licenses/LICENSE-2.0
+**
+**   Unless required by applicable law or agreed to in writing, software
+**   distributed under the License is distributed on an "AS IS" BASIS,
+**   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+**   See the License for the specific language governing permissions and
+**   limitations under the License.
+**
+****************************************************************************/
+package hr.restart.robno;
+import hr.restart.util.lookupData;
+import hr.restart.util.reports.raReportData;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+
+import com.borland.dx.dataset.DataSet;
+
+public class repKartica implements raReportData {//implements sg.com.elixir.reportwriter.datasource.IDataProvider {
+
+  _Main main;
+  repMemo rpm = repMemo.getrepMemo();
+  upKartica upk = upKartica.getupKartica();
+  DataSet ds = upk.getQds();
+  hr.restart.baza.dM dm= hr.restart.baza.dM.getDataModule();
+  raDateUtil rdu = raDateUtil.getraDateUtil();
+  String[] colname = new String[] {""};
+  repUtil ru = repUtil.getrepUtil();
+  hr.restart.util.Valid val = hr.restart.util.Valid.getValid();
+  public repKartica() {
+  }
+
+//  public repKartica(int idx) {
+//    ds.goToRow(idx);
+//  }
+//
+//  public java.util.Enumeration getData() {
+//    return new java.util.Enumeration() {
+//      {
+//        ds.open();
+//        ru.setDataSet(ds);
+//      }
+//      int indx=0;
+//      public Object nextElement() {
+//
+//        return new repKartica(indx++);
+//      }
+//      public boolean hasMoreElements() {
+//        return (indx < ds.getRowCount());
+//      }
+//    };
+//  }
+//  public void close() {}
+  
+  public raReportData getRow(int i) {
+    ds.goToRow(i);    
+    return this;
+  }
+
+  public int getRowCount() {
+    return ds.rowCount();
+  }
+
+  public void close() {
+    ru.setDataSet(null);
+    ds = null;
+  }
+  
+  
+  public BigDecimal getKOL() {
+    return ds.getBigDecimal("KOL");
+  }
+  public String getCskl(){
+    return upk.getCskl();
+  }
+  hr.restart.util.lookupData lD =  hr.restart.util.lookupData.getlookupData();
+  public String getNazivCskl(){
+// tomo update
+    lD.raLocate(dm.getSklad(),"CSKL",upk.getCskl());
+//    dm.getSklad().interactiveLocate(upk.getCskl(),"CSKL",com.borland.dx.dataset.Locate.FIRST,false);
+    return dm.getSklad().getString("NAZSKL");
+  }
+  public String getCart() {
+    return Aut.getAut().getCARTdependable(upk.rpcart.getCART(), upk.rpcart.getCART1(), upk.rpcart.getBC());
+//    return upk.getCart();
+  }
+  public String getNazart() {
+//    dm.getArtikli().interactiveLocate(String.valueOf(getCart()),"CART",com.borland.dx.dataset.Locate.FIRST,false);
+    lookupData.getlookupData().raLocate(dm.getArtikli(),"CART",upk.rpcart.getCART());
+    return dm.getArtikli().getString("NAZART");
+  }
+  public String getPocDat(){
+    return rdu.dataFormatter(upk.getPocDatum());
+  }
+  public String getZavDat(){
+    return rdu.dataFormatter(upk.getZavDatum());
+  }
+  public String getCaption2(){
+    return (getPocDat()+" do "+getZavDat());
+  }
+  public String getDatumIsp(){
+    return rdu.dataFormatter(val.getToday());
+  }
+  public String getDatDok(){
+    return rdu.dataFormatter(ds.getTimestamp("DATDOK"));
+  }
+  public Date getSortDatDok(){
+    return Date.valueOf(ds.getTimestamp("DATDOK").toString().substring(0,10));
+//   return  ds.getTimestamp("DATDOK");
+  }
+  public int getBrDok() {
+    return ds.getInt("BRDOK");
+  }
+  public String getVrDok(){
+    return ds.getString("VRDOK");
+  }
+  public double getKolUl(){
+   // return (ds.getBigDecimal("KOL").intValue()>0? ds.getBigDecimal("KOL").doubleValue():(double) 0);
+    return (ds.getBigDecimal("KOLUL").doubleValue());
+  }
+  public double getKolIz(){
+    System.out.println("KOLIZ: " + (ds.getBigDecimal("KOLIZ").doubleValue()));
+    return (ds.getBigDecimal("KOLIZ").doubleValue());
+//    return (ds.getBigDecimal("KOL").intValue()<0? ds.getBigDecimal("KOL").negate().doubleValue():(double) 0);
+  }
+  public double getZc(){
+    return (ds.getBigDecimal("ZC").doubleValue());
+  }
+  public double getIZAD(){
+    return (ds.getBigDecimal("KOLZAD").doubleValue());
+//    return (ds.getBigDecimal("IZAD").intValue()>0? ds.getBigDecimal("IZAD").doubleValue():(double) 0);
+  }
+  public double getIRAZ(){
+       return (ds.getBigDecimal("KOLRAZ").doubleValue());
+     // return (ds.getBigDecimal("IZAD").intValue()<0? ds.getBigDecimal("IZAD").negate().doubleValue():(double) 0);
+  }
+//  public double getSKOL(){
+//    return (ds.getBigDecimal("SKOL").doubleValue());
+//  }
+
+  public double getSKOL(){
+    System.out.println("SKOL: " + (ds.getBigDecimal("KOLIZ").doubleValue()));
+    return (ds.getBigDecimal("SKOL")).doubleValue();
+  }
+  public double getSIZN(){
+    return (ds.getBigDecimal("SIZN").doubleValue());
+  }
+  public String getFirstLine(){
+    return rpm.getFirstLine();
+  }
+  public String getSecondLine(){
+    return rpm.getSecondLine();
+  }
+  public String getThirdLine(){
+    return rpm.getThirdLine();
+  }
+
+  public int getDummy()
+  {
+    return 1;
+  }
+}

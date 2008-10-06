@@ -1,0 +1,77 @@
+    StorageDataSet repset = new StorageDataSet();
+    grupe = Util.getNewQueryDataSet("select * from sifrarnici WHERE SIFRARNICI.VRSTASIF = 'ABTG'");
+    nadgrupe = Util.getNewQueryDataSet("select * from sifrarnici WHERE SIFRARNICI.VRSTASIF = 'ABTG' and CSIF=CSIFPRIP");
+    rset1 = Util.getNewQueryDataSet("SELECT stdoki.brpri, stdoki.cart, stdoki.cart1, stdoki.nazart, " +
+    		"stdoki.kol, stdoki.iprodbp, stdoki.iprodsp, stdoki.por1 FROM stdoki, doki " +
+    		"WHERE stdoki.cskl = doki.cskl AND stdoki.vrdok = doki.vrdok AND stdoki.god = doki.god AND stdoki.brdok = doki.brdok " +
+    		"and doki.datdok between '"+adod+"' and '"+bddo+"' and doki.vrdok='RAC' and stdoki.iprodbp!=0 order by stdoki.brpri");
+    HashMap ncovi = new HashMap();
+    Condition sklCond = Condition.ident;//Condition.equal("CSKL", "1000");
+    repset.setColumns(rset1.cloneColumns());
+    repset.addColumn(dM.createBigDecimalColumn("NC", "Nabavna cijena"));
+    repset.addColumn(dM.createBigDecimalColumn("NV", "Nabavna vrijednost"));
+    repset.addColumn(dM.createBigDecimalColumn("RC", "Razlika u cijeni"));
+    repset.addColumn(dM.createStringColumn("GRNAZ", "Grupa", 50));
+    repset.addColumn(dM.createStringColumn("CNADGR", "Oznaka nadgrupe", 10));
+    repset.addColumn(dM.createStringColumn("NAZNADGR", "Nadgrupa", 50));
+    
+    repset.open();
+    
+    for (rset1.first();rset1.inBounds();rset1.next()) {
+      repset.insertRow(false);
+      rset1.copyTo(repset);
+      String cgr = rset1.getString("BRPRI").trim();
+      if (lookupData.getlookupData().raLocate(grupe, "CSIF", cgr)) {
+        repset.setString("GRNAZ", grupe.getString("NAZIV"));
+        repset.setString("CNADGR", grupe.getString("CSIFPRIP"));
+        if (lookupData.getlookupData().raLocate(nadgrupe, "CSIF", grupe.getString("CSIFPRIP"))) {
+          repset.setString("NAZNADGR", nadgrupe.getString("NAZIV"));
+        } else {
+          repset.setString("NAZNADGR", "-?-");
+        }
+      } else {
+        repset.setString("GRNAZ", "-?-");
+        repset.setString("CNADGR", "999");
+        repset.setString("NAZNADGR", "-?-");
+      }
+      if (!repset.getString("CNADGR").equals("100")) {
+        repset.setBigDecimal("NC", Aus.zero2);
+        repset.setBigDecimal("NV", Aus.zero2);
+        repset.setBigDecimal("RC", Aus.zero2);
+        repset.post();
+        continue;
+      }
+      String cart1 = rset1.getString("CART1");
+      BigDecimal nc = (BigDecimal)ncovi.get(cart1);
+      if (nc == null) {
+        QueryDataSet stcart = Stanje.getDataModule().getTempSet("NC", Condition.equal("CART", rset1.getInt("CART"))
+            .and(sklCond));
+        stcart.open();
+        if (stcart.getRowCount()>0) {
+          nc = stcart.getBigDecimal("NC");
+        } else {
+          QueryDataSet stcart1s = Util.getNewQueryDataSet("SELECT stanje.nc from stanje, artikli where stanje.cart=artikli.cart and " +
+              sklCond+" and artikli.cart1 like '"+rset1.getString("CART1")+"#%'");
+          if (stcart1s.getRowCount()>0) {
+            nc = Aus.zero2;
+            for (stcart1s.first();stcart1s.inBounds();stcart1s.next()) {
+              nc = nc.add(stcart1s.getBigDecimal("NC"));
+            }
+            nc = nc.divide(new BigDecimal(stcart1s.getRowCount()), BigDecimal.ROUND_HALF_UP).setScale(2);
+          } 
+        }
+      }
+      if (nc == null) {//i dalje
+        System.out.println("*** OOOOPS :: Ne mogu naci NC za "+cart1);
+        ncovi.put(cart1, Aus.zero2);
+        repset.setBigDecimal("NC", Aus.zero2);
+        repset.setBigDecimal("NV", Aus.zero2);
+        repset.setBigDecimal("RC", repset.getBigDecimal("IPRODBP"));
+        repset.post();
+      } else {
+        ncovi.put(cart1, nc);
+        repset.setBigDecimal("NC", nc);
+        repset.setBigDecimal("NV", nc.multiply(repset.getBigDecimal("KOL")).setScale(2));
+        repset.setBigDecimal("RC", repset.getBigDecimal("IPRODBP").add(repset.getBigDecimal("NV").negate()));        
+      }
+    }

@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="Windows-1250"?>
+<reportext>
+  <dat><![CDATA[
+U1</sep>Pregled nepotvr�enih ulaznih ra�una po knjizi</sep>pregledurn_knjiga.sql</sep>sk</sep>
+U2</sep>Pregled nepotvr�enih ulaznih ra�una po partneru</sep>ur_pregledurn_partner.sql</sep>sk</sep>
+UP1</sep>Pregled potvr�enih ulaznih ra�una po knjizi</sep>pregledurn_potv_knjiga.sql</sep>sk</sep>
+UP2</sep>Pregled potvr�enih ulaznih ra�una po partneru</sep>pregledurn_potv_partner.sql</sep>sk</sep>
+U_AP</sep>Pregled SVIH ulaznih ra�una po partneru</sep>pregledurn_all_partner.sql</sep>sk</sep>
+U3</sep>*Pregled svih nepotvr�enih ulaznih ra�una</sep>ur_pregledurn_svi.sql</sep>sk</sep>
+U4</sep>Pregled potvr�enih ulaznih dokumenata po knjizi</sep>pregledurn_potv_knjiga.sql</sep>sk</sep>
+I1</sep>Pregled nepotvr�enih izlaznih ra�una po knjizi</sep>pregledirn_knjiga.sql</sep>sk</sep>
+I2</sep>Pregled nepotvr�enih izlaznih ra�una po partneru</sep>ur_pregledirn_partner.sql</sep>sk</sep>
+I3</sep>*Pregled svih nepotvr�enih izlaznih ra�una</sep>ur_pregledirn_svi.sql</sep>sk</sep>
+r2n</sep>Pregled nepokrivenih R2 ra�una</sep>r2nepok.sql</sep>sk</sep>
+SKUk1</sep>Pregled neproknji�enih ulaznih ra�una SK po OJ i kontu</sep>nukon.sql</sep>sk</sep>
+SKIk1</sep>Pregled neproknji�enih izlaznih ra�una SK po OJ i kontu</sep>nikon.sql</sep>sk</sep>
+SKUk2</sep>Pregled neproknji�enih ulaznih ra�una za konto po OJ</sep>dukon.sql</sep>sk</sep>
+SKnu1</sep>Neproknji�eni ulazni ra�uni SK po kontima</sep>tempokon.sql</sep>sk</sep>
+SKni1</sep>Neproknji�eni izlazni ra�uni SK po kontima</sep>tempokoni.sql</sep>sk</sep>
+I4</sep>Pregled potvr�enih izlaznih ra�una po knjizi</sep>pregledirn_potv_knjiga.sql</sep>sk</sep>
+
+  ]]></dat>
+
+  <sql file="pregledurn_knjiga.sql"><![CDATA[
+<#>
+<#cdpdo>DO;T;;;;;12
+<#title>ULAZNI RA�UNI KNJIGE $aknjiga OD $bdpod DO $cdpdo
+<#orders>UFA
+<#visible>0,1,2,3,4,5,6,7
+<#sums>IZNOS,OSNOVICA,PDV,NEOPOREZIVO,OSTALO,RAZLIKA,SALDO
+<#aknjiga>Knjiga;S;getKnjigeU;CKNJIGE,NAZKNJIGE;0,4;;12
+<#bdpod>OD;F;;;;;12
+_dpod = new java.sql.Date(bdpod.getTime());
+_dpdo = new java.sql.Date(cdpdo.getTime());
+System.out.println(_dpod+" - "+_dpdo);
+knjig = hr.restart.zapod.OrgStr.getKNJCORG();
+qry = "select * from skstavkerad WHERE SKSTAVKERAD.CKNJIGE = '"+aknjiga+"' AND SKSTAVKERAD.URAIRA='U' AND (SKSTAVKERAD.DATPRI BETWEEN '"+_dpod+" 00:00:00' AND '"+_dpdo+" 23:59:59') AND SKSTAVKERAD.KNJIG = '"+knjig+"' AND SKSTAVKERAD.RBS = 1";
+System.out.println(qry);
+qds = hr.restart.util.Util.getNewQueryDataSet(qry);
+result = new com.borland.dx.dataset.StorageDataSet();
+c_cpar = hr.restart.baza.dM.createStringColumn("PARTNER",100);
+c_broj = qds.getColumn("BROJDOK").clone();
+c_ufa = hr.restart.baza.dM.createIntColumn("UFA");
+c_iznos = hr.restart.baza.dM.createBigDecimalColumn("IZNOS");
+c_osnovica = hr.restart.baza.dM.createBigDecimalColumn("OSNOVICA");
+c_pdv = hr.restart.baza.dM.createBigDecimalColumn("PDV");
+c_neop = hr.restart.baza.dM.createBigDecimalColumn("NEOPOREZIVO");
+c_ostalo = hr.restart.baza.dM.createBigDecimalColumn("OSTALO");
+c_razlika = hr.restart.baza.dM.createBigDecimalColumn("RAZLIKA");
+c_razlika.setCaption("OSN X 22% - PDV");
+c_saldo = hr.restart.baza.dM.createBigDecimalColumn("SALDO");
+result.setColumns(new com.borland.dx.dataset.Column[] {c_cpar,c_broj,c_ufa,c_iznos,c_osnovica,c_pdv,c_neop,c_ostalo,c_razlika,c_saldo});
+result.open();
+for (qds.first(); qds.inBounds(); qds.next()) {
+  result.insertRow(false);
+  pp = hr.restart.util.Util.getNewQueryDataSet(
+    "SELECT NAZPAR FROM partneri where cpar="+qds.getInt("CPAR")
+  );
+  pp.open();
+  result.setString("PARTNER",pp.getString("NAZPAR"));
+  result.setString("BROJDOK",qds.getString("BROJDOK"));
+  
+  result.setInt("UFA",Integer.parseInt(qds.getString("EXTBRDOK").trim()));
+  result.setBigDecimal("IZNOS",qds.getBigDecimal("ID").add(qds.getBigDecimal("IP")));
+  qdstavke = hr.restart.baza.Skstavkerad.getDataModule().getFilteredDataSet(
+  hr.restart.baza.Condition.whereAllEqual(new String[] {"KNJIG","CPAR","VRDOK","BROJDOK","VRDOK","BROJIZV"}, qds));
+  result.setBigDecimal("OSNOVICA",new BigDecimal(0));
+  result.setBigDecimal("PDV",new BigDecimal(0));
+  result.setBigDecimal("NEOPOREZIVO",new BigDecimal(0));
+  result.setBigDecimal("OSTALO",new BigDecimal(0));
+  qdstavke.open();
+  sumid = new BigDecimal(0);
+  sumip = new BigDecimal(0);
+  for (qdstavke.first(); qdstavke.inBounds(); qdstavke.next()) {
+    sumid = sumid.add(qdstavke.getBigDecimal("ID"));
+    sumip = sumip.add(qdstavke.getBigDecimal("IP"));
+    if (qdstavke.getInt("RBS") == 1) continue;
+    if (qdstavke.getShort("CKOLONE") == 6) {
+      result.setBigDecimal("OSNOVICA",result.getBigDecimal("OSNOVICA")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 9) {
+      result.setBigDecimal("PDV",result.getBigDecimal("PDV")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 11) {
+      result.setBigDecimal("NEOPOREZIVO",result.getBigDecimal("NEOPOREZIVO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else {
+      result.setBigDecimal("OSTALO",result.getBigDecimal("OSTALO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    }
+    
+  }
+  result.setBigDecimal("RAZLIKA",result.getBigDecimal("OSNOVICA").multiply(new BigDecimal(0.22))
+            .add(result.getBigDecimal("PDV").negate()));
+  result.setBigDecimal("SALDO",sumid.add(sumip.negate()));
+  result.post();
+}
+result;
+
+  ]]></sql>
+
+  <sql file="ur_pregledurn_partner.sql"><![CDATA[
+<#>
+<#datto>;T;;;;$today;0
+<#title>ULAZNI RA�UNI DOBAVLJA�A $acpar  OD $datfrom DO $datdo
+<#orders>RBR
+<#visible>1,5,6,7,13,12,16
+<#sums>IZNOS
+<#acpar>Dobavlja�;S;getPartneri;CPAR,NAZPAR;0,1,2;;12
+<#datfrom>Datum (od-do);F;;;;$year;0
+Urdok.getDataModule().getTempSet(Aus.getKnjigCond().and(Condition.equal("CPAR", acpar)).and(Condition.between("DATPRI", datfrom, datto)).and(Condition.equal("VRDOK", "URA")).and(Condition.equal("STATKNJ", "N")));
+
+
+  ]]></sql>
+
+  <sql file="pregledurn_potv_knjiga.sql"><![CDATA[
+<#>
+<#cdpdo>DO;T;;;;;12
+<#title>ULAZNI RA�UNI KNJIGE $aknjiga OD $bdpod DO $cdpdo
+<#orders>UFA
+<#sums>IZNOS,OSNOVICA,PDV,NEOPOREZIVO,OSTALO,RAZLIKA,SALDO
+<#visible>0,1,2,3,4,5,6,7,8
+<#aknjiga>Knjiga;S;getKnjigeU;CKNJIGE,NAZKNJIGE;0,4;;12
+<#bdpod>OD;F;;;;;12
+_dpod = new java.sql.Date(bdpod.getTime());
+_dpdo = new java.sql.Date(cdpdo.getTime());
+System.out.println(_dpod+" - "+_dpdo);
+knjig = hr.restart.zapod.OrgStr.getKNJCORG();
+qry = "select * from skstavke WHERE CKNJIGE like '"+aknjiga+"%' AND vrdok in ('URN','OKD') AND (DATPRI BETWEEN '"+_dpod+" 00:00:00' AND '"+_dpdo+" 23:59:59') AND KNJIG = '"+knjig+"'";
+System.out.println(qry);
+qds = hr.restart.util.Util.getNewQueryDataSet(qry);
+result = new com.borland.dx.dataset.StorageDataSet();
+c_cpar = qds.getColumn("CPAR").clone();
+c_broj = qds.getColumn("BROJDOK").clone();
+c_ufa = hr.restart.baza.dM.createStringColumn("UFA", 30);
+c_iznos = hr.restart.baza.dM.createBigDecimalColumn("IZNOS");
+c_osnovica = hr.restart.baza.dM.createBigDecimalColumn("OSNOVICA");
+c_pdv = hr.restart.baza.dM.createBigDecimalColumn("PDV");
+c_neop = hr.restart.baza.dM.createBigDecimalColumn("NEOPOREZIVO");
+c_ostalo = hr.restart.baza.dM.createBigDecimalColumn("OSTALO");
+c_razlika = hr.restart.baza.dM.createBigDecimalColumn("RAZLIKA");
+c_razlika.setCaption("OSN X 22% - PDV");
+c_saldo = hr.restart.baza.dM.createBigDecimalColumn("SALDO");
+c_rsaldo = hr.restart.baza.dM.createBigDecimalColumn("RSALDO", "Greska");
+result.setColumns(new com.borland.dx.dataset.Column[] {c_cpar,c_broj,c_ufa,c_iznos,c_osnovica,c_pdv,c_neop,c_ostalo,c_razlika,c_saldo,c_rsaldo});
+result.open();
+for (qds.first(); qds.inBounds(); qds.next()) {
+  result.insertRow(false);
+
+  result.setInt("CPAR",qds.getInt("CPAR"));
+  result.setString("BROJDOK",qds.getString("BROJDOK"));
+  
+  result.setString("UFA",qds.getString("EXTBRDOK").trim());
+  result.setBigDecimal("IZNOS",qds.getBigDecimal("ID").add(qds.getBigDecimal("IP")));
+  storno = result.getBigDecimal("IZNOS").signum() < 0;
+  qdstavke = hr.restart.baza.UIstavke.getDataModule().getTempSet(
+  hr.restart.baza.Condition.whereAllEqual(new String[] {"KNJIG","CPAR","VRDOK","BROJDOK","CKNJIGE"}, qds));
+  result.setBigDecimal("OSNOVICA",new BigDecimal(0));
+  result.setBigDecimal("PDV",new BigDecimal(0));
+  result.setBigDecimal("NEOPOREZIVO",new BigDecimal(0));
+  result.setBigDecimal("OSTALO",new BigDecimal(0));
+  qdstavke.open();
+  sumid = new BigDecimal(0);
+  sumip = new BigDecimal(0);
+  for (qdstavke.first(); qdstavke.inBounds(); qdstavke.next()) {
+    sumid = sumid.add(qdstavke.getBigDecimal("ID"));
+    sumip = sumip.add(qdstavke.getBigDecimal("IP"));
+    ist = qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP")).abs();
+    if (storno) ist = ist.negate();
+    if (qdstavke.getInt("RBS") == 1) continue;
+    if (qdstavke.getShort("CKOLONE") == 6) {
+      result.setBigDecimal("OSNOVICA",result.getBigDecimal("OSNOVICA").add(ist));
+    } else if (qdstavke.getShort("CKOLONE") == 9 || qdstavke.getShort("CKOLONE") == 10) {
+      result.setBigDecimal("PDV",result.getBigDecimal("PDV").add(ist));
+    } else if (qdstavke.getShort("CKOLONE") == 11) {
+      result.setBigDecimal("NEOPOREZIVO",result.getBigDecimal("NEOPOREZIVO").add(ist));
+    } else {
+      result.setBigDecimal("OSTALO",result.getBigDecimal("OSTALO").add(ist));
+    }
+    
+  }
+  result.setBigDecimal("RAZLIKA",result.getBigDecimal("OSNOVICA").multiply(new BigDecimal(0.22))
+            .add(result.getBigDecimal("PDV").negate()).setScale(2, BigDecimal.ROUND_HALF_UP));
+  result.setBigDecimal("SALDO",sumid.add(sumip.negate()));
+  result.setBigDecimal("RSALDO", result.getBigDecimal("IZNOS").subtract(result.getBigDecimal("OSNOVICA")).subtract(result.getBigDecimal("PDV")).subtract(result.getBigDecimal("NEOPOREZIVO")));
+  result.post();
+}
+result;
+
+  ]]></sql>
+
+  <sql file="pregledurn_potv_partner.sql"><![CDATA[
+<#>
+<#cdpdo>DO;T;;;;;12
+<#title>ULAZNI RA�UNI DOBAVLJA�A $acpar OD $bdpod DO $cdpdo (potvr�eni)
+<#orders>UFA
+<#visible>0,2,3,4,5,6,7,8,9,10,11,12,13
+<#sums>IZNOS,OSNOVICA10,PDV10,OSNOVICA22,PDV22,NEOPOREZIVO,OSTALO,RAZLIKA10,RAZLIKA22
+<#acpar>Dobavlja�;S;getPartneri;CPAR,NAZPAR;0,1,2;;12
+<#bdpod>OD;F;;;;;12
+<#groups>PARTNER
+_dpod = new java.sql.Date(bdpod.getTime());
+_dpdo = new java.sql.Date(cdpdo.getTime());
+System.out.println(_dpod+" - "+_dpdo);
+knjig = hr.restart.zapod.OrgStr.getKNJCORG();
+qry = "select * from skstavke WHERE SKSTAVKE.CPAR = "+acpar+" AND SKSTAVKE.VRDOK IN ('URN','OKD') AND (SKSTAVKE.DATPRI BETWEEN '"+_dpod+" 00:00:00' AND '"+_dpdo+" 23:59:59') AND SKSTAVKE.KNJIG = '"+knjig+"'";
+System.out.println(qry);
+qds = hr.restart.util.Util.getNewQueryDataSet(qry);
+result = new com.borland.dx.dataset.StorageDataSet();
+c_cknjige = hr.restart.baza.dM.createStringColumn("CKNJIGE",12);
+c_cpar = hr.restart.baza.dM.createStringColumn("PARTNER",100);
+c_broj = qds.getColumn("BROJDOK").clone();
+c_ufa = hr.restart.baza.dM.createIntColumn("UFA");
+c_datum = hr.restart.baza.dM.createTimestampColumn("DATUM");
+c_iznos = hr.restart.baza.dM.createBigDecimalColumn("IZNOS");
+c_osnovica22 = hr.restart.baza.dM.createBigDecimalColumn("OSNOVICA22");
+c_pdv22 = hr.restart.baza.dM.createBigDecimalColumn("PDV22");
+c_osnovica10 = hr.restart.baza.dM.createBigDecimalColumn("OSNOVICA10");
+c_pdv10 = hr.restart.baza.dM.createBigDecimalColumn("PDV10");
+c_neop = hr.restart.baza.dM.createBigDecimalColumn("NEOPOREZIVO");
+c_ostalo = hr.restart.baza.dM.createBigDecimalColumn("OSTALO");
+c_razlika22 = hr.restart.baza.dM.createBigDecimalColumn("RAZLIKA22");
+c_razlika22.setCaption("OSN X 22% - PDV");
+c_razlika10 = hr.restart.baza.dM.createBigDecimalColumn("RAZLIKA10");
+c_razlika10.setCaption("OSN X 10% - PDV");
+result.setColumns(new com.borland.dx.dataset.Column[] {c_cknjige,c_cpar,c_broj,c_ufa,c_datum,c_iznos,c_pdv10,c_osnovica10,c_osnovica22,c_pdv22,c_neop,c_ostalo,c_razlika10,c_razlika22});
+result.open();
+for (qds.first(); qds.inBounds(); qds.next()) {
+  result.insertRow(false);
+  pp = hr.restart.util.Util.getNewQueryDataSet(
+    "SELECT NAZPAR FROM partneri where cpar="+qds.getInt("CPAR")
+  );
+  pp.open();
+
+  result.setString("PARTNER",pp.getString("NAZPAR"));
+  result.setString("BROJDOK",qds.getString("BROJDOK"));
+  result.setTimestamp("DATUM",qds.getTimestamp("DATDOK"));
+
+  result.setString("CKNJIGE",qds.getString("CKNJIGE")+" / "+qds.getString("VRDOK"));  
+  result.setInt("UFA",Integer.parseInt(qds.getString("EXTBRDOK").trim()));
+  result.setBigDecimal("IZNOS",qds.getBigDecimal("ID").add(qds.getBigDecimal("IP")));
+  qdstavke = hr.restart.gk.frmKnjSKRac.getUIStavke(qds);
+  result.setBigDecimal("OSNOVICA10",new BigDecimal(0));
+  result.setBigDecimal("PDV10",new BigDecimal(0));
+  result.setBigDecimal("OSNOVICA22",new BigDecimal(0));
+  result.setBigDecimal("PDV22",new BigDecimal(0));
+  result.setBigDecimal("NEOPOREZIVO",new BigDecimal(0));
+  result.setBigDecimal("OSTALO",new BigDecimal(0));
+  qdstavke.open();
+  for (qdstavke.first(); qdstavke.inBounds(); qdstavke.next()) {
+    if (qdstavke.getInt("RBS") == 1) continue;
+    if (qdstavke.getShort("CKOLONE") == 7) {//O10%
+      result.setBigDecimal("OSNOVICA10",result.getBigDecimal("OSNOVICA10")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 8) {//O22%
+      result.setBigDecimal("OSNOVICA22",result.getBigDecimal("OSNOVICA22")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 11) {//P10%
+      result.setBigDecimal("PDV10",result.getBigDecimal("PDV10")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 13) {//P22%
+      result.setBigDecimal("PDV22",result.getBigDecimal("PDV22")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 511) {
+      result.setBigDecimal("NEOPOREZIVO",result.getBigDecimal("NEOPOREZIVO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else {
+      result.setBigDecimal("OSTALO",result.getBigDecimal("OSTALO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    }
+    
+  }
+  result.setBigDecimal("RAZLIKA22",result.getBigDecimal("OSNOVICA22").multiply(new BigDecimal(0.22))
+            .add(result.getBigDecimal("PDV22").negate()).setScale(2,BigDecimal.ROUND_HALF_UP));
+  result.setBigDecimal("RAZLIKA10",result.getBigDecimal("OSNOVICA10").multiply(new BigDecimal(0.10))
+            .add(result.getBigDecimal("PDV10").negate()).setScale(2,BigDecimal.ROUND_HALF_UP));
+  result.post();
+}
+result;
+
+  ]]></sql>
+
+  <sql file="pregledurn_all_partner.sql"><![CDATA[
+<#>
+<#cdpdo>DO;T;;;;;12
+<#title>ULAZNI RA�UNI DOBAVLJA�A $acpar OD $bdpod DO $cdpdo (SVI)
+<#orders>UFA
+<#visible>0,2,3,4,5,6,7,8,9,10,11,12,13
+<#sums>IZNOS,OSNOVICA10,PDV10,OSNOVICA22,PDV22,NEOPOREZIVO,OSTALO,RAZLIKA10,RAZLIKA22
+<#acpar>Dobavlja�;S;getPartneri;CPAR,NAZPAR;0,1,2;;12
+<#bdpod>OD;F;;;;;12
+<#groups>PARTNER
+_dpod = new java.sql.Date(bdpod.getTime());
+_dpdo = new java.sql.Date(cdpdo.getTime());
+System.out.println(_dpod+" - "+_dpdo);
+knjig = hr.restart.zapod.OrgStr.getKNJCORG();
+qry = "select * from skstavkerad WHERE SKSTAVKERAD.CPAR = "+acpar+" AND SKSTAVKERAD.URAIRA='U' AND (SKSTAVKERAD.DATPRI BETWEEN '"+_dpod+" 00:00:00' AND '"+_dpdo+" 23:59:59') AND SKSTAVKERAD.KNJIG = '"+knjig+"' AND SKSTAVKERAD.RBS = 1";
+System.out.println(qry);
+qds = hr.restart.util.Util.getNewQueryDataSet(qry);
+result = new com.borland.dx.dataset.StorageDataSet();
+c_cknjige = hr.restart.baza.dM.createStringColumn("CKNJIGE",12);
+c_cpar = hr.restart.baza.dM.createStringColumn("PARTNER",100);
+c_broj = qds.getColumn("BROJDOK").clone();
+c_ufa = hr.restart.baza.dM.createIntColumn("UFA");
+c_datum = hr.restart.baza.dM.createTimestampColumn("DATUM");
+c_iznos = hr.restart.baza.dM.createBigDecimalColumn("IZNOS");
+c_osnovica22 = hr.restart.baza.dM.createBigDecimalColumn("OSNOVICA22");
+c_pdv22 = hr.restart.baza.dM.createBigDecimalColumn("PDV22");
+c_osnovica10 = hr.restart.baza.dM.createBigDecimalColumn("OSNOVICA10");
+c_pdv10 = hr.restart.baza.dM.createBigDecimalColumn("PDV10");
+c_neop = hr.restart.baza.dM.createBigDecimalColumn("NEOPOREZIVO");
+c_ostalo = hr.restart.baza.dM.createBigDecimalColumn("OSTALO");
+c_razlika22 = hr.restart.baza.dM.createBigDecimalColumn("RAZLIKA22");
+c_razlika22.setCaption("OSN X 22% - PDV");
+c_razlika10 = hr.restart.baza.dM.createBigDecimalColumn("RAZLIKA10");
+c_razlika10.setCaption("OSN X 10% - PDV");
+result.setColumns(new com.borland.dx.dataset.Column[] {c_cknjige,c_cpar,c_broj,c_ufa,c_datum,c_iznos,c_pdv10,c_osnovica10,c_osnovica22,c_pdv22,c_neop,c_ostalo,c_razlika10,c_razlika22});
+result.open();
+for (qds.first(); qds.inBounds(); qds.next()) {
+  result.insertRow(false);
+  pp = hr.restart.util.Util.getNewQueryDataSet(
+    "SELECT NAZPAR FROM partneri where cpar="+qds.getInt("CPAR")
+  );
+  pp.open();
+
+  result.setString("PARTNER",pp.getString("NAZPAR"));
+  result.setString("BROJDOK",qds.getString("BROJDOK"));
+  result.setTimestamp("DATUM",qds.getTimestamp("DATDOK"));
+
+  result.setString("CKNJIGE",qds.getString("CKNJIGE")+" / "+qds.getString("VRDOK"));  
+  result.setInt("UFA",Integer.parseInt(qds.getString("EXTBRDOK").trim()));
+  result.setBigDecimal("IZNOS",qds.getBigDecimal("ID").add(qds.getBigDecimal("IP")));
+  qdstavke = hr.restart.baza.Skstavkerad.getDataModule().getFilteredDataSet(
+  hr.restart.baza.Condition.whereAllEqual(new String[] {"KNJIG","CPAR","VRDOK","BROJDOK","VRDOK","BROJIZV"}, qds));
+  result.setBigDecimal("OSNOVICA10",new BigDecimal(0));
+  result.setBigDecimal("PDV10",new BigDecimal(0));
+  result.setBigDecimal("OSNOVICA22",new BigDecimal(0));
+  result.setBigDecimal("PDV22",new BigDecimal(0));
+  result.setBigDecimal("NEOPOREZIVO",new BigDecimal(0));
+  result.setBigDecimal("OSTALO",new BigDecimal(0));
+  qdstavke.open();
+  for (qdstavke.first(); qdstavke.inBounds(); qdstavke.next()) {
+    if (qdstavke.getInt("RBS") == 1) continue;
+    if (qdstavke.getShort("CKOLONE") == 7) {//O10%
+      result.setBigDecimal("OSNOVICA10",result.getBigDecimal("OSNOVICA10")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 8) {//O22%
+      result.setBigDecimal("OSNOVICA22",result.getBigDecimal("OSNOVICA22")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 11) {//P10%
+      result.setBigDecimal("PDV10",result.getBigDecimal("PDV10")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 13) {//P22%
+      result.setBigDecimal("PDV22",result.getBigDecimal("PDV22")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 511) {
+      result.setBigDecimal("NEOPOREZIVO",result.getBigDecimal("NEOPOREZIVO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else {
+      result.setBigDecimal("OSTALO",result.getBigDecimal("OSTALO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    }
+    
+  }
+  result.setBigDecimal("RAZLIKA22",result.getBigDecimal("OSNOVICA22").multiply(new BigDecimal(0.22))
+            .add(result.getBigDecimal("PDV22").negate()).setScale(2,BigDecimal.ROUND_HALF_UP));
+  result.setBigDecimal("RAZLIKA10",result.getBigDecimal("OSNOVICA10").multiply(new BigDecimal(0.10))
+            .add(result.getBigDecimal("PDV10").negate()).setScale(2,BigDecimal.ROUND_HALF_UP));
+  result.post();
+}
+
+
+//POTVRDJENI!!
+qry = "select * from skstavke WHERE SKSTAVKE.CPAR = "+acpar+" AND SKSTAVKE.VRDOK IN ('URN','OKD') AND (SKSTAVKE.DATPRI BETWEEN '"+_dpod+" 00:00:00' AND '"+_dpdo+" 23:59:59') AND SKSTAVKE.KNJIG = '"+knjig+"'";
+qds = hr.restart.util.Util.getNewQueryDataSet(qry);
+for (qds.first(); qds.inBounds(); qds.next()) {
+  result.insertRow(false);
+  pp = hr.restart.util.Util.getNewQueryDataSet(
+    "SELECT NAZPAR FROM partneri where cpar="+qds.getInt("CPAR")
+  );
+  pp.open();
+
+  result.setString("PARTNER",pp.getString("NAZPAR"));
+  result.setString("BROJDOK",qds.getString("BROJDOK"));
+  result.setTimestamp("DATUM",qds.getTimestamp("DATDOK"));
+
+  result.setString("CKNJIGE",qds.getString("CKNJIGE")+" / "+qds.getString("VRDOK"));  
+  result.setInt("UFA",Integer.parseInt(qds.getString("EXTBRDOK").trim()));
+  result.setBigDecimal("IZNOS",qds.getBigDecimal("ID").add(qds.getBigDecimal("IP")));
+  qdstavke = hr.restart.gk.frmKnjSKRac.getUIStavke(qds);
+  result.setBigDecimal("OSNOVICA10",new BigDecimal(0));
+  result.setBigDecimal("PDV10",new BigDecimal(0));
+  result.setBigDecimal("OSNOVICA22",new BigDecimal(0));
+  result.setBigDecimal("PDV22",new BigDecimal(0));
+  result.setBigDecimal("NEOPOREZIVO",new BigDecimal(0));
+  result.setBigDecimal("OSTALO",new BigDecimal(0));
+  qdstavke.open();
+  for (qdstavke.first(); qdstavke.inBounds(); qdstavke.next()) {
+    if (qdstavke.getInt("RBS") == 1) continue;
+    if (qdstavke.getShort("CKOLONE") == 7) {//O10%
+      result.setBigDecimal("OSNOVICA10",result.getBigDecimal("OSNOVICA10")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 8) {//O22%
+      result.setBigDecimal("OSNOVICA22",result.getBigDecimal("OSNOVICA22")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 11) {//P10%
+      result.setBigDecimal("PDV10",result.getBigDecimal("PDV10")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 13) {//P22%
+      result.setBigDecimal("PDV22",result.getBigDecimal("PDV22")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 511) {
+      result.setBigDecimal("NEOPOREZIVO",result.getBigDecimal("NEOPOREZIVO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else {
+      result.setBigDecimal("OSTALO",result.getBigDecimal("OSTALO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    }
+    
+  }
+  result.setBigDecimal("RAZLIKA22",result.getBigDecimal("OSNOVICA22").multiply(new BigDecimal(0.22))
+            .add(result.getBigDecimal("PDV22").negate()).setScale(2,BigDecimal.ROUND_HALF_UP));
+  result.setBigDecimal("RAZLIKA10",result.getBigDecimal("OSNOVICA10").multiply(new BigDecimal(0.10))
+            .add(result.getBigDecimal("PDV10").negate()).setScale(2,BigDecimal.ROUND_HALF_UP));
+  result.post();
+}
+
+result;
+
+  ]]></sql>
+
+  <sql file="ur_pregledurn_svi.sql"><![CDATA[
+<#>
+<#datto>;T;;;;$today;0
+<#title>ULAZNI RA�UNI OD $datfrom DO $datdo
+<#orders>RBR
+<#visible>1,5,6,7,13,12,16
+<#sums>IZNOS
+<#datfrom>Datum (od-do);F;;;;$year;0
+Urdok.getDataModule().getTempSet(Aus.getKnjigCond().and(Condition.between("DATPRI", datfrom, datto)).and(Condition.equal("VRDOK", "URA")).and(Condition.equal("STATKNJ", "N")));
+
+
+  ]]></sql>
+
+  <sql file="pregledurn_potv_knjiga.sql"><![CDATA[
+<#>
+<#cdpdo>DO;T;;;;;12
+<#title>ULAZNI RA�UNI KNJIGE $aknjiga OD $bdpod DO $cdpdo
+<#orders>UFA
+<#sums>IZNOS,OSNOVICA,PDV,NEOPOREZIVO,OSTALO,RAZLIKA,SALDO
+<#visible>0,1,2,3,4,5,6,7,8
+<#aknjiga>Knjiga;S;getKnjigeU;CKNJIGE,NAZKNJIGE;0,4;;12
+<#bdpod>OD;F;;;;;12
+_dpod = new java.sql.Date(bdpod.getTime());
+_dpdo = new java.sql.Date(cdpdo.getTime());
+System.out.println(_dpod+" - "+_dpdo);
+knjig = hr.restart.zapod.OrgStr.getKNJCORG();
+qry = "select * from skstavke WHERE CKNJIGE like '"+aknjiga+"%' AND vrdok in ('URN','OKD') AND (DATPRI BETWEEN '"+_dpod+" 00:00:00' AND '"+_dpdo+" 23:59:59') AND KNJIG = '"+knjig+"'";
+System.out.println(qry);
+qds = hr.restart.util.Util.getNewQueryDataSet(qry);
+result = new com.borland.dx.dataset.StorageDataSet();
+c_cpar = qds.getColumn("CPAR").clone();
+c_broj = qds.getColumn("BROJDOK").clone();
+c_ufa = hr.restart.baza.dM.createStringColumn("UFA", 30);
+c_iznos = hr.restart.baza.dM.createBigDecimalColumn("IZNOS");
+c_osnovica = hr.restart.baza.dM.createBigDecimalColumn("OSNOVICA");
+c_pdv = hr.restart.baza.dM.createBigDecimalColumn("PDV");
+c_neop = hr.restart.baza.dM.createBigDecimalColumn("NEOPOREZIVO");
+c_ostalo = hr.restart.baza.dM.createBigDecimalColumn("OSTALO");
+c_razlika = hr.restart.baza.dM.createBigDecimalColumn("RAZLIKA");
+c_razlika.setCaption("OSN X 22% - PDV");
+c_saldo = hr.restart.baza.dM.createBigDecimalColumn("SALDO");
+c_rsaldo = hr.restart.baza.dM.createBigDecimalColumn("RSALDO", "Greska");
+result.setColumns(new com.borland.dx.dataset.Column[] {c_cpar,c_broj,c_ufa,c_iznos,c_osnovica,c_pdv,c_neop,c_ostalo,c_razlika,c_saldo,c_rsaldo});
+result.open();
+for (qds.first(); qds.inBounds(); qds.next()) {
+  result.insertRow(false);
+
+  result.setInt("CPAR",qds.getInt("CPAR"));
+  result.setString("BROJDOK",qds.getString("BROJDOK"));
+  
+  result.setString("UFA",qds.getString("EXTBRDOK").trim());
+  result.setBigDecimal("IZNOS",qds.getBigDecimal("ID").add(qds.getBigDecimal("IP")));
+  storno = result.getBigDecimal("IZNOS").signum() < 0;
+  qdstavke = hr.restart.baza.UIstavke.getDataModule().getTempSet(
+  hr.restart.baza.Condition.whereAllEqual(new String[] {"KNJIG","CPAR","VRDOK","BROJDOK","CKNJIGE"}, qds));
+  result.setBigDecimal("OSNOVICA",new BigDecimal(0));
+  result.setBigDecimal("PDV",new BigDecimal(0));
+  result.setBigDecimal("NEOPOREZIVO",new BigDecimal(0));
+  result.setBigDecimal("OSTALO",new BigDecimal(0));
+  qdstavke.open();
+  sumid = new BigDecimal(0);
+  sumip = new BigDecimal(0);
+  for (qdstavke.first(); qdstavke.inBounds(); qdstavke.next()) {
+    sumid = sumid.add(qdstavke.getBigDecimal("ID"));
+    sumip = sumip.add(qdstavke.getBigDecimal("IP"));
+    ist = qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP")).abs();
+    if (storno) ist = ist.negate();
+    if (qdstavke.getInt("RBS") == 1) continue;
+    if (qdstavke.getShort("CKOLONE") == 6) {
+      result.setBigDecimal("OSNOVICA",result.getBigDecimal("OSNOVICA").add(ist));
+    } else if (qdstavke.getShort("CKOLONE") == 9 || qdstavke.getShort("CKOLONE") == 10) {
+      result.setBigDecimal("PDV",result.getBigDecimal("PDV").add(ist));
+    } else if (qdstavke.getShort("CKOLONE") == 11) {
+      result.setBigDecimal("NEOPOREZIVO",result.getBigDecimal("NEOPOREZIVO").add(ist));
+    } else {
+      result.setBigDecimal("OSTALO",result.getBigDecimal("OSTALO").add(ist));
+    }
+    
+  }
+  result.setBigDecimal("RAZLIKA",result.getBigDecimal("OSNOVICA").multiply(new BigDecimal(0.22))
+            .add(result.getBigDecimal("PDV").negate()).setScale(2, BigDecimal.ROUND_HALF_UP));
+  result.setBigDecimal("SALDO",sumid.add(sumip.negate()));
+  result.setBigDecimal("RSALDO", result.getBigDecimal("IZNOS").subtract(result.getBigDecimal("OSNOVICA")).subtract(result.getBigDecimal("PDV")).subtract(result.getBigDecimal("NEOPOREZIVO")));
+  result.post();
+}
+result;
+
+  ]]></sql>
+
+  <sql file="pregledirn_knjiga.sql"><![CDATA[
+<#>
+<#cdpdo>DO;T;;;;;12
+<#title>IZLAZNI RA�UNI KNJIGE $aknjiga OD $bdpod DO $cdpdo
+<#orders>UFA
+<#visible>0,1,2,3,4,5,6,7
+<#sums>IZNOS,OSNOVICA,PDV,NEOPOREZIVO,OSTALO,RAZLIKA,SALDO
+<#aknjiga>Knjiga;S;getKnjigeI;CKNJIGE,NAZKNJIGE;0,4;;12
+<#bdpod>OD;F;;;;;12
+_dpod = new java.sql.Date(bdpod.getTime());
+_dpdo = new java.sql.Date(cdpdo.getTime());
+System.out.println(_dpod+" - "+_dpdo);
+knjig = hr.restart.zapod.OrgStr.getKNJCORG();
+qry = "select * from skstavkerad WHERE SKSTAVKERAD.CKNJIGE = '"+aknjiga+"' AND SKSTAVKERAD.URAIRA='I' AND (SKSTAVKERAD.DATPRI BETWEEN '"+_dpod+" 00:00:00' AND '"+_dpdo+" 23:59:59') AND SKSTAVKERAD.KNJIG = '"+knjig+"' AND SKSTAVKERAD.RBS = 1";
+System.out.println(qry);
+qds = hr.restart.util.Util.getNewQueryDataSet(qry);
+result = new com.borland.dx.dataset.StorageDataSet();
+c_cpar = hr.restart.baza.dM.createStringColumn("PARTNER",100);
+c_broj = qds.getColumn("BROJDOK").clone();
+c_ufa = hr.restart.baza.dM.createIntColumn("UFA");
+c_iznos = hr.restart.baza.dM.createBigDecimalColumn("IZNOS");
+c_osnovica = hr.restart.baza.dM.createBigDecimalColumn("OSNOVICA");
+c_pdv = hr.restart.baza.dM.createBigDecimalColumn("PDV");
+c_neop = hr.restart.baza.dM.createBigDecimalColumn("NEOPOREZIVO");
+c_ostalo = hr.restart.baza.dM.createBigDecimalColumn("OSTALO");
+c_razlika = hr.restart.baza.dM.createBigDecimalColumn("RAZLIKA");
+c_razlika.setCaption("OSN X 22% - PDV");
+c_saldo = hr.restart.baza.dM.createBigDecimalColumn("SALDO");
+result.setColumns(new com.borland.dx.dataset.Column[] {c_cpar,c_broj,c_ufa,c_iznos,c_osnovica,c_pdv,c_neop,c_ostalo,c_razlika,c_saldo});
+result.open();
+for (qds.first(); qds.inBounds(); qds.next()) {
+  result.insertRow(false);
+  pp = hr.restart.util.Util.getNewQueryDataSet(
+    "SELECT NAZPAR FROM partneri where cpar="+qds.getInt("CPAR")
+  );
+  pp.open();
+  result.setString("PARTNER",pp.getString("NAZPAR"));
+  result.setString("BROJDOK",qds.getString("BROJDOK"));
+  
+  result.setInt("UFA",Integer.parseInt(qds.getString("EXTBRDOK").trim()));
+  result.setBigDecimal("IZNOS",qds.getBigDecimal("ID").add(qds.getBigDecimal("IP")));
+  qdstavke = hr.restart.baza.Skstavkerad.getDataModule().getFilteredDataSet(
+  hr.restart.baza.Condition.whereAllEqual(new String[] {"KNJIG","CPAR","VRDOK","BROJDOK","VRDOK","BROJIZV"}, qds));
+  result.setBigDecimal("OSNOVICA",new BigDecimal(0));
+  result.setBigDecimal("PDV",new BigDecimal(0));
+  result.setBigDecimal("NEOPOREZIVO",new BigDecimal(0));
+  result.setBigDecimal("OSTALO",new BigDecimal(0));
+  qdstavke.open();
+  sumid = new BigDecimal(0);
+  sumip = new BigDecimal(0);
+  for (qdstavke.first(); qdstavke.inBounds(); qdstavke.next()) {
+    sumid = sumid.add(qdstavke.getBigDecimal("ID"));
+    sumip = sumip.add(qdstavke.getBigDecimal("IP"));
+    if (qdstavke.getInt("RBS") == 1) continue;
+    if (qdstavke.getShort("CKOLONE") == 11) {
+      result.setBigDecimal("OSNOVICA",result.getBigDecimal("OSNOVICA")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 12) {
+      result.setBigDecimal("PDV",result.getBigDecimal("PDV")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 7) {
+      result.setBigDecimal("NEOPOREZIVO",result.getBigDecimal("NEOPOREZIVO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else {
+      result.setBigDecimal("OSTALO",result.getBigDecimal("OSTALO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    }
+    
+  }
+  result.setBigDecimal("RAZLIKA",result.getBigDecimal("OSNOVICA").multiply(new BigDecimal(0.22))
+            .add(result.getBigDecimal("PDV").negate()));
+  result.setBigDecimal("SALDO",sumid.add(sumip.negate()));
+  result.post();
+}
+result;
+
+  ]]></sql>
+
+  <sql file="ur_pregledirn_partner.sql"><![CDATA[
+<#>
+<#datto>;T;;;;$today;0
+<#title>IZLAZNI RA�UNI KUPCA $acpar  OD $datfrom DO $datdo
+<#orders>RBR
+<#visible>1,5,6,7,13,12,16
+<#sums>IZNOS
+<#acpar>Kupac;S;getPartneri;CPAR,NAZPAR;0,1,2;;12
+<#datfrom>Datum (od-do);F;;;;$year;0
+Urdok.getDataModule().getTempSet(Aus.getKnjigCond().and(Condition.equal("CPAR", acpar)).and(Condition.between("DATPRI", datfrom, datto)).and(Condition.equal("VRDOK", "IRA")).and(Condition.equal("STATKNJ", "N")));
+
+
+  ]]></sql>
+
+  <sql file="ur_pregledirn_svi.sql"><![CDATA[
+<#>
+<#datto>;T;;;;$today;0
+<#title>IZLAZNI RA�UNI OD $datfrom DO $datdo
+<#orders>RBR
+<#visible>1,5,6,7,13,12,16
+<#sums>IZNOS
+<#datfrom>Datum (od-do);F;;;;$year;0
+Urdok.getDataModule().getTempSet(Aus.getKnjigCond().and(Condition.between("DATPRI", datfrom, datto)).and(Condition.equal("VRDOK", "IRA")).and(Condition.equal("STATKNJ", "N")));
+
+
+  ]]></sql>
+
+  <sql file="r2nepok.sql"><![CDATA[
+<#>
+<#groups>CKNJIGE+NAZKNJIGE+getKnjigeU,CPAR+NAZPAR+getPartneriDob
+<#datdok>Do datuma;T;;;;;9
+<#title>Pregled nepokrivenih R2 ra�una  do $datdok
+<#visible>6,7,8,9,10,11
+sk = Skstavke.getDataModule().getTempSet("knjig vrdok brojizv brojkonta cknjige cpar brojdok extbrdok datdok datumknj cgkstavke ip","datpri>='9000-01-01' and vrdok in ('URN','OKD') and datdok<='"+datdok+"'");
+sk.open();
+sk.getColumn("EXTBRDOK").setWidth(5);
+sk.getColumn("EXTBRDOK").setCaption("UFA");
+sk.getColumn("DATUMKNJ").setCaption("Primitak");
+sk.getColumn("IP").setCaption("Iznos");
+sk.getColumn("BROJDOK").setWidth(15);
+sk.getColumn("CGKSTAVKE").setWidth(25);
+sk.getColumn("CGKSTAVKE").setCaption("Nalog za knji�enje");
+sk
+
+  ]]></sql>
+
+  <sql file="nukon.sql"><![CDATA[
+<#>
+<#groups>CORG+NAZIV+getOrgstruktura
+<#title>Neproknji�eni ulazni ra�uni SK po kontima  do dana $datdo
+<#orders>brojkonta
+<#sums>ID,IP
+<#visible>1,2,3,4 
+<#datdo>Do dana;T;;;;$today;9
+SELECT uistavke.corg, uistavke.brojkonta, max(konta.nazivkonta) as nazivkonta, sum(uistavke.id) as id, sum(uistavke.ip) as ip FROM Skstavke,uistavke, konta
+WHERE skstavke.knjig = uistavke.knjig
+AND skstavke.cpar = uistavke.cpar
+AND skstavke.vrdok = uistavke.vrdok
+AND skstavke.brojdok = uistavke.brojdok
+AND uistavke.brojkonta = konta.brojkonta
+and (skstavke.cgkstavke is null or skstavke.cgkstavke='' or (uistavke.cskl like 'R%' and skstavke.datpri<=$datdo)) and skstavke.vrdok in ('URN','OKD') and skstavke.datumknj<=$datdo
+group by uistavke.corg, uistavke.brojkonta
+
+  ]]></sql>
+
+  <sql file="nikon.sql"><![CDATA[
+<#>
+<#groups>CORG+NAZIV+getOrgstruktura
+<#title>Neproknji�eni izlazni ra�uni SK po kontima  do dana $datdo
+<#orders>brojkonta
+<#visible>1,2,3,4 
+<#sums>ID,IP
+<#datdo>Do dana;T;;;;$today;9
+SELECT uistavke.corg, uistavke.brojkonta, max(konta.nazivkonta) as nazivkonta, sum(uistavke.id) as id, sum(uistavke.ip) as ip FROM Skstavke,uistavke, konta
+WHERE skstavke.knjig = uistavke.knjig
+AND skstavke.cpar = uistavke.cpar
+AND skstavke.vrdok = uistavke.vrdok
+AND skstavke.brojdok = uistavke.brojdok
+AND uistavke.brojkonta = konta.brojkonta
+and (skstavke.cgkstavke is null or skstavke.cgkstavke='') and skstavke.vrdok in ('IRN','OKK') and skstavke.datumknj<=$datdo
+group by uistavke.corg, uistavke.brojkonta
+
+  ]]></sql>
+
+  <sql file="dukon.sql"><![CDATA[
+<#>
+<#groups>CORG+NAZIV+getOrgstruktura
+<#title>Neproknji�eni ulazni ra�uni za konto $akonto  do dana $datdo
+<#visible>1,2,3,4,5,6,7
+<#sums>ID,IP
+<#akonto>Konto;S;getKonta;BROJKONTA, NAZIVKONTA;0,1;;12
+<#datdo>Do dana;T;;;;$today;9
+SELECT uistavke.corg,skstavke.cpar,partneri.nazpar,skstavke.brojdok,skstavke.extbrdok,skstavke.datdok, uistavke.id, uistavke.ip FROM Skstavke,uistavke, partneri WHERE skstavke.knjig = uistavke.knjig AND skstavke.cpar = uistavke.cpar AND skstavke.cpar = partneri.cpar AND skstavke.vrdok = uistavke.vrdok AND skstavke.brojdok = uistavke.brojdok and (skstavke.cgkstavke is null or skstavke.cgkstavke='') and skstavke.vrdok in ('URN','OKD') and skstavke.datumknj<=$datdo and uistavke.brojkonta='$akonto'
+
+
+  ]]></sql>
+
+  <sql file="tempokon.sql"><![CDATA[
+<#>
+<#datum>Do datuma;T;;;;;12
+<#title>Neproknji�eni SK ulazni ra�uni po kontima  do $datum
+<#sums>ID,IP
+SELECT uistavke.brojkonta, sum(uistavke.id) as id, sum(uistavke.ip) as ip FROM Skstavke,UIstavke
+WHERE skstavke.knjig = uistavke.knjig
+AND skstavke.cpar = uistavke.cpar
+AND skstavke.vrdok = uistavke.vrdok
+AND skstavke.brojdok = uistavke.brojdok
+AND vrdok in ('URN','OKD')
+AND (skstavke.cgkstavke is null or skstavke.cgkstavke='')
+and (uistavke.cskl not like 'R%' or skstavke.datpri<=$datum)
+and skstavke.datumknj<=$datum
+GROUP BY uistavke.brojkonta
+
+  ]]></sql>
+
+  <sql file="tempokoni.sql"><![CDATA[
+<#>
+<#datum>Do datuma;T;;;;;12
+<#sums>ID,IP
+<#title>Neproknji�eni SK izlazni ra�uni po kontima  do $datum
+SELECT uistavke.brojkonta, sum(uistavke.id) as id, sum(uistavke.ip) as ip FROM Skstavke,UIstavke
+WHERE skstavke.knjig = uistavke.knjig
+AND skstavke.cpar = uistavke.cpar
+AND skstavke.vrdok = uistavke.vrdok
+AND skstavke.brojdok = uistavke.brojdok
+AND vrdok in ('IRN','OKK')
+AND (skstavke.cgkstavke is null or skstavke.cgkstavke='')
+and skstavke.datumknj<=$datum
+GROUP BY uistavke.brojkonta
+
+  ]]></sql>
+
+  <sql file="pregledirn_potv_knjiga.sql"><![CDATA[
+<#>
+<#cdpdo>DO;T;;;;;12
+<#title>IZLAZNI RA�UNI KNJIGE $aknjiga OD $bdpod DO $cdpdo
+<#orders>UFA
+<#sums>IZNOS,OSNOVICA,PDV,NEOPOREZIVO,OSTALO,RAZLIKA,SALDO
+<#visible>0,1,2,3,4,5,6,7
+<#bdpod>OD;F;;;;;12
+<#aknjiga>Knjiga;S;getKnjigeI;CKNJIGE,NAZKNJIGE;0,4;;12
+_dpod = new java.sql.Date(bdpod.getTime());
+_dpdo = new java.sql.Date(cdpdo.getTime());
+System.out.println(_dpod+" - "+_dpdo);
+knjig = hr.restart.zapod.OrgStr.getKNJCORG();
+qry = "select * from skstavke WHERE CKNJIGE = '"+aknjiga+"' AND VRDOK in ('IRN','OKK') AND (DATPRI BETWEEN '"+_dpod+" 00:00:00' AND '"+_dpdo+" 23:59:59') AND KNJIG = '"+knjig+"'";
+System.out.println(qry);
+qds = hr.restart.util.Util.getNewQueryDataSet(qry);
+result = new com.borland.dx.dataset.StorageDataSet();
+c_cpar = qds.getColumn("CPAR").clone();
+c_broj = qds.getColumn("BROJDOK").clone();
+c_ufa = hr.restart.baza.dM.createStringColumn("UFA", 50);
+c_iznos = hr.restart.baza.dM.createBigDecimalColumn("IZNOS");
+c_osnovica = hr.restart.baza.dM.createBigDecimalColumn("OSNOVICA");
+c_pdv = hr.restart.baza.dM.createBigDecimalColumn("PDV");
+c_neop = hr.restart.baza.dM.createBigDecimalColumn("NEOPOREZIVO");
+c_ostalo = hr.restart.baza.dM.createBigDecimalColumn("OSTALO");
+c_razlika = hr.restart.baza.dM.createBigDecimalColumn("RAZLIKA");
+c_razlika.setCaption("OSN X 22% - PDV");
+c_saldo = hr.restart.baza.dM.createBigDecimalColumn("SALDO");
+result.setColumns(new com.borland.dx.dataset.Column[] {c_cpar,c_broj,c_ufa,c_iznos,c_osnovica,c_pdv,c_neop,c_ostalo,c_razlika,c_saldo});
+result.open();
+for (qds.first(); qds.inBounds(); qds.next()) {
+  result.insertRow(false);
+
+  result.setInt("CPAR", qds.getInt("CPAR"));
+  result.setString("BROJDOK",qds.getString("BROJDOK"));
+  
+  result.setString("UFA", qds.getString("EXTBRDOK"));
+  result.setBigDecimal("IZNOS",qds.getBigDecimal("ID").add(qds.getBigDecimal("IP")));
+  qdstavke = hr.restart.baza.UIstavke.getDataModule().getTempSet(
+  hr.restart.baza.Condition.whereAllEqual(new String[] {"KNJIG","CPAR","VRDOK","BROJDOK","CKNJIGE"}, qds));
+  result.setBigDecimal("OSNOVICA",new BigDecimal(0));
+  result.setBigDecimal("PDV",new BigDecimal(0));
+  result.setBigDecimal("NEOPOREZIVO",new BigDecimal(0));
+  result.setBigDecimal("OSTALO",new BigDecimal(0));
+  qdstavke.open();
+  sumid = new BigDecimal(0);
+  sumip = new BigDecimal(0);
+  for (qdstavke.first(); qdstavke.inBounds(); qdstavke.next()) {
+    sumid = sumid.add(qdstavke.getBigDecimal("ID"));
+    sumip = sumip.add(qdstavke.getBigDecimal("IP"));
+    if (qdstavke.getInt("RBS") == 1) continue;
+    if (qdstavke.getShort("CKOLONE") == 11) {
+      result.setBigDecimal("OSNOVICA",result.getBigDecimal("OSNOVICA")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 12) {
+      result.setBigDecimal("PDV",result.getBigDecimal("PDV")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else if (qdstavke.getShort("CKOLONE") == 7) {
+      result.setBigDecimal("NEOPOREZIVO",result.getBigDecimal("NEOPOREZIVO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    } else {
+      result.setBigDecimal("OSTALO",result.getBigDecimal("OSTALO")
+        .add(qdstavke.getBigDecimal("ID").add(qdstavke.getBigDecimal("IP"))));
+    }
+    
+  }
+  result.setBigDecimal("RAZLIKA",result.getBigDecimal("OSNOVICA").multiply(new BigDecimal(0.22))
+            .add(result.getBigDecimal("PDV").negate()).setScale(2, BigDecimal.ROUND_HALF_UP));
+  result.setBigDecimal("SALDO",sumid.add(sumip.negate()));
+  result.post();
+}
+result;
+
+  ]]></sql>
+
+</reportext>

@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="Windows-1250"?>
+<reportext>
+  <dat><![CDATA[
+dosli</sep>Radnici zaposleni u periodu</sep>dosli_u_periodu.sql</sep>pl</sep>
+otisli</sep>Radnici oti�li u periodu</sep>otisli_u_periodu.sql</sep>pl</sep>
+aktivni</sep>Popis aktivnih radnika</sep>popis_aktivnih_radnika.sql</sep>pl</sep>
+satnice</sep>Bruto i neto satnice po djelatnicima</sep>bruto_i_neto_satnica.sql</sep>pl</sep>
+radvrp</sep>Popis radnika po vrsti primanja</sep>radnici_po_vrstiprim.sql</sep>pl</sep>
+radvrpin</sep>Radnici po vrstama primanja</sep>radn_po_vrstamapr.sql</sep>pl</sep>
+sihexp</sep>Export �ihterica</sep>sihexp.sql</sep>pl</sep>
+terarh</sep>Dohvat terenaca iz arhive</sep>terenci_iz_arhive.sql</sep>pl</sep>
+terenci</sep>Pregled terenaca</sep>pregled_terenaca.sql</sep>pl</sep>
+zzugovori</sep>Radnici kojima isti�e ugovor u periodu</sep>rad_kojima_istice_ugovor_u_periodu.sql</sep>pl</sep>
+rbeztekuceg</sep>Radnici bez teku�eg</sep>radnici_bez_tekuceg.sql</sep>pl</sep>
+djeca14</sep>Djeca do 14 godina</sep>djecado14.sql</sep>pl</sep>
+radpooj</sep>Radnici po org jedinicama</sep>radnici_po_oj.sql</sep>pl</sep>
+starspol</sep>Radnici po starosti i spolu</sep>starost_i_spol.sql</sep>pl</sep>
+rekstarspol</sep>Rekapitulacija radnika po starosti i spolu</sep>rek_starost_i_spol.sql</sep>pl</sep>
+rekss</sep>Rekapitulacija radnika po strucnoj spremi</sep>rek_sprema.sql</sep>pl</sep>
+radstaz</sep>Popis radnika sa stazem i datumom postizanja</sep>popis_radnika_staz.sql</sep>pl</sep>
+preggo</sep>Pregled GO</sep>pregled_go.sql</sep>pl</sep>
+
+  ]]></dat>
+
+  <sql file="dosli_u_periodu.sql"><![CDATA[
+<#>
+<#bdo>DO;T;;;;;12
+<#orders>PREZIME
+<#aod>OD;F;;;;;12
+<#title>Radnici zaposleni u periodu od $aod do $bdo
+<#visible>2,3,4,7,30,35
+SELECT * from radnici, radnicipl
+WHERE radnici.cradnik = radnicipl.cradnik
+and radnicipl.datdol between $aod and $bdo
+
+  ]]></sql>
+
+  <sql file="otisli_u_periodu.sql"><![CDATA[
+<#>
+<#bdo>DO;T;;;;;12
+<#orders>PREZIME
+<#aod>OD;F;;;;;12
+<#title>Radnici OTI�LI u periodu od $aod do $bdo
+<#visible>2,3,4,31
+SELECT * from radnici, radnicipl
+WHERE radnici.cradnik = radnicipl.cradnik
+and radnicipl.datodl between $aod and $bdo
+
+  ]]></sql>
+
+  <sql file="popis_aktivnih_radnika.sql"><![CDATA[
+<#>
+<#sums>BR
+<#orders>PREZIME
+<#title>Popis aktivnih djelatnika
+<#visible>2,3,4,7,35,49
+SELECT Radnici.lokk, Radnici.aktiv, Radnici.cradnik, Radnici.ime, Radnici.prezime, Radnici.imeoca, Radnici.titula, Radnici.corg, Radnicipl.lokk, Radnicipl.aktiv, Radnicipl.cradnik, Radnicipl.cradmj, Radnicipl.css, Radnicipl.cvro, Radnicipl.cisplmj, Radnicipl.copcine, Radnicipl.rsinv, Radnicipl.rsoo, Radnicipl.brutosn, Radnicipl.brutdod, Radnicipl.brutmr, Radnicipl.brutuk, Radnicipl.godstaz, Radnicipl.stopastaz, Radnicipl.datstaz, Radnicipl.podstaz, Radnicipl.datpodstaz, Radnicipl.nacobrb, Radnicipl.koef, Radnicipl.koefzar, Radnicipl.datdol, Radnicipl.datodl, Radnicipl.datregres, Radnicipl.oluk, Radnicipl.olos, Radnicipl.jmbg, Radnicipl.brradknj, Radnicipl.regbrrk, Radnicipl.regbrmio, Radnicipl.brosigzo, Radnicipl.zijmbgzo, Radnicipl.brobveze, Radnicipl.clanomf, Radnicipl.rsb, Radnicipl.rsz, Radnicipl.corg, Radnicipl.adresa, Radnicipl.brojtek, Radnicipl.parametri,1 as br from radnici, radnicipl
+WHERE radnici.cradnik = radnicipl.cradnik
+and radnicipl.aktiv='D'
+
+  ]]></sql>
+
+  <sql file="bruto_i_neto_satnica.sql"><![CDATA[
+<#>
+<#title>Bruto i neto satnice po djelatnicima za teku�i obra�un
+SELECT radnici.cradnik, radnici.prezime, radnici.ime, (kumulrad.bruto/kumulrad.sati) as Bruto_satnica, (kumulrad.neto2/kumulrad.sati) as Neto_satnica from radnici, kumulrad, radnicipl
+WHERE radnici.cradnik = kumulrad.cradnik
+AND radnici.cradnik = radnicipl.cradnik
+AND radnicipl.aktiv='D'
+
+
+  ]]></sql>
+
+  <sql file="radnici_po_vrstiprim.sql"><![CDATA[
+<#>
+<#groups>CVRP+NAZIV+getVrsteprim
+<#sums>SATI,BRUTO,DOPRINOSI,NETO
+<#orders>PREZIME
+<#cvrp>Vrsta primanja;S;getVrsteprim;CVRP, NAZIV;0,1;;12
+<#title>POPIS DJELATNIKA SA VRSTOM PRIMANJA $cvrp
+<#visible>0,1,2,4,5,6,7
+SELECT Radnici.cradnik, Radnici.prezime, Radnici.ime, Radnici.imeoca, Radnici.corg, Primanjaobr.sati, Primanjaobr.koef, Primanjaobr.bruto, Primanjaobr.doprinosi, Primanjaobr.neto,primanjaobr.cvrp from radnici, Primanjaobr WHERE primanjaobr.cradnik = radnici.cradnik
+and primanjaobr.cvrp=$cvrp
+
+  ]]></sql>
+
+  <sql file="radn_po_vrstamapr.sql"><![CDATA[
+<#>
+<#groups>CVRP+NAZIV+getVrsteprim
+<#sums>SATI,BRUTO,DOPRINOSI,NETO
+<#orders>PREZIME
+<#cvrp>Vrste primanja za listu;S;;;;;50
+<#title>POPIS DJELATNIKA SA VRSTAMA PRIMANJA $cvrp
+<#visible>0,1,2,4,5,6,7
+SELECT Radnici.cradnik, Radnici.prezime, Radnici.ime, Radnici.imeoca, Radnici.corg, Primanjaobr.sati, Primanjaobr.koef, Primanjaobr.bruto, Primanjaobr.doprinosi, Primanjaobr.neto,primanjaobr.cvrp from radnici, Primanjaobr WHERE primanjaobr.cradnik = radnici.cradnik
+and primanjaobr.cvrp in ($cvrp)
+
+  ]]></sql>
+
+  <sql file="sihexp.sql"><![CDATA[
+<#>
+qds=hr.restart.util.Util.getNewQueryDataSet("select kumulrad.cradnik,kumulrad.netopk,sum(Odbiciobr.obriznos) as dopr FROM kumulrad, Odbiciobr WHERE kumulrad.cradnik = odbiciobr.cradnik and odbiciobr.cvrodb in (1,2,12,13,14,15,90,99) group by kumulrad.cradnik, kumulrad.netopk");
+s = "";
+for (qds.first();qds.inBounds();qds.next()) {
+  StringBuffer b = new StringBuffer();
+  char[] ch = new char[47];
+  Arrays.fill(ch, ' ');
+  StringBuffer b = new StringBuffer(new String(ch));
+  String c = qds.getString("CRADNIK");
+  String n = qds.getBigDecimal("NETOPK").toString();
+  String d = qds.getBigDecimal("DOPR").toString();
+  b.replace(12-c.length(),12,c);
+  b.replace(29-d.length(),29,d);
+  b.replace(46-n.length(),46,n);
+  s=s+b.toString()+"\n";
+}
+hr.restart.util.FileHandler.writeConverted(s,"dop_por.dat",null);
+rm = hr.restart.util.Util.getNewQueryDataSet("select * from MxPrinterRM where CRM=99");
+cmd=rm.getString("LOCALCOM");
+System.out.println("komanda je: "+cmd);
+Runtime.getRuntime().exec(cmd);
+JOptionPane.showMessageDialog(null,"Prijenos uspje�an!","Export �ihterica",JOptionPane.INFORMATION_MESSAGE);
+
+  ]]></sql>
+
+  <sql file="terenci_iz_arhive.sql"><![CDATA[
+<#>
+<#godina>Godina;I;;;;;4
+<#mjesec>Mjesec;I;;;;;2
+<#rbr>Redni broj;I;;;;;2
+INSERT INTO RSPERIOD SELECT RSPeriodarh.cradnik, 99, RSPeriodarh.rsoo, RSPeriodarh.oddana, RSPeriodarh.dodana, RSPeriodarh.copcine FROM RSPeriodarh, radnicipl where rsperiodarh.cradnik=radnicipl.cradnik AND radnicipl.aktiv='D' and RSPeriodarh.godobr=$godina and RSPeriodarh.mjobr=$mjesec and RSPeriodarh.rbrobr=$rbr and RSPeriodarh.copcine!=133
+
+  ]]></sql>
+
+  <sql file="pregled_terenaca.sql"><![CDATA[
+<#>
+<#orders>PREZIME, IME
+<#title>PREGLED TERENACA
+SELECT radnici.cradnik, radnici.prezime, radnici.ime, rsperiod.copcine from radnici, RSPeriod
+WHERE radnici.cradnik = rsperiod.cradnik
+and rsperiod.copcine!=133
+
+  ]]></sql>
+
+  <sql file="rad_kojima_istice_ugovor_u_periodu.sql"><![CDATA[
+<#>
+<#bdatdo>Datum odlaska DO;T;;;;;12
+<#adatod>Datum odlaska OD;F;;;;;12
+<#orders>PREZIME, IME
+<#title>Djelatnici kojima isti�e ugovor o radu u periodu $adatod - $bdatdo
+SELECT radnici.cradnik, radnici.prezime, radnici.ime, radnicipl.datodl from radnici, radnicipl
+WHERE radnici.cradnik = radnicipl.cradnik and radnicipl.datodl is not null and radnicipl.aktiv='D' and radnicipl.datodl between $adatod and $bdatdo
+
+
+  ]]></sql>
+
+  <sql file="radnici_bez_tekuceg.sql"><![CDATA[
+<#>
+<#orders>PREZIME
+<#title>Radnici bez teku�eg
+SELECT radnici.cradnik, radnici.prezime, radnici.ime, radnicipl.brojtek, radnicipl.cisplmj FROM Radnici, Radnicipl
+WHERE radnici.cradnik = radnicipl.cradnik
+and radnicipl.aktiv='D' 
+and (radnicipl.brojtek=''  or radnicipl.brojtek is null)
+
+
+  ]]></sql>
+
+  <sql file="djecado14.sql"><![CDATA[
+<#>
+<#groups>CRADNIK+PREZIME+IME+getRadnici
+<#title>LISTA DJECE DO 14 godina
+<#orders>DATROD
+<#visible>1,2,3
+<#sums>BR
+<#god>Godi�te (1990 za 2005);S;;;;;0
+String god ="1990";
+r = Radnici.getDataModule();
+res = new com.borland.dx.dataset.StorageDataSet();
+datumi=Util.getNewQueryDataSet("SELECT cradnik, cznac, cast(vri as timestamp) as DATROD FROM PlZnacRadData WHERE cznac in (1002,1004,1006,1008,1010,1012) and vri>'"+god.trim()+"-12-01' AND cradnik in (SELECT cradnik from radnicipl where aktiv='D')");
+    res.setColumns(new com.borland.dx.dataset.Column[] {
+        r.getColumn("CRADNIK").cloneColumn(),
+//        r.getColumn("IME").cloneColumn(),
+//        r.getColumn("PREZIME").cloneColumn(),
+        dM.createStringColumn("IMEDJ","Ime djeteta",50),
+        dM.createTimestampColumn("DATROD","Datum ro�enja"),
+        dM.createShortColumn("BR")
+    }
+    );
+    res.open();
+    for (datumi.first(); datumi.inBounds(); datumi.next()) {
+      imena = Util.getNewQueryDataSet(
+          "SELECT vri FROM plznacraddata where cradnik='"+datumi.getString("CRADNIK")
+          +"' AND CZNAC = "+(datumi.getShort("CZNAC")-1));
+      res.insertRow(false);
+      res.setString("CRADNIK", datumi.getString("CRADNIK"));
+      res.setString("IMEDJ",imena.getString("VRI"));
+      res.setTimestamp("DATROD", datumi.getTimestamp("DATROD"));
+      res.setShort("BR",(short)1);
+      res.post();
+    }
+res;
+
+  ]]></sql>
+
+  <sql file="radnici_po_oj.sql"><![CDATA[
+<#>
+<#groups>corg+naziv+getOrgstruktura
+<#sums>br
+<#orders>prezime
+<#title>Popis radnika po org jedinicama
+<#visible>0,1,2,4
+SELECT radnici.cradnik, radnici.prezime, radnici.ime, radnicipl.corg,1 as br FROM RADNICI, radnicipl
+WHERE radnici.cradnik = radnicipl.cradnik
+and radnicipl.aktiv='D'
+
+  ]]></sql>
+
+  <sql file="starost_i_spol.sql"><![CDATA[
+<#>
+<#groups>STAROST, SPOL
+<#title>Aktivni radnici po starosti i spolu
+<#anadan>Starost na dan;T;;;;;0
+<#orders>PREZIME, IME
+<#visible>0,1,2,3,5,6,7
+<#sums>BR
+     QueryDataSet qds = Util.getNewQueryDataSet("SELECT Radnici.cradnik, Radnici.ime, " +
+        "Radnici.prezime, Radnici.corg, Radnicipl.jmbg, " +
+        "plznacraddata.vri as SPOL " +
+        "from Radnici, Radnicipl, plznacraddata WHERE radnici.cradnik = radnicipl.cradnik " +
+        "AND radnicipl.aktiv='D' " +
+        "AND radnicipl.cradnik=plznacraddata.cradnik AND plznacraddata.cznac=100");
+
+    StorageDataSet ds = new StorageDataSet(); 
+    ds.setColumns(new com.borland.dx.dataset.Column[] {
+        hr.restart.baza.Radnici.getDataModule().getColumn("CRADNIK").cloneColumn(),
+        hr.restart.baza.Radnici.getDataModule().getColumn("IME").cloneColumn(),
+        hr.restart.baza.Radnici.getDataModule().getColumn("PREZIME").cloneColumn(),
+        hr.restart.baza.Radnici.getDataModule().getColumn("CORG").cloneColumn(),
+        hr.restart.baza.dM.createStringColumn("JMBG",13),
+        hr.restart.baza.dM.createStringColumn("SPOL",1),
+        hr.restart.baza.dM.createIntColumn("STAROST"),
+        hr.restart.baza.dM.createIntColumn("BR")
+    });
+    ds.open();
+    qds.open();
+    for (qds.first(); qds.inBounds(); qds.next()) {
+      ds.insertRow(false);
+      
+      ds.setString("CRADNIK", qds.getString("CRADNIK"));
+      ds.setString("IME", qds.getString("IME"));
+      ds.setString("PREZIME", qds.getString("PREZIME"));
+      ds.setString("CORG", qds.getString("CORG"));
+      ds.setString("JMBG", qds.getString("JMBG"));
+      ds.setString("SPOL", qds.getString("SPOL"));
+      
+      String jmbg = ds.getString("JMBG");
+      
+      int y = new Integer(jmbg.substring(4,7)).intValue()+1000;
+      int d = new Integer(jmbg.substring(0,2)).intValue();
+      int m = new Integer(jmbg.substring(2,4)).intValue();
+      
+      Calendar c = Calendar.getInstance();
+      c.setTime(new java.util.Date(anadan.getTime()));
+      c.set(c.YEAR,c.get(c.YEAR)-y);
+      c.set(c.MONTH,c.get(c.MONTH)-m);
+      c.set(c.DATE,c.get(c.DATE)-d);
+      ds.setInt("STAROST", c.get(c.YEAR));
+      ds.setInt("BR",1);
+      ds.post();
+    }
+ds;
+
+  ]]></sql>
+
+  <sql file="rek_starost_i_spol.sql"><![CDATA[
+<#>
+<#title>Rekapitulacija radnika po starosti i spolu
+<#anadan>Starost na dan;T;;;;;0
+<#orders>STAROST
+    QueryDataSet qds = Util.getNewQueryDataSet("SELECT Radnici.cradnik, Radnici.ime, " +
+        "Radnici.prezime, Radnici.corg, Radnicipl.jmbg, " +
+        "plznacraddata.vri as SPOL " +
+        "from Radnici, Radnicipl, plznacraddata WHERE radnici.cradnik = radnicipl.cradnik " +
+        "AND radnicipl.aktiv='D' " +
+        "AND radnicipl.cradnik=plznacraddata.cradnik AND plznacraddata.cznac=100");
+
+    StorageDataSet ds = new StorageDataSet(); 
+    ds.setColumns(new com.borland.dx.dataset.Column[] {
+        hr.restart.baza.Radnici.getDataModule().getColumn("CRADNIK").cloneColumn(),
+        hr.restart.baza.Radnici.getDataModule().getColumn("IME").cloneColumn(),
+        hr.restart.baza.Radnici.getDataModule().getColumn("PREZIME").cloneColumn(),
+        hr.restart.baza.Radnici.getDataModule().getColumn("CORG").cloneColumn(),
+        hr.restart.baza.dM.createStringColumn("JMBG",13),
+        hr.restart.baza.dM.createStringColumn("SPOL",1),
+        hr.restart.baza.dM.createIntColumn("STAROST"),
+        hr.restart.baza.dM.createIntColumn("BR")
+    });
+    ds.open();
+    qds.open();
+    for (qds.first(); qds.inBounds(); qds.next()) {
+      ds.insertRow(false);
+      
+      ds.setString("CRADNIK", qds.getString("CRADNIK"));
+      ds.setString("IME", qds.getString("IME"));
+      ds.setString("PREZIME", qds.getString("PREZIME"));
+      ds.setString("CORG", qds.getString("CORG"));
+      ds.setString("JMBG", qds.getString("JMBG"));
+      ds.setString("SPOL", qds.getString("SPOL"));
+      
+      String jmbg = ds.getString("JMBG");
+      
+      int y = new Integer(jmbg.substring(4,7)).intValue()+1000;
+      int d = new Integer(jmbg.substring(0,2)).intValue();
+      int m = new Integer(jmbg.substring(2,4)).intValue();
+      
+      Calendar c = Calendar.getInstance();
+//      c.setTimeInMillis(anadan.getTime());
+c.setTime(new java.util.Date(anadan.getTime()));
+      c.set(c.YEAR,c.get(c.YEAR)-y);
+      c.set(c.MONTH,c.get(c.MONTH)-m);
+      c.set(c.DATE,c.get(c.DATE)-d);
+      ds.setInt("STAROST", c.get(c.YEAR));
+      ds.setInt("BR",1);
+      ds.post();
+    }
+    
+    
+    StorageDataSet rekds = new StorageDataSet();
+    rekds.addColumn(dM.createStringColumn("OPIS",30));
+    rekds.addColumn(dM.createIntColumn("STAROST"));
+    rekds.addColumn(dM.createIntColumn("BROJ"));
+    rekds.open();
+    
+    int mus = 0, zen = 0;
+    
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      String opis = "UKUPNO GODINA STAROSTI";
+      int starost = ds.getInt("STAROST");
+      if (lookupData.getlookupData().raLocate(rekds,"STAROST",starost+"")) {
+        rekds.setInt("BROJ", rekds.getInt("BROJ")+1);
+        rekds.post();
+      } else {
+        rekds.insertRow(false);
+        rekds.setString("OPIS",opis);
+        rekds.setInt("STAROST",starost);
+        rekds.setInt("BROJ",1);
+        rekds.post();
+      }
+      if (ds.getString("SPOL").equals("M")) mus++;
+      else zen++;
+    }
+    rekds.insertRow(false);
+    rekds.setString("OPIS","UKUPNO MUSKARACA");
+    rekds.setInt("BROJ",mus);
+    rekds.post();
+    rekds.insertRow(false);
+    rekds.setString("OPIS","UKUPNO ZENA");
+    rekds.setInt("BROJ",zen);
+    rekds.post();
+rekds;
+
+  ]]></sql>
+
+  <sql file="rek_sprema.sql"><![CDATA[
+<#>
+<#dummy>OK za nastavak...;S;;;;;0
+<#title>Rekapitulacija radnika po stru�noj spremi
+<#orders>SPREMA
+<#sums>BROJ
+    QueryDataSet ds = Util.getNewQueryDataSet("SELECT cradnik, css FROM radnicipl WHERE aktiv='D'");
+    StorageDataSet rekds = new StorageDataSet();
+    rekds.addColumn(dM.createStringColumn("OPIS",30));
+    rekds.addColumn(dM.createStringColumn("SPREMA",5));
+    rekds.addColumn(dM.createIntColumn("BROJ"));
+    rekds.open();
+       
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      String opis = "UKUPNO STRU�NA SPREMA";
+      String sprema = ds.getString("CSS");
+      if (lookupData.getlookupData().raLocate(rekds,"SPREMA",sprema+"")) {
+        rekds.setInt("BROJ", rekds.getInt("BROJ")+1);
+        rekds.post();
+      } else {
+        rekds.insertRow(false);
+        rekds.setString("OPIS",opis);
+        rekds.setString("SPREMA",sprema);
+        rekds.setInt("BROJ",1);
+        rekds.post();
+      }
+    }
+rekds
+
+  ]]></sql>
+
+  <sql file="popis_radnika_staz.sql"><![CDATA[
+<#>
+<#title>POPIS RADNIKASA STA�EM I DATUMOM POSTIZANJA
+<#orders>PREZIME, IME
+SELECT radnici.cradnik, radnici.prezime, radnici.ime, radnicipl.godstaz, radnicipl.datstaz from radnici, radnicipl
+WHERE radnici.cradnik = radnicipl.cradnik
+and radnicipl.aktiv='D'
+
+  ]]></sql>
+
+  <sql file="pregled_go.sql"><![CDATA[
+<#>
+<#title>Pregled kori�tenja GO za $A. godinu
+<#A>Godina;I;;;;;5
+<#orders>PREZIME, IME
+    QueryDataSet radnici = Util.getNewQueryDataSet("SELECT radnici.cradnik, radnici.ime, radnici.prezime, radnicipl.jmbg, radnici.corg FROM radnici, radnicipl where radnicipl.cradnik = radnici.cradnik and radnicipl.aktiv='D' ORDER BY PREZIME COLLATE PXW_SLOV, IME");
+    radnici.open();
+    StorageDataSet repset = new StorageDataSet();
+    repset.addColumn(Radnici.getDataModule().getColumn("CRADNIK").cloneColumn());
+    repset.addColumn(Radnici.getDataModule().getColumn("PREZIME").cloneColumn());
+    repset.addColumn(Radnici.getDataModule().getColumn("IME").cloneColumn());
+    repset.addColumn(Radnicipl.getDataModule().getColumn("JMBG").cloneColumn());
+    repset.addColumn(Radnici.getDataModule().getColumn("CORG").cloneColumn());
+    repset.addColumn(dM.createIntColumn("GONG", "GO ukupno"));
+    repset.addColumn(dM.createIntColumn("GONGIS", "GO iskori�teno"));
+    repset.addColumn(dM.createIntColumn("GONGPRE", "GO preostalo"));
+    repset.open();
+    for (radnici.first();radnici.inBounds();radnici.next()) {
+      String cr = radnici.getString("CRADNIK");
+      repset.insertRow(false);
+      repset.setString("CRADNIK", radnici.getString("CRADNIK"));
+      repset.setString("PREZIME", radnici.getString("PREZIME"));
+      repset.setString("IME", radnici.getString("IME"));
+      repset.setString("JMBG", radnici.getString("JMBG"));
+      repset.setString("CORG", radnici.getString("CORG"));
+      repset.setInt("GONG", 0);
+      repset.setInt("GONGIS", 0);
+      repset.setInt("GONGPRE", 0);
+      QueryDataSet ds = Util.getNewQueryDataSet("SELECT VRI FROM PlZnacRaddata WHERE cznac in (804, 805) and cradnik = '"+cr+"'");
+      ds.open();
+      if (lookupData.getlookupData().raLocate(ds, "CZNAC", "804")) {
+        try {
+          repset.setInt("GONG", new Integer(ds.getString("VRI")).intValue());
+        } catch (Exception e) {
+          System.out.println("Nevalja 804 za "+cr+" -- "+e);
+        }
+      }
+      if (lookupData.getlookupData().raLocate(ds, "CZNAC", "805")) {
+        try {
+          repset.setInt("GONGIS", new Integer(ds.getString("VRI")).intValue());
+        } catch (Exception e) {
+          System.out.println("Nevalja 805 za "+cr+" -- "+e);
+        }
+      }
+      repset.setInt("GONGPRE", repset.getInt("GONG")-repset.getInt("GONGIS"));
+      repset.post();
+    }
+repset
+
+  ]]></sql>
+
+</reportext>

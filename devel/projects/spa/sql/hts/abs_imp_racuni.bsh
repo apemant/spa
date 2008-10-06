@@ -1,0 +1,159 @@
+import com.borland.dx.sql.dataset.QueryDataSet;
+//racuni- zaglavlja
+
+void initRacuni() {
+   arts = Artikli.getDataModule().copyDataSet(); 
+   arts.open();                                  
+   arts.refresh();
+   pdvkoef = new BigDecimal(1.22);
+	 parsNOPDV = Partneri.getDataModule().getTempSet("DI='I'");
+   parsNOPDV.open();
+	 now = new java.sql.Timestamp(System.currentTimeMillis());
+	 seqopis = "01"+"RAC"+Util.getUtil().getYear(now);
+	 intseq = Valid.getValid().findSeqInteger(seqopis, false, false).intValue();
+	 inv_num = "8"+Valid.getValid().maskZeroInteger(new Integer(intseq-1),9);
+
+   godset = Util.getNewQueryDataSet("select max(god) as god from Knjigod WHERE app='robno' and corg='01'");
+   stanje = hr.restart.baza.Stanje.getDataModule().getTempSet(Condition.equal("GOD",godset.getString("GOD")));
+   newd = doki.getDataModule().getTempSet("0=1");
+   newd.open();
+   newstd = stdoki.getDataModule().getTempSet("0=1");
+   newstd.open();
+}
+
+void update_doki(QueryDataSet n_d, QueryDataSet a_rac) {
+    n_d.setBigDecimal("uirac", a_rac.getBigDecimal("PAYTHISAMOUNT")
+                .add(n_d.getBigDecimal("uirac")));
+    n_d.setBigDecimal("provisp", a_rac.getBigDecimal("VAT")
+                .add(n_d.getBigDecimal("provisp")));//cijena bez poreza
+}
+
+void add_doki(QueryDataSet n_d, QueryDataSet a_rac) {
+    n_d.insertRow(false);
+    _rbr=0;
+    raVariant.copyTo(a_rac, n_d, "cpar,opis,datdok,ddosp,uirac,provisp");
+    b = Integer.valueOf(n_d.getString("OPIS").trim().substring(1));
+    n_d.setString("CSKL","01");
+    n_d.setString("VRDOK","RAC");
+    n_d.setString("PNBZ2",n_d.getString("OPIS"));
+    n_d.setString("GOD",Util.getUtil().getYear(n_d.getTimestamp("datdok")));
+    n_d.setTimestamp("DATDOSP",Util.getUtil().addDays(n_d.getTimestamp("DATDOK"),n_d.getShort("DDOSP")));
+    n_d.setInt("BRDOK",b);
+}
+
+void add_stdoki_keys() {
+    newstd.insertRow(false);
+    _rbr++;
+//System.out.println("RN: "+b+" rbr = "+_rbr);
+    raVariant.copyTo(ABSstav, newstd, "veza,rbsrn,cart1,cradnal,kol,vc");
+//System.out.println("   main data copied ...");
+    newstd.setString("CSKL",newd.getString("CSKL"));
+    newstd.setString("VRDOK",newd.getString("VRDOK"));
+    newstd.setString("GOD",newd.getString("GOD"));
+    newstd.setInt("BRDOK",b);
+    newstd.setShort("RBR",(short)_rbr);
+//System.out.println("   keys set ...");
+}
+
+void find_cart_stanje() {
+  if (!lookupData.getlookupData().raLocate(arts,"CART1",newstd.getString("CART1"))) {
+    lookupData.getlookupData().raLocate(arts,"CART","1");
+  } else {
+    if (newstd.getBigDecimal("VC").signum()!=0) {
+      if (newstd.getString("CRADNAL").trim().toUpperCase().equals("SALES")) {
+      if (lookupData.getlookupData().raLocate(stanje,new String[] {"CART","CSKL"},
+            new String[] {arts.getInt("CART")+"","1000"})) {
+        //RUC
+        newstd.setBigDecimal("NC",stanje.getBigDecimal("NC"));
+        newstd.setBigDecimal("IMAR",
+          newstd.getBigDecimal("KOL").multiply(newstd.getBigDecimal("VC")).
+          add(newstd.getBigDecimal("KOL").multiply(stanje.getBigDecimal("NC"))).negate());
+      } else {
+        System.out.println("SRANJE!!! Ne mogu pronaci NC za "+arts.getInt("CART"));
+      }
+      } else {
+      newstd.setBigDecimal("IMAR",
+              newstd.getBigDecimal("KOL").multiply(newstd.getBigDecimal("VC")));
+      }
+    }
+  }
+}
+
+void add_stdoki_values() {
+  newstd.setInt("CART",arts.getInt("CART"));
+  newstd.setString("BC",arts.getString("BC"));
+  newstd.setString("NAZART",arts.getString("NAZART"));
+  newstd.setString("JM",arts.getString("JM"));
+//System.out.println("   artikl data copied ...");
+  newstd.setBigDecimal("FC",newstd.getBigDecimal("VC"));
+  newstd.setBigDecimal("IPRODBP",
+  newstd.getBigDecimal("KOL").multiply(newstd.getBigDecimal("VC")));
+}
+
+boolean noPDV(String _cpar) {
+  return lookupData.getlookupData().raLocate(parsNOPDV,"CPAR",_cpar);//tu treba radije prepoznati stavku poreza (umsatz=nesto) nego se pouzdati u ljuski faktor
+}
+ 
+void add_stdoki_pdv() {
+  if (noPDV(newd.getInt("CPAR")+"") ) {
+    newstd.setBigDecimal("IPRODSP",newstd.getBigDecimal("IPRODBP"));
+    newstd.setBigDecimal("POR1",new BigDecimal(0));
+  } else {
+    newstd.setBigDecimal("IPRODSP",
+    newstd.getBigDecimal("IPRODBP").multiply(pdvkoef));
+    newstd.setBigDecimal("POR1",
+        newstd.getBigDecimal("IPRODSP").add(newstd.getBigDecimal("IPRODBP").negate()));
+  } //parsNOPDV
+}
+
+void add_stdoki_turnovergroup() {
+//Umsatzgroupe
+  ABStog = orac.getData("getturnovergroupcode.sql",ABSstav.getDouble("TOG_ID")+"");
+  if (ABStog.getRowCount()>0) {
+    newstd.setString("BRPRI",ABStog.getString("tog_code"));
+  }
+}
+
+//MAIN
+init_racuni();
+ABSrac = orac.getData("invoice_header.sql",inv_num);
+int b=0;
+int _rbr=0;
+for (ABSrac.first(); ABSrac.inBounds(); ABSrac.next()) {
+  if (ABSrac.getDate("INVOICEDATE").before(java.sql.Date.valueOf("2007-10-01"))) {
+  //hack zbog toga sto ja nisam nimalo pametan, a svi ostali su najpametniji na svijetu
+  	continue;
+  }
+  try {
+    _b = Integer.valueOf(raVariant.getDataSetValue(ABSrac,"INVOICEINUMBERB").toString().substring(1));
+  } catch (StringIndexOutOfBoundsException _bex) {
+    System.out.println("_bex for "+newd.getString("OPIS").trim());
+    _b = -1;
+  }
+  if (_b == b) {
+    update_doki(newd, ABSrac);
+  } else {
+    add_doki(newd, ABSrac);
+  }
+  newd.post();
+
+//racuni - stavke - za svako zaglavlje
+//_ts = System.currentTimeMillis();
+    ABSstav = orac.getData("invoice_line.sql",new Double(ABSrac.getDouble("HID")).intValue()+"");
+//System.out.println("Query executed in "+(System.currentTimeMillis()-_ts));
+    for (ABSstav.first(); ABSstav.inBounds(); ABSstav.next()) {
+
+      add_stdoki_keys();
+
+      find_cart_stanje();
+
+      add_stdoki_values();
+
+      add_stdoki_pdv();
+
+      add_stdoki_turnovergroup();
+//System.out.println("   values calculated ...");
+      newstd.post();
+    }
+}
+

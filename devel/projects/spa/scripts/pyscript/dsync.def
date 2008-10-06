@@ -1,0 +1,3 @@
+$TableSync
+IMETAB;alpha;20;pkey;;Tablica
+SERIALNUM;integer;6;;;Serijski broj izmjene

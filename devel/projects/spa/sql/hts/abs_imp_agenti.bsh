@@ -1,0 +1,17 @@
+setAccessibility(true);
+orac = new hr.restart.db.OraCustomConnection("jdbc:oracle:thin:@//192.168.1.1:1521/ABS1","abssolute","abssolute");
+emp = orac.getData("select cast (employeenumber as char(10)) as EN, name from employee");
+ag = hr.restart.baza.Agenti.getDataModule().getTempSet("0=1");
+alag = hr.restart.baza.Agenti.getDataModule().getTempSet();
+alag.open();
+ag.open();
+emp.open();
+for (emp.first();emp.inBounds();emp.next()) {
+cag = emp.getString("EN");
+if (lookupData.getlookupData().raLocate(alag,"CAGENT",cag)) continue;
+ag.insertRow(false);
+ag.setInt("CAGENT",Integer.parseInt(emp.getString("EN")));
+ag.setString("NAZAGENT", emp.getString("NAME"));
+ag.post();
+}
+ag.saveChanges();

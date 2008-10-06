@@ -1,0 +1,6 @@
+#pause
+$Cardav
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CDAV;alpha;10;pkey;;Šifra vrste davanja
+NAZIV;alpha;80;;;Naziv 

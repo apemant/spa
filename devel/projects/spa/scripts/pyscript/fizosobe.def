@@ -1,0 +1,6 @@
+#pause
+$Fizosobe
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CSIFIZO;alpha;10;pkey;;Šifra fizièke osobe
+Naziv;alpha;80;;;Naziv 

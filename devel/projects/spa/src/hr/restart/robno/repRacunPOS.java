@@ -1,0 +1,399 @@
+/****license*****************************************************************
+**   file: repRacunPOS.java
+**   Copyright 2006 Rest Art
+**
+**   Licensed under the Apache License, Version 2.0 (the "License");
+**   you may not use this file except in compliance with the License.
+**   You may obtain a copy of the License at
+**
+**       http://www.apache.org/licenses/LICENSE-2.0
+**
+**   Unless required by applicable law or agreed to in writing, software
+**   distributed under the License is distributed on an "AS IS" BASIS,
+**   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+**   See the License for the specific language governing permissions and
+**   limitations under the License.
+**
+****************************************************************************/
+package hr.restart.robno;
+
+import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
+import hr.restart.util.reports.mxReport;
+
+import java.math.BigDecimal;
+import java.util.StringTokenizer;
+
+import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataRow;
+import com.borland.dx.dataset.DataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
+
+/**
+ * <p>Title: Robno poslovanje</p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2000</p>
+ * <p>Company: REST-ART</p>
+ * @author REST-ART development team
+ * @version 1.0
+ */
+
+public class repRacunPOS extends mxReport {
+  hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
+  hr.restart.robno.Util util = hr.restart.robno.Util.getUtil();
+  hr.restart.util.Util ut = hr.restart.util.Util.getUtil();
+  hr.restart.util.lookupData lD =  hr.restart.util.lookupData.getlookupData();
+  String[] detail = new String[1];
+  hr.restart.pos.frmMasterBlagajna fmb = hr.restart.pos.frmMasterBlagajna.getInstance();
+  repUtil ru = repUtil.getrepUtil();
+  hr.restart.robno.sgQuerys sgq = hr.restart.robno.sgQuerys.getSgQuerys();
+  String god = "";
+
+  String porezString;
+  int width = 40;
+  int dbWidth = width/2;
+  String doubleLineSep;
+  boolean ispSif;
+
+  public repRacunPOS() {
+
+  }
+
+  public void makeReport(){
+    String wdt = frmParam.getParam("pos", "sirPOSpr", "41", 
+            "Sirina pos ispisa. Preporuka 39 - 46", true);
+    ispSif = frmParam.getParam("pos", "ispSifra", "N",
+        "Ispis šifre na raèunima POS-a (D,N)", true).equalsIgnoreCase("D");
+    width = Integer.parseInt(wdt);
+    System.out.println("WIDTH - "+ width);
+    dbWidth = width/2;
+    doubleLineSep = getDoubleLineLength();
+    makeIspis();
+    super.makeReport();
+  }
+
+  private void makeIspis(){
+     dm.getLogotipovi().open();
+     QueryDataSet master = fmb.getMasterSet();
+     god =master.getString("GOD");
+//     hr.restart.util.sysoutTEST st = new hr.restart.util.sysoutTEST(false);
+//     st.prn(master);
+     this.setDataSet(hr.restart.baza.Stpos.getDataModule().getFilteredDataSet("cskl='"+master.getString("CSKL")+"' and vrdok = 'GRC' and god =  '"+master.getString("GOD")+"' and brdok =  "+master.getInt("BRDOK")));
+     this.getDataSet().open();
+     
+     String uk = frmParam.getParam("pos", "iznosStavka", "UKUPNO",
+         "Kolona iznosa koja se prikazuje na pos raèunu (UKUPNO,IZNOS,NETO)");
+     boolean pop = "D".equalsIgnoreCase(frmParam.getParam("pos", 
+         "popustPrikaz", "N", "Prikaz popusta na pos raèunima (D,N)"));
+
+     QueryDataSet sks = hr.restart.baza.Sklad.getDataModule().getTempSet("cskl = '"+master.getString("CSKL")+"'");
+     QueryDataSet prm = hr.restart.baza.Prod_mj.getDataModule().getTempSet("cprodmj = '"+master.getString("CPRODMJ")+"'");
+     sks.open();
+     prm.open();
+
+     String prodavaonica = sks.getString("NAZSKL");
+     String prodMjesto = prm.getString("NAZPRODMJ");
+     String user = master.getString("CUSER");
+
+     ru.setDataSet(master);
+
+     this.setPgHeader(
+         "\u0007"+
+         "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
+         "<#"+dm.getLogotipovi().getString("ADRESA")+"|"+width+"|center#><$newline$>"+
+         "<#"+String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO")+"|"+width+"|center#><$newline$>"+
+         "<#Matièni broj "+dm.getLogotipovi().getString("MATBROJ")+"|"+width+"|center#><$newline$>"+
+         "<#"+prodavaonica+"|"+width+"|center#><$newline$>"+
+         getPhones()+
+//         "<#"+prodMjesto+"|"+width+"|center#><$newline$>"+
+         jeliR1(master.getInt("BRDOK"), master.getInt("CKUPAC"))+
+         doubleLineSep+"<$newline$>"+ (!ispSif ? "RBR  NAZIV<$newline$>" :
+         Aut.getAut().getCARTdependable("RBR ŠIFRA   NAZIV<$newline$>",
+                                        "RBR OZNAKA        NAZIV<$newline$>",
+                                        "RBR BARCODE       NAZIV<$newline$>")
+                                        )+   /** @todo prilagodit cart, cart1, bc uvjetima */
+         (!pop ? " KOLIÈINA   JM       CIJENA       "+getRazlikaWidthBlank()+"IZNOS<$newline$>"
+             : " KOLIÈINA  JM     CIJENA   % POP  "+Aus.spc(width-39)+"IZNOS<$newline$>")+
+         doubleLineSep+"");
+     detail[0] = (!ispSif ? "<#RBR|3|right#>  <#NAZART|"+(width-6)+"|left#><$newline$>" :
+         Aut.getAut().getCARTdependable("<#RBR|3|right#> <#CART|7|left#> <#NAZART|"+(width-12)+"|left#><$newline$>",
+                                        "<#RBR|3|right#> <#CART1|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>",
+                                        "<#RBR|3|right#> <#BC|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>"))+     /** @todo prilagodit cart, cart1, bc uvjetima */
+          (!pop ? "<#KOL|9|right#>   <#JM|3|left#> <#MC|11|right#> <#"+uk+"|"+(width-28)+"|right#>"
+              : "<#KOL|9|right#>  <#JM|3|left#> <#MC|9|right#>   <#PPOPUST1|5|right#> <#"+uk+"|"+(width-33)+"|right#>");
+     this.setDetail(detail);
+     this.setRepFooter(
+         doubleLineSep+"<$newline$>"+ getUkupno(master) +
+//         "<#UKUPNO |26|left#> <#"+master.getBigDecimal("UKUPNO")+"|15|right#><$newline$>"+
+//         "<#POPUST |26|left#> <#"+master.getBigDecimal("UIPOPUST1").add(master.getBigDecimal("UIPOPUST2"))+"|15|right#><$newline$>"+
+//         "<#PLATITI |26|left#> <#"+master.getBigDecimal("NETO")+"|15|right#><$newline$>"+   //   %sum(IZNOS|15|right)%
+         doubleLineSep+"<$newline$>"+
+         /*"NAÈIN PLAÆANJA - "+*/getNacinPlacanja(master.getInt("BRDOK"),master.getString("CSKL"))+//"<$newline$>"+
+         doubleLineSep+"<$newline$>"+
+         porezString+
+         getBlagajnaOperater(prodMjesto,user)+
+         "<$newline$>"+ getPotpis_i_MP(master.getInt("CKUPAC")) +/*"<$newline$>"+ */
+         getFooting()+
+//         "<#HVALA NA POVJERENJU !|"+width+"|center#><$newline$>"+
+         "<$newline$>"+
+//         "<$newline$>"+
+         "Nadnevak: "+raDateUtil.getraDateUtil().dataFormatter(master.getTimestamp("DATDOK"))+"  "+getRazlikaWidthBlank()+"Vrijeme: " + master.getTimestamp("DATDOK").toString().substring(11,19) +   "<$newline$>"+
+         "<$newline$><$newline$><$newline$>"+
+         "<$newline$><$newline$><$newline$>"+
+         "<$newline$><$newline$><$newline$>"+
+         //"\u001B\u0064\u0000"//+"\u0007" //"\07"
+         getLastEscapeString()
+    );
+  }
+  private String getLastEscapeString() {
+    try {
+      int crm = dm.getMxPrinterRM().getInt("CRM");//jebiga
+      String str = frmParam.getParam("sisfun", "endPOSRM"+crm, "\\u001B\\u0064\\u0000", "Sekvenca koja dolazi na kraju ispisa POS racuna za rm "+crm);
+//String str = "\\u0041\\u004e\\u0044\\u0052\\u0045\\u004a";
+      StringTokenizer tok = new StringTokenizer(str,"\\u");
+      char[] ret = new char[tok.countTokens()];
+      int i=0;
+      while (tok.hasMoreTokens()) {
+        ret[i] = (char)Integer.parseInt(tok.nextToken(), 16);
+        i++;
+      }
+      return new String(ret);
+    } catch (NumberFormatException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return "";
+    }
+  }
+  private String getPotpis_i_MP(int ckupac){
+    if (ckupac != 0 && hr.restart.sisfun.frmParam.getParam("pos","potpisMP","D","Mjesto za peèat i potpis na POS raèunu").equalsIgnoreCase("D"))
+      return "<$newline$><#MP|"+width+"|center#><$newline$>"+
+             "<#_______________________________________|"+width+"|center#><$newline$>"+"<$newline$>"+"<$newline$>";
+
+    return "";
+  }
+  
+  private String getPhones(){
+    String phoneString = "<#Tel. ";
+    if (!dm.getLogotipovi().getString("TEL1").equals(""))
+    phoneString += dm.getLogotipovi().getString("TEL1");
+    if (!dm.getLogotipovi().getString("TEL2").equals(""))
+      if (dm.getLogotipovi().getString("TEL1").equals(""))
+        phoneString += dm.getLogotipovi().getString("TEL2");
+      else
+        phoneString += ", "+dm.getLogotipovi().getString("TEL2");
+   return phoneString+"|"+width+"|center#><$newline$>"; 
+  }
+
+  private void calculatePorez(QueryDataSet dset){
+    porezString = "";
+    if (dset == null || dset.rowCount() < 1 ) return;
+    dset.first();
+
+    porezString = "<#P R E G L E D  P O R E Z A|"+width+"|center#><$newline$>"+
+                  "<#NAZIV|6|left#> <#STOPA|8|right#> <#OSNOVICA|12|right#> <#POREZ|"+(width-29)+"|right#><$newline$>"+
+                  doubleLineSep+"<$newline$>";
+    do {
+      porezString += "<#"+dset.getString("NAZPOR")+"|6|left#> <#"+sgq.format(dset.getBigDecimal("UKUPOR"),2)+"%|8|right#> <#"+sgq.format(dset.getBigDecimal("NETO").subtract(dset.getBigDecimal("POR1").add(dset.getBigDecimal("POR2").add(dset.getBigDecimal("POR3")))),2)+"|12|right#> <#"+sgq.format(dset.getBigDecimal("POREZ"),2)+"|"+(width-29)+"|right#>"+ "<$newline$>";
+      
+      System.out.println(porezString); //XDEBUG delete when no more needed
+    } while (dset.next());
+
+    porezString = porezString + doubleLineSep+"<$newline$>";
+  }
+
+  private String getNacinPlacanja(int cnp, String cskl){
+//    String nacini = "";
+    QueryDataSet npos = ut.getNewQueryDataSet("SELECT max(nacpl.naznacpl) as naznacpl, sum(rate.irata) as irata FROM rate,nacpl "+
+                                              "WHERE rate.cnacpl = nacpl.cnacpl "+
+                                              "and rate.brdok = " + cnp + " and rate.vrdok = 'GRC' and rate.god='"+ god + //Aut.getAut().getKnjigodRobno() +
+                                              "' and rate.cskl= '" + cskl + "' group by naznacpl");
+    
+//    System.out.println("SELECT max(nacpl.naznacpl) as naznacpl, sum(rate.irata) as irata FROM rate,nacpl,banke "+
+//                                              "WHERE rate.cnacpl = nacpl.cnacpl "+
+//                                              "and brdok = " + cnp + " and vrdok = 'GRC' and god='"+ Aut.getAut().getKnjigodRobno() +
+//                                              "' and cskl= '" + cskl + "' group by naznacpl");
+//    
+//    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
+//    syst.prn(npos);
+    npos.first();
+    if (npos.rowCount() == 0) return "";
+    
+    //TODO obrati paznju na sgQuerys.getSgQuerys().format(BD,int) ;)
+
+    String np = "<#P R E G L E D  P L A Æ A N J A|"+width+"|center#><$newline$>"+
+//                  "<#NAÈINA PLAÆANJA|21|left#>               IZNOS<$newline$>"+
+                  doubleLineSep+"<$newline$>";
+    do {
+      np +=  "<#"+npos.getString("NAZNACPL").toUpperCase()+"|21|left#> <#"+sgq.format(npos.getBigDecimal("IRATA"),2)+"|"+(width-22)+"|right#><$newline$>";
+    } while (npos.next());
+
+//    np += doubleLineSep+"<$newline$>";
+
+    return np; //npos.getString("NAZNACPL").toUpperCase();
+  }
+
+  private DataSet getRekapitulacija(DataSet ds) {
+    dm.getArtikli().open();
+    dm.getPorezi().open();
+    QueryDataSet qds = new QueryDataSet();
+    Column bjesansam1 = (Column) dm.getPorezi().getColumn("NAZPOR").clone();
+    bjesansam1.setColumnName("CPOR");
+    Column bjesansam2 = (Column) dm.getPorezi().getColumn("POR1").clone();
+    bjesansam2.setColumnName("POREZ");
+
+    qds.setColumns(new Column [] {
+        (Column) dm.getStdoki().getColumn("CSKL").clone(),
+        (Column) dm.getStdoki().getColumn("VRDOK").clone(),
+        (Column) dm.getStdoki().getColumn("GOD").clone(),
+        (Column) dm.getStdoki().getColumn("BRDOK").clone(),
+        bjesansam1 ,
+        (Column) dm.getPorezi().getColumn("NAZPOR").clone(),
+        (Column) dm.getPorezi().getColumn("UKUPOR").clone(),
+        (Column) dm.getStpos().getColumn("NETO").clone(),
+        bjesansam2 ,
+        (Column) dm.getStdoki().getColumn("POR1").clone(),
+        (Column) dm.getStdoki().getColumn("POR2").clone(),
+        (Column) dm.getStdoki().getColumn("POR3").clone(),
+        new com.borland.dx.dataset.Column("KEY","KEY",com.borland.dx.dataset.Variant.STRING)});
+
+    qds.open();
+    ds.open();
+    ds.first();
+    do {
+      lD.raLocate(dm.getArtikli(), new String[]{"CART"}, new String[]{String.valueOf(ds.getInt("CART"))});
+      lD.raLocate(dm.getPorezi(), new String[]{"CPOR"}, new String[]{dm.getArtikli().getString("CPOR")});
+      
+//      System.out.println("netto - " + ds.getBigDecimal("NETO")); //XDEBUG delete when no more needed
+//      
+//      sysoutTEST st = new sysoutTEST(false); //XDEBUG delete when no more needed
+//      st.prn(ds);
+
+      for (int i = 1 ; i<4;i++) {
+        if(!dm.getPorezi().getString("NAZPOR"+String.valueOf(i)).equals("")){
+          String key = ds.getString("CSKL").concat("-").concat(
+              ds.getString("GOD")).concat("-").concat(
+              ds.getString("VRDOK")).concat("-").concat(
+              String.valueOf(ds.getInt("BRDOK"))).concat("-").concat(
+              dm.getPorezi().getString("NAZPOR"+String.valueOf(i)));
+
+          if(!lD.raLocate(qds, new String[]{"KEY"}, new String[]{key})){
+            qds.insertRow(true);
+            qds.setString("CSKL", ds.getString("CSKL"));
+            qds.setString("VRDOK", ds.getString("VRDOK"));
+            qds.setString("GOD", ds.getString("GOD"));
+            qds.setInt("BRDOK", ds.getInt("BRDOK"));
+            qds.setString("CPOR", dm.getPorezi().getString("NAZPOR"+String.valueOf(i)));
+            qds.setString("NAZPOR", dm.getPorezi().getString("NAZPOR"+String.valueOf(i)));
+
+            qds.setBigDecimal("UKUPOR", dm.getPorezi().getBigDecimal("POR"+String.valueOf(i)));
+            qds.setBigDecimal("NETO", ds.getBigDecimal("NETO"));
+            qds.setBigDecimal("POREZ", ds.getBigDecimal("POR"+String.valueOf(i)));
+            qds.setBigDecimal("POR1", ds.getBigDecimal("POR1"));
+            qds.setBigDecimal("POR2", ds.getBigDecimal("POR2"));
+            qds.setBigDecimal("POR3", ds.getBigDecimal("POR3"));
+
+            qds.setString("KEY", key);
+          } else {
+            qds.setBigDecimal("NETO", qds.getBigDecimal("NETO").
+                              add(ds.getBigDecimal("NETO")));
+            qds.setBigDecimal("POREZ", qds.getBigDecimal("POREZ").add(ds.getBigDecimal("POR"+String.valueOf(i))));
+            qds.setBigDecimal("POR1", qds.getBigDecimal("POR1").add(ds.getBigDecimal("POR1")));
+            qds.setBigDecimal("POR2", qds.getBigDecimal("POR2").add(ds.getBigDecimal("POR2")));
+            qds.setBigDecimal("POR3", qds.getBigDecimal("POR3").add(ds.getBigDecimal("POR3")));
+          }
+        }
+      }
+    } while (ds.next());
+//    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
+//    syst.prn(qds);
+    return qds;
+  }
+
+  private String jeliR1(int brdok, int ckupac){
+    System.out.println("\n\nKUPAC - "+ckupac+"\n\n");
+    calculatePorez((QueryDataSet)getRekapitulacija(this.getDataSet()));
+    if(ckupac != 0){
+     /*System.out.println("Refresham...");
+     hr.restart.baza.dM.getDataModule().getKupci().refresh();*/
+      DataRow dr = lD.raLookup(hr.restart.baza.dM.getDataModule().getKupci(),"CKUPAC", ckupac+"");
+      if (dr != null){
+        String kupac = "<$newline$>";
+        kupac += "Kupac: "+
+            dr.getString("IME")+" "+dr.getString("PREZIME")+"<$newline$>"+
+            ((!dr.getString("ADR").equals(""))?"       "+dr.getString("ADR")+"<$newline$>":"")+
+            ((dr.getInt("PBR")!=0)?"       "+dr.getInt("PBR")+" ":"")+
+            ((!dr.getString("MJ").equals(""))?((dr.getInt("PBR")==0)? "       "+dr.getString("MJ"):dr.getString("MJ")):"")+
+            ((!dr.getString("JMBG").equals(""))?"<$newline$>       MB: "+dr.getString("JMBG"):"");
+
+        kupac += "<$newline$><$newline$>\u000E<#RAÈUN R-1|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
+            "\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
+        return kupac;
+      } System.out.println("Kupac je (ako ga ima) null!!!");
+    }
+//    porezString = "";
+    return "<$newline$>\u000E<#RAÈUN|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
+//        "\u001B\u0045<#"+ru.getFormatBroj()+"|20|center#>\u001B\u0046<$newline$>";
+        "\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
+  }
+
+  private String getUkupno(QueryDataSet qds) {
+    
+    BigDecimal ukupno = ut.setScale(qds.getBigDecimal("UKUPNO"),2);
+    BigDecimal ppop = ut.setScale(qds.getBigDecimal("UPPOPUST2"),2);
+    BigDecimal popust = ut.setScale((qds.getBigDecimal("UIPOPUST1").add(qds.getBigDecimal("UIPOPUST2"))),2);
+    BigDecimal neto = ut.setScale(qds.getBigDecimal("NETO"),2);
+    
+    String izn = sgq.format(neto,2);
+    if ((qds.getBigDecimal("UIPOPUST1").add(qds.getBigDecimal("UIPOPUST2"))).compareTo(Aus.zero2) == 0)
+      return "<#PLATITI|"+(width-24)+"|left#>\u000E<#"+izn+"|12|right#>\u0014<$newline$>";
+
+    return
+      "<#UKUPNO |26|left#> <#"+sgq.format(ukupno,2)+"|"+(width-26)+"|right#><$newline$>"+
+      "<#POPUST |10|left#> <#"+sgq.format(ppop,2)+" %|15|left#> <#"+sgq.format(popust,2)+"|"+(width-26)+"|right#><$newline$>"+
+      "<#PLATITI|"+(width-24)+"|left#>\u000E<#"+izn+"|12|right#>\u0014<$newline$>";
+//          "<#UKUPNO |26|left#> <#"+qds.getBigDecimal("UKUPNO")+"|15|right#><$newline$>"+
+//          "<#POPUST |26|left#> <#"+qds.getBigDecimal("UIPOPUST1").add(qds.getBigDecimal("UIPOPUST2"))+"|15|right#><$newline$>"+
+//          "<#PLATITI |26|left#> <#"+qds.getBigDecimal("NETO")+"|15|right#><$newline$>"
+//          ;
+  }
+
+  private String getBlagajnaOperater(String blag, String user){
+    String blop = hr.restart.sisfun.frmParam.getParam("pos","BlOp","0","Ispis i pozicija blagajne i operatora na malim raèunima (0,1,2)");
+    if (!blop.equalsIgnoreCase("0")){
+      DataRow usr = lD.raLookup(hr.restart.baza.dM.getDataModule().getUseri(),"CUSER", user);
+      String operater = usr.getString("NAZIV");
+      if (blop.equalsIgnoreCase("1")){
+        return "BLAGAJNA: "+blag+"<$newline$>"+
+               "OPERATER: "+operater+"<$newline$>";
+      } else {
+        return blag+", "+operater+"<$newline$>";
+      }
+    }
+    return "";
+  }
+
+  private String getFooting(){
+    String sadrzaj = "Hvala na povjerenju";
+    String footing = "";
+    if (!sadrzaj.equals("")){
+      footing = "<#"+sadrzaj+"|"+width+"|center#><$newline$><$newline$>";
+    }
+    return footing;
+  }
+  
+  private String getDoubleLineLength(){
+   String dl = "";
+   for (int i=1; i <= width; i++){
+     dl += "=";
+   }
+   return dl;
+  }
+  
+  private String getRazlikaWidthBlank(){
+    String bl = "";
+    for (int i=0; i <(width-41); i++){
+      bl += " ";
+    }
+    return bl;
+  }
+}

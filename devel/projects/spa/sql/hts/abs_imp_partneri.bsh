@@ -1,0 +1,22 @@
+ABScust = orac.getData("customers.sql", "");
+pars =  Partneri.getDataModule().copyDataSet();
+newp = Partneri.getDataModule().getTempSet("0=1");
+newp.open();
+pars.open();
+for (ABScust.first(); ABScust.inBounds(); ABScust.next()) {
+  if (!Valid.getValid().chkExistsSQL(pars, "CPAR", ABScust.getDouble("CUSTOMERNUMBER")+"")) {
+    newp.insertRow(false);
+    raVariant.copyTo(ABScust, newp, "-,-,cpar,adr,mj,mb,nazpar,tel,telfax,emadr,zr");
+    if ("".equals(newp.getString("mb"))) {
+      newp.setString("MB",("KRIVI:"+newp.getInt("CPAR")));
+    }
+    ABSag =  orac.getData("employeepercustomer.sql",newp.getInt("CPAR")+"");
+    if (ABSag.getRowCount() >0) {
+      newp.setInt("CAGENT",Integer.parseInt(ABSag.getString("CAG")));
+    } else {
+      newp.setInt("CAGENT",999);
+    }
+    newp.post();
+  }
+}
+newp.saveChanges();

@@ -1,0 +1,11 @@
+[PropertyInfo]
+clientInfo,hr.restart.client.ClConnection,false,false, , ,true,<default>
+ID,String,false,false, , ,true,<default>
+input,ObjectInputStream,false,false, , ,true,<default>
+output,ObjectOutputStream,false,false, , ,true,<default>
+socket,Socket,false,false, , ,true,<default>
+[IconNames]
+
+
+
+

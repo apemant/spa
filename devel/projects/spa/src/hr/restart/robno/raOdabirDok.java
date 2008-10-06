@@ -1,0 +1,200 @@
+/****license*****************************************************************
+**   file: raOdabirDok.java
+**   Copyright 2006 Rest Art
+**
+**   Licensed under the Apache License, Version 2.0 (the "License");
+**   you may not use this file except in compliance with the License.
+**   You may obtain a copy of the License at
+**
+**       http://www.apache.org/licenses/LICENSE-2.0
+**
+**   Unless required by applicable law or agreed to in writing, software
+**   distributed under the License is distributed on an "AS IS" BASIS,
+**   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+**   See the License for the specific language governing permissions and
+**   limitations under the License.
+**
+****************************************************************************/
+package hr.restart.robno;
+
+import hr.restart.swing.JraComboBox;
+import hr.restart.swing.JraDialog;
+import hr.restart.util.Valid;
+
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.Toolkit;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
+
+public class raOdabirDok extends JraDialog {
+
+  String odabrano = "";
+  JPanel panel1 = new JPanel();
+  JPanel panel2 = new JPanel();
+  BorderLayout borderLayout1 = new BorderLayout();
+  XYLayout xyl = new XYLayout();
+  JLabel tekst = new JLabel("Vrsta dokumenta");
+  hr.restart.util.OKpanel okp = new hr.restart.util.OKpanel(){
+    public void jBOK_actionPerformed(){
+     jBOK_action();
+    }
+    public void jPrekid_actionPerformed(){
+      jPrekid_action();
+    }
+  };
+  JraComboBox jco ;
+  public void jPrekid_action() {
+  	Valid.getValid().execSQL("");
+    setVisible(false);
+  }
+
+  public void jBOK_action(){
+    setVisible(false);
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+		afterOKPress(odabrano);
+	  }
+	});
+  }
+
+  public void afterOKPress(String odabrano){}
+
+  public raOdabirDok(Frame frame, String title, boolean modal) {
+    super(frame, title, modal);
+  }
+
+  public raOdabirDok() {
+    this(null, "", false);
+  }
+
+  public void show() {
+
+    if (jco == null) {
+      System.out.println("Prvo potegni metodu DocumentiZaPrijenos(String vrsta_dok)");
+    }
+    else {
+      try {
+        jbInit();
+        pack();
+        setLocation((Toolkit.getDefaultToolkit().getScreenSize().width -
+                 getWidth()) / 2,
+                 (Toolkit.getDefaultToolkit().getScreenSize().height -
+                 getHeight()) / 2);
+      }
+      catch(Exception ex) {
+        ex.printStackTrace();
+      }
+      super.show();
+    }
+  }
+
+  void jbInit() throws Exception {
+
+    jco.addItemListener(new java.awt.event.ItemListener(){
+      public void itemStateChanged (java.awt.event.ItemEvent i){
+        if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("PON"))){
+          odabrano="PON";
+        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("PRD"))){
+          odabrano="PRD";
+        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("NKU"))){
+          odabrano="NKU";
+        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("OTP"))){
+          odabrano="OTP";
+        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("RAC"))){
+          odabrano="RAC";
+        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("RN"))){
+          odabrano="RN";
+        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("IZD"))){
+          odabrano="IZD";
+        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("POS"))){
+            odabrano="POS";
+        }else if (i.getItem().equals("Razduženje blagajne")){
+          odabrano="POS";
+        }else if (i.getItem().equals("Raèun")){
+          odabrano="RAC";
+        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("REV"))){
+        odabrano="REV";
+        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("DOS"))){
+            odabrano="DOS";
+        }
+
+      }
+    });
+    panel2.setLayout(xyl);
+    xyl.setHeight(50);
+    xyl.setWidth(315);
+    panel2.setBorder(new javax.swing.border.EtchedBorder());
+    panel2.add(jco, new XYConstraints(150, 15, 150, -1));
+    panel2.add(tekst, new XYConstraints(15, 15, -1, -1));
+    panel1.setLayout(borderLayout1);
+    panel1.add(okp,BorderLayout.SOUTH);
+    panel1.add(panel2,BorderLayout.CENTER);
+    getContentPane().add(panel1);
+
+  }
+
+  public void DocumentiZaPrijenos(String vrsta_dok) {
+
+    String[] zaodabrati;
+     if (vrsta_dok.equals("PON")) {
+       zaodabrati = new String[] {"Narudžba"};
+       odabrano = "NKU";
+    }
+    else if (vrsta_dok.equals("OTP")) {
+       zaodabrati = new String[] {"Ra\u010Dun","Narudžba kupca","Pos"};
+       odabrano = "RAC";
+    }
+    else if (vrsta_dok.equals("IZD")) {
+        zaodabrati = new String[] {"Razduženje blagajne","Raèun"};
+        odabrano = "POS";
+     }
+    else if (vrsta_dok.equals("PRD")) {
+       zaodabrati = new String[] {"Narudžba","Ponuda"};
+       odabrano = "NKU";
+    }
+    else if (vrsta_dok.equals("RAC")) {
+    	odabrano=hr.restart.sisfun.frmParam.getParam("robno","selDokOnRAC", "OTP", "Dokument za dohvat na RACu");
+    	if (odabrano.equalsIgnoreCase("RN")) {
+      	  zaodabrati = new String[] {"Radni nalog","Otpremnica","Radni nalog po izdatnici","Ponuda","Revers","Dostavnica"};
+    	}
+    	else {
+    	  zaodabrati = new String[] {"Otpremnica","Radni nalog","Radni nalog po izdatnici","Ponuda","Revers","Dostavnica"};
+    	}
+    }
+    else if (vrsta_dok.equals("ROT")) {
+      zaodabrati = new String[] {"Narudžba","Ponuda","Predra\u010Dun","Dostavnica"};
+      odabrano = "NKU";
+    }
+    else if (vrsta_dok.equals("GRN")) {
+    	odabrano=hr.restart.sisfun.frmParam.getParam("robno","selDokOnRAC", "OTP", "Dokument za dohvat na RACu");
+    	if (odabrano.equalsIgnoreCase("RN")) {
+    		zaodabrati = new String[] {"Radni nalog","Ponuda","Radni nalog po izdatnici"};
+    	}
+    	else {
+    		zaodabrati = new String[] {"Ponuda","Radni nalog","Radni nalog po izdatnici"};
+    		odabrano = "PON";
+    	}
+    }
+    else if (vrsta_dok.equals("GOT")) {
+      zaodabrati = new String[] {"Ponuda"};
+      odabrano = "PON";
+    }
+
+    else if (vrsta_dok.equals("KAL")) {
+      zaodabrati = new String[] {"Primke"};
+      odabrano = "PRI";
+    } else if (vrsta_dok.equals("DOS")) {
+        zaodabrati = new String[] {"Narudžba"};
+        odabrano = "NKU";
+    } else {
+       zaodabrati=new String[] {"ne postoji odabir"};
+    }
+    jco = new JraComboBox(zaodabrati);
+  }
+}

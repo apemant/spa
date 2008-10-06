@@ -1,0 +1,47 @@
+//package hr.restart.db.replication.ws;
+
+import hr.restart.db.replication.ws.Sender;
+
+import java.sql.SQLException;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+/**
+* @author dgradecak
+*
+*/
+public class ReceiveData {
+
+   static Sender sender = null;
+   
+   static {
+       main(null);
+   }
+   
+   public static void main(String[] args) {
+       
+   
+	    try {
+	        System.out.println("(MAIN) started");
+	        
+	            
+	                final BeanFactory beanFactory = new ClassPathXmlApplicationContext("retreiver.xml");
+	                	                
+	                sender = (Sender)beanFactory.getBean("Sender");
+
+	
+	         System.out.println("(MAIN) finished");
+	    } catch (BeansException e) {
+	        e.printStackTrace();
+	        throw new RuntimeException(e.getMessage());
+	    }
+   }
+   
+   public String [] receive(String id, Integer last, String[] tables) throws SQLException{   
+   		
+	String[] ret = sender.execute(id.toUpperCase(), last.intValue(), tables);
+	return ret;
+   }
+}

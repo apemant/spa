@@ -1,0 +1,6 @@
+#pause
+$Carodob
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CODOB;alpha;10;pkey;;Šifra carinskog odobrenja
+NAZIV;alpha;80;;;Naziv 

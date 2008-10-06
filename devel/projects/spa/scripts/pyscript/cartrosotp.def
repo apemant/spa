@@ -1,0 +1,6 @@
+#pause
+$Cartrosotp
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CTROSOTP;alpha;10;pkey;;Šifra troška otpreme
+NAZIV;alpha;80;;;Naziv 

@@ -1,0 +1,7 @@
+#pause
+$Jmcarina
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+CJMCAR;alpha;10;pkey;;Šifra mjerne jedinice
+CJMCAROZN;alpha;10;;;Oznaka mjerne jedinice
+Naziv;alpha;80;;;Naziv 

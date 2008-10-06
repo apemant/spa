@@ -1,0 +1,21 @@
+JAVA_COMPILER=javac
+JAVA_EXECUTABLE=java
+MAX_MEMORY=512m
+CVSROOT=:pserver:user@192.168.1.10:/sda1/cvsroot
+
+#arguments for spa.run (starts with jars)
+ARG_SPA_RUN1=
+ARG_SPA_RUN2=
+ARG_SPA_RUN3=
+ARG_SPA_RUN4=
+ARG_SPA_RUN5=
+#arguments for spa.run.local (starts with classes)
+ARG_SPA_RUN_LOCAL1=-Rrobno
+ARG_SPA_RUN_LOCAL2=-usr:test
+ARG_SPA_RUN_LOCAL3=-pass:t
+ARG_SPA_RUN_LOCAL4=-knjig:01
+ARG_SPA_RUN_LOCAL5=
+#start dir (M$ folder) for spa.run; YOU need to create it
+STARTDIR_SPA_RUN=.
+#start dir (M$ folder) for spa.run.local; YOU need to create it
+STARTDIR_SPA_RUN_LOCAL=.

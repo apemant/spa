@@ -1,0 +1,28 @@
+#pause
+$Carpromst
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+Tarifni broj
+kataloški broj
+Porijeklo
+Preferencijal
+potvrda o porijeklu
+NETTO_KG
+KOL_PROP
+KOL
+CIJENA_VAL
+VRIJEDNOST_VAL
+TROSKOVI_VAL
+TROS1_KN
+TROS2_KN
+
+
+
+
+CART;int;8;;;Šifra
+CART1;alpha;20;;;Oznaka
+BC;alpha;20;;;Barcode
+NAZART;alpha;50;;;Naziv
+JM;alpha;3;;;Jm
+KOL;numeric;17,3;;;Kolièina
+

@@ -1,0 +1,7 @@
+#pause
+$VTRnl
+CRADNAL;alpha;30;pkey;;Radni nalog
+RBSRNL;integer;6;pkey;;Rbr stavke rnl
+BRANCH;alpha;60;pkey;;Grana normativa
+RBSIZD;integer;6;;;Rbr stavke izdatnice
+VEZA;alpha;50;;;id_stavka pripadajuæe izdatnice

@@ -1,0 +1,36 @@
+#pause
+$Carizlazst
+LOCK;alpha;1;;N;Status zauzetosti;*
+AKTIV;alpha;1;;D;Aktivan - neaktivan;*
+ID_IZLAZ_ZAG;int;8;pkey;;Brojaè autonumber;*
+ID_IZLAZ_STAV;int;8;pkey;;Brojaè autonumber stavaka;*
+RBR;short;4;;;Rbr
+CTG;alpha;10;;;Tarifni broj
+STOPA1;numeric;17,3;;;Stopa
+CART;int;8;;;Šifra
+CART1;alpha;20;;;Kataloški broj
+BC;alpha;20;;;Barcode
+NAZART;alpha;50;;;Naziv
+JM;alpha;3;;;Jm
+CSIFDRV;alpha;3;;;Porijeklo
+PREF;alpha;10;;;Preferencijal
+CPOTPOR;alpha;10;;;Potvrda o porijeklu
+KOL;numeric;17,3;;;Kolièina 
+NETTO_KG;numeric;17,3;;;Netto kg
+KOL_KOM;numeric;17,3;;;Kolièina (kom)
+CIJENA_VAL;numeric;17,2;;;Cijena valutna
+VRIJEDNOST_VAL;numeric;17,2;;;Vrijednost valutna
+OSNOVICA;numeric;17,2;;;Vrijednost valutna
+IZNOSCAR;numeric;17,2;;;Carinska osnovica
+PPOREZ;numeric;17,2;;;Posto poreza
+POREZ;numeric;17,2;;;Vrijednost valutna
+TROS;numeric;17,2;;;Posebni porez
+JCD_CCAR;alpha;20;;;Šifra carinarnice
+JCD_BROJ;alpha;30;;;Broj JCD
+JCD_DATUM;date;8;;;Datum JCD
+JCD_CPP37;alpha;10;;;Šifra carinskog postupka
+JCD_CCAR_KONAC;alpha;20;;;Šifra carinarnice (konaèni)
+JCD_BROJ_KONAC;alpha;30;;;Broj JCD (konaèni)
+JCD_DATUM_KONAC;date;8;;;Datum JCD (konaèni)
+JCD_CPP37_KONAC;alpha;10;;;Šifra carinskog postupka
+

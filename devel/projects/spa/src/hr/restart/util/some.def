@@ -1,0 +1,6 @@
+$Some, gk
+layout:
+  Knjigovodstvo: CORG+NAZORG+Orgsturktura 100+325
+  Konto: BROJKONTA+NAZIVKONTA+Konta 100+325
+  Org. jedinica: CORG+NAZORG+Orgstruktura 100+325
+  Period (od - do): 100 | 100 || Privremeni: 0 | Zbirno: 0

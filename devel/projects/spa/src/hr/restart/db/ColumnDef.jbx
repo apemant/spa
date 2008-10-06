@@ -1,0 +1,15 @@
+[PropertyInfo]
+caption,String,false,false,caption,caption,true,<default>
+columnName,String,false,false,columnName,columnName,true,<default>
+sqlType,int,false,false,sqlType,sqlType,true,<default>
+mask,String,false,false,mask,mask,true,<default>
+defaultValue,String,false,false,defaultValue,defaultValue,true,<default>
+precision,int,false,false,precision,precision,true,<default>
+scale,int,false,false,scale,scale,true,<default>
+width,int,false,false,width,width,true,<default>
+visible,boolean,false,false,visible,visible,true,<default>
+[IconNames]
+
+
+
+

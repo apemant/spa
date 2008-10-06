@@ -1,0 +1,16 @@
+[PropertyInfo]
+connection,java.sql.Connection,false,false,connection,connection,true,<default>
+delstmt,PreparedStatement,false,false, , ,false,<default>
+insstmt,PreparedStatement,false,false, , ,false,<default>
+keys,String[],false,false, , ,true,<default>
+metadata,java.sql.ResultSetMetaData,false,false,metadata,metadata,true,<default>
+query,String,false,false,query,query,true,<default>
+saveChangesEnabled,boolean,false,false, , ,true,<default>
+tableName,String,false,false, , ,false,<default>
+updstmt,PreparedStatement,false,false, , ,false,<default>
+whereString,String,false,false, , ,true,<default>
+[IconNames]
+
+
+
+

@@ -1,0 +1,15 @@
+[PropertyInfo]
+clientsocket,java.net.Socket,false,false, , ,false,<default>
+commObject,commObject,false,false, , ,true,<default>
+con,ClConnection,false,false, , ,false,<default>
+host,String,false,false, , ,true,<default>
+port,int,false,false, , ,true,<default>
+result,Object,false,false, , ,false,<default>
+serverCommObj,commObject,false,false, , ,false,<default>
+socket,Socket,false,false, , ,true,<default>
+toserver,ObjectOutputStream,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

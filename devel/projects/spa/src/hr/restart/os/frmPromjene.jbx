@@ -1,0 +1,25 @@
+[PropertyInfo]
+column1,Column,false,false, , ,false,<default>
+dm,hr.restart.baza.dM,false,false, , ,false,<default>
+jbKnjig,JraButton,false,false, , ,false,<default>
+jcbAmortizacije,JCheckBox,false,false, , ,false,<default>
+jcbPromjene,JCheckBox,false,false, , ,false,<default>
+jcbRevalorizacije,JCheckBox,false,false, , ,false,<default>
+jLabel11,JLabel,false,false, , ,false,<default>
+jLabel12,JLabel,false,false, , ,false,<default>
+jLabel2,JLabel,false,false, , ,false,<default>
+jLabel4,JLabel,false,false, , ,false,<default>
+jPanel1,JPanel,false,false, , ,false,<default>
+jPanel2,JPanel,false,false, , ,false,<default>
+jrfDatProm,JraTextField,false,false, , ,false,<default>
+jrfKnjig,JlrNavField,false,false, , ,false,<default>
+jrfNazKnjig,JlrNavField,false,false, , ,false,<default>
+rcc,hr.restart.util.raCommonClass,false,false, , ,false,<default>
+tds,TableDataSet,false,false, , ,false,<default>
+xYLayout1,XYLayout,false,false, , ,false,<default>
+xYLayout2,XYLayout,false,false, , ,false,<default>
+[IconNames]
+
+
+
+
