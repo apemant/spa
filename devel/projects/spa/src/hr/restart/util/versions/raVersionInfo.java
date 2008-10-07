@@ -111,7 +111,6 @@ public class raVersionInfo {
 	  	}
 	  	if (v!=null) return v;
 		} catch (Exception e) {
-			System.out.println("exception occured: "+e);
 			e.printStackTrace();
 		}
   	return "N/A";
