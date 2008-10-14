@@ -852,4 +852,10 @@ public class frmUplIspl extends raMasterDetail {
   public static String getFakeURABrojkonta() {
     return frmParam.getParam("blpn", "fakeskkto", "URA", "Broj konta koji podmecemo u stavku blagajne kad knjizimo URE kroz blagajnu");
   }
+
+  public String getKontoURA() {
+    String kto = frmParam.getParam("blpn", "ktoblura","","Konto koji se podmece na glavnu stavku URA kad se unose kroz blagajnu");
+    if (kto.trim().equals("")) kto = null;
+    return kto;
+  }
 }

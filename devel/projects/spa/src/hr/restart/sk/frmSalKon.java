@@ -133,7 +133,9 @@ public class frmSalKon extends raMasterDetail {
     //set presel values
     setBLPresel();
   }
-
+  public frmUplIspl getBlagajna() {
+    return uplIspl;
+  }
   private JraTextField jrtZiro = new JraTextField();
   private void setBLPresel() {
 //    PreSelect BLSKPreSel = new PreSelect() {

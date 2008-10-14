@@ -19,6 +19,7 @@ package hr.restart.sk;
 
 import hr.restart.baza.Vrshemek;
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
@@ -389,9 +390,15 @@ public class jpSalKonMaster extends JPanel {
   }
   
   void setKonto() {
-    String sh = jlrCskl.getText();    
-    if (sh == null || sh.length() == 0) sh = jlrShemaKnj.getText();    
-    String konto = raSaldaKonti.getKonto(fSalKon.vrdokSheme, sh, "1");    
+    String konto = null;
+    if (fSalKon.getBlagajna() != null) {
+      konto = fSalKon.getBlagajna().getKontoURA();
+    } 
+    if (konto == null) {
+      String sh = jlrCskl.getText();    
+      if (sh == null || sh.length() == 0) sh = jlrShemaKnj.getText();    
+      konto = raSaldaKonti.getKonto(fSalKon.vrdokSheme, sh, "1");
+    }
     if (konto != null && konto.length() > 0) {
       jlrKonto.setText(konto);
       supressFocus = true;
