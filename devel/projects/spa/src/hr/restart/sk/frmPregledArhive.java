@@ -465,7 +465,7 @@ public class frmPregledArhive extends raMasterDetail {
       public boolean transaction() throws Exception {
         String[] skscols = {"KNJIG", "CPAR", "VRDOK", "BROJDOK", "DATPRI", "DATDOK",
          "DATDOSP", "DATUNOS", "EXTBRDOK", "BROJIZV", "CNACPL", "OZNVAL", "TECAJ",
-          "OPIS"};
+          "OPIS","ZIRO"};
         String[] uiscols = {"RBS", "CSKL", "STAVKA", "CORG", "CKOLONE",
           "CKNJIGE", "DUGPOT", "URAIRA", "BROJKONTA"};
         QueryDataSet radne = Skstavkerad.getDataModule().getTempSet("1=0");
