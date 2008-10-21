@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jb.util.TriStateProperty;
 
@@ -198,10 +199,20 @@ public class raIZD extends raIzlazTemplate  {
     return isStanjeExist4allDS(realStavke, realStavkeGreska, getMasterSet().getString("GOD"), getMasterSet().getString("CSKL"), false);
   }
   public static boolean isStanjeExist4allDS(QueryDataSet s_realStavke, QueryDataSet s_realStavkeGreska, String god, String cskl, boolean sumcheck) {
+    return isStanjeExist4allDS(s_realStavke, s_realStavkeGreska, god, cskl, sumcheck, true);
+  }
+  public static boolean isStanjeExist4allDS(QueryDataSet s_realStavke, QueryDataSet s_realStavkeGreska, String god, String cskl, boolean sumcheck, boolean deterr) {
     allStanje s_AST = allStanje.getallStanje();
-    HashMap hm= new HashMap();
+    HashMap hm= new HashMap() {
+//      public Object put(Object key, Object value) {
+//        System.out.println("*** hm.put("+key+","+value+")");
+//        return super.put(key, value);
+//      }
+    };
     boolean returnValue = true;
     s_realStavkeGreska.emptyAllRows();
+//    StorageDataSet tmp_realStavkeGreska = s_realStavkeGreska.cloneDataSetStructure();
+//    tmp_realStavkeGreska.open();
     for (s_realStavke.first();s_realStavke.inBounds();s_realStavke.next()){
 
       s_AST.findStanjeUnconditional(god/*getMasterSet().getString("GOD")*/,
@@ -219,36 +230,66 @@ public class raIZD extends raIzlazTemplate  {
       	(BigDecimal)hm.get(String.valueOf(s_realStavke.getInt("CART")));
       if (s_AST.gettrenSTANJE().getRowCount()==0)  {
         s_realStavke.setString("STATUS","B");
-        s_realStavkeGreska.insertRow(true);
-        dM.copyColumns(s_realStavke,s_realStavkeGreska);
+        if (!sumcheck) {
+          s_realStavkeGreska.insertRow(true);
+          dM.copyColumns(s_realStavke,s_realStavkeGreska);
+        }
         returnValue = false;
 //      }else if (AST.gettrenSTANJE().getBigDecimal("KOL").subtract(realStavke.getBigDecimal("KOL")).doubleValue()<0 ) {
       }	else if (s_AST.gettrenSTANJE().getBigDecimal("KOL").subtract(kolicinaBD).doubleValue()<0 ) {        
       	s_realStavke.setString("STATUS","M");
-        s_realStavkeGreska.insertRow(true);
-        dM.copyColumns(s_realStavke,s_realStavkeGreska);
+        if (!sumcheck) {
+          s_realStavkeGreska.insertRow(true);
+          dM.copyColumns(s_realStavke,s_realStavkeGreska);
+        }
         returnValue = false;
       }
     }
     if (!returnValue && sumcheck) {//check suma jer mozda je samo trenutno otislo stanje u minus pa se poslije vratilo (storno)
-      returnValue = true;
       for (Iterator iterator = hm.keySet().iterator(); iterator.hasNext();) {
+        returnValue = true;
         String cart = (String) iterator.next();
         BigDecimal kol = (BigDecimal)hm.get(cart);
-        
-        s_AST.findStanjeUnconditional(god,cskl,Integer.parseInt(cart));
+        int icart = Integer.parseInt(cart);
+        s_AST.findStanjeUnconditional(god,cskl,icart);
         if (s_AST.gettrenSTANJE().getRowCount()==0 && kol.signum() != 0)  {
           System.out.println("isStanjeExist4allDS.sumcheck :: Nema stanja za "+god+"-"+cskl+" artikl "+cart);
           returnValue = false;
         } else if (s_AST.gettrenSTANJE().getBigDecimal("KOL").subtract(kol).doubleValue()<0) {
-          System.out.println("isStanjeExist4allDS.sumcheck :: Ipak ide u minus "+god+"-"+cskl+" artikl "+cart);
+          System.out.println("isStanjeExist4allDS.sumcheck :: Ipak ide u minus "+god+"-"+cskl+" artikl "+cart+
+              "\n           stanjeKOL = "+s_AST.gettrenSTANJE().getBigDecimal("KOL")+";" +
+              "\n           trazenKOl = "+kol);
           returnValue = false;          
         }
-        
+        if (!returnValue) {
+          if (deterr) {
+            for (s_realStavke.first(); s_realStavke.inBounds(); s_realStavke.next()) {
+              if (s_realStavke.getInt("CART") == icart) {
+                s_realStavkeGreska.insertRow(false);
+                dM.copyColumns(s_realStavke, s_realStavkeGreska);
+                s_realStavkeGreska.post();
+              }
+            }
+          } else {
+            //kumulativno
+            lookupData.getlookupData().raLocate(s_realStavke, "CART", cart);
+            s_realStavkeGreska.insertRow(false);
+            dM.copyColumns(s_realStavke, s_realStavkeGreska);
+            s_realStavkeGreska.setInt("BRDOK", 0);
+            s_realStavkeGreska.setShort("RBR", (short)0);
+            s_realStavkeGreska.setBigDecimal("KOL", kol);
+            s_realStavkeGreska.post();
+          }
+        }
       }
-        
+    } else if (!returnValue){
+//      for (tmp_realStavkeGreska.first(); tmp_realStavkeGreska.inBounds(); tmp_realStavkeGreska.next()) {
+//        s_realStavkeGreska.insertRow(false);
+//        dM.copyColumns(tmp_realStavkeGreska, s_realStavkeGreska);
+//        s_realStavkeGreska.post();
+//      }
     }
-    return returnValue;
+    return s_realStavkeGreska.getRowCount() == 0;
   }
 
   public boolean isStanjeExist4allDSwithMSG(){
