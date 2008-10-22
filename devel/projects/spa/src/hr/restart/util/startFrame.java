@@ -194,8 +194,9 @@ public class startFrame extends JraFrame implements Cloneable {
  * Drugi parametar je naslov na ekranu
  */
   public void ShowMe(boolean isFullScreen,String frTitle) {
-    this.setTitle(frTitle);
-    this.pack();
+//    this.setTitle(frTitle);
+//    setActiveFrameTitle(this);
+    if (!isShowing()) this.pack();
     Dimension screenSize = hr.restart.start.getSCREENSIZE();
     Dimension frameSize = this.getSize();
     this.setLocation(0,raToolBarRelativeY());
