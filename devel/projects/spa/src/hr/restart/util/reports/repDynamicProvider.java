@@ -226,11 +226,11 @@ public class repDynamicProvider implements IDataProvider {
       temp = lt;
       ratio = ((double) lt.PageSetup.getHeight() - lt.PageSetup.getLeft() * 2
                                                  - 20 * (cols - 1)) / width;
-      int w = createHD(ratio, lt.SectionHeader1, lt.TextHeaderValue0);
+      int w = createHD(ratio, lt.SectionHeader1, lt.TextHeaderValue0) - 20;
       createHD(ratio, lt.Detail, lt.TextDataValue0);
       createFooter(ratio, lt.SectionFooter1, lt.TextSumValue0, "U K U P N O");
       if (subtitle.length() == 0)
-        lt.SectionHeader0.setHeight(750);
+        lt.SectionHeader0.setHeight(760);
 
       if (xt != null && xt.getTotalGroupCount() > 0) {
         createGroups(temp, lt.Sections, lt.SectionHeader1, lt.SectionFooter1, lt.TextDataValue0);
@@ -238,43 +238,43 @@ public class repDynamicProvider implements IDataProvider {
           lt.Section0.setProperty(ep.GROUP_FOOTER, ev.YES);
           createFooter(ratio, lt.SectionFooter0, lt.TextTSumValue0, "S V E U K U P N O");
           lt.SectionFooter0.setHeight(400);
-          lt.Line5.setWidth(w - 40);
-          lt.Line6.setWidth(w - 40);
+          lt.Line5.setWidth(w);
+          lt.Line6.setWidth(w);
         } else lt.SectionFooter0.setTransparent(true);
       } else lt.SectionFooter0.setTransparent(true);
 
-      lt.Line1.setWidth(w - 40);
-      lt.Line2.setWidth(w - 40);
+      lt.Line1.setWidth(w);
+      lt.Line2.setWidth(w);
       if (sums) {
-        lt.Line3.setWidth(w - 40);
-        lt.Line4.setWidth(w - 40);
+        lt.Line3.setWidth(w);
+        lt.Line4.setWidth(w);
       }
     } else {
       repPortraitTableTemplate lt = new repPortraitTableTemplate();
       temp = lt;
       ratio = ((double) lt.PageSetup.getWidth() - lt.PageSetup.getLeft() * 2
                                                 - 20 * (cols - 1)) / width;
-      int w = createHD(ratio, lt.SectionHeader1, lt.TextHeaderValue0);
+      int w = createHD(ratio, lt.SectionHeader1, lt.TextHeaderValue0) - 20;
       createHD(ratio, lt.Detail, lt.TextDataValue0);
       createFooter(ratio, lt.SectionFooter1, lt.TextSumValue0, "U K U P N O");
       if (subtitle.length() == 0)
-        lt.SectionHeader0.setHeight(750);
+        lt.SectionHeader0.setHeight(760);
       if (xt != null && xt.getTotalGroupCount() > 0) {
         createGroups(temp, lt.Sections, lt.SectionHeader1, lt.SectionFooter1, lt.TextDataValue0);
         if (sums) {
           lt.Section0.setProperty(ep.GROUP_FOOTER, ev.YES);
           createFooter(ratio, lt.SectionFooter0, lt.TextTSumValue0, "S V E U K U P N O");
           lt.SectionFooter0.setHeight(400);
-          lt.Line5.setWidth(w - 40);
-          lt.Line6.setWidth(w - 40);
+          lt.Line5.setWidth(w);
+          lt.Line6.setWidth(w);
         } else lt.SectionFooter0.setTransparent(true);
       } else lt.SectionFooter0.setTransparent(true);
 
-      lt.Line1.setWidth(w - 40);
-      lt.Line2.setWidth(w - 40);
+      lt.Line1.setWidth(w);
+      lt.Line2.setWidth(w);
       if (sums) {
-        lt.Line3.setWidth(w - 40);
-        lt.Line4.setWidth(w - 40);
+        lt.Line3.setWidth(w);
+        lt.Line4.setWidth(w);
       }
     }
 //    hr.restart.util.Aus.dumpModel(temp.getReportTemplate(), 0);
@@ -334,7 +334,7 @@ public class repDynamicProvider implements IDataProvider {
         createHD(ratio, sect, def);
         if (non > 0) {
           for (int i = 1; i < non; i++) sect.removeModel(3);
-          def.setWidth(sect.getModel(3).getLeft());
+          def.setWidth(sect.getModel(3).getLeft() - 20);
 //          def.setControlSource("=(if (= 1 1) \"U K U P N O\" \"\")");
           def.setControlSource("=(if (= 1 1) \""+uk+"\")");
           def.setProperty(ep.ALIGN, ep.LEFT);

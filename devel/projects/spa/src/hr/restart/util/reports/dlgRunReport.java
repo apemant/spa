@@ -26,13 +26,26 @@ import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraDialog;
-import hr.restart.util.*;
+import hr.restart.util.Aus;
+import hr.restart.util.FileHandler;
+import hr.restart.util.OKpanel;
+import hr.restart.util.VarStr;
+import hr.restart.util.lookupData;
+import hr.restart.util.raCommonClass;
+import hr.restart.util.raImages;
+import hr.restart.util.raJPNavContainer;
+import hr.restart.util.raKeyActionSupport;
+import hr.restart.util.raNavAction;
+import hr.restart.util.raProcess;
+import hr.restart.util.startFrame;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -43,30 +56,60 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRJdk13Compiler;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.util.JRProperties;
+import net.sf.jasperreports.engine.util.JRSaver;
+import net.sf.jasperreports.view.JRViewer;
 import sg.com.elixir.ReportRuntime;
 import sg.com.elixir.reportwriter.datasource.DataSourceManager;
+import sg.com.elixir.reportwriter.datasource.IDataProvider;
+import sg.com.elixir.reportwriter.datasource.IDataSourceInfor;
 import sg.com.elixir.reportwriter.rt.ISession;
 import sg.com.elixir.reportwriter.xml.IModel;
 import sg.com.elixir.reportwriter.xml.ModelFactory;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.elixirtech.report.jgf.PrintManager;
 
 public class dlgRunReport {
 //sysoutTEST ST = new sysoutTEST(false);
@@ -82,6 +125,8 @@ public class dlgRunReport {
 //  private String[] reportTitles;
   private int defaultIdx = 0;
   private static dlgRunReport dlgRR;
+  
+  String expAP = "";
 //  private java.util.Hashtable classTemplates;
   raRunReport runner;
   JPanel jp = new JPanel(new BorderLayout());
@@ -110,6 +155,11 @@ public class dlgRunReport {
   raNavAction rnvExport = new raNavAction("Snimi",raImages.IMGEXPORT,KeyEvent.VK_F6,true) {
     public void actionPerformed(ActionEvent e) {
       exportReport();
+    }
+  };
+  raNavAction rnvMail = new raNavAction("e-Mail",raImages.IMGCOMPOSEMAIL,KeyEvent.VK_F7,true) {
+    public void actionPerformed(ActionEvent e) {
+      mailReport();
     }
   };
   raNavAction rnvExit = new raNavAction("Izlaz",raImages.IMGEXIT,KeyEvent.VK_ESCAPE,true) {
@@ -226,6 +276,7 @@ public class dlgRunReport {
 //      dlgRR.jbInit();
       dlgRR.createDialogs();
       dlgRR.enableDlg();
+      dlgRR.expAP = dlgRR.expAlterPrint();
       dlgRR.updateLogocheck();
       dlgRR.customSections.clear();
       if (runner.getDirectReport() == -1)
@@ -255,6 +306,7 @@ public class dlgRunReport {
     rjpnc.addOption(rnvPrint);
     rjpnc.addOption(rnvPreview);
     rjpnc.addOption(rnvExport);
+    rjpnc.addOption(rnvMail);
     rjpnc.addOption(rnvExit);
     logocheck.setFocusPainted(false);
     logocheck.setText(" Logotip ");
@@ -705,20 +757,20 @@ public class dlgRunReport {
       prw.show();
     } else if (mode == 2) {
 //      pre.showSaveDialog();
-      if (pre.showSaveDialog() == JFileChooser.CANCEL_OPTION) return;
+      if (pre.showSaveDialog(false) == JFileChooser.CANCEL_OPTION) return;
       try {
-        String ext = ((exportFileFilter)pre.getFileFilter()).getExtension();
-        if (ext.equalsIgnoreCase("JGF")) {
-          showNoWayMessage();
-        } else if (ext.equalsIgnoreCase("PDF")) {
-          showNoWayMessage();
-        } else if (ext.equalsIgnoreCase("TXT")) {
+        String ext = pre.getFileType();
+        if (ext.equals("txt")) {
           java.io.File wFile = pre.getSelectedFile();
           wFile.delete();
           java.io.File rFile = new java.io.File(mxReport.TMPPRINTFILE);
-          rFile.renameTo(wFile);
+          //rFile.renameTo(wFile);
+          FileHandler.copy(rFile, wFile);
+        } else {
+          showNoWayMessage();
         }
       } catch (Exception e) {
+        e.printStackTrace();
       }
     }
 //    enableDlg();
@@ -774,6 +826,16 @@ public class dlgRunReport {
       e.printStackTrace();
     }
   }
+  public void mailReport() {
+    try {
+//      if (getCurrentDescriptor().getReportType() == raReportDescriptor.TYPE_CHART)
+//        ((IReport) getCurrentDescriptor().getProvider()).export();
+//      else 
+        runReport(3);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
   void exitReport() {
 //    if (runner != null) runner.rt = null;
     rt = null;
@@ -785,7 +847,7 @@ public class dlgRunReport {
 //    super.hide();
 //  }
 
-  class prViewDialog extends JDialog {
+  class prViewDialog extends JraDialog {
 //    JPanel design = new JPanel(null);
     Component glue = Box.createHorizontalGlue();
     Box design = Box.createHorizontalBox();
@@ -804,6 +866,8 @@ public class dlgRunReport {
 //        refresh();
 //      }
 //    };
+    JasperPrint cjp = null;
+    JButton jprb = null;
     JPanel jpw = new JPanel(new BorderLayout());
     private OKpanel okpw = new OKpanel() {
       public void jBOK_actionPerformed() {
@@ -814,8 +878,15 @@ public class dlgRunReport {
       }
     };
 
-    private ActionListener actionLis = new ActionListener() {
+    public ActionListener actionLis = new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        if (jprb != null && cjp != null) {
+          try {
+            JasperPrintManager.printReport(cjp, true);
+          } catch (JRException e1) {
+            e1.printStackTrace();
+          }
+        }
         printCalled = true;
         SwingUtilities.invokeLater(new Runnable() {
           public void run() {
@@ -828,7 +899,7 @@ public class dlgRunReport {
       super((Frame) null, "Pregled ispisa", true);
       prVInit();
     }
-
+    
     public prViewDialog(JDialog dialog) {
       super(dialog, "Pregled ispisa", true);
       prVInit();
@@ -963,7 +1034,7 @@ public class dlgRunReport {
     
     private void disablePrintIfAlter() {
       if (frmParam.getParam("sisfun", "alterdisprw", "N", "Onemoguciti klasican ispis (s pregleda) ako je alternativni definiran",true).equalsIgnoreCase("D")) {
-        if (!expAlterPrint().equals("")) {
+        if (!expAP.equals("")) {
           //okpw.jBOK.setEnabled(false);
           JButton pb = findPrintButton(jpw);
           if (pb!=null) pb.setEnabled(false);
@@ -981,8 +1052,9 @@ public class dlgRunReport {
       printCalled = true;
       if (isElixir()) {
 //        rt.print();
-        if (expAlterPrint().equals("")) {
-          simulatePrint(jpw);
+        if (expAP.equals("")) {
+          if (jprb == null) simulatePrint(jpw);
+          else pressButton(jprb);
         } else {
           printCalled = false;
           alterPrintCalled = true;
@@ -1010,17 +1082,20 @@ public class dlgRunReport {
       public void run() {
         if (is != null) {
           is.close();
-          raReportDescriptor rd = getCurrentDescriptor();
-          if (rd.isExtended())
-            raElixirDataProvider.getInstance().setDataClass(rd.getDataSource());
+          
         }
+        raReportDescriptor rd = getCurrentDescriptor();
+        if (rd.isExtended())
+          raElixirDataProvider.getInstance().setDataClass(rd.getDataSource());
 //        getContentPane().setEnabled(false);
 //        getContentPane().setEnabled(false);
         getContentPane().remove(jpw);
 //        jpw.setEnabled(true);
         jpw.removeAll();
-        //setupProgressMonitor();        
-        is = rt.previewReport(jpw);
+        //setupProgressMonitor();     
+        //is = rt.previewReport(jpw);
+        cjp = getJasperPrint(jpw);
+        is = previewTemplate(jpw, cjp);
         //rt.setProgressListener(null);
         //PrintManager.current().showRangeDialog(false);
         getContentPane().add(jpw, BorderLayout.CENTER);
@@ -1035,9 +1110,12 @@ public class dlgRunReport {
     public void show(ISession is) {
       this.is = is;
       printCalled = false;
-      JButton prb = findPrintButton(jpw);
-      prb.removeActionListener(actionLis);
-      prb.addActionListener(actionLis);
+
+      if (is != null) {
+        JButton prb = findPrintButton(jpw);
+        prb.removeActionListener(actionLis);
+        prb.addActionListener(actionLis);
+      }
 //      designer = (raSectionDesigner) startFrame.getStartFrame().
 //               showFrame("hr.restart.util.reports.raSectionDesigner", 0, "", false);
 //      designer.runOnExit(refresher);
@@ -1059,7 +1137,8 @@ public class dlgRunReport {
 
   class prExportDialog extends JraDialog {
     private int selectedOption;
-    exportFileFilter xls, txt;
+    String fname;
+    exportFileFilter xls, txt, jgf, pdf, htm;
     
     JFileChooser fc = new JFileChooser() {
       public void approveSelection() {
@@ -1084,55 +1163,86 @@ public class dlgRunReport {
       fc.setDialogType(fc.SAVE_DIALOG);
       this.getContentPane().setLayout(new BorderLayout());
       this.getContentPane().add(fc,BorderLayout.CENTER);
-      fc.addChoosableFileFilter(new exportFileFilter("JGF","Java graphics format (JGF)"));
-      fc.addChoosableFileFilter(new exportFileFilter("PDF","Acrobat reader format (PDF)"));
-      fc.addChoosableFileFilter(txt = new exportFileFilter("TXT","Text file (TXT)"));
-      xls = new exportFileFilter("XLS","Excel datoteke (XLS)");
+      jgf = new exportFileFilter("JGF","Java graphics format (JGF)");
+      pdf = new exportFileFilter("PDF","Acrobat reader format (PDF)");
+      xls = new exportFileFilter("XLS","Excel document format (XLS)");
+      htm = new exportFileFilter("HTML,HTM","Hypertext document (HTML,HTM)");
+      txt = new exportFileFilter("TXT","Text file (TXT)");
     }
     void hideDialog() {
       this.hide();
     }
-    int showSaveDialog() {
+    int showSaveDialog(boolean graphic) {
       selectedOption = JFileChooser.CANCEL_OPTION;
-      if (getCurrentDescriptor().getName().equals(raReportDescriptor.DYNAMIC_CLASS)) {
-        fc.addChoosableFileFilter(xls);
-        fc.setFileFilter(xls);
+      fc.resetChoosableFileFilters();
+      if (!graphic) {
+        fc.addChoosableFileFilter(txt);
+        fc.setFileFilter(txt);
       } else {
-        if (fc.removeChoosableFileFilter(xls))
-          fc.setFileFilter(txt);
+        fc.addChoosableFileFilter(pdf);
+        fc.addChoosableFileFilter(htm);
+        if (getCurrentDescriptor().getName().equals(raReportDescriptor.DYNAMIC_CLASS)) {
+          fc.addChoosableFileFilter(xls);
+          fc.setFileFilter(xls);
+        } else fc.setFileFilter(pdf);
       }
-
       startFrame.getStartFrame().centerFrame(this,0,"Snimi u file");
       this.show();
+      if (selectedOption == JFileChooser.APPROVE_OPTION) {
+        fname = ((exportFileFilter) fc.getFileFilter()).normalize(fc.getSelectedFile().getPath());
+      } else fname = null;
       return selectedOption;
     }
-    FileFilter getFileFilter() {
-      return fc.getFileFilter();
+    
+    String getFilename() {
+      return fname;
     }
+    
     java.io.File getSelectedFile() {
       return fc.getSelectedFile();
+    }
+    
+    String getFileType() {
+      return ((exportFileFilter) fc.getFileFilter()).getExtension();
     }
   }
 
   class exportFileFilter extends FileFilter {
     private String desc;
-    private String ext;
+    private String[] ext;
     public exportFileFilter(String extC,String descC) {
       desc = descC;
-      ext = extC;
+      ext = new VarStr(extC.toLowerCase()).splitTrimmed(',');
     }
 
     public String getDescription() {
       return desc;
     }
-
+    
     public String getExtension() {
-      return ext;
+      return ext[0];
+    }
+
+    public String normalize(String fname) {
+      String fn = fname;
+      int dot = fn.lastIndexOf(".");
+      if (dot < 0) return fname + "." + ext[0];
+      
+      fn = fn.substring(dot + 1).toLowerCase();
+      for (int i = 0; i < ext.length; i++)
+        if (fn.equals(ext[i])) return fname;
+      
+      return fname + "." + ext[0]; 
     }
 
     public boolean accept(java.io.File f) {
-      if (f.getPath().lastIndexOf(".") == -1) return true;
-      if (f.getPath().substring(f.getPath().lastIndexOf(".")+1).equalsIgnoreCase(ext)) return true;
+      if (f.isDirectory()) return true;
+      String fn = f.getPath();
+      int dot = fn.lastIndexOf(".");
+      if (dot < 0) return false;
+      fn = fn.substring(dot + 1).toLowerCase();
+      for (int i = 0; i < ext.length; i++)
+        if (fn.equals(ext[i])) return true;
       return false;
     }
   }
@@ -1151,23 +1261,67 @@ public class dlgRunReport {
   public void simulatePrint(JPanel j) {    
     JButton prb = findPrintButton(j);
 //    PrintManager.current().showRangeDialog(false);
-    prb.requestFocus();
+    pressButton(prb);
+  }
+  
+  public void pressButton(JButton prb) {
     if (prb != null) {
+      prb.requestFocus();
       prb.getModel().setArmed(true);
       prb.getModel().setPressed(true);
       prb.getModel().setPressed(false);
       prb.getModel().setArmed(false);
     }
   }
-  
+
   private String expAlterPrint() {
     final String exp = frmParam.getParam("sisfun", "altprintexp","", "Ispis odmah exportirati u PDF|XLS|JGF|XML",true).toUpperCase().trim();
     return exp;
   }
+  
+  private boolean alterPreview(String exp, String expfn, Object sessionobj) {
+    if ((sessionobj instanceof JasperPrint) && exp.equals("JAS")) {
+      try {
+        JRSaver.saveObject(
+            new JasperRemotePreview((JasperPrint)sessionobj),
+            expfn+"."+exp.toLowerCase());
+        sendAlterFile(expfn, exp);
+        return true;
+      } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+      }
+    } 
+    return false;
+  }
 
-  private void alterPrint(final String exp, final ISession i) {
+  private boolean alterExport(String exp, String expfn, Object sessionobj) {
+    if ((sessionobj instanceof JasperPrint) && exp.equals("JAS")) {
+      try {
+        JRSaver.saveObject(
+            new JasperRemoteExport((JasperPrint)sessionobj),
+            expfn+"."+exp.toLowerCase());
+        sendAlterFile(expfn, exp);
+        return true;
+      } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+      }
+    } 
+    return false;
+  }
+
+  private void alterPrint(final String exp, final Object sessionobj) {
     Runnable apt = new Runnable() {
       public void run() {
+        ISession i = null;
+        JasperPrint j = null;
+        if (sessionobj instanceof ISession) {
+          i = (ISession) sessionobj;
+        }
+        if (sessionobj instanceof JasperPrint) {
+          j = (JasperPrint) sessionobj;
+        }
         boolean expengaged = false;
         String expfn = "ispis";
         expengaged = false;
@@ -1177,6 +1331,20 @@ public class dlgRunReport {
              repDynamicProvider.getInstance().xt.exportToXLS(new File(expfn+"."+exp.toLowerCase()));
              expengaged = true;
             }
+          } else if (exp.equals("JAS") || exp.equals("JASD")) {
+            if (j == null) throw new RuntimeException("Export to JAS file is possible only with Jasper report");
+            try {
+              Object o2s = null;
+              if (exp.equals("JASD")) {
+                o2s = j;
+              } else {
+                o2s = new JasperRemotePrint(j);
+              }
+              JRSaver.saveObject(o2s, expfn+"."+exp.toLowerCase());
+              expengaged = true;
+            } catch (Exception e) {
+              expengaged = false;
+            }
           } else if (!exp.equals("")) {
             String mep = "saveAs";
             Method me = rt.getClass().getMethod(mep+exp,new Class[] {String.class});
@@ -1185,9 +1353,7 @@ public class dlgRunReport {
           }
           if (i!=null) i.close();
           if (expengaged) {
-            String comm = frmParam.getParam("sisfun","altprintcomm","","OS komanda za ispis exportiranog reporta (#=file)",true);
-            String oscomm = new VarStr(comm).replaceAll("#",new File(expfn+"."+exp.toLowerCase()).getAbsolutePath()).toString();
-            Runtime.getRuntime().exec(oscomm);
+            sendAlterFile(expfn, exp);
           }
         } catch (Exception e) {
           e.printStackTrace();
@@ -1198,7 +1364,13 @@ public class dlgRunReport {
     apt.run();
     //new Thread(apt).start();
   }
-
+  
+  private void sendAlterFile(String expfn, String exp) throws IOException {
+    String comm = frmParam.getParam("sisfun","altprintcomm","","OS komanda za ispis exportiranog reporta (#=file)",true);
+    String oscomm = new VarStr(comm).replaceAll("#",new File(expfn+"."+exp.toLowerCase()).getAbsolutePath()).toString();
+    Runtime.getRuntime().exec(oscomm);
+  }
+  
   public JButton findPrintButton(JPanel cont) {
     int numb = 0;
     JButton butt = null, rb;
@@ -1268,7 +1440,74 @@ public class dlgRunReport {
     st.start();
   }
 */
+  
+  JasperPrint getJasperPrint(Container parent) {
+    JasperPrint jprint = null;
+    raProcess.runChild(parent, new Runnable() {
+      public void run() {
+        try {
+          raProcess.setMessage("Priprema ispisa...", false);
+          String dsnName = getCurrentDescriptor().getProviderName();
+          DataSourceManager dsm = DataSourceManager.current();
+          IDataSourceInfor dsn = dsm.getUserDSN(dsnName);
+          IDataProvider provider = getCurrentDescriptor().isExtended() 
+              ? raElixirDataProvider.getInstance() 
+              : (IDataProvider) getCurrentDescriptor().getProvider();
+          
+          JasperElixirData data = new JasperElixirData(dsn, provider);
+          JasperDesign jdes = JasperBuilder.buildFromElixir(rt.getReportTemplate(), data);
+          jdes.setName(getCurrentDescriptor().getName());
+          jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
+          raProcess.setMessage("Prevoðenje izraza...", false);
+          JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
+          JasperReport jcomp = new JRJdk13Compiler().compileReport(jdes);
+          //JasperReport jcomp = new JasperCompiler().compileReport(jdes);
+//          JasperReport jcomp = JasperCompileManager.compileReport(jdes);
+          //JRFillTextField
+          data.removeUnusedGetters();
+          raProcess.setMessage("Punjenje podataka...", false);
+          data.buildTable(rt.getReportTemplate());
+          raProcess.setMessage("Grupiranje i sortiranje...", false);
+          data.sortTable();
+          raProcess.setMessage("Formiranje ispisa...", false);
+          raProcess.yield(JasperFillManager.fillReport(jcomp, null, data));
+        } catch (RuntimeException e) {
+          throw e;
+        } catch (Exception e) {
+          e.printStackTrace();
+          raProcess.fail();
+        }
+      }
+    });
+    if (!raProcess.isCompleted()) return null; 
+    return (JasperPrint) raProcess.getReturnValue();
+  }
 
+  ISession previewTemplate(JPanel panel, JasperPrint jprint) {
+    prw.jprb = null;
+    if (raProcess.isInterrupted()) return null;
+    if (jprint != null) {
+      JRViewer jv = new JRViewer(jprint) {
+        public void setFitWidthZoomRatio() {
+          EventListener[] ll = btnPrint.getListeners(ActionListener.class);
+          for (int i = 0; i < ll.length; i++)
+            btnPrint.removeActionListener((ActionListener) ll[i]);
+//          btnPrint.removeActionListener(prw.actionLis);
+          btnPrint.addActionListener(prw.actionLis);
+          prw.jprb = btnPrint;
+          btnFitWidth.setSelected(true);
+          super.setFitWidthZoomRatio();
+        }
+      };
+      Dimension scr = Toolkit.getDefaultToolkit().getScreenSize();
+      jv.setPreferredSize(new Dimension(scr.height - 60, scr.height - 60));
+      jv.setFitWidthZoomRatio();
+      panel.add(jv);
+      return null;
+    }
+    return rt.previewReport(panel);
+  }
+  
   class elixirRunnerClientClient extends abstractElixirRunner {
     public void run() {
       JDialog thd = dlg;
@@ -1279,13 +1518,25 @@ public class dlgRunReport {
           //setupProgressMonitor();
           //rt.setProgressListener(null);
           //PrintManager.current().showRangeDialog(false);
-          String exp = expAlterPrint();
+          String exp = expAP;
+          JasperPrint jprint = null;
+          try {
+            jprint = getJasperPrint(dlg);
+          } catch (Exception e){
+            e.printStackTrace();
+          }
           if (exp.equals("")) {
-            ISession i = rt.previewReport(j = new JPanel());
+            /*ISession i = rt.previewReport(j = new JPanel());
             simulatePrint(j);
-            i.close();
+            i.close();*/
+            if (jprint != null) JasperPrintManager.printReport(jprint, true);
+            else {
+              ISession i = rt.previewReport(j = new JPanel());
+              simulatePrint(j);
+              i.close();
+            }
           } else {
-            alterPrint(exp, null);
+            alterPrint(exp, jprint);
           }
         }
         catch (Exception ex) {
@@ -1294,7 +1545,10 @@ public class dlgRunReport {
       else if (mode == 1) {
         prw.jpw.removeAll();
         //setupProgressMonitor();
-        ISession is = rt.previewReport(prw.jpw);
+        //ISession is = rt.previewReport(prw.jpw);
+        prw.cjp = getJasperPrint(prw.jpw);
+     if (!alterPreview(expAP,"ispis",prw.cjp)) {
+        ISession is = previewTemplate(prw.jpw, prw.cjp);
         //rt.setProgressListener(null);
         //PrintManager.current().showRangeDialog(false);
         prw.pack();
@@ -1303,9 +1557,9 @@ public class dlgRunReport {
           prw.is.close();
           if (prw.printCalled) mode = 0;
         } else {
-          printRtState(idx);
+         // printRtState(idx);
         }
-        if (!expAlterPrint().equals("") && prw.alterPrintCalled) {
+        if (!expAP.equals("") && prw.alterPrintCalled) {
           prw.alterPrintCalled = false;
           SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -1313,24 +1567,54 @@ public class dlgRunReport {
             }
           });
         }        
+} //endif alterPreview
       } else if (mode == 2) {
-        if (pre.showSaveDialog() != JFileChooser.CANCEL_OPTION) {
+        JasperPrint jpr = null;
+      if (!expAP.equals("JAS") || !alterExport(expAP,"ispis",jpr = getJasperPrint(dlg))) {
+        if (pre.showSaveDialog(true) != JFileChooser.CANCEL_OPTION) {
           try {
-            String ext = ((exportFileFilter)pre.getFileFilter()).getExtension();
+            String ext = pre.getFileType();
             System.out.println(getCurrentDescriptor().getName());
-            if (ext.equalsIgnoreCase("JGF"))
-              rt.saveAsJGF(pre.getSelectedFile().getPath());
-            else if (ext.equalsIgnoreCase("PDF"))
-              rt.saveAsPDF(pre.getSelectedFile().getPath());
-            else if (ext.equalsIgnoreCase("TXT"))
-              rt.saveAsText(pre.getSelectedFile().getPath());
-            else if (ext.equalsIgnoreCase("XLS") &&
+            if (ext.equals("pdf")) {
+              if (!expAP.equals("JAS")) jpr = getJasperPrint(dlg);
+              if (jpr == null) rt.saveAsPDF(pre.getFilename()); 
+              else JasperExportManager.exportReportToPdfFile(jpr, pre.getFilename());
+            } else if (ext.equals("htm") || ext.equals("html")) {
+              if (!expAP.equals("JAS")) jpr = getJasperPrint(dlg);
+              if (jpr == null) {
+                JOptionPane.showMessageDialog(dlg, "Nije moguæ izvoz izvještaja u HTML formatu!", 
+                    "Greška", JOptionPane.ERROR_MESSAGE);
+              } else JasperExportManager.exportReportToHtmlFile(jpr, pre.getFilename());
+            } else if (ext.equals("xls") &&
                 getCurrentDescriptor().getName().equals(raReportDescriptor.DYNAMIC_CLASS))
               repDynamicProvider.getInstance().xt.exportToXLS(pre.getSelectedFile());
+            else JOptionPane.showMessageDialog(dlg, "Pogrešan tip datoteke za izvoz!", 
+                "Greška", JOptionPane.ERROR_MESSAGE);
           } catch (Exception e) {
             e.printStackTrace();
           }
         }
+}//endif alterExport        
+      } else if (mode == 3) {
+        StorageDataSet ret = ReportMailDialog.showMailDialog();
+        if (ret != null) {
+          try {
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
+            String time_suffix = sdf.format(now);
+            JasperPrint jpr = getJasperPrint(dlg);
+            String fn = "SPA-ERP_ispis"+time_suffix+".pdf";
+            if (jpr == null) rt.saveAsPDF(fn); 
+            else JasperExportManager.exportReportToPdfFile(jpr, fn);
+            ReportMailDialog.sendMail(new File(fn), ret);
+          } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Slanje neuspješno!!! Greška :"+e);
+            e.printStackTrace();
+          }
+          System.out.println(ret);
+        }
+        //JOptionPane.showMessageDialog(null, "Slanje reporta e-mailom nije moguæe");
+        
       }
 //      if (rt != null) {
 //        rt.setReportTemplate(sg.com.elixir.reportwriter.xml.ModelFactory.getModel("Label"));
