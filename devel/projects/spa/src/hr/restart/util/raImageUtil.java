@@ -31,7 +31,7 @@ public class raImageUtil {
       InputStream ims = new FileInputStream(im);
       try {
         if (!ftp.storeFile(name, ims))
-          throw new Exception("storeFile error");
+          throw new Exception(ftp.getReplyString());
       } finally {
         try {
           ims.close();
