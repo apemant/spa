@@ -95,10 +95,13 @@ public class repDynamicProvider implements IDataProvider {
 
   public String getGroupValue(int row, int n) {
     if (xt != null && n < xt.getTotalGroupCount() && n >= 0) {
-      if (xt.getGroupDesc(n) == null || xt.getGroupGet(n) == null ||
-          !dM.isDataSetGetter(xt.getGroupGet(n))) return getGroup(row, n);
+      if (xt.getGroupDesc(n) == null || 
+          (xt.getGroupGet(n) == null && xt.getGroupGetDs(n) == null) ||
+          (xt.getGroupGet(n) != null && !dM.isDataSetGetter(xt.getGroupGet(n)))) 
+        return getGroup(row, n);
       xt.getDataSet().getVariant(xt.getGroup(n), row, v);
-      DataSet ds = dM.getDataByName(xt.getGroupGet(n));
+      DataSet ds = xt.getGroupGetDs(n) != null ? xt.getGroupGetDs(n) :
+          dM.getDataByName(xt.getGroupGet(n));
       ds.open();
       lookupData.getlookupData().raLocate(ds, xt.getGroup(n), v.toString());
       VarStr full = new VarStr(v.toString());
