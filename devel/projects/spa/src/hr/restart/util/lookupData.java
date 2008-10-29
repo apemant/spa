@@ -634,7 +634,7 @@ OPTIMIZACIJE       TT.ReStart("setStorageDataSet...");
         raSetView.setSort(new com.borland.dx.dataset.SortDescriptor(new String[] {colNames[0]})); //cuda radi!!!?
        // handleFilters(raSetView, lookupFilterListener);
       }
-      handleFilters(raSetView, (colFilters == null || isStringEmpty(colFilters))
+      handleFilters(raSetView, (colFilters == null || multi != null || isStringEmpty(colFilters))
           ? null : lookupFilterListener);
 //      setFilter(raSetView);
   //TT.ReStart("Refilter...");
