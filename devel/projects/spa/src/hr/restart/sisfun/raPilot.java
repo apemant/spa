@@ -146,16 +146,9 @@ class AutoComplete {
   public static final int AFTER_COMMAND_COL = 512;
   public static final int AFTER_BRACKET_FUNC = 1024;
 
-  private static HashMap table = new HashMap();
+  private HashMap table = new HashMap();
 
-  private String word;
-  private int context;
-
-  static {
-    fillTable();
-  }
-
-  private static void fillTable() {
+  private void fillTable() {
     add("SELECT ", BEGINNING | AFTER_BRACKET);
     add("DELETE FROM ", BEGINNING);
     add("INSERT INTO ", BEGINNING);
@@ -181,12 +174,12 @@ class AutoComplete {
     add("ORDER BY ", AFTER_CONDITION | AFTER_TABLES);
   }
 
-  public static void remove(String word) {
+  public void remove(String word) {
     if (table.containsKey(word))
       table.remove(word);
   }
 
-  public static void removeAll(String prefix) {
+  public void removeAll(String prefix) {
     String pref = prefix.toLowerCase();
     Iterator i = table.keySet().iterator();
     while (i.hasNext()) {
@@ -196,77 +189,86 @@ class AutoComplete {
     }
   }
 
-  public static void removeAll(int condition) {
+  public void removeAll(int condition) {
     Iterator i = table.keySet().iterator();
     while (i.hasNext()) {
       String key = (String) i.next();
-      if ((((AutoComplete) table.get(key)).context & condition) != 0)
+      if ((((Token) table.get(key)).context & condition) != 0)
         i.remove();
     }
   }
 
-  public static void add(String word, int context) {
+  public void add(String word, int context) {
     if (table.containsKey(word))
       throw new RuntimeException("Duplicate key: " + word);
-    table.put(word, new AutoComplete(word, context));
+    table.put(word, new Token(word, context));
   }
 
-  public static void addAll(String table, String[] cols) {
+  public void addAll(String table, String[] cols) {
     for (int i = 0; i < cols.length; i++)
       add(table + "." + cols[i].toLowerCase(), AFTER_DOT);
   }
 
-  public static void addAll(String[] cols) {
+  public void addAll(String[] cols) {
     for (int i = 0; i < cols.length; i++)
       add(cols[i].toLowerCase(), AFTER_COMMAND | AFTER_COMMAND_COL |
           AFTER_SELECT | AFTER_COLUMNS | AFTER_BRACKET_FUNC);
   }
 
-  public static String get(String prefix, int context) {
+  public String get(String prefix, int context) {
     String[] comps = getAll(prefix, context);
     if (comps.length != 1) return "";
     else return comps[0];
   }
 
-  public static String[] getAll(String prefix, int context) {
-    AutoComplete comp;
+  public String[] getAll(String prefix, int context) {
+    Token comp;
     ArrayList comps = new ArrayList();
     String pref = prefix.toLowerCase();
     Iterator i = table.values().iterator();
     while (i.hasNext()) {
-      comp = (AutoComplete) i.next();
+      comp = (Token) i.next();
       if (comp.word.toLowerCase().startsWith(pref) && (comp.context & context) != 0)
         comps.add(comp.word);
     }
     return (String[]) comps.toArray(new String[comps.size()]);
   }
 
-  public static void printAll() {
+  public void printAll() {
     Iterator i = table.keySet().iterator();
     while (i.hasNext())
       System.out.print(i.next() + "|");
     System.out.println();
   }
 
-  public static void printAllSorted() {
+  public void printAllSorted() {
     for (Iterator i = table.values().iterator(); i.hasNext(); ) {
-      AutoComplete item = (AutoComplete) i.next();
+      Token item = (Token) i.next();
       if ((item.context & AFTER_COMMAND_COL) != 0)
         System.out.print(item.word + "|");
     }
     System.out.println();
     System.out.println("----------------");
     for (Iterator i = table.values().iterator(); i.hasNext(); ) {
-      AutoComplete item = (AutoComplete) i.next();
+      Token item = (Token) i.next();
       if ((item.context & AFTER_DOT) != 0)
         System.out.print(item.word + "|");
     }
     System.out.println();
   }
 
-  private AutoComplete(String word, int context) {
-    this.word = word;
-    this.context = context;
+  public AutoComplete() {
+    fillTable();
+  }
+  
+  private static class Token {  
+    String word;
+    int context;
+    
+    public Token(String word, int context) {
+      this.word = word;
+      this.context = context;
+    }
   }
 }
 
@@ -285,6 +287,7 @@ class Tag {
   String kol;
   String type;
   String getter;
+  DataSet getDs;
   String desc;
   String vis;
   String defv;
@@ -482,7 +485,9 @@ public class raPilot extends raFrame {
 
   JFileChooser jf = new JFileChooser();
   
-  Interpreter bshInterpreter = new Interpreter();  
+  Interpreter bshInterpreter = new Interpreter();
+  
+  AutoComplete ac = new AutoComplete();
 
   VarStr buf = new VarStr();
   HashSet fromTables = new HashSet();
@@ -858,23 +863,23 @@ public class raPilot extends raFrame {
 //      System.out.println("different");
 
       if (fromTables.size() == 1)
-        AutoComplete.removeAll(AutoComplete.AFTER_COMMAND_COL);
+        ac.removeAll(AutoComplete.AFTER_COMMAND_COL);
       if (fromTables.size() > 0 ) {
         Iterator i = fromTables.iterator();
         while (i.hasNext())
-          AutoComplete.removeAll((String) i.next() + ".");
+          ac.removeAll((String) i.next() + ".");
       }
       fromTables.clear();
       if (tnames.length == 1)
-        AutoComplete.addAll(getTable(tnames[0]).getColumnNames(getTable(tnames[0]).getColumnCount()));
+        ac.addAll(getTable(tnames[0]).getColumnNames(getTable(tnames[0]).getColumnCount()));
       for (int i = 0; i < tnames.length; i++) {
         String tname = tnames[i].substring(tnames[i].lastIndexOf(".") + 1).toLowerCase();
         if (!fromTables.contains(tname)) {
           fromTables.add(tname);
-          AutoComplete.addAll(tname, getTable(tnames[i]).getColumnNames(getTable(tnames[i]).getColumnCount()));
+          ac.addAll(tname, getTable(tnames[i]).getColumnNames(getTable(tnames[i]).getColumnCount()));
           if (tnames.length != 1) {
 //            System.out.println("added " + tname + ".");
-            AutoComplete.add(tname + ".", AutoComplete.AFTER_COMMAND |
+            ac.add(tname + ".", AutoComplete.AFTER_COMMAND |
                              AutoComplete.AFTER_SELECT | AutoComplete.AFTER_COLUMNS);
           }
         }
@@ -885,7 +890,7 @@ public class raPilot extends raFrame {
     if (beg < pos) {
 //      System.out.println(text.substring(beg, pos));
       if (!any) {
-        String comp = AutoComplete.get(query.getText(beg, pos - beg), context);
+        String comp = ac.get(query.getText(beg, pos - beg), context);
         if (!comp.equals("")) {
           int end = pos - 1;
           while (++end < query.getDocument().getLength() && isName(end));
@@ -894,7 +899,7 @@ public class raPilot extends raFrame {
           query.replaceSelection(comp);
         }
       } else {
-        String[] possible = AutoComplete.getAll(query.getText(beg, pos - beg), context);
+        String[] possible = ac.getAll(query.getText(beg, pos - beg), context);
         if (possible != null && possible.length > 0) {
           int end = realp;
 //          while (++end < query.getDocument().getLength() && isName(end));
@@ -983,7 +988,7 @@ public class raPilot extends raFrame {
   void fillTableNames() {
     tab.open();
     for (tab.first(); tab.inBounds(); tab.next())
-      AutoComplete.add(tab.getString("IMETAB"), AutoComplete.AFTER_FROM | AutoComplete.AFTER_TABLES);
+      ac.add(tab.getString("IMETAB"), AutoComplete.AFTER_FROM | AutoComplete.AFTER_TABLES);
   }
 
   private KreirDrop getModule(String className) {
@@ -1543,16 +1548,19 @@ public class raPilot extends raFrame {
               "() u grupi:\n"+all, "Greška", JOptionPane.ERROR_MESSAGE);
       return false;
     }
-    DataSet ds;
-    try {
-      java.lang.reflect.Method m = dM.class.getMethod(getter, null);
-      ds = (DataSet) m.invoke(dM.getDataModule(), null);
-    } catch (Exception e) {
-      process.close();
-      JOptionPane.showMessageDialog(this.getWindow(), "Pogrešan getter "+getter+
-        "() u grupi:\n"+all, "Greška", JOptionPane.ERROR_MESSAGE);
-      return false;
-    }
+    DataSet ds = null;
+    if (tags.containsKey(getter) && ((Tag) tags.get(getter)).getDs != null)
+      ds = ((Tag) tags.get(getter)).getDs;
+    if (ds == null)
+      try {
+        java.lang.reflect.Method m = dM.class.getMethod(getter, null);
+        ds = (DataSet) m.invoke(dM.getDataModule(), null);
+      } catch (Exception e) {
+        process.close();
+        JOptionPane.showMessageDialog(this.getWindow(), "Pogrešan getter "+getter+
+          "() u grupi:\n"+all, "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
     String key = gr.left(f);
     String[] descs = gr.truncate(l).leftChop(f + 1).splitTrimmed('+');
     try {
@@ -1566,7 +1574,7 @@ public class raPilot extends raFrame {
       return false;
     }
     raExtendedTable t = (raExtendedTable) view.jp.getMpTable();
-    t.addToGroup(checkColumn(key), asc, descs, getter, newGroup);
+    t.addToGroup(checkColumn(key), asc, descs, ds, newGroup);
     return true;
   }
 
@@ -1592,6 +1600,7 @@ public class raPilot extends raFrame {
               "' u grupi:\n"+groups[i], "Greška", JOptionPane.ERROR_MESSAGE);
         return false;
       } catch (Exception e) {
+        e.printStackTrace();
         process.close();
         JOptionPane.showMessageDialog(this.getWindow(), "Pogrešno zadana grupa:\n"
                     +groups[i], "Greška", JOptionPane.ERROR_MESSAGE);
@@ -1826,7 +1835,7 @@ public class raPilot extends raFrame {
     return true;
   }
   
-  void executeBshCommand() {    
+  void executeBshCommand(boolean detach) {    
     tags = currq.addDefaults(tags);    
     boolean args = false;
     for (Iterator i = tags.keySet().iterator(); !args && i.hasNext(); )
@@ -1873,7 +1882,7 @@ public class raPilot extends raFrame {
       else {
         process.close();
         if (!offline) insertHistory();
-        if (!offline) showReturnValue(ret);        
+        if (!offline && (!detach || ret != null)) showReturnValue(ret);        
       }
     } catch (EvalError e) {
       e.printStackTrace();
@@ -1910,7 +1919,7 @@ public class raPilot extends raFrame {
   void OKPress(boolean detach) {
     currq = new Query(query.getText(), tags);
     if (!isSqlCommand(currq.command)) {
-      executeBshCommand();
+      executeBshCommand(detach);
       return;
     }
     String sql = currq.command.replace('\n', ' ').trim();
@@ -1993,7 +2002,8 @@ public class raPilot extends raFrame {
       }, 1);
     }
     offline = busy = false;
-    this.setTitle("SQL Pilot - " + dm.getDatabase1().getConnection().getConnectionURL());
+    this.setTitle("SQL Pilot - " + dm.getDatabase1().getConnection().getConnectionURL() +
+        (this == inst ? "" : " (kopija)"));
     super.show();
   }
 
@@ -2305,7 +2315,7 @@ public class raPilot extends raFrame {
         if (tname.equalsIgnoreCase("tablice")) {
           tab.refresh();
 //          tab = Tablice.getDataModule().getFilteredDataSet("", true);
-          AutoComplete.removeAll(AutoComplete.AFTER_FROM);
+          ac.removeAll(AutoComplete.AFTER_FROM);
           fillTableNames();
         }
       }
@@ -2406,6 +2416,15 @@ public class raPilot extends raFrame {
     nav.addOption(new raNavAction("Novi prikaz", raImages.IMGTABLE, KeyEvent.VK_F9) {
       public void actionPerformed(ActionEvent e) {
         begin(true);
+      }
+    });
+    nav.addOption(new raNavAction("Novi editor", raImages.IMGALIGNJUSTIFY, KeyEvent.VK_N, KeyEvent.CTRL_MASK) {
+      public void actionPerformed(ActionEvent e) {
+        raPilot real = inst;
+        raPilot np = new raPilot();
+        inst = real;
+        startFrame.getStartFrame().centerFrame(np, 0, "");
+        np.show();
       }
     });
     nav.registerNavBarKeys(this);
@@ -2646,29 +2665,32 @@ class PropsDialog {
   boolean Validacija() {
     if (data.getString("VRSTA").equals("P")) return true;
     if (data.getString("GET").length() > 0) {
-      DataSet ds;
+      DataSet ds = null;
       String s;
-      try {
-//        System.out.println(data.getString("GET"));
-        java.lang.reflect.Method m = dM.class.getMethod(data.getString("GET"), null);
-        ds = (DataSet) m.invoke(dM.getDataModule(), null);
-      } catch (Exception e) {
-        e.printStackTrace();
-        apan.jraGet.requestFocus();
-        JOptionPane.showMessageDialog(edit, "Pogrešan getter!",
-          "Greška", JOptionPane.ERROR_MESSAGE);
-        return false;
-      }
-      if (Valid.getValid().isEmpty(apan.jraKol) || Valid.getValid().isEmpty(apan.jraVis))
-        return false;
-      StringTokenizer kol = new StringTokenizer(data.getString("KOLONE"), ",");
-      while (kol.hasMoreTokens())
-        if (ds.hasColumn(s = kol.nextToken().trim()) == null) {
-          apan.jraKol.requestFocus();
-          JOptionPane.showMessageDialog(edit, "Nepostoje\u0107a kolona: "+s+"!",
-                                        "Greška", JOptionPane.ERROR_MESSAGE);
+      if (data.getString("GET").startsWith("get"))
+        try {
+  //        System.out.println(data.getString("GET"));
+          java.lang.reflect.Method m = dM.class.getMethod(data.getString("GET"), null);
+          ds = (DataSet) m.invoke(dM.getDataModule(), null);
+        } catch (Exception e) {
+          e.printStackTrace();
+          apan.jraGet.requestFocus();
+          JOptionPane.showMessageDialog(edit, "Pogrešan getter!",
+            "Greška", JOptionPane.ERROR_MESSAGE);
           return false;
         }
+      if (Valid.getValid().isEmpty(apan.jraKol) || Valid.getValid().isEmpty(apan.jraVis))
+        return false;
+      if (ds != null) {
+        StringTokenizer kol = new StringTokenizer(data.getString("KOLONE"), ",");
+        while (kol.hasMoreTokens())
+          if (ds.hasColumn(s = kol.nextToken().trim()) == null) {
+            apan.jraKol.requestFocus();
+            JOptionPane.showMessageDialog(edit, "Nepostoje\u0107a kolona: "+s+"!",
+                                          "Greška", JOptionPane.ERROR_MESSAGE);
+            return false;
+          }
+      }
       StringTokenizer vis = new StringTokenizer(data.getString("VISKOL"), ",");
       while (vis.hasMoreTokens()) {
         if (!Aus.isNumber(vis.nextToken())) {
@@ -2703,6 +2725,7 @@ class ArgumentDialog {
   ArrayList tagnames = new ArrayList();
   StorageDataSet data;
   JTextComponent[] td;
+  Interpreter bshInterpreter;
   boolean bshell;
 
   OKpanel okp = new OKpanel() {
@@ -2797,6 +2820,20 @@ class ArgumentDialog {
             tf.forceFocLost();
         }
     }
+    try {
+      bshInterpreter = new Interpreter();
+      bshInterpreter.eval(
+          "import hr.restart.baza.*;" +
+          "import hr.restart.util.*;" +
+          "import hr.restart.swing.*;" +          
+          "import com.borland.dx.dataset.*;" +
+          "import com.borland.dx.sql.dataset.*;" +
+          "import com.borland.jb.util.*;" +
+          "import java.math.BigDecimal;"
+      );
+    } catch (EvalError e) { 
+      e.printStackTrace();
+    }
   }
 
   private void createPanel() {
@@ -2827,6 +2864,7 @@ class ArgumentDialog {
     for (int i = 0; i < tagnames.size(); i++) {
       String key = (String) tagnames.get(i);
       Tag t = (Tag) tags.get(key);
+      boolean vis = t.defv == null || !t.defv.equals("*");
       int haspair = -1;
       int wid = t.wid;
       if (wid == 0) wid = 100;
@@ -2849,7 +2887,7 @@ class ArgumentDialog {
         if (haspair >= 0 && !t.type.equals(t.CHAR)) continue;
       }
       JLabel l = new JLabel(t.desc);
-      pan.add(l, new XYConstraints(15, y, -1, -1));
+      if (vis) pan.add(l, new XYConstraints(15, y, -1, -1));
       if (t.getter.length() == 0) {
         JraTextField tf = new JraTextField();
         tf.setDataSet(data);
@@ -2857,13 +2895,13 @@ class ArgumentDialog {
         td[i] = tf;
         if (cols[i].getDataType() == Variant.TIMESTAMP)
           tf.setHorizontalAlignment(SwingConstants.CENTER);
-        pan.add(tf, new XYConstraints(150, y, wid, -1));
+        if (vis) pan.add(tf, new XYConstraints(150, y, wid, -1));
         if (haspair > 0 && !t.type.equals(t.CHAR)) {
           JraTextField tf2 = new JraTextField();
           tf2.setDataSet(data);
           tf2.setColumnName((String) tagnames.get(haspair));
           td[haspair] = tf2;
-          pan.add(tf2, new XYConstraints(155+wid, y, wid, -1));
+          if (vis) pan.add(tf2, new XYConstraints(155+wid, y, wid, -1));
           if (cols[i].getDataType() == Variant.TIMESTAMP) {
             tf2.setHorizontalAlignment(SwingConstants.CENTER);
             new raDateRange(tf, tf2);
@@ -2871,7 +2909,11 @@ class ArgumentDialog {
         }
       } else {
         String[] kol = new VarStr(t.kol).splitTrimmed(',');
-        JlrNavField nfm = new JlrNavField();
+        JlrNavField nfm = new JlrNavField() {
+          public void after_lookUp() {
+            checkDynamicBind(getColumnName());
+          }
+        };
         JraButton b = new JraButton();
         nfm.setDataSet(data);
         nfm.setColumnName(key);
@@ -2881,25 +2923,24 @@ class ArgumentDialog {
           JlrNavField nfo = new JlrNavField();
           nfm.setColNames(new String[] {kol[1]});
           nfm.setTextFields(new JTextComponent[] {nfo});
-
           nfo.setNavProperties(nfm);
           nfo.setColumnName(kol[1]);
           nfo.setSearchMode(1);
           int twid = wid > 100 ? 350 : (wid < 100 ? 200 : 275);
           if (wid > 100) wid = 100;
           if (200 + twid + wid > maxw) maxw = 200 + twid + wid;
-          pan.add(nfm, new XYConstraints(150, y, wid, -1));
-          pan.add(nfo, new XYConstraints(155+wid, y, twid, -1));
-          pan.add(b, new XYConstraints(160+wid+twid, y, 21, 21));
+          if (vis) pan.add(nfm, new XYConstraints(150, y, wid, -1));
+          if (vis) pan.add(nfo, new XYConstraints(155+wid, y, twid, -1));
+          if (vis) pan.add(b, new XYConstraints(160+wid+twid, y, 21, 21));
         } else {
-          pan.add(nfm, new XYConstraints(150, y, wid, -1));
-          pan.add(b, new XYConstraints(155+wid, y, 21, 21));
+          if (vis) pan.add(nfm, new XYConstraints(150, y, wid, -1));
+          if (vis) pan.add(b, new XYConstraints(155+wid, y, 21, 21));
         }
         nfm.setSearchMode(0);
         addNastyProps(nfm, t);
         td[i] = nfm;
       }
-      y += 25;
+      if (vis) y += 25;
     }
     for (int i = 0; i < tagnames.size(); i++) {
       Tag t = (Tag) tags.get(tagnames.get(i));
@@ -2913,20 +2954,50 @@ class ArgumentDialog {
     xy.setWidth(maxw);
     xy.setHeight(y + 15);
   }
+  
+  void checkDynamicBind(String key) {
+    try {
+      for (int i = 0; i < tagnames.size(); i++) {
+        String tname = (String) tagnames.get(i);
+        if (!tname.equals(key)) {
+          Tag t = (Tag) tags.get(tname);
+          if (!t.getter.startsWith("get") && td[i] instanceof JlrNavField) {
+            for (int j = 0; j < tagnames.size(); j++) {
+              String tkey = (String) tagnames.get(j);
+              Tag tt = (Tag) tags.get(tkey);
+              if (tt.type.equals(tt.CHAR))
+                bshInterpreter.set(tkey, data.getString(tkey));
+              else if (tt.type.equals(tt.INT))
+                bshInterpreter.set(tkey, data.getInt(tkey));
+              else if (tt.type.equals(tt.FLOAT2) || tt.type.equals(tt.FLOAT3))
+                bshInterpreter.set(tkey, data.getBigDecimal(tkey));
+              else bshInterpreter.set(tkey, data.getTimestamp(tkey));
+            }
+            t.getDs = (DataSet) bshInterpreter.eval(t.getter);
+            ((JlrNavField) td[i]).setRaDataSet(t.getDs);
+          }
+        }
+      }
+    } catch (EvalError e) {
+      System.err.println("error "+e);
+    }
+  }
 
   boolean Validacija() {
     if (!bshell) {
-      for (int i = 0; i < td.length; i++) {
-        if (td[i] instanceof JlrNavField) ((JlrNavField) td[i]).forceFocLost();
+      for (int i = 0; i < td.length; i++)
+        if (pan.isAncestorOf(td[i])) {
+          if (td[i] instanceof JlrNavField) ((JlrNavField) td[i]).forceFocLost();
           if (Valid.getValid().isEmpty(td[i]))
             return false;
-      }
+        }
     }
 
     for (int i = 0; i < tagnames.size(); i++) {
       Tag t = (Tag) tags.get(tagnames.get(i));
       data.getVariant((String) tagnames.get(i), t.getValue());
     }
+    checkDynamicBind("");
     return true;
   }
 
@@ -2938,8 +3009,11 @@ class ArgumentDialog {
         visc[i] = Integer.parseInt(vis[i]);
       nf.setVisCols(visc);
 
-      java.lang.reflect.Method m = dM.class.getMethod(t.getter, null);
-      nf.setRaDataSet((DataSet) m.invoke(dM.getDataModule(), null));
+      if (t.getter.startsWith("get")) {
+        java.lang.reflect.Method m = dM.class.getMethod(t.getter, null);
+        nf.setRaDataSet((DataSet) m.invoke(dM.getDataModule(), null));
+        t.getDs = nf.getRaDataSet();
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }
