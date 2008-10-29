@@ -997,7 +997,7 @@ public abstract class KreirDrop {
     return line.toString();
   } */
 
-  public String getFieldsLine(DataSet table, String sep) {
+  public static String getFieldsLine(DataSet table, String sep) {
     VarStr line = new VarStr();
     VarStr part = new VarStr();
     Variant v = new Variant();
