@@ -30,7 +30,8 @@ public class raImageUtil {
       ftp.deleteFile(name);
       InputStream ims = new FileInputStream(im);
       try {
-        ftp.storeFile(name, ims);
+        if (!ftp.storeFile(name, ims))
+          throw new Exception("storeFile error");
       } finally {
         try {
           ims.close();
