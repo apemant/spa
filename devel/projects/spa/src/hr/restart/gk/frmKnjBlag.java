@@ -16,10 +16,13 @@
 **
 ****************************************************************************/
 package hr.restart.gk;
+import hr.restart.baza.Blagizv;
+import hr.restart.baza.Condition;
 import hr.restart.blpn.frmUplIspl;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.raTransaction;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.raKonta;
 
 import java.math.BigDecimal;
@@ -34,8 +37,12 @@ public class frmKnjBlag extends frmKnjizenje {
   }
   public boolean okPress() {
     if (!getKnjizenje().startKnjizenje(this)) return false;
-    izvjestaji = Util.getNewQueryDataSet("SELECT * FROM Blagizv WHERE status = 'Z' and knjig = '"+hr.restart.zapod.OrgStr.getKNJCORG(false)+
-        "' and datdo < '"+new java.sql.Date(Util.getUtil().addDays(dataSet.getTimestamp("DATUMDO"),1).getTime()).toString()+"'");
+    izvjestaji = Blagizv.getDataModule().getFilteredDataSet(
+        Condition.whereAllEqual(new String[]{"STATUS","KNJIG"}, new String[] {"Z",OrgStr.getKNJCORG(false)})
+        .and(Condition.till("DATDO", dataSet.getTimestamp("DATUMDO"))));
+//      Util.getNewQueryDataSet("SELECT * FROM Blagizv WHERE status = 'Z' and knjig = '"+hr.restart.zapod.OrgStr.getKNJCORG(false)+
+//        "' and datdo < '"+new java.sql.Date(Util.getUtil().addDays(dataSet.getTimestamp("DATUMDO"),1).getTime()).toString()+"'");
+    izvjestaji.open();
     if (izvjestaji.getRowCount() == 0) {
       getKnjizenje().setErrorMessage("Nema podataka za knjiženje!");
       return false;
