@@ -79,14 +79,15 @@ public class repUplIspl implements sg.com.elixir.reportwriter.datasource.IDataPr
 //    return "Blagajna br. " + getCBLAG() + " Valuta: " + getOZNVAL() + " od " + getDATOD() + " do " + getDATDO();
 //  }
   public String getZaPeriod(){
+    System.err.println("getZaPeriod");
     if (fui.bezgotovinska){
       if (ds.getTimestamp("DATOD").equals(ds.getTimestamp("DATDO")))
-        return "Bezgotovinska blagajna br. " + getCBLAG() + " Valuta: " + getOZNVAL() + " za " + getDATOD();
-      return "Bezgotovinska blagajna br. " + getCBLAG() + " Valuta: " + getOZNVAL() + " od " + getDATOD() + " do " + getDATDO();
+        return "Bezgotovinska blagajna br. " + getCBLAG() + " za " + getDATOD();
+      return "Bezgotovinska blagajna br. " + getCBLAG() + " od " + getDATOD() + " do " + getDATDO();
     } else {
       if (ds.getTimestamp("DATOD").equals(ds.getTimestamp("DATDO")))
-        return "Blagajna br. " + getCBLAG() + " Valuta: " + getOZNVAL() + " za " + getDATOD();
-      return "Blagajna br. " + getCBLAG() + " Valuta: " + getOZNVAL() + " od " + getDATOD() + " do " + getDATDO();
+        return "Blagajna br. " + getCBLAG() + " za " + getDATOD();
+      return "Blagajna br. " + getCBLAG() + " od " + getDATOD() + " do " + getDATDO();
     }
   }
   public String getBROJKONTA() {
@@ -171,7 +172,7 @@ public class repUplIspl implements sg.com.elixir.reportwriter.datasource.IDataPr
     return re.getLogoMjesto();
   }
   public String getDatumIsp(){
-    return rdu.dataFormatter(ds.getTimestamp("DATUM"));
+    return rdu.dataFormatter(Valid.getValid().getToday());
 //    return rdu.dataFormatter(vl.getToday());
   }
 }

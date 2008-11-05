@@ -16,14 +16,14 @@
      <Property Name="Record Source">JDOrepBlagIzv</Property>
      <Property Name="Page Header">All Pages</Property>
      <Property Name="Page Footer">All Pages</Property>
-     <Property Name="Width">15540</Property>
+     <Property Name="Width">15980</Property>
      <Property Name="Grid On">No</Property>
      <Property Name="Snap to grid">No</Property>
      <Property Name="Grid X">5</Property>
      <Property Name="Grid Y">5</Property>
      <Property Name="Version">1.50</Property>
-     <Property Name="Last Modified">Wed Feb 23 18:52:51 CET 2005</Property>
-     <HiddenProperty Name="Template Path">C:\devel\projects\spa\src\hr\restart\blpn\reports\</HiddenProperty>
+     <Property Name="Last Modified">Tue Oct 28 12:08:16 CET 2008</Property>
+     <HiddenProperty Name="Template Path">/Users/andrej/Documents/workspace/devel/projects/spa/src/hr/restart/blpn/reports/</HiddenProperty>
      <HiddenProperty Name="Text_Count">48</HiddenProperty>
      <HiddenProperty Name="Label_Count">30</HiddenProperty>
      <HiddenProperty Name="Image_Count">0</HiddenProperty>
@@ -465,9 +465,9 @@
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
                <Property Name="Left">0</Property>
-               <Property Name="Top">1600</Property>
-               <Property Name="Width">15680</Property>
-               <Property Name="Height">280</Property>
+               <Property Name="Top">1480</Property>
+               <Property Name="Width">15640</Property>
+               <Property Name="Height">500</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
                <Property Name="Border Style">Transparent</Property>
@@ -480,7 +480,7 @@
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">Yes</Property>
+               <Property Name="Lock">No</Property>
                <Property Name="Auto Wrap">Yes</Property>
           </Model>
           <Model Name="Text47">
@@ -497,7 +497,7 @@
                <Property Name="Left">0</Property>
                <Property Name="Top">860</Property>
                <Property Name="Width">15700</Property>
-               <Property Name="Height">760</Property>
+               <Property Name="Height">560</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
                <Property Name="Border Style">Transparent</Property>
