@@ -17,9 +17,12 @@
 ****************************************************************************/
 package hr.restart.blpn;
 
+import hr.restart.baza.Blagajna;
+import hr.restart.baza.Condition;
 import hr.restart.baza.Stavblag;
 import hr.restart.baza.dM;
 import hr.restart.baza.raDataSet;
+import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.raTransaction;
@@ -541,6 +544,19 @@ public class sgStuff {
     
     vl.execSQL(qstr);
     vl.RezSet.open();
+    if (vl.RezSet.getInt("BRIZV") < 1) {
+      QueryDataSet blags = Blagajna.getDataModule().getFilteredDataSet(Condition.whereAllEqual(new String[] {"KNJIG","CBLAG","OZNVAL"}, presset));
+      blags.open();
+      if (blags.getRowCount() == 0) {
+        System.out.println("!!!ERRROR: Nema blagajne!!!");
+      } else {
+        if (vl.findYear(blags.getTimestamp("DATIZV")).equals(vl.findYear(presset.getTimestamp("DATOD-from")))) {
+          return blags.getInt("BRIZV")+1;
+        } else {
+          return 1;
+        }
+      }
+    }
     return vl.RezSet.getInt("BRIZV") + 1;
   }
   public boolean isSepNumUI() {
@@ -867,8 +883,8 @@ public class sgStuff {
         "' and blagizv.cblag=" + presset.getInt("CBLAG") +
         " and blagizv.oznval='" + presset.getString("OZNVAL") + "' " +
         "and blagizv.godina=" + presset.getShort("GODINA") + " " +
-        "and blagizv.status = 'U'" +
-        "and blagizv.brizv=" + prethodni + "";
+        "and blagizv.status = 'U'"
+        +"and blagizv.brizv=" + prethodni + "";
 //System.out.println("qstr getSTATUSPREDIZV " +qstr);
     vl.execSQL(qstr);
     vl.RezSet.open();
@@ -878,7 +894,16 @@ public class sgStuff {
     }
     return vl.RezSet.getString("STATUS");
   }
-
+  public boolean isExistUIzv(StorageDataSet presset) {
+    String qstr = "select blagizv.status from blagizv where blagizv.knjig='" +
+        presset.getString("KNJIG") +
+        "' and blagizv.cblag=" + presset.getInt("CBLAG") +
+        " and blagizv.oznval='" + presset.getString("OZNVAL") + "' " +
+        "and blagizv.status = 'U'";
+    vl.execSQL(qstr);
+    vl.RezSet.open();
+    return !vl.RezSet.isEmpty();
+  }
   public boolean getJeLiBlagajnaBezgotovinska(String knjig, int cblag, String oznval){
     String qstr = "select brezgot from blagajna where knjig ='" + knjig + "' and cblag =" + cblag + " and oznval='" + oznval + "'";
     QueryDataSet qds = ut.getNewQueryDataSet(qstr);
@@ -1304,16 +1329,18 @@ public class sgStuff {
    *@return          Description of the Return Value
    */
   public String updateBlagajnaKodArhiviranja(QueryDataSet master, StorageDataSet presset) {
-    return "update blagajna " +
+    String s = "update blagajna " +
         "set " +
-        "saldo='" + master.getBigDecimal("UKSALDO") + "', " +
-        "pvsaldo='" + master.getBigDecimal("PVUKSALDO") +
-        "', datizv='" + master.getTimestamp("DATDO") +
+        "saldo=" + master.getBigDecimal("UKSALDO") + ", " +
+        "pvsaldo=" + master.getBigDecimal("PVUKSALDO") +
+        ", datizv='" + master.getTimestamp("DATDO") +
         "', brizv=" + master.getInt("BRIZV") +
         " where " +
         "cblag=" + presset.getInt("CBLAG") +
         " and oznval='" + presset.getString("OZNVAL") +
         "' and knjig='" + presset.getString("KNJIG") + "'";
+    System.out.println(s);
+    return s;
   }
 
   /**

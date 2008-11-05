@@ -139,6 +139,7 @@ public class frmUplIspl extends raMasterDetail {
     System.out.println("sweepSK - MODE = "+raDetail.getMode() + "key = "+blid);
     QueryDataSet sk = getSkStavkerad(blid);
     if (sk.getRowCount() > 0) {
+      if (!transact && !sweepQuestion()) return;
       sk.deleteAllRows();
       if (transact) {
         raTransaction.saveChanges(sk);
@@ -148,6 +149,11 @@ public class frmUplIspl extends raMasterDetail {
     }
   }
   
+  private boolean sweepQuestion() {
+     return JOptionPane.showConfirmDialog(getContentPane(), "Prekidom unosa stavke brišu se sve unešene URE vezane uz tu stavku!! Obrisati URE?", "Pozor!!!", 
+         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION;
+  }
+
   public void AfterDeleteDetail() {
     updateDelete();
     sweepSK(true, lastBLID);
@@ -312,8 +318,8 @@ public class frmUplIspl extends raMasterDetail {
       rcc.setLabelLaF(this.jpDetail.jraPvizdatak, false);
       rcc.setLabelLaF(this.jpDetail.jraPvprimitak, false);
       rcc.setLabelLaF(this.jpDetail.jraTecaj, false);
-        this.getDetailSet().setString("CSKL", "1");
-        jpDetail.setStavka(this.getDetailSet().getString("CSKL"));
+      this.getDetailSet().setString("CSKL", "1");
+      jpDetail.setStavka(this.getDetailSet().getString("CSKL"));
       jpDetail.jraDatum.requestFocus();
       jpDetail.jraDatum.selectAll();
     } else if (mode == 'I') {
@@ -326,9 +332,13 @@ public class frmUplIspl extends raMasterDetail {
       jpDetail.jraDatum.selectAll();
     }
     lastBLID = getBLUID();
-    boolean isUra = getSkStavkerad().getRowCount() > 0;
+    StorageDataSet sksr = getSkStavkerad();
+    boolean isUra = sksr.getRowCount() > 0;
     containsURA(isUra);
-    if (!isUra) jpDetail.initAdvancedDetail(mode);
+    if (isUra) {
+      getDetailSet().setBigDecimal("IZDATAK", frmSalKon.getBlagIznos(sksr));
+      getDetailSet().setTimestamp("DATUM", sksr.getTimestamp("DATPRI"));
+    } else jpDetail.initAdvancedDetail(mode);
   }
   
   private boolean isBigDecimalFieldZero(String field){
@@ -445,7 +455,7 @@ public class frmUplIspl extends raMasterDetail {
           JOptionPane.ERROR_MESSAGE);
       return false;
     }
-    if (mode == 'N' && ss.getSTATUSPREDIZV(preselectData).trim().equals("U")) {
+    if (mode == 'N' && ss.isExistUIzv(preselectData)) {
       jpMaster.jraDatod.requestFocus();
       JOptionPane.showMessageDialog(getJPanelMaster(),
           new hr.restart.swing.raMultiLineMessage(new String[]{"Prethodni izvještaj nije zaklju\u010Den", "Nemogu\u0107e je otvaranje novog izvještaja"}),
@@ -462,14 +472,16 @@ public class frmUplIspl extends raMasterDetail {
           JOptionPane.ERROR_MESSAGE);
       return false;
     }
-    this.getMasterSet().setInt("BRIZV", ss.getNoviBrIzv(preselectData));
-    BigDecimal pr = ss.getPRIJENOS(preselectData);
-    this.getMasterSet().setBigDecimal("PRIJENOS", pr);
-    this.getMasterSet().setBigDecimal("UKSALDO", pr);
-    BigDecimal pvp = ss.getPVPRIJENOS(preselectData);
-    this.getMasterSet().setBigDecimal("PVPRIJENOS", pvp);
-    this.getMasterSet().setBigDecimal("PVUKSALDO", pvp);
-    raMaster.setEnabledNavAction(raMaster.getNavBar().getNavContainer().getNavActions()[5], true);
+    if (mode == 'N') {
+      this.getMasterSet().setInt("BRIZV", ss.getNoviBrIzv(preselectData));
+      BigDecimal pr = ss.getPRIJENOS(preselectData);
+      this.getMasterSet().setBigDecimal("PRIJENOS", pr);
+      this.getMasterSet().setBigDecimal("UKSALDO", pr);
+      BigDecimal pvp = ss.getPVPRIJENOS(preselectData);
+      this.getMasterSet().setBigDecimal("PVPRIJENOS", pvp);
+      this.getMasterSet().setBigDecimal("PVUKSALDO", pvp);
+      raMaster.setEnabledNavAction(raMaster.getNavBar().getNavContainer().getNavActions()[5], true);
+    }
     return true;
   }
 
@@ -783,6 +795,8 @@ public class frmUplIspl extends raMasterDetail {
           raTransaction.runSQL(ss.updateBlagajnaKodArhiviranja(getMasterSet(), preselectData));
         }
         catch (Exception ex) {
+          ex.printStackTrace();
+          return false;
         }
         if (!arhiviranje()) {
           return false;
@@ -790,10 +804,13 @@ public class frmUplIspl extends raMasterDetail {
         saveChanges(getMasterSet());
       return true;
       }};
-    newTransaction.execTransaction();
-    potvrdiSKStavkerad();
-    getMasterSet().refresh();
-    raMaster.getJpTableView().fireTableDataChanged();
+    if (newTransaction.execTransaction()) {
+      potvrdiSKStavkerad();
+      getMasterSet().refresh();
+      raMaster.getJpTableView().fireTableDataChanged();
+    } else {
+      JOptionPane.showMessageDialog(getContentPane(), "Potvrda nije uspjela !!!");
+    }
   }
 
   private void potvrdiSKStavkerad() {
