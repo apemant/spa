@@ -238,7 +238,7 @@ public class repUplIsplUplatnice implements raReportData {//implements sg.com.el
 //    return rdu.dataFormatter(vl.getToday());
   }
   public String getDatumIspSkup(){
-    return rdu.dataFormatter(vl.getToday());
+    return getDatumIsp();
 //    return rdu.dataFormatter(vl.getToday());
   }
 }
