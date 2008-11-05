@@ -68,6 +68,7 @@ import javax.swing.JTable;
 
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
@@ -842,9 +843,12 @@ public class frmSalKon extends raMasterDetail {
    * @return
    */
   public BigDecimal getBlagIznos() {
+    return getBlagIznos(getMasterSet());
+  }
+  public static BigDecimal getBlagIznos(StorageDataSet masterSet) {
     BigDecimal ret = Aus.zero2;
-    for (getMasterSet().first(); getMasterSet().inBounds(); getMasterSet().next()) {
-      ret = ret.add(getMasterSet().getBigDecimal("SALDO"));
+    for (masterSet.first(); masterSet.inBounds(); masterSet.next()) {
+      ret = ret.add(masterSet.getBigDecimal("SALDO"));
     }
     return ret;
   }
