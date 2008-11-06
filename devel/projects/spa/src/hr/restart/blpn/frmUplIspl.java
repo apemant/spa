@@ -150,8 +150,12 @@ public class frmUplIspl extends raMasterDetail {
   }
   
   private boolean sweepQuestion() {
-     return JOptionPane.showConfirmDialog(getContentPane(), "Prekidom unosa stavke brišu se sve unešene URE vezane uz tu stavku!! Obrisati URE?", "Pozor!!!", 
-         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION;
+//    return JOptionPane.showConfirmDialog(getContentPane(), "Prekidom unosa stavke brišu se sve unešene URE vezane uz tu stavku!! Obrisati URE?", "Pozor!!!", 
+//        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION;
+     JOptionPane.showMessageDialog(getContentPane(), 
+         "Prekidom unosa stavke ostaju se sve unešene URE vezane uz tu stavku!! Te URE æe se pojaviti na slijedeæoj novoj stavci pa ih pobrišite ruèno ili ostavite", "Pozor!!!", 
+         JOptionPane.WARNING_MESSAGE);
+     return false;
   }
 
   public void AfterDeleteDetail() {
@@ -222,6 +226,10 @@ public class frmUplIspl extends raMasterDetail {
     }
     maketmps();
     lastBLID = getBLUID();
+    if (getSkStavkerad().getRowCount() > 0) {
+      JOptionPane.showMessageDialog(getContentPane(), "Potrebno je prvo obrisati URE vezane uz ovu stavku");
+      return false;
+    }
     return true;
   }
 
@@ -614,7 +622,7 @@ public class frmUplIspl extends raMasterDetail {
   private void jbInit() throws Exception {
 
     this.setMasterSet(dm.getBlagizv());
-    this.setMasterDeleteMode(this.DELDETAIL);
+    this.setMasterDeleteMode(this.EMPTYDEL);
     this.setVisibleColsMaster(new int[]{1, 4, 7, 8, 10, 11});
     this.setMasterKey(new String[]{"KNJIG", "CBLAG", "OZNVAL", "GODINA", "BRIZV"});
     jpMaster = new jpUplIsplMaster(this);
