@@ -1159,6 +1159,10 @@ public class frmSalKon extends raMasterDetail {
   }*/
 
   private void Proknjizi() {
+    if (getBlagajna() != null || getMasterSet().getString("ZIRO").startsWith("BL#:")) {
+      JOptionPane.showMessageDialog(getContentPane(), "Raèuni kroz blagajnu se potvrðuju zajedno sa blagajnièkim izvještajem");
+      return;
+    }
     if (getMasterSet().rowCount() == 0) return;
     BigDecimal sal = getBalance();
     if (sal.signum() != 0) {
