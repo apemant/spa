@@ -49,6 +49,7 @@ import javax.swing.JPanel;
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class frmUplIspl extends raMasterDetail {
@@ -197,12 +198,19 @@ public class frmUplIspl extends raMasterDetail {
       
       this.getMasterSet().setTimestamp("DATDO", this.getMasterSet().getTimestamp("DATOD"));
       
-      this.getDetailSet().first();
-      do {
-        if (this.getMasterSet().getTimestamp("DATDO").before(this.getDetailSet().getTimestamp("DATUM"))) {
-          this.getMasterSet().setTimestamp("DATDO", this.getDetailSet().getTimestamp("DATUM"));
+//      this.getDetailSet().first();
+//      do {
+//        if (this.getMasterSet().getTimestamp("DATDO").before(this.getDetailSet().getTimestamp("DATUM"))) {
+//          this.getMasterSet().setTimestamp("DATDO", this.getDetailSet().getTimestamp("DATUM"));
+//        }
+//      } while (this.getDetailSet().next());
+      Variant v = new Variant();
+      for (int r = 0; r < getDetailSet().rowCount(); r++) {
+        getDetailSet().getVariant("DATUM", r, v);
+        if (this.getMasterSet().getTimestamp("DATDO").before(v.getTimestamp())) {
+          this.getMasterSet().setTimestamp("DATDO", v.getTimestamp());
         }
-      } while (this.getDetailSet().next());
+      }
     }
     
     try {
@@ -872,6 +880,8 @@ public class frmUplIspl extends raMasterDetail {
     rcc.setLabelLaF(jpDetail.jlrNaziv, !contains);
     rcc.setLabelLaF(jpDetail.jbSelCorg, !contains);
     rcc.EnabDisabAll(jpDetail.advui, !contains);
+    jpDetail.advui.tsk.setLabelLafPar(!contains);
+    if (contains) jpDetail.advui.tsk.rebind(getDetailSet());
   }
   
   public static String getFakeURABrojkonta() {

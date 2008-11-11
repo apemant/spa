@@ -152,7 +152,7 @@ public class jpTemSK extends JPanel {
     }
     
     enablejp = _enabled;
-    rebind(enablejp?qds:null,!qdsIsSkstavke);
+    rebind(enablejp||alwaysEnablePar()?qds:null,!qdsIsSkstavke||alwaysEnablePar());
     if (qdsIsSkstavke||alwaysEnablePar()) jlrCpar.setDataSet(rm.getRaQueryDataSet());
     jraDatdok.setDataSet(enablejp ? qds : rm.getRaQueryDataSet());
 
@@ -199,5 +199,14 @@ public class jpTemSK extends JPanel {
    */
   private boolean alwaysEnablePar() {
     return (frmParam.getParam("gk","finkonpar_tem","N","Unosi li se partner kroz temeljnicu i na financijska konta").equals("D"));
+  }
+  /**
+   * Radi setLabelLaf(*Cpar, enabler || finkonpar_tem = D)
+   * @param enabled
+   */
+  public void setLabelLafPar(boolean enabled) {
+    rcc.setLabelLaF(jlrCpar,(enabled||alwaysEnablePar()));
+    rcc.setLabelLaF(jlrNazpar,(enabled||alwaysEnablePar()));
+    rcc.setLabelLaF(jbSelCpar,(enabled||alwaysEnablePar()));
   }
 } 
