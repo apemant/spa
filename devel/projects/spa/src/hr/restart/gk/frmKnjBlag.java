@@ -77,9 +77,17 @@ System.out.println("Usao u nenormalno");
                 stavka.setString("OPIS","Stavke -".concat(opisIzvj).concat(empty50).substring(0,50));
                 stavka.setTimestamp("DATDOK",izvjestaji.getTimestamp("DATDO"));
               } else {
+                stavka.setInt("CPAR", stavbl.getInt("CPAR"));
                 stavka.setString("OPIS",stavbl.getString("OPIS").concat(opisIzvj).concat(empty50).substring(0,50));
                 stavka.setTimestamp("DATDOK",stavbl.getTimestamp("DATDOK"));
               }
+              if (isSk(uis)) {
+                stavka.setTimestamp("DATDOSP", stavbl.getTimestamp("DATUM"));
+                stavka.setString("BROJDOK", uis.getString("BROJDOK"));
+                stavka.setString("VRDOK",frmNalozi.determineVrdok(uis, false));
+                stavka.setInt("CPAR", stavbl.getInt("CPAR"));
+              } 
+
               if (!getKnjizenje().saveStavka()) return false;
             }
           } else {
@@ -109,20 +117,15 @@ System.out.println("Usao u nenormalno");
             } else {
               stavka.setString("OPIS",stavbl.getString("OPIS").concat(opisIzvj).concat(empty50).substring(0,50));
               stavka.setTimestamp("DATDOK",stavbl.getTimestamp("DATDOK"));
+              stavka.setInt("CPAR", stavbl.getInt("CPAR"));
             }
-            boolean isSK;
-            try {
-              isSK = raKonta.isSaldak(stavbl.getString("BROJKONTA"));
-            } catch (Exception e) {
-              System.out.println("raKonta.isSaldak je puko ko kokica "+e);
-              isSK = false;
-            }
+            boolean isSK = isSk(stavbl);
             if (isSK) {
               stavka.setTimestamp("DATDOSP", stavbl.getTimestamp("DATDOSP"));
               stavka.setString("BROJDOK", stavbl.getString("BROJDOK"));
-              stavka.setInt("CPAR", stavbl.getInt("CPAR"));
               stavka.setString("BROJKONTA",stavbl.getString("BROJKONTA"));
               stavka.setString("VRDOK",frmNalozi.determineVrdok(stavka, false));
+              stavka.setInt("CPAR", stavbl.getInt("CPAR"));
             } //else System.out.println(stavbl.getString("BROJKONTA")+" NIPOŠTO NIJE sk stavka");
             if (!getKnjizenje().saveStavka()) return false;
           } //if SKstavke
@@ -155,6 +158,16 @@ System.out.println("Usao u nenormalno");
       getKnjizenje().fixVrdok = true;
     }
     return succ; 
+  }
+  private boolean isSk(QueryDataSet stavbl) {
+    boolean ret;
+    try {
+      ret = raKonta.isSaldak(stavbl.getString("BROJKONTA"));
+    } catch (Exception e) {
+      System.out.println("raKonta.isSaldak je puko ko kokica "+e);
+      ret = false;
+    }
+    return ret;
   }
 
   private QueryDataSet getStavBl(DataSet izvj) {
