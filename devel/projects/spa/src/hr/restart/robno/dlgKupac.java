@@ -57,6 +57,10 @@ public class dlgKupac extends JraDialog {
     }
   };
   
+  public OKpanel getOKpanel() {
+    return okp;
+  }
+  
   public dlgKupac(Dialog owner, StorageDataSet _resolvSet) {
     super(owner,true);
     resolvSet = _resolvSet;
