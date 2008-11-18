@@ -967,3 +967,72 @@ DEST;char;50;;;Na
 KOL;numeric;15,3;;0;Kolièina
 IDX=src
 IDX=dest
+
+
+$stdokitmp
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSKL;char;12;pkey;;Skladište
+VRDOK;char;3;pkey;;Vrsta
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj;7
+RBR;short;2;pkey;;Rbr;4
+CART;int;6;;;Šifra;7
+CART1;char;20;;;Oznaka;12
+BC;char;20;;;Barcode;21
+NAZART;char;50;;;Naziv;25
+JM;char;3;;;JM;4
+CRADNAL;char;30;;;Radni nalog;15
+KOL;numeric;15,3;;0;Kolièina;10
+UPRAB;numeric;10,2;;0;Pop (%);8
+UIRAB;numeric;15,2;;0;Iznos popusta;14
+UPZT;numeric;10,2;;0;Posto zavisnih troškova;8
+UIZT;numeric;15,2;;0;Iznos zavisnih troškova
+FC;numeric;15,2;;0;Cijena;12
+INETO;numeric;15,2;;0;Neto iznos;14
+FVC;numeric;15,2;;0;Cijena bez poreza;12
+IPRODBP;numeric;15,2;;0;Bez poreza;14
+POR1;numeric;15,2;;0;Porez 1;14
+POR2;numeric;15,2;;0;Porez 2;14
+POR3;numeric;15,2;;0;Porez 3;14
+FMC;numeric;15,2;;0;Cijena s porezom;12
+IPRODSP;numeric;15,2;;0;S porezom;14
+NC;numeric;15,2;;0;Nabavna cijena;12
+INAB;numeric;15,2;;0;Nabavni iznos;14
+IMAR;numeric;15,2;;0;Razlika u cijeni;14
+VC;numeric;15,2;;0;Prodajna cijena bez poreza;12
+IBP;numeric;15,2;;0;Iznos bez poreza;14
+IPOR;numeric;15,2;;0;Porezi;14
+MC;numeric;15,2;;0;Prodajna cijena s porezom;12
+ISP;numeric;15,2;;0;Iznos s porezom;14
+ZC;numeric;15,2;;0;Cijena zalihe;12
+IRAZ;numeric;15,2;;0;Razduženje
+BRPRI;char;7;;;Broj primke s koje se skida FLH
+RBRPRI;short;2;;;Redni broj stavke primke;15
+PPOR1;numeric;15,2;;0;Posto poreza 1;14
+PPOR2;numeric;15,2;;0;Posto poreza 2;14
+PPOR3;numeric;15,2;;0;Posto poreza 3;14
+CARTNOR;int;6;;;Šifra normiranog artikla;7
+UIPOR;numeric;15,2;;0;Ukupni iznos poreza;*
+UPPOR;numeric;15,2;;0;Ukupni iznos poreza;*
+STATUS;char;1;;N;STATUS
+RBSRN;int;6;;;ID stavke RNL;*
+ITKAL;char;52;;;Broj kalkulacije zadnjeg izlaza;*
+SITKAL;char;52;;;Br preth kalkulacije izlaza;*
+SBSIZ;short;2;;;Br stavki izlaza po zadnjem izl.;*
+RBSID;int;6;;;ID stavke;*
+FMCPRP;numeric;15,2;;0;Cijena;12
+CSKLART;char;12;;;Skladište artikla
+REZKOL;char;1;;N;Rezervacija
+VEZA;char;50;;;Veza;*
+ID_STAVKA;char;50;;;ID stavka;*
+KOL1;numeric;15,3;;0;Pakiranja;10
+KOL2;numeric;15,3;;0;Naruèeno;10
+CVOZ;char;24;;;Vozaè
+LOT;char;12;;;Lot
+ROKTRAJ;date;;;;Rok trajanja
+IDX=cskl,vrdok,god,brdok
+IDX=cart
+IDX=cradnal
+IDX=veza
+IDX=id_stavka
