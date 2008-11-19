@@ -22,6 +22,7 @@ import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.dataSetTableModel;
+import hr.restart.swing.raTableRunningSum;
 import hr.restart.swing.raTableSumRow;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
@@ -114,7 +115,13 @@ public class frmKartica extends raMatPodaci {
       if ((ds.getString("POKRIVENO").equalsIgnoreCase("N") && status == 2) ||
           (ds.getString("POKRIVENO").equalsIgnoreCase("D") && status == 1))
         ds.emptyRow();
-      else ds.next();
+      else {
+        if (ds.getBigDecimal("IP").signum() != 0) {
+          Aus.clear(ds, "RSALDO");
+          Aus.sub(ds, "RSALDO", "SALDO");
+        } else Aus.set(ds, "RSALDO", "SALDO");
+        ds.next();
+      }
 
     setRaQueryDataSet(ds);
     //getColumnsBean().restoreWidths();
@@ -332,6 +339,7 @@ public class frmKartica extends raMatPodaci {
     boolean dispExt = frmParam.getParam("sk", "displayExt", "N", "Prikaži kolonu " +
         "dodatnog broja dokumenta na kartici SK (D/N)", true).equalsIgnoreCase("D");
     
+    dm.getSkstavkeBase().getColumn("RSALDO").setCaption("Kumulativni saldo");
     this.setRaQueryDataSet(dm.getSkstavkeBase());
     this.setVisibleCols(dispExt ? new int[]{2, 4, 9, 11, 16, 17, 20} : new int[]{2, 4, 9, 16, 17, 20});
     this.setTitle("Kartica");
@@ -387,6 +395,7 @@ public class frmKartica extends raMatPodaci {
         return kupci ? id.subtract(ip) : ip.subtract(id);*/
       }
     });
+    getJpTableView().addTableModifier(new raTableRunningSum("RSALDO"));
     
     pres = new presKartica(this);
     this.addOption(aPok = new raNavAction("Pokriveni dokumenti", raImages.IMGSTAV, KeyEvent.VK_F6) {
