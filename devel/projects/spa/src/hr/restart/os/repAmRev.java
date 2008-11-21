@@ -133,7 +133,7 @@ public class repAmRev implements sg.com.elixir.reportwriter.datasource.IDataProv
 
   public double getStIspravak()
   {
-    return ds.getDouble("STVARNIISP");
+    return rdOSUtil.getBDouble(ds, "STVARNIISP");
   }
 
   public double getSadVrUl()

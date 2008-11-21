@@ -34,6 +34,7 @@ import java.util.LinkedList;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -272,7 +273,7 @@ public class rdOSUtil {
     public String getDetailStrIspis(String invBr, String corg, String status, String aktiv, char mod)
     {
 //     System.out.println("STATUS: " + status);
-      String qStr = "select os_sredstvo.corg as corg, os_sredstvo.invbroj as invbroj, os_sredstvo.nazsredstva as nazsredstva,"+
+      String qStr = "select os_sredstvo.corg2 as corg2, os_sredstvo.invbroj as invbroj, os_sredstvo.nazsredstva as nazsredstva,"+
                     "os_sredstvo.clokacije as clokacije, os_sredstvo.cgrupe as cgrupe, os_sredstvo.cskupine as cskupine,"+
                     "os_sredstvo.brojkonta as brojkonta, os_sredstvo.cpar as cpar, os_sredstvo.cartikla as cartikla, "+
                     "os_sredstvo.cobjekt as cobjekt, os_sredstvo.cradnik as cradnik, os_sredstvo.datnabave as datnab, "+
@@ -292,7 +293,7 @@ public class rdOSUtil {
     {
 
       System.out.println("corg " + cOrg + " status " + status + " mod " + mod);
-      String qStr = "select corg2 as corg, invbroj as invbr, nazsredstva as nazsredstva, datpromjene as datum, "+
+      String qStr = "select corg2 as corg2, invbroj as invbr, nazsredstva as nazsredstva, datpromjene as datum, "+
                     "osnduguje as osnduguje, osnpotrazuje as osnpotrazuje, ispduguje as ispduguje, isppotrazuje as isppotrazuje, status as status "+
                     " from os_sredstvo"+
 //                    " where corg='"+cOrg+"' and status='A'"+
@@ -1297,7 +1298,7 @@ String getPripOrgAm(String str, String corgTable) {
               "max(os_sredstvo.cskupine) as cskupine, max(os_sredstvo.cartikla) as cartikla, max(os_sredstvo.invbroj) as invbr, max(os_sredstvo.nazsredstva) as nazsredstva, max(os_sredstvo.datpromjene) as datum, "+
               "sum(os_sredstvo.osnpocetak) as osnpocetak, sum(os_sredstvo.isppocetak) as isppocetak "+
 //              "from os_sredstvo where os_sredstvo.osnpocetak>0 "+getOSStatus(status)+getAktivnost(aktiv)+getOSPorijeklo(porijeklo)+" and os_sredstvo.godproiz>="+gpp+" and os_sredstvo.godproiz<="+gpz+" and "+getOSPripOrg(cOrg, po)+getGroupBy(oj+ol+ib, ispOS.getSelectedRB());
-              "from os_sredstvo where os_sredstvo.osnpocetak>0 "+getOSStatus(status)+getAktivnost(aktiv)+getOSPorijeklo(porijeklo)+" and os_sredstvo.godproiz>="+gpp+" and os_sredstvo.godproiz<="+gpz+" and "+getPripOrg(cOrg, po, "OS_SREDSTVO")+getGroupBy(oj+ol+ib, ispOS.getSelectedRB(),"os_sredstvo");
+              "from os_sredstvo where os_sredstvo.osnpocetak>0 "+getOSStatus(status)+getAktivnost(aktiv)+getOSPorijeklo(porijeklo)+" and os_sredstvo.godproiz>='"+gpp+"' and os_sredstvo.godproiz<='"+gpz+"' and "+getPripOrg(cOrg, po, "OS_SREDSTVO")+getGroupBy(oj+ol+ib, ispOS.getSelectedRB(),"os_sredstvo");
 //      System.out.println("PST_OSI "+qStr);
       return qStr;
     }
@@ -1316,7 +1317,7 @@ String getPripOrgAm(String str, String corgTable) {
       String qStr = "select max(os_sredstvo.dokument) as dokument, max(os_sredstvo.corg2) as corg, max(os_sredstvo.brojkonta) as brojkonta, max(os_sredstvo.cgrupe) as cgrupe, max(os_sredstvo.clokacije) as clokacije, "+
               "max(os_sredstvo.cskupine) as cskupine, max(os_sredstvo.cartikla) as cartikla, max(os_sredstvo.invbroj) as invbr, max(os_sredstvo.nazsredstva) as nazsredstva, max(os_sredstvo.datpromjene) as datum, "+
               "sum(os_sredstvo.osnpocetak) as osnpocetak, sum(os_sredstvo.isppocetak) as isppocetak "+
-              "from os_sredstvo where os_sredstvo.osnpocetak>0 "+getOSStatus(status)+getAktivnost(aktiv)+getOSPorijeklo(porijeklo)+" and os_sredstvo.godproiz>="+gpp+" and os_sredstvo.godproiz<="+gpz+" and "+getPripOrg(cOrg, pripO, "OS_SREDSTVO")+nadoprc;
+              "from os_sredstvo where os_sredstvo.osnpocetak>0 "+getOSStatus(status)+getAktivnost(aktiv)+getOSPorijeklo(porijeklo)+" and os_sredstvo.godproiz>='"+gpp+"' and os_sredstvo.godproiz<='"+gpz+"' and "+getPripOrg(cOrg, pripO, "OS_SREDSTVO")+nadoprc;
 //      System.out.println("PST_OSI "+qStr);
       return qStr;
     }
@@ -1343,7 +1344,7 @@ String getPripOrgAm(String str, String corgTable) {
                     "sum(os_sredstvo.ispduguje) as ispduguje, sum(os_sredstvo.isppotrazuje) as isppotrazuje, sum(os_sredstvo.isppocetak) as isppocetak, "+
                     "sum(os_sredstvo.amortizacija) as amortizacija, sum(os_sredstvo.pamortizacija) as pamortizacija "+
                     "from os_sredstvo where "+getPripOrg(cOrg, po, "OS_SREDSTVO")+datLik+ " and os_sredstvo.godproiz>="+gpp+
-                    " and os_sredstvo.godproiz<="+gpz+" "+getOSStatus(status)+getOSPorijeklo(porijeklo)+getGroupBy(oj+ol+ib, ispOS.getSelectedRB(),"os_sredstvo");
+                    "' and os_sredstvo.godproiz<='"+gpz+"' "+getOSStatus(status)+getOSPorijeklo(porijeklo)+getGroupBy(oj+ol+ib, ispOS.getSelectedRB(),"os_sredstvo");
 
 //      String qStr="select max(os_sredstvo.corg2) as corg, max(os_sredstvo.brojkonta) as brojkonta, max(os_sredstvo.cgrupe) as cgrupe, max(os_sredstvo.clokacije) as clokacije, "+
 //                  "max(os_sredstvo.cskupine) as cskupine, max(os_sredstvo.cartikla) as cartikla, max(os_sredstvo.invbroj) as invbr, max(os_sredstvo.nazsredstva) as nazsredstva, "+
@@ -1385,8 +1386,8 @@ String getPripOrgAm(String str, String corgTable) {
                     "max(os_sredstvo.datpromjene) as datum, sum(os_sredstvo.osnduguje) as osnduguje, sum(os_sredstvo.osnpocetak) as osnpocetak, sum(os_sredstvo.osnpotrazuje) as osnpotrazuje, "+
                     "sum(os_sredstvo.ispduguje) as ispduguje, sum(os_sredstvo.isppotrazuje) as isppotrazuje, sum(os_sredstvo.isppocetak) as isppocetak, "+
                     "sum(os_sredstvo.amortizacija) as amortizacija, sum(os_sredstvo.pamortizacija) as pamortizacija "+
-                    "from os_sredstvo where "+getPripOrg(cOrg, pripO, "OS_SREDSTVO")+" "+datLik+ " and os_sredstvo.godproiz>="+gpp+
-                    " and os_sredstvo.godproiz<="+gpz+" "+getOSStatus(status)+" "+getOSPorijeklo(porijeklo)+" "+nadoprc;
+                    "from os_sredstvo where "+getPripOrg(cOrg, pripO, "OS_SREDSTVO")+" "+datLik+ " and os_sredstvo.godproiz>='"+gpp+
+                    "' and os_sredstvo.godproiz<='"+gpz+"' "+getOSStatus(status)+" "+getOSPorijeklo(porijeklo)+" "+nadoprc;
 //      System.out.println("TST_OS: " + qStr);
       return qStr;
     }
@@ -1405,8 +1406,8 @@ String getPripOrgAm(String str, String corgTable) {
               "sum(os_promjene.osnduguje) as osnduguje, sum(os_promjene.osnpotrazuje) as osnpotrazuje, sum(os_promjene.ispduguje) as ispduguje, sum(os_promjene.isppotrazuje) as isppotrazuje "+
               "from os_sredstvo "+
               "JOIN os_promjene on os_sredstvo.invbroj=os_promjene.invbroj and os_sredstvo.corg2= os_promjene.corg2 "+
-              " and os_promjene.datpromjene <= "+zavDat+getOSStatus_SND(status, zavDat)+getOSPorijeklo(porijeklo)+" and os_sredstvo.godproiz>="+gpp+
-              " and os_sredstvo.godproiz<="+gpz+" and "+getPripOrg(cOrg, po, "OS_SREDSTVO")+datLik+
+              " and os_promjene.datpromjene <= "+zavDat+getOSStatus_SND(status, zavDat)+getOSPorijeklo(porijeklo)+" and os_sredstvo.godproiz>='"+gpp+
+              "' and os_sredstvo.godproiz<='"+gpz+"' and "+getPripOrg(cOrg, po, "OS_SREDSTVO")+datLik+
               getGroupBy(oj+ol+ib, ispOS.getSelectedRB(),"os_sredstvo");
 //        System.out.println("SND_OS: " + qStr);
         return qStr;
@@ -1422,7 +1423,7 @@ String getPripOrgAm(String str, String corgTable) {
       else if(!oj && !ol && ib) dodatak = " group by os_sredstvo.invbroj";
       else if(oj && !ol && ib) dodatak = " group by os_sredstvo.corg2, os_sredstvo.invbroj";
       else if(!oj && ol && ib) dodatak = " group by "+oblikIspisa(selRB,"os_sredstvo")+", os_sredstvo.invbroj";
-      else if(oj && ol && ib) dodatak = " group by corg2, "+oblikIspisa(selRB,"os_sredstvo")+", os_sredstvo.invbroj";
+      else if(oj && ol && ib) dodatak = " group by os_sredstvo.corg2, "+oblikIspisa(selRB,"os_sredstvo")+", os_sredstvo.invbroj";
       String datLik="";
       if(aktiv.equals("D"))
         datLik = " and (os_sredstvo.datlikvidacije is null or os_sredstvo.datlikvidacije > "+zavDat+") ";
@@ -1436,8 +1437,8 @@ String getPripOrgAm(String str, String corgTable) {
             "from os_sredstvo "+
             "JOIN "+
             "os_promjene on os_sredstvo.invbroj=os_promjene.invbroj and os_sredstvo.corg2= os_promjene.corg2 "+
-            "and os_promjene.datpromjene <= "+zavDat+getOSStatus_SND(status, zavDat)+getOSPorijeklo(porijeklo)+" and os_sredstvo.godproiz>="+gpp+" "+
-            "and os_sredstvo.godproiz<="+gpz+" and "+getPripOrg(cOrg, pripO, "OS_SREDSTVO")+datLik+
+            "and os_promjene.datpromjene <= "+zavDat+getOSStatus_SND(status, zavDat)+getOSPorijeklo(porijeklo)+" and os_sredstvo.godproiz>='"+gpp+"' "+
+            "and os_sredstvo.godproiz<='"+gpz+"' and "+getPripOrg(cOrg, pripO, "OS_SREDSTVO")+datLik+
             dodatak;
 //      System.out.println("SND_OS: " + qStr);
       return qStr;
@@ -1463,7 +1464,7 @@ String getPripOrgAm(String str, String corgTable) {
       qStr = "select max(os_si.dokument) as dokument, max(os_si.corg2) as corg, max(os_si.brojkonta) as brojkonta, max(os_si.cgrupe) as cgrupe, max(os_si.clokacije) as clokacije, "+
              "max(os_si.cskupine) as cskupine, max(os_si.cartikla) as cartikla, max(os_si.invbroj) as invbr, max(os_si.nazsredstva) as nazsredstva, max(os_si.datpromjene) as datum, "+
              "sum(os_si.osnpocetak) as osnpocetak, sum(os_si.isppocetak) as isppocetak "+
-             "from os_si where os_si.osnpocetak>0 and os_si.godproiz>="+gpp+" and os_si.godproiz<="+gpz+" "+
+             "from os_si where os_si.osnpocetak>0 and os_si.godproiz>='"+gpp+"' and os_si.godproiz<='"+gpz+"' "+
 //             getSIStatus(status)+getAktivnostSI(aktiv)+" and "+getSIPripOrg(cOrg, po)+getSIPorijeklo(porijeklo)+getGroupBy(oj+ol+ib, ispSI.getSelectedRB());
              getSIStatus(status)+getAktivnostSI(aktiv)+" and "+getPripOrg(cOrg, po, "OS_SI")+getSIPorijeklo(porijeklo)+getGroupBy(oj+ol+ib, ispSI.getSelectedRB(),"os_si");
       return qStr;
@@ -1483,7 +1484,7 @@ String getPripOrgAm(String str, String corgTable) {
       String qStr = "select max(os_si.dokument) as dokument, max(os_si.corg2) as corg, max(os_si.brojkonta) as brojkonta, max(os_si.cgrupe) as cgrupe, max(os_si.clokacije) as clokacije, "+
              "max(os_si.cskupine) as cskupine, max(os_si.cartikla) as cartikla, max(os_si.invbroj) as invbr, max(os_si.nazsredstva) as nazsredstva, max(os_si.datpromjene) as datum, "+
              "sum(os_si.osnpocetak) as osnpocetak, sum(os_si.isppocetak) as isppocetak "+
-             "from os_si where os_si.osnpocetak>0 and os_si.godproiz>="+gpp+" and os_si.godproiz<="+gpz+" "+
+             "from os_si where os_si.osnpocetak>0 and os_si.godproiz>='"+gpp+"' and os_si.godproiz<='"+gpz+"' "+
 //             getSIStatus(status)+getAktivnostSI(aktiv)+" and "+getSIPripOrg(cOrg, po)+getSIPorijeklo(porijeklo)+getGroupBy(oj+ol+ib, ispSI.getSelectedRB());
              getSIStatus(status)+getAktivnostSI(aktiv)+" and "+getPripOrg(cOrg, pripO, "OS_SI")+getSIPorijeklo(porijeklo)+nadoprc;
 //      System.out.println("qStr\n"+qStr);
@@ -1509,7 +1510,7 @@ String getPripOrgAm(String str, String corgTable) {
               "max(os_si.cskupine) as cskupine, max(os_si.cartikla) as cartikla, max(os_si.invbroj) as invbr, max(os_si.nazsredstva) as nazsredstva, max(os_si.datpromjene) as datum, "+
               "sum(os_si.osnduguje) as osnduguje, sum(os_si.osnpocetak) as osnpocetak, sum(os_si.osnpotrazuje) as osnpotrazuje, sum(os_si.ispduguje) as ispduguje, sum(os_si.isppotrazuje) as isppotrazuje, sum(os_si.isppocetak) as isppocetak "+
 //              "from os_si where "+getSIPripOrg(cOrg, po)+" and datlikvidacije is null and os_si.godproiz>="+gpp+" and os_si.godproiz<="+gpz+" "+
-              "from os_si where "+getPripOrg(cOrg, po, "OS_SI")+" and datlikvidacije is null and os_si.godproiz>="+gpp+" and os_si.godproiz<="+gpz+" "+
+              "from os_si where "+getPripOrg(cOrg, po, "OS_SI")+" and datlikvidacije is null and os_si.godproiz>='"+gpp+"' and os_si.godproiz<='"+gpz+"' "+
               getSIStatus(status)+datLik+getSIPorijeklo(porijeklo)+getGroupBy(oj+ol+ib, ispSI.getSelectedRB(),"os_si");
       return qStr;
     }
@@ -1540,7 +1541,7 @@ String getPripOrgAm(String str, String corgTable) {
             " union select max(os_si.corg2) as corg, max(os_si.brojkonta) as brojkonta, max(os_si.cgrupe) as cgrupe, max(os_si.clokacije) as clokacije, "+
             "max(os_si.cskupine) as cskupine, max(os_si.cartikla) as cartikla, max(os_si.invbroj) as invbr, max(os_si.nazsredstva) as nazsredstva, max(os_si.datpromjene) as datum, "+
             "sum(os_si.osnduguje) as osnduguje, sum(os_si.osnpocetak) as osnpocetak, sum(os_si.osnpotrazuje) as osnpotrazuje, sum(os_si.ispduguje) as ispduguje, sum(os_si.isppotrazuje) as isppotrazuje, sum(os_si.isppocetak) as isppocetak "+
-            "from os_si where "+getPripOrg(cOrg, pripO, "OS_SI")+" and datlikvidacije is null and os_si.godproiz>="+gpp+" and os_si.godproiz<="+gpz+" "+
+            "from os_si where "+getPripOrg(cOrg, pripO, "OS_SI")+" and datlikvidacije is null and os_si.godproiz>='"+gpp+"' and os_si.godproiz<='"+gpz+"' "+
             getSIStatus(status)+datLik+getSIPorijeklo(porijeklo)+nadoprc;
 //      System.out.println("qStrTST_SI\n"+qStr);
       return qStr;
@@ -1579,9 +1580,9 @@ String getPripOrgAm(String str, String corgTable) {
               "from os_si "+
               "JOIN os_stsi on os_si.invbroj=os_stsi.invbroj and os_si.corg2= os_stsi.corg2 "+
 //              " and os_stsi.datpromjene >= '"+pocDat+"' and os_stsi.datpromjene <= "+zavDat+getSIStatus_SND(status, zavDat)+getSIPorijeklo(porijeklo)+" and os_si.godproiz>="+gpp+
-              " and os_stsi.datpromjene <= "+zavDat+getSIStatus_SND(status, zavDat)+getSIPorijeklo(porijeklo)+" and os_si.godproiz>="+gpp+
+              " and os_stsi.datpromjene <= "+zavDat+getSIStatus_SND(status, zavDat)+getSIPorijeklo(porijeklo)+" and os_si.godproiz>='"+gpp+
 //              " and os_si.godproiz<="+gpz+" and "+getSIPripOrg(cOrg, po)+getAktivnostSI(aktiv)+
-              " and os_si.godproiz<="+gpz+" and "+getPripOrg(cOrg, po, "OS_SI")+datLik+
+              "' and os_si.godproiz<='"+gpz+"' and "+getPripOrg(cOrg, po, "OS_SI")+datLik+
               getGroupBy(oj+ol+ib, ispSI.getSelectedRB(),"os_si");
       return qStr;
     }
@@ -1609,8 +1610,8 @@ String getPripOrgAm(String str, String corgTable) {
               "sum(os_stsi.osnduguje) as osnduguje, sum(os_stsi.osnpotrazuje) as osnpotrazuje, sum(os_stsi.ispduguje) as ispduguje, sum(os_stsi.isppotrazuje) as isppotrazuje "+
               "from os_si "+
               "JOIN os_stsi on os_si.invbroj=os_stsi.invbroj and os_si.corg2= os_stsi.corg2 "+
-              " and os_stsi.datpromjene <= "+zavDat+getSIStatus_SND(status, zavDat)+getSIPorijeklo(porijeklo)+" and os_si.godproiz>="+gpp+
-              " and os_si.godproiz<="+gpz+" and "+getPripOrg(cOrg, pripO, "OS_SI")+datLik+
+              " and os_stsi.datpromjene <= "+zavDat+getSIStatus_SND(status, zavDat)+getSIPorijeklo(porijeklo)+" and os_si.godproiz>='"+gpp+
+              "' and os_si.godproiz<='"+gpz+"' and "+getPripOrg(cOrg, pripO, "OS_SI")+datLik+
               nadoprc;
 //        System.out.println("qStr\n"+qStr);
       return qStr;
@@ -1648,12 +1649,12 @@ String getPripOrgAm(String str, String corgTable) {
       String qStr = "";
       if (inv == 0) qStr = "";
       else if(inv == 1) qStr = " group by os_obrada2.corg";
-      else if(inv == 2) qStr = " group by os_obrada2."+oblikIspisa(selRB,"os_obrada2");
-      else if(inv == 3) qStr = " group by os_obrada2.corg, os_obrada2."+oblikIspisa(selRB,"os_obrada2");
+      else if(inv == 2) qStr = " group by "+oblikIspisa(selRB,"os_obrada2");
+      else if(inv == 3) qStr = " group by os_obrada2.corg, "+oblikIspisa(selRB,"os_obrada2");
       else if(inv == 4) qStr = " group by os_obrada2.invbroj";
       else if(inv == 5) qStr = " group by os_obrada2.corg, os_obrada2.invbroj";
-      else if(inv == 6) qStr = " group by os_obrada2."+oblikIspisa(selRB,"os_obrada2")+", os_obrada2.invbroj";
-      else if(inv == 7) qStr = " group by os_obrada2.corg, os_obrada2."+oblikIspisa(selRB,"os_obrada2")+", os_obrada2.invbroj";
+      else if(inv == 6) qStr = " group by "+oblikIspisa(selRB,"os_obrada2")+", os_obrada2.invbroj";
+      else if(inv == 7) qStr = " group by os_obrada2.corg, "+oblikIspisa(selRB,"os_obrada2")+", os_obrada2.invbroj";
       return qStr;
     }
 
@@ -2252,6 +2253,14 @@ String getPripOrgAm(String str, String corgTable) {
   {
   	String qStr = "brojkonta ='"+bk+"' and kontoisp='"+isp+"' and kontoamor='"+amor+"'";
   	return OS_Kontaisp.getDataModule().getRowCount(qStr) > 0;
+  }
+
+  public static double getBDouble(ReadRow ds, String colnm) {
+    if (ds.getColumn(colnm).getSqlType() == java.sql.Types.DOUBLE) {
+      return ds.getDouble(colnm);
+    } else {
+      return ds.getBigDecimal(colnm).doubleValue();
+    }
   }
 
   ///****** STARE METODE ZA PRIPADAJUCE CORGOVE ZAMJENJENE SA getPripOrg(parametri)

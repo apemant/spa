@@ -136,7 +136,7 @@ public class repAmRevTot implements sg.com.elixir.reportwriter.datasource.IDataP
 
   public double getStIspravak()
   {
-    return ds.getDouble("STVARNIISP");
+    return rdOSUtil.getBDouble(ds, "STVARNIISP");
   }
   public double getSadVrUl()
   {

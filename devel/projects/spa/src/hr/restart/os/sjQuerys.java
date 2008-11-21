@@ -34,7 +34,7 @@ public class sjQuerys {
     String str="SELECT os_sredstvo.invbroj, os_sredstvo.nazsredstva, os_sredstvo.cgrupe, os_amgrupe.zakstopa,"+
                " os_amgrupe.odlstopa, os_sredstvo.osnpocetak, os_sredstvo.isppocetak "+
                "FROM os_sredstvo, os_amgrupe "+
-               "WHERE os_sredstvo.cgrupe=os_amgrupe.cgrupe and invbroj='"+ib+"' and os_sredstvo.status='A'";
+               "WHERE os_sredstvo.cgrupe=os_amgrupe.cgrupe and os_sredstvo.invbroj='"+ib+"' and os_sredstvo.status='A'";
     System.out.println("SQL: "+str);
     return str;
   }
@@ -45,7 +45,7 @@ public class sjQuerys {
                 "FROM os_sredstvo, os_promjene, os_amgrupe "+
                 "WHERE os_sredstvo.invbroj=os_promjene.invbroj and os_sredstvo.corg2=os_promjene.corg2"+
                 " and os_sredstvo.cgrupe=os_amgrupe.cgrupe and os_sredstvo.status=os_promjene.status"+
-                " and invbroj='"+ib+"' and datpromjene>="+dat+" and os_sredstvo.status='A'";
+                " and os_sredstvo.invbroj='"+ib+"' and os_promjene.datpromjene>="+dat+" and os_sredstvo.status='A'";
     System.out.println("SQL: "+str);
     return str;
   }
