@@ -207,7 +207,7 @@ public class ispAmor_NextGeneration extends raUpitLite {
              "(ispravak + amortizacija) as stvarniisp, mjesec as mjesec from os_obrada4 "+
              "where " + corging + " AND " + datrange + " order by corg";
     } else {
-      qStr = "select max(corg) as corg, sum(osnovica) as nabvrijed,"+
+      qStr = "select corg, sum(osnovica) as nabvrijed,"+
              "sum(ispravak) as ispravak, sum(amortizacija) as amortizacija, "+
              "sum(ispravak + amortizacija) as stvarniisp from os_obrada4 "+
              "where " + corging + " AND " + datrange + " group by corg";

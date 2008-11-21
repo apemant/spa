@@ -236,11 +236,15 @@ public class repIspisAmortizacija implements raReportData {
 
   public double getStIspravak()
   {
-    return ds.getDouble("STVARNIISP");
+    if (ds.getColumn("STVARNIISP").getSqlType() == java.sql.Types.DOUBLE) {
+      return ds.getDouble("STVARNIISP");
+    } else {
+      return ds.getBigDecimal("STVARNIISP").doubleValue();
+    }
   }
   
   public double getJedanMinusCetri(){
-    return ds.getBigDecimal("NABVRIJED").doubleValue() - ds.getDouble("STVARNIISP");
+    return ds.getBigDecimal("NABVRIJED").doubleValue() - getStIspravak();
   }
   
   public double getSadVrUl()

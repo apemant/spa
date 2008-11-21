@@ -99,7 +99,7 @@ public class repLik implements sg.com.elixir.reportwriter.datasource.IDataProvid
 
   public double getSaldo()
   {
-    return ds.getDouble("SALDO");
+    return ds.getBigDecimal("SALDO").doubleValue();
   }
 
   public String getNazOrg()
@@ -118,12 +118,12 @@ public class repLik implements sg.com.elixir.reportwriter.datasource.IDataProvid
 
   public double getIspravak()
   {
-    return ds.getDouble("ISPRAVAK");
+    return ds.getBigDecimal("ISPRAVAK").doubleValue();
   }
 
   public double getOsnovica()
   {
-    return ds.getDouble("OSNOVICA");
+    return ds.getBigDecimal("OSNOVICA").doubleValue();
   }
 
 

@@ -77,9 +77,9 @@ public class ispLikviSI extends ispLikvi{
     Aus.refilter(qds, qStr);
     qds.first();
     do {
-      osn=osn + qds.getDouble("OSNOVICA");
-      isp=isp + qds.getDouble("ISPRAVAK");
-      saldo=saldo+qds.getDouble("SALDO");
+      osn=osn + qds.getBigDecimal("OSNOVICA").doubleValue();
+      isp=isp + qds.getBigDecimal("ISPRAVAK").doubleValue();
+      saldo=saldo+qds.getBigDecimal("SALDO").doubleValue();
       qds.next();
     } while(qds.inBounds());
 

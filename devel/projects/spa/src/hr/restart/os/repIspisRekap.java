@@ -148,7 +148,7 @@ public class repIspisRekap implements raReportData {
   }
 
   public double getPET() {
-    return ds.getDouble("PET");
+    return ds.getBigDecimal("PET").doubleValue();
   }
 
   public double getSEST() {
@@ -176,15 +176,15 @@ public class repIspisRekap implements raReportData {
   }
 
   public double getDESET() {
-    return ds.getDouble("DESET");
+    return ds.getBigDecimal("DESET").doubleValue();
   }
 
   public double getJEDANAEST() {
-    return ds.getDouble("JEDANAEST");
+    return ds.getBigDecimal("JEDANAEST").doubleValue();
   }
 
   public double getDVANAEST() {
-    return ds.getDouble("DVANAEST");
+    return ds.getBigDecimal("DVANAEST").doubleValue();
   }
 
   public double getSumeTri() {

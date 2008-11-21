@@ -349,7 +349,7 @@ System.out.println("IspisRekap_7");
       kontoStr =  " and os_sredstvo.brojkonta ='" + this.jrfKonto.getText().trim()+"'";
     }
 
-    String dn = "select invbroj as invbroj, corg2 as corg, osnduguje, osnpotrazuje, (osnduguje - osnpotrazuje) as c1, ispduguje, isppotrazuje, (isppotrazuje - ispduguje) as c2  FROM OS_Promjene where "+
+    String dn = "select invbroj as invbroj, corg2 as corg, osnduguje, osnpotrazuje, CAST((osnduguje - osnpotrazuje) AS numeric(15,2)) as c1, ispduguje, isppotrazuje, CAST((isppotrazuje - ispduguje) AS numeric(15,2)) as c2  FROM OS_Promjene where "+
                 "os_promjene.datpromjene >='"+ut.getFirstDayOfYear(tds.getTimestamp("pocDatum"))+"' and os_promjene.datpromjene < "+util.getTimestampValue(tds.getTimestamp("pocDatum"),0)+
                 " and  os_promjene."+ inCorg + " order by invbroj";
 
@@ -377,7 +377,7 @@ System.out.println("\ndn - " + dn);
       finalSet.setString("INVBROJ",tempPsSet.getString("INVBROJ"));
       finalSet.setBigDecimal("TRI",tempPsSet.getBigDecimal("OSNPOCETAK"));
       finalSet.setBigDecimal("CETIRI",tempPsSet.getBigDecimal("ISPPOCETAK"));
-      finalSet.setDouble("PET",(tempPsSet.getBigDecimal("OSNPOCETAK").subtract(tempPsSet.getBigDecimal("ISPPOCETAK"))).doubleValue());
+      finalSet.setBigDecimal("PET",(tempPsSet.getBigDecimal("OSNPOCETAK").subtract(tempPsSet.getBigDecimal("ISPPOCETAK"))));
     } while (tempPsSet.next());
 
     if (!ut.getFirstSecondOfDay(tds.getTimestamp("pocDatum")).equals(ut.getFirstDayOfYear(tds.getTimestamp("pocDatum")))){
@@ -387,7 +387,7 @@ System.out.println("\ndn - " + dn);
         if (ld.raLocate(finalSet,new String[] {"INVBROJ","CORG"},new String[] {tempDnSet.getString("INVBROJ"),tempDnSet.getString("CORG")}))  {
           finalSet.setBigDecimal("TRI",finalSet.getBigDecimal("TRI").add(tempDnSet.getBigDecimal("OSNDUGUJE").subtract(tempDnSet.getBigDecimal("OSNPOTRAZUJE")))); //tempPsSet.getBigDecimal("OSNPOCETAK"));
           finalSet.setBigDecimal("CETIRI",finalSet.getBigDecimal("CETIRI").add(tempDnSet.getBigDecimal("ISPPOTRAZUJE").subtract(tempDnSet.getBigDecimal("ISPDUGUJE"))));//tempPsSet.getBigDecimal("ISPPOCETAK"));
-          finalSet.setDouble("PET",(tempPsSet.getBigDecimal("OSNPOCETAK").subtract(tempPsSet.getBigDecimal("ISPPOCETAK"))).doubleValue());
+          finalSet.setBigDecimal("PET",(tempPsSet.getBigDecimal("OSNPOCETAK").subtract(tempPsSet.getBigDecimal("ISPPOCETAK"))));
         }
       } while (tempDnSet.next());
     }
@@ -430,9 +430,9 @@ System.out.println("\ndn - " + dn);
 
     finalSet.first();
     do {
-      finalSet.setDouble("DESET",(finalSet.getBigDecimal("TRI").doubleValue() + finalSet.getBigDecimal("SEST").doubleValue() - finalSet.getBigDecimal("SEDAM").doubleValue()));
-      finalSet.setDouble("JEDANAEST",(finalSet.getBigDecimal("CETIRI").doubleValue() - finalSet.getBigDecimal("OSAM").doubleValue() + finalSet.getBigDecimal("DEVET").doubleValue() + finalSet.getBigDecimal("AMOR").doubleValue()));
-      finalSet.setDouble("DVANAEST",(finalSet.getDouble("DESET") - finalSet.getDouble("JEDANAEST")));
+      finalSet.setBigDecimal("DESET",(finalSet.getBigDecimal("TRI").add(finalSet.getBigDecimal("SEST")).subtract(finalSet.getBigDecimal("SEDAM"))));
+      finalSet.setBigDecimal("JEDANAEST",finalSet.getBigDecimal("CETIRI").subtract(finalSet.getBigDecimal("OSAM")).add(finalSet.getBigDecimal("DEVET")).add(finalSet.getBigDecimal("AMOR")));
+      finalSet.setBigDecimal("DVANAEST",finalSet.getBigDecimal("DESET").subtract(finalSet.getBigDecimal("JEDANAEST")));
     } while (finalSet.next());
     finalSet.first();
     finalSet.setRowId("CORG", true);
@@ -444,12 +444,12 @@ System.out.println("\ndn - " + dn);
       sum6=sum6.add(finalSet.getBigDecimal("SEST"));
       sum7=sum7.add(finalSet.getBigDecimal("SEDAM"));
       sum8=sum8.add(finalSet.getBigDecimal("OSAM"));
-      sum5=sum5+finalSet.getDouble("PET");
+      sum5=sum5+finalSet.getBigDecimal("PET").doubleValue();
       sum9=sum9.add(finalSet.getBigDecimal("DEVET"));
       amor=amor.add(finalSet.getBigDecimal("AMOR"));
-      sum10=sum10+finalSet.getDouble("DESET");
-      sum11=sum11+finalSet.getDouble("JEDANAEST");
-      sum12=sum12+finalSet.getDouble("DVANAEST");
+      sum10=sum10+finalSet.getBigDecimal("DESET").doubleValue();
+      sum11=sum11+finalSet.getBigDecimal("JEDANAEST").doubleValue();
+      sum12=sum12+finalSet.getBigDecimal("DVANAEST").doubleValue();
       finalSet.next();
     } while(finalSet.inBounds());
 

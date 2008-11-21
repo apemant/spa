@@ -118,12 +118,12 @@ public class repLikSIKum implements sg.com.elixir.reportwriter.datasource.IDataP
 
   public double getIspravak()
   {
-    return ds.getDouble("ISPRAVAK");
+    return ds.getBigDecimal("ISPRAVAK").doubleValue();
   }
 
   public double getOsnovica()
   {
-    return ds.getDouble("OSNOVICA");
+    return ds.getBigDecimal("OSNOVICA").doubleValue();
   }
 
 

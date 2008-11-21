@@ -118,12 +118,12 @@ public class repLikSI implements sg.com.elixir.reportwriter.datasource.IDataProv
 
   public double getIspravak()
   {
-    return ds.getDouble("ISPRAVAK");
+    return ds.getBigDecimal("ISPRAVAK").doubleValue();
   }
 
   public double getOsnovica()
   {
-    return ds.getDouble("OSNOVICA");
+    return ds.getBigDecimal("OSNOVICA").doubleValue();
   }
 
 
