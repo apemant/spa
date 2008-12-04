@@ -41,6 +41,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
+import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -135,7 +136,12 @@ public class CalcRazPor {
     BigDecimal neop = getGodTotalNeop(cradnik, orgdata);
     BigDecimal premije = getPremije(cradnik);
     BigDecimal poros = neto.add(neop.negate()).add(premije.negate());
-    BigDecimal[] osn = getOsnovice(poros);
+    StorageDataSet orgosn = new StorageDataSet();
+    orgosn.setColumns(new Column[] {dM.createShortColumn("GODOBR"), dM.createShortColumn("MJOBR"),
+        dM.createBigDecimalColumn("OSNPOR1"),dM.createBigDecimalColumn("OSNPOR2"),dM.createBigDecimalColumn("OSNPOR3"),dM.createBigDecimalColumn("OSNPOR4"),dM.createBigDecimalColumn("OSNPOR5")});
+    Util.fillReadonlyData(orgosn,"SELECT godobr, mjobr, max(osnpor1) as osnpor1, max(osnpor2) as osnpor2, max(osnpor3) as osnpor3, max(osnpor4) as osnpor4, max(osnpor5)  as osnpor5 " +
+    		"from kumulorgarh where "+Condition.equal("CORG",corg)+" AND "+inqrange+" group by godobr, mjobr");
+    BigDecimal[] osn = getOsnovice(poros, orgosn);
     BigDecimal[] stpo = raObracunPL.getInstance().getStopePoreza(cradnik);
     BigDecimal por1 = osn[0].multiply(stpo[0]);
     BigDecimal por2 = osn[1].multiply(stpo[1]);
@@ -182,21 +188,28 @@ public class CalcRazPor {
     return null;
   }
   
-  private BigDecimal[] getOsnovice(BigDecimal poros) {
+  private BigDecimal[] getOsnovice(BigDecimal poros, StorageDataSet orgosn) {
+    
     BigDecimal[] ret = new BigDecimal[4];
     Parametripl.getDataModule().getQueryDataSet().open();
+    
     // osnpor1
-    BigDecimal parporos1 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR1").multiply(new BigDecimal(12));
+//    BigDecimal parporos1 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR1").multiply(new BigDecimal(12));
+    BigDecimal parporos1 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR1").add(getSum(orgosn, "OSNPOR1"));
     if (poros.compareTo(parporos1)>=0) {
       ret[0] = parporos1;
       //osnpor2
-      BigDecimal parporos2 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR2").multiply(new BigDecimal(12))
+//      BigDecimal parporos2 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR2").multiply(new BigDecimal(12))
+//      .add(parporos1.negate());
+      BigDecimal parporos2 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR2").add(getSum(orgosn, "OSNPOR2"))
           	  .add(parporos1.negate());
       if (poros.add(parporos1.negate()).compareTo(parporos2) >= 0) {
         ret[1] = parporos2;
         //osnpor3 
-        BigDecimal parporos3 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR3").multiply(new BigDecimal(12))
-    	  .add(parporos1.negate()).add(parporos2.negate());
+//        BigDecimal parporos3 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR3").multiply(new BigDecimal(12))
+//    	  .add(parporos1.negate()).add(parporos2.negate());
+        BigDecimal parporos3 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR3").add(getSum(orgosn, "OSNPOR3"))
+    	      .add(parporos1.negate()).add(parporos2.negate());
         if (poros.add(parporos1.negate()).add(parporos2.negate()).compareTo(parporos3) >= 0) {
           ret[2] = parporos3;
           ret[3] = poros.add(parporos1.negate()).add(parporos2.negate()).add(parporos3.negate());
