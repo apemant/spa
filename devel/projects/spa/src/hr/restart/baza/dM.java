@@ -375,6 +375,8 @@ public class dM implements DataModule {
       String driver = conTIP;   
       if (driver.equals("interbase.interclient.Driver"))
         Dialect.setCurrentDialect(InterbaseDialect.getInstance());
+      else if (driver.equals("org.firebirdsql.jdbc.FBDriver"))
+        Dialect.setCurrentDialect(FirebirdsqlDialect.getInstance());
       else if (driver.equals("com.mysql.jdbc.Driver"))
         Dialect.setCurrentDialect(MySQLDialect.getInstance());
       else if (driver.equals("org.hsqldb.jdbcDriver"))
