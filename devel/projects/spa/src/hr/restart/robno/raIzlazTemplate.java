@@ -579,7 +579,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 				.getInt("BRDOK")));
 		if (returnValue) {
 			if (!this.getDetailSet().isEmpty()) {
-				javax.swing.JOptionPane.showConfirmDialog(null,
+				javax.swing.JOptionPane.showConfirmDialog(raMaster.getWindow(),
 						"Nisu pobrisane stavke dokumenta !", "Gre\u0161ka",
 						javax.swing.JOptionPane.DEFAULT_OPTION,
 						javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -1094,7 +1094,7 @@ ST.prn(radninal);
 			return false;
         if (frmParam.getParam("robno","docBefDatKnj","N","Dozvoliti izradu dokumenta u periodu koje je veæ knjižen ").equalsIgnoreCase("N")) {
 		if (!isKnjigDataOK()) {
-			javax.swing.JOptionPane.showMessageDialog(null,
+			javax.swing.JOptionPane.showMessageDialog(raMaster.getWindow(),
 					"Datum u periodu koji je veæ knjižen !", "Greška",
 					javax.swing.JOptionPane.ERROR_MESSAGE);
 			MP.panelBasic.jtfDATDOK.requestFocus();
@@ -1200,7 +1200,7 @@ ST.prn(radninal);
 				rKD.KalkulacijaStanje(what_kind_of_dokument);
 			}
 		} else {
-			javax.swing.JOptionPane.showMessageDialog(null, rCD.errorMessage(),
+			javax.swing.JOptionPane.showMessageDialog(raDetail.getWindow(), rCD.errorMessage(),
 					"Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
 			// raDM.jtfKOL.requestFocus();
 		}
@@ -1780,9 +1780,7 @@ ST.prn(radninal);
 				return false;
 			}
 			if (isNedozvoljenArtikl()) {
-				javax.swing.JOptionPane
-						.showMessageDialog(
-								null,
+				javax.swing.JOptionPane.showMessageDialog(raDetail.getWindow(),
 								"Za ovu vrstu dokumenta koristite nedozvoljen artikl !",
 								"Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
 				return false;
@@ -1930,7 +1928,7 @@ ST.prn(radninal);
 						"BRDOK" }, getMasterSet())) > 0)
 			return true;
 		else {
-			javax.swing.JOptionPane.showMessageDialog(null,
+			javax.swing.JOptionPane.showMessageDialog(raDetail.getWindow(),
 					"Ne postoje stavke ovog dokumenta. Nemogu\u0107 ispis!",
 					"Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -2668,7 +2666,7 @@ System.out.println("findCjenik::else :: "+sql);
 					new String[] { String
 							.valueOf(getDetailSet().getInt("CART")) })) {
 
-				javax.swing.JOptionPane.showMessageDialog(null,
+				javax.swing.JOptionPane.showMessageDialog(raDetail.getWindow(),
 						"Ne postoji porezna grupa !", "Greška",
 						javax.swing.JOptionPane.ERROR_MESSAGE);
 
@@ -2764,9 +2762,7 @@ System.out.println("findCjenik::else :: "+sql);
 		}
 		if (isStanje && !rCD.isDataKalkulOK(getMasterSet().getTimestamp("DATDOK"), 
 				AST.gettrenSTANJE().getString("TKAL"))) {
-			javax.swing.JOptionPane
-					.showMessageDialog(
-							raDetail.getWindow(),
+			JOptionPane.showMessageDialog(raDetail.getWindow(),
 							"Datum zadnje kalkulacije je veæi nego izlaznog dokumenta koji želite napraviti !",
 							"Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -2775,8 +2771,8 @@ System.out.println("findCjenik::else :: "+sql);
 			rCD.prepareFields(getDetailSet());
 			if (!rCD.testIzlaz4Del((DataSet) getDetailSet(), AST
 					.gettrenSTANJE())) {
-				javax.swing.JOptionPane.showMessageDialog(null, rCD
-						.errorMessage(), "Greška",
+				javax.swing.JOptionPane.showMessageDialog(raDetail.getWindow(), 
+				    rCD.errorMessage(), "Greška",
 						javax.swing.JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
@@ -2791,9 +2787,7 @@ System.out.println("findCjenik::else :: "+sql);
     			if (getDetailSet().getBigDecimal("VC").compareTo(
     					getDetailSet().getBigDecimal("ZC")) != 0) {
     
-    				javax.swing.JOptionPane
-    						.showMessageDialog(
-    								null,
+    				JOptionPane.showMessageDialog(raDetail.getWindow(),
     								"Cijena zalihe je razlièita od veleprodajna cijene !!!",
     								"Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
     				return false;
@@ -2802,9 +2796,7 @@ System.out.println("findCjenik::else :: "+sql);
     		} else if (rKD.stanje.sVrSklad.equalsIgnoreCase("M")) {
     			if (getDetailSet().getBigDecimal("MC").compareTo(
     					getDetailSet().getBigDecimal("ZC")) != 0) {
-    				javax.swing.JOptionPane
-    						.showMessageDialog(
-    								null,
+    				JOptionPane.showMessageDialog(raDetail.getWindow(),
     								"Cijena zalihe je razlièita od maloprodajne cijene !!!",
     								"Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
     				return false;
@@ -2828,9 +2820,7 @@ System.out.println("findCjenik::else :: "+sql);
 				  // nista
 				} else if (i == -1) {
 					DP.jtfKOL.requestFocus();
-					javax.swing.JOptionPane
-							.showMessageDialog(
-									raDetail.getWindow(),
+					JOptionPane.showMessageDialog(raDetail.getWindow(),
 									"Koli\u010Dina je ve\u0107a nego koli\u010Dina na zalihi !",
 									"Greška",
 									javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -2840,9 +2830,7 @@ System.out.println("findCjenik::else :: "+sql);
 					String rezkol = hr.restart.sisfun.frmParam.getParam(
 							"robno", "rezkol");
 					if (!rezkol.equals("N")) {
-						javax.swing.JOptionPane
-								.showMessageDialog(
-										raDetail.getWindow(),
+						JOptionPane.showMessageDialog(raDetail.getWindow(),
 										"Koristite rezervirane koli\u010Dine !",
 										"Greška",
 										javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -2853,8 +2841,7 @@ System.out.println("findCjenik::else :: "+sql);
 				}
 				if (rKD.isEqualNula("stavka", "kol")) {
 					DP.jtfKOL.requestFocus();
-					javax.swing.JOptionPane.showMessageDialog(raDetail
-							.getWindow(),
+					JOptionPane.showMessageDialog(raDetail.getWindow(),
 							"Koli\u010Dina mora biti ve\u0107a od nule !",
 							"Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
 					return false;
@@ -2867,9 +2854,7 @@ System.out.println("findCjenik::else :: "+sql);
 						&& rKD.isKolStanjeManjeOd(DP.rpcart.jrfCART
 								.getRaDataSet().getBigDecimal("MINKOL"))) {
 					DP.jtfKOL.requestFocus();
-					javax.swing.JOptionPane
-							.showMessageDialog(
-									raDetail.getWindow(),
+					JOptionPane.showMessageDialog(raDetail.getWindow(),
 									"Koli\u010Dina nakon unosa dokumenta je "
 											+ rKD.getKolStanjeAfterMat()
 											+ " "
@@ -2893,9 +2878,7 @@ System.out.println("findCjenik::else :: "+sql);
 						&& rKD.isKolStanjeManjeOd(DP.rpcart.jrfCART
 								.getRaDataSet().getBigDecimal("SIGKOL"))) {
 					DP.jtfKOL.requestFocus();
-					if (!(javax.swing.JOptionPane
-							.showConfirmDialog(
-									raDetail,
+					if (!(JOptionPane.showConfirmDialog(raDetail.getWindow(),
 									"Koli\u010Dina nakon unosa dokumenta je "
 											+ rKD.getKolStanjeAfterMat()
 											+ " "
