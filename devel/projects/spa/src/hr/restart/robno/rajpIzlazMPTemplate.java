@@ -176,7 +176,10 @@ class rajpIzlazMPTemplate extends JPanel {
 		  panelZah = new panZah();
 		  panelOstatak = new panOstatak();
 		  panelDodatni = new panDodatni();
-		}
+		} else if (version == 8) {
+          panelOstatak = new panOstatak();
+          panelDodatni = new panDodatni();
+        }
 
 	}
 
@@ -223,7 +226,12 @@ class rajpIzlazMPTemplate extends JPanel {
           mainTab.add(panelZah, "Osnovni podaci");
           mainTab.add(panelOstatak, "Dodatni podaci");
           mainTab.add(panelDodatni, "Napomene i ostalo");
-		}
+		} else if (version == 8) {
+          add(mainTab, BorderLayout.CENTER);
+          mainTab.add(panelBasic, "Osnovni podaci");
+          mainTab.add(panelOstatak, "Dodatni podaci");
+          mainTab.add(panelDodatni, "Napomene i ostalo");
+        }
 		setupOnePredef();
 	}
 
@@ -377,6 +385,10 @@ class rajpIzlazMPTemplate extends JPanel {
 			panelDodatni.BindComp();
 		} else if (TypeDoc.getTypeDoc().numberPanel(fDI.what_kind_of_dokument) == 7) {
           panelZah.BindComp();
+          panelOstatak.BindComp();
+          panelDodatni.BindComp();
+        } else if (TypeDoc.getTypeDoc().numberPanel(fDI.what_kind_of_dokument) == 8) {
+          panelBasic.BindComp();
           panelOstatak.BindComp();
           panelDodatni.BindComp();
         }
@@ -776,7 +788,7 @@ SwingUtilities.invokeLater(new Runnable(){
 				add(jtfDATDOK, new XYConstraints(150, 115, 100, -1));
 				add(jdohvatDokumenta, new XYConstraints(255, 115, 21, 21));
 				add(jpgetval, new XYConstraints(0, 135, -1, -1));
-			} else if (version == 5) {
+			} else if (version == 5 || version == 8) {
 				if (fDI.bPonudaZaKupca) {
 					add(rpku, new XYConstraints(0, 0, -1, -1));
 					add(jlDATDOK, new XYConstraints(15, 115, -1, -1));
