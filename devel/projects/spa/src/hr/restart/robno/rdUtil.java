@@ -1177,7 +1177,7 @@ public class rdUtil {
   //********************************************************************************//
   
   private String dokiF(){
-    String upit = "SELECT vrdok FROM Vrdokum where app in ('rac','mp','robno') and tipdok in ('F','O','SK') and vrsdok = 'I'";
+    String upit = "SELECT vrdok FROM Vrdokum where app in ('rac','mp','robno','sklad') and tipdok in ('F','O','SK') and vrsdok = 'I'";
     QueryDataSet vrdoksi = ut.getNewQueryDataSet(upit);
     vrdoksi.first();
     String dokiF = "(";
@@ -1194,7 +1194,7 @@ public class rdUtil {
    return dokiF; 
   }
   private String dokiFSK(){
-    String upit = "SELECT vrdok FROM Vrdokum where app in ('rac','mp','robno') and tipdok in ('F','O') and vrsdok = 'I'";
+    String upit = "SELECT vrdok FROM Vrdokum where app in ('rac','mp','robno','sklad') and tipdok in ('F','O') and vrsdok = 'I'";
     QueryDataSet vrdoksi = ut.getNewQueryDataSet(upit);
     vrdoksi.first();
     String dokiF = "(";
@@ -1259,7 +1259,7 @@ public class rdUtil {
         // Izlazi
         "SELECT 'B' as ui, 'B' as SRT, DOKI.VRDOK, DOKI.BRDOK, STDOKI.RBR, DOKI.DATDOK, " +
         "DOKI.CORG, DOKI.CVRTR, "+
-        "0.000 AS KOLUL, STDOKI.KOL AS KOLIZ, " + "STDOKI.ZC, 0.00 AS KOLZAD, STDOKI.IRAZ AS KOLRAZ, '            ' as sklul, doki.cskl as skliz " + "from STDOKI,DOKI " + "where STDOKI.CART=" + cart + " AND STDOKI.CSKL='" + cSkl + "' AND " + doci + igod + "AND DOKI.DATDOK <= " + newDateZ + " AND DOKI.VRDOK NOT IN ('RAC','GRN','PRD','PON','NKU','NDO','ZAH','TRE','TER','ODB','POS') and (stdoki.veza is null or (STDOKI.VEZA not LIKE '%ROT%' and STDOKI.VEZA not LIKE '%DOS%')) UNION ALL " +
+        "0.000 AS KOLUL, STDOKI.KOL AS KOLIZ, " + "STDOKI.ZC, 0.00 AS KOLZAD, STDOKI.IRAZ AS KOLRAZ, '            ' as sklul, doki.cskl as skliz " + "from STDOKI,DOKI " + "where STDOKI.CART=" + cart + " AND STDOKI.CSKL='" + cSkl + "' AND " + doci + igod + "AND DOKI.DATDOK <= " + newDateZ + " AND DOKI.VRDOK NOT IN ('RAC','GRN','PRD','PON','UZP','NKU','NDO','ZAH','TRE','TER','ODB','POS') and (stdoki.veza is null or (STDOKI.VEZA not LIKE '%DOS%')) UNION ALL " +
 
         //"SELECT 'B' as ui, 'B' as SRT, DOKI.VRDOK, DOKI.BRDOK, STDOKI.RBR, DOKI.DATDOK, 0.000 AS KOLUL, STDOKI.KOL AS KOLIZ, " + "STDOKI.ZC, 0.00 AS KOLZAD, STDOKI.IRAZ AS KOLRAZ, '            ' as sklul, doki.cskl as skliz " + "from STDOKI,DOKI " + "where STDOKI.CART=" + cart + " AND STDOKI.CSKL='" + cSkl + "' AND " + doci + " " + " AND DOKI.GOD='" + god + "' " + "AND DOKI.DATDOK <= " + newDateZ + " AND DOKI.VRDOK = 'DOS' and (STDOKI.VEZA not LIKE '%ROT%' or stdoki.veza is null) UNION ALL " +
         // Poravnanje
