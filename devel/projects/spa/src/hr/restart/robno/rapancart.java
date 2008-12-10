@@ -92,6 +92,7 @@ public class rapancart extends JPanel {
   private boolean gotFocus = false;
   private boolean lUsluga = false;
   private boolean SerNum = false;
+  private boolean enableChange = false;
   private boolean extraSklad = false;
   private boolean bPrikazKolicina = false;
 //      frmParam.getParam("robno", "prikazKol", "N","Prikaz kolièina na rapancartu (D/N)").equalsIgnoreCase("D");
@@ -1027,8 +1028,12 @@ System.out.println("layheight="+lay.getHeight());
 //  }
   
   boolean isAllowNameChange() {
-    return Aus.isNumber(jrfCART.getText()) &&
+    return enableChange || Aus.isNumber(jrfCART.getText()) &&
            raVart.isVarnaziv(Aus.getNumber(jrfCART.getText()));
+  }
+  
+  public void enableNameChange(boolean alwaysVar) {
+    enableChange = alwaysVar;
   }
 /**
  * Vraca da
