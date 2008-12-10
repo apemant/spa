@@ -68,7 +68,7 @@ public class TypeDoc {
   static final String[] araj_docs = {"PST","PRI","POR","PRK","PTE","INV",
                               "PON","POS","OTP","ROT","GOT","POD","IZD","INM",
                               "OTR","NDO","NKU","MES","MEI","MEU","PRE","REV",
-                              "PRV","POV", "ZAH", "TRE"};
+                              "PRV","POV", "ZAH", "TRE", "UZP"};
   static final String[] araj_docsOJ = {"PRD","RAC","TER","ODB","GRN","KAL","POS"};
 
   static public TypeDoc getTypeDoc(){
@@ -201,6 +201,7 @@ public class TypeDoc {
         "TER".equalsIgnoreCase(what_kind_of_document) ||
         "ZAH".equalsIgnoreCase(what_kind_of_document) ||
         "TRE".equalsIgnoreCase(what_kind_of_document) ||
+        "UZP".equalsIgnoreCase(what_kind_of_document) ||
 //        what_kind_of_document.equals("REV") ||
 //        what_kind_of_document.equals("PRV") ||
         "ODB".equalsIgnoreCase(what_kind_of_document));
@@ -224,6 +225,7 @@ public class TypeDoc {
             "ZAH".equalsIgnoreCase(what_kind_of_document) ||
             "TRE".equalsIgnoreCase(what_kind_of_document) ||
             "PON".equalsIgnoreCase(what_kind_of_document) ||
+            "UZP".equalsIgnoreCase(what_kind_of_document) ||
             "OTP".equalsIgnoreCase(what_kind_of_document) ||
   
             "OTR".equalsIgnoreCase(what_kind_of_document) ||
@@ -306,6 +308,8 @@ public class TypeDoc {
     } else if ("ZAH".equalsIgnoreCase(what_kind_of_document) ||
             "TRE".equalsIgnoreCase(what_kind_of_document)) {
       forReturn = 7;
+    } else if ("UZP".equalsIgnoreCase(what_kind_of_document)) {
+      forReturn = 8; //4
     }
     return forReturn;
   }
