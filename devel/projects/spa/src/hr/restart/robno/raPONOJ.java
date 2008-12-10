@@ -63,7 +63,6 @@ public class raPONOJ extends raIzlazTemplate {
 		raDetail.getRepRunner().addReport("hr.restart.robno.repMxPON",
 				"Matri\u010Dni ispis ponude");
 
-		super.SetFocusNovi();
 	}
 
 
