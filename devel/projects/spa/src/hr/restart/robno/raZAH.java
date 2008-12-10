@@ -55,6 +55,8 @@ public class raZAH extends raIzlazTemplate {
     setMasterSet(dm.getZagZah());
     setDetailSet(dm.getStZah());
     
+    DP.rpcart.enableNameChange(true);
+    
     MP.BindComp();
     DP.BindComp();
   }
