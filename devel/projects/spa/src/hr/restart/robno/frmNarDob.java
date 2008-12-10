@@ -211,7 +211,7 @@ public class frmNarDob extends raMasterDetail {
   public void refilterDetailSet() { 
     super.refilterDetailSet();
     jpDetail.rpc.setGodina(vl.findYear(this.getMasterSet().getTimestamp("DATDOK")));
-    jpDetail.rpc.setCskl(this.getMasterSet().getString("CSKL"));
+    //jpDetail.rpc.setCskl(this.getMasterSet().getString("CSKL"));
   }
 
 
@@ -251,13 +251,13 @@ public class frmNarDob extends raMasterDetail {
       if (getDetailSet().getBigDecimal("KOL").compareTo(
           zahStavkaNew.getBigDecimal("KOL")) != 0) {
         if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(jpDetail,
-            "Kolièina na narudžbenici se razlikuje od kolièine na zahtjevnici!" +
+            "Kolièina na narudžbenici se razlikuje od kolièine na trebovanju!" +
             " Nastaviti ipak?", "Upozorenje", JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.WARNING_MESSAGE)) return false;
       }
       if (!zahStavkaNew.getString("STATUS").equalsIgnoreCase("N")) {
         JOptionPane.showMessageDialog(jpDetail, 
-            "Odabrana stavka zahtjevnice je veæ naruèena!",
+            "Odabrana stavka trebovanju je veæ naruèena!",
             "Prijenos", JOptionPane.ERROR_MESSAGE);
         return false;
       }
@@ -267,7 +267,7 @@ public class frmNarDob extends raMasterDetail {
       if (getDetailSet().getBigDecimal("KOL").compareTo(
           zahStavkaOld.getBigDecimal("KOL")) != 0) {
         if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(jpDetail,
-            "Kolièina na narudžbenici se razlikuje od kolièine na zahtjevnici!" +
+            "Kolièina na narudžbenici se razlikuje od kolièine na trebovanju!" +
             " Nastaviti ipak?", "Upozorenje", JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.WARNING_MESSAGE)) return false;
       }
@@ -282,7 +282,7 @@ public class frmNarDob extends raMasterDetail {
     if (zahStavkaNew.rowCount() == 0 || 
         zahStavkaNew.getInt("CART") != getDetailSet().getInt("CART")) {
       JOptionPane.showMessageDialog(jpDetail, 
-          "Odabrana stavka zahtjevnice je u meðuvremenu promijenjena!",
+          "Odabrana stavka trebovanja je u meðuvremenu promijenjena!",
           "Prijenos", JOptionPane.ERROR_MESSAGE);
       return true;
     }
@@ -309,6 +309,7 @@ public class frmNarDob extends raMasterDetail {
   public boolean DeleteCheckDetail() {
     oldRbr = this.getDetailSet().getShort("RBR");
     key4del = rCD.getKey(getDetailSet());
+    findOldStavka('B');
 System.out.println("key4del "+ key4del);    
     return true;
   }
@@ -687,7 +688,7 @@ System.out.println(tmpVTTEXT.getQuery().getQueryString());
 	  boolean haveCskl = cskl.length() > 0;
 	    
 	  boolean fullZah = frmParam.getParam("robno", "dohvatZAH", "D", 
-	        "Prikazati sve stavke zahtjevnice kod dohvata na narudžbenici (D,N)", true).
+	        "Prikazati sve stavke trebovanja kod dohvata na narudžbenici (D,N)", true).
 	          equalsIgnoreCase("D");
 	  
 	  String dod = "";
@@ -722,10 +723,12 @@ System.out.println(tmpVTTEXT.getQuery().getQueryString());
 	    doh.setMetaDataUpdate(MetaDataUpdate.TABLENAME+MetaDataUpdate.PRECISION+
 	        MetaDataUpdate.SCALE+MetaDataUpdate.SEARCHABLE);
 	    doh.setColumns((Column[]) cols.toArray(new Column[cols.size()]));
+	    doh.getColumn("KOL1").setCaption("Naruèeno");
+	    doh.getColumn("KOL2").setCaption("Isporuèeno");
 	    doh.open();
 	    if (doh.rowCount() == 0) {
 	      JOptionPane.showMessageDialog(jpDetail, 
-	          "Nema nenaruèenih stavaka zahtjevnica u ovoj godini!",
+	          "Nema nenaruèenih stavaka trebovanja u ovoj godini!",
 	          "Prijenos", JOptionPane.ERROR_MESSAGE);
 	      return;
 	    }
@@ -739,7 +742,7 @@ System.out.println(tmpVTTEXT.getQuery().getQueryString());
 	    mdc.addModifier(new StatusColorModifier(mdc.isTurboTable()));
 	    
 	    if (mdc.show(raDetail.getWindow(), 
-	        "Dohvat stavki zahtjevnica za naruèivanje")) {
+	        "Dohvat stavki trebovanja za naruèivanje")) {
 	      if (!doh.getString("STATUS").equals("N")) {
 	        JOptionPane.showMessageDialog(jpDetail, 
 	            "Odabrana stavka je veæ od prije naruèena!",
@@ -749,6 +752,8 @@ System.out.println(tmpVTTEXT.getQuery().getQueryString());
 	      zahStavkaNew = stdoki.getDataModule().getTempSet(
 	          Condition.whereAllEqual(Util.dkey, doh));
 	      zahStavkaNew.open();
+	      if (jpDetail.rpc.getCskl().length() == 0)
+	        jpDetail.rpc.setCskl(zahStavkaNew.getString("CSKL"));
 	      if (haveArt) afterArt();
 	      else jpDetail.rpc.setCART(doh.getInt("CART"));
 	    }
@@ -758,7 +763,7 @@ System.out.println(tmpVTTEXT.getQuery().getQueryString());
 	    Variant shared = new Variant();
 	    HashSet dset = new HashSet(Arrays.asList(new String[]
 	       {"RBR", "CART", "CART1", "BC", "NAZART", 
-	        "JM", "KOL", "FVC", "FMC", "STATUS"}));
+	        "JM", "KOL", "KOL1", "KOL2", "FVC", "FMC", "STATUS"}));
 	    
 	    boolean turboTable;
 	    
