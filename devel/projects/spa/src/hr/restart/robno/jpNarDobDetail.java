@@ -328,7 +328,7 @@ public class jpNarDobDetail extends JPanel {
     
     trans.setIcon(raImages.getImageIcon(raImages.IMGSENDMAIL));
     trans.setAutomaticFocusLost(true);
-    trans.setToolTipText("Dohvat stavki zahtjevnica");
+    trans.setToolTipText("Dohvat stavki trebovanja");
     trans.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         fNarDob.zahDohvat();
