@@ -256,6 +256,15 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
     rotStavkaOld.setString("STATUS", 
         Aus.comp(rotStavkaOld, "KOL", "KOL2") == 0 ? "P" : "N");
     raTransaction.saveChanges(rotStavkaOld);
+    if (rotStavkaOld.getString("VEZA").length() > 0) {
+      QueryDataSet zah = stdoki.getDataModule().getTempSet(
+          Condition.equal("ID_STAVKA", rotStavkaOld.getString("VEZA")));
+      zah.open();
+      if (zah.rowCount() == 1) {
+        Aus.set(zah, "KOL2", rotStavkaOld);
+        raTransaction.saveChanges(zah);
+      }
+    }
     transStavka.deleteRow();
     raTransaction.saveChanges(transStavka);
     return true;
@@ -310,6 +319,15 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
     link.setBigDecimal("KOL", getDetailSet().getBigDecimal("KOL"));
     Aus.add(stavka, "KOL2", link, "KOL");
     stavka.setString("STATUS", Aus.comp(stavka, "KOL", "KOL2") == 0 ? "P" : "N");
+    if (stavka.getString("VEZA").length() > 0) {
+      QueryDataSet zah = stdoki.getDataModule().getTempSet(
+          Condition.equal("ID_STAVKA", stavka.getString("VEZA")));
+      zah.open();
+      if (zah.rowCount() == 1) {
+        Aus.set(zah, "KOL2", stavka);
+        raTransaction.saveChanges(zah);
+      }
+    }
     raTransaction.saveChanges(link);
     raTransaction.saveChanges(stavka);
     return true;
