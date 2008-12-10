@@ -39,6 +39,7 @@ public class menuNar extends JMenu {
 
   hr.restart.util.startFrame SF;
   JMenuItem jmZAH = new JMenuItem();
+  JMenuItem jmUZP = new JMenuItem();
   JMenuItem jmNDO = new JMenuItem();
   JMenuItem jmNKU = new JMenuItem();
 
@@ -62,6 +63,12 @@ public class menuNar extends JMenu {
         jmZAH_actionPerformed(e);
       }
     });
+    jmUZP.setText("Upit za ponudu");
+    jmUZP.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmUZP_actionPerformed(e);
+      }
+    });
     jmNDO.setText("Narudžbe dobavljaèu");
     jmNDO.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -75,12 +82,17 @@ public class menuNar extends JMenu {
       }
     });
     this.add(jmZAH);
+    this.add(jmUZP);
     this.add(jmNDO);
     this.add(jmNKU);
   }
   void jmZAH_actionPerformed(ActionEvent e) {
     raZAH fZAH = (raZAH) raLoader.load("hr.restart.robno.raZAH");
     presZAH.getPres().showJpSelectDoc("TRE", fZAH, true, "Trebovanje");
+  }
+  void jmUZP_actionPerformed(ActionEvent e) {
+    raUZP fUZP = (raUZP) raLoader.load("hr.restart.robno.raUZP");
+    presUZP.getPres().showJpSelectDoc("UZP", fUZP, true, "Upit za ponudu");
   }
   void jmNDO_actionPerformed(ActionEvent e) {
     frmNarDob frmND = (frmNarDob) raLoader.load("hr.restart.robno.frmNarDob");
