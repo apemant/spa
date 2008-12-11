@@ -21,12 +21,17 @@
 package hr.restart.pl;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.FondSati;
 import hr.restart.baza.Kumulrad;
 import hr.restart.baza.Kumulradarh;
+import hr.restart.baza.Odbici;
 import hr.restart.baza.Parametripl;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.dM;
+import hr.restart.robno.dlgKupac;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.frmTableDataView;
+import hr.restart.swing.JraDialog;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.lookupData;
@@ -34,9 +39,12 @@ import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raTransaction;
 import hr.restart.util.sysoutTEST;
 import hr.restart.zapod.OrgStr;
+import hr.restart.zapod.dlgGetKnjig;
 
+import java.awt.Frame;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -90,14 +98,26 @@ public class CalcRazPor {
 //    Radnici.getDataModule().getFilteredDataSet(Condition.equal("CORG",OrgStr.getKNJCORG())),godina);
   }
   public void showDetail() {
-    sysoutTEST st = new sysoutTEST(false);
-    st.showInFrame(detailCaPo,"detail");    
+//    sysoutTEST st = new sysoutTEST(false);
+//    st.showInFrame(detailCaPo,"detail");  
+    showInFrame(detailCaPo, "Detalji godišnjeg obraèuna poreza");
+    //dw.show();
+    
   }
   public void showMaster() {
-    sysoutTEST st = new sysoutTEST(false);
-    st.showInFrame(masterCaPo,"master");    
-  }
+//    sysoutTEST st = new sysoutTEST(false);
+//    st.showInFrame(masterCaPo,"master"); 
+    showInFrame(masterCaPo, "Pregled razlike po god. obraèunu poreza");
     
+  }
+  private void showInFrame(StorageDataSet set, String title) {
+    frmTableDataView dw = new frmTableDataView(true, true, false);
+    dw.setDataSet(set);
+    JraDialog ddw = new JraDialog((Frame)null,title,true);
+    ddw.setContentPane(dw.getContentPane());
+    ddw.pack();
+    ddw.show();
+  }
   /**
    * 
    */
@@ -111,23 +131,21 @@ public class CalcRazPor {
     raddata.open();
     raOdbici.getInstance().setObrRange(new MyObrRange(inqrange));
     StorageDataSet orgdata = new StorageDataSet();
-    if (realolak) {
-	    QueryDataSet orgdataqry = Util.getNewQueryDataSet(
-	        "SELECT datumispl, MINPL as MINPL FROM kumulorgarh WHERE "
-	        +Condition.equal("CORG",corg)+" AND "+inqrange
-	        );
-        orgdata.setColumns(orgdataqry.cloneColumns());
-        String oldmonth="##";
-        orgdata.open();
-        for (orgdataqry.first(); orgdataqry.inBounds(); orgdataqry.next()) {
-          String currmonth = Util.getUtil().getMonth(orgdataqry.getTimestamp("DATUMISPL"));
-          if (!oldmonth.equals(currmonth)) {
-            orgdata.insertRow(false);
-            orgdataqry.copyTo(orgdata);
-            orgdata.post();
-          }
+    QueryDataSet orgdataqry = Util.getNewQueryDataSet(
+        "SELECT godobr, mjobr, rbrobr, datumispl, MINPL FROM kumulorgarh WHERE "
+        +Condition.equal("CORG",corg)+" AND "+inqrange
+        );
+      orgdata.setColumns(orgdataqry.cloneColumns());
+      String oldmonth="##";
+      orgdata.open();
+      for (orgdataqry.first(); orgdataqry.inBounds(); orgdataqry.next()) {
+        String currmonth = Util.getUtil().getMonth(orgdataqry.getTimestamp("DATUMISPL"));
+        if (!oldmonth.equals(currmonth)) {
+          orgdata.insertRow(false);
+          orgdataqry.copyTo(orgdata);
+          orgdata.post();
         }
-    }
+      }
     StorageDataSet kumrad = Kumulrad.getDataModule().getTempSet(Condition.equal("CRADNIK",cradnik));
     kumrad.open();
     //get values
@@ -136,6 +154,7 @@ public class CalcRazPor {
     BigDecimal neop = getGodTotalNeop(cradnik, orgdata);
     BigDecimal premije = getPremije(cradnik);
     BigDecimal poros = neto.add(neop.negate()).add(premije.negate());
+    if (poros.signum()<0) poros = Aus.zero2;
     StorageDataSet orgosn = new StorageDataSet();
     orgosn.setColumns(new Column[] {dM.createShortColumn("GODOBR"), dM.createShortColumn("MJOBR"),
         dM.createBigDecimalColumn("OSNPOR1"),dM.createBigDecimalColumn("OSNPOR2"),dM.createBigDecimalColumn("OSNPOR3"),dM.createBigDecimalColumn("OSNPOR4"),dM.createBigDecimalColumn("OSNPOR5")});
@@ -257,11 +276,77 @@ System.out.println("******"+_crad+"******"+qprirez);
     premije = premije.add(getSum(prems, "OBRIZNOS"));
     return premije;
   }
+  private BigDecimal getGodTotalNeop(String cradnik, StorageDataSet orgdata) {
+    //orgdata godobr, mjobr, rbrobr, datumispl, MINPL FROM kumulorgarh
+    String olakqry = hr.restart.pl.raOdbici.getInstance().getOdbiciWhereQuery("RA","K","1","4",cradnik, null , "odbiciarh"); //npr."CVRODB in (6) and CKEY='cradnik')
+    //osnovni odbitak iz fonda sati
+    QueryDataSet fondsati = FondSati.getDataModule().getTempSet(Condition.equal("KNJIG", dlgGetKnjig.getKNJCORG()).and(Condition.equal("GODINA", (short)_godina)));
+    //trenutni osobni odbitak
+    StorageDataSet currolaks = raOdbici.getInstance().getOlaksice(cradnik,raOdbici.DEF);
+    BigDecimal currkoef = getSum(currolaks,"STOPA");
+    QueryDataSet pars = Parametripl.getDataModule().getTempSet();
+    pars.open();
+    BigDecimal currminpl = pars.getBigDecimal("MINPL");
+    //zadnji koeficijent prije zadanog perioda
+    Calendar c = Calendar.getInstance();
+    c.set(_godina-1, 11, 1);
+    Timestamp lastdaybefore = Util.getUtil().getLastDayOfYear(new Timestamp(c.getTimeInMillis()));
+    String _q;
+    QueryDataSet lastarh = Util.getNewQueryDataSet(_q = "SELECT max(DATUMISPL) as DATUMISPL FROM kumulorgarh WHERE " + Condition.equal("KNJIG", dlgGetKnjig.getKNJCORG())
+        .and(Condition.till("DATUMISPL", lastdaybefore)));
+System.out.println(_q);
+    lastarh.open();
+    QueryDataSet lastodbici = Util.getNewQueryDataSet(_q = "SELECT odbiciarh.obrstopa FROM odbiciarh,kumulorgarh WHERE " +
+        "odbiciarh.godobr = kumulorgarh.godobr AND odbiciarh.mjobr = kumulorgarh.mjobr AND odbiciarh.rbrobr = kumulorgarh.rbrobr AND " +
+        Condition.equal("DATUMISPL", lastarh) + " AND "+olakqry);
+System.out.println(_q);
+    lastodbici.open();
+    BigDecimal lastkoef = getSum(lastodbici, "OBRSTOPA");
+    BigDecimal lastminpl = currminpl;
+//    		"KNJIG = '"+dlgGetKnjig.getKNJCORG()+"' and DATUMISPL < ";
+    BigDecimal godtotalneop = Aus.zero2;
+    for (int mji = 1; mji < 13; mji++) {
+      //ima li orgdata u mji
+      boolean orgdataLocated = false;
+      for (orgdata.first(); orgdata.inBounds(); orgdata.next()) {
+        if (Integer.parseInt(Util.getUtil().getMonth(orgdata.getTimestamp("DATUMISPL")))==mji) {
+          orgdataLocated = true;
+          break;
+        }
+      }
+System.out.println("orgdatalocated = "+orgdataLocated);
+      if (lookupData.getlookupData().raLocate(fondsati, "MJESEC", mji+"")) {
+System.out.println("fondsati.isNull(MINPL) = "+fondsati.isNull("MINPL"));
+System.out.println("fondsati.getBigDecimal(MINPL).signum() == 0 = "+(fondsati.getBigDecimal("MINPL").signum()));
+        if (!(fondsati.isNull("MINPL") || fondsati.getBigDecimal("MINPL").signum() == 0)) {
+          lastminpl = fondsati.getBigDecimal("MINPL");
+        }
+      }
+System.out.println(fondsati);
+System.out.println(orgdata);
+
+      if (orgdataLocated) {
+        //ako ima pokupi MINPL (!realolak) i obrstopa 
+        //lastminpl = orgdata.getBigDecimal("MINPL");
+        QueryDataSet odbicimj = Util.getNewQueryDataSet(_q = "SELECT odbiciarh.obrstopa FROM odbiciarh WHERE " +
+            Condition.whereAllEqual(new String[] {"GODOBR","MJOBR","RBROBR"}, orgdata)
+             + " AND "+olakqry);
+System.out.println(_q);
+        lastkoef = getSum(odbicimj, "OBRSTOPA"); 
+      } else {
+        //ako nema uzmi MINPL iz fondsati i lastkoef
+      }
+System.out.println("Za "+mji+":: godtotalneop = godtotalneop + "+lastminpl+" + "+lastminpl+"*"+lastkoef+" = "+godtotalneop+" + "+lastminpl.add(lastminpl.multiply(lastkoef)));
+      godtotalneop = godtotalneop.add(lastminpl).add(lastminpl.multiply(lastkoef));
+System.out.println("Za "+mji+":: godtotalneop = "+godtotalneop);     
+    }
+    return godtotalneop;
+  }
   /**
    * @param cradnik
    * @return
    */
-  private BigDecimal getGodTotalNeop(String cradnik, StorageDataSet orgdata) {
+  private BigDecimal getGodTotalNeop__old(String cradnik, StorageDataSet orgdata) {
     BigDecimal dvanaest = new BigDecimal(12);
     StorageDataSet currolaks = raOdbici.getInstance().getOlaksice(cradnik,raOdbici.DEF);
     //BigDecimal currkoef = new BigDecimal("1.00");
