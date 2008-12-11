@@ -1036,3 +1036,12 @@ IDX=cart
 IDX=cradnal
 IDX=veza
 IDX=id_stavka
+
+$FondSati
+KNJIG;char;12;pkey;;Poduzeæe
+GODINA;short;2;pkey;;Godina
+MJESEC;short;2;pkey;;Mjesec
+SATIRAD;numeric;17,2;;0;Sati rada;15
+SATIPRAZ;numeric;17,2;;0;Sati praznika;15
+SATIUK;numeric;17,2;;0;Sati ukupno;15
+MINPL;numeric;17,2;;0;Olakšica U mjesecu;15
