@@ -1195,7 +1195,7 @@ sysoutTEST ST = new sysoutTEST(false);
     QueryDataSet qrazlpor = odbici.getOdbici("RA",prir?"R":"P","2","0",cradnik,null,"odbici",cradnik,raOdbici.DEF);
     BigDecimal razpor;
     try {
-      razpor = calcOdbiciRadnik(qrazlpor,null,false)[1];
+      razpor = calcOdbiciRadnik(qrazlpor,"NETO",false)[1];
     } catch (Exception e) {
       e.printStackTrace();
       razpor = nula;
