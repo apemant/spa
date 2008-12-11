@@ -147,6 +147,7 @@ public class frmObrPor extends frmObradaPL {
     return (answ == 0);
   }
   boolean succ=false;
+  boolean showRazlCaPo = false;
   public void okPress() {
     if (frmcrp!=null && frmcrp.getCRP() !=null) {//obr.prvo normalno onda razliku poreza
       succ = obracun.obracun(jcbDopr.isSelected(),jcbPor.isSelected(),jcbKred.isSelected(),jcbPrir.isSelected(),jcbLimitsPOR.isSelected(),jcbLimitsDOP.isSelected(),false);
@@ -157,6 +158,7 @@ public class frmObrPor extends frmObradaPL {
           //TODO preview
           frmTableDataView preview = new frmTableDataView(true,false) {
             protected void OKPress() {
+              showRazlCaPo = true;
               frmTableDataView prwdetail = new frmTableDataView(true, false);
               prwdetail.setDataSet(frmcrp.getCRP().getDetailCaPo());
               JraDialog dprwdetail = new JraDialog(dprw);
@@ -190,6 +192,9 @@ public class frmObrPor extends frmObradaPL {
   }
   public void showMessage() {
     showMessage(this,"Obra\u010Dun","an",succ);
+    if (frmcrp!=null && frmcrp.getCRP()!=null && showRazlCaPo) {
+      frmcrp.getCRP().showDetail();
+    }
   }
   public static void showMessage(frmObradaPL fOPL,String poruka,String an,boolean _succ) {
     JOptionPane.showMessageDialog(fOPL.jp,
