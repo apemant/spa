@@ -60,6 +60,7 @@ public class jpFondSati extends JPanel {
     }
   };
   JraTextField jraSatiuk = new JraTextField();
+  JraTextField jraMinpl = new JraTextField();
   JLabel jlSatipraz = new JLabel();
 
   public jpFondSati(frmFondSati f) {
@@ -108,6 +109,8 @@ public class jpFondSati extends JPanel {
     });*/
     jraSatiuk.setColumnName("SATIUK");
     jraSatiuk.setDataSet(fFondSati.getRaQueryDataSet());
+    jraMinpl.setColumnName("MINPL");
+    jraMinpl.setDataSet(fFondSati.getRaQueryDataSet());
 
 
     jlSatipraz.setText("Sati praznika");
@@ -119,10 +122,12 @@ public class jpFondSati extends JPanel {
     jpDetail.add(jraMjesec,   new XYConstraints(150, 20, 50, -1));
     jpDetail.add(jraSatirad,   new XYConstraints(150, 45, 100, -1));
     jpDetail.add(jraSatiuk,  new XYConstraints(150, 70, 100, -1));
+    jpDetail.add(jraMinpl,  new XYConstraints(430, 70, 100, -1));
     jpDetail.add(jraSatipraz,              new XYConstraints(430, 45, 100, -1));
+    jpDetail.add(new JLabel("Olakšica U mj."),  new XYConstraints(320, 70, 100, -1));
+    jpDetail.add(jlSatipraz,      new XYConstraints(320, 45, -1, -1));
 
     this.add(jpDetail, BorderLayout.CENTER);
-    jpDetail.add(jlSatipraz,      new XYConstraints(320, 45, -1, -1));
 //    jpDetail.add(jcbAktiv,     new XYConstraints(460, 20, 70, -1));
   }
 
