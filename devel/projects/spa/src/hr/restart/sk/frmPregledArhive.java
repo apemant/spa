@@ -710,6 +710,12 @@ public class frmPregledArhive extends raMasterDetail {
     this.raMaster.getNavBar().removeStandardOptions(new int[] {raNavBar.ACTION_ADD,
         raNavBar.ACTION_TOGGLE_TABLE});
 
+    raMaster.addOption(new raNavAction("Virmani", raImages.IMGALIGNRIGHT, KeyEvent.VK_F8) {
+      public void actionPerformed(java.awt.event.ActionEvent ev) {
+          virmani();
+        }
+      },6);
+    
     this.setDetailSet(UIstavke.getDataModule().getFilteredDataSet("1=0"));
     this.setNaslovDetail("Stavke ra\u010Duna");
     this.setVisibleColsDetail(new int[] {5,6,7,8});
@@ -718,6 +724,9 @@ public class frmPregledArhive extends raMasterDetail {
     jpDetail.BindComponents(getDetailSet());
     this.setJPanelDetail(jpDetail);
 
+    raMaster.installSelectionTracker("CSKSTAVKE");
+
+    
 
 //    pres.setSelDataSet(getMasterSet());
     this.raMaster.addOption(rnaDe = new hr.restart.util.raNavAction("Poništi", raImages.IMGEXPORT, KeyEvent.VK_F7) {
@@ -792,6 +801,14 @@ public class frmPregledArhive extends raMasterDetail {
         }
     );
 
+  }
+  
+  protected void virmani() {
+    if (raMaster.getSelectionTracker().countSelected() == 0) {//nista odabrano
+        JOptionPane.showMessageDialog(raMaster.getWindow(),"Potrebno je odabrati raèune tipkom Enter za ispis virmana!");
+    } else {
+        new VirmaniSK(raMaster).show();
+    }
   }
 }
 
