@@ -173,28 +173,33 @@ private void clearVars() {
     String adrT = handleEmptyStr(naTerDS.getString("ADRESA"),1);
     String mjT = handleEmptyStr(naTerDS.getString("MJESTO"),0);
     String pbrT = handleEmptyStr(naTerDS.getString("HPBROJ") ,0);
-    _nateret = nazT + "\n"+adrT+pbrT+mjT;
+    _nateret = nazT + "\n"+adrT+pbrT+" "+mjT;
     _jedzav = "NNDNN";
     _brracnateret = naTerDS.getString("ZIRO"); //TODO ziro racun na upit iz zirorn?
-    for (_skstavke.first(); _skstavke.inBounds(); _skstavke.next()) {
-      if (doProcessStavka(_skstavke)) {
-	      _svrha = getDefaultSvrha() + " " + _skstavke.getString("BROJDOK");
-	      _ukorist = getUkorist(_skstavke.getInt("CPAR"));
-	      _pnbz2 = getPnbz2(_skstavke);
-	      _brracukorist = getBRRUkorist(_skstavke.getInt("CPAR"));
-	      _pnbo2 = _skstavke.getString("BROJDOK");
-	      _iznos = _skstavke.getBigDecimal("ID").add(_skstavke.getBigDecimal("IP"));
+    DataSet sk = _selectionTracker.getSelectedView();
+    for (sk.first(); sk.inBounds(); sk.next()) {
+	      _svrha = getDefaultSvrha() + " " + sk.getString("BROJDOK");
+	      _ukorist = getUkorist(sk.getInt("CPAR"));
+	      _pnbz2 = getPnbz2(sk);
+	      _brracukorist = getBRRUkorist(sk.getInt("CPAR"));
+	      _pnbo2 = sk.getString("BROJDOK");
+	      _iznos = sk.getBigDecimal("ID").add(sk.getBigDecimal("IP"));
 	      _mjesto = mjT;
 	      _datizv = getDatumPlacanja();
-	      _datpred = getDatumPlacanja();
-	      add(_jedzav, _nateret, _svrha, _ukorist, _brracnateret, _nacizv, _pnbz1, _pnbz2, _sif1, _sif2, _sif3, _brracukorist, _pnbo1, _pnbo2, _iznos, _mjesto, _datizv, _datpred);
-      }
+	      _datpred = getDatumPlacanja();	      
+	      if (raVrdokMatcher.isRacun(sk)) {
+	        if (raVrdokMatcher.isDob(sk))
+	          add(_jedzav, _nateret, _svrha, _ukorist, _brracnateret, _nacizv, _pnbz1, _pnbz2, _sif1, _sif2, _sif3, _brracukorist, _pnbo1, _pnbo2, _iznos, _mjesto, _datizv, _datpred);
+	        else if (raVrdokMatcher.isKup(sk))
+	          add(_jedzav, _ukorist, _svrha, _nateret, _brracukorist, _nacizv, _pnbz1, _pnbz2, _sif1, _sif2, _sif3, _brracnateret, _pnbo1, _pnbo2, _iznos, _mjesto, _datizv, _datpred);
+	      }
     }
+    _selectionTracker.destroySelectedView();
     save();
-    if (_master!=null) {
+    /*if (_master!=null) {
     	_master.getJpTableView().enableEvents(true);
     	_master.getColumnsBean().refreshAction();
-    }
+    }*/
   }
 
   /**
