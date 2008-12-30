@@ -38,6 +38,8 @@ import javax.swing.JOptionPane;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.ReadRow;
+import com.borland.dx.dataset.ReadWriteRow;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jb.util.TriStateProperty;
@@ -201,7 +203,28 @@ public class raIZD extends raIzlazTemplate  {
   public static boolean isStanjeExist4allDS(QueryDataSet s_realStavke, QueryDataSet s_realStavkeGreska, String god, String cskl, boolean sumcheck) {
     return isStanjeExist4allDS(s_realStavke, s_realStavkeGreska, god, cskl, sumcheck, true);
   }
+  /**
+   * Metoda je losa ali koristi kod prijema podataka iz vana u skladiste koje se vodi po NC-u 
+   * Poziva se u isStanjeExist4allDS(ds, ds, String, String, boolean, boolean, boolean) ako je 3. boolean (fillstvalues) true
+   * @param stavka
+   * @param stanje
+   */
+  public static void add_stotp_values(ReadWriteRow stavka, ReadRow stanje) {
+    stavka.setBigDecimal("NC",stanje.getBigDecimal("NC"));
+    stavka.setBigDecimal("INAB",stavka.getBigDecimal("NC").multiply(stavka.getBigDecimal("KOL")));
+    stavka.setBigDecimal("VC",stanje.getBigDecimal("VC"));
+    stavka.setBigDecimal("IBP",stavka.getBigDecimal("VC").multiply(stavka.getBigDecimal("KOL")));
+    stavka.setBigDecimal("MC",stanje.getBigDecimal("MC"));
+    stavka.setBigDecimal("ISP",stavka.getBigDecimal("MC").multiply(stavka.getBigDecimal("KOL")));
+    stavka.setBigDecimal("ZC",stavka.getBigDecimal("NC"));//!!! samo ako je po prosjecnoj nabavnoj !!!!!!
+    stavka.setBigDecimal("IRAZ",stavka.getBigDecimal("ZC").multiply(stavka.getBigDecimal("KOL")));
+    stavka.setString("CSKLART",stavka.getString("CSKL"));
+  }
+  
   public static boolean isStanjeExist4allDS(QueryDataSet s_realStavke, QueryDataSet s_realStavkeGreska, String god, String cskl, boolean sumcheck, boolean deterr) {
+    return isStanjeExist4allDS(s_realStavke, s_realStavkeGreska, god, cskl, sumcheck, deterr, false);
+  }
+  public static boolean isStanjeExist4allDS(QueryDataSet s_realStavke, QueryDataSet s_realStavkeGreska, String god, String cskl, boolean sumcheck, boolean deterr, boolean fillstvalues) {
     allStanje s_AST = allStanje.getallStanje();
     HashMap hm= new HashMap() {
 //      public Object put(Object key, Object value) {
@@ -228,6 +251,11 @@ public class raIZD extends raIzlazTemplate  {
       }
       BigDecimal kolicinaBD = 
       	(BigDecimal)hm.get(String.valueOf(s_realStavke.getInt("CART")));
+      
+      if (fillstvalues && s_AST.gettrenSTANJE().getRowCount()>0) {
+        add_stotp_values(s_realStavke, s_AST.gettrenSTANJE());
+      }
+      
       if (s_AST.gettrenSTANJE().getRowCount()==0)  {
         s_realStavke.setString("STATUS","B");
         if (!sumcheck) {
