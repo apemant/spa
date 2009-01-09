@@ -104,6 +104,7 @@ public class repIzlazni implements raReportData {
     String nowDok = getFormatBroj();
     if (lastDok != null && !nowDok.equals(lastDok)) {
       lastDok = nowDok;
+      modParams();
       rekapPorez();
       nacPl();
       setZnacajkeSubjekta();
@@ -1572,8 +1573,7 @@ public BigDecimal getIPRODSP() {
   boolean specChars = false;
   boolean iznosPop = false;
   private void setParams() {
-    ispisPJ = frmParam.getParam("robno","ispisPJ","D","Ispis poslovne jedinice na ROT-u " +
-            "(D-u adresi, I-kao isporuka, O-na oba mjesta, N-bez P.J.)");
+    modParams();
     conVl = frmParam.getParam("robno","ConVl","N",
             "Dodati vlasnika u naziv partnera ako je obrt(D,V,N)");
     specChars = frmParam.getParam("robno","chForSpecial","N","Provjerava specijalne " +
@@ -1582,6 +1582,29 @@ public BigDecimal getIPRODSP() {
         "Prikaz ukupnog iznosa stavke izaza s popustom (D/N)").equalsIgnoreCase("D");
     metroDob = frmParam.getParam("robno","MetroCpar","20196",
         "Šifra dobavljaèa na raèunu i otpremnici za Metro");
+  }
+
+  private void modParams() {
+    ispisPJ = frmParam.getParam("robno","ispisPJ","D","Ispis poslovne jedinice na ROT-u " +
+    "(D-u adresi, I-kao isporuka, O-na oba mjesta, N-bez P.J.)");
+    String ispisPJCPAR = getIspisPJCPAR(getCPAR());
+    ispisPJ = (ispisPJCPAR.equals("")?ispisPJ:ispisPJCPAR);
+    System.err.println("modParams: lastdok = "+lastDok+" cpar = "+getCPAR()+" ispisPJ = "+ispisPJ);
+  }
+  public static String getIspisPJCPAR(int cpar) {
+    String ispisPJCPAR = frmParam.getParam("robno", "ispisPJCPAR", "", "Vrijednost parametra ispisPJ u odnosu na partnera (cpar1:value,cpar2:value,cparN:value...");
+    try {      
+      String[] pars = new VarStr(ispisPJCPAR).split(',');
+      for (int i = 0; i < pars.length; i++) {
+        String[] p = new VarStr(pars[i]).split(':');
+        int _cpar = Integer.parseInt(p[0]);
+        if (_cpar == cpar) return p[1];
+      }
+    } catch (Exception e) {
+      // 
+      //e.printStackTrace();
+    }
+    return "";
   }
 
   //-------------------------------------------------------------
