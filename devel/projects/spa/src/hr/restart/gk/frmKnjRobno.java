@@ -997,7 +997,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                                 + vrdok
                                 + "' and csklul='"
                                 + alSkladista.get(cnt)
-                                + "' group by cskl";
+                                + "' group by shkonta.cskl";
                         mesklaSetupApproval(appruvalshema, vrdok, uis);
                     }
                 }
@@ -1016,7 +1016,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                                 + vrdok
                                 + "' and cskl='"
                                 + alSkladista.get(cnt)
-                                + "' group by csklul";
+                                + "' group by shkonta.csklul";
                         mesklaSetupApproval(appruvalshema, vrdok, uis);
                     }
 
@@ -1207,7 +1207,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                 + getDatumDoSQL()
                 + " AND doku.statknj not in ('K') AND CSKL IN ("
                 + skladista
-                + ") group by cskl,vrdok";
+                + ") group by doku.cskl,doku.vrdok";
 
         String sqlQueryUlOJ = "SELECT MAX(CSKL) as CSKL,MAX(vrdok) as VRDOK from doku "
                 + "WHERE doku.vrdok in ("
@@ -1217,7 +1217,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                 + getDatumDoSQL()
                 + " AND doku.statknj not in ('K') AND CSKL IN ("
                 + orgstruktura
-                + ") group by cskl,vrdok";
+                + ") group by doku.cskl,doku.vrdok";
 
         String sqlQueryIZSK = "SELECT MAX(CSKL) as CSKL,MAX(vrdok) as VRDOK from doki "
                 + "WHERE vrdok in ("
@@ -1226,7 +1226,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                 + " AND datdok "
                 + getDatumDoSQL()
                 + " AND statknj not in ('K') AND CSKL IN ("
-                + skladista + ") group by cskl,vrdok";
+                + skladista + ") group by doki.cskl,doki.vrdok";
 
         String sqlQueryIZOJ = "SELECT MAX(CSKL) as CSKL,MAX(vrdok) as VRDOK from doki "
                 + "WHERE vrdok in ("
@@ -1235,7 +1235,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                 + " AND datdok "
                 + getDatumDoSQL()
                 + " AND statknj not in ('K') AND CSKL IN ("
-                + orgstruktura + ") group by cskl,vrdok";
+                + orgstruktura + ") group by doki.cskl,doki.vrdok";
 
         String sqlQuerymesklaUL = "SELECT MAX(CSKLUL) as CSKLUL,MAX(CSKLIZ) as CSKLIZ,"
                 + "MAX(vrdok) as vrdok from meskla "
@@ -1246,7 +1246,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                 + getDatumDoSQL()
                 + " AND statknju not in ('K')  AND CSKLUL IN ("
                 + skladista
-                + ") group by csklul,cskliz,vrdok";
+                + ") group by meskla.csklul,meskla.cskliz,meskla.vrdok";
 
         String sqlQuerymesklaIZ = "SELECT MAX(CSKLUL) as CSKLUL,MAX(CSKLIZ) as CSKLIZ,"
                 + "MAX(vrdok) as vrdok from meskla "
@@ -1257,7 +1257,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                 + getDatumDoSQL()
                 + " AND statknji not in ('K')  AND CSKLIZ IN ("
                 + skladista
-                + ") group by csklul,cskliz,vrdok";
+                + ") group by meskla.csklul,meskla.cskliz,meskla.vrdok";
         QueryDataSet qdsset = null;
 
         try {
