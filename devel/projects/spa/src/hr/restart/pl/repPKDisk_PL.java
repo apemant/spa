@@ -20,6 +20,7 @@ package hr.restart.pl;
 import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.robno.repUtil;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -125,7 +126,8 @@ public class repPKDisk_PL implements sg.com.elixir.reportwriter.datasource.IData
 
   public String getDatumIsp()
   {
-    return rdu.dataFormatter(vl.getToday());
+    return (frmParam.getParam("pl", "ippoprdat", "N","Ispisati datum sastavljanja na propratnom listu IP obrasca").equals("D"))?
+        rdu.dataFormatter(vl.getToday()):"";
   }
 }
 
