@@ -219,7 +219,7 @@ public class repIzlazni implements raReportData {
   }
 
   public String getNAZPAR() {    
-    String cached = cache.getValue("NAZPAR", Integer.toString(ds.getInt("CPAR")));
+    String cached = cache.getValue("NAZPAR", ds.getInt("CPAR")+"-"+ds.getInt("PJ"));
     if (cached != null) return cached;
     colname[0] = "CPAR";
     String np = ru.getSomething(colname,dm.getPartneri(),"NAZPAR").getString();
@@ -261,13 +261,13 @@ public class repIzlazni implements raReportData {
     return cache.returnValue("");
   }
 
-  public String getNAZPARPJ() {    
+/*  public String getNAZPARPJ() {    
     String cached = cache.getValue("NAZPARPJ", Integer.toString(ds.getInt("CPAR")));
     if (cached != null) return cached;
     colname[0] = "CPAR";
     String np = ru.getSomething(colname,dm.getPartneri(),"NAZPAR").getString();
     return cache.returnValue(np);
-  }
+  }*/
 
   public String getNAZPJ() {
     String cached = cache.getValue("NAZPJ", ds.getInt("CPAR") + "-" + ds.getInt("PJ"));
