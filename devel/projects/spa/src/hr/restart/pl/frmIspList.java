@@ -155,7 +155,7 @@ public class frmIspList extends frmIzvjestajiPL {
     String sql =
         "SELECT radnici.corg, radnici.cradnik, radnici.prezime, radnici.ime, radnici.imeoca, " + getTableName() + ".* "+
         "FROM radnici, " + getTableName() + " WHERE radnici.cradnik = " + getTableName() + ".cradnik AND " + getWhereQuery(isArh?getTableName():"radnici") + radrange +
-        " ORDER BY radnici.prezime, radnici.ime "+vl.getCollateSQL(); /// PROXIMITY WARNING
+        " ORDER BY radnici.prezime, radnici.ime ";//+vl.getCollateSQL(); /// PROXIMITY WARNING
     System.out.println("AaAa : " + sql);
     SQLradnici.close();
     SQLradnici.setQuery(new QueryDescriptor(dm.getDatabase1(),sql));
@@ -188,7 +188,7 @@ public class frmIspList extends frmIzvjestajiPL {
       );
     }
     if (!range.getString("CRADNIKOD").equals("") && !range.getString("CRADNIKDO").equals(""))
-      radrange = " AND radnici.cradnik * 1 BETWEEN "+range.getString("CRADNIKOD")+" AND "+range.getString("CRADNIKDO");
+      radrange = " AND cast(radnici.cradnik as numeric(6,0)) BETWEEN "+range.getString("CRADNIKOD")+" AND "+range.getString("CRADNIKDO");
     else radrange = "";
     findRadniciSorted();
     findRadniciSortedByCorg();
