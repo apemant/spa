@@ -322,6 +322,12 @@ public class raCalcPrimanja {
   }
 
   public void addCalcSet(DataSet ds, String tableName) {
+    if (tableName.equals("radnicipl") && radnicipl == null) {
+      try {
+        radnicipl = (StorageDataSet)ds;
+      } catch (Exception e) {
+      }
+    }
     calcSets.put(tableName.toLowerCase(),ds);
   }
 
