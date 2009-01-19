@@ -23,6 +23,7 @@ import hr.restart.swing.JraRadioButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raImages;
+import hr.restart.util.raKeyAction;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.dlgTotalPromet;
 import hr.restart.zapod.raKnjigChangeListener;
@@ -31,6 +32,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -232,6 +234,17 @@ class rajpIzlazMPTemplate extends JPanel {
           mainTab.add(panelOstatak, "Dodatni podaci");
           mainTab.add(panelDodatni, "Napomene i ostalo");
         }
+		final int[] keys = {KeyEvent.VK_1, KeyEvent.VK_2, 
+		        KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5};
+		for (int i = 0; i < mainTab.getComponentCount(); i++) {
+		  fDI.raMaster.addKeyAction(new raKeyAction(keys[i], KeyEvent.ALT_MASK) {
+            public void keyAction() {
+              for (int i = 0; i < 5; i++)
+                if (keys[i] == getRaActionKey())
+                  mainTab.setSelectedIndex(i);
+            }
+          });
+		}
 		setupOnePredef();
 	}
 
