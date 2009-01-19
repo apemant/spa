@@ -18,10 +18,12 @@
 package hr.restart.zapod;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Orgstruktura;
 import hr.restart.baza.zirorn;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
+import hr.restart.util.lookupData;
 
 import com.borland.dx.dataset.DataSet;
 
@@ -284,6 +286,18 @@ e.printStackTrace();
     }
 
     return strCorg;
+  }
+  
+  public static String getZiroForCorg(String corg) {
+    DataSet corgs = Orgstruktura.getDataModule().getTempSet();
+    corgs.open();
+    while (lookupData.getlookupData().raLocate(corgs, "CORG", corg)) {
+      String prip = corgs.getString("PRIPADNOST");
+      if (corgs.getString("ZIRO").length() > 0 || corg.equals(prip))
+        return corgs.getString("ZIRO");
+      corg = prip;
+    }
+    return null;
   }
   
   public static String[] getBranchCorgs(String strCorg) {
