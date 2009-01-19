@@ -108,7 +108,9 @@ public abstract class raFieldMask implements FocusListener, KeyListener {
     cacheDynamicVariables();
     if (ch == '\b' && keypressBackspace()) e.consume();
     if (ch < ' ' && keypressControl(ch)) e.consume();
-    if (ch >= ' ' && keypressCharacter(ch)) e.consume();
+    if (!e.isControlDown() && !e.isAltDown() && !e.isAltGraphDown()) {
+      if (ch >= ' ' && keypressCharacter(ch)) e.consume();
+    }
     if (e.isConsumed()) foc = false;
   }
 
