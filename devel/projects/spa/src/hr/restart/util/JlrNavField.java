@@ -877,6 +877,7 @@ public class JlrNavField extends JraTextField {
       return lD.lookUP(frame,this.getRaDataSet(),this,textFields,colNames,currVisCols,currentLuMode);
     }
     catch (Exception ex) {
+      ex.printStackTrace();
       return false;
     }
 
@@ -1162,7 +1163,7 @@ public class JlrNavField extends JraTextField {
     return false;
   }
 
-  private void setLastNavValues() {
+  public void setLastNavValues() {
     lastNavValue = getText();
     if (textFields == null) return;
     for (int i = 0; i < textFields.length; i++) {
