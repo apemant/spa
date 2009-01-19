@@ -30,6 +30,7 @@ import java.awt.Color;
 import java.math.BigDecimal;
 
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
@@ -124,6 +125,17 @@ public class raDOS extends raIzlazTemplate  {
 	  public void ConfigViewOnTable(){
 	    this.setVisibleColsMaster(new int[] {4,5,6,31,32,34}); // Requested by Mladen (Siniša)
 	    setVisibleColsDetail(new int[] {4,Aut.getAut().getCARTdependable(5,6,7),8,9,10});	    
+	  }
+	  
+	  public boolean checkAccess() {
+	    if (!super.checkAccess()) return false;
+	    if (getMasterSet().getString("STATIRA").equals("P")) {
+          setUserCheckMsg(
+                  "Korisnik ne može promijeniti dokument jer je prenesen u drugi dokument !",
+                  false);
+          return false;
+        }
+	    return true;
 	  }
 
 	  
@@ -296,6 +308,12 @@ ST.prn(AST.gettrenSTANJE());
           if (dm.getArtikli().getBigDecimal("BRJED").signum() > 0)
             getDetailSet().setBigDecimal("KOL1", getDetailSet().getBigDecimal("KOL")
                 .divide(dm.getArtikli().getBigDecimal("BRJED"), 3, BigDecimal.ROUND_HALF_UP));
+        }
+        if (getDetailSet().getString("STATUS").equals("P")) {
+          JOptionPane.showMessageDialog(raDetail.getWindow(),
+                  "Stavka je veæ prenešena u drugi dokument !",
+                  "Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
+          return false;
         }
 	    return true;
 	  }
