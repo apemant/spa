@@ -632,11 +632,17 @@ public class JraTable2 extends JTable implements JraTableInterface {
     }
 
     tableSort = null;
+    updateModifiers();
 
     setVisible(true);
 
   }
-
+  
+  public void updateModifiers() {
+    raTableModifier[] mods = getTableModifiers();
+    for (int i = 0; i < mods.length; i++)
+      mods[i].dataChanged();
+  }
 /*
 
   public void addNotify() {
@@ -1088,6 +1094,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
     Integer key = new Integer(modifiers.size());
 
     modifiers.put(key,m);
+    m.dataChanged();
 
   }
 
