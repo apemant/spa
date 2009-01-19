@@ -1788,6 +1788,8 @@ ST.prn(radninal);
 		} else {
 			return false;
 		}
+      DP.rpcart.setExtraSklad(getDetailSet().getString("CSKLART"));
+
 		return DodatnaValidacijaDetail();
 	}
 
@@ -2072,7 +2074,7 @@ ST.prn(radninal);
 	public boolean checkAddEnabled() {
 		return !Aut.getAut().isWrongKnjigYear(this, true);
 	}
-
+	
 	/*
 	 * public boolean checkAcces2() { if (raUser.getInstance().isSuper()) {
 	 * return true; } if (super.isUserCheck()) { if
@@ -2144,6 +2146,9 @@ System.out.println("findCjenik::else :: "+sql);
 
 	public void beforeShowDetail() {
 		DP.InitRaPanCartDP();
+        DP.rpcart.setExtraSklad(null);
+	    if (getDetailSet().rowCount() > 0)
+	       DP.rpcart.setExtraSklad(getDetailSet().getString("CSKLART"));
 	}
 
 	public void CORGafter_lookUp() {
