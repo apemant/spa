@@ -544,9 +544,16 @@ public class raJPTableView extends JPanel {
         e.printStackTrace();
       }
     else {
-      mpTable.pos();
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          mpTable.pos();
+          setIgnoreRepaint(false);
+          repaint();
+        }
+      });
+      /*mpTable.pos();
       setIgnoreRepaint(false);
-      repaint();
+      repaint();*/
     }
   }
 
