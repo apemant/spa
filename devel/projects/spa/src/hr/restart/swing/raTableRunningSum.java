@@ -21,6 +21,11 @@ public class raTableRunningSum extends raTableModifier {
   public raTableRunningSum(String col) {
     colname = col;
   }
+  
+  public void dataChanged() {
+    forwardSum = backwardSum = null;
+    oldrows = 0;
+  }
 
   public boolean doModify() {
     if (getTable() instanceof JraTable2) {
