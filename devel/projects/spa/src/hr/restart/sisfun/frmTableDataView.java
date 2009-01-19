@@ -99,6 +99,10 @@ public class frmTableDataView extends JraFrame {
       setCount();
       changed = false;
     }
+    public void init_kum() {
+      super.init_kum();
+      if (isShowing()) getColumnsBean().initialize();
+    }
 //    public void mpTable_killFocus(java.util.EventObject e) {
 //      System.out.println("kill focus "+editor.open);
 //      if (editor.open) editor.setFokus();
@@ -172,6 +176,9 @@ public class frmTableDataView extends JraFrame {
     reusable = sticky;
   }
 
+  public boolean isEditable() {
+    return editable;
+  }
 /*  protected JRootPane createRootPane() {
     return new JRootPane() {
       public boolean isShowing() {
@@ -669,7 +676,7 @@ public class frmTableDataView extends JraFrame {
 
   public void show() {
 //    if (shown) System.out.println("SHOWN????");
-    jp.getNavBar().getColBean().initialize();
+    if (!isShowing()) jp.getNavBar().getColBean().initialize();
     Point cbpl = jp.getNavBar().getColBean().getPreferredLocationOnScreen();
     if (cbpl != null) {
       if (jp.getColumnsBean().getSaveName() != null) pack();
