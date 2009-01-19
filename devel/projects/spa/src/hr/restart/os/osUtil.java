@@ -18,6 +18,7 @@
 package hr.restart.os;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.KreirDrop;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
@@ -447,13 +448,22 @@ public class osUtil {
     if ("D".equalsIgnoreCase(hr.restart.sisfun.frmParam.getParam("robno","kalkchVC","D"))) {
     }
     String cVrati="";
-    vl.execSQL(sjQuerys.getMaxInvBroj(hr.restart.zapod.OrgStr.getKNJCORG()));
-    vl.RezSet.open();
     try {
-      System.out.println("Int: " + vl.RezSet.getString(0).length());
-      cVrati = "0000000000" +
-          String.valueOf(Integer.parseInt(vl.RezSet.getString(0)) + 1);
-      cVrati = cVrati.substring(cVrati.length() - vl.RezSet.getString(0).length(), cVrati.length());
+      vl.execSQL(sjQuerys.getMaxInvBroj(hr.restart.zapod.OrgStr.getKNJCORG()));
+      vl.RezSet.open();
+    } catch (Exception e) {
+      vl.execSQL(sjQuerys.getMaxInvBroj(hr.restart.zapod.OrgStr.getKNJCORG(),true));
+      vl.RezSet.open();
+    }
+    cVrati = "0000000000" +
+      String.valueOf(Aus.getAnyNumber(vl.RezSet.getString(0)) + 1);
+    try {
+      vl.execSQL("select INVBROJ from os_sredstvo where corg='"+hr.restart.zapod.OrgStr.getKNJCORG()+"'");
+      vl.RezSet.open();
+      vl.RezSet.first();
+      int len = vl.RezSet.getString("INVBROJ").length();
+ //     System.out.println("Int: " + vl.RezSet.getString(0).length());
+      cVrati = cVrati.substring(cVrati.length() - len, cVrati.length());
       System.out.println("Vrati: " + cVrati);
     }
     catch (Exception ex) {

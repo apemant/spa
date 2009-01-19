@@ -114,7 +114,11 @@ public class sjQuerys {
     return str;
   }
   public static String getMaxInvBroj(String corg) {
-    String str="select max(invbroj) from os_sredstvo where corg='"+corg+"'";
+    return getMaxInvBroj(corg, false);
+  }
+  public static String getMaxInvBroj(String corg, boolean stringSearch) {
+    String what = stringSearch?"max(invbroj)":"cast(max(cast(invbroj as numeric(10,0))) as char(10))";
+    String str="select "+what+" from os_sredstvo where corg='"+corg+"'";//ISPROBAJ!!!
     System.out.println("SQL: "+str);
     return str;
   }
