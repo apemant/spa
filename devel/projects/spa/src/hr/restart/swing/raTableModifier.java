@@ -83,6 +83,10 @@ public abstract class raTableModifier {
     renderComponent = v_rendcom;
   }
   
+  public void dataChanged() {
+    
+  }
+  
   public void setComponentText(String txt) {
     if (renderComponent instanceof JLabel) {
       ((JLabel)renderComponent).setText(txt);
