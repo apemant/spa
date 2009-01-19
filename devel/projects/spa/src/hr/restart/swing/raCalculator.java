@@ -106,7 +106,7 @@ public class raCalculator extends JFrame {
       pack();
       AWTKeyboard.registerKeyStroke(getContentPane(), AWTKeyboard.ESC, new KeyAction() {
         public boolean actionPerformed() {
-          hide();
+          setVisible(false);
           return true;
         }
       });
