@@ -101,6 +101,7 @@ public class rapancart extends JPanel {
   private String tempNAZART = ""; // member varijabla dodana radi hendlamnja nove i stare usluge
                                   // najgluplje na svijetu = najefikasnije na svijetu
 //  private raControlDocs rCD = new raControlDocs();
+  private String csklart = null;
   private JPanel artPanel = new JPanel();
 
   XYLayout lay = new XYLayout();
@@ -520,6 +521,10 @@ public class rapancart extends JPanel {
 System.out.println("layheight="+lay.getHeight());
 //    initDummy();
   }
+  
+  public void setExtraSklad(String cskl) {
+    csklart = cskl;
+  }
 
   public void addSkladField(DataSet skladset) {
     extraSklad = true;
@@ -904,8 +909,9 @@ System.out.println("layheight="+lay.getHeight());
     setParametrizedNazivArtiklaSearchMode();
     if (enableUsluga) gotFocus = true;
     if (extraSklad && this.getTabela().getString("CSKLART").length() == 0 &&
-        raUser.getInstance().getDefSklad() != null) {
-      this.getTabela().setString("CSKLART", raUser.getInstance().getDefSklad());
+        (csklart != null || raUser.getInstance().getDefSklad() != null)) {
+      if (csklart != null) this.getTabela().setString("CSKLART", csklart);
+      else this.getTabela().setString("CSKLART", raUser.getInstance().getDefSklad());
       jlrSklad.forceFocLost();
       return;
     }
