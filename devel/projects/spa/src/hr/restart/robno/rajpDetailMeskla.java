@@ -53,7 +53,7 @@ public class rajpDetailMeskla extends JPanel {
     public void metToDo_after_lookUp(){
       if (rAM.raDetail.getMode() == 'B') return;
       enable_rest(true);
-      rAM.findStanjaiCijene();
+      rAM.findStanjaiCijene(true);
       jtfKOL.requestFocus();
       jtfKOL.selectAll();
     }
@@ -91,8 +91,18 @@ public class rajpDetailMeskla extends JPanel {
   
   JLabel jLabel8 = new JLabel();
   JLabel jLabel9 = new JLabel();
-  JraTextField jraFC = new JraTextField();
+  JraTextField jraFC = new JraTextField() {
+  	public void valueChanged() {
+  		rAM.izlazCijena();
+  	};
+  };
   JraTextField jraZADRAZIZ = new JraTextField();
+  JraTextField jraZADRAZUL = new JraTextField();
+  JraTextField jraZCUL = new JraTextField()  {
+  	public void valueChanged() {
+  		rAM.ulazCijena();
+  	};
+  };
   JraTextField jraBEFKOLIZ = new JraTextField();
   JraTextField jraAFTKOLIZ = new JraTextField();
   JraTextField jraBEFKOLUL = new JraTextField();
@@ -105,6 +115,8 @@ public class rajpDetailMeskla extends JPanel {
   JLabel jLabel11 = new JLabel();
   JLabel jLabel12 = new JLabel();
   JLabel jLabel13 = new JLabel();
+  JLabel jlZCUL = new JLabel();
+  JLabel jlVRIUL = new JLabel();
 
   public rajpDetailMeskla(raMeskla rAM) {
     this.rAM = rAM;
@@ -119,6 +131,8 @@ public class rajpDetailMeskla extends JPanel {
     jtfKOL.setDataSet(rAM.getDetailSet());
     jraFC.setDataSet(rAM.getDetailSet());
     jraZADRAZIZ.setDataSet(rAM.getDetailSet());
+    jraZCUL.setDataSet(rAM.getDetailSet());
+    jraZADRAZUL.setDataSet(rAM.getDetailSet());
   }
 
   private void jbInit() throws Exception {
@@ -158,6 +172,10 @@ public class rajpDetailMeskla extends JPanel {
     jLabel9.setText("Iznos");
     jraFC.setColumnName("ZC");
     jraZADRAZIZ.setColumnName("ZADRAZIZ");
+    jraZADRAZUL.setColumnName("ZADRAZUL");
+    jraZCUL.setColumnName("ZCUL");
+    jlZCUL.setText("Ulazna cijena");
+    jlVRIUL.setText("Ulazna vrijednost");
     jraBEFKOLIZ.setDataSet(TDS.getMesklaTempSet());
     jraBEFKOLIZ.setFont(new java.awt.Font("SansSerif", 1, 12));
     jraBEFKOLIZ.setColumnName("BEFKOLIZ");
@@ -194,9 +212,13 @@ public class rajpDetailMeskla extends JPanel {
     jPanelCenter.add(jLabel1, new XYConstraints(15, 10, -1, -1));
     jPanelCenter.add(jtfKOL, new XYConstraints(150, 10, 130, -1));
     jPanelCenter.add(jLabel8, new XYConstraints(15, 35, -1, -1));
-    jPanelCenter.add(jLabel9, new XYConstraints(393, 35, -1, -1));
+    jPanelCenter.add(jLabel9, new XYConstraints(320, 35, -1, -1));
     jPanelCenter.add(jraFC, new XYConstraints(150, 35, 130, -1));
     jPanelCenter.add(jraZADRAZIZ, new XYConstraints(480, 35, 130, -1));
+    jPanelCenter.add(jlZCUL, new XYConstraints(15, 60, -1, -1));
+    jPanelCenter.add(jlVRIUL, new XYConstraints(320, 60, -1, -1));
+    jPanelCenter.add(jraZCUL, new XYConstraints(150, 60, 130, -1));
+    jPanelCenter.add(jraZADRAZUL, new XYConstraints(480, 60, 130, -1));
     jPanelCenter.add(focusField, new XYConstraints(360, 501, 1, -1));
     this.add(jPanelStanje, BorderLayout.SOUTH);
     jPanelStanje.add(jLabel2, new XYConstraints(60, 10, 255, -1));
@@ -238,8 +260,10 @@ public class rajpDetailMeskla extends JPanel {
   }
 
   public void enable_rest(boolean istina){
-    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,false);
+    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,istina && rAM.allowNeg);
+    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraZCUL,istina && rAM.allowNeg);
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(this.jraZADRAZIZ,false);
+    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(this.jraZADRAZUL,false);
     hr.restart.util.raCommonClass.getraCommonClass().EnabDisabAll(this.jPanelStanje,false);
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jtfKOL,istina);
     jraFC.setEditable(false);

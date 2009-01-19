@@ -97,6 +97,32 @@ public class raKalkulBDMeskla {
     else if (stanjeul.sVrSklad.equals("M"))  stavka.zcul = stanjeul.mc;
 */
   }
+  
+  public void alterIzlaz() {
+  	if (stanjeiz.sVrSklad.equals("N")) {
+  		stavka.nc = stavka.zc;
+  	} else if (stanjeiz.sVrSklad.equals("V")) {
+  		stavka.vc = stavka.zc;
+  		kalkPrice("VC");
+  	} else if (stanjeiz.sVrSklad.equals("M")) {
+  		stavka.mc = stavka.zc;
+  		kalkPrice("MC");
+  	}
+  	stanjeiz.nc = stavka.nc;
+  	stanjeiz.vc = stavka.vc;
+  	stanjeiz.mc = stavka.mc;
+  	stanjeiz.zc = stavka.zc;
+  }
+  
+  public void alterUlaz() {
+  	if (stanjeul.sVrSklad.equals("V")) {
+  		stavka.vc = stavka.zcul;
+  		kalkPrice("VC");
+  	} else if (stanjeul.sVrSklad.equals("M")) {
+  		stavka.mc = stavka.zcul;
+  		kalkPrice("MC");
+  	}
+  }
 
   public void setupPrice(){
     initTmp();
@@ -104,6 +130,15 @@ public class raKalkulBDMeskla {
     stavka.vc = stanjeiz.vc;
     stavka.mc = stanjeiz.mc;
     stavka.zc = stanjeiz.zc;
+    
+    if ( stanjeul.sVrSklad.equals("N")) {
+    	stavka.zcul = stavka.nc;
+    } else if ( stanjeul.sVrSklad.equals("V")) {
+    	stavka.zcul = stavka.vc;
+    } else if ( stanjeul.sVrSklad.equals("M")) {
+    	stavka.zcul = stavka.mc;
+    }
+    
 //    stavka.pmar = (stavka.vc-stavka.nc)/(stavka.nc/100);
     tmpBD  = stavka.vc.subtract(stavka.nc);
     tmpBD2 = stavka.nc.divide(Sto,4,BigDecimal.ROUND_HALF_UP);
@@ -169,9 +204,10 @@ public class raKalkulBDMeskla {
       stavka.zadrazul = stavka.kol.multiply(stavka.nc).setScale(2,BigDecimal.ROUND_HALF_UP);
       tmpBD = stanjeul.kolul.add(stavka.kol).subtract(stavkaold.kol).subtract(stanjeul.koliz);
       tmpBD2 = stanjeul.vul.add(stavka.zadrazul).subtract(stavkaold.zadrazul).subtract(stanjeul.viz);
-      if (tmpBD.doubleValue()!= 0) {
+      /*if (tmpBD.doubleValue()!= 0) {
         stavka.zcul = tmpBD2.divide(tmpBD,2,BigDecimal.ROUND_HALF_UP);
-      }
+      }*/
+      stavka.zcul = stavka.nc;
     }
     else if ( stanjeul.sVrSklad.equals("V")){
       stavka.iporul    = Nula;

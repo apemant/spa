@@ -20,9 +20,11 @@ package hr.restart.robno;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
+import hr.restart.util.raCommonClass;
 import hr.restart.util.raImages;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raNavAction;
@@ -30,8 +32,6 @@ import hr.restart.util.raProcess;
 import hr.restart.util.raTransaction;
 
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -68,6 +68,7 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
   hr.restart.swing.raTableColumnModifier TCM1 ;
   raControlDocs rCD = new raControlDocs();
   short oldRbr=0;
+  boolean allowNeg = false;
   
   raNavAction rnvNacinPlac = new raNavAction("PRK u MES",
           raImages.IMGMOVIE, java.awt.event.KeyEvent.VK_F7) {
@@ -165,6 +166,7 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
     setNaslovMaster("Meðuskladišnice za skladišta " +
         jpSelectM.getSelRow().getString("CSKLIZ") + " -> " +
         jpSelectM.getSelRow().getString("CSKLUL"));
+    allowNeg = frmParam.getParam("robno", "allowNeg", "N", "Dopustiti odlaženje u minus").equals("D");
   }
   
   public void SetFokusMaster (char mode) {
@@ -235,18 +237,18 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
 
   public boolean ValidacijaDetail(char mode) {
     if (hr.restart.util.Valid.getValid().isEmpty(raDM.jtfKOL)) return false;
-    findStanja();
+    findStanjaiCijene(false);
 
     int i = rKM.TestStanja();
     rKM.kalkStanja();
-    if (i==-1){
+    if (i==-1 && !allowNeg){
         javax.swing.JOptionPane.showMessageDialog(null,
             "Koli\u010Dina je ve\u0107a nego koli\u010Dina na zalihi !",
             "Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
         return false;
     }
     else {
-       if (i == -2 ){
+       if (i == -2 && !allowNeg){
           String rezkol = hr.restart.sisfun.frmParam.getParam("robno","rezkol");
           if (!rezkol.equals("N")){
              javax.swing.JOptionPane.showMessageDialog(null,
@@ -255,7 +257,7 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
              if (rezkol.equals("D")) return false;
           }
         }
-        if (hr.restart.sisfun.frmParam.getParam("robno","minkol","N").equalsIgnoreCase("D") &&
+        if (i>=0 && hr.restart.sisfun.frmParam.getParam("robno","minkol","N").equalsIgnoreCase("D") &&
             dm.getArtikli().getBigDecimal("MINKOL").doubleValue()!=0 &&
             rKM.isKolStanjeManjeOd(dm.getArtikli().getBigDecimal("MINKOL"))) {
               raDM.jtfKOL.requestFocus();
@@ -268,7 +270,7 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
           return false;
         }
 
-        if (hr.restart.sisfun.frmParam.getParam("robno","sigkol","N").equalsIgnoreCase("D") &&
+        if (i>=0 && hr.restart.sisfun.frmParam.getParam("robno","sigkol","N").equalsIgnoreCase("D") &&
             dm.getArtikli().getBigDecimal("SIGKOL").doubleValue()!=0 &&
             rKM.isKolStanjeManjeOd(dm.getArtikli().getBigDecimal("SIGKOL"))){
               raDM.jtfKOL.requestFocus();
@@ -346,15 +348,15 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
   public void AfterDeleteDetail(){
   //// treba dodati rekaklulacije rbr
 
-    lc.TransferFromClass2DB(StanjeIzlaz,rKM.stanjeiz);
-    lc.TransferFromClass2DB(StanjeUlaz,rKM.stanjeul);
-    StanjeIzlaz.saveChanges();
-    StanjeUlaz.saveChanges();
+//    lc.TransferFromClass2DB(StanjeIzlaz,rKM.stanjeiz);
+//    lc.TransferFromClass2DB(StanjeUlaz,rKM.stanjeul);
+//    StanjeIzlaz.saveChanges();
+//    StanjeUlaz.saveChanges();
     nStavka=99;
     findNSTAVKA();
-    if (raDM.rpcart.getISB().equals("D")) {
-      dlgSerBrojevi.getdlgSerBrojevi().deleteSerBr('M');
-    }
+//    if (raDM.rpcart.getISB().equals("D")) {
+//      dlgSerBrojevi.getdlgSerBrojevi().deleteSerBr('M');
+//    }
   }
 
   public boolean doBeforeSaveMaster(char mode){
@@ -405,6 +407,7 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
     else {   /// mode 'N' i 'I'
 
       try {
+      	lc.printAll(rKM.stanjeiz);
         lc.TransferFromClass2DB(StanjeIzlaz,rKM.stanjeiz);
         rCD.unosIzlaz(getDetailSet(),StanjeIzlaz); //???????
         raTransaction.saveChanges((QueryDataSet) StanjeIzlaz);
@@ -511,7 +514,14 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
         "select * from stanje where god = '"+getDetailSet().getString("GOD")+
         "' and cskl='"+getDetailSet().getString("CSKLIZ")+
         "' and cart = "+getDetailSet().getInt("CART"));
-    SanityCheck.stanjeArt(StanjeIzlaz, getDetailSet(), "CSKLIZ");
+    if (StanjeIzlaz.rowCount() == 0) {
+    	StanjeIzlaz.insertRow(false);
+      dM.copyColumns(getDetailSet(), StanjeIzlaz, 
+              new String[] {"GOD", "CART"});
+      StanjeIzlaz.setString("CSKL", getDetailSet().getString("CSKLIZ"));
+      StanjeIzlaz.post();
+    }
+    //SanityCheck.stanjeArt(StanjeIzlaz, getDetailSet(), "CSKLIZ");
 
 //    ASTUL.gettrenSTANJE(getDetailSet().getString("GOD"),
 //                    getDetailSet().getString("CSKLUL"),getDetailSet().getInt("CART"));
@@ -535,15 +545,20 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
     rKM.stavka.postopor =allPorezi.getallPorezi().gettrenPOREZART().getBigDecimal("UKUPOR");
   }
 
-  public void findStanjaiCijene(){
+  public void findStanjaiCijene(boolean fetch){
 
     findStanja();
     raDM.TDS.SetMesklaTempSet(StanjeUlaz,StanjeIzlaz);
-    rKM.setupOldPrice();
-    rKM.setupPrice();
-    if(true){
-        getDetailSet().setBigDecimal("ZC",StanjeIzlaz.getBigDecimal("ZC"));
+    if(fetch){
+    	rKM.setupOldPrice();
+      rKM.setupPrice();
+        getDetailSet().setBigDecimal("ZC",rKM.stavka.zc);
+        getDetailSet().setBigDecimal("ZCUL",rKM.stavka.zcul);
+    } else {
+    	izlazCijena();
+    	ulazCijena();
     }
+    
 System.out.println("poc findStanjaiCijene()");
 System.out.println("stanjeiz");
 lc.printAll(rKM.stanjeiz);
@@ -555,7 +570,25 @@ lc.printAll(rKM.stavka);
 //ST.prn(StanjeUlaz);
 //System.out.println("StanjeIzlaz");
 //ST.prn(StanjeIzlaz);
+  if (fetch && allowNeg) {
+  	if (rKM.stanjeiz.kol.compareTo(rKM.stavkaold.kol) != 0)
+  		raCommonClass.getraCommonClass().setLabelLaF(raDM.jraFC, false);
+  	if (!rKM.stanjeiz.sVrSklad.equals("N") || rKM.stanjeul.sVrSklad.equals("N"))
+  		raCommonClass.getraCommonClass().setLabelLaF(raDM.jraZCUL, false);
+  }
 System.out.println("kraj findStanjaiCijene()");
+  }
+  
+  public void izlazCijena() {
+  	rKM.stavka.zc = getDetailSet().getBigDecimal("ZC");
+  	rKM.alterIzlaz();
+  	kalk();
+  }
+  
+  public void ulazCijena() {
+  	rKM.stavka.zcul = getDetailSet().getBigDecimal("ZCUL");
+  	rKM.alterUlaz();
+  	kalk();
   }
 
   public void jtfKOL_focusLost(java.awt.event.FocusEvent e){
@@ -564,23 +597,27 @@ System.out.println("kraj findStanjaiCijene()");
 //      lc.setBDField("KOL",getDetailSet().getBigDecimal("KOL"),rKM.stavka);
       rKM.stavka.kol = getDetailSet().getBigDecimal("KOL");
 //lc.printAll(rKM.stavka);
-rKM.Kalkulacija();
-lc.TransferFromClass2DB(getDetailSet(),rKM.stavka);
-//ST.prn(getDetailSet());
-
-      if (raDetail.getMode()=='N') {
-        raDM.TDS.AddSubStanje(getDetailSet().getBigDecimal("KOL"),
-          getDetailSet().getBigDecimal("ZADRAZUL"),
-          getDetailSet().getBigDecimal("ZADRAZIZ"));
-      } else if (raDetail.getMode()=='I') {
-        raDM.TDS.AddSubStanje(getDetailSet().getBigDecimal("KOL").
-                subtract(rKM.stavkaold.kol),
-          getDetailSet().getBigDecimal("ZADRAZUL").
-                subtract(rKM.stavkaold.zadrazul),
-          getDetailSet().getBigDecimal("ZADRAZIZ").
-                subtract(rKM.stavkaold.zadraziz));
-      }
+      kalk();
     }
+  }
+  
+  void kalk() {
+  	rKM.Kalkulacija();
+  	lc.TransferFromClass2DB(getDetailSet(),rKM.stavka);
+//  	ST.prn(getDetailSet());
+
+  	      if (raDetail.getMode()=='N') {
+  	        raDM.TDS.AddSubStanje(getDetailSet().getBigDecimal("KOL"),
+  	          getDetailSet().getBigDecimal("ZADRAZUL"),
+  	          getDetailSet().getBigDecimal("ZADRAZIZ"));
+  	      } else if (raDetail.getMode()=='I') {
+  	        raDM.TDS.AddSubStanje(getDetailSet().getBigDecimal("KOL").
+  	                subtract(rKM.stavkaold.kol),
+  	          getDetailSet().getBigDecimal("ZADRAZUL").
+  	                subtract(rKM.stavkaold.zadrazul),
+  	          getDetailSet().getBigDecimal("ZADRAZIZ").
+  	                subtract(rKM.stavkaold.zadraziz));
+  	      }
   }
 
   public void PrepMeskla4Change(){
