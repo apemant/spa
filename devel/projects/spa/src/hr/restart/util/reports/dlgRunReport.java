@@ -433,7 +433,7 @@ public class dlgRunReport {
     if (frameSize.width > screenSize.width) {
       frameSize.width = screenSize.width;
     }
-    int mins = jp.isAncestorOf(lpan) ? 330 : 300;
+    int mins = jp.isAncestorOf(lpan) ? 400 : 350;
     if (frameSize.width < mins) frameSize.setSize(mins,frameSize.height);
     dlg.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
     dlg.setSize(frameSize.width+100,frameSize.height);
