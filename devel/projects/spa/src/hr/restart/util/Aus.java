@@ -43,9 +43,11 @@ import java.awt.RenderingHints;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -107,6 +109,13 @@ public class Aus {
     'l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F',
     'G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','_','.'
   };
+  
+  private static int[] varTypes = {Variant.STRING, Variant.INT,
+    Variant.SHORT, Variant.LONG, Variant.BIGDECIMAL, Variant.FLOAT,
+    Variant.DOUBLE, Variant.TIMESTAMP, Variant.DATE};
+  private static Class[] classTypes = {String.class, int.class,
+      short.class, long.class, BigDecimal.class, float.class,
+      double.class, Timestamp.class, Date.class};
   
   public static Locale hr = Locale.getDefault();//new Locale("hr", "HR", "");
   
@@ -1097,6 +1106,30 @@ public class Aus {
   
   public static QueryDataSet q(String query) {
     return Util.getNewQueryDataSet(query, true);
+  }
+  
+  /**
+   * Prebacuje cijelu kolonu nekog dataseta u odgovarajuæi array.
+   * @param ds DataSet èija kolona se traži.
+   * @param col Ime kolone u datasetu.
+   * @return dinamièki kreiran array, vraæen kao objekt.
+   */
+  public static Object toArray(DataSet ds, String col) {
+    int dt = ds.getColumn(col).getDataType();
+    Class c = null;
+    for (int i = 0; i < varTypes.length; i++)
+      if (varTypes[i] == dt) c = classTypes[i];
+    if (c == null)
+      throw new RuntimeException("Invalid datatype: " +
+          Variant.typeName(dt));
+    
+    Variant v = new Variant();
+    Object arr = Array.newInstance(c, ds.getRowCount());
+    for (int i = 0; i < ds.rowCount(); i++) {
+      ds.getVariant(col, i, v);
+      Array.set(arr, i, v.getAsObject());
+    }
+    return arr;
   }
   
   /**
