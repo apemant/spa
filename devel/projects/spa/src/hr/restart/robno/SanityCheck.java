@@ -106,7 +106,7 @@ public class SanityCheck {
 			throw new SanityException("Nedefinirana godina!");
 		int god = Aus.getNumber(ds.getString("GOD"));
 		int thisGod = Aus.getNumber(Valid.getValid().findYear());
-		if (god <= thisGod - 20 || god > thisGod)
+		if (god <= thisGod - 20 || god > thisGod+1)
 			throw new SanityException("Pogrešna godina - " + god + "!");
 	}
 
@@ -120,6 +120,7 @@ public class SanityCheck {
 			throw new SanityException("Nedefiniran datum dokumenta!");
 		Timestamp datum = ds.getTimestamp("DATDOK");
 		Timestamp lastValid = Util.getUtil().getLastDayOfYear(Valid.getValid().getToday());
+		lastValid = Util.getUtil().addYears(lastValid, 1);
     Timestamp firstValid = Util.getUtil().addYears(lastValid, -25);
     if (datum.after(Util.getUtil().getLastSecondOfDay(lastValid)) ||
     		datum.before(firstValid))
