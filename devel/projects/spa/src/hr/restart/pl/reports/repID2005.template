@@ -22,8 +22,8 @@
      <Property Name="Grid X">4</Property>
      <Property Name="Grid Y">4</Property>
      <Property Name="Version">1.50</Property>
-     <Property Name="Last Modified">Tue Feb 27 18:58:19 CET 2007</Property>
-     <HiddenProperty Name="Template Path">/media/hda3/home/andrej/eworkspace/devel/projects/spa/src/hr/restart/pl/reports/</HiddenProperty>
+     <Property Name="Last Modified">Wed Jan 21 16:24:05 CET 2009</Property>
+     <HiddenProperty Name="Template Path">/Users/andrej/Documents/workspace/devel/projects/spa/classes/hr/restart/pl/reports/</HiddenProperty>
      <HiddenProperty Name="Text_Count">108</HiddenProperty>
      <HiddenProperty Name="Label_Count">224</HiddenProperty>
      <HiddenProperty Name="Image_Count">0</HiddenProperty>
@@ -291,19 +291,39 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Property Name="Can Shrink">No</Property>
           <Property Name="Repeat Section">No</Property>
           <Property Name="Height">13560</Property>
-          <Model Name="Label135">
+          <Model Name="Label123">
                <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label135</Property>
-               <Property Name="Caption">
-
-
-</Property>
+               <Property Name="Name">Label123</Property>
+               <Property Name="Caption">II.</Property>
                <Property Name="Visible">Yes</Property>
-               <Property Name="Left">940</Property>
-               <Property Name="Top">2240</Property>
-               <Property Name="Width">9060</Property>
-               <Property Name="Height">320</Property>
-               <Property Name="Back Style">Normal</Property>
+               <Property Name="Left">0</Property>
+               <Property Name="Top">2560</Property>
+               <Property Name="Width">960</Property>
+               <Property Name="Height">280</Property>
+               <Property Name="Back Style">Transparent</Property>
+               <Property Name="Back Color">Light Gray</Property>
+               <Property Name="Border Style">Transparent</Property>
+               <Property Name="Border Color">Black</Property>
+               <Property Name="Border Width">2 pt</Property>
+               <Property Name="Font Color">Black</Property>
+               <Property Name="Font Name">Lucida Bright</Property>
+               <Property Name="Font Size">10</Property>
+               <Property Name="Font Weight">Bold</Property>
+               <Property Name="Font Italic">No</Property>
+               <Property Name="Font Underline">No</Property>
+               <Property Name="Text Align">Center</Property>
+               <Property Name="Lock">No</Property>
+          </Model>
+          <Model Name="Label119">
+               <Property Name="Model Name">Label</Property>
+               <Property Name="Name">Label119</Property>
+               <Property Name="Caption">3.</Property>
+               <Property Name="Visible">Yes</Property>
+               <Property Name="Left">0</Property>
+               <Property Name="Top">1940</Property>
+               <Property Name="Width">960</Property>
+               <Property Name="Height">280</Property>
+               <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">Light Gray</Property>
                <Property Name="Border Style">Transparent</Property>
                <Property Name="Border Color">Black</Property>
@@ -314,7 +334,53 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
                <Property Name="Font Weight">Bold</Property>
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Left</Property>
+               <Property Name="Text Align">Center</Property>
+               <Property Name="Lock">No</Property>
+          </Model>
+          <Model Name="Label126">
+               <Property Name="Model Name">Label</Property>
+               <Property Name="Name">Label126</Property>
+               <Property Name="Caption">2.</Property>
+               <Property Name="Visible">Yes</Property>
+               <Property Name="Left">0</Property>
+               <Property Name="Top">1620</Property>
+               <Property Name="Width">960</Property>
+               <Property Name="Height">280</Property>
+               <Property Name="Back Style">Transparent</Property>
+               <Property Name="Back Color">Light Gray</Property>
+               <Property Name="Border Style">Transparent</Property>
+               <Property Name="Border Color">Black</Property>
+               <Property Name="Border Width">2 pt</Property>
+               <Property Name="Font Color">Black</Property>
+               <Property Name="Font Name">Lucida Bright</Property>
+               <Property Name="Font Size">9</Property>
+               <Property Name="Font Weight">Bold</Property>
+               <Property Name="Font Italic">No</Property>
+               <Property Name="Font Underline">No</Property>
+               <Property Name="Text Align">Center</Property>
+               <Property Name="Lock">No</Property>
+          </Model>
+          <Model Name="Label136">
+               <Property Name="Model Name">Label</Property>
+               <Property Name="Name">Label136</Property>
+               <Property Name="Caption">4.</Property>
+               <Property Name="Visible">Yes</Property>
+               <Property Name="Left">0</Property>
+               <Property Name="Top">2260</Property>
+               <Property Name="Width">960</Property>
+               <Property Name="Height">280</Property>
+               <Property Name="Back Style">Transparent</Property>
+               <Property Name="Back Color">Light Gray</Property>
+               <Property Name="Border Style">Transparent</Property>
+               <Property Name="Border Color">Black</Property>
+               <Property Name="Border Width">2 pt</Property>
+               <Property Name="Font Color">Black</Property>
+               <Property Name="Font Name">Lucida Bright</Property>
+               <Property Name="Font Size">9</Property>
+               <Property Name="Font Weight">Bold</Property>
+               <Property Name="Font Italic">No</Property>
+               <Property Name="Font Underline">No</Property>
+               <Property Name="Text Align">Center</Property>
                <Property Name="Lock">No</Property>
           </Model>
           <Model Name="Label134">
@@ -433,7 +499,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label215">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label215</Property>
-               <Property Name="Caption">Broj osiguranih osoba po osnovi rada za podnositelja izvješća</Property>
+               <Property Name="Caption">Broj osiguranih osoba </Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">12260</Property>
@@ -456,7 +522,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label216">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label216</Property>
-               <Property Name="Caption">- poseban doprinos za zapošljavanje osoba s invaliditetom</Property>
+               <Property Name="Caption">- posebni doprinos za poticanje zapošljavanja osoba s invaliditetom</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">11960</Property>
@@ -605,62 +671,10 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
                <Property Name="Border Width">1 pt</Property>
                <Property Name="Lock">No</Property>
           </Model>
-          <Model Name="Label200">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label200</Property>
-               <Property Name="Caption">
-
-
-</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">9260</Property>
-               <Property Name="Width">10700</Property>
-               <Property Name="Height">300</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Left</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label209">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label209</Property>
-               <Property Name="Caption">
-
-
-</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">11340</Property>
-               <Property Name="Width">10700</Property>
-               <Property Name="Height">300</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Left</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
           <Model Name="Label211">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label211</Property>
-               <Property Name="Caption">Osiguranje za slučaj nezaposlenosti</Property>
+               <Property Name="Caption">Doprinosi za slučaj nezaposlenosti</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">11360</Property>
@@ -819,7 +833,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label207">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label207</Property>
-               <Property Name="Caption">- poseban doprinos za prava u slučaju ozljede na radu i prof. bolesti</Property>
+               <Property Name="Caption">- doprinos za zdravstveno osiguranje zaštite zdravlja na radu</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">10740</Property>
@@ -952,32 +966,6 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label199">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label199</Property>
-               <Property Name="Caption">
-
-
-</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">10160</Property>
-               <Property Name="Width">10700</Property>
-               <Property Name="Height">300</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Left</Property>
                <Property Name="Lock">No</Property>
           </Model>
           <Model Name="Text95">
@@ -1135,7 +1123,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label194">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label194</Property>
-               <Property Name="Caption">Zdravstveno osiguranje</Property>
+               <Property Name="Caption">Doprinosi za obvezna zdravstvena osiguranja</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">10200</Property>
@@ -1176,32 +1164,6 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label120">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label120</Property>
-               <Property Name="Caption">
-
-
-</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">7980</Property>
-               <Property Name="Width">10700</Property>
-               <Property Name="Height">660</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Left</Property>
                <Property Name="Lock">No</Property>
           </Model>
           <Model Name="Label189">
@@ -1322,7 +1284,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label190">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label190</Property>
-               <Property Name="Caption">Mirovinsko osiguranje na temelju generacijske solidarnosti</Property>
+               <Property Name="Caption">Doprinosi za mirovinsko osiguranje na temelju generacijske solidarnosti</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">8360</Property>
@@ -1341,36 +1303,6 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Left</Property>
                <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Text90">
-               <Property Name="Model Name">Text</Property>
-               <Property Name="Name">Text90</Property>
-               <Property Name="Control Source"></Property>
-               <Property Name="Running Sum">No</Property>
-               <Property Name="Locale">Template Locale</Property>
-               <Property Name="Format">Number|false|1|309|2|2|true|3|false</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Hide Duplicates">No</Property>
-               <Property Name="Can Grow">No</Property>
-               <Property Name="Can Shrink">No</Property>
-               <Property Name="Left">8900</Property>
-               <Property Name="Top">8360</Property>
-               <Property Name="Width">1780</Property>
-               <Property Name="Height">260</Property>
-               <Property Name="Back Style">Transparent</Property>
-               <Property Name="Back Color">White</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">1 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Plain</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Right</Property>
-               <Property Name="Lock">No</Property>
-               <Property Name="Auto Wrap">No</Property>
           </Model>
           <Model Name="Text91">
                <Property Name="Model Name">Text</Property>
@@ -1435,7 +1367,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label186">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label186</Property>
-               <Property Name="Caption">OBRAČUNANI DOPRINOSI ZA OBVEZNA OSIGURANJA</Property>
+               <Property Name="Caption">OBRAČUNANI DOPRINOSI UKUPNO</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">7980</Property>
@@ -1449,29 +1381,6 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
                <Property Name="Font Color">Black</Property>
                <Property Name="Font Name">Lucida Bright</Property>
                <Property Name="Font Size">10</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Left</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label116">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label116</Property>
-               <Property Name="Caption"></Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">940</Property>
-               <Property Name="Top">640</Property>
-               <Property Name="Width">9800</Property>
-               <Property Name="Height">320</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
                <Property Name="Font Weight">Bold</Property>
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
@@ -1510,8 +1419,8 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
                <Property Name="Top">7980</Property>
                <Property Name="Width">960</Property>
                <Property Name="Height">320</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
+               <Property Name="Back Style">Transparent</Property>
+               <Property Name="Back Color">White</Property>
                <Property Name="Border Style">Transparent</Property>
                <Property Name="Border Color">Black</Property>
                <Property Name="Border Width">2 pt</Property>
@@ -2393,7 +2302,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label162">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label162</Property>
-               <Property Name="Caption">- prema plaći koja se odnosi na razdoblje do 31. prosinca 2002. </Property>
+               <Property Name="Caption">- ostali doprinosi obračunani i obustavljeni od primitaka</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">4300</Property>
@@ -2623,7 +2532,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label138">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label138</Property>
-               <Property Name="Caption">PRIMICI, IZDACI, OBRAČUNANI I UPLAĆEN POREZ I PRIREZ</Property>
+               <Property Name="Caption">PODACI O ISPLAĆENIM PRIMICIMA I OBRAČUNU POREZA</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">2560</Property>
@@ -2641,101 +2550,6 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Left</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label137">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label137</Property>
-               <Property Name="Caption"></Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">2240</Property>
-               <Property Name="Width">960</Property>
-               <Property Name="Height">320</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">10</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label136">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label136</Property>
-               <Property Name="Caption">4.</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">2260</Property>
-               <Property Name="Width">960</Property>
-               <Property Name="Height">280</Property>
-               <Property Name="Back Style">Transparent</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label130">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label130</Property>
-               <Property Name="Caption">
-
-
-</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">940</Property>
-               <Property Name="Top">940</Property>
-               <Property Name="Width">2560</Property>
-               <Property Name="Height">660</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Left</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label128">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label128</Property>
-               <Property Name="Caption"></Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">940</Property>
-               <Property Name="Width">960</Property>
-               <Property Name="Height">660</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">10</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
                <Property Name="Lock">No</Property>
           </Model>
           <Model Name="Label129">
@@ -2759,219 +2573,6 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label127">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label127</Property>
-               <Property Name="Caption"></Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">1600</Property>
-               <Property Name="Width">960</Property>
-               <Property Name="Height">320</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">10</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label126">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label126</Property>
-               <Property Name="Caption">2.</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">1620</Property>
-               <Property Name="Width">960</Property>
-               <Property Name="Height">280</Property>
-               <Property Name="Back Style">Transparent</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label125">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label125</Property>
-               <Property Name="Caption">
-
-
-</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">940</Property>
-               <Property Name="Top">1600</Property>
-               <Property Name="Width">2560</Property>
-               <Property Name="Height">320</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Left</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label122">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label122</Property>
-               <Property Name="Caption"></Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">2540</Property>
-               <Property Name="Width">960</Property>
-               <Property Name="Height">320</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">10</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label123">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label123</Property>
-               <Property Name="Caption">II.</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">2560</Property>
-               <Property Name="Width">960</Property>
-               <Property Name="Height">280</Property>
-               <Property Name="Back Style">Transparent</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">10</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label114">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label114</Property>
-               <Property Name="Caption"></Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">1900</Property>
-               <Property Name="Width">960</Property>
-               <Property Name="Height">320</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">10</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label119">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label119</Property>
-               <Property Name="Caption">3.</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">1940</Property>
-               <Property Name="Width">960</Property>
-               <Property Name="Height">280</Property>
-               <Property Name="Back Style">Transparent</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label115">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label115</Property>
-               <Property Name="Caption">I.</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">640</Property>
-               <Property Name="Width">960</Property>
-               <Property Name="Height">320</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">10</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label8">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label8</Property>
-               <Property Name="Caption">
-
-
-</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">940</Property>
-               <Property Name="Top">1900</Property>
-               <Property Name="Width">3400</Property>
-               <Property Name="Height">320</Property>
-               <Property Name="Back Style">Normal</Property>
-               <Property Name="Back Color">Light Gray</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">2 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">9</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Left</Property>
                <Property Name="Lock">No</Property>
           </Model>
           <Model Name="Line83">
@@ -3033,7 +2634,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label118">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label118</Property>
-               <Property Name="Caption">MB / MBG</Property>
+               <Property Name="Caption">POREZNI BROJ</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">1940</Property>
@@ -3842,7 +3443,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label201">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label201</Property>
-               <Property Name="Caption">Mirovinsko osiguranje na temelju individualne kapitaliziranje štednje</Property>
+               <Property Name="Caption">Doprinosi za mirovinsko osiguranje na temelju individualne kapit. štednje</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">9300</Property>
@@ -4155,6 +3756,29 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
                <Property Name="Text Align">Center</Property>
                <Property Name="Lock">No</Property>
                <Property Name="Auto Wrap">No</Property>
+          </Model>
+          <Model Name="Label115">
+               <Property Name="Model Name">Label</Property>
+               <Property Name="Name">Label115</Property>
+               <Property Name="Caption">I.</Property>
+               <Property Name="Visible">Yes</Property>
+               <Property Name="Left">0</Property>
+               <Property Name="Top">640</Property>
+               <Property Name="Width">960</Property>
+               <Property Name="Height">320</Property>
+               <Property Name="Back Style">Transparent</Property>
+               <Property Name="Back Color">White</Property>
+               <Property Name="Border Style">Transparent</Property>
+               <Property Name="Border Color">Black</Property>
+               <Property Name="Border Width">2 pt</Property>
+               <Property Name="Font Color">Black</Property>
+               <Property Name="Font Name">Lucida Bright</Property>
+               <Property Name="Font Size">10</Property>
+               <Property Name="Font Weight">Bold</Property>
+               <Property Name="Font Italic">No</Property>
+               <Property Name="Font Underline">No</Property>
+               <Property Name="Text Align">Center</Property>
+               <Property Name="Lock">No</Property>
           </Model>
      </Model>
      <Model Name="Section Header1">

@@ -22,8 +22,8 @@
      <Property Name="Grid X">5</Property>
      <Property Name="Grid Y">5</Property>
      <Property Name="Version">1.50</Property>
-     <Property Name="Last Modified">Tue Feb 26 18:09:23 CET 2008</Property>
-     <HiddenProperty Name="Template Path">/media/sda3/home/andrej/eworkspace/devel/projects/spa/src/hr/restart/pl/reports/</HiddenProperty>
+     <Property Name="Last Modified">Wed Jan 21 16:38:36 CET 2009</Property>
+     <HiddenProperty Name="Template Path">/Users/andrej/Documents/workspace/devel/projects/spa/classes/hr/restart/pl/reports/</HiddenProperty>
      <HiddenProperty Name="Text_Count">137</HiddenProperty>
      <HiddenProperty Name="Label_Count">82</HiddenProperty>
      <HiddenProperty Name="Image_Count">0</HiddenProperty>
@@ -2932,7 +2932,7 @@
           <Model Name="Label6">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label6</Property>
-               <Property Name="Caption">Točke 1., 3., 4., 5., 10. i 11.</Property>
+               <Property Name="Caption">Propisana obveza doprinosa</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">6040</Property>
                <Property Name="Top">3500</Property>
@@ -2955,7 +2955,7 @@
           <Model Name="Label7">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label7</Property>
-               <Property Name="Caption">Točke 6., 8. i 9</Property>
+               <Property Name="Caption">Izuzeti od obveze doprinosa</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">7440</Property>
                <Property Name="Top">3500</Property>
@@ -3072,7 +3072,7 @@ Nerezidenti</Property>
           <Model Name="Label11">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label11</Property>
-               <Property Name="Caption">Primtak učenika i studenata</Property>
+               <Property Name="Caption">Primici učenika i studenata</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">13040</Property>
                <Property Name="Top">3340</Property>
@@ -3141,7 +3141,7 @@ Nerezidenti</Property>
           <Model Name="Label77">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label77</Property>
-               <Property Name="Caption">OPIS PODATAKA TE VRSTE PRIMITKA I IZNOSI OSNOVICA, DOPRINOSA, POREZA NA DOHODAK I PRIREZA</Property>
+               <Property Name="Caption">OPIS PODATAKA, VRSTE DOPRINOSA I PRIMITAKA</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">880</Property>
                <Property Name="Top">2460</Property>
@@ -4190,7 +4190,7 @@ Nerezidenti</Property>
           <Model Name="Label26">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label26</Property>
-               <Property Name="Caption">ISPLAĆENI PRIMICI (čl. 32. stavci 3. i 5. Zakona)</Property>
+               <Property Name="Caption">ISPLAĆENI PRIMICI</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">780</Property>
                <Property Name="Top">4740</Property>
@@ -4259,7 +4259,7 @@ Nerezidenti</Property>
           <Model Name="Label29">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label29</Property>
-               <Property Name="Caption">IZNOSI OBRAČUNANIH DOPRINOSA ZA:</Property>
+               <Property Name="Caption">IZNOSI OBRAČUNANIH DOPRINOSA</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">780</Property>
                <Property Name="Top">5640</Property>
@@ -4282,7 +4282,7 @@ Nerezidenti</Property>
           <Model Name="Label30">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label30</Property>
-               <Property Name="Caption">mir. osig. na temelju generacijske solidarnosti</Property>
+               <Property Name="Caption">doprinos za mirovinsko osiguranje</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">780</Property>
                <Property Name="Top">5940</Property>
@@ -4351,7 +4351,7 @@ Nerezidenti</Property>
           <Model Name="Label33">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label33</Property>
-               <Property Name="Caption">osnovno zdravstveno osiguranje</Property>
+               <Property Name="Caption">doprinos za zdravstveno osiguranje</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">780</Property>
                <Property Name="Top">6860</Property>
@@ -4374,7 +4374,7 @@ Nerezidenti</Property>
           <Model Name="Label34">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label34</Property>
-               <Property Name="Caption">poseban za osig. u određenim okolnostima</Property>
+               <Property Name="Caption">posebni doprinos za zdr. osig. zaštite zdr. na radu</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">780</Property>
                <Property Name="Top">7160</Property>
@@ -4397,7 +4397,7 @@ Nerezidenti</Property>
           <Model Name="Label35">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label35</Property>
-               <Property Name="Caption">poseban za korištenje zdr. zaštite u inozemstvu</Property>
+               <Property Name="Caption">posebni doprinos za korištenje zdr. zaštite u inoz.</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">780</Property>
                <Property Name="Top">7460</Property>
@@ -4466,7 +4466,7 @@ Nerezidenti</Property>
           <Model Name="Label1">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label1</Property>
-               <Property Name="Caption">O PRIMICIMA PO DRUGIM OSNOVAMA, OBVEZNIM DOPRINOSIMA, POREZU NA DOHODAK I PRIREZU</Property>
+               <Property Name="Caption">o drugom dohotku, obračunanom i uplaćenom porezu na dohodak i prirezu te doprinosima za obvezna osiguranja</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">0</Property>
                <Property Name="Top">440</Property>
@@ -4762,7 +4762,7 @@ Nerezidenti</Property>
           <Model Name="Label39">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label39</Property>
-               <Property Name="Caption">MB ili JMBG</Property>
+               <Property Name="Caption">POREZNI BROJ</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">320</Property>
                <Property Name="Top">2140</Property>
@@ -5662,7 +5662,7 @@ Nerezidenti</Property>
           <Model Name="Label71">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label71</Property>
-               <Property Name="Caption">obračunan predujam poreza na dohodak</Property>
+               <Property Name="Caption">predujam poreza na dohodak</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">780</Property>
                <Property Name="Top">8360</Property>
@@ -5685,7 +5685,7 @@ Nerezidenti</Property>
           <Model Name="Label72">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label72</Property>
-               <Property Name="Caption">obračunan prirez porezu na dohodak</Property>
+               <Property Name="Caption">prirez porezu na dohodak</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">780</Property>
                <Property Name="Top">8660</Property>
