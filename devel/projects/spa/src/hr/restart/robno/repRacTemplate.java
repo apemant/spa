@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.reports.raIzlazDetail;
 import hr.restart.util.reports.raIzlazSectionFooterLines;
 import hr.restart.util.reports.raIzlazSectionHeaderLines;
@@ -75,10 +76,26 @@ public class repRacTemplate extends repIzlazOrigTemplate {
     
     
     /*if (hr.restart.sisfun.frmParam.getParam("robno","ispisTELFAX_Par","N","Ispis Telefona i faxa partnera na ROT-u u polju za adresu").
-        equalsIgnoreCase("N")) {
+.        equalsIgnoreCase("N")) {
       sh.TextTEL.defaultAlterer().setVisible(false);
 //      sh.TextFAX.defaultAlterer().setVisible(false);
     }*/
+    
+    if (frmParam.getParam("robno", "vertZag", "N", 
+        "Vertikalno pozicionirano zaglavlje raèuna").equals("D")) {
+      raReportElement isp = sh.LabelIsporuka.defaultAlterer();
+      raReportElement rac = sh.LabelR_A_C_U_N.defaultAlterer();
+      raReportSection win = sh.defaultAltererSect().getView(
+          isp.getLeft(), rac.getTop(), rac.getRight(), isp.getBottom());
+      sh.setHeight(sh.getHeight() + isp.getBottom() - rac.getTop());
+      
+      win.moveDown(isp.getTop() - rac.getTop() - 120);
+      win.moveLeft(5760);
+      raReportElement r1 = sh.LabelR1.defaultAlterer();
+      r1.setTop(r1.getTop() + isp.getTop() - rac.getTop() - 120);
+      raReportElement ob = sh.LabelObrazac.defaultAlterer();
+      ob.setTop(ob.getTop() + isp.getTop() - rac.getTop() - 120);
+    }
     
     return sh;
 //    sh.LabelNacinplacanja.defaultAlterer().setTop(sh.LabelNacinotpreme.defaultAlterer().getTop());
