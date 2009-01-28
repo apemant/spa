@@ -182,6 +182,7 @@ private void clearVars() {
 	      _ukorist = getUkorist(sk.getInt("CPAR"));
 	      _pnbz2 = getPnbz2(sk);
 	      _brracukorist = getBRRUkorist(sk.getInt("CPAR"));
+	      _brracnateret = OrgStr.getZiroForCorg(sk.getString("CORG"));
 	      _pnbo2 = sk.getString("BROJDOK");
 	      _iznos = sk.getBigDecimal("ID").add(sk.getBigDecimal("IP"));
 	      _mjesto = mjT;
@@ -190,8 +191,9 @@ private void clearVars() {
 	      if (raVrdokMatcher.isRacun(sk)) {
 	        if (raVrdokMatcher.isDob(sk))
 	          add(_jedzav, _nateret, _svrha, _ukorist, _brracnateret, _nacizv, _pnbz1, _pnbz2, _sif1, _sif2, _sif3, _brracukorist, _pnbo1, _pnbo2, _iznos, _mjesto, _datizv, _datpred);
-	        else if (raVrdokMatcher.isKup(sk))
-	          add(_jedzav, _ukorist, _svrha, _nateret, _brracukorist, _nacizv, _pnbz1, _pnbz2, _sif1, _sif2, _sif3, _brracnateret, _pnbo1, _pnbo2, _iznos, _mjesto, _datizv, _datpred);
+	        else if (raVrdokMatcher.isKup(sk)) {          
+	          add(_jedzav, _ukorist, _svrha, _nateret, " ", _nacizv, _pnbz1, _pnbz2, _sif1, _sif2, _sif3, _brracnateret, _pnbo1, _pnbo2, _iznos, _mjesto, _datizv, _datpred);
+	        }
 	      }
     }
     _selectionTracker.destroySelectedView();
