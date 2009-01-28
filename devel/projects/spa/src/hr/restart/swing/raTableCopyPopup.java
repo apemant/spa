@@ -17,24 +17,38 @@
 ****************************************************************************/
 package hr.restart.swing;
 
+import hr.restart.baza.Condition;
 import hr.restart.help.raLiteBrowser;
+import hr.restart.sisfun.frmTableDataView;
+import hr.restart.sisfun.raPilot;
+import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
+import hr.restart.util.IntParam;
+import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
 import hr.restart.util.raDataFilter;
+import hr.restart.util.raGlob;
 import hr.restart.util.columnsbean.ColumnsBean;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
@@ -42,6 +56,9 @@ import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.RowFilterListener;
 import com.borland.dx.dataset.Variant;
+import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 /**
  * <p>Title: </p>
@@ -54,15 +71,20 @@ import com.borland.dx.dataset.Variant;
 
 public class raTableCopyPopup extends JPopupMenu {
 
-  private JraTable2 jt = null;
-  private int selRow, selCol, memRow = -99, memCol = -99;
+  protected JraTable2 jt = null;
+  protected int selRow, selCol, memRow = -99, memCol = -99;
   private JTextField tx = new JTextField();
   static raTableCopyPopup inst = new raTableCopyPopup();
-  private Action add, addAll, set, setAll, sub, subAll, reset, 
-      fastAdd, filtShow, filtEq, filtNeq, filtRemove, search, searchAll;
+  private Action add, addAll, set, setAll, sub, subAll, reset,
+      selClear, selAll, selectCol, fastAdd, filtShow, filtEq, filtNeq, 
+      filtRemove, search, searchAll, tabCond, keyCond, inCond, 
+      inColCond, copyAll, clearAll, replaceAll;
   private JMenu calcMenu;
+  private JMenu adminMenu;
+  
   
   raCalculator calc = raCalculator.getInstance();
+  ReplaceDialog repDlg = new ReplaceDialog();
   
   static {
     AWTKeyboard.registerKeyStroke(AWTKeyboard.ESC, new KeyAction() {
@@ -121,7 +143,14 @@ public class raTableCopyPopup extends JPopupMenu {
       raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
       boolean selMulti = (stm != null && stm.countSelected() > 1);
       boolean multi = (selRow != jt.getSelectedRow()) || selMulti;
+      boolean extend = jt instanceof raExtendedTable;
+      boolean dataset = jt.getDataSet() != null;
+      boolean ed = extend && dataset &&
+        (jt.getTopLevelAncestor() instanceof frmTableDataView) &&
+        ((frmTableDataView) jt.getTopLevelAncestor()).isEditable();
+      boolean admin = raUser.getInstance().isSuper();
       calcMenu.setEnabled(num);
+      adminMenu.setEnabled(admin && extend && dataset);
       add.setEnabled(num);
       fastAdd.setEnabled(num);
       addAll.setEnabled(num && multi);
@@ -138,12 +167,37 @@ public class raTableCopyPopup extends JPopupMenu {
       setAll.putValue(Action.NAME, selMulti ? 
           "Napuni zbroj oznaèenih vrijednosti u koloni" :
           "Napuni zbroj oznaèenog isjeèka kolone");
+      
+      selClear.setEnabled(stm != null && stm.countSelected() > 0);
+      selAll.setEnabled(stm != null);
+      selectCol.setEnabled(stm != null && selRow != jt.getSelectedRow());
+      keyCond.setEnabled(jt.getRowCount() > 0);
+      inCond.setEnabled(jt.getRowCount() > 1);
+      inColCond.setEnabled(multi && jt.getRowCount() > 1);
+      inColCond.putValue(Action.NAME, selMulti ?
+          "Generiraj upit za oznaèene vrijednosti kolone" :
+          "Generiraj upit za isjeèak kolone");
+      copyAll.setEnabled(ed && jt.getRowCount() > 1);
+      copyAll.putValue(Action.NAME, selMulti ?
+          "Kopiraj vrijednost u sve oznaèene redove" :
+          "Kopiraj vrijednost u sve redove");
+      clearAll.setEnabled(ed && jt.getRowCount() > 0);
+      clearAll.putValue(Action.NAME, selMulti ?
+          "Poništi vrijednosti u svim oznaèenim redovima" :
+          "Poništi vrijednosti u svim redovima");
+      replaceAll.setEnabled(ed && jt.getRowCount() > 0 && 
+          jt.getDataSet().getColumn(jt.getRealColumnName(selCol)).
+          getDataType() == Variant.STRING);
+      replaceAll.putValue(Action.NAME, selMulti ?
+          "Zamijeni uzorak teksta u svim oznaèenim redovima" :
+          "Zamijeni uzorak teksta u svim redovima");
+
       reset.setEnabled(calc.data.getBigDecimal("RESULT").signum() != 0);
-      filtShow.setEnabled(jt instanceof raExtendedTable && jt.getDataSet() != null);
-      filtEq.setEnabled(jt instanceof raExtendedTable && jt.getDataSet() != null);
-      filtNeq.setEnabled(jt instanceof raExtendedTable && jt.getDataSet() != null);
-      filtRemove.setEnabled(jt instanceof raExtendedTable && 
-          jt.getDataSet() != null && jt.getDataSet().getRowFilterListener() != null);
+      filtShow.setEnabled(extend && dataset);
+      filtEq.setEnabled(extend && dataset);
+      filtNeq.setEnabled(extend && dataset);
+      filtRemove.setEnabled(extend && dataset && 
+          jt.getDataSet().getRowFilterListener() != null);
       inst.jt.repaint(inst.jt.getCellRect(selRow, selCol, true));
       show(jt, e.getX(), e.getY());
     }
@@ -192,6 +246,25 @@ public class raTableCopyPopup extends JPopupMenu {
       }
     });
     addSeparator();
+    add(selClear  = new AbstractAction("Poništi odabir redova") {
+      public void actionPerformed(ActionEvent e) {
+        raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
+        stm.clearSelection();
+        jt.repaint();
+      }
+    });
+    add(selAll  = new AbstractAction("Odaberi sve redove") {
+      public void actionPerformed(ActionEvent e) {
+        selRows(0, jt.getDataSet().getRowCount() - 1);
+      }
+    });
+    add(selectCol  = new AbstractAction("Odaberi oznaèeni raspon redova") {
+      public void actionPerformed(ActionEvent e) {
+        selectCol();
+      }
+    });
+    add(adminMenu = new JMenu("Administratorske operacije"));
+    addSeparator();
     add(search = new AbstractAction("Traži na Internetu") {
       public void actionPerformed(ActionEvent e) {
         searchInternet(false);
@@ -230,7 +303,7 @@ public class raTableCopyPopup extends JPopupMenu {
         setValue();
       }
     });
-    calcMenu.add(setAll = new AbstractAction("Naput zbroj oznaèenog isjeèka kolone") {
+    calcMenu.add(setAll = new AbstractAction("Napuni zbroj oznaèenog isjeèka kolone") {
       public void actionPerformed(ActionEvent e) {
         setAllValue();
       }
@@ -243,11 +316,236 @@ public class raTableCopyPopup extends JPopupMenu {
     });
     calcMenu.add(new AbstractAction("Prikaži kalkulator") {
       public void actionPerformed(ActionEvent e) {
-        if (!calc.isShowing()) calc.show();
+        if (!calc.isShowing()) calc.setVisible(true);
         calc.setState(Frame.NORMAL);
         calc.toFront();
       }
     });
+    adminMenu.add(tabCond = new AbstractAction("Generiraj upit za tablicu") {
+      public void actionPerformed(ActionEvent e) {
+        setupTabCond();
+      }
+    });
+    adminMenu.add(keyCond = new AbstractAction("Generiraj upit za red") {
+      public void actionPerformed(ActionEvent e) {
+        setupKeyCond();
+      }
+    });
+    adminMenu.add(inCond = new AbstractAction("Generiraj upit za kolonu") {
+      public void actionPerformed(ActionEvent e) {
+        setupInCond();
+      }
+    });
+    adminMenu.add(inColCond = new AbstractAction("Generiraj upit za isjeèak kolone") {
+      public void actionPerformed(ActionEvent e) {
+        setupInColCond();
+      }
+    });
+    adminMenu.addSeparator();
+    adminMenu.add(copyAll = new AbstractAction("Kopiraj vrijednost u sve redove") {
+      public void actionPerformed(ActionEvent e) {
+        copyAll();
+      }
+    });
+    adminMenu.add(clearAll = new AbstractAction("Poništi vrijednosti u svim redovima") {
+      public void actionPerformed(ActionEvent e) {
+        clearAll();
+      }
+    });
+    adminMenu.add(replaceAll = new AbstractAction("Zamijeni uzorak teksta") {
+      public void actionPerformed(ActionEvent e) {
+        replaceAll();
+      }
+    });
+  }
+  
+  void selRows(int from, int to) {
+    raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
+    DataSet ds = jt.getDataSet();
+    int row = ds.getRow();
+    jt.stopFire();
+    ds.enableDataSetEvents(false);
+    ds.goToRow(from);
+    for (int i = from; i <= to; ds.next(), i++)
+      stm.toggleSelection(ds);
+    ds.goToRow(row);
+    ds.enableDataSetEvents(true);
+    jt.startFire();
+    jt.repaint();
+  }
+  
+  void selectCol() {
+    int b = jt.getSelectedRow();
+    int e = selRow;
+    if (e < b) {
+      e = b;
+      b = selRow;
+    }
+    selRows(b, e);
+  }
+  
+  void checkPilot() {
+    String p = IntParam.getTag("popup.pilot");
+    if (p == null || p.length() == 0)
+      IntParam.setTag("popup.pilot", p = "D");
+    if (p.equals("D")) raPilot.open(true);
+  }
+  
+  void setQuery(Condition where) {
+    try {
+      tx.setText("SELECT * FROM " + Valid.getTableName(
+          ((QueryDataSet) jt.getDataSet()).getOriginalQueryString())
+          + " WHERE " + where);
+      tx.selectAll();
+      tx.copy();
+      checkPilot();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
+  void setupTabCond() {
+    tx.setText(((QueryDataSet) jt.getDataSet()).getOriginalQueryString());
+    tx.selectAll();
+    tx.copy();
+    checkPilot();
+  }
+  
+  void setupKeyCond() {
+    try {
+      String[] keys = ((raExtendedTable) jt).owner.getKeyColumns();
+      DataRow dr = new DataRow(jt.getDataSet());
+      jt.getDataSet().getDataRow(selRow, dr);
+      setQuery(Condition.whereAllEqual(keys, dr));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
+  void setupInCond() {
+    Object arr = Aus.toArray(jt.getDataSet(), jt.getRealColumnName(selCol));
+    setQuery(Condition.in(jt.getRealColumnName(selCol), arr));
+  }
+  
+  void setupInColCond() {
+    raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
+    if (stm == null || stm.countSelected() < 2) {
+      int b = jt.getSelectedRow();
+      int e = selRow;
+      if (e < b) {
+        e = b;
+        b = selRow;
+      }
+      Object arr = Aus.toArray(jt.getDataSet(), jt.getRealColumnName(selCol));
+      Object subarr = Array.newInstance(arr.getClass().getComponentType(), e - b + 1);
+      System.arraycopy(arr, b, subarr, 0, e - b + 1);
+      setQuery(Condition.in(jt.getRealColumnName(selCol), subarr));
+    } else if (stm.isNatural()) {
+      Integer[] sel = (Integer[]) stm.getSelection();
+      Object arr = Aus.toArray(jt.getDataSet(), jt.getRealColumnName(selCol));
+      Object subarr = Array.newInstance(arr.getClass().getComponentType(), sel.length);
+      for (int i = 0; i < sel.length; i++)
+        Array.set(subarr, i, Array.get(arr, sel[i].intValue()));
+      setQuery(Condition.in(jt.getRealColumnName(selCol), subarr));
+      jt.repaint();
+    } else {
+      DataSet ds = stm.getSelectedView();
+      Object arr = Aus.toArray(ds, jt.getRealColumnName(selCol));
+      setQuery(Condition.in(jt.getRealColumnName(selCol), arr));
+      stm.destroySelectedView();
+      jt.repaint();
+    }
+  }
+  
+  long[] generateList() {
+    raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
+    DataSet ds = jt.getDataSet();
+    int row = ds.getRow();
+    jt.stopFire();
+    ds.enableDataSetEvents(false);
+    if (stm != null && stm.countSelected() > 1) {
+      long[] rows = new long[stm.countSelected()];
+      if (stm.isNatural()) {
+        Integer[] sel = (Integer[]) stm.getSelection();
+        for (int i = 0; i < sel.length; i++) {
+          ds.goToRow(sel[i].intValue());
+          rows[i] = ds.getInternalRow();
+        }
+      } else {
+        int i = 0;
+        for (ds.first(); ds.inBounds(); ds.next())
+          if (stm.isSelected(ds))
+            rows[i++] = ds.getInternalRow();
+      }
+      ds.goToRow(row);
+      return rows;
+    }
+    long[] rows = new long[ds.rowCount()];
+    int i = 0;
+    for (ds.first(); ds.inBounds(); ds.next())
+      rows[i++] = ds.getInternalRow();
+    ds.goToRow(row);
+    return rows;
+  }
+  
+  void copyAll() {
+    long[] rows = generateList();
+    String col = jt.getRealColumnName(selCol);
+    DataSet ds = jt.getDataSet();
+    int row = ds.getRow();
+    Variant v = new Variant();
+    ds.getVariant(col, selRow, v);
+    for (int i = 0; i < rows.length; i++) {
+      ds.goToInternalRow(rows[i]);
+      ds.setVariant(col, v);
+      ds.post();
+    }
+    ds.goToRow(row);
+    ds.enableDataSetEvents(true);
+    jt.startFire();
+    jt.fireTableDataChanged();
+  }
+  
+  void clearAll() {
+    long[] rows = generateList();
+    String col = jt.getRealColumnName(selCol);
+    DataSet ds = jt.getDataSet();
+    int row = ds.getRow();
+    for (int i = 0; i < rows.length; i++) {
+      ds.goToInternalRow(rows[i]);
+      ds.setAssignedNull(col);
+      ds.post();
+    }
+    ds.goToRow(row);
+    ds.enableDataSetEvents(true);
+    jt.startFire();
+    jt.fireTableDataChanged();
+  }
+  
+  void replaceAll() {
+    if (repDlg.show(jt.getTopLevelAncestor(), 
+        repDlg.pan, "Zamijeni uzorak teksta")) {
+      raGlob glob = new raGlob(repDlg.orig.getText());
+      VarStr buf = new VarStr();
+      String repl = repDlg.repl.getText();
+      long[] rows = generateList();
+      String col = jt.getRealColumnName(selCol);
+      DataSet ds = jt.getDataSet();
+      int row = ds.getRow();
+      for (int i = 0; i < rows.length; i++) {
+        ds.goToInternalRow(rows[i]);
+        if (glob.matches(ds.getString(col))) {
+          buf.clear().append(glob.morphLastMatch(repl));
+          System.out.println(buf);
+          ds.setString(col, buf.toString());
+          ds.post();
+        }
+      }
+      ds.goToRow(row);
+      ds.enableDataSetEvents(true);
+      jt.startFire();
+      jt.fireTableDataChanged();
+    }
   }
   
   private BigDecimal getValueAtRow(int row) {
@@ -273,19 +571,17 @@ public class raTableCopyPopup extends JPopupMenu {
       Integer[] sel = (Integer[]) stm.getSelection();
       for (int i = 0; i < sel.length; i++)
         sum = sum.add(getValueAtRow(sel[i].intValue()));
-      stm.clearSelection();
       jt.repaint();
     } else {
       DataSet ds = stm.getSelectedView();
       String cname = jt.getRealColumnName(selCol);
-  
+
       Variant v = new Variant();
       for (ds.first(); ds.inBounds(); ds.next()) {
         ds.getVariant(cname, v);
         sum = sum.add(v.getAsBigDecimal());
       }
       stm.destroySelectedView();
-      stm.clearSelection();
       jt.repaint();
     }
     return sum.setScale(calc.getPrecision(), BigDecimal.ROUND_HALF_UP);
@@ -320,7 +616,7 @@ public class raTableCopyPopup extends JPopupMenu {
   void setValue() {
     calc.data.setBigDecimal("RESULT", getValueAtRow(selRow).
       setScale(calc.getPrecision(), BigDecimal.ROUND_HALF_UP));
-    if (!calc.isShowing()) calc.show();
+    if (!calc.isShowing()) calc.setVisible(true);
     calc.setState(Frame.NORMAL);
   }
   
@@ -330,7 +626,7 @@ public class raTableCopyPopup extends JPopupMenu {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    if (!calc.isShowing()) calc.show();
+    if (!calc.isShowing()) calc.setVisible(true);
     calc.setState(Frame.NORMAL);
   }
 
@@ -367,7 +663,7 @@ public class raTableCopyPopup extends JPopupMenu {
     ColumnsBean cb = ((raExtendedTable) jt).owner.getColumnsBean();
     raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
     if (stm != null && stm.isNatural()) stm.clearSelection();
-    jt.fireTableDataChanged();
+    jt.repaint();
     if (cb != null && cb.isShowing()) cb.checkFilter();
   }
   
@@ -378,7 +674,6 @@ public class raTableCopyPopup extends JPopupMenu {
   }
   
   void setFilter(boolean eq) {
-    ColumnsBean cb = ((raExtendedTable) jt).owner.getColumnsBean();
     RowFilterListener filter = jt.getDataSet().getRowFilterListener();
     if (filter != null) jt.getDataSet().removeRowFilterListener(filter);
     String col = jt.getRealColumnName(selCol);
@@ -398,10 +693,58 @@ public class raTableCopyPopup extends JPopupMenu {
   }
   
   void removeFilter() {
-    ColumnsBean cb = ((raExtendedTable) jt).owner.getColumnsBean();
     RowFilterListener filter = jt.getDataSet().getRowFilterListener();
     if (filter != null) jt.getDataSet().removeRowFilterListener(filter);
     jt.getDataSet().setSort(jt.getDataSet().getSort());
     updateFilterChange();
+  }
+  
+  class ReplaceDialog extends raOptionDialog {
+    public JraPanel pan = new JraPanel(new BorderLayout());
+    public JraPanel main = new JraPanel(new XYLayout(415, 75));
+    public JraTextField orig = new JraTextField();
+    public JraTextField repl = new JraTextField();
+    
+    public ReplaceDialog() {
+      main.add(new JLabel("Uzorak teksta"), new XYConstraints(15, 15, -1, -1));
+      main.add(orig, new XYConstraints(150, 15, 250, -1));
+      main.add(new JLabel("Zamjenski uzorak"), new XYConstraints(15, 40, -1, -1));
+      main.add(repl, new XYConstraints(150, 40, 250, -1));
+      pan.add(main);
+      pan.add(okp, BorderLayout.SOUTH);
+    }
+    
+    protected void beforeShow() {
+      orig.setText(jt.getValueAt(selRow, selCol).toString());
+      if (repl.isEmpty()) repl.setText(orig.getText());
+    }
+    
+    protected boolean checkOk() {
+      if (orig.getText().length() == 0) {
+        orig.requestFocus();
+        JOptionPane.showMessageDialog(win, "Uzorak je prazan!", 
+            "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+      if (repl.getText().length() == 0) {
+        repl.requestFocus();
+        JOptionPane.showMessageDialog(win, "Zamjenski uzorak je prazan!", 
+            "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+      if (orig.getText().equals(repl.getText())) {
+        repl.requestFocus();
+        JOptionPane.showMessageDialog(win, "Uzorci su jednaki!", 
+            "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+      if (!new raGlob(orig.getText()).compatibleWith(repl.getText())) {
+        repl.requestFocus();
+        JOptionPane.showMessageDialog(win, "Zamjenski uzorak je nekompatibilan izvornom!", 
+            "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+      return true;
+    }
   }
 }
