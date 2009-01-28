@@ -672,17 +672,21 @@ public class raSaldaKonti {
       return total;
     }
     
-    public void checkStavka(DataSet sk, Map allSk) {
+    public void checkStavka(DataSet sk, Map allSk, boolean fix) {
       BigDecimal iznos = sk.getBigDecimal("SSALDO");
       BigDecimal saldo = sk.getBigDecimal("SALDO");
+      BigDecimal rsaldo = iznos;
       BigDecimal pviznos = sk.getBigDecimal("PVSSALDO");
       BigDecimal pvsaldo = sk.getBigDecimal("PVSALDO");
+      BigDecimal pvrsaldo = pviznos;
       BigDecimal tecaj = calcTecaj(sk);
       //BigDecimal jedval = findJedVal(sk);
       boolean domVal = isDomVal(sk);
       boolean racTip = raVrdokMatcher.isRacunTip(sk);
       for (int i = 0; i < others.size(); i++) {
         PokDoc pd = (PokDoc) others.get(i);
+        
+        if (fix && !allSk.containsKey(pd.csk)) continue;
         //BigDecimal pi = (BigDecimal) vals.get(i);
         SalDoc sd = (SalDoc) allSk.get(pd.csk);
         BigDecimal rTecaj = tecaj;
@@ -696,17 +700,21 @@ public class raSaldaKonti {
             pd.iznos.multiply(rTecaj).setScale(2, BigDecimal.ROUND_HALF_UP);
 
         if (domVal || !sdDomVal)
-          pvsaldo = pvsaldo.add(racTip == pd.racSide ? pd.iznos.negate() : pd.iznos);
-        saldo = saldo.add(racTip == pd.racSide ? domIznos.negate() : domIznos);
+          pvrsaldo = pvrsaldo.subtract(racTip == pd.racSide ? pd.iznos.negate() : pd.iznos);
+        rsaldo = rsaldo.subtract(racTip == pd.racSide ? domIznos.negate() : domIznos);
       }
-      if (pvsaldo.compareTo(pviznos) != 0)
-        raProcess.addError("Nekonzistentnost deviznog pokrivenog iznosa", 
-            sk, pvsaldo.subtract(sk.getBigDecimal("PVSALDO")));
-      if (saldo.compareTo(iznos) != 0) {
-        sk.setBigDecimal("PVSSALDO", iznos);
-        sk.setBigDecimal("PVSALDO", saldo);
-        raProcess.addError("Nekonzistentnost kunskog pokrivenog iznosa", 
-            sk, iznos.subtract(saldo));
+      if (pvsaldo.compareTo(pvrsaldo) != 0)
+        if (fix) sk.setBigDecimal("PVSALDO", pvrsaldo);
+        else raProcess.addError("Nekonzistentnost deviznog pokrivenog iznosa", 
+            sk, pviznos.subtract(pvrsaldo));
+      if (saldo.compareTo(rsaldo) != 0) {
+        if (fix) sk.setBigDecimal("SALDO", rsaldo);
+        else {
+          sk.setBigDecimal("PVSSALDO", iznos);
+          sk.setBigDecimal("PVSALDO", saldo);
+          raProcess.addError("Nekonzistentnost kunskog pokrivenog iznosa", 
+            sk, iznos.subtract(rsaldo));
+        }
       }
     }
   }
@@ -776,7 +784,7 @@ public class raSaldaKonti {
               ssal = ssal.subtract(pp.getTotal(rac));
               if (ssal.compareTo(sal) != 0)
                 raProcess.addError("Nekonzistentnost pokrivenog iznosa", sk, pp.getTotal(rac));
-            } else pp.checkStavka(sk, allSk);
+            } else pp.checkStavka(sk, allSk, false);
           }
         } else if (ssal.compareTo(sal) != 0)
           raProcess.addError("Nedostaje veza za pokrivanje ili greška u saldu", sk, n0);
@@ -1374,6 +1382,78 @@ public class raSaldaKonti {
     }
     
     return results;
+  }
+  
+  public static void recreateSaldo(String from, String to, int cpar) {
+    System.out.println("Checking consistency from "+from+" to "+to);
+    
+    raProcess.setMessage("Dohvat stavaka salda konti...", false);
+    String scols = simpleDev ? "SSALDO SALDO" : "OZNVAL TECAJ SSALDO SALDO PVSSALDO PVSALDO";
+    String ssalcol = colSSaldo(), salcol = colSaldo();
+    DataSet sk = Skstavke.getDataModule().getTempSet(
+        //KNJIG CPAR BROJKONTA VRDOK BROJDOK BROJIZV 
+        "CSKSTAVKE DATUMKNJ ID IP VRDOK "+scols,
+        Aus.getKnjigCond().and(Condition.where("POKRIVENO", Condition.NOT_EQUAL, "X")).
+            and(Condition.equal("CPAR", cpar)).and(
+            Condition.between("DATUMKNJ", ut.getYearBegin(from), ut.getYearEnd(to))));
+    sk.open();
+    
+    for (int i = 0; i < sk.columnCount(); i++)
+      System.out.println(sk.getColumn(i));
+    
+    System.out.println(sk.rowCount() + " rows in skstavke");
+    
+    Map allSk = new HashMap();
+    for (sk.first(); sk.inBounds(); sk.next())
+      allSk.put(sk.getString("CSKSTAVKE"), simpleDev ? null : new SalDoc(sk));
+
+    raProcess.setMessage("Dohvat veza pokrivanja dokumenata...", true);
+    DataSet pok = Pokriveni.getDataModule().getTempSet();
+    pok.open();
+    Map poka = new HashMap();
+    for (pok.first(); pok.inBounds(); pok.next()) {
+      String csku = pok.getString("CUPLATE");
+      String cskr = pok.getString("CRACUNA");
+      BigDecimal sal = pok.getBigDecimal("IZNOS");
+      PokriveniDok du = (PokriveniDok) poka.get(csku);
+      PokriveniDok dr = (PokriveniDok) poka.get(cskr);
+      
+      if (du != null) du.add(new PokDoc(true, cskr, sal));
+      else poka.put(csku, new PokriveniDok(new PokDoc(true, cskr, sal)));
+      
+      if (dr != null) dr.add(new PokDoc(false, csku, sal));
+      else poka.put(cskr, new PokriveniDok(new PokDoc(false, csku, sal)));
+    }
+    pok.close();
+    pok = null;
+
+    for (sk.first(); sk.inBounds(); sk.next()) {
+      boolean rac = raVrdokMatcher.isRacunTip(sk);
+      String csk = sk.getString("CSKSTAVKE");
+      BigDecimal ssal = sk.getBigDecimal(ssalcol);
+      BigDecimal sal = sk.getBigDecimal(salcol);
+      
+      PokriveniDok pp = (PokriveniDok) poka.get(csk);
+      if (pp != null) {
+        if (simpleDev) {
+           ssal = ssal.subtract(pp.getTotal(rac));
+           if (ssal.compareTo(sal) != 0)
+             sk.setBigDecimal("SALDO", ssal);
+        } else pp.checkStavka(sk, allSk, true);
+      } else if (ssal.compareTo(sal) != 0)
+        sk.setBigDecimal("SALDO", ssal);
+    }
+    sk.saveChanges();
+  }
+  
+  public static void recreateSaldo(final int cpar) {
+    raProcess.runChild(new Runnable() {
+      public void run() {
+        recreateSaldo(
+            Valid.getValid().getKnjigYear("gk"), 
+            Valid.getValid().findYear(), cpar);
+      }
+    });
   }
   
   public static void checkSkConsistency() {
