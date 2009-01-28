@@ -80,7 +80,9 @@ public class repPK implements raReportData, IDataProvider {
   public String getCRADNIK(){
      return ds.getString("CRADNIK");
   }
-
+  public String getSORTNIPOJAM() {
+    return ds.getString("SORTNIPOJAM")+" "+getCRADNIK();
+  }
   public String getNAZIV(){
     return frPK.getKnjNaziv();
   }
@@ -166,7 +168,7 @@ public class repPK implements raReportData, IDataProvider {
     try {
       return vl.maskZeroInteger(new Integer(op),3);      
     } catch (Exception e) {
-      e.printStackTrace();
+      //e.printStackTrace();
       return op;
     }
   }

@@ -81,7 +81,7 @@
           <Model Name="Section0">
                <Property Name="Model Name">Section</Property>
                <Property Name="Name">Section0</Property>
-               <Property Name="Field">CRADNIK</Property>
+               <Property Name="Field">SORTNIPOJAM</Property>
                <Property Name="Sort Order">Ascending</Property>
                <Property Name="Group Header">Yes</Property>
                <Property Name="Group Footer">Yes</Property>

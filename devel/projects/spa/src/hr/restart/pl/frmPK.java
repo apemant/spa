@@ -17,9 +17,11 @@
 ****************************************************************************/
 package hr.restart.pl;
 import hr.restart.baza.dM;
+import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
+import hr.restart.util.sysoutTEST;
 
 import java.math.BigDecimal;
 
@@ -286,10 +288,16 @@ System.out.println(a);
   
   public DataSet getRepSetList(){
     if (repSetPKList == null) return getNewRepSetList();
+//    sysoutTEST ST = new sysoutTEST(false);
+//    ST.showInFrame(repSetPKList, "TEST!!!");
+
     return repSetPKList;
   }
+  
   public DataSet getNewRepSetList(){
 		repSetPKList = repSetPK.cloneDataSetStructure();
+		repSetPKList.addColumn(dM.createStringColumn("SORTNIPOJAM", 200));
+		repSetPKList.setLocale(Aus.hr);
     repSetPKList.open();
     BigDecimal nula = new BigDecimal(0);
     repSetPK.setSort(new SortDescriptor(new String[] {"CRADNIK","MJISPL"}));
@@ -297,22 +305,29 @@ System.out.println(a);
     int mend = Integer.parseInt(Util.getUtil().getMonth(fieldSet.getTimestamp("DATISPLDO")));
     repSetPK.first();
     String lastcradnik = repSetPK.getString("CRADNIK");
+    String sortnipojam = getSortniPojam(lastcradnik);
 //System.out.println("getRepSetList() entering loop");
     for (repSetPK.first(); repSetPK.inBounds(); repSetPK.next()) {
       nextStep("Dodavanje mjeseci bez isplate za radnika "+lastcradnik);
       if (!lastcradnik.equals(repSetPK.getString("CRADNIK"))) {
-        addMissingMonths(repSetPKList, nula, mbegin, mend, lastcradnik);
+        addMissingMonths(repSetPKList, nula, mbegin, mend, lastcradnik, sortnipojam);
         lastcradnik = repSetPK.getString("CRADNIK");
+        sortnipojam = getSortniPojam(lastcradnik);
       }
       repSetPKList.insertRow(false);
       repSetPK.copyTo(repSetPKList);
+      repSetPKList.setString("SORTNIPOJAM", sortnipojam);
     }
-    addMissingMonths(repSetPKList, nula, mbegin, mend, lastcradnik);
-    repSetPKList.setSort(new SortDescriptor(new String[] {"CRADNIK","MJISPL"}));
+    addMissingMonths(repSetPKList, nula, mbegin, mend, lastcradnik, sortnipojam);
+    repSetPKList.setSort(new SortDescriptor(new String[] {"SORTNIPOJAM","MJISPL"}));
     return repSetPKList;
   }
-  
-  private void addMissingMonths(StorageDataSet repSetPKList, BigDecimal nula, int mbegin, int mend, String lastcradnik) {
+  private String getSortniPojam(String cRad) {
+    dm.getAllRadnici().open();
+    lookupData.getlookupData().raLocate(dm.getAllRadnici(), new String[]{"CRADNIK"}, new String[]{cRad+""});
+    return dm.getAllRadnici().getString("PREZIME")+" "+ dm.getAllRadnici().getString("IME");
+  }
+  private void addMissingMonths(StorageDataSet repSetPKList, BigDecimal nula, int mbegin, int mend, String lastcradnik, String srt) {
     for (int i=mbegin; i <= mend; i++) {
       if (!lookupData.getlookupData().raLocate(repSetPKList,
           new String[] {"CRADNIK", "MJISPL"},
@@ -333,6 +348,7 @@ System.out.println(a);
         repSetPKList.setBigDecimal("PRIR",nula);
         repSetPKList.setBigDecimal("PORIPRIR",nula);
         repSetPKList.setBigDecimal("OSIG",nula);
+        repSetPKList.setString("SORTNIPOJAM", srt);
       }
     }
 //    System.out.println("addMissingMonths for "+lastcradnik+" done");
