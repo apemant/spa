@@ -181,6 +181,16 @@ public class raGlob {
 
     return result.toString();
   }
+  
+  public boolean compatibleWith(String rule)
+  {
+      try {
+          match(getTrivialMatch()).morphLastMatch(rule);
+          return true;
+      } catch(Exception e) {
+          return false;
+      }
+  }
 
   /**
    * Pokusava izvrsiti podudaranje zadanog stringa sa
@@ -327,6 +337,13 @@ public class raGlob {
       orig.append(glob.get(i));
     return orig.toString();
   }
+  
+  public String getTrivialMatch() {
+    StringBuffer tm = new StringBuffer();
+    for (int i = 0; i < glob.size(); i++)
+      tm.append(((GlobElement) glob.get(i)).getTrivialMatch());
+    return tm.toString();
+  }
 
   public String toString() {
     StringBuffer dump = new StringBuffer();
@@ -418,17 +435,22 @@ class GlobElement {
   public static final int INVERSE = 4;
   private int type;
   private String string;
+  private String trivialMatch;
   private ArrayList selection;
   public GlobElement(boolean multi) {
     type = multi ? MULTI : SINGLE;
+    trivialMatch = ".";
   }
   public GlobElement(String value) {
     type = STRING;
     string = value;
+    trivialMatch = value;
   }
   public GlobElement(ArrayList sel, boolean inverse) {
     type = inverse ? INVERSE : SELECTION;
     selection = sel;
+    trivialMatch = sel.size() == 0 ? "" : inverse ? "\0" : 
+      String.valueOf(((Range) sel.get(0)).fromChar);
   }
   public String toString() {
     if (type == MULTI) return "*";
@@ -460,6 +482,9 @@ class GlobElement {
     for (int i = 0; i < selection.size(); i++)
       sel.append(((Range) selection.get(i)).expand());
     return sel.toString();
+  }
+  public String getTrivialMatch() {
+    return trivialMatch;
   }
   public boolean selectionMatch(char ch) {
     for (int i = 0; i < selection.size(); i++)
