@@ -57,6 +57,10 @@ public class repRacNoPopustTemplate extends repIzlazOrigTemplate {
     textSgetDatug.setControlSource("SgetDATUG");
     textSgetDatug.setTop(topNar);
     
+    sh.LabelR_A_C_U_N.defaultAlterer().setCaption(
+        frmParam.getParam("robno", "racPNPTekst", "R A È U N", 
+            "Naslov raèuna bez popusta"));
+   
     if ("D".equalsIgnoreCase(frmParam.getParam("robno", "rnpTri", "N",
         "Raèun bez popusta u Tri-formatu"))) {
       sh.defaultAltererSect().removeModels(new raReportElement[]
