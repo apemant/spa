@@ -571,8 +571,8 @@ lc.printAll(rKM.stavka);
 //System.out.println("StanjeIzlaz");
 //ST.prn(StanjeIzlaz);
   if (fetch && allowNeg) {
-  	if (rKM.stanjeiz.kol.compareTo(rKM.stavkaold.kol) != 0)
-  		raCommonClass.getraCommonClass().setLabelLaF(raDM.jraFC, false);
+  	/*if (rKM.stanjeiz.kol.compareTo(rKM.stavkaold.kol) != 0)
+  		raCommonClass.getraCommonClass().setLabelLaF(raDM.jraFC, false);*/
   	if (!rKM.stanjeiz.sVrSklad.equals("N") || rKM.stanjeul.sVrSklad.equals("N"))
   		raCommonClass.getraCommonClass().setLabelLaF(raDM.jraZCUL, false);
   }
