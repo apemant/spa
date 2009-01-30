@@ -538,7 +538,20 @@ public class raPilot extends raFrame {
       startFrame.getStartFrame().showFrame("hr.restart.sisfun.raPilot", 0, "Pilot", false);
     inst.executeOfflineReport(rep, title, owner);
   }
-
+  
+  public static void open(boolean paste) {
+    if (inst == null)
+      startFrame.getStartFrame().showFrame("hr.restart.sisfun.raPilot", 0, "Pilot", false);
+    
+    raPilot real = inst;
+    raPilot np = new raPilot();
+    inst = real;
+    startFrame.getStartFrame().centerFrame(np, 0, "");
+    np.show();
+    if (paste) np.query.paste();
+    np.updateTitle();
+  }
+  
   private void executeOfflineReport(java.net.URL rep, String title, Window owner) {
     if (isShowing()) {
       view.hide();
@@ -1917,6 +1930,7 @@ public class raPilot extends raFrame {
   }
 
   void OKPress(boolean detach) {
+    updateTitle();
     currq = new Query(query.getText(), tags);
     if (!isSqlCommand(currq.command)) {
       executeBshCommand(detach);
@@ -2002,9 +2016,16 @@ public class raPilot extends raFrame {
       }, 1);
     }
     offline = busy = false;
-    this.setTitle("SQL Pilot - " + dm.getDatabase1().getConnection().getConnectionURL() +
-        (this == inst ? "" : " (kopija)"));
+    updateTitle();
     super.show();
+  }
+  
+  void updateTitle() {
+    String rest = "";
+    String q = query.getText();
+    if (q.length() > 36) q = q.substring(0, 32) + "...";
+    if (q.length() > 0) rest = " - " + q;
+    setTitle("SQL Pilot" + rest);
   }
 
   void cancelPress() {
@@ -2075,6 +2096,7 @@ public class raPilot extends raFrame {
   
   void updateInfo() {
     histInfo.setText((hist.nextIndex() + 1) + "/" + history.size());
+    updateTitle();
   }
 
   void deleteAllHistory() {
@@ -2409,7 +2431,7 @@ public class raPilot extends raFrame {
       public void actionPerformed(ActionEvent e) {
         dm.showParams();
         dm.reconnectIfNeeded();
-        setTitle("SQL Pilot - " + dm.getDatabase1().getConnection().getConnectionURL());
+        updateTitle();
       }
     });
 
@@ -2420,11 +2442,7 @@ public class raPilot extends raFrame {
     });
     nav.addOption(new raNavAction("Novi editor", raImages.IMGALIGNJUSTIFY, KeyEvent.VK_N, KeyEvent.CTRL_MASK) {
       public void actionPerformed(ActionEvent e) {
-        raPilot real = inst;
-        raPilot np = new raPilot();
-        inst = real;
-        startFrame.getStartFrame().centerFrame(np, 0, "");
-        np.show();
+        open(false);
       }
     });
     nav.registerNavBarKeys(this);
