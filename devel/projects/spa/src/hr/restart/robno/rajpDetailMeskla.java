@@ -266,6 +266,5 @@ public class rajpDetailMeskla extends JPanel {
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(this.jraZADRAZUL,false);
     hr.restart.util.raCommonClass.getraCommonClass().EnabDisabAll(this.jPanelStanje,false);
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jtfKOL,istina);
-    jraFC.setEditable(false);
   }
 }
