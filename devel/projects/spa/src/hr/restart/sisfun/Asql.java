@@ -178,7 +178,7 @@ public class Asql {
   public static void createMasterNorme(QueryDataSet mast) {
     //vl.execSQL(sql);
     mast.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(),
-      "SELECT MAX(norme.cartnor) as cartnor, MAX(artikli.cart) as cart, "+
+      "SELECT norme.cartnor as cartnor, MAX(artikli.cart) as cart, "+
       "MAX(artikli.cart1) as cart1, MAX(artikli.bc) as bc, MAX(artikli.nazart) as nazart, "+
       "MAX(artikli.jm) as jm FROM norme,artikli WHERE norme.cartnor = artikli.cart GROUP BY cartnor"
     ));
@@ -212,7 +212,7 @@ public class Asql {
   public static void createMasterCjenik(QueryDataSet mast, String what, String dummy) {
     String nesTi,eksept;
     if (what.equalsIgnoreCase("CSKL")) {
-      nesTi = "max(cjenik.cskl) as cskl, "+
+      nesTi = "cjenik.cskl, "+
 		"max(sklad.nazskl) as nazskl " +
 		"FROM cjenik,partneri,sklad "+
       "WHERE cjenik.cpar = partneri.cpar AND cjenik.cskl = sklad.cskl ";
@@ -231,10 +231,10 @@ public class Asql {
     
     mast.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(),
         "SELECT "+ 
-        "max(cjenik.cpar) as cpar, "+ 
+        "cjenik.cpar as cpar, "+ 
         "max(partneri.nazpar) as nazpar, " +
-        
-        "max(cjenik.corg) as corg, " + 
+        (what.equalsIgnoreCase("CSKL")?
+        "max(cjenik.corg) as corg, ":"cjenik.corg as corg, ") + 
 
         nesTi+ 
 
@@ -306,7 +306,7 @@ public class Asql {
 
   public static void createMasterKamate(QueryDataSet mast) {
     mast.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(),
-      "SELECT MAX(ckam) as ckam, MAX(opis) as opis "+
+      "SELECT kamate.ckam as ckam, MAX(opis) as opis "+
       "FROM kamate GROUP BY ckam"
     ));
     mast.setColumns(new Column[] {

@@ -954,10 +954,10 @@ System.out.println("QS : " + queryString);
                          "stdoki.kol, "+
                          "stdoki.iraz, "+
                          "stdoki.iprodbp, "+
-                         "(stdoki.iprodsp - stdoki.iprodbp) as por, "+
+                         "CAST ((stdoki.iprodsp - stdoki.iprodbp) AS numeric(12,2)) as por, "+
                          "stdoki.iprodsp, "+
                          "stdoki.inab, "+
-                         "(stdoki.iprodbp-stdoki.inab) as ruc "+caprDobart+
+                         "CAST ((stdoki.iprodbp-stdoki.inab) AS numeric(12,2)) as ruc "+caprDobart+
                          "from artikli, doki, stdoki "+dobart+
                          "where doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok "+
                          "and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok AND stdoki.cart = artikli.cart "+
@@ -1059,18 +1059,18 @@ System.out.println("QS : " + queryString);
 //        else stds.setBigDecimal("KOL", new java.math.BigDecimal("0.00"));
         stds.setBigDecimal("IRAZ", ts.getBigDecimal("IRAZ"));
         stds.setBigDecimal("IPRODBP", ts.getBigDecimal("IPRODBP"));
-        stds.setBigDecimal("POR", new java.math.BigDecimal(ts.getDouble("POR")));
+        stds.setBigDecimal("POR", ts.getBigDecimal("POR"));
         stds.setBigDecimal("IPRODSP", ts.getBigDecimal("IPRODSP"));
         stds.setBigDecimal("INAB", ts.getBigDecimal("INAB"));
-        stds.setBigDecimal("RUC", new java.math.BigDecimal(ts.getDouble("RUC")));
+        stds.setBigDecimal("RUC", ts.getBigDecimal("RUC"));
         /*
         stds.setBigDecimal("KOL", stds.getBigDecimal("KOL").add(ts.getBigDecimal("KOL")));
         stds.setBigDecimal("IRAZ", stds.getBigDecimal("IRAZ").add(ts.getBigDecimal("IRAZ")));
         stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
-        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(new java.math.BigDecimal(ts.getDouble("POR"))));
+        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(new java.math.BigDecimal(ts.getBigDecimal("POR"))));
         stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
         stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(new java.math.BigDecimal(ts.getDouble("RUC"))));
+        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(new java.math.BigDecimal(ts.getBigDecimal("RUC"))));
         */
         try {
           stds.setBigDecimal("PostoRUC",stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),4,java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
@@ -1097,10 +1097,10 @@ System.out.println("QS : " + queryString);
         
         stds.setBigDecimal("IRAZ", stds.getBigDecimal("IRAZ").add(ts.getBigDecimal("IRAZ")));
         stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
-        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(new java.math.BigDecimal(ts.getDouble("POR"))));
+        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(ts.getBigDecimal("POR")));
         stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
         stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(new java.math.BigDecimal(ts.getDouble("RUC"))));
+        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(ts.getBigDecimal("RUC")));
         try {
           stds.setBigDecimal("PostoRUC",stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),4,java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
         }
@@ -1304,10 +1304,10 @@ System.out.println("QS : " + queryString);
 //        stds.setBigDecimal("KOL", stds.getBigDecimal("KOL").add(ts.getBigDecimal("KOL")));
         stds.setBigDecimal("IRAZ", stds.getBigDecimal("IRAZ").add(ts.getBigDecimal("IRAZ")));
         stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
-        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(new java.math.BigDecimal(ts.getDouble("POR"))));
+        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(ts.getBigDecimal("POR")));
         stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
         stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(new java.math.BigDecimal(ts.getDouble("RUC"))));
+        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(ts.getBigDecimal("RUC")));
         try {
           stds.setBigDecimal("PostoRUC",stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),4,java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
         }
@@ -1334,10 +1334,10 @@ System.out.println("QS : " + queryString);
         
         stds.setBigDecimal("IRAZ", stds.getBigDecimal("IRAZ").add(ts.getBigDecimal("IRAZ")));
         stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
-        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(new java.math.BigDecimal(ts.getDouble("POR"))));
+        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(ts.getBigDecimal("POR")));
         stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
         stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(new java.math.BigDecimal(ts.getDouble("RUC"))));
+        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(ts.getBigDecimal("RUC")));
         try {
           stds.setBigDecimal("PostoRUC",stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),4,java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
         }

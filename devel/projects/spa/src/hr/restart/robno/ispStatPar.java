@@ -205,13 +205,13 @@ public class ispStatPar extends raPanStats {
           reportSet.setBigDecimal("INAB", temporarySet.getBigDecimal("INAB"));
           reportSet.setBigDecimal("RUC", temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("IPRODBP", temporarySet.getBigDecimal("IPRODBP"));
-          reportSet.setBigDecimal("POR", new java.math.BigDecimal(temporarySet.getDouble("POR")));
+          reportSet.setBigDecimal("POR", temporarySet.getBigDecimal("POR"));
           reportSet.setBigDecimal("IPRODSP", temporarySet.getBigDecimal("IPRODSP"));
         } else {
           reportSet.setBigDecimal("INAB", reportSet.getBigDecimal("INAB").add(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("RUC", reportSet.getBigDecimal("RUC").add(temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB"))));
           reportSet.setBigDecimal("IPRODBP", reportSet.getBigDecimal("IPRODBP").add(temporarySet.getBigDecimal("IPRODBP")));
-          reportSet.setBigDecimal("POR", reportSet.getBigDecimal("POR").add(new java.math.BigDecimal(temporarySet.getDouble("POR"))));
+          reportSet.setBigDecimal("POR", reportSet.getBigDecimal("POR").add(temporarySet.getBigDecimal("POR")));
           reportSet.setBigDecimal("IPRODSP", reportSet.getBigDecimal("IPRODSP").add(temporarySet.getBigDecimal("IPRODSP")));
         }
         
@@ -296,13 +296,13 @@ public class ispStatPar extends raPanStats {
           reportSet.setBigDecimal("INAB", temporarySet.getBigDecimal("INAB"));
           reportSet.setBigDecimal("RUC", temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("IPRODBP", temporarySet.getBigDecimal("IPRODBP"));
-          reportSet.setBigDecimal("POR", new java.math.BigDecimal(temporarySet.getDouble("POR")));
+          reportSet.setBigDecimal("POR", temporarySet.getBigDecimal("POR"));
           reportSet.setBigDecimal("IPRODSP", temporarySet.getBigDecimal("IPRODSP"));
         } else {
           reportSet.setBigDecimal("INAB", reportSet.getBigDecimal("INAB").add(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("RUC", reportSet.getBigDecimal("RUC").add(temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB"))));
           reportSet.setBigDecimal("IPRODBP", reportSet.getBigDecimal("IPRODBP").add(temporarySet.getBigDecimal("IPRODBP")));
-          reportSet.setBigDecimal("POR", reportSet.getBigDecimal("POR").add(new java.math.BigDecimal(temporarySet.getDouble("POR"))));
+          reportSet.setBigDecimal("POR", reportSet.getBigDecimal("POR").add(temporarySet.getBigDecimal("POR")));
           reportSet.setBigDecimal("IPRODSP", reportSet.getBigDecimal("IPRODSP").add(temporarySet.getBigDecimal("IPRODSP")));
         }
       } while (temporarySet.next());
@@ -397,13 +397,13 @@ public class ispStatPar extends raPanStats {
           reportSet.setBigDecimal("INAB", temporarySet.getBigDecimal("INAB"));
           reportSet.setBigDecimal("RUC", temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("IPRODBP", temporarySet.getBigDecimal("IPRODBP"));
-          reportSet.setBigDecimal("POR", new java.math.BigDecimal(temporarySet.getDouble("POR")));
+          reportSet.setBigDecimal("POR", temporarySet.getBigDecimal("POR"));
           reportSet.setBigDecimal("IPRODSP", temporarySet.getBigDecimal("IPRODSP"));
         } else {
           reportSet.setBigDecimal("INAB", reportSet.getBigDecimal("INAB").add(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("RUC", reportSet.getBigDecimal("RUC").add(temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB"))));
           reportSet.setBigDecimal("IPRODBP", reportSet.getBigDecimal("IPRODBP").add(temporarySet.getBigDecimal("IPRODBP")));
-          reportSet.setBigDecimal("POR", reportSet.getBigDecimal("POR").add(new java.math.BigDecimal(temporarySet.getDouble("POR"))));
+          reportSet.setBigDecimal("POR", reportSet.getBigDecimal("POR").add(temporarySet.getBigDecimal("POR")));
           reportSet.setBigDecimal("IPRODSP", reportSet.getBigDecimal("IPRODSP").add(temporarySet.getBigDecimal("IPRODSP")));
         }
 /*        try {
@@ -448,13 +448,13 @@ public class ispStatPar extends raPanStats {
           reportSetGroups.setBigDecimal("INAB", temporarySet.getBigDecimal("INAB"));
           reportSetGroups.setBigDecimal("RUC", temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB")));
           reportSetGroups.setBigDecimal("IPRODBP", temporarySet.getBigDecimal("IPRODBP"));
-          reportSetGroups.setBigDecimal("POR", new java.math.BigDecimal(temporarySet.getDouble("POR")));
+          reportSetGroups.setBigDecimal("POR", temporarySet.getBigDecimal("POR"));
           reportSetGroups.setBigDecimal("IPRODSP", temporarySet.getBigDecimal("IPRODSP"));
         } else {
           reportSetGroups.setBigDecimal("INAB", reportSetGroups.getBigDecimal("INAB").add(temporarySet.getBigDecimal("INAB")));
           reportSetGroups.setBigDecimal("RUC", reportSetGroups.getBigDecimal("RUC").add(temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB"))));
           reportSetGroups.setBigDecimal("IPRODBP", reportSetGroups.getBigDecimal("IPRODBP").add(temporarySet.getBigDecimal("IPRODBP")));
-          reportSetGroups.setBigDecimal("POR", reportSetGroups.getBigDecimal("POR").add(new java.math.BigDecimal(temporarySet.getDouble("POR"))));
+          reportSetGroups.setBigDecimal("POR", reportSetGroups.getBigDecimal("POR").add(temporarySet.getBigDecimal("POR")));
           reportSetGroups.setBigDecimal("IPRODSP", reportSetGroups.getBigDecimal("IPRODSP").add(temporarySet.getBigDecimal("IPRODSP")));
         }
       } while (temporarySet.next());
@@ -647,14 +647,14 @@ public class ispStatPar extends raPanStats {
         dpaSet.setBigDecimal("INAB", tmpSet.getBigDecimal("INAB"));
         dpaSet.setBigDecimal("RUC", tmpSet.getBigDecimal("IPRODBP").subtract(tmpSet.getBigDecimal("INAB")));
         dpaSet.setBigDecimal("IPRODBP", tmpSet.getBigDecimal("IPRODBP"));
-        dpaSet.setBigDecimal("POR", new java.math.BigDecimal(tmpSet.getDouble("POR")));
+        dpaSet.setBigDecimal("POR", tmpSet.getBigDecimal("POR"));
         dpaSet.setBigDecimal("IPRODSP", tmpSet.getBigDecimal("IPRODSP"));
       } else {
         dpaSet.setBigDecimal("KOL", dpaSet.getBigDecimal("KOL").add(tmpSet.getBigDecimal("KOL")));
         dpaSet.setBigDecimal("INAB", dpaSet.getBigDecimal("INAB").add(tmpSet.getBigDecimal("INAB")));
         dpaSet.setBigDecimal("RUC", dpaSet.getBigDecimal("RUC").add(tmpSet.getBigDecimal("IPRODBP").subtract(tmpSet.getBigDecimal("INAB"))));
         dpaSet.setBigDecimal("IPRODBP", dpaSet.getBigDecimal("IPRODBP").add(tmpSet.getBigDecimal("IPRODBP")));
-        dpaSet.setBigDecimal("POR", dpaSet.getBigDecimal("POR").add(new java.math.BigDecimal(tmpSet.getDouble("POR"))));
+        dpaSet.setBigDecimal("POR", dpaSet.getBigDecimal("POR").add(tmpSet.getBigDecimal("POR")));
         dpaSet.setBigDecimal("IPRODSP", dpaSet.getBigDecimal("IPRODSP").add(tmpSet.getBigDecimal("IPRODSP")));
       }
     } while (tmpSet.next());
@@ -853,8 +853,8 @@ public class ispStatPar extends raPanStats {
     "doki.cpar, " + 
     "stdoki.cart, " + "stdoki.cart1, " + 
     "stdoki.bc, " + "stdoki.nazart, " + "stdoki.jm, " + " artikli.cgrart, " + "stdoki.kol, " + 
-    "stdoki.iraz, " + "stdoki.iprodbp, " + "(stdoki.iprodsp - stdoki.iprodbp) as por, " + 
-    "stdoki.iprodsp, " + "stdoki.inab, " + "(stdoki.iprodbp-stdoki.inab) as ruc ";
+    "stdoki.iraz, " + "stdoki.iprodbp, " + "CAST ((stdoki.iprodsp - stdoki.iprodbp) AS numeric(12,2)) as por, " + 
+    "stdoki.iprodsp, " + "stdoki.inab, " + "CAST ((stdoki.iprodbp-stdoki.inab) AS numeric(12,2)) as ruc ";
 
     String cskls;
     if (getCskl().equals("")) {
