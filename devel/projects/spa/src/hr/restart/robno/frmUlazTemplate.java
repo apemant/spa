@@ -339,8 +339,8 @@ public class frmUlazTemplate extends raMasterDetail {
 		
 		BigDecimal dk = getDetailSet().getBigDecimal("KOL");
 		if (mode == 'I') dk = dk.subtract(oldKOL);
-		if (isFind && !isTranzit && stanjeSet.getBigDecimal("KOL").
-            compareTo(dk.negate()) < 0) {
+		if (isFind && !isTranzit && (mode == 'I' || dk.signum() < 0) && 
+		    stanjeSet.getBigDecimal("KOL").compareTo(dk.negate()) < 0) {
           JOptionPane.showConfirmDialog(raDetail.getWindow(),
                 "Nedovoljna kolièina na zalihi za smanjivanje ovom stavkom!",
                 "Gre\u0161ka", JOptionPane.ERROR_MESSAGE);
