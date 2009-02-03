@@ -155,6 +155,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	boolean isVTtextzag = false;
 	
 	boolean isTranzit = false;
+	
+	boolean isMinusAllowed = false;
 
 	int lastCparNavigated = -1;
 
@@ -516,6 +518,11 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	        TD.isCsklSklad(what_kind_of_dokument) && 
 	        lD.raLocate(dm.getSklad(), "CSKL", cskl) &&
 	        dm.getSklad().getString("VRSKL").equals("Z");
+	    
+	    isMinusAllowed = frmParam.getParam("robno", "allowMinus", "N",
+	        "Dopustiti odlazak u minus na izlazima (D,N)?").equals("D");
+	        
+	        
 	  
 		setNaslovMaster(master_titel + additional);
 		setNaslovDetail(detail_titel_mno);
@@ -2821,7 +2828,7 @@ System.out.println("findCjenik::else :: "+sql);
 		    lc.TransferFromDB2Class(AST.gettrenSTANJE(), rKD.stanje);
 	        rKD.stanje.sVrSklad = AST.VrstaZaliha();
 				int i = rKD.TestStanje();
-				if (isTranzit) {
+				if (isTranzit || isMinusAllowed) {
 				  // nista
 				} else if (i == -1) {
 					DP.jtfKOL.requestFocus();
