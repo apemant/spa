@@ -32,7 +32,7 @@ import com.borland.dx.dataset.SortDescriptor;
 public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.reportwriter.datasource.IDataProvider {
 
   _Main main;
-  DataSet ds = reportsQuerysCollector.getRQCModule().getQueryDataSet();
+  //DataSet ds = reportsQuerysCollector.getRQCModule().getQueryDataSet();
   hr.restart.baza.dM dm= hr.restart.baza.dM.getDataModule();
   raDateUtil rdu = raDateUtil.getraDateUtil();
 
@@ -47,7 +47,7 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
   }
   
   public repOTP() {
-    ds.setSort(new SortDescriptor(new String[] {"BRDOK", "RBR"}));
+    //ds.setSort(new SortDescriptor(new String[] {"BRDOK", "RBR"}));
     ru.setDataSet(ds);
   }
 
