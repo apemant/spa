@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.JraTextMultyKolField;
 import hr.restart.util.LinkClass;
@@ -56,6 +57,7 @@ public class raMEI extends hr.restart.util.raMasterDetail{
   hr.restart.swing.raTableColumnModifier TCM  ;
   hr.restart.swing.raTableColumnModifier TCM1 ;
   boolean bMEI = true;
+  boolean allowNeg = false;
   raControlDocs rCD = new raControlDocs();
   allStanje AST = new allStanje();
   allStanje ASTUL = new allStanje();
@@ -214,10 +216,11 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     setNaslovMaster("Izlazne meðuskladišnice za skladišta " +
         jpSelectM.getSelRow().getString("CSKLIZ") + " -> " +
         jpSelectM.getSelRow().getString("CSKLUL"));
+    allowNeg = frmParam.getParam("robno", "allowNeg", "N", "Dopustiti odlaženje u minus").equals("D");
   }
   
   public void masterSet_navigated(com.borland.dx.dataset.NavigationEvent ne) {
-    this.setNaslovDetail("Stavke ulazne meðuskladišnice "+
+    this.setNaslovDetail("Stavke izlazne meðuskladišnice "+
         getMasterSet().getString("CSKLIZ").trim()+" - "+
         getMasterSet().getString("CSKLUL").trim()+" / "+
         getMasterSet().getString("GOD") + " - " + 
@@ -285,7 +288,7 @@ public class raMEI extends hr.restart.util.raMasterDetail{
 
     int i = rKM.TestStanja();
 
-    if (i==-1&& bMEI==true){
+    if (i==-1&& bMEI && !allowNeg){
         javax.swing.JOptionPane.showMessageDialog(null,
             "Koli\u010Dina je ve\u0107a nego koli\u010Dina na zalihi !",
             "Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -293,7 +296,7 @@ public class raMEI extends hr.restart.util.raMasterDetail{
         return false;
     }
     else {
-       if (i == -2 && bMEI){
+       if (i == -2 && bMEI && !allowNeg){
           String rezkol =hr.restart.sisfun.frmParam.getParam("robno","rezkol");
           if (!rezkol.equals("N")){
              javax.swing.JOptionPane.showMessageDialog(null,
