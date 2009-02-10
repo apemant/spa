@@ -33,6 +33,7 @@ import hr.restart.util.raTransaction;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
+import java.sql.Timestamp;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -895,8 +896,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 				qdsPojedUlaz.setInt("BRDOK", tmpqds.getInt("BRDOK"));
 				qdsPojedUlaz.setString("KLJUC", tmpqds.getString("KLJUC"));
 				qdsPojedUlaz.setTimestamp("DVO", tmpqds.getTimestamp("DVO"));
-				qdsPojedUlaz.setTimestamp("DATDOSP", tmpqds
-						.getTimestamp("DATDOSP"));
+				qdsPojedUlaz.setTimestamp("DATDOSP", tmpqds.getTimestamp("DATDOSP"));
+                qdsPojedUlaz.setTimestamp("DATUPL", tmpqds.getTimestamp("DATUPL"));
 				qdsPojedUlaz.setInt("CPAR", tmpqds.getInt("CPAR"));
 				qdsPojedUlaz.setBigDecimal("UIRAC", tmpqds.getBigDecimal(
 						"UIPRPOR").add(tmpqds.getBigDecimal("UIKAL")));
@@ -1061,7 +1062,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 			qdsPojedIzlaz.setBigDecimal("SALDO", qdsPojedIzlaz.getBigDecimal(
 					"UIRAC").subtract(qdsPojedIzlaz.getBigDecimal("PLATITI")));
-			qdsPojedIzlaz.setTimestamp("datupl", tds.getTimestamp("DATUPL"));
+			qdsPojedIzlaz.setTimestamp("datupl", new Timestamp( 
+			    tds.getTimestamp("DATUPL").getTime()));
 			if (qdsPojedIzlaz.getBigDecimal("SALDO").doubleValue() == 0) {
 				qdsPojedIzlaz.setInt("DANIK", raDateUtil.getraDateUtil()
 						.DateDifference(
@@ -1088,8 +1090,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			myqds.setBigDecimal("PLATITI", qdsPojedIzlaz
 					.getBigDecimal("PLATITI"));
 			myqds.setString("STATPLA", qdsPojedIzlaz.getString("STATPLA"));
-			myqds.setTimestamp("datupl", tds.getTimestamp("DATUPL"));
-
+			myqds.setTimestamp("datupl", new Timestamp( 
+                tds.getTimestamp("DATUPL").getTime()));
 			if (qdsAllIzlaz != null && qdsAllIzlaz.getRowCount() != 0) {
 				qdsAllIzlaz.setBigDecimal("PLATITI", qdsAllIzlaz.getBigDecimal(
 						"PLATITI").add(tds.getBigDecimal("UPLATA")));
@@ -1133,7 +1135,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 			qdsPojedUlaz.setBigDecimal("SALDO", qdsPojedUlaz.getBigDecimal(
 					"UIRAC").subtract(qdsPojedUlaz.getBigDecimal("PLATITI")));
-			qdsPojedUlaz.setTimestamp("datupl", tds.getTimestamp("DATUPL"));
+			qdsPojedUlaz.setTimestamp("datupl", new Timestamp( 
+                tds.getTimestamp("DATUPL").getTime()));
 			if (qdsPojedUlaz.getBigDecimal("SALDO").doubleValue() == 0) {
 				qdsPojedUlaz.setInt("DANIK", raDateUtil.getraDateUtil()
 						.DateDifference(ut.getFirstSecondOfDay(qdsPojedUlaz
@@ -1158,7 +1161,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			myqds.setBigDecimal("PLATITI", qdsPojedUlaz
 					.getBigDecimal("PLATITI"));
 			myqds.setString("STATPLA", qdsPojedUlaz.getString("STATPLA"));
-			myqds.setTimestamp("datupl", tds.getTimestamp("DATUPL"));
+			myqds.setTimestamp("datupl", new Timestamp( 
+                tds.getTimestamp("DATUPL").getTime()));
 
 			if (qdsAllUlaz != null && qdsAllUlaz.getRowCount() != 0) {
                 qdsAllUlaz.setBigDecimal("PLATITI", qdsAllUlaz.getBigDecimal(
