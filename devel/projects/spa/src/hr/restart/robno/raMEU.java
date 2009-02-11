@@ -69,6 +69,11 @@ public class raMEU extends raMEI {
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repMeuExtendedVersion","hr.restart.robno.repMeskla","MeuExtendedVersion","Me\u0111uskladišnica ulazna - vrijednosna");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repMeuNiv","hr.restart.robno.repMesNivel","Nivel","Poravnanje - nivelacija");
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repMeuNiv","hr.restart.robno.repMesNivel","Nivel","Poravnanje - nivelacija");
+    
+    rCD.setisNeeded(hr.restart.sisfun.frmParam.getParam("robno",
+				"kontKalk", "D",
+				"Kontrola ispravosti redoslijeda unosa dokumenata")
+				.equalsIgnoreCase("D"));
 
   }
   public void Funkcija_ispisa_Over(boolean what){

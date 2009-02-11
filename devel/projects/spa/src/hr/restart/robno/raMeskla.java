@@ -155,6 +155,10 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
     if (raUser.getInstance().isSuper())
     	raDetail.addOption(rnvTrans, 5, false);
     System.out.println("test meskla kraj");
+    rCD.setisNeeded(hr.restart.sisfun.frmParam.getParam("robno",
+				"kontKalk", "D",
+				"Kontrola ispravosti redoslijeda unosa dokumenata")
+				.equalsIgnoreCase("D"));
   }
   public void EntryPointMaster(char mode){}
 
