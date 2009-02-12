@@ -166,6 +166,9 @@ public class SecondChooser extends JraDialog {
         copySkladParam = frmParam.getParam("robno", "copySkladPrice", "N",
              "Prepisati skladišne cijene kod prijenosa (D,N)").equals("D");
         
+        copyDatum = frmParam.getParam("robno", "copyOtpDatum", "N",
+        		"Prepisati datum s otpremnice kod prebacivanja u raèun (D,N)").equals("D");
+        
 		if (DesniSet.getRowCount() > 0) {
 			if (checkZaglavlje()) {
 				findStavke();
@@ -298,16 +301,21 @@ public class SecondChooser extends JraDialog {
 			rIT.getMasterSet().setInt("PJ", ZaglavljeSet.getInt("PJ"));
 		}
         
-        if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS")
-            && (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase(
-            "RAC") || rIT.getMasterSet().getString("VRDOK")
-            .equalsIgnoreCase("ROT"))) {
+        if ((ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS")
+        		|| ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("OTP"))
+            && (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC") 
+            || rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("ROT"))) {
           rIT.getMasterSet().setString("BRNARIZ", ZaglavljeSet.getString("BRNARIZ"));
           rIT.getMasterSet().setTimestamp("DATNARIZ", ZaglavljeSet.getTimestamp("DATNARIZ"));
           rIT.getMasterSet().setString("BRDOKIZ", repUtil.getFormatBroj(ZaglavljeSet));
           rIT.getMasterSet().setTimestamp("DATDOKIZ", ZaglavljeSet.getTimestamp("DATDOK"));
         }
 
+     if (copyDatum && ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("OTP")
+ 				&& rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC")) {
+    	 dM.copyColumns(ZaglavljeSet, rIT.getMasterSet(), new String[] {"DATDOK", "DVO", "DATDOSP"});
+     }
+        
 		if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("PON")
 				&& (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase(
 						"RAC") || rIT.getMasterSet().getString("VRDOK")
@@ -497,6 +505,8 @@ public class SecondChooser extends JraDialog {
     // ILI
     // kod prijenosa RAC-a u OTP, ako je RAC prethodno nastao iz DOS-a.
     boolean fixDOS;
+    
+    boolean copyDatum;
 
 	StorageDataSet expanded = null;
 
