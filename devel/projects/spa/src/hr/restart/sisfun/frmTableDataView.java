@@ -81,6 +81,10 @@ public class frmTableDataView extends JraFrame {
       super.fireTableDataChanged();
       setCount();
     }
+    public void repaint() {
+    	super.repaint();
+    	setCount();
+    }
     public void setTableColumnsUI() {
       super.setTableColumnsUI();
       if (jp.getColumnsBean() != null)
