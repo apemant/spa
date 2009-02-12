@@ -145,10 +145,10 @@ public class raTableCopyPopup extends JPopupMenu {
       boolean multi = (selRow != jt.getSelectedRow()) || selMulti;
       boolean extend = jt instanceof raExtendedTable;
       boolean dataset = jt.getDataSet() != null;
-      boolean ed = extend && dataset &&
-        (jt.getTopLevelAncestor() instanceof frmTableDataView) &&
-        ((frmTableDataView) jt.getTopLevelAncestor()).isEditable();
-      boolean admin = raUser.getInstance().isSuper();
+      boolean view = (jt.getTopLevelAncestor() instanceof frmTableDataView) &&
+      							((frmTableDataView) jt.getTopLevelAncestor()).isEditable(); 
+      boolean ed = extend && dataset && view;
+      boolean admin = raUser.getInstance().isSuper() || view;
       calcMenu.setEnabled(num);
       adminMenu.setEnabled(admin && extend && dataset);
       add.setEnabled(num);
