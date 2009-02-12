@@ -665,6 +665,8 @@ public class raTableCopyPopup extends JPopupMenu {
     if (stm != null && stm.isNatural()) stm.clearSelection();
     jt.repaint();
     if (cb != null && cb.isShowing()) cb.checkFilter();
+    if (jt.getTopLevelAncestor() instanceof frmTableDataView)
+    	((frmTableDataView) jt.getTopLevelAncestor()).setCount();
   }
   
   void showFilter() {
