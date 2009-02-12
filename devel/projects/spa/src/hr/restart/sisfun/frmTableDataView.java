@@ -59,6 +59,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
 import javax.swing.filechooser.FileFilter;
 
 import com.borland.dx.dataset.Column;
@@ -80,10 +81,6 @@ public class frmTableDataView extends JraFrame {
     public void fireTableDataChanged() {
       super.fireTableDataChanged();
       setCount();
-    }
-    public void repaint() {
-    	super.repaint();
-    	setCount();
     }
     public void setTableColumnsUI() {
       super.setTableColumnsUI();
