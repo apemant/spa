@@ -3040,7 +3040,7 @@ System.out.println("findCjenik::else :: "+sql);
       dcz.setDataSet(prep == null ? qDS : prep);
       dcz.setUpClass(this);
       dcz.setDataSetKey(new String[] { "CSKL", "GOD", "VRDOK", "BRDOK" }, 
-          new String[] {"DATDOK"});
+          new String[] {"DATDOK", "CPAR", "UIRAC"});
       dcz.initialise();
       if (prep == null) {
         dcz.pack();
@@ -3147,7 +3147,7 @@ System.out.println("findCjenik::else :: "+sql);
 						.getString("CSKL"), odabrano, dodatak);
 			}
 
-            qDS = doki.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK DATDOK", upit);
+            qDS = doki.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK DATDOK CPAR UIRAC", upit);
             qDS.open();
 		}
 	}
