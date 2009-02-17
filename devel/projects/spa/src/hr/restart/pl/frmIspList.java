@@ -438,7 +438,7 @@ public class frmIspList extends frmIzvjestajiPL {
 
 //    System.out.println("getPrimanjaSet arh : " + isArh);
 
-    String sql = "SELECT primanja"+(isArh?"arh":"obr")+".*, vrsteprim.naziv FROM primanja"+(isArh?"arh":"obr")+", vrsteprim "+
+    String sql = "SELECT primanja"+(isArh?"arh":"obr")+".*, CAST ((primanja"+(isArh?"arh":"obr")+".BRUTO - primanja"+(isArh?"arh":"obr")+".DOPRINOSI) as numeric(15,2)) AS DOHODAK, vrsteprim.naziv FROM primanja"+(isArh?"arh":"obr")+", vrsteprim "+
                  "WHERE cradnik = '"+rad+"' AND primanja"+(isArh?"arh":"obr")+".cvrp = vrsteprim.cvrp "+
                  getBetweenAhrQuery("primanjaarh") +" "+
                  "ORDER BY "+(isArh?"primanjaarh.godobr, primanjaarh.mjobr, primanjaarh.rbrobr,":"")+" primanja"+(isArh?"arh":"obr")+".cvrp, primanja"+(isArh?"arh":"obr")+".rbr";
@@ -473,7 +473,11 @@ public class frmIspList extends frmIzvjestajiPL {
     v.setBigDecimal(bd);
     return formater.format(v);
   }
-  
+  String getNetoColParam() {
+    return frmParam.getParam("pl", "netildoh", "N", "Da li se na listicu po zaradama prikazuje (N)eto ili (D)ohodak?")
+      .equalsIgnoreCase("D")?"DOHODAK":"NETO";
+    //"NETO";
+  }
   BigDecimal totalStopa;
   String nazivPrim, sati, koef, neto, bruto, nazivDop, osnovicaDop, stopa, iznos;
   String nazivNak, satiNaknada, iznosNak, nazivKred, iznosKred;
@@ -503,13 +507,13 @@ public class frmIspList extends frmIzvjestajiPL {
             _sati.append(format(ds, "SATI")).append("\n");
             _koef.append(format(ds, "KOEF")).append("\n");
             _bruto.append(format(ds, "BRUTO")).append("\n");
-            _neto.append(format(ds, "NETO")).append("\n");
+            _neto.append(format(ds, getNetoColParam())).append("\n");
           }
           if (raParam.getParam(getVrprim(), 1).equals("N") &&
               raParam.getParam(getVrprim(), 2).equals("N")) {  // Naknade
             _nazivN.append(getVrprim().getString("NAZIV")).append("\n");
             _satiN.append(format(ds, "SATI")).append("\n");
-            _iznosN.append(format(ds, "NETO")).append("\n");
+            _iznosN.append(format(ds, getNetoColParam())).append("\n");
           }
         }
       } else{
@@ -518,13 +522,13 @@ public class frmIspList extends frmIzvjestajiPL {
           _sati.append(format(ds, "SATI")).append("\n");
           _koef.append(format(ds, "KOEF")).append("\n");
           _bruto.append(format(ds, "BRUTO")).append("\n");
-          _neto.append(format(ds, "NETO")).append("\n");
+          _neto.append(format(ds, getNetoColParam())).append("\n");
         }
         if (raParam.getParam(getVrprim(), 1).equals("N") &&
             raParam.getParam(getVrprim(), 2).equals("N")) {  // Naknade
           _nazivN.append(getVrprim().getString("NAZIV")).append("\n");
           _satiN.append(format(ds, "SATI")).append("\n");
-          _iznosN.append(format(ds, "NETO")).append("\n");
+          _iznosN.append(format(ds, getNetoColParam())).append("\n");
         }
       }
     }

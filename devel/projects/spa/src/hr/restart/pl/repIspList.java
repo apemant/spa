@@ -198,7 +198,11 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
   }
 
   public BigDecimal getTotalNeto() {
-    return radnici.getBigDecimal("NETO2");
+    if (fil.getNetoColParam().equals("NETO")) {
+      return radnici.getBigDecimal("NETO2");
+    } else {
+      return getDohodak();
+    }
   }
 
   public BigDecimal getTotalDoprinosi() {
