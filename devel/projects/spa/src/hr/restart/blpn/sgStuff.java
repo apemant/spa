@@ -22,17 +22,24 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Stavblag;
 import hr.restart.baza.dM;
 import hr.restart.baza.raDataSet;
+import hr.restart.db.raVariant;
+import hr.restart.robno.raDateUtil;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
+import hr.restart.util.lookupData;
 import hr.restart.util.raTransaction;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.StringTokenizer;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
 
@@ -751,7 +758,8 @@ public class sgStuff {
   public String getRepQDSIzvjestaj(QueryDataSet master, String detaljTablica) {
     String q= "select blagizv.cblag, blagizv.brizv, blagizv.datod, blagizv.datdo, blagizv.ukprimitak, blagizv.ukizdatak, blagizv.saldo, " +
         "blagizv.prijenos, blagizv.uksaldo, " + detaljTablica + ".rbs, " + detaljTablica + ".vrsta, " + detaljTablica + ".datum, " + detaljTablica + ".knjig, " + detaljTablica + ".opis, " + detaljTablica + ".primitak, " +
-        "" + detaljTablica + ".izdatak, " + detaljTablica + ".stavka, " + detaljTablica + ".cskl, " +detaljTablica + ".brojkonta, " + detaljTablica + ".corg " + 
+        "" + detaljTablica + ".izdatak, " + detaljTablica + ".stavka, " + detaljTablica + ".cskl, " +detaljTablica + ".brojkonta, " + detaljTablica + ".corg, "
+        + detaljTablica + ".tko, " + detaljTablica + ".cpar, " + detaljTablica + ".brojdok, " + detaljTablica + ".datdok, " + detaljTablica + ".datdosp " + 
         "from blagizv, " + detaljTablica + " " +
         "where blagizv.knjig='" + master.getString("KNJIG") + "' and blagizv.cblag=" + master.getInt("CBLAG") +
         " and blagizv.oznval='" + master.getString("OZNVAL") + "' and blagizv.godina=" + master.getShort("GODINA") +
@@ -1832,5 +1840,35 @@ System.out.println(qstr);
       return true;
     }
     return false;
+  }
+
+  public static String getOPISBLIzv(DataSet ds) {
+    String opisblizv = frmParam.getParam("blpn", "opisblizv", "OPIS+TKO", "Sto treba pisati u opisu stavke kod blagajnickog izvj.");
+    VarStr ret = new VarStr();
+    StringTokenizer stobli = new StringTokenizer(opisblizv, "+");
+    while (stobli.hasMoreTokens()) {
+      String colnme = stobli.nextToken().trim().toUpperCase();
+      Column col = ds.hasColumn(colnme);
+      if (col != null) {
+        String val = raVariant.getDataSetValue(ds, colnme).toString();
+        if (col.getDataType() == Variant.TIMESTAMP) {
+          val = raDateUtil.getraDateUtil().dataFormatter(ds.getTimestamp(colnme));
+        }
+        ret.append(val).append(" ");
+      } else if (ds.hasColumn("CPAR") != null) {
+        QueryDataSet ppar = dM.getDataModule().getAllPartneri();
+        ppar.open();
+        if (ppar.hasColumn(colnme) != null) {
+          if (lookupData.getlookupData().raLocate(ppar, "CPAR", ""+ds.getInt("CPAR"))) {
+            ret.append(raVariant.getDataSetValue(ppar, colnme).toString()).append(" ");
+          }
+        }
+      }
+      
+    }
+    if (ret.length() == 0) {
+      return ds.getString("OPIS");
+    }
+    return ret.toString();
   }
 }

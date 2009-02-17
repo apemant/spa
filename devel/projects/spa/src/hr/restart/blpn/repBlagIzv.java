@@ -138,7 +138,8 @@ public class repBlagIzv implements sg.com.elixir.reportwriter.datasource.IDataPr
     return ds.getBigDecimal("UKIZDATAK");
   }
   public String getOPIS() {
-    return ds.getString("OPIS");
+    return sgStuff.getOPISBLIzv(ds);
+    //return ds.getString("OPIS")+" "+ds.getString("TKO");
   }
   public String getDATUMSTAVKE() {
     return rdu.dataFormatter(ds.getTimestamp("DATUM"));
