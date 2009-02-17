@@ -936,9 +936,20 @@ public class plUtil {
 
 
   // R E P O R T S
-  public String getRekObrStr(String table)
+  boolean isGrouped(int i, String fld) {
+    if ("cvro".equalsIgnoreCase(fld)) {
+      if (i == 1 || i == 3) return true;
+    }
+    if ("corg".equalsIgnoreCase(fld)) {
+      if (i == 2 || i == 3) return true;
+    }
+    return false;
+  }
+  public String getRekObrStr(int i, String table)
   {
-    String qStr = "select max(corg) as corg, max(cvro) as cvro, max(knjig) as knjig, sum(sati) as sati, "+
+    String qStr = "select "+(isGrouped(i, "corg")?"":"max(")+"corg"+(isGrouped(i, "corg")?"":")")+" as corg, " +
+    		          ""+(isGrouped(i, "cvro")?"":"max(")+"cvro"+(isGrouped(i, "cvro")?"":")")+" as cvro, " +
+    		          "max(knjig) as knjig, sum(sati) as sati, "+
                   "sum(bruto) as bruto, sum(doprinosi) as doprinosi, sum(neto)as neto, sum(neop) as neop, "+
                   "sum(iskneop) as iskneop, sum(porosn) as porosn, sum(por1) as por1, sum(por2)  as por2, "+
                   "sum(por3) as por3, sum(por4) as por4, sum(por5) as por5, sum(poruk) as poruk, sum(prir) as prir, "+

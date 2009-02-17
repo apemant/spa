@@ -216,12 +216,12 @@ public class frmRekObr extends frmIzvjestajiPL{
 
 
 
-    String qStr = plUtil.getPlUtil().getRekObrStr(this.getKumOrgTableName());
+    //String qStr = plUtil.getPlUtil().getRekObrStr(this.getKumOrgTableName());
 
-    String qStrZN = qStr + this.getWhereQuery() + plUtil.getPlUtil().getRekObrGroupBy(0, fieldSet.getString("CVRO"));
-    String qStrVRO = qStr + this.getWhereQuery() + plUtil.getPlUtil().getRekObrGroupBy(1, fieldSet.getString("CVRO"));
-    String qStrORG = qStr + this.getWhereQuery() + plUtil.getPlUtil().getRekObrGroupBy(2, fieldSet.getString("CVRO"));
-    String qStrPOJ = qStr + this.getWhereQuery() + plUtil.getPlUtil().getRekObrGroupBy(3, fieldSet.getString("CVRO"));
+    String qStrZN = plUtil.getPlUtil().getRekObrStr(0, this.getKumOrgTableName()) + this.getWhereQuery() + plUtil.getPlUtil().getRekObrGroupBy(0, fieldSet.getString("CVRO"));
+    String qStrVRO = plUtil.getPlUtil().getRekObrStr(1, this.getKumOrgTableName()) + this.getWhereQuery() + plUtil.getPlUtil().getRekObrGroupBy(1, fieldSet.getString("CVRO"));
+    String qStrORG = plUtil.getPlUtil().getRekObrStr(2, this.getKumOrgTableName()) + this.getWhereQuery() + plUtil.getPlUtil().getRekObrGroupBy(2, fieldSet.getString("CVRO"));
+    String qStrPOJ = plUtil.getPlUtil().getRekObrStr(3, this.getKumOrgTableName()) + this.getWhereQuery() + plUtil.getPlUtil().getRekObrGroupBy(3, fieldSet.getString("CVRO"));
 
     qdsZN.setQuery(new QueryDescriptor(dm.getDatabase1(), qStrZN));
     qdsVRO.setQuery(new QueryDescriptor(dm.getDatabase1(), qStrVRO));
@@ -453,7 +453,7 @@ System.out.println("ID3 = "+ID3);
     if (isArhMode()) {
       obrrange = getBetweenAhrQuery(radnicipl);
       if (cs == 0) {
-        obrrange = new VarStr(obrrange).replace("AND","WHERE").toString();
+        obrrange = new VarStr(obrrange).replaceFirst("AND","WHERE").toString();
       }
     }
     return new String[] {radnicipl,obrrange};
@@ -480,6 +480,7 @@ System.out.println("ID3 = "+ID3);
         uvjet = "select cradnik as cradnik from "+radnicipl+" where corg='"+cOrg+"' and cvro='"+cVro+"'"+obrrange;
         break;
     }
+    System.out.println("getCRadnik "+uvjet);
     tmp = Util.getNewQueryDataSet(uvjet, true);
     tmp.first();
     String inStr="(";
@@ -612,7 +613,9 @@ System.out.println("ID3 = "+ID3);
     String[] _araq = getAdditionalRadArhQuerys(0);
     String radnicipl = _araq[0];
     String obrrange = _araq[1];
-    QueryDataSet rad_corg_vro_set = Util.getNewQueryDataSet("select cradnik, corg, cvro FROM "+radnicipl+" "+obrrange);
+    String q;
+    QueryDataSet rad_corg_vro_set = Util.getNewQueryDataSet(q = "select cradnik, corg, cvro FROM "+radnicipl+" "+obrrange);
+    System.out.println("rad_corg_vro_set "+q);
     return rad_corg_vro_set;
   }
   private QueryDataSet setDoprinosiGrouped( int cs)
