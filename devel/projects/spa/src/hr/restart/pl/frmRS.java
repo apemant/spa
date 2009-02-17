@@ -303,7 +303,7 @@ public class frmRS extends raUpitLite {
     this.addReport("hr.restart.pl.repDiskRSm","R-Sm obrazac - DISKETA");
     ////R-S obrazac 2000-2004
 //    this.addReport("hr.restart.pl.repRS_A", "R-S obrazac stranica A", 2);
-//    this.addReport("hr.restart.pl.repRS_B", "R-S obrazac stranica B", 2);
+    this.addReport("hr.restart.pl.repRS_B", "STARI R-S stranica B", 2);
 //    this.addReport("hr.restart.pl.repDiskRS","R-S obrazac - DISKETA");
   }
 
