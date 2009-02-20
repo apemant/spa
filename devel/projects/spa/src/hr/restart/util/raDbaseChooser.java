@@ -1,6 +1,7 @@
 package hr.restart.util;
 
 import hr.restart.start;
+import hr.restart.help.raShortcutItem;
 import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.ActionExecutor;
 import hr.restart.swing.KeyAction;
@@ -128,7 +129,8 @@ public class raDbaseChooser extends JDialog {
     }
     
     if (vb.size() > 0) bases.setSelectedIndex(index);
-    bases.setFont(bases.getFont().deriveFont(Font.ITALIC).deriveFont(18f));
+ //   bases.setFont(bases.getFont().deriveFont(Font.ITALIC).deriveFont(18f));
+    raShortcutItem.setFancyFont(bases);
     bases.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     bases.setFixedCellHeight(36);
     bases.revalidate();

@@ -80,10 +80,12 @@ public class raShortcutItem extends JLabel implements Action {
     setFancyFont(this);
   }
   public static void setFancyFont(javax.swing.JComponent comp) {
-    if (System.getProperty("os.name").toLowerCase().equals("linux") &&
-        System.getProperty("java.version").startsWith("1.3")) {
-      comp.setFont(comp.getFont().deriveFont(Font.PLAIN,(float)(comp.getFont().getSize()+2)));
-    } else comp.setFont(comp.getFont().deriveFont(Font.ITALIC,(float)(comp.getFont().getSize()+2)));    
+    System.out.println("****setFancyFont("+comp);
+//    if (System.getProperty("os.name").toLowerCase().equals("linux") &&
+//        System.getProperty("java.version").startsWith("1.3")) {
+//      comp.setFont(comp.getFont().deriveFont(Font.PLAIN,(float)(comp.getFont().getSize()+2)));
+//    } else comp.setFont(comp.getFont().deriveFont(Font.ITALIC,(float)(comp.getFont().getSize()+2)));
+    comp.setFont(comp.getFont().deriveFont(Font.PLAIN,(float)(comp.getFont().getSize()+2)));
   }
   /**
    * @see javax.swing.Action#getValue(String)
