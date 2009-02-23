@@ -42,11 +42,16 @@ public abstract class repPrijavaPDV06OrigTemplate extends raReportTemplate {
   private String[] SectionHeader0Props = new String[] {"NAZIV", "", "", "", "Yes", "", "Yes", "", 
      "13540"};
   public raReportElement LabelPDV;
-  private String[] LabelPDVProps = new String[] {"PDV", "", "10100", "40", "620", "280", "", "", "", 
-     "", "", "", "Lucida Bright", "13", "", "", "", ""};
+//  private String[] LabelPDVProps = new String[] {"PDV", "", "10100", "40", "620", "280", "", "", "", 
+//     "", "", "", "Lucida Bright", "13", "", "", "", ""};
+  private String[] LabelPDVProps = new String[] {"PDV", "", "9680", "", "1040", "280", "", "", 
+      "", "", "", "", "Lucida Bright", "13", "", "", "", ""};
+
   public raReportElement LabelOBRAZAC;
-  private String[] LabelOBRAZACProps = new String[] {"OBRAZAC", "", "8980", "100", "1100", "220", 
-     "", "", "", "", "", "", "Lucida Bright", "", "", "", "", ""};
+  private String[] LabelOBRAZACProps = new String[] {"OBRAZAC", "", "8560", "60", "1100", "220", "", 
+      "", "", "", "", "", "Lucida Bright", "", "", "", "", ""};
+//  private String[] LabelOBRAZACProps = new String[] {"OBRAZAC", "", "8980", "100", "1100", "220", 
+//     "", "", "", "", "", "", "Lucida Bright", "", "", "", "", ""};
   public raReportElement LabelPOREZNI_OBVEZNIK_NAZIVIME_I;
   private String[] LabelPOREZNI_OBVEZNIK_NAZIVIME_IProps = new String[] {
      "POREZNI OBVEZNIK (NAZIV/IME I PREZIME I ADRESA: MJESTO, ULICA I BROJ)", "", "", "300", "5760", 
