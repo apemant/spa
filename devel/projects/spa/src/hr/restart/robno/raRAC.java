@@ -21,6 +21,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Kupci;
 import hr.restart.baza.Partneri;
 import hr.restart.sisfun.frmParam;
+import hr.restart.swing.raSelectTableModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.raImages;
 import hr.restart.util.raMatPodaci;
@@ -70,12 +71,26 @@ final public class raRAC extends raIzlazTemplate {
     }
 
     public void ispisiizradaOTP() {
+    	raSelectTableModifier stm = raMaster.getSelectionTracker();
+    	if (stm == null || stm.countSelected() == 0) {
         raAutoOtpfromRacMask rAOFRM = new raAutoOtpfromRacMask();
         rAOFRM.setCskl(getMasterSet().getString("CSKL"));
         rAOFRM.setBrdok(getMasterSet().getInt("BRDOK"));
         rAOFRM.setGod(getMasterSet().getString("GOD"));
         rAOFRM.setVrdok(getMasterSet().getString("VRDOK"));
-        rAOFRM.ispisiizradaOTP();
+        rAOFRM.ispisiizradaOTP(false);
+    	} else {
+    		for (getMasterSet().first(); getMasterSet().inBounds(); getMasterSet().next()) {
+	    		if (stm.isSelected(getMasterSet())) {
+	    			raAutoOtpfromRacMask rAOFRM = new raAutoOtpfromRacMask();
+	    			rAOFRM.setCskl(getMasterSet().getString("CSKL"));
+	          rAOFRM.setBrdok(getMasterSet().getInt("BRDOK"));
+	          rAOFRM.setGod(getMasterSet().getString("GOD"));
+	          rAOFRM.setVrdok(getMasterSet().getString("VRDOK"));
+	          rAOFRM.ispisiizradaOTP(true);
+	    	  }
+    		}
+    	}
     }
 
     public void cskl2csklart() {
