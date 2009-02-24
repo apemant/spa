@@ -70,6 +70,8 @@ public class raAutoOtpfromRac {
 			.getLinkClass();
 
 	private StorageDataSet greske = new StorageDataSet();
+	
+	boolean isMinusAllowed = false;
 
 	public raAutoOtpfromRac() {
 	}
@@ -86,6 +88,9 @@ public class raAutoOtpfromRac {
         vtPrijenos.open();
 /*          hr.restart.util.Util.getNewQueryDataSet("select * from VTprijenos",
 				true);*/
+        
+      isMinusAllowed = frmParam.getParam("robno", "allowMinus", "N",
+        "Dopustiti odlazak u minus na izlazima (D,N)?").equals("D");
 	}
 
 	protected boolean smijem_li_dalje() {
@@ -171,7 +176,7 @@ public class raAutoOtpfromRac {
 			rKD.kalkSkladPart();
 			/*BigDecimal bd = rKD.stanje.kolrez;
 			rKD.stanje.kolrez = Aus.zero2;*/
-			if (rKD.TestStanje() == rKD.rKS.NEG_KOL) {
+			if (rKD.TestStanje() == rKD.rKS.NEG_KOL && !isMinusAllowed) {
 				return -5;
 			}
 			rKD.KalkulacijaStanje("OTP");
