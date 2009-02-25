@@ -17,7 +17,10 @@
 ****************************************************************************/
 package hr.restart.help;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
+import hr.restart.util.IntParam;
+import hr.restart.util.VarStr;
 import hr.restart.util.raImages;
 
 import java.awt.Color;
@@ -79,13 +82,35 @@ public class raShortcutItem extends JLabel implements Action {
 //    setFont(getFont().deriveFont(Font.ITALIC));
     setFancyFont(this);
   }
+  private static int fancyStyle = -999, fancySize = -999;
   public static void setFancyFont(javax.swing.JComponent comp) {
-    System.out.println("****setFancyFont("+comp);
+//    System.out.println("****setFancyFont("+comp);
 //    if (System.getProperty("os.name").toLowerCase().equals("linux") &&
 //        System.getProperty("java.version").startsWith("1.3")) {
 //      comp.setFont(comp.getFont().deriveFont(Font.PLAIN,(float)(comp.getFont().getSize()+2)));
 //    } else comp.setFont(comp.getFont().deriveFont(Font.ITALIC,(float)(comp.getFont().getSize()+2)));
-    comp.setFont(comp.getFont().deriveFont(Font.PLAIN,(float)(comp.getFont().getSize()+2)));
+    /*
+    1 mjesto: 0 = PLAIN, 1 = BOLD, 2 = ITALIC, 3 = BOLD&ITALIC 
+    2 mjesto: +1, +2, -1 etc.
+    primjeri 0+0 :: plain bez izmjene velicine
+             1+2 :: Bold i za 2 veci (default)
+             3+2 :: Bold i Italic i za 2 veci
+     */
+    if (fancyStyle == -999 || fancySize == -999) {
+      String param = IntParam.getTag("fancyFont");
+      try {
+        fancyStyle = Integer.parseInt(param.substring(0,1));
+        fancySize = Integer.parseInt(param.replace('+', ' ').substring(1).trim());
+      } catch (Exception e) {
+        System.out.println("*** Error in setFancyFont::");
+        e.printStackTrace();
+        fancyStyle = 1;
+        fancySize = 2;
+        IntParam.setTag("fancyFont", "1+2");
+      }
+    }
+//    comp.setFont(comp.getFont().deriveFont(Font.BOLD,(float)(comp.getFont().getSize()+2)));
+    comp.setFont(comp.getFont().deriveFont(fancyStyle,(float)(comp.getFont().getSize()+fancySize)));
   }
   /**
    * @see javax.swing.Action#getValue(String)
