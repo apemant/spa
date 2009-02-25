@@ -17,13 +17,18 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
+import hr.restart.util.raFileFilter;
 import hr.restart.util.raLoader;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.ResourceBundle;
 
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * <p>Title: </p>
@@ -42,6 +47,9 @@ public class menuNar extends JMenu {
   JMenuItem jmUZP = new JMenuItem();
   JMenuItem jmNDO = new JMenuItem();
   JMenuItem jmNKU = new JMenuItem();
+  JMenuItem jmNKUedi = new JMenuItem();
+  
+  JFileChooser fc = new JFileChooser();
 
   public menuNar(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -81,10 +89,26 @@ public class menuNar extends JMenu {
         jmNKU_actionPerformed(e);
       }
     });
+    jmNKUedi.setText("Import narudžbe kupca");
+    jmNKUedi.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmNKUedi_actionPerformed(e);
+      }
+    });
     this.add(jmZAH);
     this.add(jmUZP);
     this.add(jmNDO);
     this.add(jmNKU);
+    frmParam.getParam("robno", "ediCskl", "",
+      "Šifra OJ ili skladišta za EDI narudžbe");
+    if (frmParam.getParam("robno", "ediOrder", "N",
+        "Omoguæiti import narudžbi kupca preko EDI (D,N)").equals("D")) {
+      this.add(jmNKUedi);
+      fc.setCurrentDirectory(new File("."));
+      FileFilter ff = new raFileFilter("EDI XML datoteke (*.xml)");
+      fc.addChoosableFileFilter(ff);
+      fc.setFileFilter(ff);
+    }
   }
   void jmZAH_actionPerformed(ActionEvent e) {
     raZAH fZAH = (raZAH) raLoader.load("hr.restart.robno.raZAH");
@@ -102,5 +126,13 @@ public class menuNar extends JMenu {
     raNKU ranku = (raNKU)raLoader.load("hr.restart.robno.raNKU");
     presNKU.getPres().showJpSelectDoc("NKU", ranku, true, "Narudžbe kupca");
   }
-
+  
+  void jmNKUedi_actionPerformed(ActionEvent e) {
+    if (fc.showOpenDialog(null) == fc.APPROVE_OPTION) {
+      
+      String cskl = frmParam.getParam("robno", "ediCskl", "",
+          "Šifra OJ ili skladišta za EDI narudžbe");
+      raOrderEDI.createOrder(cskl, fc.getSelectedFile());
+    }
+  }
 }
