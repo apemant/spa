@@ -23,6 +23,9 @@
 
 package hr.restart;
 
+import hr.restart.help.raShortcutItem;
+import hr.restart.sisfun.frmParam;
+import hr.restart.swing.JraDialog;
 import hr.restart.util.FileHandler;
 import hr.restart.util.IntParam;
 import hr.restart.util.raImages;
@@ -42,9 +45,11 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -56,7 +61,7 @@ import javax.swing.SwingConstants;
  */
 public class dlgExit extends JWindow {
   private JPanel jpContent;
-  //private int result = 0; //0 = povratak, 1=ch user, 2= ch knjig, 3=izlaz
+  private int result = 0; //0 = povratak, 1=ch user, 2= ch knjig, 3=izlaz
   private static dlgExit _this;
   private int cursorPosition = 0;
   private JLabel[] labels;
@@ -67,6 +72,7 @@ public class dlgExit extends JWindow {
   private static Color selBorderColor = hr.restart.help.raAbstractShortcutContainer.listSelectionBorder;
   private static Color unselBackGround = Color.white;
   private static Color panelBorderColor = hr.restart.help.raAbstractShortcutContainer.listSelectionBackground;
+  private JraDialog d; 
 
   private AWTEventListener awtlistener = new AWTEventListener() {
     public void eventDispatched(AWTEvent event) {
@@ -94,6 +100,7 @@ public class dlgExit extends JWindow {
   /** Creates a new instance of dlExit */
   protected dlgExit() {
     super(startFrame.getStartFrame());
+    //super((Frame)null);
     jInit();
   }
   private void jInit() {
@@ -110,22 +117,38 @@ public class dlgExit extends JWindow {
     jlTitle.setBackground(selBackground);
     jlTitle.setOpaque(true);
     jlTitle.setBorder(BorderFactory.createMatteBorder(2,2,2,2,panelBorderColor));
-    jlTitle.setFont(jlTitle.getFont().deriveFont(Font.BOLD|Font.ITALIC, jlTitle.getFont().getSize()+2));
+    //jlTitle.setFont(jlTitle.getFont().deriveFont(Font.BOLD|Font.ITALIC, jlTitle.getFont().getSize()+2));
+    raShortcutItem.setFancyFont(jlTitle);
     jlTitle.setHorizontalAlignment(JLabel.CENTER);
     jlMessage.setBackground(unselBackGround);
     jlMessage.setOpaque(true);
     jlMessage.setBorder(BorderFactory.createMatteBorder(0,2,2,2,panelBorderColor));
     jlMessage.setText(labels[0].getToolTipText());
     jlMessage.setHorizontalAlignment(JLabel.CENTER);
-    addComponentListener(new ComponentAdapter() {
+    //addContent(this);
+  }
+  
+  private void addContent(JWindow c) {
+    c.addComponentListener(new ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
         addKeyListeners();
       }
     });
-    getContentPane().add(jpContent, BorderLayout.CENTER);
-    getContentPane().add(jlTitle, BorderLayout.NORTH);
-    getContentPane().add(jlMessage, BorderLayout.SOUTH);
+    c.getContentPane().add(jpContent, BorderLayout.CENTER);
+    c.getContentPane().add(jlTitle, BorderLayout.NORTH);
+    c.getContentPane().add(jlMessage, BorderLayout.SOUTH);
   }
+  private void addContent(JDialog c) {
+    c.addComponentListener(new ComponentAdapter() {
+      public void componentShown(ComponentEvent e) {
+        addKeyListeners();
+      }
+    });
+    c.getContentPane().add(jpContent, BorderLayout.CENTER);
+    c.getContentPane().add(jlTitle, BorderLayout.NORTH);
+    c.getContentPane().add(jlMessage, BorderLayout.SOUTH);
+  }
+
   
   private JLabel getLabel(String icondesc, String text, final int res, String toolTipText) {
     ImageIcon ic = raImages.getImageIcon(icondesc);
@@ -171,9 +194,17 @@ public class dlgExit extends JWindow {
   
   public void pack() {
     super.pack();
-    this.setLocation((start.getSCREENSIZE().width-this.getSize().width)/2, (start.getSCREENSIZE().height-this.getSize().height)/2);
-    for (int i=0; i<labels.length; i++) setSelected(labels[i], i == 0);
+    doWithPack(this);
   }
+  private void doWithPack(JWindow c) {
+    c.setLocation((start.getSCREENSIZE().width-c.getSize().width)/2, (start.getSCREENSIZE().height-c.getSize().height)/2);
+    for (int i=0; i<labels.length; i++) setSelected(labels[i], i == 0);    
+  }
+  private void doWithPack(JDialog c) {
+    c.setLocation((start.getSCREENSIZE().width-c.getSize().width)/2, (start.getSCREENSIZE().height-c.getSize().height)/2);
+    for (int i=0; i<labels.length; i++) setSelected(labels[i], i == 0);    
+  }
+
   private void addKeyListeners() {
     Toolkit.getDefaultToolkit().addAWTEventListener(awtlistener, AWTEvent.KEY_EVENT_MASK);    
   }
@@ -181,12 +212,49 @@ public class dlgExit extends JWindow {
     Toolkit.getDefaultToolkit().removeAWTEventListener(awtlistener);
   }
   public static void showExitMessage() {
-    if (_this == null) _this = new dlgExit();
-    _this.pack();
-    _this.show();
+    if (_this == null) {
+      _this = new dlgExit();
+      if (frmParam.getParam("sisfun", "exitWD", "W", "Da li je izlazni ekran JWindow ili JraDialog").equalsIgnoreCase("W")) {
+        _this.addContent(_this);
+      } else {
+        _this.d = new JraDialog(startFrame.getStartFrame()) {
+          public void pack() {
+            super.pack();
+            _this.doWithPack(this);
+          }
+        };
+        _this.addContent(_this.d);
+        try {
+          _this.d.getClass().getMethod("setUndecorated", new Class[] {boolean.class}).invoke(_this.d, new Object[] {new Boolean(true)});
+        } catch (IllegalArgumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } catch (SecurityException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } catch (IllegalAccessException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } catch (InvocationTargetException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
+    if (frmParam.getParam("sisfun", "exitWD", "W", "Da li je izlazni ekran JWindow ili JraDialog").equalsIgnoreCase("W")) {
+      _this.pack();
+      _this.show();
+    } else {
+      _this.d.pack();
+      _this.d.show();
+    }
   }
   private void exitClicked(int res) {
-    dlgExit.this.hide();
+    //dlgExit.this.hide();
+    jpContent.getTopLevelAncestor().hide();
     rmvKeyListeners();
     if (res == 0) {
     } else if (res == 1) {
