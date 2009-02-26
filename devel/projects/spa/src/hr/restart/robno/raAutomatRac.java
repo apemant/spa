@@ -492,7 +492,7 @@ public class raAutomatRac extends raFrame {
         String sql = "SELECT ugovori.* FROM Ugovori,Partneri WHERE ugovori.cpar = partneri.cpar and "
                 + "ugovori.aktiv ='D' and ugovori.corg = '"
                 + jlrCORG.getText()
-                + "'";
+                + "' AND "+frmUgovori.getCorgCondition("ugovori");
 
         if (!jlrCVRUGO.getText().equals(""))
             sql = sql + " and ugovori.CVRUGO ='" + jlrCVRUGO.getText() + "'";
@@ -1168,7 +1168,7 @@ public class raAutomatRac extends raFrame {
         }
 
         String sql = "select ugovori.* from ugovori,partneri where ugovori.cpar = partneri.cpar and ugovori.AKTIV='D' AND "
-          +frmUgovori.getCorgCondition("ugovori")+dodatak+" ORDER BY partneri.nazpar";
+          + " ugovori.corg = '"+ jlrCORG.getText() + "' AND "+frmUgovori.getCorgCondition("ugovori")+dodatak+" ORDER BY partneri.nazpar";
 //System.out.println(sql);
         
         QueryDataSet ugovorizag = hr.restart.util.Util
