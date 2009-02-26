@@ -663,10 +663,8 @@ public class raTableCopyPopup extends JPopupMenu {
     ColumnsBean cb = ((raExtendedTable) jt).owner.getColumnsBean();
     raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
     if (stm != null && stm.isNatural()) stm.clearSelection();
-    jt.repaint();
+    jt.fireTableDataChanged();
     if (cb != null && cb.isShowing()) cb.checkFilter();
-    if (jt.getTopLevelAncestor() instanceof frmTableDataView)
-    	((frmTableDataView) jt.getTopLevelAncestor()).setCount();
   }
   
   void showFilter() {
