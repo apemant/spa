@@ -282,7 +282,13 @@ System.out.println("Konaèmi "+vs);
 			}
 		}
 	};
-	
+	private String domOZNVAL;
+	private String getDomOZNVAL() {
+	  if (domOZNVAL == null || domOZNVAL.trim().equals("")) {
+	    domOZNVAL = Tecajevi.getDomOZNVAL();
+	  }
+	  return domOZNVAL;
+	}
 	public void rekalkulAll(){
 		
 		raProcess.setMessage("Rekalkulacija u tijeku ..",true);
@@ -307,7 +313,7 @@ System.out.println("Konaèmi "+vs);
 		QueryDataSet stavke = 
 			Util.getNewQueryDataSet("SELECT * FROM STUGOVOR where CUGOVOR='"+ugovor+"' and "+getCorgCondition("STUGOVOR"));
 		for (stavke.first();stavke.inBounds();stavke.next()){
-			if (stavke.getString("OZNVAL") == null  || stavke.getString("OZNVAL").trim().length()==0 ) {
+			if (stavke.getString("OZNVAL") == null  || stavke.getString("OZNVAL").trim().length()==0 || stavke.getString("OZNVAL").trim().equalsIgnoreCase(getDomOZNVAL())) {
 				continue;
 			}
 			if (lD.raLocate(teclista,"OZNVAL",stavke.getString("OZNVAL"))){
