@@ -2037,6 +2037,8 @@ public class frmBrBilAll extends raUpitFat {
 
   protected void addingReport(){
     killAllReports();
+    this.addReport("hr.restart.gk.repBBNAMEA1", "hr.restart.gk.repBrBilAllSource", "BBNAMEprpsGeneric", "Bruto bilanca, NAZIV, poèetno stanje, promet, saldo"); // ***
+//    this.addReport("hr.restart.gk.repBBNAMEA1", "hr.restart.gk.repBrBilAllSource", "BBNAMEprpsWideExtendedTEST", "Bruto bilanca, NAZIV, poèetno stanje, promet, saldo"); // ***
     if (isKompletnaBilanca()) { // kompletna bilanca
       if (stds.getString("PS").equals("D")) { // poèetno stanje + promet
         this.addReport("hr.restart.gk.repBBrepA1", "hr.restart.gk.repBrBilAllSource", "BBpromPs01", "Bruto bilanca, poèetno stanje, promet, saldo"); // ***

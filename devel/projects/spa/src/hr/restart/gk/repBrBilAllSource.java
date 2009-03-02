@@ -112,6 +112,16 @@ public class repBrBilAllSource implements raReportData {
   public double getSALDO(){
     return ds.getBigDecimal("SALDO").doubleValue();
   }
+  public double getSALID(){
+    if (ds.getBigDecimal("SALDO").signum()>0)
+      return ds.getBigDecimal("SALDO").doubleValue();
+    return 0;
+  }
+  public double getSALIP(){
+    if (ds.getBigDecimal("SALDO").signum()<0)
+      return ds.getBigDecimal("SALDO").negate().doubleValue();
+    return 0;  
+  }
   //////
   
   
