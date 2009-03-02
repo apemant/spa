@@ -176,7 +176,7 @@ public class raROT extends raIzlazTemplate  {
     checkLimit = hr.restart.sisfun.frmParam.getParam("robno","checkLimit","D","Provjera limita kreditiranja").equalsIgnoreCase("D");
     
     if (frmParam.getParam("robno", "ROTzarada", "D",
-        "Izraèunati stvarnu zaradu na ROT-u (D,N)").equals("N")) {
+        "Izraèunati stvarnu zaradu na ROT-u (D,N)").equals("D")) {
       raDetail.getJpTableView().addTableModifier(new raTableModifier() {
         Variant shared = new Variant();
         public void modify() {
