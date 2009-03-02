@@ -23,9 +23,12 @@ import hr.restart.baza.Stdoku;
 import hr.restart.baza.dM;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
+import hr.restart.swing.JraTable2;
 import hr.restart.swing.raColors;
 import hr.restart.swing.raStatusColorModifier;
 import hr.restart.swing.raTableColumnModifier;
+import hr.restart.swing.raTableModifier;
+import hr.restart.swing.raTableValueModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.MasterDetailChooser;
 import hr.restart.util.VarStr;
@@ -36,6 +39,7 @@ import hr.restart.util.raTransaction;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +51,7 @@ import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.DataSetException;
 import com.borland.dx.dataset.MetaDataUpdate;
 import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jb.util.TriStateProperty;
 
@@ -169,6 +174,33 @@ public class raROT extends raIzlazTemplate  {
         
     stozbroiti();    
     checkLimit = hr.restart.sisfun.frmParam.getParam("robno","checkLimit","D","Provjera limita kreditiranja").equalsIgnoreCase("D");
+    
+    if (frmParam.getParam("robno", "ROTzarada", "D",
+        "Izraèunati stvarnu zaradu na ROT-u (D,N)").equals("N")) {
+      raDetail.getJpTableView().addTableModifier(new raTableModifier() {
+        Variant shared = new Variant();
+        public void modify() {
+          JraTable2 tab = (JraTable2) getTable();
+          DataSet ds = tab.getDataSet();
+          ds.getVariant("IPRODBP", getRow(), shared);
+          BigDecimal ruc = shared.getBigDecimal();
+          ds.getVariant("INAB", getRow(), shared);
+          ruc = ruc.subtract(shared.getBigDecimal());
+          shared.setBigDecimal(ruc);
+          Column bcol = ds.getColumn("IMAR");
+          setComponentText(bcol.format(shared));
+        }
+      
+        public boolean doModify() {
+          if (getTable() instanceof JraTable2) {
+            JraTable2 tab = (JraTable2) getTable();
+            Column col = tab.getDataSetColumn(getColumn());
+            return (col != null && col.getColumnName().equalsIgnoreCase("IMAR"));
+          }
+          return false;
+        }
+      });
+    }
  }
 
   public void beforeShowMaster() {
