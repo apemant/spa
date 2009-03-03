@@ -888,21 +888,11 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 						"UIRAC").subtract(qdsAllUlaz.getBigDecimal("PLATITI")));
 			} else {
 				qdsPojedUlaz.insertRow(true);
-				qdsPojedUlaz.setString("BRRAC", tmpqds.getString("BRRAC"));
-				qdsPojedUlaz.setString("CSKL", tmpqds.getString("CSKL"));
-				qdsPojedUlaz.setString("VRDOK", tmpqds.getString("VRDOK"));
-				qdsPojedUlaz.setString("GOD", tmpqds.getString("GOD"));
-				qdsPojedUlaz.setString("STATPLA", tmpqds.getString("STATPLA"));
-				qdsPojedUlaz.setInt("BRDOK", tmpqds.getInt("BRDOK"));
-				qdsPojedUlaz.setString("KLJUC", tmpqds.getString("KLJUC"));
-				qdsPojedUlaz.setTimestamp("DVO", tmpqds.getTimestamp("DVO"));
-				qdsPojedUlaz.setTimestamp("DATDOSP", tmpqds.getTimestamp("DATDOSP"));
-                qdsPojedUlaz.setTimestamp("DATUPL", tmpqds.getTimestamp("DATUPL"));
-				qdsPojedUlaz.setInt("CPAR", tmpqds.getInt("CPAR"));
+                dm.copyColumns(tmpqds, qdsPojedUlaz, new String[] 
+                    {"brrac", "cskl", "vrdok", "god", "brdok", "kljuc", "cpar", 
+                     "platiti", "statpla", "dvo", "datdosp", "datupl"});
 				qdsPojedUlaz.setBigDecimal("UIRAC", tmpqds.getBigDecimal(
 						"UIPRPOR").add(tmpqds.getBigDecimal("UIKAL")));
-				qdsPojedUlaz.setBigDecimal("PLATITI", tmpqds
-						.getBigDecimal("PLATITI"));
 
 				qdsPojedUlaz.setBigDecimal("SALDO", qdsPojedUlaz.getBigDecimal(
 						"UIRAC")
