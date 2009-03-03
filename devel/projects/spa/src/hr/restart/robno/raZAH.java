@@ -25,7 +25,7 @@ package hr.restart.robno;
 
 import javax.swing.JOptionPane;
 
-import hr.restart.sisfun.frmParam;
+import hr.restart.swing.raTableColumnModifier;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raNavBar;
 
@@ -59,6 +59,12 @@ public class raZAH extends raIzlazTemplate {
     
     MP.BindComp();
     DP.BindComp();
+    
+    raMaster.getJpTableView().addTableModifier(new raTableColumnModifier(
+        "CRADNIK", new String[] {"CRADNIK", "IME", "PREZIME"}, dm.getRadnici()));
+    raMaster.getJpTableView().addTableModifier(new raTableColumnModifier(
+        "CORG", new String[] {"CORG", "NAZIV"}, dm.getOrgstruktura()));
+    
   }
   
   public void initialiser() {
