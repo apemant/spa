@@ -157,6 +157,10 @@ final public class raRAC extends raIzlazTemplate {
         raMaster.getRepRunner().addReport("hr.restart.robno.repRacPnP",
             "hr.restart.robno.repRacuniPnP",
             "RacSifKupPak","Raèun sa šifrom kupca");
+        
+        raMaster.getRepRunner().addReport("hr.restart.robno.repRacVert",
+            "hr.restart.robno.repIzlazni", "RacVert",
+            "Raèun 1 red okomito");
 
         raMaster.getRepRunner().addReport("hr.restart.robno.repRacUsluga",
                 "hr.restart.robno.repUslIzlazni", "RacUsluga",
@@ -215,6 +219,10 @@ final public class raRAC extends raIzlazTemplate {
         raDetail.getRepRunner().addReport("hr.restart.robno.repRacPnP",
             "hr.restart.robno.repRacuniPnP",
             "RacSifKupPak","Raèun sa šifrom kupca");
+        
+        raDetail.getRepRunner().addReport("hr.restart.robno.repRacVert",
+            "hr.restart.robno.repIzlazni", "RacVert",
+            "Raèun 1 red okomito");
 
         raDetail.getRepRunner().addReport("hr.restart.robno.repRacUsluga",
             "hr.restart.robno.repUslIzlazni", "RacUsluga",
