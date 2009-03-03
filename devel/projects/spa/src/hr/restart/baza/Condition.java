@@ -49,6 +49,12 @@ import com.borland.dx.dataset.Variant;
 public abstract class Condition {
 
   /**
+   * Koliko maksimalno smije biti clanova u in (cl1, cl2, cl3, ... clN)
+   * prije nego presjece sa OR polje in (clN+1, clN+2 ...)
+   */
+  public static final int MAXINQUERY = 200;
+  
+  /**
    * Konstanta koja oznacava operaciju =.
    */
   public static final int EQUAL = 0;
@@ -505,7 +511,7 @@ class SimpleCondition extends Condition {
     boolean overflow = false;
     for (int i = 0, n = 0; i < Array.getLength(val); i++, n++) {
       st.append(del).append(Array.get(val, i)).append(del).append(',');
-      if (n > 1490) {
+      if (n > MAXINQUERY) {
         st.chop().append(')').append(" OR ").append(column).append(" IN (");
         n = 0;
         overflow = true;

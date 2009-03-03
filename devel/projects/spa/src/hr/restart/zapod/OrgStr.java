@@ -183,7 +183,7 @@ System.out.println("setting filter "+knjigsql+andNotIn);
       _orgs.first();
       do {
         in = in+"'"+_orgs.getString("CORG")+"',";
-        if (cnt > 1498) {
+        if (cnt > Condition.MAXINQUERY) {
           in = in.substring(0,in.length()-1)+") OR "+col+" in (";
           cnt=0;
         }        
