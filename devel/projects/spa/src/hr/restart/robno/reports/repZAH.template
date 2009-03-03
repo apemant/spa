@@ -509,7 +509,7 @@
           <Model Name="Label91">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label91</Property>
-               <Property Name="Caption">IZDATNICA</Property>
+               <Property Name="Caption">TREBOVANJE</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">7040</Property>
                <Property Name="Top">80</Property>
