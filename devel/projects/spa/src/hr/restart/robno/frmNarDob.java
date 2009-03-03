@@ -124,6 +124,13 @@ public class frmNarDob extends raMasterDetail {
     setTitleMaster();
     jpMaster.jp1.jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndKnjig(corg));
   }
+  
+  public void beforeShowDetail() {
+    // TODO Auto-generated method stub
+    jpDetail.rpc.setExtraSklad(null);
+    if (getDetailSet().rowCount() > 0)
+      jpDetail.rpc.setExtraSklad(getDetailSet().getString("CSKLART"));
+  }
 
   public void EntryPointMaster(char mode) {
     rcc.setLabelLaF(jpMaster.jp2.jlrNAZNAC, false);
@@ -273,6 +280,7 @@ public class frmNarDob extends raMasterDetail {
       }
     }
     if (checkDohChanged()) return false;
+    jpDetail.rpc.setExtraSklad(getDetailSet().getString("CSKLART"));
     return true;
   }
   
@@ -548,6 +556,7 @@ System.out.println("key4del "+ key4del);
   void afterArt() {
     if (zahStavkaNew != null) {
       Aus.set(getDetailSet(), "KOL", zahStavkaNew);
+      getDetailSet().setString("NAZART", zahStavkaNew.getString("NAZART"));
       afterKOL();
     }
     if (findDOBART()) {
@@ -752,8 +761,8 @@ System.out.println(tmpVTTEXT.getQuery().getQueryString());
 	      zahStavkaNew = stdoki.getDataModule().getTempSet(
 	          Condition.whereAllEqual(Util.dkey, doh));
 	      zahStavkaNew.open();
-	      if (jpDetail.rpc.getCskl().length() == 0)
-	        jpDetail.rpc.setCskl(zahStavkaNew.getString("CSKL"));
+	      getDetailSet().setString("CSKLART", zahStavkaNew.getString("CSKL"));
+//          jpDetail.rpc.setCskl(zahStavkaNew.getString("CSKL"));
 	      if (haveArt) afterArt();
 	      else jpDetail.rpc.setCART(doh.getInt("CART"));
 	    }
