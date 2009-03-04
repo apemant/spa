@@ -213,8 +213,9 @@ System.out.println("stanje.kolsklad "+stanje.kolsklad);
     if (stanje.kol.doubleValue()!=0) {
         tmpBD = stanje.nabul.subtract(stanje.nabiz);
         stanje.nc =  tmpBD.divide(stanje.kol,2,BigDecimal.ROUND_HALF_UP);
-    }
-    else {
+    } else if (stanje.kolul.doubleValue()!=0) {
+      stanje.nc =  stanje.nabul.divide(stanje.kolul,2,BigDecimal.ROUND_HALF_UP);
+    } else {
       stanje.nc =  Nula;
     }
   }

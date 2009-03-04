@@ -52,9 +52,11 @@ public class raKalkulBDUlaz {
 		stanje.vul = stanje.vul.subtract(stavkaold.porav);
 		stanje.vri = stanje.vul.subtract(stanje.viz);
 		stanje.kol = stanje.kolul.subtract(stanje.koliz);
-		if (stanje.kol.doubleValue() >0){
+		if (stanje.kol.doubleValue() !=0){
 			tmpBD = stanje.nabul.subtract(stanje.nabiz);
 			stanje.nc = tmpBD.divide(stanje.kol,2,BigDecimal.ROUND_HALF_UP);
+		} else if (stanje.kolul.doubleValue() !=0) {
+	        stanje.nc = stanje.nabul.divide(stanje.kolul,2,BigDecimal.ROUND_HALF_UP);
 		} else {
 			stanje.nc = Nula;
 		}
