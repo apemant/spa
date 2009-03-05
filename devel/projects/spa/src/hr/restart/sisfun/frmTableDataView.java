@@ -100,10 +100,10 @@ public class frmTableDataView extends JraFrame {
       setCount();
       changed = false;
     }
-    public void init_kum() {
+    /*public void init_kum() {
       super.init_kum();
       if (isShowing()) getColumnsBean().initialize();
-    }
+    }*/
 //    public void mpTable_killFocus(java.util.EventObject e) {
 //      System.out.println("kill focus "+editor.open);
 //      if (editor.open) editor.setFokus();
