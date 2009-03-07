@@ -1178,7 +1178,7 @@ public class raAutomatRac extends raFrame {
         for (ugovorizag.first(); ugovorizag.inBounds(); ugovorizag.next()) {
             ugovoristav = stugovor.getDataModule().getTempSet(
                 Condition.whereAllEqual(new String[] {"CUGOVOR","KNJIG"}, ugovorizag)
-                .and(Condition.where("STATUSRAC", Condition.NOT_EQUAL, "N"))); 
+                .and(Condition.where("STATUSRAC", Condition.NOT_EQUAL, "N")).and(Condition.where("IPRODSP", Condition.NOT_EQUAL, Aus.zero2))); 
             ugovoristav.open();
 //              hr.restart.util.Util
 //                    .getNewQueryDataSet("select * from stugovor where cugovor='"
