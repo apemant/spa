@@ -40,6 +40,8 @@ public class raPONOJ extends raIzlazTemplate {
 		raMaster.getRepRunner().addReport("hr.restart.robno.repPonuda2V",
 				"hr.restart.robno.repIzlazni", "Ponuda2",
 				"Ponuda 2 red u valuti");
+		raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaNop",
+            "hr.restart.robno.repIzlazni", "PonudaNop", "Ponuda bez cijena stavki");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repRac",
             "hr.restart.robno.repIzlazni","ProformaInvoice2","Proforma Invoice");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repMxPON",
@@ -58,6 +60,8 @@ public class raPONOJ extends raIzlazTemplate {
 		raDetail.getRepRunner().addReport("hr.restart.robno.repPonuda2V",
 				"hr.restart.robno.repIzlazni", "Ponuda2",
 				"Ponuda 2 red u valuti");
+		raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaNop",
+            "hr.restart.robno.repIzlazni", "PonudaNop", "Ponuda bez cijena stavki");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repRac",
             "hr.restart.robno.repIzlazni","ProformaInvoice2","Proforma Invoice");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repMxPON",
