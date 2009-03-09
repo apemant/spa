@@ -23,13 +23,28 @@
  */
 package hr.restart.robno;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.Arrays;
+import java.util.HashSet;
+
 import javax.swing.JOptionPane;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.dM;
+import hr.restart.baza.doki;
+import hr.restart.baza.stdoki;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.raTableColumnModifier;
+import hr.restart.util.VarStr;
 import hr.restart.util.raCommonClass;
+import hr.restart.util.raImages;
+import hr.restart.util.raNavAction;
 import hr.restart.util.raNavBar;
+import hr.restart.util.raTransaction;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jb.util.TriStateProperty;
 
 /**
@@ -40,6 +55,12 @@ import com.borland.jb.util.TriStateProperty;
  */
 public class raZAH extends raIzlazTemplate {
   private raCommonClass rcc = raCommonClass.getraCommonClass();
+  
+  raNavAction navZatvori = new raNavAction("Zatvori stavku", raImages.IMGDOWN, KeyEvent.VK_F8) {
+    public void actionPerformed(ActionEvent e) {
+      closeZah();
+    }
+  };
   
   public raZAH() {
     setPreSel((jpPreselectDoc) presZAH.getPres());
@@ -59,6 +80,8 @@ public class raZAH extends raIzlazTemplate {
     
     MP.BindComp();
     DP.BindComp();
+    
+    raDetail.addOption(navZatvori, 4);
     
     raMaster.getJpTableView().addTableModifier(new raTableColumnModifier(
         "CRADNIK", new String[] {"CRADNIK", "IME", "PREZIME"}, dm.getRadnici()));
@@ -195,6 +218,45 @@ public class raZAH extends raIzlazTemplate {
           !getDetailSet().getString("STATUS").equalsIgnoreCase("N")) {
         raDetail.getNavBar().getStandardOption(raNavBar.ACTION_DELETE).setEnabled(false);
         raDetail.getNavBar().getStandardOption(raNavBar.ACTION_UPDATE).setEnabled(false);
+      }
+    }
+    
+    void closeZah() {
+      if (getDetailSet().getRowCount() == 0) return;
+      if (!getDetailSet().getString("STATUS").equals("N")) {
+        JOptionPane.showMessageDialog(raDetail.getWindow(),
+            "Stavka je veæ prenesena!", "Greška",
+            javax.swing.JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      String arts = frmParam.getParam("robno", "manArt", "", 
+          "Popis artikala koji se mogu ruèno zatvoriti na trebovanju");
+      
+      String[] ar = new VarStr(arts).splitTrimmed(',');
+      HashSet ars = new HashSet(Arrays.asList(ar));
+      
+      if (!ars.contains(Integer.toString(getDetailSet().getInt("CART")))) {
+        JOptionPane.showMessageDialog(raDetail.getWindow(),
+            "Artikl se ne može ruèno zatvoriti!", "Greška",
+            javax.swing.JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      
+      if (JOptionPane.showConfirmDialog(raDetail.getWindow(),
+            "Želite li zatvoriti stavku trebovanja?", "Zatvaranje",
+            javax.swing.JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        getDetailSet().setString("STATUS", "P");
+        getDetailSet().saveChanges();
+        
+        DataSet nonp = stdoki.getDataModule().getTempSet(Condition.whereAllEqual(
+            Util.mkey, getDetailSet()).and(Condition.equal("STATUS", "N")));
+        nonp.open();
+        
+        if (nonp.rowCount() == 0) {
+          // postavi status mastera na prenesen
+          getMasterSet().setString("STATIRA", "P");
+          getMasterSet().saveChanges();
+        }
       }
     }
     
