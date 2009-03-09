@@ -318,7 +318,7 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
     link.setString("DEST", getDetailSet().getString("ID_STAVKA"));
     link.setBigDecimal("KOL", getDetailSet().getBigDecimal("KOL"));
     Aus.add(stavka, "KOL2", link, "KOL");
-    stavka.setString("STATUS", Aus.comp(stavka, "KOL", "KOL2") == 0 ? "P" : "N");
+    stavka.setString("STATUS", Aus.comp(stavka, "KOL", "KOL2") <= 0 ? "P" : "N");
     if (stavka.getString("VEZA").length() > 0) {
       QueryDataSet zah = stdoki.getDataModule().getTempSet(
           Condition.equal("ID_STAVKA", stavka.getString("VEZA")));
