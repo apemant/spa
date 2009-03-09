@@ -17,11 +17,15 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Inventura;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
+import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
 
 import javax.swing.JLabel;
@@ -30,6 +34,7 @@ import javax.swing.JPanel;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.TableDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 
@@ -67,7 +72,7 @@ public class frmInvLista extends raUpitLite {
   }
   public boolean runFirstESC() {
     /**@todo Implement this hr.restart.util.raUpitLite abstract method*/
-    throw new java.lang.UnsupportedOperationException("Method runFirstESC() not yet implemented.");
+    return true;
   }
   public void firstESC() {
     /**@todo Implement this hr.restart.util.raUpitLite abstract method*/
@@ -84,13 +89,18 @@ public class frmInvLista extends raUpitLite {
     vl.execSQL("select cart,kol,iraz from stdoki where vrdok='INM' and god='"+tds.getString("GOD")+"' and cskl='"+jrfCSKL.getText()+"'");
     vl.RezSet.open();
     vl.RezSet.first();
+    
+    QueryDataSet inv = Inventura.getDataModule().getTempSet(
+        Condition.equal("CSKL", jrfCSKL.getText()));
+    inv.open();
+    
     do {
-      if (hr.restart.util.lookupData.getlookupData().raLocate(dm.getInventura(),"CART", String.valueOf(vl.RezSet.getInt("CART")))) {
-        dm.getInventura().setBigDecimal("KOLKNJ", rut.sumValue(dm.getInventura().getBigDecimal("KOLKNJ"),vl.RezSet.getBigDecimal("KOL")));
-        dm.getInventura().setBigDecimal("VRIKNJ", rut.sumValue(dm.getInventura().getBigDecimal("VRIKNJ"),vl.RezSet.getBigDecimal("IRAZ")));
-        dm.getInventura().setBigDecimal("KOLMANJ", rut.sumValue(dm.getInventura().getBigDecimal("KOLMANJ"),vl.RezSet.getBigDecimal("KOL")));
-        dm.getInventura().setBigDecimal("VRIMANJ", rut.sumValue(dm.getInventura().getBigDecimal("VRIMANJ"),vl.RezSet.getBigDecimal("IRAZ")));
-        dm.getInventura().post();
+      if (hr.restart.util.lookupData.getlookupData().raLocate(inv,"CART", String.valueOf(vl.RezSet.getInt("CART")))) {
+        Aus.add(inv, "KOLKNJ", vl.RezSet, "KOL");
+        Aus.add(inv, "VRIKNJ", vl.RezSet, "IRAZ");
+        Aus.add(inv, "KOLMANJ", vl.RezSet, "KOL");
+        Aus.add(inv, "VRIMANJ", vl.RezSet, "IRAZ");
+        inv.post();
       }
       else {
         System.out.println("error: ");
@@ -102,12 +112,12 @@ public class frmInvLista extends raUpitLite {
     vl.RezSet.open();
     vl.RezSet.first();
     do {
-      if (hr.restart.util.lookupData.getlookupData().raLocate(dm.getInventura(),"CART", String.valueOf(vl.RezSet.getInt("CART")))) {
-        dm.getInventura().setBigDecimal("KOLKNJ", rut.negateValue(dm.getInventura().getBigDecimal("KOLKNJ"),vl.RezSet.getBigDecimal("KOL")));
-        dm.getInventura().setBigDecimal("VRIKNJ", rut.negateValue(dm.getInventura().getBigDecimal("VRIKNJ"),vl.RezSet.getBigDecimal("IZAD")));
-        dm.getInventura().setBigDecimal("KOLVIS", rut.sumValue(dm.getInventura().getBigDecimal("KOLVIS"),vl.RezSet.getBigDecimal("KOL")));
-        dm.getInventura().setBigDecimal("VRIVIS", rut.sumValue(dm.getInventura().getBigDecimal("VRIVIS"),vl.RezSet.getBigDecimal("IZAD")));
-        dm.getInventura().post();
+      if (hr.restart.util.lookupData.getlookupData().raLocate(inv,"CART", String.valueOf(vl.RezSet.getInt("CART")))) {
+        Aus.sub(inv, "KOLKNJ", vl.RezSet, "KOL");
+        Aus.sub(inv, "VRIKNJ", vl.RezSet, "IZAD");
+        Aus.add(inv, "KOLVIS", vl.RezSet, "KOL");
+        Aus.add(inv, "VRIVIS", vl.RezSet, "IZAD");
+        inv.post();
       }
       else {
         System.out.println("error: ");
@@ -115,15 +125,18 @@ public class frmInvLista extends raUpitLite {
 
     } while (vl.RezSet.next());
     try {
-      dm.getInventura().saveChanges();
+      inv.saveChanges();
     }
     catch (Exception ex) {
-      JOptionPane.showConfirmDialog(this.jp, "Greška kod formiranja liste !", "Greška", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-      this.hide();
+      setNoDataAndReturnImmediately("Greška kod formiranja liste !");
     }
-    JOptionPane.showConfirmDialog(this.jp, "Formiranje uspješno završeno !", "Informacija", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
-    this.hide();
   }
+  
+  protected void upitCompleted() {
+    JOptionPane.showConfirmDialog(this.jp, "Formiranje uspješno završeno !", "Informacija", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+    raCommonClass.getraCommonClass().EnabDisabAllLater(getJPan(), true);
+  }
+  
   private void jbInit() throws Exception {
     this.setJPan(jp);
     jlCSKL.setText("Skladište");
