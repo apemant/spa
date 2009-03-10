@@ -151,6 +151,8 @@ public class frmNarDob extends raMasterDetail {
     super.EntryPointDetail(mode);
     jpDetail.rcc.setLabelLaF(jpDetail.trans, mode == 'N');
     zahStavkaNew = zahStavkaOld = null;
+    oldKol = mode == 'N' ? Aus.zero3 :
+      this.getDetailSet().getBigDecimal("KOL");
   }
 
   private void setDefaultNacs() {
@@ -255,13 +257,13 @@ public class frmNarDob extends raMasterDetail {
     
     if (zahStavkaNew != null) {
       if (checkDohChanged()) return false;
-      if (getDetailSet().getBigDecimal("KOL").compareTo(
+      /*if (getDetailSet().getBigDecimal("KOL").compareTo(
           zahStavkaNew.getBigDecimal("KOL")) != 0) {
         if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(jpDetail,
             "Kolièina na narudžbenici se razlikuje od kolièine na trebovanju!" +
             " Nastaviti ipak?", "Upozorenje", JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.WARNING_MESSAGE)) return false;
-      }
+      }*/
       if (!zahStavkaNew.getString("STATUS").equalsIgnoreCase("N")) {
         JOptionPane.showMessageDialog(jpDetail, 
             "Odabrana stavka trebovanju je veæ naruèena!",
@@ -313,9 +315,11 @@ public class frmNarDob extends raMasterDetail {
   }
   
   short oldRbr;
+  BigDecimal oldKol;
 
   public boolean DeleteCheckDetail() {
     oldRbr = this.getDetailSet().getShort("RBR");
+    oldKol = this.getDetailSet().getBigDecimal("KOL");
     key4del = rCD.getKey(getDetailSet());
     findOldStavka('B');
 System.out.println("key4del "+ key4del);    
@@ -399,40 +403,49 @@ System.out.println("key4del "+ key4del);
   }
   
   private boolean removeOldLink() {
-    zahStavkaOld.setString("VEZA", "");
-    zahStavkaOld.setString("STATUS", "N");
-    Aus.clear(zahStavkaOld, "KOL1");
-    QueryDataSet master = doki.getDataModule().getTempSet(
-        Condition.whereAllEqual(Util.mkey, zahStavkaOld));
-    master.open();
-    if (master.getRowCount() == 1) {
-      master.setString("STATIRA", "N");
-      raTransaction.saveChanges(master);
-    } else new Throwable("Greška kod prijenosa ROT->PRK").printStackTrace();
+    Aus.sub(zahStavkaOld, "KOL1", oldKol);
+    if (zahStavkaOld.getBigDecimal("KOL1").signum() < 0) {
+      Aus.clear(zahStavkaOld, "KOL1");
+      System.out.println("KOL < 0?? " + zahStavkaOld);
+    }
+    if (Aus.comp(zahStavkaOld, "KOL1", "KOL") < 0) {
+      zahStavkaOld.setString("STATUS", "N");
+      QueryDataSet master = doki.getDataModule().getTempSet(
+          Condition.whereAllEqual(Util.mkey, zahStavkaOld));
+      master.open();
+      if (master.getRowCount() == 1) {
+        master.setString("STATIRA", "N");
+        raTransaction.saveChanges(master);
+      } else new Throwable("Greška kod prijenosa ROT->PRK").printStackTrace();
+    }
     raTransaction.saveChanges(zahStavkaOld);
     return true;
   }
   
   private boolean updateZahStavka(QueryDataSet stavka) {
-    stavka.setString("STATUS", "P");
-    stavka.setString("VEZA", getDetailSet().getString("ID_STAVKA"));
-    Aus.set(stavka, "KOL1", getDetailSet(), "KOL");
+    //stavka.setString("STATUS", "P");
+    //stavka.setString("VEZA", getDetailSet().getString("ID_STAVKA"));
     getDetailSet().setString("VEZA", stavka.getString("ID_STAVKA"));
-    DataSet nonp = stdoki.getDataModule().getTempSet(Condition.whereAllEqual(
-        Util.mkey, stavka).and(Condition.equal("STATUS", "N")));
-    nonp.open();
-    if (nonp.rowCount() == 0 || (nonp.rowCount() == 1 &&
-        dM.compareColumns(stavka, nonp, vkey) == null)) {
-      // postavi status mastera na prenesen
-      QueryDataSet master = doki.getDataModule().getTempSet(
-          Condition.whereAllEqual(Util.mkey, stavka));
-      master.open();
-      if (master.getRowCount() == 1) {
-        master.setString("STATIRA", "P");
-        raTransaction.saveChanges(master);
-      } else new Throwable("Greška kod prijenosa ROT->PRK").printStackTrace();
+    
+    if (zahStavkaOld == stavka) Aus.sub(stavka, "KOL1", oldKol);
+    Aus.add(stavka, "KOL1", getDetailSet(), "KOL");
+    if (Aus.comp(stavka, "KOL1", "KOL") >= 0) {
+      stavka.setString("STATUS", "P");
+      DataSet nonp = stdoki.getDataModule().getTempSet(Condition.whereAllEqual(
+          Util.mkey, stavka).and(Condition.equal("STATUS", "N")));
+      nonp.open();
+      if (nonp.rowCount() == 0 || (nonp.rowCount() == 1 &&
+          dM.compareColumns(stavka, nonp, vkey) == null)) {
+        // postavi status mastera na prenesen
+        QueryDataSet master = doki.getDataModule().getTempSet(
+            Condition.whereAllEqual(Util.mkey, stavka));
+        master.open();
+        if (master.getRowCount() == 1) {
+          master.setString("STATIRA", "P");
+          raTransaction.saveChanges(master);
+        } else new Throwable("Greška kod prijenosa ROT->PRK").printStackTrace();
+      }
     }
-
     raTransaction.saveChanges(stavka);
     raTransaction.saveChanges(getDetailSet());
     return true;
@@ -470,7 +483,7 @@ System.out.println("key4del "+ key4del);
 
   public void AfterSaveDetail(char mode) {
     if (mode == 'N') {
-      SwingUtilities.invokeLater(new Runnable(){
+      /*SwingUtilities.invokeLater(new Runnable(){
         public void run() {
           jpDetail.rpc.EnabDisab(true);
           rcc.EnabDisabAll(jpDetail.rpc.jlrSklad,true);
@@ -480,7 +493,7 @@ System.out.println("key4del "+ key4del);
           jpDetail.rpc.jlrSklad.emptyTextFields();
           jpDetail.rpc.jlrSklad.requestFocus();
         }
-      });
+      });*/
     }
     vttext = null;
     
@@ -556,6 +569,7 @@ System.out.println("key4del "+ key4del);
   void afterArt() {
     if (zahStavkaNew != null) {
       Aus.set(getDetailSet(), "KOL", zahStavkaNew);
+      Aus.sub(getDetailSet(), "KOL", zahStavkaNew, "KOL1");
       getDetailSet().setString("NAZART", zahStavkaNew.getString("NAZART"));
       afterKOL();
     }
@@ -659,6 +673,7 @@ System.out.println("key4del "+ key4del);
     jpDetail = new jpNarDobDetail(this);
     this.setJPanelDetail(jpDetail);
     jpDetail.initRpcart();
+    jpDetail.rpc.enableNameChange(true);
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarDob", "hr.restart.robno.repNarDobSource", "NarDob", "Narudžbe dobavljaèu");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarPop", "hr.restart.robno.repNarDobSource", "NarPop", "Narudžbe dobavljaèu s popustom");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarDobV", "hr.restart.robno.repNarDobSource", "NarDob", "Narudžbe dobavljaèu u valuti");
