@@ -17,7 +17,10 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Orgstruktura;
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
@@ -34,6 +37,7 @@ import javax.swing.JPanel;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 
@@ -142,11 +146,24 @@ public class frmIzvjestajiPL extends raUpitLite {
     } else return "";
   }
 
+  private int inneeded = -1;
+  private boolean inQueryNeeded() {
+    if (inneeded < 0) {
+      if (frmParam.getParam("pl", "corginopt", "D", "Optimizirati in query u frmIzvjestajiPL (D/N").equalsIgnoreCase("D")) {
+        QueryDataSet ojs = Orgstruktura.getDataModule().getTempSet(Condition.equal("NALOG", "1"));
+        ojs.open();
+        inneeded = ojs.getRowCount()>1?1:0;
+      } else inneeded = 1; 
+    }
+    return inneeded == 1;
+  }
   public String getWhereQuery() {
+    if (!inQueryNeeded()) return "corg = corg " + getBetweenAhrQuery();
     return   "corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) + getBetweenAhrQuery();
   }
 
   public String getWhereQuery(String tabela) {
+    if (!inQueryNeeded()) return tabela+".corg = "+tabela+".corg"+getBetweenAhrQuery(tabela);
     return   tabela+".corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) + getBetweenAhrQuery(tabela);
   }
 
