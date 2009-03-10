@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.zapod.OrgStr;
+
 import java.sql.Timestamp;
 
 public class sjQuerys {
@@ -202,18 +204,19 @@ public class sjQuerys {
   }
   static String getPripOrg(String corg, String radnik, String baza) {
     int i=0;
-    String cVrati=baza+"CORG in (";
+    String cVrati=baza+"CORG in ";
     com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
-    tds.first();
-    do {
-      if (i>0) {
-        cVrati=cVrati+',';
-      }
-      i++;
-      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-      tds.next();
-    } while (tds.inBounds());
-    cVrati=cVrati+")";
+//    tds.first();
+//    do {
+//      if (i>0) {
+//        cVrati=cVrati+',';
+//      }
+//      i++;
+//      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
+//      tds.next();
+//    } while (tds.inBounds());
+//    cVrati=cVrati+")";
+    cVrati = cVrati + OrgStr.getOrgStr().getInQuery(tds, baza+"CORG");
     if (!radnik.equals("")) {
       cVrati=cVrati+" and "+baza+"CRADNIK='"+radnik+"'";
     }
