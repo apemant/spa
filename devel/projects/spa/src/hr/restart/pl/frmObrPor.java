@@ -34,6 +34,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -149,6 +151,13 @@ public class frmObrPor extends frmObradaPL {
   boolean succ=false;
   boolean showRazlCaPo = false;
   public void okPress() {
+    obracun.addPropertyChangeListener(new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("msg")) {
+          raProcess.setMessage(evt.getNewValue(), false);
+        }
+      }
+    });
     if (frmcrp!=null && frmcrp.getCRP() !=null) {//obr.prvo normalno onda razliku poreza
       succ = obracun.obracun(jcbDopr.isSelected(),jcbPor.isSelected(),jcbKred.isSelected(),jcbPrir.isSelected(),jcbLimitsPOR.isSelected(),jcbLimitsDOP.isSelected(),false);
       if (succ) {

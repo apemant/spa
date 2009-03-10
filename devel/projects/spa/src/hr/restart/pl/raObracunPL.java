@@ -27,11 +27,17 @@ import hr.restart.util.raTransaction;
 import hr.restart.util.sysoutTEST;
 import hr.restart.zapod.OrgStr;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeListenerProxy;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.ReadRow;
@@ -240,10 +246,14 @@ sysoutTEST ST = new sysoutTEST(false);
     }
   }
   private void loopRadnici() throws Exception {
-    if (radnici.getRowCount() == 0) return;
+    int radrc = radnici.getRowCount();
+    int cnt = 1;
+    if (radrc == 0) return;
     radnici.first();
     do {
 //System.out.println("Rolling shljaker "+radnici.getString("CRADNIK"));
+      firePropertyChange("msg", "", "Org.jed. "+radnici.getString("CORG")+" - obraèun plaæe za radnika "+cnt+" od "+radrc);
+      cnt++;
       primanja = Util.getNewQueryDataSet("SELECT * FROM primanjaobr where cradnik = '"+radnici.getString("CRADNIK")+"'");
       odbiciobr = Util.getNewQueryDataSet("SELECT * FROM odbiciobr where cradnik = '"+radnici.getString("CRADNIK")+"'");
       if (primanja.getRowCount() != 0) {
@@ -1272,7 +1282,18 @@ sysoutTEST ST = new sysoutTEST(false);
     } while (orgset.next());
   }
 
-
+//messaging
+  private LinkedList propertyChangeListeners = new LinkedList();
+  public void addPropertyChangeListener(PropertyChangeListener l) {
+    propertyChangeListeners.add(l);
+  }
+  public void firePropertyChange(String prop, Object oldVal, Object newVal) {
+    for (Iterator iterator = propertyChangeListeners.iterator(); iterator.hasNext();) {
+      PropertyChangeListener lis = (PropertyChangeListener) iterator.next();
+      lis.propertyChange(new PropertyChangeEvent(this, prop, oldVal, newVal));
+    }
+  }
+  
 
 
 //test
@@ -1284,6 +1305,7 @@ public static void main(String[] args) {
   }
 
 }
+
 //  System.out.println("SELECT * FROM kumulradarh where "+raPlObrRange.getInQueryIsp(2002,7,"kumulradarh"));
 //  System.out.println("r1 = "+raPlObrRange.getInQueryIsp(2002,7));
 //  System.out.println("SELECT * FROM kumulradarh where "+new raPlObrRange((short)2002,(short)3,(short)1,(short)2002,(short)10,(short)99).getQuery("KUMULRADarh"));
