@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
@@ -215,6 +216,7 @@ public class frmSpecKred extends frmIzvjestajiPL {
   public static QueryDataSet getQdsPOJ()
   {
     qdsPOJ.open();
+    qdsPOJ.setSort(new SortDescriptor(new String[]{"CVRODB","PREZIME","IME","RBRODB"}));
     return qdsPOJ;
   }
 
@@ -240,6 +242,8 @@ public class frmSpecKred extends frmIzvjestajiPL {
     else
       sIspPoj+=" and "+table+".cvrodb ='"+temp.getString("CVRODB")+"' group by "+table+".cradnik, "+table+".rbrodb";
 
+System.out.println("sIspZbir :: " + sIspZbir);
+System.out.println("sIspPoj :: " + sIspPoj);
     qdsZB.setQuery(new QueryDescriptor(dm.getDatabase1(), sIspZbir));
     qdsPOJ.setQuery(new QueryDescriptor(dm.getDatabase1(), sIspPoj));
 

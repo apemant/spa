@@ -981,7 +981,8 @@ public class plUtil {
   {
     String sIsp =  "select max("+table+".cradnik) as cradnik,max(radnici.corg) as corg, " +
                 " max("+table+".cvrodb) as cvrodb, sum("+table+".obriznos) as obriznos, "+
-                "sum("+table+".saldo) as saldo, max("+table+".rbrodb) as rbrodb"+
+                "sum("+table+".saldo) as saldo, max("+table+".rbrodb) as rbrodb, " +
+                		"max(radnici.prezime) as prezime, max(radnici.ime) as ime"+
                 " from "+table+", radnici where "+table+"."+where+
                   " and radnici.cradnik= "+table+".cradnik and radnici.";
 

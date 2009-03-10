@@ -92,7 +92,7 @@
           <Model Name="Section1">
                <Property Name="Model Name">Section</Property>
                <Property Name="Name">Section1</Property>
-               <Property Name="Field">CRadnik</Property>
+               <Property Name="Field">RadImePrez</Property>
                <Property Name="Sort Order">Ascending</Property>
                <Property Name="Group Header">No</Property>
                <Property Name="Group Footer">No</Property>

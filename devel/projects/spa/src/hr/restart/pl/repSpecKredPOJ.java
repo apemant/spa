@@ -151,11 +151,12 @@ public class repSpecKredPOJ implements sg.com.elixir.reportwriter.datasource.IDa
 
   public String getRadImePrez()
   {
-    String ime = "";
-    String prezime = "";
-    String cradnik = ds.getString("CRADNIK");
-    lookupData.getlookupData().raLocate(dm.getAllRadnici(), new String[] {"CRADNIK"}, new String[] {""+cradnik});
-    return dm.getAllRadnici().getString("IME")+" "+dm.getAllRadnici().getString("PREZIME");
+//    String ime = "";
+//    String prezime = "";
+//    String cradnik = ds.getString("CRADNIK");
+//    lookupData.getlookupData().raLocate(dm.getAllRadnici(), new String[] {"CRADNIK"}, new String[] {""+cradnik});
+//    return dm.getAllRadnici().getString("IME")+" "+dm.getAllRadnici().getString("PREZIME");
+    return ds.getString("PREZIME") + " " + ds.getString("IME");
   }
 
 //*****************************************************************
