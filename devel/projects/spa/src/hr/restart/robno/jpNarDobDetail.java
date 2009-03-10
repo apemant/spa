@@ -219,10 +219,11 @@ public class jpNarDobDetail extends JPanel {
       rcc.setLabelLaF(jraVc, false);
       rcc.setLabelLaF(jraIvc, false);
 
+      rpc.EnabDisab(true);
       rpcLostFocus = false;
-      rpc.setCART();
+      rpc.SetDefFocus();
 //      jrfCSKL.requestFocus();
-      rpc.jlrSklad.requestFocus();
+      //rpc.jlrSklad.requestFocus();
     } else if (mode == 'I') {
 //      rcc.EnabDisabAll(jpCSKL,false);
       rpc.EnabDisab(false);
@@ -417,7 +418,7 @@ public class jpNarDobDetail extends JPanel {
 	rpc.setCskl(frmNarDob.getInstance().getDetailSet().getString("CSKL"));
 	
     rpc.setTabela(frmNarDob.getInstance().getDetailSet());
-    rpc.setMode("DOH");
+    rpc.setMode("N");
     rpc.setBorder(null);
     rpc.dodText();
     rpc.setDefParam();
