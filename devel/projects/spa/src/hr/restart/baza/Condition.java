@@ -512,7 +512,8 @@ class SimpleCondition extends Condition {
     for (int i = 0, n = 0; i < Array.getLength(val); i++, n++) {
       st.append(del).append(Array.get(val, i)).append(del).append(',');
       if (n > MAXINQUERY) {
-        st.chop().append(')').append(" OR ").append(column).append(" IN (");
+        String qual = (table == null)?"":table+".";
+        st.chop().append(')').append(" OR ").append(qual).append(column).append(" IN (");
         n = 0;
         overflow = true;
       }

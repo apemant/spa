@@ -17,6 +17,9 @@
 ****************************************************************************/
 package hr.restart.os;
 
+import hr.restart.baza.Condition;
+import hr.restart.util.Aus;
+
 /**
  * <p>Title: Robno poslovanje</p>
  * <p>Description: </p>
@@ -153,19 +156,20 @@ public class sjQuerys {
     return str;
   }
   static String getPripOrg(String corg, String tekst) {
-    int i=0;
-    String cVrati=tekst+" in (";
     com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
-    tds.first();
-    do {
-      if (i>0) {
-        cVrati=cVrati+',';
-      }
-      i++;
-      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-    } while (tds.next());
-    cVrati=cVrati+")";
-    return cVrati;
+    return Condition.in(tekst, tds, "corg").toString();
+//    int i=0;
+//    String cVrati=tekst+" in (";
+//    tds.first();
+//    do {
+//      if (i>0) {
+//        cVrati=cVrati+',';
+//      }
+//      i++;
+//      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
+//    } while (tds.next());
+//    cVrati=cVrati+")";
+//    return cVrati;
   }
   static String checkMode(char mode) {
     if (mode=='P') {

@@ -224,19 +224,20 @@ public class frmStanjeKonto extends raUpit {
   }
 
   private String inCorg(String tablica){
-    ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(kontoPanel.getCorg());
-    String sqlCorgString = "";
-    if (!kontoPanel.getIsOrgstr() || stds.getString("ORGSTR").equals("1")) { //jrbOdabrana.isSelected()) {
-      sqlCorgString = " and "+tablica+".corg = '" + kontoPanel.jlrCorg.getText() + "' ";
-    } else {
-      ojs.first();
-      sqlCorgString = " and "+tablica+".corg in (";
-      do {
-        sqlCorgString = sqlCorgString + "'" + ojs.getString("CORG").trim() + "',";
-      } while (ojs.next());
-      sqlCorgString = sqlCorgString.substring(0, sqlCorgString.trim().length()) + ") ";
-    }
-    return sqlCorgString;
+    return " AND "+ Aus.getCorgInCond(kontoPanel.getCorg()).toString();
+//    ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(kontoPanel.getCorg());
+//    String sqlCorgString = "";
+//    if (!kontoPanel.getIsOrgstr() || stds.getString("ORGSTR").equals("1")) { //jrbOdabrana.isSelected()) {
+//      sqlCorgString = " and "+tablica+".corg = '" + kontoPanel.jlrCorg.getText() + "' ";
+//    } else {
+//      ojs.first();
+//      sqlCorgString = " and "+tablica+".corg in (";
+//      do {
+//        sqlCorgString = sqlCorgString + "'" + ojs.getString("CORG").trim() + "',";
+//      } while (ojs.next());
+//      sqlCorgString = sqlCorgString.substring(0, sqlCorgString.trim().length()) + ") ";
+//    }
+//    return sqlCorgString;
   }
 
   private String inKontas(String tablica){

@@ -21,6 +21,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Konta;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.raUpitLite;
 
@@ -114,22 +115,23 @@ public class frmZakList extends raUpitLite {
   QueryDataSet tempDS;
 
   public boolean Validacija(){
-    ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(kontoPanel.jlrCorg.getText());
+//    ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(kontoPanel.jlrCorg.getText());
 //    String sqlCorgString;
-    ojs.first();
-    sqlCorgString = " and gkkumulativi.corg in (";
-    do {
-      sqlCorgString += "'" + ojs.getString("CORG").trim() + "',";
-    } while (ojs.next());
-    sqlCorgString = sqlCorgString.substring(0, sqlCorgString.trim().length()) + ")";
+//    ojs.first();
+//    sqlCorgString = " and gkkumulativi.corg in (";
+//    do {
+//      sqlCorgString += "'" + ojs.getString("CORG").trim() + "',";
+//    } while (ojs.next());
+//    sqlCorgString = sqlCorgString.substring(0, sqlCorgString.trim().length()) + ")";
+    sqlCorgString = " and "+Aus.getCorgInCond(kontoPanel.jlrCorg.getText()).qualified("gkkumulativi");
 
-    String findK ="select max(gkkumulativi.brojkonta) as brojkonta, max(gkkumulativi.godmj) as godmj,"+
+    String findK ="select gkkumulativi.brojkonta as brojkonta, gkkumulativi.godmj as godmj,"+
                   " sum(gkkumulativi.id) as id, sum(gkkumulativi.ip) as ip from gkkumulativi where gkkumulativi.brojkonta like '%'" +
                   " and gkkumulativi.godmj in (" + range(jtGodina.getText().trim(), jtMjesecZav.getText().trim()) + ")" +
                   sqlCorgString + " group by brojkonta, godmj";
 
 //    /*QueryDataSet*/ tempDS = new QueryDataSet();
-
+System.out.println(findK);
     tempDS = util.getNewQueryDataSet(findK, false);
 
     tempDS.addColumn((Column) colPocID.clone());

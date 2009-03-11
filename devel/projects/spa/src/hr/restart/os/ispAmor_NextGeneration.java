@@ -168,14 +168,14 @@ public class ispAmor_NextGeneration extends raUpitLite {
   }
 
   private String queryString_Amortizacija(){
-    String corging = "OS_OBRADA2.";
+    String corging = "";
     String group1, group2, group3;
 
     if (isPripOrgJed()) {
       StorageDataSet ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(mainStorage.getString("CORG"));
-      corging += Condition.in("CORG",ojs).toString();
+      corging += Condition.in("CORG",ojs).qualified("OS_OBRADA2").toString();
     } else
-      corging += "CORG = '" + mainStorage.getString("CORG").trim() + "'";
+      corging += "OS_OBRADA2.CORG = '" + mainStorage.getString("CORG").trim() + "'";
 
     group1 = (isPoOrgJed()   ? "os_obrada2.corg" : "");
     group2 = (isOblikIsp()   ? ((isPoOrgJed()) ? ", os_obrada2."+mainStorage.getString("OBLIK") : " os_obrada2."+mainStorage.getString("OBLIK")) : "");
@@ -191,14 +191,14 @@ public class ispAmor_NextGeneration extends raUpitLite {
   }
 
   private String queryString_Likvidacija(){
-    String corging = "OS_OBRADA4.";
+    String corging = "";
     String qStr = "";
 
     if (isPripOrgJed()) {
       StorageDataSet ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(mainStorage.getString("CORG"));
-      corging += Condition.in("CORG",ojs).toString();
+      corging += Condition.in("CORG",ojs).qualified("OS_OBRADA4").toString();
     } else {
-      corging += "CORG = '" + mainStorage.getString("CORG").trim() + "'";
+      corging += "OS_OBRADA4.CORG = '" + mainStorage.getString("CORG").trim() + "'";
     }
     String datrange = Condition.between("DATLIKVIDACIJE", getDatumOd(), getDatumDo()).toString();
     if (isSInvBrojem()){

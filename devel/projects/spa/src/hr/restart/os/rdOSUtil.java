@@ -694,7 +694,7 @@ public class rdOSUtil {
                "CAST((os_sredstvo.osnpocetak+os_promjene.osnduguje-os_promjene.osnpotrazuje-os_sredstvo.isppocetak-os_promjene.isppotrazuje+os_promjene.ispduguje) AS numeric(15,2)) as dvanaest "+
                "from os_sredstvo, os_promjene where os_sredstvo.invbroj= os_promjene.invbroj "+
                "and os_promjene.datpromjene >="+pocDat+" and os_promjene.datpromjene <="+zavDat+
-               " and os_sredstvo.corg2= os_promjene.corg2 and os_sredstvo.status=os_promjene.status and os_promjene.status='A' and  os_sredstvo."+inCorg2+" ";
+               " and os_sredstvo.corg2= os_promjene.corg2 and os_sredstvo.status=os_promjene.status and os_promjene.status='A' and  "+inCorg2+" ";
         if(!sKonto.equals(""))
           qStr=qStr +  " and os_sredstvo.brojkonta ='" + sKonto+"'";
 //        qStr+= getRekapGB(gb); ///-> odkomentirati za staru verziju
@@ -1193,18 +1193,20 @@ public class rdOSUtil {
    int i=0;
    String cVrati;
    if (mode==8) {
-     cVrati=" "+corgTable.trim()+".CORG2 in (";
      com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
-     tds.first();
-     do {
-       if (i>0) {
-         cVrati=cVrati+',';
-       }
-       i++;
-       cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-       tds.next();
-     } while (tds.inBounds());
-     cVrati=cVrati+")";
+     cVrati = " "+Condition.in("CORG2", tds, "CORG").qualified(corgTable);
+//     cVrati=" "+corgTable.trim()+".CORG2 in (";
+//     com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
+//     tds.first();
+//     do {
+//       if (i>0) {
+//         cVrati=cVrati+',';
+//       }
+//       i++;
+//       cVrati=cVrati+"'"+tds.getString("CORG")+"'";
+//       tds.next();
+//     } while (tds.inBounds());
+//     cVrati=cVrati+")";
    }
    else {
      cVrati=" "+corgTable.trim()+".CORG2='"+str+"'";
@@ -1213,21 +1215,22 @@ public class rdOSUtil {
   }
 
   String getPripOrg(String str, String corgTable) {
-    int i=0;
-    String cVrati;
-      cVrati=" "+corgTable.trim()+".CORG2 in (";
-      com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
-      tds.first();
-      do {
-        if (i>0) {
-          cVrati=cVrati+',';
-        }
-        i++;
-        cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-        tds.next();
-      } while (tds.inBounds());
-      cVrati=cVrati+")";
-    return cVrati;
+    return getPripOrg(str, 8, corgTable);
+    //    int i=0;
+//    String cVrati;
+//      cVrati=" "+corgTable.trim()+".CORG2 in (";
+//      com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
+//      tds.first();
+//      do {
+//        if (i>0) {
+//          cVrati=cVrati+',';
+//        }
+//        i++;
+//        cVrati=cVrati+"'"+tds.getString("CORG")+"'";
+//        tds.next();
+//      } while (tds.inBounds());
+//      cVrati=cVrati+")";
+//    return cVrati;
   }
 
   /////
@@ -1235,18 +1238,19 @@ public class rdOSUtil {
  int i=0;
  String cVrati;
  if (mode==8) {
-   cVrati=" "+corgTable.trim()+".CORG in (";
-   com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
-   tds.first();
-   do {
-     if (i>0) {
-       cVrati=cVrati+',';
-     }
-     i++;
-     cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-     tds.next();
-   } while (tds.inBounds());
-   cVrati=cVrati+")";
+   cVrati = " "+Aus.getCorgInCond(str).qualified(corgTable);
+//   cVrati=" "+corgTable.trim()+".CORG in (";
+//   com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
+//   tds.first();
+//   do {
+//     if (i>0) {
+//       cVrati=cVrati+',';
+//     }
+//     i++;
+//     cVrati=cVrati+"'"+tds.getString("CORG")+"'";
+//     tds.next();
+//   } while (tds.inBounds());
+//   cVrati=cVrati+")";
  }
  else {
    cVrati=" "+corgTable.trim()+".CORG='"+str+"'";
@@ -1255,39 +1259,41 @@ public class rdOSUtil {
 }
 
 String getPripOrgAm(String str, String corgTable) {
-  int i=0;
-  String cVrati;
-    cVrati=" "+corgTable.trim()+".CORG in (";
-    com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
-    tds.first();
-    do {
-      if (i>0) {
-        cVrati=cVrati+',';
-      }
-      i++;
-      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-      tds.next();
-    } while (tds.inBounds());
-    cVrati=cVrati+")";
-  return cVrati;
+  return getPripOrgAm(str, 8, corgTable);
+//  int i=0;
+//  String cVrati;
+//    cVrati=" "+corgTable.trim()+".CORG in (";
+//    com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
+//    tds.first();
+//    do {
+//      if (i>0) {
+//        cVrati=cVrati+',';
+//      }
+//      i++;
+//      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
+//      tds.next();
+//    } while (tds.inBounds());
+//    cVrati=cVrati+")";
+//  return cVrati;
   }
 
   String getPripOrgPrim(String str, String corgTable) {
-    int i=0;
-    String cVrati;
-      cVrati=" "+corgTable.trim()+".CORG in (";
-      com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
-      tds.first();
-      do {
-        if (i>0) {
-          cVrati=cVrati+',';
-        }
-        i++;
-        cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-        tds.next();
-      } while (tds.inBounds());
-      cVrati=cVrati+")";
-    return cVrati;
+    return getPripOrgAm(str, 8, corgTable);
+//    int i=0;  //Djizus fakin kopipejstn krajst !!!
+//    String cVrati;
+//      cVrati=" "+corgTable.trim()+".CORG in (";
+//      com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
+//      tds.first();
+//      do {
+//        if (i>0) {
+//          cVrati=cVrati+',';
+//        }
+//        i++;
+//        cVrati=cVrati+"'"+tds.getString("CORG")+"'";
+//        tds.next();
+//      } while (tds.inBounds());
+//      cVrati=cVrati+")";
+//    return cVrati;
   }
 
    // Osnovna sredstva

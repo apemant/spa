@@ -275,7 +275,7 @@ public class frmBrBilancaPer extends raUpit {
     /** @todo zrelo za optimizaciju, ali cu pricekat response od korisnika */
     String qStr = "select "+gkstavke+" as realcorg, gkstavke.brojkonta as brojkonta, sum(gkstavke.id) as id, "+
                   "sum(gkstavke.ip) as ip, gkstavke.cvrnal as cvrnal "+
-                  "from gkstavke where gkstavke.knjig='"+knjigovodstvo+"' and gkstavke."+getCorgs()+" and "+
+                  "from gkstavke where gkstavke.knjig='"+knjigovodstvo+"' and "+getCorgs("gkstavke")+" and "+
 //                  "gkstavke.brojkonta = konta.brojkonta and "+
 //                  "gkstavke.brojkonta = konta.brojkonta and konta.aktiv='D' "+/*and konta.ispisbb='D' */"and "+
                   "gkstavke.brojkonta like '"+getBrKon()+"%' "+
@@ -288,7 +288,7 @@ public class frmBrBilancaPer extends raUpit {
       qStr +=" UNION ALL "+
              "select "+gkstavkerad+" as realcorg, gkstavkerad.brojkonta as brojkonta, sum(gkstavkerad.id) as id, "+
              "sum(gkstavkerad.ip) as ip, gkstavkerad.cvrnal as cvrnal  "+
-             "from gkstavkerad where gkstavkerad.knjig='"+knjigovodstvo+"' and gkstavkerad."+getCorgs()+" and "+
+             "from gkstavkerad where gkstavkerad.knjig='"+knjigovodstvo+"' and "+getCorgs("gkstavkerad")+" and "+
 //             "gkstavkerad.brojkonta = konta.brojkonta and "+
 //             "gkstavkerad.brojkonta = konta.brojkonta and konta.aktiv='D' "+/*and konta.ispisbb='D' */"and "+
              "gkstavkerad.brojkonta like '"+getBrKon()+"%' "+
@@ -581,14 +581,14 @@ public class frmBrBilancaPer extends raUpit {
     else return "";
   }
 
-  private String getCorgs(){
+  private String getCorgs(String table){
     String sqlCorgString = "";
     if (stds.getString("ORGSTR").equals("1")){ //jrbOdabrana.isSelected()) {
-      sqlCorgString = "CORG ='" + kontoPanel.getCorg() + "'";
+      sqlCorgString = table+".CORG ='" + kontoPanel.getCorg() + "'";
     } else {
       StorageDataSet ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(kontoPanel.getCorg());
-      if (ojs.rowCount()==1) return "CORG ='" + ojs.getString("CORG").trim() + "'";
-      sqlCorgString = Condition.in("CORG",ojs).toString();
+      if (ojs.rowCount()==1) return table+".CORG ='" + ojs.getString("CORG").trim() + "'";
+      sqlCorgString = Condition.in("CORG",ojs).qualified(table).toString();
     }
     return sqlCorgString;
   }

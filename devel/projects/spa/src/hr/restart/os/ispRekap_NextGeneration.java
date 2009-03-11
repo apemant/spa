@@ -343,6 +343,7 @@ System.out.println("IspisRekap_7");
 
     knjSDS.first();
     String inCorg = Condition.in("CORG2",knjSDS,"CORG").toString().toLowerCase();
+    String inCorg2 = Condition.in("CORG2",knjSDS,"CORG").qualified("os_sredstvo").toString().toLowerCase();
     String kontoStr = "";
 
     if (!this.jrfKonto.getText().trim().equals("")){
@@ -351,14 +352,14 @@ System.out.println("IspisRekap_7");
 
     String dn = "select invbroj as invbroj, corg2 as corg, osnduguje, osnpotrazuje, CAST((osnduguje - osnpotrazuje) AS numeric(15,2)) as c1, ispduguje, isppotrazuje, CAST((isppotrazuje - ispduguje) AS numeric(15,2)) as c2  FROM OS_Promjene where "+
                 "os_promjene.datpromjene >='"+ut.getFirstDayOfYear(tds.getTimestamp("pocDatum"))+"' and os_promjene.datpromjene < "+util.getTimestampValue(tds.getTimestamp("pocDatum"),0)+
-                " and  os_promjene."+ inCorg + " order by invbroj";
+                " and "+ inCorg + " order by invbroj";
 
     String ps = "SELECT invbroj as invbroj, brojkonta as brojkonta, corg2 as corg, osnpocetak as osnpocetak, isppocetak as isppocetak "+
                 "FROM OS_Sredstvo where"+
                 "(os_sredstvo.aktiv='D' or os_sredstvo.datlikvidacije >= '"+ut.getFirstDayOfYear(tds.getTimestamp("pocDatum"))+"')"+
-                "and  os_sredstvo."+ inCorg + kontoStr + " order by invbroj";
+                "and "+ inCorg + kontoStr + " order by invbroj";
 
-    qStr = rdOSUtil.getUtil().getRekapitulacija(inCorg, util.getTimestampValue(tds.getTimestamp("pocDatum"),0), util.getTimestampValue(tds.getTimestamp("zavDatum"),1), this.jrfKonto.getText().trim(), (OJ+KO+IB));//gb);
+    qStr = rdOSUtil.getUtil().getRekapitulacija(inCorg2, util.getTimestampValue(tds.getTimestamp("pocDatum"),0), util.getTimestampValue(tds.getTimestamp("zavDatum"),1), this.jrfKonto.getText().trim(), (OJ+KO+IB));//gb);
     Aus.refilter(tempSet, qStr);    
 
     finalSet.setColumns(tempSet.cloneColumns());

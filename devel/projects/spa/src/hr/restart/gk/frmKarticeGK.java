@@ -222,8 +222,8 @@ public class frmKarticeGK extends raUpit {
                knjigDifolt.trim() + "' and gkstavkerad" + kontoJe +
                "and gkstavkerad.datumknj >=" + newDateP + " and gkstavkerad.datumknj <=" + newDateZ +
                "and gkstavkerad.rbr=nalozi.rbr and gkstavkerad.knjig=nalozi.knjig and gkstavkerad.god=nalozi.god and gkstavkerad.cvrnal=nalozi.cvrnal";
-    String c = " and gkstavke." + getCorgs() + " "; //" and gkstavke.corg='" + kontoPanel.jlrCorg.getText().trim() + "'";
-    String cc = " and gkstavkerad." + getCorgs() + " "; //" and gkstavkerad.corg='" + kontoPanel.jlrCorg.getText().trim() + "'";
+    String c = " and " + getCorgs("gkstavke") + " "; //" and gkstavke.corg='" + kontoPanel.jlrCorg.getText().trim() + "'";
+    String cc = " and " + getCorgs("gkstavkerad") + " "; //" and gkstavkerad.corg='" + kontoPanel.jlrCorg.getText().trim() + "'";
     String slj = " order by ";
     if (stds.getString("SLJED").equals("D")) slj = slj+"2, 9 ";
     else slj = slj+"2, 8 ";
@@ -267,12 +267,12 @@ public class frmKarticeGK extends raUpit {
 
     if (!dev && stds.getString("DONOS").equals("D")){
       String donosQueryString = "";
-      String da = "select max(gkstavke.brojkonta) as brojkonta, sum(gkstavke.ip) as ip, sum(gkstavke.id) as id "+
-                  "from gkstavke, nalozi where gkstavke."+getCorgs() +" "+uvjetA+
+      String da = "select gkstavke.brojkonta as brojkonta, sum(gkstavke.ip) as ip, sum(gkstavke.id) as id "+
+                  "from gkstavke, nalozi where "+getCorgs("gkstavke") +" "+uvjetA+
                   " and gkstavke" + kontoJe + " and gkstavke.datumknj >='" + util.getFirstDayOfYear(stds.getTimestamp("pocDatum")) + "' "+
                   "and gkstavke.datumknj < " + newDateP + " and gkstavke.rbr=nalozi.rbr and gkstavke.knjig=nalozi.knjig and gkstavke.god=nalozi.god and gkstavke.cvrnal=nalozi.cvrnal group by brojkonta";
-      String db = " union all select max(gkstavkerad.brojkonta) as brojkonta, sum(gkstavkerad.ip) as ip, sum(gkstavkerad.id) as id "+
-                  "from gkstavkerad, nalozi where gkstavkerad."+getCorgs()+" " + uvjetB+
+      String db = " union all select gkstavkerad.brojkonta as brojkonta, sum(gkstavkerad.ip) as ip, sum(gkstavkerad.id) as id "+
+                  "from gkstavkerad, nalozi where "+getCorgs("gkstavkerad")+" " + uvjetB+
                   " and gkstavkerad" + kontoJe + " and gkstavkerad.datumknj >='" + util.getFirstDayOfYear(stds.getTimestamp("pocDatum")) + "' "+
                   "and gkstavkerad.datumknj < " + newDateP + " and gkstavkerad.rbr=nalozi.rbr and gkstavkerad.knjig=nalozi.knjig and gkstavkerad.god=nalozi.god and gkstavkerad.cvrnal=nalozi.cvrnal group by brojkonta";
 
@@ -294,7 +294,7 @@ public class frmKarticeGK extends raUpit {
 //    }
 
 //    System.out.println("queryString ::: "+queryString);
-
+System.out.println(queryString);
     QueryDataSet exRez = util.getNewQueryDataSet(queryString);
 
 //    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
@@ -962,17 +962,17 @@ public class frmKarticeGK extends raUpit {
 
   }
 
-  protected String getCorgs(){
+  protected String getCorgs(String table){
 //    sysoutTEST st = new sysoutTEST(false);
 //    st.prn(stds);
     String sqlCorgString = "";
     if (stds.getString("ORGSTR").equals("1")){ //jrbOdabrana.isSelected()) {
-      sqlCorgString = "CORG ='" + kontoPanel.getCorg() + "'";
+      sqlCorgString = table+".CORG ='" + kontoPanel.getCorg() + "'";
     } else {
       StorageDataSet ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(kontoPanel.getCorg());
 //      st.prn(ojs);
-      if (ojs.rowCount()==1) return "CORG ='" + ojs.getString("CORG").trim() + "'";
-      sqlCorgString = Condition.in("CORG",ojs).toString();
+      if (ojs.rowCount()==1) return table+".CORG ='" + ojs.getString("CORG").trim() + "'";
+      sqlCorgString = Condition.in("CORG",ojs).qualified(table).toString();
     }
 //    System.out.println("CONDITION = " + sqlCorgString);
     return sqlCorgString;

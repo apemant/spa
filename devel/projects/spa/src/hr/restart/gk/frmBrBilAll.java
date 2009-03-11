@@ -1650,7 +1650,7 @@ public class frmBrBilAll extends raUpitFat {
       
       qStr = "select "+gkkumulativi+" as realcorg, gkkumulativi.brojkonta as brojkonta, gkkumulativi.id as id, "+
       "gkkumulativi.ip as ip, gkkumulativi.godmj as godmj  "+
-      "from gkkumulativi where gkkumulativi.knjig='"+knjigovodstvo+"' and gkkumulativi."+getCorgs()+" and "+
+      "from gkkumulativi where gkkumulativi.knjig='"+knjigovodstvo+"' and "+getCorgs("gkkumulativi")+" and "+
       "gkkumulativi.brojkonta like '"+getBrKon()+"%' "+
       "and gkkumulativi.godmj in ("+range(stds.getString("GODINA"), stds.getString("POCMJ"), stds.getString("ZAVMJ"))+")";
       
@@ -1658,7 +1658,7 @@ public class frmBrBilAll extends raUpitFat {
         qStr += " UNION ALL "+
         "select "+gkstavkerad+" as realcorg, gkstavkerad.brojkonta as brojkonta, gkstavkerad.id as id, "+
         "gkstavkerad.ip as ip, gkstavkerad.godmj as godmj  "+
-        "from gkstavkerad where gkstavkerad.knjig='"+knjigovodstvo+"' and gkstavkerad."+getCorgs()+" and "+
+        "from gkstavkerad where gkstavkerad.knjig='"+knjigovodstvo+"' and "+getCorgs("gkstavkerad")+" and "+
         "gkstavkerad.brojkonta like '"+getBrKon()+"%' "+
         "and gkstavkerad.godmj in ("+range(stds.getString("GODINA"), stds.getString("POCMJ"), stds.getString("ZAVMJ"))+") ";
       }
@@ -1672,7 +1672,7 @@ public class frmBrBilAll extends raUpitFat {
       
       qStr = "select "+gkstavke+" as realcorg, gkstavke.brojkonta as brojkonta, " +
             "sum(gkstavke.id) as id, sum(gkstavke.ip) as ip, gkstavke.cvrnal as cvrnal "+
-      "from gkstavke where gkstavke.knjig='"+knjigovodstvo+"' and gkstavke."+getCorgs()+" and "+
+      "from gkstavke where gkstavke.knjig='"+knjigovodstvo+"' and "+getCorgs("gkstavke")+" and "+
       "gkstavke.brojkonta like '"+getBrKon()+"%' "+ps+
       "and (gkstavke."+getRange(false) + 
       " GROUP BY gkstavke.corg,gkstavke.brojkonta,gkstavke.cvrnal";
@@ -1681,7 +1681,7 @@ public class frmBrBilAll extends raUpitFat {
         qStr +=" UNION ALL "+
         "select "+gkstavkerad+" as realcorg, gkstavkerad.brojkonta as brojkonta, " +
          "sum(gkstavkerad.id) as id, sum(gkstavkerad.ip) as ip, gkstavkerad.cvrnal as cvrnal "+
-        "from gkstavkerad where gkstavkerad.knjig='"+knjigovodstvo+"' and gkstavkerad."+getCorgs()+" and "+
+        "from gkstavkerad where gkstavkerad.knjig='"+knjigovodstvo+"' and "+getCorgs("gkstavkerad")+" and "+
         "gkstavkerad.brojkonta like '"+getBrKon()+"%' "+
         "and (gkstavkerad."+getRange(true) +
         " GROUP BY gkstavkerad.corg,gkstavkerad.brojkonta,gkstavkerad.cvrnal";
@@ -1726,14 +1726,14 @@ public class frmBrBilAll extends raUpitFat {
     else return "";
   }
 
-  private String getCorgs(){
+  private String getCorgs(String table){
     String sqlCorgString = "";
     if (stds.getString("ORGSTR").equals("1")){
-      sqlCorgString = "CORG ='" + kontoPanel.getCorg() + "'";
+      sqlCorgString = table+".CORG ='" + kontoPanel.getCorg() + "'";
     } else {
       StorageDataSet ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(kontoPanel.getCorg());
-      if (ojs.rowCount()==1) return "CORG ='" + ojs.getString("CORG").trim() + "'";
-      sqlCorgString = Condition.in("CORG",ojs).toString();
+      if (ojs.rowCount()==1) return table+".CORG ='" + ojs.getString("CORG").trim() + "'";
+      sqlCorgString = Condition.in("CORG",ojs).qualified(table).toString();
     }
     return sqlCorgString;
   }
