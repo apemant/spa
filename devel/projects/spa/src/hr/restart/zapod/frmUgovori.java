@@ -324,7 +324,7 @@ System.out.println("Konaèmi "+vs);
 		}
 		HashMap hm = getCalcHashMap(stavke);
 		for (stavke.first(); stavke.inBounds(); stavke.next()) {
-			if (stavke.getString("MANIPULATIVNI") == null  || stavke.getString("MANIPULATIVNI").trim().length()==0 ) {
+			if (!(stavke.getString("MANIPULATIVNI") == null  || stavke.getString("MANIPULATIVNI").trim().length()==0 )) {
 				kalkManipStavka(stavke, hm);
 			}
 		}
@@ -927,8 +927,8 @@ System.out.println(m);
 			System.out.println("jeee");
 			QueryDataSet rbsovi = Util
 					.getNewQueryDataSet("SELECT RBR from stugovor where cugovor='"
-							+ getMasterSet().getString("CUGOVOR")+ "'"
-                            + " AND knjig = '"+getMasterSet().getString("KNJIG")+"'"
+							+ qds.getString("CUGOVOR")+ "'"
+                            + " AND knjig = '"+qds.getString("KNJIG")+"'"
                             + " and statusman='D'");
 			if(rbsovi.getRowCount()<1) {
 				qds.setBigDecimal("KOL", new BigDecimal("1.00"));
