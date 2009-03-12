@@ -111,6 +111,9 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
   public String getNazivRadnogMjesta() {
     return fil.getNazivRadnogMjesta();
   }
+  public String getInformationLine() {
+    return fil.getInformLine();
+  }
 
   public String getRadnik() {
     return radnici.getString("CRADNIK");

@@ -361,7 +361,7 @@ public class frmIspList extends frmIzvjestajiPL {
 
     vrprim = hr.restart.util.Util.getNewQueryDataSet("SELECT cvrp, naziv, parametri FROM vrsteprim");
     vrodb = hr.restart.util.Util.getNewQueryDataSet("SELECT cvrodb, opisvrodb FROM vrsteodb");
-    radpl = hr.restart.util.Util.getNewQueryDataSet("SELECT cradnik, cradmj, brojtek, cisplmj FROM radnicipl");
+    radpl = hr.restart.util.Util.getNewQueryDataSet("SELECT cradnik, cradmj, brojtek, cisplmj, cvro, jmbg FROM radnicipl");
     radmj = hr.restart.util.Util.getNewQueryDataSet("SELECT cradmj, nazivrm FROM radmj");
     mainPanel.add(jpr, BorderLayout.CENTER);
     jPanel2.add(jrcbPrikaz, new XYConstraints(475, 25, 100, -1));
@@ -482,7 +482,7 @@ public class frmIspList extends frmIzvjestajiPL {
   String nazivPrim, sati, koef, neto, bruto, nazivDop, osnovicaDop, stopa, iznos;
   String nazivNak, satiNaknada, iznosNak, nazivKred, iznosKred;
   String cradmj, nazradmj;
-  String brojtek, nazbanke, tipIsplate;
+  String brojtek, nazbanke, tipIsplate, nazvro;
   short cisplmj;
   int cbanke;
   public void findStrings(String crad, short rbrObr, short mjObr, short godObr) {
@@ -621,12 +621,32 @@ public class frmIspList extends frmIzvjestajiPL {
     tipIsplate = dm.getIsplMJ().getString("TIPISPLMJ");
     ld.raLocate(dm.getBankepl(), "CBANKE" ,String.valueOf(dm.getIsplMJ().getInt("CBANKE")));
     nazbanke = dm.getBankepl().getString("NAZBANKE");
+    dM.getDataModule().getVrodn().open();
+    ld.raLocate(dM.getDataModule().getVrodn(), "CVRO", radpl.getString("CVRO"));
+    nazvro = dM.getDataModule().getVrodn().getString("NAZIVRO");
 
 //    this.killAllReports();
 //    this.addReports();
 
   }
-
+  public String getNazivVRO() {
+    return nazvro;
+  }
+  public String getInformLine() {
+    String infolispl = frmParam.getParam("pl", "infolispl", "MRJ", "Na infou ispod imena na ispl.list. treba biti M=radno mjesto, R=Radni odnos, J=JMBG");
+    String il = "";
+    if (infolispl.indexOf("M")!=-1) {
+      il+= "\nRadno mjesto: "+getRadnoMjesto()+" "+getNazivRadnogMjesta();
+    }
+    if (infolispl.indexOf("R")!=-1) {
+      il+= "\nRadni odnos: "+getRadnicipl().getString("CVRO")+" "+getNazivVRO();
+    }
+    if (infolispl.indexOf("J")!=-1) {
+      il+= "\nJMBG: "+getRadnicipl().getString("JMBG");
+    }
+    return il;
+    
+  }
   public String getRadnoMjesto() {
     return cradmj;
   }
