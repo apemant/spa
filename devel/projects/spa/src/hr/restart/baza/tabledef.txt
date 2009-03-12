@@ -50,6 +50,7 @@
 # oblik inicijalizacije (onaj s hrpom poziva tipa KOLONA.setBlaBla(nesto)).
 
 $approdok
+
 #definicija robnog dokumenta iz appro07 aplikacije
 # NAME;TYPE;PRECISION;INDEX;DEFAULT;CAPTION<;WIDTH>
 Stat;char;1;;;Stat
@@ -95,9 +96,9 @@ VrijSPor;numeric;17,2;;0;VrijSPor
 ZaokrDok;numeric;17,2;;0;ZaokrDok
 Zaduzenje;numeric;17,2;;0;Zaduzenje
 Razduzenje;numeric;17,2;;0;Razduzenje
-Napomena1;char;60;;;Napomena1
-Napomena2;char;60;;;Napomena2
-Napomena3;char;60;;;Napomena3
+Napomena1;char;600;;;Napomena1
+Napomena2;char;600;;;Napomena2
+Napomena3;char;600;;;Napomena3
 UlazIzlaz;char;1;;;UlazIzlaz
 StatIsp;char;1;;;StatIsp
 DatIsp;timestamp;;;;DatIsp
@@ -108,7 +109,7 @@ DatProI;timestamp;;;;DatProI
 Drzi;char;4;;;Drzi
 DatDrzi;timestamp;;;;DatDrzi
 StatT;char;1;pkey;;StatT
-
+RNBROJ;char;20;pkey;;RNBROJ
 
 $Agenti
 LOKK;char;1;;N;Lokk;*
