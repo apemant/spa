@@ -159,20 +159,24 @@ public class frmKnjRobno extends frmKnjizenje {
     }
 
     private String getOpisStavke(DataSet ds) {
-        
+        String osip = "";
         try {
 
-            return ds.getString("CSKL") + "-" + ds.getString("GOD") + "-"
+          osip= ds.getString("CSKL") + "-" + ds.getString("GOD") + "-"
                     + ds.getString("VRDOK") + "-" + ds.getInt("BRDOK");
         } catch (Exception ex) {
           try {
-            return ds.getString("CSKLIZ") + "-" + ds.getString("CSKLUL") + "-"
+            osip= ds.getString("CSKLIZ") + "-" + ds.getString("CSKLUL") + "-"
                     + ds.getString("GOD") + "-" + ds.getString("VRDOK") + "-"
                     + ds.getInt("BRDOK");
           } catch (Exception ex2) {
-            return "prijenos iz RK";
+            osip= "prijenos iz RK";
           }
         }
+        if (frmParam.getParam("robno", "krkpnbz2opis", "N", "Ubaciti pnbz2 u opis stavke gk pri prijenosu u robno").equalsIgnoreCase("D")) {
+          osip = ds.getString("PNBZ2")+" "+osip.trim();
+        }
+        return osip;
     }
 
     public void setStatusCheck(boolean _statusCheck) {
