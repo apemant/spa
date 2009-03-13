@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.reports.ReportModifier;
 import hr.restart.util.reports.raElixirPropertyValues;
 import hr.restart.util.reports.raIzlazPageFooter;
@@ -77,5 +78,10 @@ public class repUpitPonudaTemplate extends repOTPOrigTemplate {
     this.LabelSifra.setCaption(Aut.getAut().getIzlazCARTdep("Šifra", "Oznaka", "Barcode"));
     this.SectionHeader1.resizeElement(this.LabelSifra, Aut.getAut().getIzlazCARTwidth(), this.LabelNaziv_artikla);
     this.Detail.resizeElement(this.TextCART, Aut.getAut().getIzlazCARTwidth(), this.TextNAZART);
+    TextNAZARText.setLeft(TextNAZART.getLeft());
+    boolean wide = frmParam.getParam("robno", "extNazartWide", "N", 
+        "Široki dodatni opis artikla (D,N)?").equalsIgnoreCase("D");
+    if (!wide) TextNAZARText.setWidth(TextNAZART.getWidth());
+    else TextNAZARText.setWidth(TextKOL.getLeft() - TextNAZARText.getLeft() - 20);
   }
 }
