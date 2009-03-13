@@ -203,7 +203,7 @@ public class repRacunPOS extends mxReport {
 
   private String getNacinPlacanja(int cnp, String cskl){
 //    String nacini = "";
-    QueryDataSet npos = ut.getNewQueryDataSet("SELECT max(nacpl.naznacpl) as naznacpl, sum(rate.irata) as irata FROM rate,nacpl "+
+    QueryDataSet npos = ut.getNewQueryDataSet("SELECT nacpl.naznacpl as naznacpl, sum(rate.irata) as irata FROM rate,nacpl "+
                                               "WHERE rate.cnacpl = nacpl.cnacpl "+
                                               "and rate.brdok = " + cnp + " and rate.vrdok = 'GRC' and rate.god='"+ god + //Aut.getAut().getKnjigodRobno() +
                                               "' and rate.cskl= '" + cskl + "' group by naznacpl");
