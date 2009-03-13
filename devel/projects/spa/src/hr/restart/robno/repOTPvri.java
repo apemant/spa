@@ -24,20 +24,19 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import com.borland.dx.dataset.DataRow;
-import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 
 public class repOTPvri extends repIzlazni implements raReportData { //sg.com.elixir.reportwriter.datasource.IDataProvider {
 
-  _Main main;
-  DataSet ds = reportsQuerysCollector.getRQCModule().getQueryDataSet();
-  hr.restart.baza.dM dm= hr.restart.baza.dM.getDataModule();
-  raDateUtil rdu = raDateUtil.getraDateUtil();
+  //_Main main;
+  //DataSet ds = reportsQuerysCollector.getRQCModule().getQueryDataSet();
+  //hr.restart.baza.dM dm= hr.restart.baza.dM.getDataModule();
+  //raDateUtil rdu = raDateUtil.getraDateUtil();
 
-  String[] colname = new String[] {""};
-  repUtil ru = repUtil.getrepUtil();
-  hr.restart.util.Util ut =  hr.restart.util.Util.getUtil();
-  repMemo rm = repMemo.getrepMemo();
+  //String[] colname = new String[] {""};
+  //repUtil ru = repUtil.getrepUtil();
+  //hr.restart.util.Util ut =  hr.restart.util.Util.getUtil();
+  //repMemo rm = repMemo.getrepMemo();
 
 
   public repOTPvri() {
