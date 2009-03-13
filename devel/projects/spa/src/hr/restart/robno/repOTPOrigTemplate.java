@@ -89,6 +89,10 @@ public abstract class repOTPOrigTemplate extends raReportTemplate {
   public raReportElement TextNAZART;
   private String[] TextNAZARTProps = new String[] {"NAZART", "", "", "", "", "", "", "", "2440", "",
      "5960", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "No"};
+  public raReportElement TextNAZARText;
+  private String[] TextNAZARTextProps = new String[] {"NAZARText", "", "", "", "", "", "Yes", "Yes", "2440", "220",
+     "5960", "0", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "Yes"};
+  
   public raReportElement TextCART;
   private String[] TextCARTProps = new String[] {"CART", "", "", "", "", "", "", "", "480", "",
      "1940", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
@@ -156,6 +160,7 @@ public abstract class repOTPOrigTemplate extends raReportTemplate {
     TextKOL = sect.addModel(ep.TEXT, TextKOLProps);
     TextRBR = sect.addModel(ep.TEXT, TextRBRProps);
     TextNAZART = sect.addModel(ep.TEXT, TextNAZARTProps);
+    TextNAZARText = sect.addModel(ep.TEXT, TextNAZARTextProps);
     TextCART = sect.addModel(ep.TEXT, TextCARTProps);
     return sect;
   }
