@@ -113,6 +113,7 @@ public class raUZP extends raIzlazTemplate {
       MP.BindComp();
       DP.BindComp();
       DP.rpcart.addSkladField(hr.restart.robno.Util.getSkladFromCorg());
+      DP.rpcart.enableNameChange(true);
       DP.resizeDP();
       this.setVisibleColsMaster(new int[] { 4, 5, 9 });
   }
@@ -334,6 +335,8 @@ public class raUZP extends raIzlazTemplate {
           DP.rpcart.setCskl(zahStavkaNew.getString("CSKL"));
         if (!haveArt) DP.rpcart.setCART(doh.getInt("CART"));
         Aus.set(getDetailSet(), "KOL", zahStavkaNew);
+        Aus.sub(getDetailSet(), "KOL", zahStavkaNew, "KOL1");
+        getDetailSet().setString("NAZART", zahStavkaNew.getString("NAZART"));
       }
   }
   
