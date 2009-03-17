@@ -78,7 +78,7 @@ public class Parametri extends KreirDrop implements DataModule {
     parametriPARAM.setCaption("Parametar");
     parametriPARAM.setColumnName("PARAM");
     parametriPARAM.setDataType(com.borland.dx.dataset.Variant.STRING);
-    parametriPARAM.setPrecision(15);
+    parametriPARAM.setPrecision(25);
     parametriPARAM.setRowId(true);
     parametriPARAM.setTableName("PARAMETRI");
     parametriPARAM.setSqlType(1);
@@ -128,7 +128,7 @@ public class Parametri extends KreirDrop implements DataModule {
 
     ddl.create("parametri")
        .addChar("app", 10, true)
-       .addChar("param", 15, true)
+       .addChar("param", 25, true)
        .addChar("opispar", 100)
        .addChar("vrijednost", 60)
        .addChar("sistemski", 1, "G")
