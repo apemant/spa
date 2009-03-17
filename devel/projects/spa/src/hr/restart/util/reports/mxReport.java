@@ -18,6 +18,7 @@
 package hr.restart.util.reports;
 
 import hr.restart.util.Aus;
+import hr.restart.util.Util;
 
 /**
  * Utility za kreiranje matricnih reporta
@@ -585,7 +586,31 @@ public class mxReport {
  */
   public void print() {
     try {
-      java.lang.Runtime.getRuntime().exec(RM.getPrintCommand()).waitFor();
+System.out.println("mxReport:: exec proc "+RM.getPrintCommand());
+      Process proc = java.lang.Runtime.getRuntime().exec(RM.getPrintCommand());
+System.out.println("mxReport:: waitFor proc "+RM.getPrintCommand());
+      //proc.waitFor();
+      /*int cnt = 0;
+      while (true) {
+          try {
+            cnt ++;
+            if (cnt>10) break;
+            print("pokusaj "+cnt);
+            System.out.println(proc.exitValue());
+            break;
+          } catch (IllegalThreadStateException itse) {
+            print(itse);
+            //Thread.sleep(300);
+          }
+      }*/
+System.out.println("mxReport:: outputting input stream for "+proc);
+      Util.bufferedReadOut(proc.getInputStream());
+System.out.println("mxReport:: outputting error stream for "+proc);
+      Util.bufferedReadOut(proc.getErrorStream());
+System.out.println("mxReport:: done with proc "+proc);
+//      while ((ch = proc.getErrorStream().read()) > -1) System.out.write(ch);
+//      while ((ch = proc.getInputStream().read()) > -1) System.out.write(ch);
+
     } catch (Exception e) {
       e.printStackTrace();
       System.out.println("Ispis neuspjesan Exeption: "+e+"\nCommand: "+RM.getPrintCommand());
