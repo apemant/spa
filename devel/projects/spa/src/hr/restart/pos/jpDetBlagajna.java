@@ -28,6 +28,7 @@ import hr.restart.util.raCommonClass;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -225,10 +226,10 @@ public class jpDetBlagajna extends JPanel {
     this.setLayout(xYLayout1);
     jPanel1.setBorder(BorderFactory.createRaisedBevelBorder());
     jPanel1.setLayout(xYLayout2);
-    jLabel1.setFont(new java.awt.Font("Dialog", 1, 20));
+    jLabel1.setFont(getBrojRacFont());
     jLabel1.setForeground(Color.black);
     jLabel1.setText("BROJ");
-    jLabel2.setFont(new java.awt.Font("Dialog", 1, 20));
+    jLabel2.setFont(getBrojRacFont());
     jLabel2.setForeground(Color.black);
     jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
     jLabel2.setText("jLabel2");
@@ -242,12 +243,10 @@ public class jpDetBlagajna extends JPanel {
     jLabel3.setText("Artikl");
     jLabel4.setText("Stavka");
     jtfIZNOS.setColumnName("IZNOS");
-    jLabel10.setFont(new java.awt.Font("Dialog", 1, 13));
+    jLabel10.setFont(getOrgSkladBlagUserFont());
     jLabel10.setHorizontalAlignment(SwingConstants.CENTER);
-    jLabel10.setText("jLabel10");
-    jLabel11.setFont(new java.awt.Font("Dialog", 1, 13));
+    jLabel11.setFont(getOrgSkladBlagUserFont());
     jLabel11.setHorizontalAlignment(SwingConstants.CENTER);
-    jLabel11.setText("jLabel11");
     jtfKOL.setColumnName("KOL");
     /*jtfKOL.addKeyListener(new jpDetBlagajna_jtfKOL_keyAdapter(this));*/
     jtfPOPUST.setColumnName("PPOPUST1");
@@ -258,16 +257,16 @@ public class jpDetBlagajna extends JPanel {
     jPanel4.setLayout(xYLayout5);
     jPanel5.setBorder(BorderFactory.createRaisedBevelBorder());
     jPanel5.setLayout(xYLayout6);
-    jLabel5.setFont(new java.awt.Font("Dialog", 1, 11));
+    jLabel5.setFont(getRightPanelLabelsFont());
     jLabel5.setText("UKUPNO");
     jPanel6.setBorder(BorderFactory.createRaisedBevelBorder());
     jPanel6.setLayout(xYLayout7);
     jPanel7.setBorder(BorderFactory.createRaisedBevelBorder());
     jPanel7.setLayout(xYLayout8);
-    jLabel6.setFont(new java.awt.Font("Dialog", 1, 11));
+    jLabel6.setFont(getRightPanelLabelsFont());
     jLabel6.setForeground(Color.black);
     jLabel6.setText("%");
-    jLabel7.setFont(new java.awt.Font("Dialog", 1, 11));
+    jLabel7.setFont(getRightPanelLabelsFont());
     jLabel7.setText("PLATITI");
     jPanel8.setLayout(xYLayout9);
     jPanel9.setLayout(xYLayout10);
@@ -275,21 +274,18 @@ public class jpDetBlagajna extends JPanel {
     jPanel8.setBorder(BorderFactory.createRaisedBevelBorder());
     jPanel9.setBorder(BorderFactory.createRaisedBevelBorder());
     jPanel10.setBorder(BorderFactory.createRaisedBevelBorder());
-    jLabel12.setText("jLabel12");
     jLabel12.setColumnName("IZNOS");
-    jLabel12.setFont(new java.awt.Font("Dialog", 1, 14));
+    jLabel12.setFont(getRightPanelValuesFont());
     jLabel12.setForeground(Color.black);
     jLabel12.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel13.setText("jLabel13");
     jLabel13.setColumnName("UIPOPUST2");
-    jLabel13.setFont(new java.awt.Font("Dialog", 1, 14));
+    jLabel13.setFont(getRightPanelValuesFont());
     jLabel13.setForeground(Color.black);
     jLabel13.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel14.setText("jLabel14");
     jLabel14.setColumnName("NETO");
     jLabel14.setForeground(Color.red);
     jLabel14.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel14.setFont(new java.awt.Font("Dialog", 1, 14));
+    jLabel14.setFont(getRightPanelValuesFont());
 //    jtfPOP.setColumns(0);
     jtfPOP.setColumnName("UPPOPUST2");
     jtfPOP.addFocusListener(new jpDetBlagajna_jtfPOP_focusAdapter(this));
@@ -378,6 +374,22 @@ public class jpDetBlagajna extends JPanel {
     jPanel9.add(jLabel13,     new XYConstraints(50, 7, 60, -1));
     jPanel2.add(jPanel10,        new XYConstraints(76, 68, 122, 34));
     jPanel10.add(jLabel14,     new XYConstraints(0, 7, 110, -1));
+  }
+  private Font getRightPanelValuesFont() {
+//    return new java.awt.Font("Dialog", 1, 14);
+    return new java.awt.Font("Dialog", 1, 20);
+  }
+  private Font getRightPanelLabelsFont() {
+//    return new java.awt.Font("Dialog", 1, 11);
+    return new java.awt.Font("Dialog", 1, 14);
+  }
+  private Font getOrgSkladBlagUserFont() {
+//    return new java.awt.Font("Dialog", 1, 13);
+    return new java.awt.Font("Dialog", 1, 20);
+  }
+  private Font getBrojRacFont() {
+//    return new java.awt.Font("Dialog", 1, 20);
+    return new java.awt.Font("Dialog", 1, 24);
   }
   void setDataSet(com.borland.dx.sql.dataset.QueryDataSet master, com.borland.dx.sql.dataset.QueryDataSet detail) {
     jtfKOL.setDataSet(detail);
