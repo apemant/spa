@@ -1236,11 +1236,13 @@ public class frmMasterBlagajna extends raMasterDetail {
       if (narSet.rowCount() > 0) {
         narDest = (String) rms.get(gr);
         raDetail.getRepRunner().setOneTimeDirectReport("hr.restart.robno.repNarPOS");
+        System.out.println("Zovem Funkcija_ispisa ... za destinaciju "+narDest);
         raDetail.Funkcija_ispisa();
         try {
+          System.out.println("Spavam 250 ...");
           Thread.sleep(250);
         } catch (InterruptedException e) {
-          // blah
+          e.printStackTrace();
         }
       }
     }
