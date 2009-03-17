@@ -351,7 +351,7 @@ System.out.println("  adding menuShItem "+menuShItem.getText());
     }
     JPanel navPanel = new JPanel() {
 //    pogodak brand
-      private Image img = raImages.getImageIcon(raImages.IMGPOGODAK).getImage();//288x70
+/*      private Image img = raImages.getImageIcon(raImages.IMGPOGODAK).getImage();//288x70
       //   setBorder(BorderFactory.createLineBorder(Color.black,2));
       public void paint(Graphics g) {
         super.paint(g);
@@ -361,7 +361,7 @@ System.out.println("  adding menuShItem "+menuShItem.getText());
         double x = getWidth() - w - 10;
         g.drawImage(img, (int)x, 0, (int)w, getHeight(), this);
       }
-      
+*/      
     };
     final raNavAction namnu = new raNavAction("Menu",raImages.IMGTABLE,KeyEvent.VK_M,KeyEvent.CTRL_MASK) {
       public void actionPerformed(ActionEvent e) {

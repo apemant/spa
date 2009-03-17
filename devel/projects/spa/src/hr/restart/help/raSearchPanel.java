@@ -105,13 +105,13 @@ public class raSearchPanel extends JPanel {
       }
     });
     jrbSearch.setText("Traži u SPA");
-    jrbSearch.setIcon(raImages.getImageIcon(raImages.IMGSTICKER,21,false));
+//    jrbSearch.setIcon(raImages.getImageIcon(raImages.IMGSTICKER,21,false));
     jrbSearch.setHorizontalAlignment(SwingConstants.LEFT);
     jrbSearchWeb.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         try {
           raLiteBrowser.openSystemBrowser(
-              new URL("http://www.pogodak.hr/search.jsp?q="+
+              new URL("http://www.google.hr/search?q="+
                   Aus.convertToURLFriendly(jtSearchString.getText())));
         } catch (MalformedURLException e1) {
           e1.printStackTrace();
@@ -119,7 +119,7 @@ public class raSearchPanel extends JPanel {
       }
     });
     jrbSearchWeb.setText("Traži na webu");
-    jrbSearchWeb.setIcon(raImages.getImageIcon(raImages.IMGPOGODAK,21,false));
+//    jrbSearchWeb.setIcon(raImages.getImageIcon(raImages.IMGPOGODAK,21,false));
     jrbSearchWeb.setHorizontalAlignment(SwingConstants.LEFT);
     GridLayout lay = new GridLayout(2, 1);
     jpSearchButtons.setLayout(lay);
