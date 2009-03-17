@@ -342,7 +342,7 @@ public class upUlazIzlaz extends raUpitFat {
   }
   
   public String navDoubleClickActionName(){
-    return "";
+    return "Prikaz dokumenta";
   }
 
   int[] visiz = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14};
@@ -356,7 +356,7 @@ public class upUlazIzlaz extends raUpitFat {
   
   protected void addNavBarOptions() {
     super.addNavBarOptions();
-    getJPTV().getNavBar().removeOption(rnvDoubleClick);
+//    getJPTV().getNavBar().removeOption(rnvDoubleClick);
   }
 
   public void firstESC() {
