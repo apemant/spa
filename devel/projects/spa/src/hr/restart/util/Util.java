@@ -39,7 +39,11 @@ import hr.restart.baza.Refresher;
 import hr.restart.baza.dM;
 import hr.restart.db.raVariant;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -2205,6 +2209,25 @@ System.out.println("desetice "+inTxtVal.substring(9,11));
       }
     }
     return table;
+  }
+  public static void bufferedReadOut(InputStream in) {
+    bufferedReadOut(in, System.out);
+  }
+  public static void bufferedReadOut(InputStream in, OutputStream out) {
+    bufferedReadOut(in,out,1024);
+  }
+  public static void bufferedReadOut(InputStream in, OutputStream out, int buffersize) {
+    byte[] buff = new byte[buffersize];
+    int count = 0;
+    try {
+      do {
+        count = in.read(buff);
+        if (count > 0) out.write(buff, 0, count);
+      } while (count >= 0);
+      out.flush();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 /* fora ali radi sa java 1.4+  :(
   public static String getMyIpFromWeb(){
