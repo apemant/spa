@@ -226,7 +226,7 @@ public class jpDetBlagajna extends JPanel {
     this.setLayout(xYLayout1);
     jPanel1.setBorder(BorderFactory.createRaisedBevelBorder());
     jPanel1.setLayout(xYLayout2);
-    jLabel1.setFont(getBrojRacFont());
+    jLabel1.setFont(getLabelBrojRacFont());
     jLabel1.setForeground(Color.black);
     jLabel1.setText("BROJ");
     jLabel2.setFont(getBrojRacFont());
@@ -350,7 +350,7 @@ public class jpDetBlagajna extends JPanel {
     jPanel1.add(jLabel10,    new XYConstraints(50, 10, 430, -1));
     this.add(jPanel4,    new XYConstraints(540, 5, 200, 75));
     jPanel4.add(jLabel1,     new XYConstraints(10, 23, -1, -1));
-    jPanel4.add(jLabel2,      new XYConstraints(80, 23, 110, -1));
+    jPanel4.add(jLabel2,      new XYConstraints(80, 0, 110, 75));
     jPanel3.add(jtfPOPUST,   new XYConstraints(470, 65, 40, -1));
     jPanel3.add(jrfJM,   new XYConstraints(470, 20, 40, -1));
     
@@ -369,15 +369,15 @@ public class jpDetBlagajna extends JPanel {
     jPanel2.add(jPanel7,         new XYConstraints(0, 68, 76, 34));
     jPanel7.add(jLabel7,   new XYConstraints(5, 7, -1, -1));
     jPanel2.add(jPanel8,      new XYConstraints(76, 0, 122, 34));
-    jPanel8.add(jLabel12,     new XYConstraints(0, 7, 110, -1));
+    jPanel8.add(jLabel12,     new XYConstraints(0, -3/*7*/, 110, 34/*-1*/));
     jPanel2.add(jPanel9,     new XYConstraints(76, 34, 122, 34));
-    jPanel9.add(jLabel13,     new XYConstraints(50, 7, 60, -1));
+    jPanel9.add(jLabel13,     new XYConstraints(0, -3/*7*/, 110, 34/*-1*/));
     jPanel2.add(jPanel10,        new XYConstraints(76, 68, 122, 34));
-    jPanel10.add(jLabel14,     new XYConstraints(0, 7, 110, -1));
+    jPanel10.add(jLabel14,     new XYConstraints(0, -3/*7*/, 110, 34/*-1*/));
   }
   private Font getRightPanelValuesFont() {
 //    return new java.awt.Font("Dialog", 1, 14);
-    return new java.awt.Font("Dialog", 1, 20);
+    return new java.awt.Font("Dialog", 1, 22);
   }
   private Font getRightPanelLabelsFont() {
 //    return new java.awt.Font("Dialog", 1, 11);
@@ -388,6 +388,9 @@ public class jpDetBlagajna extends JPanel {
     return new java.awt.Font("Dialog", 1, 20);
   }
   private Font getBrojRacFont() {
+    return new java.awt.Font("Dialog", 1, 40);
+  }
+  private Font getLabelBrojRacFont() {
 //    return new java.awt.Font("Dialog", 1, 20);
     return new java.awt.Font("Dialog", 1, 24);
   }
