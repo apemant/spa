@@ -562,6 +562,7 @@ public class frmID extends raUpitLite {
     colGodina = dm.createIntColumn("GODINA");
     colInozemstvo = dm.createBigDecimalColumn("INOZEMSTVO",2);
     colIdent = dm.createStringColumn("IDENTIFIKATOR",2);
+    colIdent.setDefault("1");
 
     jraMjesec.setDataSet(fieldSet);
     jraMjesec.setColumnName("MJESEC");
