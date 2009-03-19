@@ -22,8 +22,8 @@
      <Property Name="Grid X">4</Property>
      <Property Name="Grid Y">4</Property>
      <Property Name="Version">1.50</Property>
-     <Property Name="Last Modified">Wed Jan 21 16:24:05 CET 2009</Property>
-     <HiddenProperty Name="Template Path">/Users/andrej/Documents/workspace/devel/projects/spa/classes/hr/restart/pl/reports/</HiddenProperty>
+     <Property Name="Last Modified">Thu Mar 19 10:21:36 CET 2009</Property>
+     <HiddenProperty Name="Template Path">/Users/andrej/Documents/workspace/devel/projects/spa/src/hr/restart/pl/reports/</HiddenProperty>
      <HiddenProperty Name="Text_Count">108</HiddenProperty>
      <HiddenProperty Name="Label_Count">224</HiddenProperty>
      <HiddenProperty Name="Image_Count">0</HiddenProperty>
@@ -3030,7 +3030,7 @@ o primicima od nesamostalnog rada (plaći i mirovini), porezu na dohodak i prire
           <Model Name="Label145">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label145</Property>
-               <Property Name="Caption">Uplaćene premije osiguranja (od 2.1.1. do 2.2.3.)</Property>
+               <Property Name="Caption">Uplaćene premije osiguranja (od 2.2.1. do 2.2.3.)</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1120</Property>
                <Property Name="Top">4600</Property>
