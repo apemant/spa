@@ -443,7 +443,11 @@ public class repIzlazni implements raReportData {
     String cached = cache.getValue("NAZORG", ds.getString("CORG"));
     if (cached != null) return cached;
     colname[0] = "CORG";
-    return cache.returnValue(ru.getSomething(colname,dm.getOrgstruktura(),"NAZIV").getString());
+    String ret = cache.returnValue(ru.getSomething(colname,dm.getOrgstruktura(),"NAZIV").getString());
+    if (ds.getString("VRDOK").equals("TRE")) {//ai hack za trebovanja
+      return ret+" "+ds.getString("OPIS");
+    } 
+    return ret;
 //    return "EEEEEEEEE";
   }
 
@@ -1225,6 +1229,19 @@ public BigDecimal getIPRODSP() {
       return cache.returnValue(ime.concat(" ".concat(prezime)));
     }
     return cache.returnValue("");
+  }
+  //ai trebovanja CKO = CRADNIK
+  public String getNaruciteljCKO() {
+    String cached = cache.getValue("IMEIBEZIME", ds.getInt("CKO")+"");
+    if (cached != null) return cached;
+    if (ds.getInt("CKO")>0){
+      if (lookupData.getlookupData().raLocate(dm.getRadnici(), "CRADNIK", ds.getInt("CKO")+"")) {
+        String ime =  dm.getRadnici().getString("IME");
+        String prezime =  dm.getRadnici().getString("PREZIME");
+        return cache.returnValue(ime.concat(" ".concat(prezime)));
+      }
+    }
+    return cache.returnValue("");    
   }
 
   static VarStr nacpl;

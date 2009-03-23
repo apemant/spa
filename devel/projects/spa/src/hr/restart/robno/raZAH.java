@@ -80,7 +80,6 @@ public class raZAH extends raIzlazTemplate {
     
     MP.BindComp();
     DP.BindComp();
-    
     raDetail.addOption(navZatvori, 4);
     
     raMaster.getJpTableView().addTableModifier(new raTableColumnModifier(
@@ -90,6 +89,57 @@ public class raZAH extends raIzlazTemplate {
     
   }
   
+  public void RestSetup() {
+    super.RestSetup();
+    alterMP();
+  }
+  private void alterMP() {
+    MP.panelDodatni.jlAgent.setText("Voditelj");
+    MP.panelDodatni.jlKontaktOsoba.setText("Naruèitelj");
+    MP.panelDodatni.jrfKO.setNavColumnName("CRADNIK");
+    setRadniciKO();
+    MP.panelDodatni.jrfKO.setColNames(new String[] { "PREZIME" });
+    MP.panelDodatni.jrfNAZKO.setColumnName("PREZIME");
+    MP.panelDodatni.jrfNAZKO.setNavColumnName("PREZIME");
+    MP.panelDodatni.jlOPIS.setText("Dod. mjestu troška");
+  }
+
+  private void setRadniciKO() {
+    MP.panelDodatni.jrfKO.setRaDataSet(dm.getRadnici());
+    MP.panelDodatni.jrfNAZKO.setRaDataSet(dm.getRadnici());
+  }
+  public void initTmpDataSet() {
+//    super.initTmpDataSet();
+    setRadniciKO();
+  }
+  public void SetFocusNovi() {
+    super.SetFocusNovi();
+    setRadniciKO();
+    setDefaultsKO();
+  }
+  private void setDefaultsKO() {
+    getMasterSet().setInt("CKO", getDefCKO());
+    getMasterSet().setInt("CAGENT", getDefCAG());
+  }
+  
+  private int getDefCKO() {
+    return Integer.parseInt(frmParam.getParam("robno", "defCKOTRE", "0", "Defaultna vrijednost narucitelja potpisnika u TRE", true));
+  }
+  private int getDefCAG() {
+    return Integer.parseInt(frmParam.getParam("robno", "defCAGTRE", "0", "Defaultna vrijednost voditelja u TRE", true));
+  }
+
+  private void putDefaultsKO() {
+    getDefCAG();
+    getDefCKO();//da kreira parametre
+    frmParam.setParam("robno", "defCKOTRE", getMasterSet().getInt("CKO")+"");
+    frmParam.setParam("robno", "defCAGTRE", getMasterSet().getInt("CAGENT")+"");
+  }
+  public void AfterAfterSaveMaster(char mode) {
+    super.AfterAfterSaveMaster(mode);
+    if (mode == 'N') putDefaultsKO();
+  }
+
   public void initialiser() {
     what_kind_of_dokument = "TRE";
   }
