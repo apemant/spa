@@ -172,7 +172,9 @@ public class repID_B implements raReportData { //sg.com.elixir.reportwriter.data
       return " ";
     }
   }
-
+  public String getPORBROJ() {
+    return frID.getKnjMatbroj();
+  }
   public String getFirstLine(){
     return re.getFirstLine();
   }
