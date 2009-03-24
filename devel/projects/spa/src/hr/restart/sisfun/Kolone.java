@@ -75,7 +75,7 @@ public class Kolone {
     koloneTIP.setCaption("Tip");
     koloneTIP.setColumnName("TIP");
     koloneTIP.setDataType(com.borland.dx.dataset.Variant.STRING);
-    koloneTIP.setPrecision(16);
+    koloneTIP.setPrecision(20);
     koloneTIP.setTableName("KOLONE");
     koloneTIP.setServerColumnName("TIP");
     koloneTIP.setSqlType(1);
