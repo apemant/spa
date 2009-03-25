@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.zapod;
 
+import hr.restart.baza.Condition;
+
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 /**
@@ -64,8 +66,11 @@ public class raRadnici {
     }
     corg = null;
     knjig = knj;
-    String inQuery = OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndKnjig(knj));
-    radnici = hr.restart.baza.Radnici.getDataModule().getFilteredDataSet("CORG in " + inQuery);
+    //String inQuery = OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndKnjig(knj));
+    radnici = hr.restart.baza.Radnici.getDataModule().getFilteredDataSet(
+        Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(knj))
+        //"CORG in " + inQuery
+        );
     return radnici;
   }
 }

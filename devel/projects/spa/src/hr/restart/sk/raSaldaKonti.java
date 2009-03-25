@@ -202,7 +202,8 @@ public class raSaldaKonti {
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
     if (corgs.rowCount() == 0) return "";
     else if (corgs.rowCount() == 1) return " AND corg = '" + corg + "'";
-    else return " AND corg in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs);
+    else return " AND " + Condition.in("corg", corgs); 
+    //" AND corg in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs);
   }
 
   public static boolean isDomVal(ReadRow row) {
