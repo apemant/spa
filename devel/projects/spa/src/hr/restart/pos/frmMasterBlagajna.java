@@ -1410,7 +1410,17 @@ public class frmMasterBlagajna extends raMasterDetail {
     //super.Funkcija_ispisa_detail();
   }
   void showLabel() {
-    jpBl.jLabel10.setText(hr.restart.zapod.OrgStr.getOrgStr().getKnjigovodstva().getString("NAZIV")+" - "+hr.restart.robno.Util.getMPSklDataset().getString("NAZSKL"));
+    String nazskl = " - ";
+    QueryDataSet mpskl = hr.restart.robno.Util.getMPSklDataset();
+    if (mpskl.getRowCount() > 0) {
+      nazskl += mpskl.getString("NAZSKL");
+    } else if (lookupData.getlookupData().raLocate(dm.getSklad(), "CSKL", cskl)) {
+      nazskl += dm.getSklad().getString("NAZSKL");
+    } else {
+      nazskl = "";
+    }
+    
+    jpBl.jLabel10.setText(hr.restart.zapod.OrgStr.getOrgStr().getKnjigovodstva().getString("NAZIV")+nazskl);
   }
   public void ZatvoriOstaloDetail() {
   	allReadyRun=false;
