@@ -205,7 +205,7 @@ public class upRekapTros extends raUpitLite {
 
     String acorg = "AND doki.corg ='" + corg + "' ";
 
-    String bcorg = "AND doki.corg in " + OrgStr.getOrgStr().getInQuery(jlrCorg.getRaDataSet()) + " ";
+    String bcorg = "AND (doki.corg in " + OrgStr.getOrgStr().getInQuery(jlrCorg.getRaDataSet(),"doki.corg") + ") ";
 
     String nadopr = "AND doki.datdok between '" + god + "-01-01 00:00:00.0' and '" + god + "-12-31 23:59:59.0' "+
                     "ORDER BY doki.corg";

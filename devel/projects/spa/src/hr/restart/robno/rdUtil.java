@@ -1809,21 +1809,24 @@ public class rdUtil {
   }
 
   public boolean getCSKL_CORG(String cSklStr, String cOrgStr) {
-    String in = "('";
-    if (cSklStr.equals("") || cSklStr == null)
-      return false;
-    StorageDataSet tds = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(cOrgStr);
-    tds.open();
-    tds.first();
-    while (tds.inBounds()) {
-      if (tds.getRow() < tds.getRowCount() - 1)
-        in += tds.getString("CORG") + "', '";
-      else
-        in += tds.getString("CORG") + "')";
-      tds.next();
-    }
+//    String in = "('";
+//    if (cSklStr.equals("") || cSklStr == null)
+//      return false;
+//    StorageDataSet tds = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(cOrgStr);
+//    tds.open();
+//    tds.first();
+//    while (tds.inBounds()) {
+//      if (tds.getRow() < tds.getRowCount() - 1)
+//        in += tds.getString("CORG") + "', '";
+//      else
+//        in += tds.getString("CORG") + "')";
+//      tds.next();
+//    }
 
-    QueryDataSet qds = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet("CSKL ='" + cSklStr + "' AND CORG IN" + in);
+    QueryDataSet qds = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet("CSKL ='" + cSklStr + 
+        //"' AND CORG IN" + in
+        "' AND "+Condition.in("CORG", hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(cOrgStr))
+        );
     qds.open();
 
     if (qds.getRowCount() <= 0)

@@ -239,7 +239,7 @@ public class ispStatArt extends raPanStats {
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(fieldSet.getString("CORG"));
     if (corgs.rowCount() == 0 || fieldSet.getString("CORG").equals("")) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + fieldSet.getString("CORG") + "'";
-    else inq = "DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs);
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs, "DOKI.CSKL")+") ";
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+"))";
 

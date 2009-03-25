@@ -16,6 +16,7 @@
 **
 ****************************************************************************/
 package hr.restart.pl;
+import hr.restart.baza.Condition;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
@@ -366,22 +367,23 @@ System.out.println("BankSpec.qStr = "+qStr);
 
   public String getPripOrg(String str, String corgTable)
   {
-    int i = 0;
-    String cVrati;
-    cVrati=" "+corgTable.trim()+".CORG in (";
-    com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
-    tds.first();
-    do
-    {
-      if (i>0) {
-        cVrati=cVrati+',';
-      }
-      i++;
-      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-      tds.next();
-    } while (tds.inBounds());
-    cVrati=cVrati+")";
-    return cVrati;
+//    int i = 0;
+//    String cVrati;
+//    cVrati=" "+corgTable.trim()+".CORG in (";
+//    com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
+//    tds.first();
+//    do
+//    {
+//      if (i>0) {
+//        cVrati=cVrati+',';
+//      }
+//      i++;
+//      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
+//      tds.next();
+//    } while (tds.inBounds());
+//    cVrati=cVrati+")";
+//    return cVrati;
+    return " "+Condition.in("CORG", hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str)).qualified(corgTable);
   }
 
   public void setDifolt(){

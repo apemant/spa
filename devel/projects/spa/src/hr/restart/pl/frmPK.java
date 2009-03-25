@@ -257,7 +257,7 @@ public class frmPK extends frmDNR{
       +" AND kumulradarh.rbrobr = kumulorgarh.rbrobr"
       +" AND kumulradarh.corg = kumulorgarh.corg"
       +" and EXTRACT(YEAR FROM kumulorgarh.datumispl)="+getGodPK(repSet)
-      +" and kumulorgarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")));
+      +" and (kumulorgarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulorgarh.corg")+") ";
       String a2 = "AND cradnik between '"+ fieldSet.getInt("CRADNIKOD") + "' and '" + fieldSet.getInt("CRADNIKDO") + "'";
       String a;
       if (!jlrCradnikOd.getText().equals("")) a = a1.concat(a2);

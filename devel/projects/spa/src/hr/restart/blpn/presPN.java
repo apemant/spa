@@ -217,8 +217,8 @@ public class presPN extends PreSelect {
   private static StorageDataSet radnici;
   public static StorageDataSet getRadnici() {
     if (radnici == null) {
-      radnici = Radnici.getDataModule().getFilteredDataSet(" radnici.aktiv='D' AND radnici.corg in "+
-          OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig()));
+      radnici = Radnici.getDataModule().getFilteredDataSet(" radnici.aktiv='D' AND (radnici.corg in "+
+          OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "radnici.corg")+")");
     }
     return radnici;
   }

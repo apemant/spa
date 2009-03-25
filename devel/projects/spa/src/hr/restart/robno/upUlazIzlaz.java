@@ -701,7 +701,7 @@ public class upUlazIzlaz extends raUpitFat {
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(getCorg());
     if (corgs.rowCount() == 0) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + getCorg() + "'";
-    else inq = "DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs);
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
     if (!csklEnab) return " AND "+inq;
     
     Condition oj = Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);

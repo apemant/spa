@@ -150,7 +150,7 @@ public class raPlObrRange {
     Condition datisplbetween = Condition.between("kumulorgarh.datumispl", cdod, Util.getUtil().getLastDayOfMonth(new java.sql.Timestamp(d.getTime())));
     String qry = "SELECT kumulorgarh.godobr,kumulorgarh.mjobr,kumulorgarh.rbrobr FROM kumulorgarh where " + datisplbetween
  //           "kumulorgarh.datumispl between '"+datod+"' AND '"+datdo
-    +" AND kumulorgarh.corg in "+ors.getInQuery(ors.getOrgstrAndCurrKnjig())
+    +" AND (kumulorgarh.corg in "+ors.getInQuery(ors.getOrgstrAndCurrKnjig(),"kumulorgarh.corg")+") "
     +" group by kumulorgarh.godobr,kumulorgarh.mjobr,kumulorgarh.rbrobr";
 System.out.println(qry);
     qdsQueryIsp = Util.getNewQueryDataSet(qry);

@@ -311,8 +311,8 @@ public class jpRamatDetailRS extends JPanel {
     jlrCradnik.setTextFields(new JTextComponent[] {jlrIme, jlrPrezime});
     jlrCradnik.setVisCols(new int[] {0, 1, 2});
     jlrCradnik.setSearchMode(0);
-    jlrCradnik.setRaDataSet(Radnici.getDataModule().getTempSet("LOKK='N' and AKTIV='D' and CORG in " +
-        orgStr.getInQuery(orgStr.getOrgstrAndCurrKnjig())));
+    jlrCradnik.setRaDataSet(Radnici.getDataModule().getTempSet("LOKK='N' and AKTIV='D' and (CORG in " +
+        orgStr.getInQuery(orgStr.getOrgstrAndCurrKnjig())+")"));
     jlrCradnik.setNavButton(jbSelCradnik);
 
     jlrIme.setColumnName("IME");

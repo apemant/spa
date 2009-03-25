@@ -129,7 +129,7 @@ public class frmM4 extends frmIzvjestajiPL{
   private void kumulradarh(){
     String kra = "select max(cradnik) as cradnik, sum(bruto) as osnosig from kumulradarh "+
                  "where godobr = " + fieldSet.getShort("GODINAOD") +
-                 "and corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) +
+                 "and (corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) + ") "+
                  "group by cradnik";
 //    System.out.println("KUMULRADARH : " + kra);
     this.oosig = ut.getNewQueryDataSet(kra);
@@ -211,8 +211,8 @@ public class frmM4 extends frmIzvjestajiPL{
                   "from radnici, radnicipl, radmj "+
                   "WHERE radnici.cradnik = radnicipl.cradnik "+
                   "AND radnicipl.cradmj = radmj.cradmj "+
-                  "AND radnici.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) +
-                  " ORDER BY radnici.cradnik";
+                  "AND (radnici.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"radnici.corg") +
+                  ") ORDER BY radnici.cradnik";
 //    System.out.println("BASIC : " + basic);
     this.basic = ut.getNewQueryDataSet(basic);
 //    radniciIn = " and Kumulradarh.cradnik in (";
@@ -235,8 +235,8 @@ public class frmM4 extends frmIzvjestajiPL{
                     "AND kumulradarh.mjobr = kumulorgarh.mjobr AND kumulradarh.rbrobr = kumulorgarh.rbrobr "+
                     "AND kumulradarh.cvro = kumulorgarh.cvro AND kumulradarh.corg = kumulorgarh.corg "+
                     "and Kumulradarh.godobr= " + fieldSet.getShort("GODINAOD") + " " +
-                    "and Kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) +
-                    " GROUP BY Kumulradarh.mjobr, Kumulradarh.cradnik";
+                    "and (Kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"Kumulradarh.corg") +
+                    ") GROUP BY Kumulradarh.mjobr, Kumulradarh.cradnik";
 
 //    String basicA = "select max(cradnik) as cradnik, max(mjobr) as mjobr,  sum(bruto) as bruto "+
 //                    "FROM Kumulradarh where godobr= '" + fieldSet.getShort("GODINAOD") + "'" +

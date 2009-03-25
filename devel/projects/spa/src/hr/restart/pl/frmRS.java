@@ -455,8 +455,8 @@ public class frmRS extends raUpitLite {
     String ret = " FROM "
                .concat(getTableName())
                .concat(",radnici where radnici.cradnik = ")
-               .concat(getTableName()).concat(".cradnik AND radnici.corg in ")
-               .concat(orgStr.getInQuery(orgStr.getOrgstrAndCurrKnjig()));
+               .concat(getTableName()).concat(".cradnik AND (radnici.corg in ")
+               .concat(orgStr.getInQuery(orgStr.getOrgstrAndCurrKnjig(),"radnici.corg")+") ");
     if (rsmode.equals("A")) {
       ret = ret.concat(" AND ").concat(getTableName()).concat(".IDENTIFIKATOR = '")
           .concat(jpHead.headerRS.getString("IDENTIFIKATOR"))

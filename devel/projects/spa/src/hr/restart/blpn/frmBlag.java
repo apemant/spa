@@ -146,7 +146,7 @@ public class frmBlag extends raMatPodaci {
   public static QueryDataSet getBlagajneKnjig() {
     if (blagajneknjig == null || dirty) {
       blagajneknjig = Blagajna.getDataModule().getFilteredDataSet("knjig in "+
-          OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig()));
+          OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(),"knjig"));
     }
     return blagajneknjig;
   }

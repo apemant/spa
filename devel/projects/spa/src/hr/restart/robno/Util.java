@@ -401,7 +401,9 @@ public class Util {
     QueryDataSet qdsVrati;
     hr.restart.zapod.OrgStr or = hr.restart.zapod.OrgStr.getOrgStr();
     hr.restart.baza.Sklad skl = hr.restart.baza.Sklad.getDataModule();
-    qdsVrati=skl.getFilteredDataSet("vrzal='M' and corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig()));
+    String q;
+    qdsVrati=skl.getFilteredDataSet(q="vrzal='M' and (corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig())+")");
+    System.out.println("getMPSklDataset q::: "+q);
     qdsVrati.open();
     return qdsVrati;
 
@@ -897,11 +899,10 @@ public class Util {
     if (matSkladFromCorg==null) {
       final hr.restart.zapod.OrgStr or = hr.restart.zapod.OrgStr.getOrgStr();
       final hr.restart.baza.Sklad skl = hr.restart.baza.Sklad.getDataModule();
-      System.out.println("Our: "+or.getInQuery(or.getOrgstrAndCurrKnjig()));
-      matSkladFromCorg = skl.getFilteredDataSet("tipskl='M' and corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig()));
+      matSkladFromCorg = skl.getFilteredDataSet("tipskl='M' and (corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig())+")");
       hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
         public void knjigChanged(String a1, String a2) {
-          skl.setFilter(matSkladFromCorg, "tipskl='M' and corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig()));
+          skl.setFilter(matSkladFromCorg, "tipskl='M' and (corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig())+")");
           matSkladFromCorg.open();
         }
       });
@@ -916,7 +917,6 @@ public class Util {
     if (skladFromCorg==null) {
       final hr.restart.zapod.OrgStr or = hr.restart.zapod.OrgStr.getOrgStr();
       final hr.restart.baza.Sklad skl = hr.restart.baza.Sklad.getDataModule();
-      System.out.println("Our: "+or.getInQuery(or.getOrgstrAndCurrKnjig()));
       skladFromCorg = skl.getFilteredDataSet("corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig()));
       hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
         public void knjigChanged(String a1, String a2) {

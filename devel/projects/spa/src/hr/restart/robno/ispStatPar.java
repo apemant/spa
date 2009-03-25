@@ -894,7 +894,7 @@ public class ispStatPar extends raPanStats {
     else if (corgs.rowCount() == 1)
       inq = "DOKI.CSKL = '" + fieldSet.getString("CORG") + "'";
     else
-      inq = "DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs);
+      inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs, "DOKI.CSKL")+") ";
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND ((" + oj + " AND " + inq + ") OR (" + oj.not() + cskls + ")) ";//"
                                                                                                                // AND

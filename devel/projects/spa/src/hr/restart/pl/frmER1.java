@@ -379,7 +379,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
                   " AND radnicipl.corg = kumulorgarh.corg"+
                   " and kumulorgarh.datumispl between '"+ fieldSet.getTimestamp("DATOD") + "' and '" + ut.getLastSecondOfDay(fieldSet.getTimestamp("DATDO")) + "'" +
                   " and kumulradarh.cradnik = '"+ fieldSet.getInt("CRADNIK") + "'" +
-                  " and kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")))+
+                  " and (kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulradarh.corg")+")"+
                   " and " + kumul +
                   " group by kumulradarh.mjobr, kumulradarh.godobr "+
                   "order by prezime " + vl.getCollateSQL() + " , kumulradarh.godobr, kumulradarh.mjobr";

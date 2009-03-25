@@ -686,7 +686,7 @@ System.out.println("QS : " + queryString);
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
     if (corgs.rowCount() == 0) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
-    else inq = "DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs);
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+" AND DOKI.CSKL = '"+cskl+"'))";
 
@@ -808,7 +808,7 @@ System.out.println("QS : " + queryString);
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
     if (corgs.rowCount() == 0) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
-    else inq = "DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs);
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+" AND DOKI.CSKL = '"+cskl+"'))";
 
@@ -938,7 +938,7 @@ System.out.println("QS : " + queryString);
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
     if (corgs.rowCount() == 0 || corg.equals("")) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
-    else inq = "DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs);
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+"))";
 
@@ -1164,7 +1164,7 @@ System.out.println("QS : " + queryString);
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
     if (corgs.rowCount() == 0) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
-    else inq = "DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs);
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+"))";
 

@@ -475,8 +475,8 @@ public class frmID extends raUpitLite {
       neki = neki.concat(raPlObrRange.getInQueryIsp(godina, mjesec, table.trim())) + " and ";
 //      System.out.println("\nNeki poslje : " + neki);
     }
-    return neki.concat(" corg in ").concat(
-        hr.restart.zapod.OrgStr.getOrgStr().getInQuery(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig()));
+    return neki.concat(" (corg in ").concat(
+        hr.restart.zapod.OrgStr.getOrgStr().getInQuery(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig())+")");
   }
 
   private String odbiciWh(short[] id){
