@@ -348,7 +348,7 @@ hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(false);
             "from OS_SREDSTVO, OS_AMGRUPE, OS_REVSKUPINE "+
             "where OS_SREDSTVO.CGRUPE=OS_AMGRUPE.CGRUPE AND OS_SREDSTVO.CSKUPINE=OS_REVSKUPINE.CSKUPINE "+
             " AND DATAKTIVIRANJA<"+util.getTimestampValue(dm.getOS_Metaobrada().getTimestamp("DATUMDO"), util.NUM_LAST)+
-            " AND "+getPripOrg()+" AND (OS_SREDSTVO.DATLIKVIDACIJE IS NULL or OS_SREDSTVO.DATLIKVIDACIJE>"+util.getTimestampValue(dm.getOS_Metaobrada().getTimestamp("DATUMDO"), util.NUM_FIRST)+") "+
+            " AND "+getPripOrg()+" AND (OS_SREDSTVO.DATLIKVIDACIJE IS NULL or OS_SREDSTVO.DATLIKVIDACIJE>"+util.getTimestampValue(dm.getOS_Metaobrada().getTimestamp("DATUMDO"), util.NUM_LAST)+") "+
             "and (os_sredstvo.status='A')";
 //            "and (os_sredstvo.status='A' or os_sredstvo.dataktiviranja>"+util.getTimestampValue(dm.getOS_Metaobrada().getTimestamp("DATUMDO"), util.NUM_LAST)+")";
     System.out.println(sSql);
