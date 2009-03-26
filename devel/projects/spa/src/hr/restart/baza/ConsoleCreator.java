@@ -614,7 +614,7 @@ public class ConsoleCreator {
       for (int i = 0; i < comms.size(); i++) {
         String com = (String) comms.get(i);
         System.out.println(com);
-        Valid.getValid().runSQL(com);
+        if (!Valid.getValid().runSQL(com)) return false;
       }
       return true;
     }
