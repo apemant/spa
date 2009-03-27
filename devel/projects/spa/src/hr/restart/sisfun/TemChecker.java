@@ -105,7 +105,7 @@ public class TemChecker extends ComponentAdapter {
       view.setDataSet(result);
       view.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
       view.show();
-    } else {
+    } else if (gk.rowCount() > 0) {
       frmNalozi.getFrmNalozi().getMasterSet().last();
       frmNalozi.getFrmNalozi().raMaster.LegalDelete(false, false);
       cont = true;
