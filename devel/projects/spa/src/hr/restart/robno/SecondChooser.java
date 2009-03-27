@@ -1003,6 +1003,12 @@ System.out.println(StavkeSet.getInt("CARt"));
 						+ String.valueOf(rIT.getMasterSet().getInt("BRDOK")));
 			} else {
 				ZaglavljeSetTmp.setString("STATIRA", "P");
+				
+				if ((ZaglavljeSetTmp.getString("VRDOK").equals("OTP") &&
+				    "RAC GRN".indexOf(rIT.what_kind_of_dokument) >= 0) ||
+				    ("RAC GRN".indexOf(ZaglavljeSetTmp.getString("VRDOK")) >= 0 &&
+				        rIT.what_kind_of_dokument.equals("OTP")))
+				  rIT.getMasterSet().setString("STATIRA", "P");
 			}
 
 			//System.out.println("ZaglavljeSetTmp.getTableName() " +
