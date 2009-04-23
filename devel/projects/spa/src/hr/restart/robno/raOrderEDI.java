@@ -104,10 +104,13 @@ public class raOrderEDI {
           getYear(zag.getTimestamp("DATDOK")));
       
       String pj = null;
+      String ramp = null;
       for (Iterator i = nar.getChildren("E1EDKA1").iterator(); i.hasNext(); ) {
         Element di = (Element) i.next();
-        if ("WE".equals(di.getChildText("PARVW")))
+        if ("WE".equals(di.getChildText("PARVW"))) {
           pj = di.getChildText("LIFNR");
+          ramp = di.getChildText("ABLAD");
+        }
       }
       
       if (pj != null && ld.raLocate(pjg, "PJ", pj))
@@ -118,6 +121,20 @@ public class raOrderEDI {
         if ("001".equals(di.getChildText("QUALF")))
           zag.setString("BRNARIZ", di.getChildText("BELNR"));
       }
+      
+      String vri = null;
+      for (Iterator i = nar.getChildren("E1EDK03").iterator(); i.hasNext(); ) {
+        Element di = (Element) i.next();
+        if ("002".equals(di.getChildText("IDDAT")))
+          vri = di.getChildText("UZEIT");
+      }
+      
+      if (vri != null && ramp != null) {
+        zag.setString("OPIS", "VRIJEME ISPORUKE: " +
+            vri.substring(0, 2) + ":" +
+            vri.substring(2, 4) + ", RAMPA " + ramp);
+      }
+      
       
       String[] acc = {"CART", "CART1", "BC", "NAZART", "JM"};
       
