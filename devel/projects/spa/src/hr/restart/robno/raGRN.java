@@ -55,7 +55,7 @@ public class raGRN extends raIzlazTemplate  {
     rAOFRM.setBrdok(getMasterSet().getInt("BRDOK"));
     rAOFRM.setGod(getMasterSet().getString("GOD"));
     rAOFRM.setVrdok(getMasterSet().getString("VRDOK"));
-    rAOFRM.ispisiizradaOTP(false);
+    rAOFRM.ispisiizradaOTP(false, false);
   }
 
 
