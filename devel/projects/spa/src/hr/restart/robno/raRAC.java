@@ -71,6 +71,8 @@ final public class raRAC extends raIzlazTemplate {
     }
 
     public void ispisiizradaOTP() {
+      boolean stop = "D".equals(frmParam.getParam("robno", "stopAuto", "D",
+          "Prekinuti automatsku izradu otpremnica kod prve greške (D,N)"));
     	raSelectTableModifier stm = raMaster.getSelectionTracker();
     	if (stm == null || stm.countSelected() == 0) {
         raAutoOtpfromRacMask rAOFRM = new raAutoOtpfromRacMask();
@@ -78,18 +80,27 @@ final public class raRAC extends raIzlazTemplate {
         rAOFRM.setBrdok(getMasterSet().getInt("BRDOK"));
         rAOFRM.setGod(getMasterSet().getString("GOD"));
         rAOFRM.setVrdok(getMasterSet().getString("VRDOK"));
-        rAOFRM.ispisiizradaOTP(false);
+        rAOFRM.ispisiizradaOTP(false, false);
     	} else {
-    		for (getMasterSet().first(); getMasterSet().inBounds(); getMasterSet().next()) {
-	    		if (stm.isSelected(getMasterSet())) {
-	    			raAutoOtpfromRacMask rAOFRM = new raAutoOtpfromRacMask();
-	    			rAOFRM.setCskl(getMasterSet().getString("CSKL"));
-	          rAOFRM.setBrdok(getMasterSet().getInt("BRDOK"));
-	          rAOFRM.setGod(getMasterSet().getString("GOD"));
-	          rAOFRM.setVrdok(getMasterSet().getString("VRDOK"));
-	          rAOFRM.ispisiizradaOTP(true);
-	    	  }
-    		}
+    	    raMaster.getJpTableView().enableEvents(false);
+    	    try {
+        		for (getMasterSet().first(); getMasterSet().inBounds(); getMasterSet().next()) {
+    	    		if (stm.isSelected(getMasterSet())) {
+    	    			raAutoOtpfromRacMask rAOFRM = new raAutoOtpfromRacMask();
+    	    			rAOFRM.setCskl(getMasterSet().getString("CSKL"));
+    	          rAOFRM.setBrdok(getMasterSet().getInt("BRDOK"));
+    	          rAOFRM.setGod(getMasterSet().getString("GOD"));
+    	          rAOFRM.setVrdok(getMasterSet().getString("VRDOK"));
+    	          rAOFRM.ispisiizradaOTP(true, stop);
+    	          if (rAOFRM.wasError())
+    	            break;
+    	          stm.toggleSelection(getMasterSet());
+    	          getMasterSet().refetchRow(getMasterSet());
+    	    	  }
+        		}
+    	    } finally {
+    	      raMaster.getJpTableView().enableEvents(true);
+    	    }
     	}
     }
 
