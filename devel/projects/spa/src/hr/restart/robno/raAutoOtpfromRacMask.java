@@ -32,7 +32,7 @@ public class raAutoOtpfromRacMask  {
 
 
 
-  public void ispisiizradaOTP(boolean auto){
+  public void ispisiizradaOTP(boolean auto, boolean stop){
 
     okOTP = 0;
     QueryDataSet qds = hr.restart.util.Util.getNewQueryDataSet(
@@ -40,10 +40,11 @@ public class raAutoOtpfromRacMask  {
         "cskl='" + cskl + "' and vrdok='" + vrdok +
         "' and god='" + god + "' and brdok=" + brdok, true);
     if (qds.getInt("sve") == 0) {
-    	if (!auto)
+    	if (!auto || stop)
     		javax.swing.JOptionPane.showMessageDialog
           (null,"Ne postoje stavke za izradu otpremnica !","Obavijest",
            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    	okOTP = -1;
       return;
     }
     qds = hr.restart.util.Util.getNewQueryDataSet
@@ -58,7 +59,7 @@ public class raAutoOtpfromRacMask  {
           javax.swing.JOptionPane.QUESTION_MESSAGE) ==
                                            javax.swing.JOptionPane.OK_OPTION){
         autoOtpremnica();
-        if (!auto) poruke();
+        if (!auto || (stop && okOTP < 0)) poruke();
         //if (okOTP==0) ispisOTP();
       } else {
         qds = hr.restart.util.Util.getNewQueryDataSet
@@ -72,10 +73,16 @@ System.out.println("sve==0");
         } else {
 System.out.println("sve != 0");
         }
+        okOTP = -1;
       }
     } else {
       if (!auto) ispisOTP();
+      okOTP = 0;
     }
+  }
+  
+  public boolean wasError() {
+    return okOTP < 0;
   }
 
   public void autoOtpremnica(){
