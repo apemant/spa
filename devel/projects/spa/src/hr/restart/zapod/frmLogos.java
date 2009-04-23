@@ -20,11 +20,13 @@ package hr.restart.zapod;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Logodat;
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raMatPodaci;
@@ -109,6 +111,7 @@ public class frmLogos extends raMatPodaci {
   JraButton jbVrdoks = new JraButton();
 
   QueryDataSet header, footer;
+  String fontRep = null;
 
   public frmLogos() {
     try {
@@ -291,6 +294,11 @@ public class frmLogos extends raMatPodaci {
 //    jp.add(jtfBOTTOMMARGIN,   new XYConstraints(410, 280, 40, -1));
 //    jp.add(jlBOTTOMMARGIN,  new XYConstraints(340, 280, -1, -1));
   }
+  
+  public void beforeShow() {
+    fontRep = frmParam.getParam("sisfun", "globalFont", "", 
+        "Ime fonta koji zamjenjuje Lucida Bright");
+  }
 
   private void setSectionFilters() {
     Logodat.getDataModule().setFilter(header,
@@ -435,6 +443,10 @@ public class frmLogos extends raMatPodaci {
 
   void fillText(DataSet ds, String text, int x, int y, int w, int h, String font, String align) {
     fillCommon(ds, x, y, w, h);
+    
+    if (fontRep != null && fontRep.length() > 0) 
+      font = new VarStr(font).replace("Lucida Bright", fontRep).toString();
+    
     ds.setString("TEKST", text);
     ds.setString("TIP", "T");
     ds.setString("FONT", font);
