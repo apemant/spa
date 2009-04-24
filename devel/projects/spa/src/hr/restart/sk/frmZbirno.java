@@ -229,7 +229,7 @@ public class frmZbirno extends raFrame {
     
     raProcess.setMessage("Zbrajanje i priprema kumulativa...", false);
     
-    Timestamp d2 = ut.addDays(ut.getYearBegin(vl.getKnjigYear("gk")), 1);
+    Timestamp d2 = ut.addDays(Aus.getGkYear(dto), 1);
     PartnerCache.Data pData;
     for (docs.first(); docs.inBounds(); docs.next()) {
       if ((pData = pCache.getData(docs.getInt("CPAR"))) != null) {
