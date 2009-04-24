@@ -46,6 +46,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import bsh.Interpreter;
 
@@ -521,9 +522,9 @@ public class frmKnjizenje extends JraDialog implements ResetEnabled {
               frmNalozi.getFrmNalozi().fakeDetail = null;
               frmNalozi.getFrmNalozi().obrada.fKnjizenje = null;
             } else {
-              hide();
               frmNalozi.getFrmNalozi().show();
               frmGK.getFrmGK().openNalog();
+              setVisible(false);
             }
           }
         } else {
