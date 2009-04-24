@@ -251,7 +251,8 @@ public class dlgGetKnjig extends JraDialog {
         return KNJCORG;
 
     }
-
+    //ai: hack zbog korisnickih prava i repFuckingMemo
+    boolean prvibezpitanja = !upit && OrgStr.getOrgStr().knjigovodstva == null;
     com.borland.dx.dataset.DataSet knjigs = OrgStr.getOrgStr().getKnjigovodstva();
 
     knjigs.open();
@@ -272,8 +273,9 @@ public class dlgGetKnjig extends JraDialog {
 
         knjigs.first();
 
-        return knjigs.getString("CORG");
-
+        String k = knjigs.getString("CORG");
+        if (prvibezpitanja) OrgStr.getOrgStr().knjigovodstva = null;
+        return k;
       }
 
       return KNJCORG;
