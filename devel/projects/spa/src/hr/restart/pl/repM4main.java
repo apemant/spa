@@ -81,7 +81,9 @@ public class repM4main implements raReportData { // sg.com.elixir.reportwriter.d
 //
 //  public void close() {
 //  }
-
+  public String getTITLE() {
+    return "PRIJAVA O UTVRÐENOM STAŽU I PLAÆI, OSNOVICAMA OSIGURANJA I NAKNADAMA PLAÆE ZA GODINU "+getGODINA();
+  }
   public String getCRADNIKA(){
     return ds.getString("CRADNIK");
   }

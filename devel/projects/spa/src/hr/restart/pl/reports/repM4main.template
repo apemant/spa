@@ -22,9 +22,9 @@
      <Property Name="Grid X">5</Property>
      <Property Name="Grid Y">5</Property>
      <Property Name="Version">1.50</Property>
-     <Property Name="Last Modified">Wed Jun 11 11:44:49 CEST 2003</Property>
-     <HiddenProperty Name="Template Path">C:\Projects\gk\src\hr\restart\pl\reports\</HiddenProperty>
-     <HiddenProperty Name="Text_Count">88</HiddenProperty>
+     <Property Name="Last Modified">Tue Apr 21 13:57:18 CEST 2009</Property>
+     <HiddenProperty Name="Template Path">/Users/andrej/Documents/workspace/devel/projects/spa/src/hr/restart/pl/reports/</HiddenProperty>
+     <HiddenProperty Name="Text_Count">89</HiddenProperty>
      <HiddenProperty Name="Label_Count">133</HiddenProperty>
      <HiddenProperty Name="Image_Count">0</HiddenProperty>
      <HiddenProperty Name="Page_Break_Count">0</HiddenProperty>
@@ -56,6 +56,24 @@
           <Property Name="Row Spacing">0.0</Property>
           <Property Name="Column Spacing">0.0</Property>
           <Property Name="Column Layout">Across, then Down</Property>
+          <Property Name="Paint Margin">No</Property>
+     </Model>
+     <Model Name="Watermark">
+          <Property Name="Model Name">Watermark</Property>
+          <Property Name="Name">Watermark</Property>
+          <Property Name="Picture"></Property>
+          <Property Name="Picture Type"></Property>
+          <Property Name="Size Mode">Clip</Property>
+          <Property Name="Picture Alignment">Center</Property>
+          <Property Name="Visible">No</Property>
+          <Property Name="Left">1440</Property>
+          <Property Name="Top">1440</Property>
+          <Property Name="Width">2880</Property>
+          <Property Name="Height">2880</Property>
+          <Property Name="Border Style">Transparent</Property>
+          <Property Name="Border Color">Black</Property>
+          <Property Name="Border Width">1 pt</Property>
+          <Property Name="Lock">No</Property>
      </Model>
      <Model Name="Sections">
           <Property Name="Model Name">Sections</Property>
@@ -74,7 +92,7 @@
           <Model Name="Section1">
                <Property Name="Model Name">Section</Property>
                <Property Name="Name">Section1</Property>
-               <Property Name="Field">CRADNIKA</Property>
+               <Property Name="Field">RADNIK</Property>
                <Property Name="Sort Order">Ascending</Property>
                <Property Name="Group Header">No</Property>
                <Property Name="Group Footer">No</Property>
@@ -312,30 +330,6 @@
                <Property Name="Border Style">Solid</Property>
                <Property Name="Border Color">Black</Property>
                <Property Name="Border Width">1 pt</Property>
-               <Property Name="Lock">No</Property>
-          </Model>
-          <Model Name="Label102">
-               <Property Name="Model Name">Label</Property>
-               <Property Name="Name">Label102</Property>
-               <Property Name="Caption">
-PRIJAVA O UTVRĐENOM STAŽU I PLAĆI, OSNOVICAMA OSIGURANJA I NAKNADAMA PLAĆE ZA GODINU 2002.</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">0</Property>
-               <Property Name="Width">15680</Property>
-               <Property Name="Height">460</Property>
-               <Property Name="Back Style">Transparent</Property>
-               <Property Name="Back Color">White</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">1 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">10</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
                <Property Name="Lock">No</Property>
           </Model>
           <Model Name="Text83">
@@ -1041,6 +1035,36 @@ BROJ</Property>
                <Property Name="Lock">No</Property>
                <Property Name="Auto Wrap">Yes</Property>
           </Model>
+          <Model Name="TextNASLOV">
+               <Property Name="Model Name">Text</Property>
+               <Property Name="Name">TextNASLOV</Property>
+               <Property Name="Control Source">TITLE</Property>
+               <Property Name="Running Sum">No</Property>
+               <Property Name="Locale">Template Locale</Property>
+               <Property Name="Format">None</Property>
+               <Property Name="Visible">Yes</Property>
+               <Property Name="Hide Duplicates">No</Property>
+               <Property Name="Can Grow">No</Property>
+               <Property Name="Can Shrink">No</Property>
+               <Property Name="Left">0.0</Property>
+               <Property Name="Top">0.0</Property>
+               <Property Name="Width">15680.016</Property>
+               <Property Name="Height">459.93600000000004</Property>
+               <Property Name="Back Style">Transparent</Property>
+               <Property Name="Back Color">White</Property>
+               <Property Name="Border Style">Transparent</Property>
+               <Property Name="Border Color">Black</Property>
+               <Property Name="Border Width">1 pt</Property>
+               <Property Name="Font Color">Black</Property>
+               <Property Name="Font Name">Lucida Bright</Property>
+               <Property Name="Font Size">10</Property>
+               <Property Name="Font Weight">Bold</Property>
+               <Property Name="Font Italic">No</Property>
+               <Property Name="Font Underline">No</Property>
+               <Property Name="Text Align">Center</Property>
+               <Property Name="Lock">No</Property>
+               <Property Name="Auto Wrap">Yes</Property>
+          </Model>
      </Model>
      <Model Name="Section Header1">
           <Property Name="Model Name">Section Header</Property>
@@ -1169,7 +1193,7 @@ BROJ</Property>
           <Property Name="Visible">Yes</Property>
           <Property Name="Can Grow">Yes</Property>
           <Property Name="Can Shrink">Yes</Property>
-          <Property Name="Height">820</Property>
+          <Property Name="Height">680</Property>
           <Model Name="Text68">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text68</Property>

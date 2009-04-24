@@ -127,7 +127,7 @@ public class frmM4 extends frmIzvjestajiPL{
   }
 
   private void kumulradarh(){
-    String kra = "select max(cradnik) as cradnik, sum(bruto) as osnosig from kumulradarh "+
+    String kra = "select cradnik, sum(bruto) as osnosig from kumulradarh "+
                  "where godobr = " + fieldSet.getShort("GODINAOD") +
                  "and (corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) + ") "+
                  "group by cradnik";
@@ -136,7 +136,7 @@ public class frmM4 extends frmIzvjestajiPL{
   }
 
   private void qdsM4_1(){
-    String hzzo ="select max(cradnik) as cradnik, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
+    String hzzo ="select cradnik, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
                  " and " + raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_1) +
                  " group by cradnik";
 //    System.out.println("QDSM4_1 (HZZO) : " + hzzo);
@@ -145,7 +145,7 @@ public class frmM4 extends frmIzvjestajiPL{
   }
 
   private void qdsM4_2(){
-    String rh ="select max(cradnik) as cradnik, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
+    String rh ="select cradnik, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
                  " and " + raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_2) +
                  " group by cradnik";
 //    System.out.println("QDSM4_2 (RH) : " + rh);
@@ -154,7 +154,7 @@ public class frmM4 extends frmIzvjestajiPL{
   }
 
   private void qdsM4_3(){
-    String ss ="select max(cradnik) as cradnik, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
+    String ss ="select cradnik, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
                " and " + raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_3) +
                " group by cradnik";
 //    System.out.println("QDSM4_3 (SS) : " + ss);
@@ -163,7 +163,7 @@ public class frmM4 extends frmIzvjestajiPL{
   }
 
   private void qdsM4_1_b(){
-    String hzzo ="select max(mjobr) as mjobr, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
+    String hzzo ="select mjobr, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
                  " and " + raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_1) +
                  " group by mjobr";
 //    System.out.println("QDSM4_1_b (HZZO) : " + hzzo);
@@ -172,7 +172,7 @@ public class frmM4 extends frmIzvjestajiPL{
   }
 
   private void qdsM4_2_b(){
-    String rh ="select max(mjobr) as mjobr, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
+    String rh ="mjobr, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
                  " and " + raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_2) +
                  " group by mjobr";
 //    System.out.println("QDSM4_2_b (RH) : " + rh);
@@ -181,7 +181,7 @@ public class frmM4 extends frmIzvjestajiPL{
   }
 
   private void qdsM4_3_b(){
-    String ss ="select max(mjobr) as mjobr, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
+    String ss ="select mjobr, sum(bruto) as BRUTO from primanjaarh where godobr = " + fieldSet.getShort("GODINAOD") +
                " and " + raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_3) +
                " group by mjobr";
 //    System.out.println("QDSM4_3_b (SS) : " + ss);
@@ -190,7 +190,7 @@ public class frmM4 extends frmIzvjestajiPL{
   }
 
   private void qdsID_1_1(){
-    String III_1_1 = "select max(cradnik) as cradnik, max(mjobr) as mjobr, sum(obriznos) as iznos from odbiciarh where godobr = " + fieldSet.getShort("GODINAOD") +
+    String III_1_1 = "select cradnik, mjobr, sum(obriznos) as iznos from odbiciarh where godobr = " + fieldSet.getShort("GODINAOD") +
                      " and " + raIzvjestaji.getOdbiciWhQueryIzv(raIzvjestaji.ID_1_1) +
 //                     " and " +
                      " group by mjobr, cradnik";
@@ -212,7 +212,7 @@ public class frmM4 extends frmIzvjestajiPL{
                   "WHERE radnici.cradnik = radnicipl.cradnik "+
                   "AND radnicipl.cradmj = radmj.cradmj "+
                   "AND (radnici.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"radnici.corg") +
-                  ") ORDER BY radnici.cradnik";
+                  ") ORDER BY radnici.prezime, radnici.ime, radnici.cradnik";
 //    System.out.println("BASIC : " + basic);
     this.basic = ut.getNewQueryDataSet(basic);
 //    radniciIn = " and Kumulradarh.cradnik in (";
@@ -229,7 +229,7 @@ public class frmM4 extends frmIzvjestajiPL{
 
   private void osnovno2(){
 
-    String basicA = "select max(Kumulradarh.cradnik) as cradnik, max(Kumulradarh.mjobr) as mjobr,  "+
+    String basicA = "select Kumulradarh.cradnik as cradnik, Kumulradarh.mjobr as mjobr,  "+
                     "sum(Kumulradarh.bruto) as bruto, max(Kumulorgarh.datumispl) as datumispl "+
                     "FROM Kumulradarh, Kumulorgarh WHERE kumulradarh.godobr = kumulorgarh.godobr "+
                     "AND kumulradarh.mjobr = kumulorgarh.mjobr AND kumulradarh.rbrobr = kumulorgarh.rbrobr "+
