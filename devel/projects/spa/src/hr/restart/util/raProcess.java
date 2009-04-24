@@ -107,6 +107,7 @@ public class raProcess {
   boolean shouldInterrupt, interruptEnabled;
   private static raProcess current = null;
   private static dlgErrors errs;
+  private static boolean openWait = !System.getProperties().containsKey("raProcess.NOOPENWAIT");
 
   private raProcess(Container parent, String title, Object message, Runnable process, int steps) {
     Container realparent = null;
@@ -511,7 +512,14 @@ public class raProcess {
   public static void openScratchDataSet(DataSet ds) {
     if (isCurrentNull()) return;
     checkClosing();
-    current.openAndWait(ds);
+//AI:BLOKA!!!
+    if (openWait) {
+//System.out.println("openScratchDataSet:openAndWait");      
+      current.openAndWait(ds);
+    } else {
+System.out.println("openScratchDataSet:ds.open");      
+      ds.open();
+    }
     checkClosing();
   }
 
