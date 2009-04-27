@@ -337,8 +337,9 @@ public class frmZbirno extends raFrame {
   }
 
   public String getNaslov() {
-    return "\nZBIRNI PREGLED "+(isKupci() ? "KUPACA" : "DOBAVLJAÈA")+
-        " PO PROMETU I SALDU" + (raSaldaKonti.isDomVal(oznval) ? "" : (" ("+oznval+")"));
+    return "ZBIRNI PREGLED "+(isKupci() ? "KUPACA" : "DOBAVLJAÈA")+
+        " PO PROMETU I SALDU" + (raSaldaKonti.isDomVal(oznval) ? "" : (" ("+oznval+")"))
+        + "\nna dan "+rdu.dataFormatter(dto);
   }
 
   private void setDataSet() {

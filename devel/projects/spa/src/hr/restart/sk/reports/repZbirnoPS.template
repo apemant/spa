@@ -22,9 +22,9 @@
      <Property Name="Grid X">5</Property>
      <Property Name="Grid Y">5</Property>
      <Property Name="Version">1.50</Property>
-     <Property Name="Last Modified">Wed May 04 21:06:14 CEST 2005</Property>
-     <HiddenProperty Name="Template Path">/home/abf/projekti/devel/projects/spa/src/hr/restart/sk/reports/</HiddenProperty>
-     <HiddenProperty Name="Text_Count">1234</HiddenProperty>
+     <Property Name="Last Modified">Mon Apr 27 14:50:00 CEST 2009</Property>
+     <HiddenProperty Name="Template Path">/Users/andrej/Documents/workspace/devel/projects/spa/src/hr/restart/sk/reports/</HiddenProperty>
+     <HiddenProperty Name="Text_Count">1235</HiddenProperty>
      <HiddenProperty Name="Label_Count">715</HiddenProperty>
      <HiddenProperty Name="Image_Count">0</HiddenProperty>
      <HiddenProperty Name="Page_Break_Count">0</HiddenProperty>
@@ -273,36 +273,6 @@
                <Property Name="Lock">Yes</Property>
                <Property Name="Auto Wrap">Yes</Property>
           </Model>
-          <Model Name="Text1213">
-               <Property Name="Model Name">Text</Property>
-               <Property Name="Name">Text1213</Property>
-               <Property Name="Control Source">NASLOV</Property>
-               <Property Name="Running Sum">No</Property>
-               <Property Name="Locale">Template Locale</Property>
-               <Property Name="Format">None</Property>
-               <Property Name="Visible">Yes</Property>
-               <Property Name="Hide Duplicates">No</Property>
-               <Property Name="Can Grow">No</Property>
-               <Property Name="Can Shrink">No</Property>
-               <Property Name="Left">0</Property>
-               <Property Name="Top">800</Property>
-               <Property Name="Width">10740</Property>
-               <Property Name="Height">660</Property>
-               <Property Name="Back Style">Transparent</Property>
-               <Property Name="Back Color">White</Property>
-               <Property Name="Border Style">Transparent</Property>
-               <Property Name="Border Color">Black</Property>
-               <Property Name="Border Width">1 pt</Property>
-               <Property Name="Font Color">Black</Property>
-               <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">14</Property>
-               <Property Name="Font Weight">Bold</Property>
-               <Property Name="Font Italic">No</Property>
-               <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">No</Property>
-               <Property Name="Auto Wrap">Yes</Property>
-          </Model>
           <Model Name="Text1223">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text1223</Property>
@@ -512,6 +482,36 @@
                <Property Name="Text Align">Right</Property>
                <Property Name="Lock">No</Property>
                <Property Name="Auto Wrap">No</Property>
+          </Model>
+          <Model Name="Text1234">
+               <Property Name="Model Name">Text</Property>
+               <Property Name="Name">Text1234</Property>
+               <Property Name="Control Source">NASLOV</Property>
+               <Property Name="Running Sum">No</Property>
+               <Property Name="Locale">Template Locale</Property>
+               <Property Name="Format">None</Property>
+               <Property Name="Visible">Yes</Property>
+               <Property Name="Hide Duplicates">No</Property>
+               <Property Name="Can Grow">Yes</Property>
+               <Property Name="Can Shrink">No</Property>
+               <Property Name="Left">0</Property>
+               <Property Name="Top">800</Property>
+               <Property Name="Width">10740</Property>
+               <Property Name="Height">660</Property>
+               <Property Name="Back Style">Transparent</Property>
+               <Property Name="Back Color">White</Property>
+               <Property Name="Border Style">Transparent</Property>
+               <Property Name="Border Color">Black</Property>
+               <Property Name="Border Width">1 pt</Property>
+               <Property Name="Font Color">Black</Property>
+               <Property Name="Font Name">Lucida Bright</Property>
+               <Property Name="Font Size">14</Property>
+               <Property Name="Font Weight">Bold</Property>
+               <Property Name="Font Italic">No</Property>
+               <Property Name="Font Underline">No</Property>
+               <Property Name="Text Align">Center</Property>
+               <Property Name="Lock">No</Property>
+               <Property Name="Auto Wrap">Yes</Property>
           </Model>
      </Model>
      <Model Name="Section Header1">
