@@ -1187,7 +1187,7 @@ public class raAutomatRac extends raFrame {
                 continue;
             addDoki(ugovorizag);
             int rbr = 1;
-            ugovoristav.setSort(new SortDescriptor(new String[]{"CART"})); 
+            ugovoristav.setSort(new SortDescriptor(new String[]{"CART1"})); 
             for (ugovoristav.first(); ugovoristav.inBounds(); ugovoristav.next()) {
                 addStdoki(ugovorizag, ugovoristav, rbr);
                 rbr++;
