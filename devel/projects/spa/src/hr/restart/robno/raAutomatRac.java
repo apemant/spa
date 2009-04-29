@@ -22,6 +22,7 @@ import hr.restart.baza.dM;
 import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.baza.stugovor;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
@@ -148,8 +149,9 @@ public class raAutomatRac extends raFrame {
     private XYLayout xYLayout1 = new XYLayout();
 
     private XYLayout XYLayoutmali = new XYLayout();
-
-    private JLabel ldatum = new JLabel("Datum dok. / DVO");
+    private boolean datdvo = frmParam.getParam("robno", "autodvo","D","Odredjuje li se datum DVO pri autom. izradi racuna iz ugovora (D) ili dospijece (N)").equalsIgnoreCase("D");
+    private String dattxt = datdvo?"Datum dok. / DVO":"Dat.dok / dosp";
+    private JLabel ldatum = new JLabel(dattxt);
 
     private JraTextField datum = new JraTextField() {
       public void valueChanged() {
@@ -444,11 +446,14 @@ public class raAutomatRac extends raFrame {
         panel1.add(ldatum, new XYConstraints(15, 35, -1, -1));
         panel1.add(datum, new XYConstraints(150, 35, 100, -1));
 //        panel1.add(ldvo, new XYConstraints(255, 35, -1, -1));
-        panel1.add(dvo, new XYConstraints(255, 35, 100, -1));
+        if (datdvo) {
+          panel1.add(dvo, new XYConstraints(255, 35, 100, -1));
+        } else {
+          panel1.add(datosp, new XYConstraints(255, 35, 100, -1));
+        }
 //        panel1.add(ldanidosp, new XYConstraints(405, 35, -1, -1));
 //        panel1.add(danidosp, new XYConstraints(500, 35, 30, -1));
 //        panel1.add(ldatdosp, new XYConstraints(15, 60, -1, -1));
-//        panel1.add(datosp, new XYConstraints(150, 60, 100, -1));
         panel1.add(jbMnemonik, new XYConstraints(360, 35, 170, 21));   //252, 60, 21, 21));
 //         panel1.add(lmjesec, new XYConstraints(15, 85, -1, -1) );
 //         panel1.add(mjesec, new XYConstraints(150, 85, 35, -1) );
@@ -1003,19 +1008,23 @@ public class raAutomatRac extends raFrame {
         zagRac
                 .setTimestamp("DATUG", zagugovora.getTimestamp("DATUGOVOR"));
         
-        //TODO ovdje rjesavat problem ¡
-        zagRac.setShort("DDOSP", zagugovora.getShort("DANIDOSP"));
-        //TODO ovdje rjesavat problem ^
-        
+        if (datdvo) {
+          //TODO ovdje rjesavat problem ¡
+          zagRac.setShort("DDOSP", zagugovora.getShort("DANIDOSP"));
+          //TODO ovdje rjesavat problem ^
+          //>>>>>>>>ovo ovako za sada ¡
+          zagRac.setTimestamp("DATDOSP", new java.sql.Timestamp(raDateUtil
+              .getraDateUtil().addDate(DummySet.getTimestamp("DVO"),
+                  (int) zagugovora.getShort("DANIDOSP")).getTime())); 
+          //>>>>>>>>ovo ovako za sada ^
+        } else {
+          zagRac.setShort("DDOSP", DummySet.getShort("DANIDOSP"));
+          zagRac.setTimestamp("DATDOSP", DummySet.getTimestamp("DATDOSP"));
+        }
         zagRac.setTimestamp("DVO", DummySet.getTimestamp("DVO"));
         
 //        zagRac.setTimestamp("DATDOSP", DummySet.getTimestamp("DATDOSP"));
 
-        //>>>>>>>>ovo ovako za sada ¡
-        zagRac.setTimestamp("DATDOSP", new java.sql.Timestamp(raDateUtil
-            .getraDateUtil().addDate(DummySet.getTimestamp("DVO"),
-                (int) zagugovora.getShort("DANIDOSP")).getTime())); 
-        //>>>>>>>>ovo ovako za sada ^
         
         Util.getUtil().getBrojDokumenta(zagRac);
         alSEQS.add(new int[]{zagRac.getInt("BRDOK")});
