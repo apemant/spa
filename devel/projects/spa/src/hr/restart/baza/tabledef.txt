@@ -389,7 +389,7 @@ $Konta
 LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
 BROJKONTA;char;8;pkey;;Broj
-NAZIVKONTA;char;100;;;Naziv
+NAZIVKONTA;char;500;;;Naziv
 VRSTAKONTA;char;1;;A;Vrsta konta
 ORGSTR;char;1;;;Pripadnost OJ
 OSTAVKE;char;1;;;Otvorene stavke
