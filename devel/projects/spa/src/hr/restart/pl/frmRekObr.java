@@ -280,7 +280,7 @@ public class frmRekObr extends frmIzvjestajiPL{
     String tabRad=getKumRadTableName();
     String tabRadArh=isArhMode()?tabRad:"radnici";
     String qStr = "select distinct count (*) from radnici, "+tabRad+" where radnici.cradnik = "+tabRad+".cradnik "+
-                  "and radnici."+this.getWhereQuery();
+                  "and "+getWhereQuery(tabRadArh);
     if(!cOrg.equals(""))
       qStr += " and "+tabRadArh+".corg='"+cOrg+"'";
     QueryDataSet rQDS = new QueryDataSet();

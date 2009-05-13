@@ -186,7 +186,7 @@ public class frmRekDopPor extends frmRekObr{
                   ") or ("+opl.getOdbiciWhereQuery(opl.DOPN_param,getTableName())+
                   ")) AND radnicipl.cradnik = " + getTableName() + ".cradnik"+
                   " AND radnici.cradnik = " + getTableName() + ".cradnik"+
-                  " AND radnici."+getWhereQuery();
+                  " AND "+getWhereQuery("radnici");
 
     String grupBy = " group by " + getTableName() + ".cvrodb";
 
@@ -208,12 +208,13 @@ public class frmRekDopPor extends frmRekObr{
                   ") or ("+opl.getOdbiciWhereQuery(opl.DOPN_param,getTableName())+
                   ")) AND radnicipl.cradnik = " + getTableName() + ".cradnik"+
                   " AND radnici.cradnik = " + getTableName() + ".cradnik"+
-                  " AND radnici."+getWhereQuery();
+                  " AND "+getWhereQuery("radnici");
     if (!fieldSet.getString("CVRO").equals("") && flag.equals("LD")) qstr = qstr.concat(" and radnicipl.cvro = "+fieldSet.getString("CVRO"));
 
     String[] gruping;
     if (!flag.equals("LD")) gruping = new String[]{"CVRODB","CVRO"};
     else gruping = new String[]{"CVRODB"};
+System.out.println("getQDSDop("+flag+") :: " + qstr);
     QueryDataSet temporary = ut.getNewQueryDataSet(qstr);
     QueryDataSet temporary2 = new QueryDataSet();
     temporary2.setColumns(temporary.cloneColumns());
@@ -243,7 +244,7 @@ public class frmRekDopPor extends frmRekObr{
                   opl.getOdbiciWhereQuery(opl.PRIREZ_param,getTableName())+
                   ") AND radnicipl.cradnik = " + getTableName() + ".cradnik"+
                   " AND radnici.cradnik = " + getTableName() + ".cradnik"+
-                  " AND radnici."+getWhereQuery();
+                  " AND "+getWhereQuery("radnici");
     String grup1 = " group by radnicipl.copcine";
     String grup2 = " group by obrstopa";
     if (flag.equals("OPC")) qstr = qstr.concat(grup1);
@@ -259,7 +260,7 @@ public class frmRekDopPor extends frmRekObr{
                   opl.getOdbiciWhereQuery(opl.PRIREZ_param,getTableName())+
                   ") AND radnicipl.cradnik = " + getTableName() + ".cradnik"+
                   " AND radnici.cradnik = " + getTableName() + ".cradnik"+
-                  " AND radnici."+getWhereQuery();
+                  " AND "+getWhereQuery("radnici");
 
     QueryDataSet temporary = ut.getNewQueryDataSet(qstr);
     QueryDataSet temporary2 = new QueryDataSet();
@@ -297,7 +298,7 @@ public class frmRekDopPor extends frmRekObr{
                   ".por2) as por2, sum(" + getTableNamePorez() + ".por3) as por3, sum(" + getTableNamePorez() + ".por4) as por4, sum(" +
                   getTableNamePorez() + ".por5) as por5, sum(" + getTableNamePorez() + ".poruk) as poruk "+
                   "FROM " + getTableNamePorez() + ",radnicipl,radnici where radnicipl.cradnik = " + getTableNamePorez() + ".cradnik "+
-                  "AND radnici.cradnik = " + getTableNamePorez() + ".cradnik AND radnici." + getWhereQuery();
+                  "AND radnici.cradnik = " + getTableNamePorez() + ".cradnik AND " + getWhereQuery("radnici");
     String grup1 = " group by radnicipl.copcine";
     if (flag.equals("OPC")) qstr = qstr.concat(grup1);
     return qstr;
@@ -308,7 +309,7 @@ public class frmRekDopPor extends frmRekObr{
                   ".por2 as por2, " + getTableNamePorez() + ".por3 as por3, " + getTableNamePorez() + ".por4 as por4, " +
                   getTableNamePorez() + ".por5 as por5, " + getTableNamePorez() + ".poruk as poruk "+
                   "FROM " + getTableNamePorez() + ",radnicipl,radnici where radnicipl.cradnik = " + getTableNamePorez() + ".cradnik "+
-                  "AND radnici.cradnik = " + getTableNamePorez() + ".cradnik AND radnici." + getWhereQuery();
+                  "AND radnici.cradnik = " + getTableNamePorez() + ".cradnik AND " + getWhereQuery("radnici");
 
     QueryDataSet temporary = ut.getNewQueryDataSet(qstr);
     QueryDataSet temporary2 = new QueryDataSet();
@@ -356,7 +357,7 @@ public class frmRekDopPor extends frmRekObr{
               ") or ("+opl.getOdbiciWhereQuery(opl.DOPN_param,getTableName())+  //    \\ <- odbiciarh ??  getTableName() ??
               ")) AND radnicipl.cradnik = " + getTableName() + ".cradnik"+
               " AND radnici.cradnik = " + getTableName() + ".cradnik"+
-              " AND radnici."+getWhereQuery(); // getWhereQuery() pocinje sa "corg in (..."
+              " AND "+getWhereQuery("radnici"); // getWhereQuery() pocinje sa "corg in (..."
 
     String grupBy = " group by cvro";
 
@@ -372,7 +373,7 @@ public class frmRekDopPor extends frmRekObr{
               ") or ("+opl.getOdbiciWhereQuery(opl.DOPN_param,getTableName())+  //    \\ <- odbiciarh ??  getTableName() ??
               ")) AND radnicipl.cradnik = " + getTableName() + ".cradnik"+
               " AND radnici.cradnik = " + getTableName() + ".cradnik"+
-              " AND radnici."+getWhereQuery();
+              " AND "+getWhereQuery("radnici");
     QueryDataSet temporary = ut.getNewQueryDataSet(qstr);
     QueryDataSet temporary2 = new QueryDataSet();
     temporary2.setColumns(temporary.cloneColumns());

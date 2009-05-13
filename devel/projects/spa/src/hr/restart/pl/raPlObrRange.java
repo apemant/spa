@@ -71,11 +71,30 @@ public class raPlObrRange {
         +" AND "+tName+"rbrobr BETWEEN "+RBROBRfrom+" AND "+RBROBRto;
   }
 
-  private static String getTName(String tableName) {
+  private static String getTName(String _tableName) {
     String tName = null;
+    String tableName = checkTabelaArh(_tableName);
     if (tableName == null) return "";
     if (tableName.trim().equals("")) return "";
     return tableName.concat(".");
+  }
+  /**
+   * Da li je tabela arhivska odnosno ima li u sebi kolone godobr, mjobr i rbrobr
+   * @param tabela
+   * @return ime tabele iz parametra ako je arhivska, a ako nije vraca null (za poziv raPlObrRange.getQuery());
+   */
+  private static String checkTabelaArh(String tabela) {
+//    KreirDrop[] kd = KreirDrop.getModulesWithColumns(new String [] {"godobr","mjobr","rbrobr"});
+//    for (int i = 0; i < kd.length; i++) {
+//      if (kd[i].get...MA ZNAM NAPAMET)
+//      
+//    }
+    if (tabela == null) return null;
+    String[] arhtablenames = new String[] {"odbiciarh","prisutarh","kumulorgarh","kumulradarh","primanjaarh","rsperiodarh"};
+    for (int i = 0; i < arhtablenames.length; i++) {
+      if (arhtablenames[i].equalsIgnoreCase(tabela)) return tabela;
+    }
+    return null;
   }
 
   /**
