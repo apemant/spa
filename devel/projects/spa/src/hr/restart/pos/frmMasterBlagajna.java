@@ -1187,7 +1187,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     } else
       return;
 
-    if (!printNar_impl())
+    if (!printNar_impl(true))
       JOptionPane.showMessageDialog(raDetail.getWindow(),
           "Pogrešno zadane grupe artikala za ispis narudbi!", "Greška",
           JOptionPane.ERROR_MESSAGE);
@@ -1196,7 +1196,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   DataSet narSet;
   String narDest;
 
-  private boolean printNar_impl() {
+  public boolean printNar_impl(boolean saveChanges) {
     String np = frmParam.getParam("pos", "narPrint", "",
         "Definicije grupa artikala -> radno mjesto narudbe");
     if (np.length() == 0) return false;
@@ -1263,7 +1263,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     
     }
     
-    if (needSave) det.saveChanges();
+    if (needSave&&saveChanges) det.saveChanges();
     return true;
   }
   
