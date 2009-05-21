@@ -18,16 +18,20 @@
 package hr.restart.os;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Orgstruktura;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
+import hr.restart.util.Util;
+import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raImages;
 import hr.restart.util.raUpitLite;
 import hr.restart.util.sysoutTEST;
 import hr.restart.zapod.OrgStr;
+import hr.restart.zapod.dlgGetKnjig;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -819,6 +823,11 @@ hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(false);
     osm.showFrame("hr.restart.os.ispAmor", "Ispis amortizacije");
   }
   String getPripOrg() {
+    if (jrfCORG.getText().equals(dlgGetKnjig.getKNJCORG())) {
+      QueryDataSet knjigs = Orgstruktura.getDataModule().getTempSet(Condition.equal("NALOG", "1"));
+      knjigs.open();
+      if (knjigs.getRowCount() == 1) return "0=0";
+    }
     com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(jrfCORG.getText());
     return Condition.in("CORG2", tds, "CORG").qualified("OS_SREDSTVO").toString();
 //    int i=0;
