@@ -1058,10 +1058,14 @@ System.out.println("Nije modal dialog...Vracam false");
   }
 
   private boolean containsMenu(JMenuBar jmb,JMenu jm) {
-    for (int i = 0; i < jmb.getMenuCount(); i++) {
-      if (jmb.getMenu(i).getText().equals(jm.getText())) return true;
+    try {
+      for (int i = 0; i < jmb.getMenuCount(); i++) {
+        if (jmb.getMenu(i).getText().equals(jm.getText())) return true;
+      }
+      return false;
+    } catch (Exception e) {
+      return false;
     }
-    return false;
   }
   public boolean checkToolAccess() {
     String usro = hr.restart.sisfun.raUser.getInstance().getUser();
