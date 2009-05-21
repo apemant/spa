@@ -166,6 +166,7 @@ public class frmPlacanje extends raMatPodaci {
     catch(Exception e) {
       e.printStackTrace();
     }
+    inst = this;
   }
 
   private void jbInit() throws Exception {
@@ -485,9 +486,7 @@ public class frmPlacanje extends raMatPodaci {
     qdsRate.open();
     mDoki=master;
 
-//    _Main.getStartFrame().showFrame("hr.restart.robno.frmPlacanje", "Plaæanje");
-    if (frmplacanje == null)
-        frmplacanje = (frmPlacanje)_Main.getStartFrame().showFrame("hr.restart.robno.frmPlacanje",0, "Plaæanje",false);
+    getFrmPlacanje();
 
     tdsTemp.open();
     System.out.println("master.getBigDecimal(UIRAC) "+master.getBigDecimal("UIRAC"));
@@ -506,7 +505,7 @@ public class frmPlacanje extends raMatPodaci {
 
     return justCheckRate(master);
   }
-  private static frmPlacanje frmplacanje;
+  protected static frmPlacanje frmplacanje;
   public static boolean entryRate(raMasterDetail rmd) {
     QueryDataSet master = rmd.getMasterSet();
   	System.out.println("EntryRate"+jtfBROJ.isEnabled());
@@ -527,8 +526,7 @@ public class frmPlacanje extends raMatPodaci {
           createSingleRata(rmd, sr.equalsIgnoreCase("S"))) return true;
     }
 
-    if (frmplacanje == null)
-        frmplacanje = (frmPlacanje)_Main.getStartFrame().showFrame("hr.restart.robno.frmPlacanje",0, "Plaæanje",false);
+    getFrmPlacanje();
 
     
     tdsTemp.open();
@@ -547,6 +545,12 @@ public class frmPlacanje extends raMatPodaci {
       master.setString("CNACPL", qdsRate.getString("CNACPL"));
     rmd.raDetail.requestFocus();
     return true;
+  }
+
+  public static String frmPlacanjeClassName = "hr.restart.robno.frmPlacanje"; 
+  protected static void getFrmPlacanje() {
+    if (frmplacanje == null)
+        frmplacanje = (frmPlacanje)_Main.getStartFrame().showFrame(frmPlacanjeClassName,0, "Plaæanje",false);
   }
   public void EntryPoint(char mode) {
     rcc.setLabelLaF(jtfBROJ, false);
