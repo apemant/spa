@@ -220,14 +220,14 @@ public class upKPRFake extends raUpit {
 		String sqlupit;
 		
 		if (jrbsklad.isSelected()){
-			corg = "cskl='" + jrfCSKL.getText() + "' ";
-			sqlupit = "select max(cskl),max(vrdok),max(brdok),"
-				+ "max(datdok) as datdok,sum(iprodsp) as iprodsp,"
-				+ "MAX(GOD) as god,max(cskl) as cskl "
+			corg = "doki.cskl='" + jrfCSKL.getText() + "' ";
+			sqlupit = "select max(doki.cskl),max(doki.vrdok),max(doki.brdok),"
+				+ "datdok,sum(stdoki.iprodsp) as iprodsp,"
+				+ "MAX(doki.GOD) as god,max(doki.cskl) as cskl "
 				+ "from doki,stdoki WHERE "+corg+" and doki.cskl = stdoki.cskl AND "
 				+ "doki.vrdok = stdoki.vrdok AND doki.god = stdoki.god "
 				+ "AND doki.brdok = stdoki.brdok "
-				+ "AND DATDOK between '"
+				+ "AND doki.DATDOK between '"
 				+ ut.getFirstSecondOfDay(tds.getTimestamp("pocDatum"))
 				+ "' and '"
 				+ ut.getLastSecondOfDay(tds.getTimestamp("zavDatum"))
@@ -235,10 +235,10 @@ public class upKPRFake extends raUpit {
 				+ "AND doki.vrdok='GOT' group by datdok order by datdok";
 			
 		} else {
-			corg = "cskl='" + jrfCORG.getText() + "' ";
-			sqlupit = "select max(cskl),max(vrdok),max(brdok),"
-				+ "max(datdok) as datdok,sum(iprodsp) as iprodsp,"
-				+ "MAX(GOD) as god,max(cskl) as cskl "
+			corg = "doki.cskl='" + jrfCORG.getText() + "' ";
+			sqlupit = "select max(doki.cskl),max(doki.vrdok),max(doki.brdok),"
+				+ "datdok,sum(stdoki.iprodsp) as iprodsp,"
+				+ "MAX(doki.GOD) as god,max(doki.cskl) as cskl "
 				+ "from doki,stdoki WHERE "+corg+" and doki.cskl = stdoki.cskl AND "
 				+ "doki.vrdok = stdoki.vrdok AND doki.god = stdoki.god "
 				+ "AND doki.brdok = stdoki.brdok "
@@ -251,6 +251,7 @@ public class upKPRFake extends raUpit {
 			
 		}
 		knjiga.open();
+System.out.println(sqlupit);
 		QueryDataSet racuni = ut
 				.getNewQueryDataSet(sqlupit);
 //System.out.println(racuni.getQuery().getQueryString());
