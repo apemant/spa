@@ -1281,17 +1281,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   	  makeNext=newRacun;
   	} else return;
 
-	int maxGrcF5 = Integer.parseInt(hr.restart.sisfun.frmParam.getParam("pos", "GRC_kom_int", "1", "Broj raèuna kod ispisa na F5 iz unosa POS-a",true));
-
-    for (int print = 1; print <= maxGrcF5; print++) {
-      raDetail.getRepRunner().setOneTimeDirectReport("hr.restart.robno.repRacunPOS");
-      raDetail.Funkcija_ispisa();
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException e) {
-        // blah
-      }
-    }
+  	justPrintGRC();
     raDetail.rnvExit_action();
 //    pressF10('B');
 //    _Main.getStartFrame().showFrame("hr.restart.robno.dlgPrintPOS", "Spremanje i ispis raèuna");
@@ -1321,6 +1311,20 @@ public class frmMasterBlagajna extends raMasterDetail {
 //    if (mode=='U') pressF10(mode);
 //    else if ((mode=='I') && (newRacun)) pressF10(mode);
  */
+  }
+
+  public void justPrintGRC() {
+    int maxGrcF5 = Integer.parseInt(hr.restart.sisfun.frmParam.getParam("pos", "GRC_kom_int", "1", "Broj raèuna kod ispisa na F5 iz unosa POS-a",true));
+
+      for (int print = 1; print <= maxGrcF5; print++) {
+        raDetail.getRepRunner().setOneTimeDirectReport("hr.restart.robno.repRacunPOS");
+        raDetail.Funkcija_ispisa();
+        try {
+          Thread.sleep(250);
+        } catch (InterruptedException e) {
+          // blah
+        }
+      }
   }
   void calcGlobalPopust() {
     tmpPOP=util.nul;
