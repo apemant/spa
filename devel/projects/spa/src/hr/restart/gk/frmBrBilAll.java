@@ -577,7 +577,7 @@ public class frmBrBilAll extends raUpitFat {
     razvijeni.setColumns(new Column[] {
         (Column) dm.getGkkumulativi().getColumn("CORG").clone(),
         (Column) dm.getGkkumulativi().getColumn("BROJKONTA").clone(),
-        dm.createStringColumn("NK", "Naziv konta", 200),
+        dm.createStringColumn("NK", "Naziv konta", 0),
         dm.createBigDecimalColumn("POCID", "Po\u010DetnoD", 2),
         dm.createBigDecimalColumn("POCIP", "Po\u010DetnoP", 2),
         dm.createBigDecimalColumn("SALPS","SaldoPS",2),
@@ -838,7 +838,7 @@ public class frmBrBilAll extends raUpitFat {
     obradjeni.setColumns(new Column[] {
         (Column) dm.getGkkumulativi().getColumn("CORG").clone(),
         (Column) dm.getGkkumulativi().getColumn("BROJKONTA").clone(),
-        dm.createStringColumn("NK", "Naziv konta", 200),
+        dm.createStringColumn("NK", "Naziv konta", 0),
         dm.createBigDecimalColumn("POCID", "Po\u010DetnoD", 2),
         dm.createBigDecimalColumn("POCIP", "Po\u010DetnoP", 2),
         dm.createBigDecimalColumn("SALPS","SaldoPS",2),
@@ -974,7 +974,7 @@ public class frmBrBilAll extends raUpitFat {
     razvijeni.setColumns(new Column[] {
         (Column) dm.getGkkumulativi().getColumn("CORG").clone(),
         (Column) dm.getGkkumulativi().getColumn("BROJKONTA").clone(),
-        dm.createStringColumn("NK", "Naziv konta", 200),
+        dm.createStringColumn("NK", "Naziv konta", 0),
         dm.createBigDecimalColumn("POCID", "Po\u010DetnoD", 2),
         dm.createBigDecimalColumn("POCIP", "Po\u010DetnoP", 2),
         dm.createBigDecimalColumn("SALPS","SaldoPS",2),
@@ -1415,7 +1415,7 @@ public class frmBrBilAll extends raUpitFat {
     sumamed.setColumns(new Column[] {
         (Column) dm.getGkkumulativi().getColumn("CORG").clone(),
         (Column) dm.getGkkumulativi().getColumn("BROJKONTA").clone(),
-        dm.createStringColumn("NK", "Naziv konta", 200),
+        dm.createStringColumn("NK", "Naziv konta", 0),
         dm.createBigDecimalColumn("POCID", "Po\u010DetnoD", 2),
         dm.createBigDecimalColumn("POCIP", "Po\u010DetnoP", 2),
         dm.createBigDecimalColumn("SALPS","SaldoPS",2),
