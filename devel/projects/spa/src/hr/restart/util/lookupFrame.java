@@ -184,8 +184,8 @@ public class lookupFrame extends JraDialog {
         this_compShown();
       }
     });
-    oKpanel1.setMaximumSize(new Dimension(32767, 27));
-    oKpanel1.setPreferredSize(new Dimension(138, 25));
+//    oKpanel1.setMaximumSize(new Dimension(32767, 27));
+//    oKpanel1.setPreferredSize(new Dimension(138, 25));
 
     this.getContentPane().add(jPTable, BorderLayout.CENTER); //UVIJEK TREBA KREIRATI PRIJE JdbTable od ColumnsBeana
     this.getContentPane().add(jPcbean, BorderLayout.NORTH);
