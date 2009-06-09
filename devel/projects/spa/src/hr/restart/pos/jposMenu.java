@@ -38,13 +38,13 @@ import javax.swing.JMenuItem;
 public class jposMenu extends JMenu {
   ResourceBundle res = ResourceBundle.getBundle("hr.restart.robno.Res");
   hr.restart.util.startFrame SF;
-  JMenuItem jmBlagajna = new JMenuItem();
-  JMenuItem jmGOT = new JMenuItem();
-  JMenuItem jmRazduzenjePOSa = new JMenuItem();
-  JMenuItem jmRazduzenjePOS = new JMenuItem();
-  JMenuItem jmGRN = new JMenuItem();
-  JMenuItem jmRekapitulacijaPOS = new JMenuItem();
-  JMenuItem jmPregledArtikliRacuni = new JMenuItem();
+  public JMenuItem jmBlagajna = new JMenuItem();
+  public JMenuItem jmGOT = new JMenuItem();
+  public JMenuItem jmRazduzenjePOSa = new JMenuItem();
+  public JMenuItem jmRazduzenjePOS = new JMenuItem();
+  public JMenuItem jmGRN = new JMenuItem();
+  public JMenuItem jmRekapitulacijaPOS = new JMenuItem();
+  public JMenuItem jmPregledArtikliRacuni = new JMenuItem();
 
   public jposMenu(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -114,31 +114,31 @@ public class jposMenu extends JMenu {
     this.add(jmPregledArtikliRacuni);
   }
 
-  void jmBlagajna_actionPerformed(ActionEvent e) {
+  public void jmBlagajna_actionPerformed(ActionEvent e) {
     PreSelect.showPreselect("hr.restart.pos.presBlag", "hr.restart.pos.frmMasterBlagajna",
                             jmBlagajna.getText(), false);
 //    SF.showFrame("hr.restart.robno.dlgBeforePOS", res.getString("dlgBeforePOS_title"));
   }
-  void jmGOT_actionPerformed(ActionEvent e) {
+  public void jmGOT_actionPerformed(ActionEvent e) {
     hr.restart.robno.raGOT ragot = (hr.restart.robno.raGOT)raLoader.load("hr.restart.robno.raGOT");
     hr.restart.robno.presGOT.getPres().showJpSelectDoc("GOT", ragot, true, jmGOT.getText());
   }
-  void jmRazduzenjePOS_actionPerformed(ActionEvent e) {
+  public void jmRazduzenjePOS_actionPerformed(ActionEvent e) {
     hr.restart.robno.raPOS rapos = (hr.restart.robno.raPOS)raLoader.load("hr.restart.robno.raPOS");
     hr.restart.robno.presPOS.getPres().showJpSelectDoc("POS", rapos, true, jmRazduzenjePOS.getText());
   }
-  void jmRazduzenjePOSa_actionPerformed(ActionEvent e) {
+  public void jmRazduzenjePOSa_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmPos2POS", jmRazduzenjePOSa.getText());
   }
-  void jmGRN_actionPerformed(ActionEvent e) {
+  public void jmGRN_actionPerformed(ActionEvent e) {
     hr.restart.robno.raGRN ragrn = (hr.restart.robno.raGRN)raLoader.load("hr.restart.robno.raGRN");
     hr.restart.robno.presGRN.getPres().showJpSelectDoc("GRN", ragrn, true, jmGRN.getText());
   }
-  void jmRekapitulacijaPOS_actionPerformed(ActionEvent e) {
+  public void jmRekapitulacijaPOS_actionPerformed(ActionEvent e) {
 //    SF.showFrame("hr.restart.robno.ispPOS_Total", jmRekapitulacijaPOS.getText());
     SF.showFrame("hr.restart.robno.ispRekapitulacijaRacunaPOS", jmRekapitulacijaPOS.getText());
   }
-  void jmPregledArtikliRacuni_actionPerformed(ActionEvent e){
+  public void jmPregledArtikliRacuni_actionPerformed(ActionEvent e){
     SF.showFrame("hr.restart.robno.upRacuniArtikliPOS", jmPregledArtikliRacuni.getText());
   }
 }

@@ -58,7 +58,7 @@ public class jzpMenu extends javax.swing.JMenu {
 
   JMenuItem jzpMenuKonta = new JMenuItem();
 
-  JMenuItem jzpMenuPpar = new JMenuItem();
+  public JMenuItem jzpMenuPpar = new JMenuItem();
 
   JMenuItem jzpMenuPparHistory = new JMenuItem();
   
@@ -78,9 +78,9 @@ public class jzpMenu extends javax.swing.JMenu {
 
   JMenuItem jmKontaPar = new JMenuItem();
 
-  JMenuItem jmBanke = new JMenuItem();
+  public JMenuItem jmBanke = new JMenuItem();
 
-  JMenuItem jmKartice = new JMenuItem();
+  public JMenuItem jmKartice = new JMenuItem();
 
   JMenuItem jmUgovori = new JMenuItem();
 
@@ -88,7 +88,7 @@ public class jzpMenu extends javax.swing.JMenu {
 
   JMenuItem jmGrupPart = new JMenuItem();
 
-  JMenuItem jmNacPlac = new JMenuItem();
+  public JMenuItem jmNacPlac = new JMenuItem();
 
   JMenuItem jmNapomene = new JMenuItem();
 
@@ -572,7 +572,7 @@ public class jzpMenu extends javax.swing.JMenu {
 
 
 
-  void jzpMenuPpar_actionPerformed(ActionEvent e) {
+  public void jzpMenuPpar_actionPerformed(ActionEvent e) {
 
 //    SF.showFrame(fpartneri);
 
@@ -649,13 +649,13 @@ public class jzpMenu extends javax.swing.JMenu {
 
   }
 
-  void jmBanke_actionPerformed(ActionEvent e) {
+  public void jmBanke_actionPerformed(ActionEvent e) {
 
     SF.showFrame("hr.restart.zapod.frmBanke", Res.getString("frmBanke_title"));
 
   }
 
-  void jmKartice_actionPerformed(ActionEvent e) {
+  public void jmKartice_actionPerformed(ActionEvent e) {
 
     SF.showFrame("hr.restart.zapod.frmKartice", Res.getString("frmKartice_title"));
 

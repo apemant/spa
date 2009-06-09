@@ -36,16 +36,16 @@ public class menuOpMp extends JMenu {
   ResourceBundle res = ResourceBundle.getBundle("hr.restart.robno.Res");
 
   hr.restart.util.startFrame SF;
-  JMenuItem jmSkladista = new JMenuItem();
-  JMenuItem jmPorezi = new JMenuItem();
-  JMenuItem jmJedMj = new JMenuItem();
-  JMenuItem jmGrupaArt = new JMenuItem();
-  JMenuItem jmArtikli = new JMenuItem();
-  JMenuItem jmShemeKonta = new JMenuItem();
-  JMenuItem jmShemeKontaOJ = new JMenuItem();
-  JMenuItem jmProdMjesta = new JMenuItem();
-  JMenuItem jmVrArt = new JMenuItem();
-  JMenuItem jmBlagajnici = new JMenuItem();
+  public JMenuItem jmSkladista = new JMenuItem();
+  public JMenuItem jmPorezi = new JMenuItem();
+  public JMenuItem jmJedMj = new JMenuItem();
+  public JMenuItem jmGrupaArt = new JMenuItem();
+  public JMenuItem jmArtikli = new JMenuItem();
+  public JMenuItem jmShemeKonta = new JMenuItem();
+  public JMenuItem jmShemeKontaOJ = new JMenuItem();
+  public JMenuItem jmProdMjesta = new JMenuItem();
+  public JMenuItem jmVrArt = new JMenuItem();
+  public JMenuItem jmBlagajnici = new JMenuItem();
 
   public menuOpMp(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -138,36 +138,36 @@ public class menuOpMp extends JMenu {
     this.add(jmBlagajnici);
   }
 
-  void jmSkladista_actionPerformed(ActionEvent e) {
+  public void jmSkladista_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmSkladiste", jmSkladista.getText());
   }
-  void jmPorezi_actionPerformed(ActionEvent e) {
+  public void jmPorezi_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmPorezi", jmPorezi.getText());
   }
-  void jmJedMj_actionPerformed(ActionEvent e) {
+  public void jmJedMj_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmJedMj", jmJedMj.getText());
   }
-  void jmGrupaArt_actionPerformed(ActionEvent e) {
+  public void jmGrupaArt_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmGrupArt", jmGrupaArt.getText());
   }
-  void jmArtikli_actionPerformed(ActionEvent e) {
+  public void jmArtikli_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmArtikli", jmArtikli.getText());
   }
-  void jmShemeKonta_actionPerformed(ActionEvent e) {
+  public void jmShemeKonta_actionPerformed(ActionEvent e) {
     frmShemeKontaMp fShKonta = (frmShemeKontaMp) SF.showFrame("hr.restart.mp.frmShemeKontaMp", 0, jmShemeKonta.getText(), false);
     fShKonta.go();
   }
-  void jmShemeKontaOJ_actionPerformed(ActionEvent e) {
+  public void jmShemeKontaOJ_actionPerformed(ActionEvent e) {
     frmShemeKontaMpOJ fShKonta = (frmShemeKontaMpOJ) SF.showFrame("hr.restart.mp.frmShemeKontaMpOJ", 0, jmShemeKonta.getText(), false);
     fShKonta.go();
   }
-  void jmProdMjesta_actionPerformed(ActionEvent e) {
+  public void jmProdMjesta_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmProdMj", jmProdMjesta.getText());
   }
-  void jmBlagajnici_actionPerformed(ActionEvent e) {
+  public void jmBlagajnici_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmBlagajnici", jmBlagajnici.getText());
   }
-  void jmVrArt_actionPerformed(ActionEvent e) {
+  public void jmVrArt_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmVrArt", jmVrArt.getText());
   }
 
