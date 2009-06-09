@@ -70,6 +70,7 @@ import javax.swing.plaf.FontUIResource;
  */
 
 public class startFrame extends JraFrame implements Cloneable {
+  public static boolean STEALTH_MODE = false;
   static startFrame myStFr;
 //  private static startFrame SFR;
   ResourceBundle res = ResourceBundle.getBundle("hr.restart.util.aiRes");
@@ -215,6 +216,10 @@ public class startFrame extends JraFrame implements Cloneable {
       statusMSG();
 //    hideToolBar();
     } catch (Exception e){e.printStackTrace();}
+  }
+  public void setVisible(boolean b) {
+    if (STEALTH_MODE) return;
+    super.setVisible(b);
   }
 /*
   private void hideToolBar() {
