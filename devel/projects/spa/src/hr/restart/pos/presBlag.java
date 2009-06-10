@@ -77,6 +77,7 @@ public class presBlag extends PreSelect {
 
   JLabel jlStol = new JLabel();
   JraTextField jraStol = new JraTextField();
+  JraTextField jraVRDOK = new JraTextField();
   
   JLabel jlDatum = new JLabel();
   JraTextField jraDatumfrom = new JraTextField();
@@ -145,6 +146,7 @@ public class presBlag extends PreSelect {
     } else {
       jrfCPRODMJ.requestFocusLater();
     }
+    jraVRDOK.getDataSet().setString("VRDOK", getVRDOK());
   }
 
   public boolean Validacija() {
@@ -255,6 +257,7 @@ public class presBlag extends PreSelect {
     if (stolovi) {
       jlStol.setText("Stol");
       jraStol.setColumnName("STOL");
+      jraVRDOK.setColumnName("VRDOK");
       jcbAktiv.setText(" Samo aktivni raèuni ");
       jcbAktiv.setHorizontalTextPosition(SwingConstants.LEADING);
       jcbAktiv.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -274,6 +277,8 @@ public class presBlag extends PreSelect {
     jp.add(jrfNAZPRODMJ, new XYConstraints(260, 45, 255, -1));
     jp.add(jbCPRODMJ, new XYConstraints(519, 45, 21, 21));
 
+    jp.add(jraVRDOK, new XYConstraints(0,0,0,0));
+    jraVRDOK.setVisible(false);
   //jp.add(jrfCBLAGAJNIK, new XYConstraints(-1, -1, 100, -1));
 //    jp.add(jrfNAZBLAGAJNIK, new XYConstraints(260, 70, 255, -1));
 //    jp.add(jbCBLAGAJNIK, new XYConstraints(519, 70, 21, 21));
@@ -299,5 +304,12 @@ public class presBlag extends PreSelect {
   }
   public static boolean isSuper() {
   	return isSuper;
+  }
+  /**
+   * Override za NAR i sl.
+   * @return
+   */
+  protected String getVRDOK() {
+    return "GRC";
   }
 }
