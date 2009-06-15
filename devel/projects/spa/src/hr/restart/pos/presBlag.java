@@ -123,6 +123,10 @@ public class presBlag extends PreSelect {
       firstTime = false;
       resetDefaults();
     }
+    if (!getPRODMJ().trim().equals("")) {
+      jrfCPRODMJ.getDataSet().setString("CPRODMJ",getPRODMJ());
+      jrfCPRODMJ.forceFocLost();
+    }
 /*    QueryDataSet qds = hr.restart.robno.Util.getMPSklDataset();
     qds.open();
     if (qds.rowCount()==0) {
@@ -153,21 +157,25 @@ public class presBlag extends PreSelect {
     if (vl.isEmpty(jrfCSKL)) return false;
     if (vl.isEmpty(jrfCPRODMJ)) return false;
     //if (stolovi && vl.isEmpty(jraStol)) return false;
-    dm.getBlagajnici().open();
-    if (!lookupData.getlookupData().raLocate(dm.getBlagajnici(), "LOZINKA", String.valueOf(jpswd.getPassword()))) {
-    	JOptionPane.showMessageDialog(null, "Pogrešna lozinka!", "Greška", JOptionPane.ERROR_MESSAGE);
-      	return false;
-    }
-    else {
-      blagajnik=dm.getBlagajnici().getString("CBLAGAJNIK");
-      if (dm.getBlagajnici().getString("SUPER").equalsIgnoreCase("D")) {
-      	isSuper=true;
+    if (isUserOriented()) {
+      blagajnik = raUser.getInstance().getUser();
+      isSuper = raUser.getInstance().isSuper();
+    } else {
+      dm.getBlagajnici().open();
+      if (!lookupData.getlookupData().raLocate(dm.getBlagajnici(), "LOZINKA", String.valueOf(jpswd.getPassword()))) {
+      	JOptionPane.showMessageDialog(null, "Pogrešna lozinka!", "Greška", JOptionPane.ERROR_MESSAGE);
+        	return false;
       }
       else {
-      	isSuper=false;
+        blagajnik=dm.getBlagajnici().getString("CBLAGAJNIK");
+        if (dm.getBlagajnici().getString("SUPER").equalsIgnoreCase("D")) {
+        	isSuper=true;
+        }
+        else {
+        	isSuper=false;
+        }
       }
     }
-
     if (stolovi) stol = jraStol.getText();
 /*    String str="SELECT * FROM BLAGAJNICI WHERE LOZINKA='"+String.valueOf(jpswd.getPassword())+"'";
     QueryDataSet qds = hr.restart.util.Util.getNewQueryDataSet(str);
@@ -266,13 +274,12 @@ public class presBlag extends PreSelect {
       jp.add(jcbAktiv, new XYConstraints(375, 95, 140, -1));
     }
 
-    jp.add(jLabel1, new XYConstraints(15, 20, -1, -1));
     jp.add(jrfNAZSKL, new XYConstraints(260, 20, 255, -1));
     jp.add(jrfCSKL, new XYConstraints(150, 20, 100, -1));
-    jp.add(jLabel3, new XYConstraints(15, 70, -1, -1));
     jp.add(jLabel2, new XYConstraints(15, 45, -1, -1));
     jp.add(jPanel1, new XYConstraints(0, 0, -1, -1));
     jp.add(jbCSKL, new XYConstraints(519, 20, 21, 21));
+    jp.add(jLabel1, new XYConstraints(15, 20, -1, -1));
     jp.add(jrfCPRODMJ, new XYConstraints(150, 45, 100, -1));
     jp.add(jrfNAZPRODMJ, new XYConstraints(260, 45, 255, -1));
     jp.add(jbCPRODMJ, new XYConstraints(519, 45, 21, 21));
@@ -291,7 +298,10 @@ public class presBlag extends PreSelect {
     this.addSelRange(jraDatumfrom, jraDatumto);
     this.setSelPanel(jp);
     installResetButton();
-    jp.add(jpswd, new XYConstraints(150, 70, 100, -1));
+    if (!isUserOriented()) {
+      jp.add(jLabel3, new XYConstraints(15, 70, -1, -1));
+      jp.add(jpswd, new XYConstraints(150, 70, 100, -1));
+    }
   }
   
   public String refineSQLFilter(String orig) {
@@ -299,6 +309,23 @@ public class presBlag extends PreSelect {
     return orig + " AND pos.aktiv='D'";
   }
   
+  private static int userOriented = -1;
+  public static boolean isUserOriented() {
+    if (userOriented<0) {
+      userOriented = 
+        frmParam.getParam("pos", "posUser","N","Da li se POS vodi na nivou usera (D) ili blagajnika").equalsIgnoreCase("D")
+        ?1:0;
+    } 
+    return userOriented == 1;
+  }
+  
+  public static String prodmj = null;
+  public static String getPRODMJ() {
+    if (prodmj == null) {
+      prodmj = frmParam.getParam("pos", "prodmj", "", "Oznaka prodajnog mjesta za POS (per makina!)", true);
+    }
+    return prodmj;
+  }
   public static String getBlagajnik() {
   	return blagajnik;
   }

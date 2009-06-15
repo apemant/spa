@@ -490,7 +490,10 @@ public class frmMasterBlagajna extends raMasterDetail {
     dm.getProd_mj().open();
     dm.getSklad().open();
     showLabel();
-    jpBl.jLabel11.setText(dm.getProd_mj().getString("NAZPRODMJ")+" / "+dm.getBlagajnici().getString("NAZBLAG"));
+    String shljaker = presBlag.isUserOriented()?
+        raUser.getInstance().getImeUsera():
+          dm.getBlagajnici().getString("NAZBLAG");
+    jpBl.jLabel11.setText(dm.getProd_mj().getString("NAZPRODMJ")+" / "+shljaker);
     jpBl.setDataSet(getMasterSet(), getDetailSet());
     getDetailSet().refresh();
   }
