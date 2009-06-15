@@ -666,7 +666,7 @@ STATUS;char;1;;N;STATUS;*
 CNACPL;char;3;;;Na\u10din plaæanja
 CUSER;char;15;;;Operater
 CKUPAC;int;6;;;Kupac;5
-CBLAGAJNIK;char;3;;;Blagajnik
+CBLAGAJNIK;char;15;;;Blagajnik
 STOL;char;10;;;Stol
 RDOK;char;60;;;Dokument razduženja
 IDX=brdok
