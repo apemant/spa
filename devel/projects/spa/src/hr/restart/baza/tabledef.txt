@@ -405,6 +405,7 @@ AKTIV;char;1;;D;Aktivan - neaktivan;*
 CRACUNA;text;90;pkey;;Raèun
 CUPLATE;text;90;pkey;;Uplata
 IZNOS;numeric;17,2;;0;Iznos
+PVIZNOS;numeric;17,2;;0;Dev. iznos
 IDX=cracuna
 IDX=cuplate
 
@@ -414,6 +415,7 @@ AKTIV;char;1;;D;Aktivan - neaktivan;*
 CRACUNA;text;90;pkey;;Raèun
 CUPLATE;text;90;pkey;;Uplata
 IZNOS;numeric;17,2;;0;Iznos
+PVIZNOS;numeric;17,2;;0;Dev. iznos
 IDX=cracuna
 IDX=cuplate
 
@@ -667,7 +669,7 @@ CNACPL;char;3;;;Na\u10din plaæanja
 CUSER;char;15;;;Operater
 CKUPAC;int;6;;;Kupac;5
 CBLAGAJNIK;char;15;;;Blagajnik
-STOL;char;10;;;Stol
+STOL;char;20;;;Stol
 RDOK;char;60;;;Dokument razduženja
 IDX=brdok
 
@@ -1046,3 +1048,13 @@ SATIRAD;numeric;17,2;;0;Sati rada;15
 SATIPRAZ;numeric;17,2;;0;Sati praznika;15
 SATIUK;numeric;17,2;;0;Sati ukupno;15
 MINPL;numeric;17,2;;0;Olakšica U mjesecu;15
+
+$Stolovi
+PODIJ;text;30;;;Podij
+STOL;text;20;pkey;;Stol
+
+$Resources
+ID;text;255;pkey;;ID
+name;text;255;;;Ime
+RESTYPE;int;6;;;Tip
+CONTENT;blob;;;;Podaci
