@@ -215,8 +215,7 @@ public class DataSetComparator {
       c1.setCaption("1." + c1.getCaption());
       ret.addColumn(c1);
       c1c[i] = c1.getColumnName();
-    }
-    for (int i = 0; i < compareCols.length; i++) {
+      
       Column c2 = (Column) two.getColumn(compareCols[i]).clone();
       c2.setColumnName(c2.getColumnName() + "2");
       c2.setCaption("2." + c2.getCaption());
