@@ -658,8 +658,12 @@ public abstract class KreirDrop {
                 if (rowData != null) rowData.put(existingNames[i], val);
                 if (val.length() > 0 || existingCols[i].getDataType() == Variant.STRING) {
                   if (existingCols[i].getDataType() == Variant.TIMESTAMP)
-                    ps.setTimestamp(existingNames[i], new java.sql.Timestamp(
-                        java.sql.Date.valueOf(val).getTime()), false);
+                    try {
+                      v.setFromString(existingCols[i].getDataType(), val);
+                      ps.setValue(existingNames[i], v.getAsObject(), false);
+                    } catch (IllegalArgumentException ie) {
+                      ps.setTimestamp(existingNames[i], java.sql.Timestamp.valueOf(val), false);
+                    }                    
                   if (existingCols[i].getDataType() == Variant.INPUTSTREAM) {
                     byte[] arr = decode(val);
                     ps.setBinaryStream(ps.getParameterIndex(existingNames[i], 
