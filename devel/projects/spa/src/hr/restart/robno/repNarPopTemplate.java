@@ -65,9 +65,10 @@ public class repNarPopTemplate extends repIzlazOrigTemplate {
   }
   
   public raReportSection createSectionFooter0() {
-    raIzlazSectionFooterForCustom isf0 = new raIzlazSectionFooterForCustom(this);
+    /*raIzlazSectionFooterForCustom isf0 = new raIzlazSectionFooterForCustom(this);
     isf0.TextNAPOMENAOPIS.defaultAlterer().setControlSource("NAZNAP");
-    return isf0;    
+    return isf0;*/    
+    return new raIzlazSectionFooterForCustom(this);
   }
 
 }
