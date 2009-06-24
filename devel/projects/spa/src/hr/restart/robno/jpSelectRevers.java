@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
@@ -24,11 +25,13 @@ import hr.restart.util.PreSelect;
 import hr.restart.util.raMasterDetail;
 
 import java.awt.Font;
+import java.sql.Timestamp;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.borland.dx.dataset.DataRow;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 /**
@@ -44,6 +47,7 @@ import com.borland.jbcl.layout.XYLayout;
 public class jpSelectRevers extends PreSelect {
 
   hr.restart.util.Valid val = hr.restart.util.Valid.getValid();
+  hr.restart.util.Util uut = hr.restart.util.Util.getUtil();
   hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
   rapancskl1 rpcskl = new rapancskl1(false,272);
   JLabel jlVRDOK = new JLabel();
@@ -185,9 +189,21 @@ public class jpSelectRevers extends PreSelect {
     }
   }
 
+  boolean firstTime = true;
+  com.borland.dx.dataset.DataRow preselData;
+  
   public void SetFokus() {
-    prepareRaDokument();
-    oslobodi(true);
+    if (firstTime) {
+      prepareRaDokument();
+      oslobodi(true);
+    } else {
+      dM.copyColumns(preselData, getSelRow());
+      rpcskl.jrfCSKL.forceFocLost();
+      jrfCORG.forceFocLost();
+      if (jrfCPAR.isVisible())
+        jrfCPAR.forceFocLost();
+    }
+    
     rpcskl.jrfCSKL.requestFocus();
 
   }
@@ -199,6 +215,10 @@ public class jpSelectRevers extends PreSelect {
       }
     if (!hr.restart.util.Util.getUtil().isValidRange(getSelRow().getTimestamp("DATDOK-from"), getSelRow().getTimestamp("DATDOK-to")))
       return false;
+    firstTime = false;
+    preselData = new DataRow(getSelRow());
+    dM.copyColumns(getSelRow(), preselData);
+    
     return true;
   }
   public void oslobodi(boolean default1) {
@@ -210,10 +230,17 @@ public class jpSelectRevers extends PreSelect {
 
   void prepareRaDokument() {
     getSelRow().setString("VRDOK",raDokument);
-    getSelRow().setTimestamp("DATDOK-from",hr.restart.robno.Util.getUtil().findFirstDayOfYear(Integer.parseInt(val.findYear())));
-    getSelRow().setTimestamp("DATDOK-to",hr.restart.util.Valid.getValid().getToday());
+    
+    Timestamp day = val.getToday();
+    if (!Aut.getAut().getKnjigodRobno().equals(val.findYear()) &&
+        !dm.getKnjigod().getString("STATRADA").equalsIgnoreCase("D"))
+      day = uut.getYearEnd(Aut.getAut().getKnjigodRobno());
+    
+    getSelRow().setTimestamp("DATDOK-from", day);
+    getSelRow().setTimestamp("DATDOK-to", day);
     getSelRow().post();
   }
+  
   public boolean isBRDOK() {
   	if (getSelRow().getInt("BRDOK")==0) return false;
   	return true;
