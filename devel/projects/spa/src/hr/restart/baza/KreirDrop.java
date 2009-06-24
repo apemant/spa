@@ -26,9 +26,16 @@ import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +44,10 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JTextArea;
+
+import org.w3c.tools.codec.Base64Decoder;
+import org.w3c.tools.codec.Base64Encoder;
+import org.w3c.tools.codec.Base64FormatException;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -646,15 +657,17 @@ public abstract class KreirDrop {
                          replaceAll("</sep>", sep).toString();
                 if (rowData != null) rowData.put(existingNames[i], val);
                 if (val.length() > 0 || existingCols[i].getDataType() == Variant.STRING) {
-                  try {
+                  if (existingCols[i].getDataType() == Variant.TIMESTAMP)
+                    ps.setTimestamp(existingNames[i], new java.sql.Timestamp(
+                        java.sql.Date.valueOf(val).getTime()), false);
+                  if (existingCols[i].getDataType() == Variant.INPUTSTREAM) {
+                    byte[] arr = decode(val);
+                    ps.setBinaryStream(ps.getParameterIndex(existingNames[i], 
+                        false), new ByteArrayInputStream(arr), arr.length);
+                  } else {
                     v.setFromString(existingCols[i].getDataType(), val);
                     ps.setValue(existingNames[i], v.getAsObject(), false);
-                  } catch (IllegalArgumentException ie) {
-                    if (existingCols[i].getDataType() == Variant.TIMESTAMP)
-                      ps.setTimestamp(existingNames[i], new java.sql.Timestamp(
-                          java.sql.Date.valueOf(val).getTime()), false);
-                    else throw ie;
-                  }
+                  } 
                 } else ps.setNull(ps.getParameterIndex(existingNames[i], false),
                         existingCols[i].getSqlType());
               }
@@ -1005,13 +1018,40 @@ public abstract class KreirDrop {
     for (int i = 0; i < table.columnCount(); i++) {
       if (table.getColumn(i).getSqlType() != java.sql.Types.NULL) {
         table.getVariant(table.getColumn(i).getColumnName(), v);
-        part.clear().append(v);
-        part.replaceAll(sep, "</sep>");
+        if (v.getType() == Variant.INPUTSTREAM)
+         part.clear().append(encode(v.getInputStream())); 
+        else {
+          part.clear().append(v);
+          part.replaceAll(sep, "</sep>");
+        }
         line.append(part).append(sep);
       }
     }
     line.replaceAll("\n", "\\n");
     return line.toString();
+  }
+  
+  public static String encode(InputStream is) {
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    try {
+      new Base64Encoder(is, out).process();
+    } catch (IOException e) {
+      //
+    }
+    return out.toString();
+  }
+  
+  public static byte[] decode(String val) {
+    ByteArrayInputStream is = new ByteArrayInputStream(val.getBytes());
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    try {
+      new Base64Decoder(is, out).process();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (Base64FormatException e) {
+      e.printStackTrace();
+    }
+    return out.toByteArray();
   }
 
   private String getFieldNames(DataSet table) {
@@ -1263,6 +1303,9 @@ public abstract class KreirDrop {
       case Variant.TIMESTAMP:
         ddl.addDate(cname, c.isRowId());
         break;
+      case Variant.INPUTSTREAM:
+        ddl.addBlob(cname, c.isRowId());
+        break;
     }
   }
   
@@ -1282,6 +1325,8 @@ public abstract class KreirDrop {
       dtype = Variant.SHORT;
     else if (stype.equals("date") || stype.equals("timestamp"))
       dtype = Variant.TIMESTAMP;
+    else if (stype.equals("blob"))
+      dtype = Variant.INPUTSTREAM;
     else
       terror("pogresan tip kolone, "+stype);
     
