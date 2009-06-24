@@ -455,6 +455,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repRacNp", "RAC", "D", ""},
       {"hr.restart.robno.repRac2", "RAC", "D", ""},
       {"hr.restart.robno.repRacPnP", "RAC", "D", ""},
+      {"hr.restart.robno.repRacPnP2", "RAC", "D", ""},
       {"hr.restart.robno.repRacUsluga", "RAC", "D", ""},
       {"hr.restart.robno.repRacV", "RAC", "D", ""},
       {"hr.restart.robno.repRac2V", "RAC", "D", ""},

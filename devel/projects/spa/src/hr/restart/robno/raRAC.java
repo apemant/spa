@@ -169,6 +169,10 @@ final public class raRAC extends raIzlazTemplate {
             "hr.restart.robno.repRacuniPnP",
             "RacSifKupPak","Raèun sa šifrom kupca");
         
+        raMaster.getRepRunner().addReport("hr.restart.robno.repRacPnP2",
+            "hr.restart.robno.repRacuniPnP","RacPnP",
+            "Raèun s popustima");
+        
         raMaster.getRepRunner().addReport("hr.restart.robno.repRacVert",
             "hr.restart.robno.repIzlazni", "RacVert",
             "Raèun 1 red okomito");
@@ -230,6 +234,10 @@ final public class raRAC extends raIzlazTemplate {
         raDetail.getRepRunner().addReport("hr.restart.robno.repRacPnP",
             "hr.restart.robno.repRacuniPnP",
             "RacSifKupPak","Raèun sa šifrom kupca");
+        
+        raDetail.getRepRunner().addReport("hr.restart.robno.repRacPnP2",
+            "hr.restart.robno.repRacuniPnP","RacPnP",
+            "Raèun s popustima");
         
         raDetail.getRepRunner().addReport("hr.restart.robno.repRacVert",
             "hr.restart.robno.repIzlazni", "RacVert",
