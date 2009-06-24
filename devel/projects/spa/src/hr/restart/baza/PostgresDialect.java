@@ -32,6 +32,7 @@ public class PostgresDialect extends Dialect {
       { "FLOAT", "numeric(%SIZE,%PRECISION)" },
       { "DEFAULT", "default '%VALUE'" },
       { "DATE", "timestamp" },
+      { "BLOB", "bytea" },
       { "PKEY", "Primary Key (%FIELD)" },
       
       { "ADD-COLUMN", "alter table %NAME add %COLUMN %TYPE" },

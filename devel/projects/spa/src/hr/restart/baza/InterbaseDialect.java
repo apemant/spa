@@ -41,6 +41,7 @@ public class InterbaseDialect extends Dialect {
       { "FLOAT", "numeric(%SIZE,%PRECISION)" },
       { "DEFAULT", "default '%VALUE'" },
       { "DATE", "date" },
+      { "BLOB", "blob" },
       { "PKEY", "Primary Key (%FIELD)" },
       
       { "ADD-COLUMN", "alter table %NAME add %COLUMN %TYPE" },

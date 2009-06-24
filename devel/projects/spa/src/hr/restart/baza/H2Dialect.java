@@ -33,6 +33,7 @@ public class H2Dialect extends Dialect {
       { "FLOAT", "numeric(%SIZE,%PRECISION)" },
       { "DEFAULT", "default '%VALUE'" }, // default '%VALUE'
       { "DATE", "timestamp" },
+      { "BLOB", "blob" },
       { "PKEY", "Primary Key (%FIELD)" },
       
       { "INDEX", "create index %NAME on %TABLE (%FIELD)" },

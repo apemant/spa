@@ -42,6 +42,7 @@ public class MySQLDialect extends Dialect {
       { "FLOAT", "numeric(%SIZE,%PRECISION)" },
       { "DEFAULT", "default '%VALUE'" },
       { "DATE", "date" },
+      { "BLOB", "blob" },
       { "PKEY", "Primary Key (%FIELD)" },
 
       { "INDEX", "create index %NAME on %TABLE (%FIELD)" },

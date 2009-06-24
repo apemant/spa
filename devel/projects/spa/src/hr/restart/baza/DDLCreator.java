@@ -133,8 +133,25 @@ public class DDLCreator {
     return addDate(_name, false);
   }
   
+  public DDLCreator addBlob(String _name, boolean _not_null) {
+    fields.add(_name);
+    fieldsList.append(_name).append(" ").
+      append(blobComm(_not_null)).append(", ");
+    return this;
+  }
+  
+  public DDLCreator addBlob(String _name) {
+    return addBlob(_name, false);
+  }
+  
   public String dateComm(boolean _not_null) {
     VarStr field = new VarStr(Dialect.getDDL("DATE"));
+    if (_not_null == true) field.append(" NOT NULL");
+    return field.toString();
+  }
+  
+  public String blobComm(boolean _not_null) {
+    VarStr field = new VarStr(Dialect.getDDL("BLOB"));
     if (_not_null == true) field.append(" NOT NULL");
     return field.toString();
   }

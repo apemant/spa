@@ -44,6 +44,7 @@ public class DefaultDialect extends Dialect {
       { "FLOAT", "numeric(%SIZE,%PRECISION)" },
       { "DEFAULT", "default '%VALUE'" },
       { "DATE", "date" },
+      { "BLOB", "blob" },
       { "PKEY", "Primary Key (%FIELD)" },
 
       { "INDEX", "create index %NAME on %TABLE (%FIELD)" },
@@ -89,6 +90,8 @@ public class DefaultDialect extends Dialect {
         return 5;
       case Variant.TIMESTAMP:
         return 93;
+      case Variant.INPUTSTREAM:
+        return -4;
     }
     throw new RuntimeException("Pogresan tip kolone");
   }
