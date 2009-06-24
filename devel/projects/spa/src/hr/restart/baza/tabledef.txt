@@ -887,6 +887,7 @@ img_id;int;6;pkey;;img_id
 tablica;text;50;;;TABLICA
 ckey;text;100;;;ckey
 imgurl;text;100;;;URL
+img;blob;;;;Slika
 
 $Artikli
 LOKK;char;1;;N;LOKK;*
@@ -1053,8 +1054,3 @@ $Stolovi
 PODIJ;text;30;;;Podij
 STOL;text;20;pkey;;Stol
 
-$Resources
-ID;text;255;pkey;;ID
-name;text;255;;;Ime
-RESTYPE;int;6;;;Tip
-CONTENT;blob;;;;Podaci
