@@ -127,6 +127,8 @@ public class SecondChooser extends JraDialog {
     
     private boolean rnlOpis = false;
     
+    private boolean transOtp = false;
+    
     private boolean copySkladParam = false;
     private boolean copySklad = false;
 
@@ -162,6 +164,9 @@ public class SecondChooser extends JraDialog {
         bprennormativ = false;
         rnlOpis = frmParam.getParam("robno", "rnlTransOpis", "N",
             "Prenijeti opis radnog naloga na raèun (D,N)?").equals("D");
+        
+        transOtp = frmParam.getParam("robro", "transBrdokOtp", "D",
+            "Prenijeti broj otpremnice na raèun (D,N)").equals("D");
         
         copySkladParam = frmParam.getParam("robno", "copySkladPrice", "N",
              "Prepisati skladišne cijene kod prijenosa (D,N)").equals("D");
@@ -306,9 +311,13 @@ public class SecondChooser extends JraDialog {
             && (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC") 
             || rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("ROT"))) {
           rIT.getMasterSet().setString("BRNARIZ", ZaglavljeSet.getString("BRNARIZ"));
-          rIT.getMasterSet().setTimestamp("DATNARIZ", ZaglavljeSet.getTimestamp("DATNARIZ"));
-          rIT.getMasterSet().setString("BRDOKIZ", repUtil.getFormatBroj(ZaglavljeSet));
-          rIT.getMasterSet().setTimestamp("DATDOKIZ", ZaglavljeSet.getTimestamp("DATDOK"));
+          if (!ZaglavljeSet.isNull("DATNARIZ"))
+            rIT.getMasterSet().setTimestamp("DATNARIZ", ZaglavljeSet.getTimestamp("DATNARIZ"));
+          if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS") 
+              || transOtp) {
+            rIT.getMasterSet().setString("BRDOKIZ", repUtil.getFormatBroj(ZaglavljeSet));
+            rIT.getMasterSet().setTimestamp("DATDOKIZ", ZaglavljeSet.getTimestamp("DATDOK"));
+          }
         }
 
      if (copyDatum && ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("OTP")
