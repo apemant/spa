@@ -116,7 +116,7 @@ public class jposMenu extends JMenu {
 
   public void jmBlagajna_actionPerformed(ActionEvent e) {
     PreSelect.showPreselect("hr.restart.pos.presBlag", "hr.restart.pos.frmMasterBlagajna",
-                            jmBlagajna.getText(), false);
+                            jmBlagajna.getText(), true);
 //    SF.showFrame("hr.restart.robno.dlgBeforePOS", res.getString("dlgBeforePOS_title"));
   }
   public void jmGOT_actionPerformed(ActionEvent e) {
