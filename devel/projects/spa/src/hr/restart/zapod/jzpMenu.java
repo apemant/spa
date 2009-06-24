@@ -679,7 +679,7 @@ public class jzpMenu extends javax.swing.JMenu {
 
   }
 
-  void jmNacPlac_actionPerformed(ActionEvent e) {
+  public void jmNacPlac_actionPerformed(ActionEvent e) {
 
     SF.showFrame("hr.restart.zapod.frmNacPl", Res.getString("frmNacPl_title"));
 
