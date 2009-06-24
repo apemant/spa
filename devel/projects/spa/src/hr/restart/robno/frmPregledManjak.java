@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.baza.dM;
 import hr.restart.sisfun.Asql;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
@@ -97,7 +98,7 @@ public class frmPregledManjak extends raMasterDetail {
     }
   };
 
-  boolean rpcLostFocus;
+  boolean rpcLostFocus, isMinusAllowed;
 
   String[] key = Util.mkey;
   short oldRbr;
@@ -130,6 +131,8 @@ public class frmPregledManjak extends raMasterDetail {
     this.getMasterSet().open();
     this.getDetailSet().open();
     initRpcart();
+    isMinusAllowed = frmParam.getParam("robno", "allowMinus", "N",
+      "Dopustiti odlazak u minus na izlazima (D,N)?").equals("D");
   }
 
   public void EntryPointMaster(char mode) {
@@ -232,7 +235,7 @@ public class frmPregledManjak extends raMasterDetail {
 
   public boolean testStanje() {
     if (mjstanje== null) return false;
-    if (mjstanje.getBigDecimal("KOL").doubleValue()<0) {
+    if (!isMinusAllowed && mjstanje.getBigDecimal("KOL").doubleValue()<0) {
       mjstanje = null;
       JOptionPane.showMessageDialog(this.jpDetail,"Nedovoljna koli\u010Dina na stanju!","Greška",
         JOptionPane.ERROR_MESSAGE);
