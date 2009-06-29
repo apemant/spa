@@ -840,6 +840,6 @@ public class ConsoleCreator {
             "hr.restart.baza.Urvrdok", "hr.restart.baza.Urstat",
             "hr.restart.baza.Urshist", "hr.restart.baza.Approdok",
             "hr.restart.baza.Imageinfo", "hr.restart.baza.Artrans",
-            "hr.restart.baza.stdokitmp", "hr.restart.baza.Resources"
+            "hr.restart.baza.stdokitmp", "hr.restart.baza.Stolovi"
       };
 }
