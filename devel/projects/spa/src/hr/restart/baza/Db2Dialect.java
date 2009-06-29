@@ -42,6 +42,7 @@ public class Db2Dialect extends Dialect {
       { "FLOAT", "numeric(%SIZE,%PRECISION)" },
       { "DEFAULT", "" }, // default '%VALUE'
       { "DATE", "timestamp" },
+      { "BLOB", "blob" },
       { "PKEY", "Primary Key (%FIELD)" },
       
       { "ADD-COLUMN", "alter table %NAME add %COLUMN %TYPE" },
