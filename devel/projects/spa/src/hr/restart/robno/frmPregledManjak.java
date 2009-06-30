@@ -125,6 +125,7 @@ public class frmPregledManjak extends raMasterDetail {
 
   private void enableKol() {
     rcc.setLabelLaF(jraKol, true);
+    if (raIzlazTemplate.allowPriceChange()) rcc.setLabelLaF(jraCijena, true);
   }
 
   public void beforeShowMaster() {
@@ -182,7 +183,8 @@ public class frmPregledManjak extends raMasterDetail {
       eraseFields();
       rpc.setCART();
     } else if (mode == 'I') {
-      rcc.setLabelLaF(jraCijena, false);
+//      rcc.setLabelLaF(jraCijena, false);
+      rcc.setLabelLaF(jraCijena, raIzlazTemplate.allowPriceChange());
       rcc.setLabelLaF(jraIznos, false);
     }
   }
@@ -195,6 +197,7 @@ public class frmPregledManjak extends raMasterDetail {
       lc.TransferFromDB2Class(getDetailSet(),stavkaold);
       jraKol.requestFocus();
     }
+    
   }
 
   private QueryDataSet mjstanje ;

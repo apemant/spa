@@ -3772,4 +3772,8 @@ System.out.println("findCjenik::else :: "+sql);
     return false;
   }
 
+  public static boolean allowPriceChange() {
+    return frmParam.getParam("robno", "priceChIzl", "N", "Dozvoliti izmjenu cijena na OTP, MEI, INM, OTR...(D/N)").equalsIgnoreCase("D");
+  }
+
 }

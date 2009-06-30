@@ -223,7 +223,11 @@ public class rajpIzlazDPTemplate extends JPanel {
 		}
 	};
 
-	JraTextField jraZC = new JraTextField();
+	JraTextField jraZC = new JraTextField() {
+	  public void valueChanged() {
+	    fDI.Kalkulacija(jraZC, "KOL");
+	  }
+	};
 
 	JraTextField jraIRAZ = new JraTextField() {
 		public boolean isFocusTraversable() {
@@ -757,7 +761,12 @@ public class rajpIzlazDPTemplate extends JPanel {
 	void setEnabledAll(boolean trut) {
 
 		rcc.EnabDisabAll(jpDetailCenter, trut);
-		rcc.setLabelLaF(jraZC, false);
+//		rcc.setLabelLaF(jraZC, false);
+		if (raIzlazTemplate.allowPriceChange() && fDI.getDetailSet().getString("VRDOK").equalsIgnoreCase("OTP")) {
+		  rcc.setLabelLaF(jraZC, trut);
+		} else {
+		  rcc.setLabelLaF(jraZC, false);
+		}
 		rcc.setLabelLaF(jraIRAZ, false);
 
 		rcc.setLabelLaF(jraIPRODSP, false);

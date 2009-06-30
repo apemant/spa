@@ -148,6 +148,7 @@ public class frmOtpisRobe extends raMasterDetail {
   private void enableKol() {
     rcc.setLabelLaF(jraKol, true);
     rcc.setLabelLaF(jraTipKalkul, true);
+    if (raIzlazTemplate.allowPriceChange()) rcc.setLabelLaF(jraCijena, true);
   }
 
   DataSet sdokiz;
@@ -224,7 +225,8 @@ public class frmOtpisRobe extends raMasterDetail {
       eraseFields();
       rpc.setCART();
     } else if (mode == 'I') {
-      rcc.setLabelLaF(jraCijena, false);
+//      rcc.setLabelLaF(jraCijena, false);
+      rcc.setLabelLaF(jraCijena, raIzlazTemplate.allowPriceChange());
       rcc.setLabelLaF(jraIznos, false);
     }
   }

@@ -829,8 +829,13 @@ public class raMEI extends hr.restart.util.raMasterDetail{
   public void enable_rest(boolean istina){
 
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jtfKOL,istina);
-    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,false);
-    jraFC.setEditable(false);
+//parametrizirati
+    if (raIzlazTemplate.allowPriceChange()) {
+      hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,istina);
+    } else {
+      hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,false);
+      //jraFC.setEditable(false);
+    }
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraINETO,false);
 
   }
