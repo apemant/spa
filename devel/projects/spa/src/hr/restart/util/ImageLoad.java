@@ -17,9 +17,19 @@ import javax.swing.*;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageProducer;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 
@@ -169,6 +179,13 @@ public class ImageLoad implements ActionListener{
 			//treba ga sejvati na server preko raImageUtil
 			raImageUtil u = new raImageUtil();
 			u.saveImage(selectedFile, nejm);
+		} else if (protocol.equals("db")) {
+		  try {
+        set.setInputStream("IMG", new FileInputStream(selectedFile));
+      } catch (FileNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
 		}
 		//.....
 		set.setString("imgurl", url);
@@ -187,19 +204,16 @@ public class ImageLoad implements ActionListener{
 //		QueryDataSet set1 = Imageinfo.getDataModule().getFilteredDataSet(Condition.equal("tablica", table).and(Condition.equal("CKEY", key)));
 //		QueryDataSet set2 = Imageinfo.getDataModule().getFilteredDataSet(Condition.whereAllEqual(new String[] {"tablica","ckey"}, new String[] {table, key}));
 		set.open();
-		String url = null;
-		if (set.getRowCount() != 0) {
-			url = set.getString("imgurl");
-		} else return;
+		if (set.getRowCount() == 0) return;
 		//url tipa ili ftp:ime ili file:ime
 		//parsires url
 		//ucitas
 		// nabijes na jlabel
-		ImageIcon ic = loadImage(url);
+		ImageIcon ic = loadImage(set);
 
 		if (ic!=null) {
 			lblSlika.setIcon(ic);
-			lblSlika.setText(url);
+			lblSlika.setText(set.getString("IMGURL"));
 			f.pack();
 		} else {
 		  lblSlika.setText("(nije odabrano)");
@@ -213,27 +227,54 @@ public class ImageLoad implements ActionListener{
 		
 	}
 	private static File lastF = null;
-	public static ImageIcon loadImage(String url) {
-      StringTokenizer tok = new StringTokenizer(url,":");
-      String protocol = tok.nextToken();
-      String file = tok.nextToken();
-      if (protocol.equals("ftp")) {
-          ImageIcon imi = new raImageUtil().loadImage(file);
-          lastF = raImageUtil.lastLoadedFile;
-          return imi;
-      } else if (protocol.equals("file")) {
-          try {
-              System.out.println(" Loadin' imidj :: "+file);
-              lastF = new File(getImgDir().getAbsolutePath()+File.separator+file);
-              return new ImageIcon(
-                  Toolkit.getDefaultToolkit().createImage(getImgDir().getAbsolutePath()+File.separator+file)
-              );
-          } catch (Exception e) {
-              e.printStackTrace();
-          }
+	public static ImageIcon loadImage(QueryDataSet set) {
+	    String[] parsed = parseUrl(set.getString("IMGURL"));
+	    String protocol = parsed[0];
+	    String file = parsed[1];
+      ImageIcon imi = loadImage(protocol, file);
+      if (imi != null) return imi;
+      if (protocol.equals("db")) {
+        try {
+          BufferedInputStream is = new BufferedInputStream( set.getInputStream("IMG"));
+          byte[] bytes = new byte[is.available()];
+          is.read(bytes);
+          return new ImageIcon(Toolkit.getDefaultToolkit().createImage(bytes));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
       }
       return null;
 	}
+	private static String[] parseUrl(String url) {
+    StringTokenizer tok = new StringTokenizer(url,":");
+    String protocol = tok.nextToken();
+    String file = tok.nextToken();
+    return new String[] {protocol, file};
+	}
+	public static ImageIcon loadImage(String url) {
+    String[] parsed = parseUrl(url);
+    String protocol = parsed[0];
+    String file = parsed[1];
+    return loadImage(protocol, file);
+	}
+  public static ImageIcon loadImage(String protocol, String file) {
+    if (protocol.equals("ftp")) {
+        ImageIcon imi = new raImageUtil().loadImage(file);
+        lastF = raImageUtil.lastLoadedFile;
+        return imi;
+    } else if (protocol.equals("file")) {
+        try {
+            System.out.println(" Loadin' imidj :: "+file);
+            lastF = new File(getImgDir().getAbsolutePath()+File.separator+file);
+            return new ImageIcon(
+                Toolkit.getDefaultToolkit().createImage(getImgDir().getAbsolutePath()+File.separator+file)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    return null;
+  }
 
 	public String getTable() {
 		if (table == null) return "UNKNOWN";
