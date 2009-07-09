@@ -21,6 +21,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Vrdokum;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
+import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raDateRange;
 import hr.restart.util.Aus;
@@ -74,6 +75,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
   
   private raComboBox comboIzbor = new raComboBox();
   private JraTextField jnfGODINA = new JraTextField();
+  private JraCheckBox jcbNula = new JraCheckBox();
   
   private static raOtpisIzvjestaj instanceOfMe = null;
   
@@ -150,6 +152,9 @@ public class raOtpisIzvjestaj extends raUpitFat {
 
     new raDateRange(jtfPocDatum, jtfZavDatum);
     
+    jcbNula.setText(" Prikaz svih artikala ");
+    jcbNula.setHorizontalAlignment(SwingConstants.TRAILING);
+    jcbNula.setHorizontalTextPosition(SwingConstants.LEADING);
     
     jnfGODINA.setDataSet(fieldSet);
     jnfGODINA.setColumnName("GODINA");
@@ -163,6 +168,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
     jp.add(new JLabel("Datum (od-do)"), new XYConstraints(15, 55, 130, -1));
     jp.add(jtfPocDatum, new XYConstraints(150, 55, 100, -1));
     jp.add(jtfZavDatum, new XYConstraints(255, 55, 100, -1));
+    jp.add(jcbNula, new XYConstraints(400, 55, 204, -1));
 //    jp.add(new JLabel("Godina"), new XYConstraints(15, 55, 130, -1));
 //    jp.add(jnfGODINA, new XYConstraints(150, 55, 100, -1));
 
@@ -263,7 +269,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
   public QueryDataSet findDataSetForIspis(String oznaka, boolean corg) { //String cskl, String corg) {
     String dodatak = "";
     if (corg) {
-      dodatak = "stdoki.cskl in (";
+      dodatak = "doki.cskl in (";
       QueryDataSet qds = Util.getUtil().getSkladFromCorg(); 
       
       for (;;){
@@ -278,8 +284,9 @@ public class raOtpisIzvjestaj extends raUpitFat {
       
 
     } else {
-      dodatak = "cskl='" + oznaka + "'";
+      dodatak = "doki.cskl='" + oznaka + "'";
     }
+    String dodm = "meskla.cskliz" + dodatak.substring(9); 
     System.out.println("dodatak = " + dodatak);
     Condition otr = Condition.in("VRDOK", new String[] {"INM", "OTR"});
     Condition otr2 = otr; 
@@ -307,8 +314,24 @@ public class raOtpisIzvjestaj extends raUpitFat {
       " group by stdoki.cart order by 1";
 
     System.out.println(sql);
+    
 
     QueryDataSet ukupanizlaz = hr.restart.util.Util.getNewQueryDataSet(sql);
+    
+    sql = 
+      "select max(stmeskla.cart) as cart, sum(stmeskla.KOL) as KOL_IZLAZ, " +
+      "sum(stmeskla.ZADRAZIZ) as VRI_IZLAZ, max(stanje.zc) as zc " +
+      "from meskla,stmeskla,stanje WHERE stanje.cart=stmeskla.cart and " +
+      "stanje.god=stmeskla.god and stanje.cskl = stmeskla.cskliz and " + 
+      rut.getDocMes("meskla", "stmeskla") + " and " + dodm + " and " + 
+      Condition.between("DATDOK", tds, "pocDatum", "zavDatum").
+      and(Condition.in("VRDOK", "MES MEI")).qualified("meskla") + 
+      " group by stmeskla.cart order by 1";
+
+    System.out.println(sql);
+    
+
+    QueryDataSet ukupanmiz = hr.restart.util.Util.getNewQueryDataSet(sql);
     
     sql = "select max(stdoki.cart) as cart, sum(stdoki.KOL) as KOL_OTPIS, " +
           "sum(stdoki.IRAZ) as VRI_OTPIS, max(stanje.zc) as zc " +
@@ -322,19 +345,22 @@ public class raOtpisIzvjestaj extends raUpitFat {
 
     QueryDataSet ukupanotpis = hr.restart.util.Util.getNewQueryDataSet(sql);
     
+    System.out.println(sql);
+    System.out.println(ukupanotpis);
+    
     ukupanizlaz.first();
     ukupanotpis.first();
     while (ukupanizlaz.inBounds() && ukupanotpis.inBounds()) {
       if (ukupanizlaz.getInt("CART") < ukupanotpis.getInt("CART"))
-        updateList(sds, ukupanizlaz, null);
+        updateList(sds, ukupanizlaz, ukupanmiz, null);
       else if (ukupanizlaz.getInt("CART") > ukupanotpis.getInt("CART"))
-        updateList(sds, null, ukupanotpis);
-      else updateList(sds, ukupanizlaz, ukupanotpis);
+        updateList(sds, null, null, ukupanotpis);
+      else updateList(sds, ukupanizlaz, ukupanmiz, ukupanotpis);
     }
     while (ukupanizlaz.inBounds())
-      updateList(sds, ukupanizlaz, null);
+      updateList(sds, ukupanizlaz, ukupanmiz, null);
     while (ukupanotpis.inBounds())
-      updateList(sds, null, ukupanotpis);
+      updateList(sds, null, null, ukupanotpis);
     
     /*
     for (ukupanizlaz.first(); ukupanizlaz.inBounds(); ukupanizlaz.next()) {
@@ -399,7 +425,8 @@ public class raOtpisIzvjestaj extends raUpitFat {
   
   String[] ccols = {"CART", "ZC"};
   String[] acols = {"CART1", "BC", "NAZART", "JM"};
-  void updateList(DataSet dest, DataSet izlaz, DataSet otpis) {
+  void updateList(DataSet dest, DataSet izlaz, DataSet mes, DataSet otpis) {
+    if (!jcbNula.isSelected() && (otpis == null || otpis.getBigDecimal("KOL").signum() == 0)) return;
     dest.insertRow(false);
     if (izlaz != null)
       dM.copyColumns(izlaz, dest, ccols);
@@ -421,10 +448,17 @@ public class raOtpisIzvjestaj extends raUpitFat {
     }
     if (izlaz != null) {
       BigDecimal kol = izlaz.getBigDecimal("KOL_IZLAZ");
+      BigDecimal vri = Aus.zero2;
+      if (mes != null && lD.raLocate(mes, "CART", 
+          Integer.toString(izlaz.getInt("CART")))) {
+        kol = kol.add(mes.getBigDecimal("KOL_IZLAZ"));
+        vri = mes.getBigDecimal("VRI_IZLAZ");
+      }
+      
       BigDecimal doz = dest.getBigDecimal("POSTO").multiply(kol).
               divide(STO, znacdec, BigDecimal.ROUND_DOWN);
       dest.setBigDecimal("KOL_IZLAZ", kol);
-      dest.setBigDecimal("VRI_IZLAZ", izlaz.getBigDecimal("VRI_IZLAZ"));
+      dest.setBigDecimal("VRI_IZLAZ", vri.add(izlaz.getBigDecimal("VRI_IZLAZ")));
       dest.setBigDecimal("KOL_OTPIS_DOZ", doz);
       dest.setBigDecimal("VRI_OTPIS_DOZ", izlaz.getBigDecimal("ZC").
           multiply(doz).setScale(2, BigDecimal.ROUND_HALF_UP));
