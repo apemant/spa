@@ -168,7 +168,10 @@ public class raOtpisIzvjestaj extends raUpitFat {
     jp.add(new JLabel("Datum (od-do)"), new XYConstraints(15, 55, 130, -1));
     jp.add(jtfPocDatum, new XYConstraints(150, 55, 100, -1));
     jp.add(jtfZavDatum, new XYConstraints(255, 55, 100, -1));
-    jp.add(jcbNula, new XYConstraints(400, 55, 204, -1));
+    // AI: za poslije kad Ante bude imao vremena i to... 
+    //jp.add(jcbNula, new XYConstraints(400, 55, 204, -1));
+    // eoAI
+    jcbNula.setSelected(true);
 //    jp.add(new JLabel("Godina"), new XYConstraints(15, 55, 130, -1));
 //    jp.add(jnfGODINA, new XYConstraints(150, 55, 100, -1));
 
