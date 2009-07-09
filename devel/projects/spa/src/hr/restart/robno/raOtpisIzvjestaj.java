@@ -426,7 +426,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
   String[] ccols = {"CART", "ZC"};
   String[] acols = {"CART1", "BC", "NAZART", "JM"};
   void updateList(DataSet dest, DataSet izlaz, DataSet mes, DataSet otpis) {
-    if (!jcbNula.isSelected() && (otpis == null || otpis.getBigDecimal("KOL").signum() == 0)) return;
+    if (!jcbNula.isSelected() && (otpis == null || otpis.getBigDecimal("KOL_OTPIS").signum() == 0)) return;
     dest.insertRow(false);
     if (izlaz != null)
       dM.copyColumns(izlaz, dest, ccols);
