@@ -36,6 +36,9 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
 
+import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.dx.sql.dataset.QueryDescriptor;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 
@@ -62,7 +65,11 @@ public class presBlag extends PreSelect {
   JlrNavField jrfNAZSKL = new JlrNavField();
   XYLayout xYLayout1 = new XYLayout();
   JPanel jp = new JPanel();
-  JlrNavField jrfCSKL = new JlrNavField();
+  JlrNavField jrfCSKL = new JlrNavField() {
+    public void after_lookUp() {
+      setProd_mjLookup();
+    }
+  };
   JLabel jLabel3 = new JLabel();
   JLabel jLabel2 = new JLabel();
   JLabel jLabel1 = new JLabel();
@@ -338,5 +345,18 @@ public class presBlag extends PreSelect {
    */
   protected String getVRDOK() {
     return "GRC";
+  }
+  private void setProd_mjLookup() {
+    String cskl = jrfCSKL.getDataSet().getString(jrfCSKL.getColumnName());
+    if (!cskl.equals("")) {
+      QueryDataSet set = (QueryDataSet)jrfCPRODMJ.getRaDataSet();
+      set.close();
+      String q = "SELECT * FROM prod_mj WHERE cskl = '"+cskl+"'";
+      System.out.println("setProd_mjLookup :: "+q);
+      set.setQuery(new  QueryDescriptor(
+              dM.getDataModule().getDatabase1(),q, true));
+      set.open();
+      jrfCPRODMJ.forceFocLost();
+    }
   }
 }
