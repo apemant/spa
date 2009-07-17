@@ -124,7 +124,7 @@ public class repRS_A implements sg.com.elixir.reportwriter.datasource.IDataProvi
   }
 
   public String getMJESEC(){
-    if (hs.getString("CSIF").equals("03") ||hs.getString("CSIF").equals("05")){
+    if (hs.getString("CSIF").equals("03") ||hs.getString("CSIF").equals("05") ||hs.getString("CSIF").equals("08")){
       return "00"; // zbog nemogucnosti komunikacije izmedju nekih klasa mora bit vako!!
     }
     return Valid.getValid().maskString(hs.getShort("MJESEC")+"",'0',2);

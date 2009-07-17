@@ -160,7 +160,7 @@ public class repDiskRS extends repDisk{
     String naziv = getNaziv(0);
     String adresa = getNaziv(1);
     String _mjobr = null;
-    if (qdsIdent.getString("CSIF").equals("03") ||qdsIdent.getString("CSIF").equals("05")){
+    if (qdsIdent.getString("CSIF").equals("03") ||qdsIdent.getString("CSIF").equals("05")||qdsIdent.getString("CSIF").equals("08")){
       _mjobr = "00";
     } else {
       _mjobr = vl.maskZeroInteger(new Integer(qdsIdent.getShort("MJESEC")+""),2);
