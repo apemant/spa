@@ -325,14 +325,14 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
   public boolean Validacija(char mode) {
 //    sysoutTEST st = new sysoutTEST(false);
 //    st.prn(this.getDetailSet());
-    if (whatNow.equalsIgnoreCase("CSKL") && !rpc.AST.findStanje(vl.findYear(vl.getToday()),mast.getString("CSKL"),
+    /*if (whatNow.equalsIgnoreCase("CSKL") && !rpc.AST.findStanje(vl.findYear(vl.getToday()),mast.getString("CSKL"),
         this.getDetailSet().getInt("CART"))) {
       JOptionPane.showMessageDialog(jpCjenik, "Nema artikla na stanju!", "Greška", JOptionPane.ERROR_MESSAGE);
       rpc.EnabDisab(true);
       rpc.setCART();
       EraseFields();
       return false;
-    }
+    }*/
     
     if (this.getDetailSet().getString("OZNVAL").equals("")){
      System.err.println("Odje je greskija.... triba bi uguzit domacu valutu.... radim na tom... i jerryju :)");
@@ -387,8 +387,8 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
 //      JOptionPane.showMessageDialog(jpCjenik, "Nema artikla na stanju!","Greška",
 //       JOptionPane.ERROR_MESSAGE);
       EraseFields();
-      Aut.getAut().handleRpcErr(rpc, "Nema artikla na stanju!");
-      return false;
+      //Aut.getAut().handleRpcErr(rpc, "Nema artikla na stanju!");
+      return super.rpcOut();
     }
     if (!super.rpcOut()) return false;
     
