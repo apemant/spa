@@ -26,6 +26,7 @@ import hr.restart.robno.Aut;
 import hr.restart.robno.Rbr;
 import hr.restart.robno.Util;
 import hr.restart.robno._Main;
+import hr.restart.robno.allStanje;
 import hr.restart.robno.frmPlacanje;
 import hr.restart.robno.raVart;
 import hr.restart.sisfun.frmParam;
@@ -46,6 +47,7 @@ import hr.restart.util.raMasterDetail;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raNavBar;
 import hr.restart.util.raTransaction;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -255,6 +257,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   }
 
   String cskl, god, rm, cblag, stol;
+  int cpar;
 
   public void beforeShowMaster() {
   	cskl = getPreSelect().getSelRow().getString("CSKL");
@@ -262,6 +265,11 @@ public class frmMasterBlagajna extends raMasterDetail {
     rm = getPreSelect().getSelRow().getString("CPRODMJ");
 //    cblag="1";
     cblag = presBlag.getBlagajnik();
+    String knjig = OrgStr.getKNJCORG(false);
+    String cps = frmParam.getParam("zapod", "knjigCpar"+knjig, "",
+        "Šifra partnera koji predstavlja knjigovodstvo "+knjig);
+    cpar = Aus.getNumber(cps);
+    
     if (presBlag.stolovi) {
       getMasterSet().last();
       if (presBlag.stol == null || presBlag.stol.length() == 0)
@@ -537,8 +545,8 @@ public class frmMasterBlagajna extends raMasterDetail {
     if (vl.isEmpty(jpBl.jtfMC))
       return false;
     
-    if (!frmParam.getParam("robno","dohMcPOS","AR",
-      "Dohvat cijene na POS-u (AR,ST)").trim().equalsIgnoreCase("AR") &&
+    if (frmParam.getParam("robno","dohMcPOS","AR",
+      "Dohvat cijene na POS-u (AR,ST)").trim().equalsIgnoreCase("ST") &&
         raVart.isStanje(getDetailSet().getInt("CART"))) {
       
       if (!checkKol()) return false;
@@ -855,6 +863,21 @@ public class frmMasterBlagajna extends raMasterDetail {
    */
 
   java.math.BigDecimal findMC() {
+    String vrc = frmParam.getParam("robno","dohMcPOS","AR",
+      "Dohvat cijene na POS-u (AR,ST,CJ)").trim();
+    
+    if (vrc.equals("CJ")) {
+      DataSet cj = allStanje.getallStanje().getCijenik("GRC", cskl, cpar,
+          getDetailSet().getInt("CART"));
+      if (cj != null && cj.rowCount() > 0) {
+        if (raDetail.getMode()=='N' && cj.getBigDecimal("POSTO").signum() > 0) {
+          getDetailSet().setBigDecimal("PPOPUST1", cj.getBigDecimal("POSTO"));
+        }
+        return cj.getBigDecimal("MC");
+      }
+      vrc = "AR";
+    }
+    
   	kolNaStanju = kolRez = Aus.zero3;
   	BigDecimal prva = Aus.zero2;
   	String str;
@@ -877,8 +900,7 @@ public class frmMasterBlagajna extends raMasterDetail {
       getDetailSet().setBigDecimal("PPOPUST1", vl.RezSet.getBigDecimal("PPOP"));
     }
   	prva=vl.RezSet.getBigDecimal("MC");
-    if (nostanje || frmParam.getParam("robno","dohMcPOS","AR",
-        "Dohvat cijene na POS-u (AR)").trim().equals("AR")) {
+    if (nostanje || vrc.equals("AR")) {
       return prva;
     }
     
