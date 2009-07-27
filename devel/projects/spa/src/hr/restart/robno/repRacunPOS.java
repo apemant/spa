@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
+import hr.restart.util.VarStr;
 import hr.restart.util.reports.mxReport;
 
 import java.math.BigDecimal;
@@ -96,9 +97,20 @@ public class repRacunPOS extends mxReport {
      String user = master.getString("CUSER");
 
      ru.setDataSet(master);
+     
+     String prep = frmParam.getParam("pos", "addHeader", "",
+         "Dodatni header ispred POS raèuna");
+     if (prep.length() > 0) {
+       String[] parts = new VarStr(prep).split('|');
+       VarStr buf = new VarStr();
+       for (int i = 0; i < parts.length; i++)
+         buf.append("<#").append(parts[i]).append('|').
+           append(width).append("|center#><$newline$>");
+       prep = buf.toString();
+     }
 
      this.setPgHeader(
-         "\u0007"+
+         "\u0007"+prep+
          "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
          "<#"+dm.getLogotipovi().getString("ADRESA")+"|"+width+"|center#><$newline$>"+
          "<#"+String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO")+"|"+width+"|center#><$newline$>"+
