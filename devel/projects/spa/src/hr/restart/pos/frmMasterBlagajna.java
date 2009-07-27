@@ -866,18 +866,6 @@ public class frmMasterBlagajna extends raMasterDetail {
     String vrc = frmParam.getParam("robno","dohMcPOS","AR",
       "Dohvat cijene na POS-u (AR,ST,CJ)").trim();
     
-    if (vrc.equals("CJ")) {
-      DataSet cj = allStanje.getallStanje().getCijenik("GRC", cskl, cpar,
-          getDetailSet().getInt("CART"));
-      if (cj != null && cj.rowCount() > 0) {
-        if (raDetail.getMode()=='N' && cj.getBigDecimal("POSTO").signum() > 0) {
-          getDetailSet().setBigDecimal("PPOPUST1", cj.getBigDecimal("POSTO"));
-        }
-        return cj.getBigDecimal("MC");
-      }
-      vrc = "AR";
-    }
-    
   	kolNaStanju = kolRez = Aus.zero3;
   	BigDecimal prva = Aus.zero2;
   	String str;
@@ -896,6 +884,19 @@ public class frmMasterBlagajna extends raMasterDetail {
       //(vl.RezSet.getString("VRART").equals("U"));
     boolean nostanje = !raVart.isStanje(vl.RezSet);
     cporez=vl.RezSet.getString("CPOR");
+    
+    if (vrc.equals("CJ")) {
+      DataSet cj = allStanje.getallStanje().getCijenik("GRC", cskl, cpar,
+          getDetailSet().getInt("CART"));
+      if (cj != null && cj.rowCount() > 0) {
+        if (raDetail.getMode()=='N' && cj.getBigDecimal("POSTO").signum() > 0) {
+          getDetailSet().setBigDecimal("PPOPUST1", cj.getBigDecimal("POSTO"));
+        }
+        return cj.getBigDecimal("MC");
+      }
+      vrc = "AR";
+    }
+    
     if (raDetail.getMode()=='N') {
       getDetailSet().setBigDecimal("PPOPUST1", vl.RezSet.getBigDecimal("PPOP"));
     }
