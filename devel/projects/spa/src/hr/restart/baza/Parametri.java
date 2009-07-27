@@ -70,7 +70,7 @@ public class Parametri extends KreirDrop implements DataModule {
     parametriVRIJEDNOST.setCaption("Defaultna vrijednost");
     parametriVRIJEDNOST.setColumnName("VRIJEDNOST");
     parametriVRIJEDNOST.setDataType(com.borland.dx.dataset.Variant.STRING);
-    parametriVRIJEDNOST.setPrecision(60);
+    parametriVRIJEDNOST.setPrecision(200);
     parametriVRIJEDNOST.setWidth(12);
     parametriVRIJEDNOST.setTableName("PARAMETRI");
     parametriVRIJEDNOST.setSqlType(1);
@@ -130,7 +130,7 @@ public class Parametri extends KreirDrop implements DataModule {
        .addChar("app", 10, true)
        .addChar("param", 25, true)
        .addChar("opispar", 100)
-       .addChar("vrijednost", 60)
+       .addChar("vrijednost", 200)
        .addChar("sistemski", 1, "G")
        .addPrimaryKey("app,param");
 
