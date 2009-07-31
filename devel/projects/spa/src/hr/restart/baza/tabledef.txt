@@ -973,6 +973,67 @@ IDX=src
 IDX=dest
 
 
+$Stdoku
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSKL;char;12;pkey;;Skladište
+VRDOK;char;3;pkey;;Vrsta;4
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj;10
+RBR;short;2;pkey;;Rbr;5
+CART;int;6;;;Šifra;7
+CART1;char;20;;;Oznaka;15
+BC;char;20;;;Barcode;15
+NAZART;char;50;;;Naziv;25
+JM;char;3;;;Jm;5
+KOL;numeric;15,3;;0;Kolièina;10
+DC;numeric;15,2;;0;Dobavljaèeva cijena;12
+DC_VAL;numeric;15,2;;0;Dobavljaèeva cijena u valuti;14
+IDOB;numeric;15,2;;0;Dob. iznos;14
+IDOB_VAL;numeric;15,2;;0;IDOB_VAL;14
+PRAB;numeric;10,2;;0;Posto popusta;8
+IRAB;numeric;15,2;;0;Popust;14
+PZT;numeric;15,7;;0;Posto zavisnih troškova;8
+IZT;numeric;15,2;;0;Troškovi;14
+NC;numeric;15,2;;0;Nabavna cijena;12
+PMAR;numeric;10,2;;0;Posto RuC;8
+MAR;numeric;15,2;;0;Jed. RuC;14
+VC;numeric;15,2;;0;Cijena bez poreza;12
+POR1;numeric;15,2;;0;Porez 1;14
+POR2;numeric;15,2;;0;Porez 2;14
+POR3;numeric;15,2;;0;Porez 3;14
+MC;numeric;15,2;;0;Cijena s porezom;12
+INAB;numeric;15,2;;0;Nabavni iznos;14
+IMAR;numeric;15,2;;0;RuC;14
+IBP;numeric;15,2;;0;Iznos bez poreza;14
+IPOR;numeric;15,2;;0;Porez;14
+ISP;numeric;15,2;;0;Iznos s porezom;14
+ZC;numeric;15,2;;0;Cijena;12
+IZAD;numeric;15,2;;0;Zaduženje;14
+KOLFLH;numeric;15,3;;0;Kolièina FLH;*
+SKOL;numeric;15,3;;0;Stara kolièina;10
+SVC;numeric;15,2;;0;Stara cijena bez poreza;12
+SMC;numeric;15,2;;0;Stara cijena s porezom;12
+DIOPORMAR;numeric;15,2;;0;Dio poravnanja RuC-a;14
+DIOPORPOR;numeric;15,2;;0;Dio poravnanja poreza;14
+PORAV;numeric;15,2;;0;Poravnanje;14
+STATUS;char;1;;N;STATUS
+SKAL;char;52;;;Prethodni broj kalkulacije;*
+RBSID;int;6;;;ID stavke;*
+CSKLART;char;12;;;Skladište
+VEZA;char;50;;;Veza;*
+ID_STAVKA;char;50;;;ID stavka;*
+KOL1;numeric;15,3;;0;Pakiranja;10
+KOL2;numeric;15,3;;0;Koleta;10
+DATPRO;timestamp;;;;Datum proizvodnje
+DATROK;timestamp;;;;Rok upotrebe
+LOT;char;12;;;Lot
+CREG;char;24;;;Reg. broj
+IDX=cart
+IDX=veza
+IDX=id_stavka
+
+
 $stdokitmp
 LOKK;char;1;;N;LOKK;*
 AKTIV;char;1;;D;AKTIV;*
