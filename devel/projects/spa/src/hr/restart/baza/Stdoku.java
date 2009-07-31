@@ -34,7 +34,7 @@ public class Stdoku extends KreirDrop implements DataModule {
   QueryDataSet stdokuPRE = new QueryDataSet();
   QueryDataSet stdokuINV = new QueryDataSet();
 
-  Column stdokuLOKK = new Column();
+/*  Column stdokuLOKK = new Column();
   Column stdokuAKTIV = new Column();
   Column stdokuCSKL = new Column();
   Column stdokuVRDOK = new Column();
@@ -85,7 +85,7 @@ public class Stdoku extends KreirDrop implements DataModule {
   Column stdokuVEZA = new Column();  
   Column stdokuIDSTAVKA = new Column();
   Column stdokuKOL1 = new Column();
-  Column stdokuKOL2 = new Column();
+  Column stdokuKOL2 = new Column();*/
   
   public static Stdoku getDataModule() {
     if (stdokuclass == null) {
@@ -141,7 +141,7 @@ public class Stdoku extends KreirDrop implements DataModule {
     }
   }
   private void jbInit() throws Exception {
-    stdokuIDOB_VAL.setColumnName("IDOB_VAL");
+    /*stdokuIDOB_VAL.setColumnName("IDOB_VAL");
     stdokuIDOB_VAL.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
     stdokuIDOB_VAL.setDisplayMask("###,###,##0.00");
     stdokuIDOB_VAL.setDefault("0");
@@ -706,7 +706,8 @@ public class Stdoku extends KreirDrop implements DataModule {
         stdokuNC, stdokuPMAR, stdokuMAR, stdokuVC, stdokuPOR1, stdokuPOR2, stdokuPOR3, stdokuMC, stdokuINAB, stdokuIMAR, stdokuIBP, stdokuIPOR,
         stdokuISP, stdokuZC, stdokuIZAD, stdokuKOLFLH, stdokuSKOL, stdokuSVC, stdokuSMC, stdokuDIOPORMAR, stdokuDIOPORPOR, stdokuPORAV,
         stdokuSTATUS, stdokuSKAL, stdokuRBSID, stdokuCSKLART, stdokuVEZA, stdokuIDSTAVKA, stdokuKOL1, stdokuKOL2});
-
+*/ 
+    initModule();
     initClones();
   }
 
@@ -721,53 +722,9 @@ public class Stdoku extends KreirDrop implements DataModule {
     createFilteredDataSet(stdokuINV, "1=0");
   }
 
-  public void setall(){
+  
+/*  public void setall(){
 
-/*      SqlDefTabela = "create table Stdoku " +
-      "(lokk char(1) CHARACTER SET WIN1250 default 'N', " + //Status zauzetosti
-      "aktiv char(1) CHARACTER SET WIN1250 default 'D', " + // Aktivan-neaktivan
-      "cskl char(6) CHARACTER SET WIN1250 not null,"+ //Šifra skladišta
-      "vrdok char(3) CHARACTER SET WIN1250 not null," +   //Vrsta dokumenta (OTP,PRI,..)
-      "god char(4) CHARACTER SET WIN1250 not null," + // Godina zalihe
-      "brdok numeric(6,0) not null , " + // Broj dokumenta
-      "rbr numeric(4,0) not null, " + // Redni broj stavke
-      "cart numeric(6,0) , "+   // Šifra artikl broj\u010Danik
-      "cart1 char(20) character set win1250 ," +  // Šifra artikl - alpha dodatna
-      "bc char(20) character set win1250 ,"+ // Barcode
-      "nazart char(50) CHARACTER SET WIN1250 , " + // Naziv artikla
-      "jm char(3) CHARACTER SET WIN1250 , " + // Jedinica mjere
-      "kol  numeric(17,3) ," + // Koli\u010Dina
-      "dc   numeric(12,2) ," + // Dobavlja\u010Deva cijena
-      "dc_val numeric(12,2) ," + // Dobavlja\u010Deva cijena u valuti
-      "idob numeric(17,2),"  + // Iznos dobavlja\u010Da
-      "idob_val numeric(17,2),"  + // Iznos dobavlja\u010Da u valuti
-      "prab numeric(6,2),"   + // Posto rabata
-      "irab numeric(17,2)," +  // Iznos rabata
-      "pzt numeric(6,2)," + // Posto zavisni troškovi (kumulativ)
-      "izt numeric(17,2) ," + // Iznos zavisni troškovi (kumulativ)
-      "nc   numeric(12,4) ," + // Nabavna cijena
-      "pmar numeric(6,2) , " + // Posto marže
-      "mar  numeric(17,2), " + // Marža po jedinici VC-NC
-      "vc   numeric(12,2) ," + // Prodajna
-      "por1  numeric(17,2) ," + // Porez 1 (npr. PDV)
-      "por2  numeric(17,2) ," + // Porez 2 (npr. na potrošnju 3%
-      "por3  numeric(17,2) ," + // Porez 3
-      "mc   numeric(12,2) , " + // Prodajna cijena s porezom
-      "inab numeric(17,2), " +  // Iznos nabavni
-      "imar numeric(17,2), " + // Iznos marže
-      "ibp  numeric(17,2), " + // Iznos bez poreza
-      "ipor numeric(17,2),"  + // Iznos poreza
-      "isp  numeric(17,2),"  + // Iznos s porezom
-      "zc   numeric(12,4),"  + // Cijena zalihe
-      "izad numeric(17,2),"  + // Iznos zalihe
-      "kolflh numeric(17,3)," + //Koli\u010Dina za FIFO LIFO HIFO
-      "skol numeric(17,3) ," + // Koli\u010Dina stara prije nivelacije
-      "svc numeric (12,2) ," + // Stara prod. cijena bez nivelacije
-      "smc numeric (12,2) , " + // Stara prodajna cijena s porezom
-      "diopormar numeric(17,2)," + // Dio poravnanja marže
-      "dioporpor numeric(17,2)," + // Dio poravnanja poreza
-      "porav numeric(17,2),"+ // Poravnanje
-      "Primary Key (cskl,vrdok,god,brdok,rbr))" ; */
 
     ddl.create("stdoku")
        .addChar("lokk", 1, "N")
@@ -827,24 +784,10 @@ public class Stdoku extends KreirDrop implements DataModule {
     SqlDefTabela = ddl.getCreateTableString();
 
     String[] idx = new String[] {"cskl,vrdok,god,brdok",
-        /*"brdok",*/ "cart", "veza", "id_stavka"};
+        "cart", "veza", "id_stavka"};
     String[] uidx = new String[] {};
     DefIndex = ddl.getIndices(idx, uidx);
     NaziviIdx = ddl.getIndexNames(idx, uidx);
 
-    /*
-    NaziviIdx=new String[]{"ilokkstdoku","iaktivstdoku","icsklstdoku","ivrdokstdoku","ibrdokstdoku",
-                            "irbrstdoku","ipkstdoku ","icartstdoku"} ;
-
-
-    DefIndex= new String[] {CommonTable.SqlDefIndex+NaziviIdx[0] +" on Stdoku (lokk)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[1] + " on Stdoku (aktiv)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[2] + " on Stdoku (cskl)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[3] + " on Stdoku (vrdok)",
-                            CommonTable.SqlDefIndex+NaziviIdx[4] + " on Stdoku (brdok)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[5] + " on Stdoku (rbr)" ,
-                            CommonTable.SqlDefUniqueIndex+NaziviIdx[6] +" on Stdoku (cskl,vrdok,god,brdok,rbr)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[7] + " on Stdoku (cart)" };
-  */
-  }
+  }*/
 }
