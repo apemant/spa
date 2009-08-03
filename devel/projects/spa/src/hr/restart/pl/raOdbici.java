@@ -394,6 +394,9 @@ public class raOdbici {
     if (vrsteodb == null) vrsteodb = Util.getNewQueryDataSet("SELECT * FROM vrsteodb");
     return vrsteodb;
   }
+  public void null_vrsteodb() {
+    vrsteodb = null;
+  }
   private BigDecimal getDomIznos(ReadRow odbitak) {
     BigDecimal retIznos = odbitak.getBigDecimal("IZNOS");
     try {
