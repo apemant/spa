@@ -870,19 +870,20 @@ System.out.println("Radim kalkulaciju iznosa za faktrur");
 					BigDecimal.ROUND_HALF_UP);
 			ds.setBigDecimal("UPRAB", tmp2);
 		} else if (name.equalsIgnoreCase("VAL_VC")) {
-
-			tmp1 = (ds.getBigDecimal("VAL_VC").multiply(ds
-					.getBigDecimal("UPPOR"))).setScale(4,
-					BigDecimal.ROUND_HALF_UP);
-			tmp1 = tmp1.divide(new BigDecimal("100"), 4,
-					BigDecimal.ROUND_HALF_UP);
-
-			ds.setBigDecimal("VAL_MC", tmp1.add(ds.getBigDecimal("VAL_VC"))
-					.setScale(4, BigDecimal.ROUND_HALF_UP));
-
-			ds.setBigDecimal("FC", ds.getBigDecimal("TECAJ").multiply(
-					ds.getBigDecimal("VAL_VC")).setScale(2,
-					BigDecimal.ROUND_HALF_UP));
+		  if (!ds.getString("OZNVAL").equals(getDomOZNVAL())) {
+		    tmp1 = (ds.getBigDecimal("VAL_VC").multiply(ds
+		        .getBigDecimal("UPPOR"))).setScale(4,
+		            BigDecimal.ROUND_HALF_UP);
+		    tmp1 = tmp1.divide(new BigDecimal("100"), 4,
+		        BigDecimal.ROUND_HALF_UP);
+		    
+		    ds.setBigDecimal("VAL_MC", tmp1.add(ds.getBigDecimal("VAL_VC"))
+		        .setScale(4, BigDecimal.ROUND_HALF_UP));
+		    
+		    ds.setBigDecimal("FC", ds.getBigDecimal("TECAJ").multiply(
+		        ds.getBigDecimal("VAL_VC")).setScale(2,
+		            BigDecimal.ROUND_HALF_UP));
+		  }
 			kalkulacija("KOLIFCIUIRAB", ds);
 
 		} else if (name.equalsIgnoreCase("VAL_MC")) {
