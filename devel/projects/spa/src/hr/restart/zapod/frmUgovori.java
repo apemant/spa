@@ -17,7 +17,9 @@
 ****************************************************************************/
 package hr.restart.zapod;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
+import hr.restart.baza.Porezi;
 import hr.restart.baza.Ugovori;
 import hr.restart.robno.Aut;
 import hr.restart.robno.frmDodatniTxt;
@@ -33,6 +35,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.MathEvaluator;
 import hr.restart.util.Util;
 import hr.restart.util.VarStr;
+import hr.restart.util.lookupData;
 import hr.restart.util.raImages;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raMasterDetail;
@@ -289,6 +292,8 @@ System.out.println("Konaèmi "+vs);
 	  }
 	  return domOZNVAL;
 	}
+	QueryDataSet porezi;
+	QueryDataSet artikli;
 	public void rekalkulAll(){
 		
 		raProcess.setMessage("Rekalkulacija u tijeku ..",true);
@@ -296,6 +301,10 @@ System.out.println("Konaèmi "+vs);
 				"select * from Ugovori WHERE aktiv='D' and "+getCorgCondition("ugovori"));
 		QueryDataSet zadnjatecajnalista = Util.getNewQueryDataSet(
 				"select * from Tecajevi a WHERE datval in (select max(datval) from tecajevi b where a.oznval=b.oznval)");
+		porezi = Porezi.getDataModule().copyDataSet();
+		artikli = Artikli.getDataModule().copyDataSet();
+		porezi.open();
+		artikli.open();
 		for (zaglavlja.first();zaglavlja.inBounds();zaglavlja.next()) {
 			raProcess.setMessage("Obradjujem ugovor "+zaglavlja.getString("CUGOVOR"),true);
 			maintancestavke(zaglavlja.getString("CUGOVOR") ,zadnjatecajnalista);
@@ -313,11 +322,14 @@ System.out.println("Konaèmi "+vs);
 		QueryDataSet stavke = 
 			Util.getNewQueryDataSet("SELECT * FROM STUGOVOR where CUGOVOR='"+ugovor+"' and "+getCorgCondition("STUGOVOR"));
 		for (stavke.first();stavke.inBounds();stavke.next()){
+		  handlePOR(stavke); //vuce ppor1 ppor2 ppor3 iz tablice porezi
 			if (stavke.getString("OZNVAL") == null  || stavke.getString("OZNVAL").trim().length()==0 || stavke.getString("OZNVAL").trim().equalsIgnoreCase(getDomOZNVAL())) {
-				continue;
+				stavke.setString("OZNVAL", getDomOZNVAL());
+			  //continue;
 			}
 			if (lD.raLocate(teclista,"OZNVAL",stavke.getString("OZNVAL"))){
 				stavke.setBigDecimal("TECAJ", teclista.getBigDecimal("TECSRED"));
+				
 				kalkulacija("VAL_VC", stavke);
 				setupIznos4Racun(stavke);
 			}
@@ -333,8 +345,23 @@ System.out.println("Konaèmi "+vs);
 	}
 	
 	
-
-	public void jBStavke_actionPerformed(java.awt.event.ActionEvent e) {
+//vuce ppor1 ppor2 ppor3 iz tablice porezi
+	private void handlePOR(QueryDataSet stavke) {
+	  if (!lookupData.getlookupData().raLocate(artikli, "CART", stavke.getInt("CART")+"")) {
+	    System.err.println("Err!!@##@@! artikal "+stavke.getInt("CART")+" nije pronadjen");
+	    return;
+	  }
+	  if (!lookupData.getlookupData().raLocate(porezi, "CPOR", artikli.getString("CPOR"))) {
+	    System.err.println("Err!!! porez za artikl CART::"+stavke.getInt("CART")+" CPOR::"+artikli.getString("CPOR")+" nije pronadjen");
+	    return;
+	  }
+	  stavke.setBigDecimal("PPOR1", porezi.getBigDecimal("POR1"));
+	  stavke.setBigDecimal("PPOR2", porezi.getBigDecimal("POR2"));
+	  stavke.setBigDecimal("PPOR3", porezi.getBigDecimal("POR3"));
+	  stavke.setBigDecimal("UPPOR", porezi.getBigDecimal("POR1").add(porezi.getBigDecimal("POR2").add(porezi.getBigDecimal("POR3"))));
+	  stavke.post();
+  }
+  public void jBStavke_actionPerformed(java.awt.event.ActionEvent e) {
 
 		if (!hr.restart.sisfun.frmParam.getParam("robno", "ugoRekal",
 				"N", "Rekalk. ugovora kod ulaza u stavke").equalsIgnoreCase("D")) {
