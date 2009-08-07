@@ -63,6 +63,7 @@ public class frmPL extends startFrame {
   JMenuItem jmiRS = new JMenuItem();
   JMenuItem jmiVirmani = new JMenuItem();
   JMenuItem jmiBankSpec = new JMenuItem();
+  JMenuItem jmiBankSpecA = new JMenuItem();
   JMenu jmArhiva = new JMenu();
   JMenuItem jmiArhiviranje = new JMenuItem();
   JMenuItem jmiDohArh = new JMenuItem();
@@ -316,6 +317,12 @@ public class frmPL extends startFrame {
     jmiBankSpec.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiBankSpec_actionPerformed(e);
+      }
+    });
+    jmiBankSpecA.setText("Diskete i specifikacije za banku");
+    jmiBankSpecA.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiBankSpecA_actionPerformed(e);
       }
     });
     jmArhiva.setText("Arhiva");
@@ -587,6 +594,7 @@ public class frmPL extends startFrame {
     jmObrasciArh.add(jmiDNR);
     jmObrasciArh.add(jmiPK);
     jmObrasciArh.add(jmiVirmaniArh);
+    jmObrasciArh.add(jmiBankSpecA);
     setRaJMenuBar(jMenuBar);
     jmSys.add(jmAddDefault);
     jmAddDefault.add(jmiAddDefIzvjestaji);
@@ -720,6 +728,12 @@ public class frmPL extends startFrame {
 
   void jmiBankSpec_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.pl.frmBankSpec",jmiBankSpec.getText());
+  }
+  void jmiBankSpecA_actionPerformed(ActionEvent e) {
+//    showFrame("hr.restart.pl.frmBankSpec",jmiBankSpec.getText());
+    frmBankSpec spec = hr.restart.pl.frmBankSpec.getInstanceA();
+    centerFrame(spec, 0, jmiBankSpec.getText()+" iz arhive");
+    showFrame(spec);
   }
 
   void jmiIspList_actionPerformed(ActionEvent e) {

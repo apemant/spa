@@ -79,6 +79,7 @@ public class frmBankSpec extends frmIzvjestajiPL{
   Column column = new Column();
   Column column2 = new Column();
   public static frmBankSpec fBankSpec;
+  public static frmBankSpec fBankSpecA;
   private static QueryDataSet qds = new QueryDataSet();
   private static int  brRad = 0;
   private char mode;
@@ -86,6 +87,13 @@ public class frmBankSpec extends frmIzvjestajiPL{
   public static String labela="";
   public static String IMOj="";
 
+  public static frmBankSpec getInstanceA()
+  {
+    if(fBankSpecA==null)
+      fBankSpecA = new frmBankSpec('A');
+      fBankSpec = fBankSpecA;
+    return fBankSpecA;
+  }
   public static frmBankSpec getInstance()
   {
     if(fBankSpec==null)
@@ -246,6 +254,7 @@ public class frmBankSpec extends frmIzvjestajiPL{
       IMOj="za org. jed "+jlrNazorg.getText();
     String ispMjAdd = "";
     String cOrgAdd ="";
+    String arhiva ="";
 
     if(jlrCorg.getText().equals(""))
       cOrgAdd = getPripOrg(hr.restart.zapod.OrgStr.getKNJCORG(), "RADNICIPL");
@@ -254,12 +263,16 @@ public class frmBankSpec extends frmIzvjestajiPL{
 
     if(!jlfCIspMJ.getText().equals(""))
       ispMjAdd = " and radnicipl.cisplmj="+jlfCIspMJ.getText();
+    
+    if (mode=='A') {
+      arhiva = getArhRangeQuery();
+    }
 
     String qStr = "select radnicipl.corg as corg, radnici.cradnik as cradnik, radnici.ime as ime, radnici.prezime as prezime,radnicipl.brojtek as brojtek,"+
-                 "radnicipl.jmbg as jmbg, radnicipl.cisplmj as isplmj, bankepl.cbanke as cbanke, kumulrad.naruke as naruke "+
-                 "from radnici,radnicipl, bankepl, isplmj, kumulrad where radnici.cradnik = radnicipl.cradnik "+
+                 "radnicipl.jmbg as jmbg, radnicipl.cisplmj as isplmj, bankepl.cbanke as cbanke, "+getKumRadTableName()+".naruke as naruke "+
+                 "from radnici,radnicipl, bankepl, isplmj, "+getKumRadTableName()+" where radnici.cradnik = radnicipl.cradnik "+
                  "and isplmj.cbanke = bankepl.cbanke and radnicipl.cisplmj =isplmj.cisplmj "+
-                 "and kumulrad.cradnik = radnicipl.cradnik and "+cOrgAdd+ispMjAdd;
+                 "and "+getKumRadTableName()+".cradnik = radnicipl.cradnik and "+cOrgAdd+ispMjAdd+arhiva;
 System.out.println("BankSpec.qStr = "+qStr);
     if(qds.isOpen()) qds.close();
     qds.setQuery(new QueryDescriptor(dm.getDatabase1(), qStr));
@@ -280,6 +293,13 @@ System.out.println("BankSpec.qStr = "+qStr);
   }
 
 
+private String getArhRangeQuery() {
+  if (mode!='A') return "";
+    return " AND "+new raPlObrRange(       
+        fieldSet.getShort("GODINAOD"),
+        fieldSet.getShort("MJESECOD"),
+        fieldSet.getShort("RBROD")).getQuery(getKumRadTableName());
+  }
 ///////////////////***************************** Prebaciti kod srkija u main klasu
   public int getbrDjelatnika(String cOrg)
   {
@@ -301,11 +321,14 @@ System.out.println("BankSpec.qStr = "+qStr);
 
    if(!cOrg.equals(""))
      qStr += " and radnici.corg='"+cOrg+"'";
+   if (mode == 'A') {
+     
+   }
    QueryDataSet rQDS = new QueryDataSet();
    rQDS.setQuery(new QueryDescriptor(dm.getDatabase1(), qStr));
    return Valid.getValid().getSetCount(rQDS,0);
   }
-
+  
   private String getKumOrgTableName()
   {
     if (mode=='A') return "kumulorgarh";
@@ -392,11 +415,16 @@ System.out.println("BankSpec.qStr = "+qStr);
     jlrCorg.forceFocLost();
     jlMjGodOd.setText("Obrada");
     jlRbr.setText("Redni broj");
-    rcc.EnabDisabAll(jPanel2, false);
-    rcc.EnabDisabAll(jPanel2, false);
+    if (mode!='A') { 
+      rcc.EnabDisabAll(jPanel2, false);
+    }
+    rcc.setLabelLaF(jraMjesecDo, false);
+    rcc.setLabelLaF(jraGodinaDo, false);
+    rcc.setLabelLaF(jraRbrDo, false);
     jraMjesecDo.setVisible(false);
     jraGodinaDo.setVisible(false);
     jraRbrDo.setVisible(false);
+    
     jlrCorg.requestFocus();
   }
 
