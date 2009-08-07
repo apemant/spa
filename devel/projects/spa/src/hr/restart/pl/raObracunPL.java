@@ -1225,86 +1225,34 @@ sysoutTEST ST = new sysoutTEST(false);
   private void calcHarach() {
     if (frmParam.getParam("pl", "obrkrizb","D","Obracunati krizni porez (D/N)").equalsIgnoreCase("N")) return;
     
-    String harachCVRODB = frmParam.getParam("pl", "krizpcvrodb", "8765", "Oznaka vrste odbitka za krizni porez");
-    String harachCPOV = frmParam.getParam("pl", "krizpcpov", "8765", "Oznaka povjerioca-virmana za krizni porez");
-    String harach1limit = frmParam.getParam("pl", "krizposn1", "3000.00", "Minimalna osnovica za 2% kriznog poreza");
-    String harach2limit = frmParam.getParam("pl", "krizposn2", "6000.00", "Minimalna osnovica za 4% kriznog poreza");
-    String harach1stopa = frmParam.getParam("pl", "krizpstopa1", "2.00", "Stopa za 2% kriznog poreza :)");
-    String harach2stopa = frmParam.getParam("pl", "krizpstopa2", "4.00", "Stopa za 4% kriznog poreza :)");
-    createHarachOsnPod(harachCVRODB,harachCPOV);
+    String harachCVRODB = Harach.getHarachParam("CVRODB");
+    String harachCPOV = Harach.getHarachParam("CPOV");
+    String harach1limit = Harach.getHarachParam("limit1");
+    String harach2limit = Harach.getHarachParam("limit2");
+    String harach1stopa = Harach.getHarachParam("stopa1");
+    String harach2stopa = Harach.getHarachParam("stopa2");
+    if (Harach.createHarachOsnPod(harachCVRODB,harachCPOV)) odbici.null_vrsteodb();;
     BigDecimal harachosnovica = getMjVals()[8].add(osnovicaZaKredit);
     QueryDataSet harachset = Odbici.getDataModule().getTempSet(
         Condition.equal("CVRODB", Short.parseShort(harachCVRODB)).and(Condition.equal("CKEY",radnici.getString("CRADNIK"))));
     harachset.open();
     if (harachset.getRowCount() == 0 && (harachosnovica.compareTo(new BigDecimal(harach1limit)) > 0)) {//automatiche
-      BigDecimal stopa = new BigDecimal(harach1stopa);
-      if (harachosnovica.compareTo(new BigDecimal(harach2limit)) >= 0) {
-        stopa = new BigDecimal(harach2stopa);
-      }
-      harachset.insertRow(false);
-      harachset.setShort("CVRODB", Short.parseShort(harachCVRODB));
-      harachset.setString("CKEY", radnici.getString("CRADNIK"));
-      harachset.setString("CKEY2", "");
-      harachset.setShort("RBRODB", (short)0);
-      harachset.setBigDecimal("SALDO", Aus.zero2);
-      harachset.setBigDecimal("GLAVNICA", Aus.zero2);
-      harachset.setBigDecimal("STOPA", stopa);
-      harachset.post();
-//      raOdbici.CalcRes clcres = odbici.calcOdbitak(kumulrad,harachset,"NARUKE",true); 
-        odbiciobr.insertRow(false);
-        setValues(harachset,odbiciobr);
-        odbiciobr.setString("CRADNIK",kumulrad.getString("CRADNIK"));
-        odbiciobr.setShort("CVRP",Short.parseShort("0"));
-        odbiciobr.setShort("RBR",Short.parseShort("0"));
-        odbiciobr.setBigDecimal("OBRIZNOS",ut.setScale(harachosnovica.multiply(stopa.divide(new BigDecimal("100.00"))),2));
-        odbiciobr.setBigDecimal("OBRSTOPA",ut.setScale(stopa,2));
-        odbiciobr.setBigDecimal("OBROSN",ut.setScale(harachosnovica,2));
-        odbiciobr.setBigDecimal("SALDO",ut.setScale(Aus.zero2,2));
-        odbiciobr.post();
-        kumulrad.setBigDecimal("KREDITI",kumulrad.getBigDecimal("KREDITI").add(odbiciobr.getBigDecimal("OBRIZNOS")));
-        kumulrad.setBigDecimal("NARUKE",kumulrad.getBigDecimal("NARUKE").add(odbiciobr.getBigDecimal("OBRIZNOS").negate()));
+      
+      ReadRow _odbiciobr = Harach.addHaracOdbitak(kumulrad.getString("CRADNIK"), harachosnovica, harachset);
+      odbiciobr.insertRow(false);
+      setValues(_odbiciobr, odbiciobr);
+      odbiciobr.post();
+      
+      
+      kumulrad.setBigDecimal("KREDITI",kumulrad.getBigDecimal("KREDITI").add(odbiciobr.getBigDecimal("OBRIZNOS")));
+      kumulrad.setBigDecimal("NARUKE",kumulrad.getBigDecimal("NARUKE").add(odbiciobr.getBigDecimal("OBRIZNOS").negate()));
 //        addBigDec_kumulorg("KREDITI",kumulrad.getBigDecimal("KREDITI"));
 //        addBigDec_kumulorg("NARUKE",kumulrad.getBigDecimal("NARUKE"));
     }
   }
+
   
-  private boolean harachOsnPodCreated = false;
-  private void createHarachOsnPod(String harachCVRODB, String harachCPOV) {
-    if (!harachOsnPodCreated) {
-      QueryDataSet vrsteodb = Vrsteodb.getDataModule().getFilteredDataSet(Condition.equal("CVRODB", harachCVRODB));
-      QueryDataSet povjerioci = Povjerioci.getDataModule().getFilteredDataSet(Condition.equal("CPOV", harachCPOV));
-      vrsteodb.open();
-      povjerioci.open();
-      if (vrsteodb.getRowCount() == 0) {
-        vrsteodb.insertRow(false);
-        vrsteodb.setShort("CVRODB", Short.parseShort(harachCVRODB));
-        vrsteodb.setString("OPISVRODB", "Krizni porez");
-        vrsteodb.setString("NIVOODB", "RA");
-        vrsteodb.setString("TIPODB", "S");
-        vrsteodb.setString("VRSTAOSN", "3");
-        vrsteodb.setString("OSNOVICA", "3");
-        vrsteodb.setInt("CPOV", Integer.parseInt(harachCPOV));
-        vrsteodb.setBigDecimal("STOPA", new BigDecimal("-1.00"));
-        vrsteodb.post();
-        vrsteodb.saveChanges();
-        odbici.null_vrsteodb();
-      }
-      if (povjerioci.getRowCount() == 0) {
-        povjerioci.insertRow(false);
-        povjerioci.setInt("CPOV", Integer.parseInt(harachCPOV));
-        povjerioci.setString("NAZPOV", "Državni proraèun");
-        povjerioci.setString("MJESTO", ".");
-        povjerioci.setString("ADRESA", ".");
-        povjerioci.setString("NACISP", "2");
-        povjerioci.setString("PNBO2", "1902-$matbr");
-        povjerioci.setString("ZIRO", "1001005-1863000160");
-        povjerioci.setString("SVRHA", "Poseban porez na neto plaæe isplaæene u $mi/$godi");
-        povjerioci.saveChanges();
-        odbici.null_vrsteodb();
-      }
-      harachOsnPodCreated = true;
-    }
-  }
+
   private void calcKrediti() throws Exception {
     if (osnovicaZaKredit.compareTo(nula) > 0) {
       QueryDataSet krediti = odbici.getKrediti(radnici.getString("CRADNIK"),raOdbici.DEF);
