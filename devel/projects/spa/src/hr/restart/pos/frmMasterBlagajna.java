@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.pos;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Refresher;
 import hr.restart.baza.Stanje;
@@ -277,7 +278,16 @@ public class frmMasterBlagajna extends raMasterDetail {
       else setNaslovMaster("Blagajna - raèuni stola " + presBlag.stol);
       setNaslovDetail("Stavke raèuna (stol " + presBlag.stol + ")");
     }
+    
+    String va = frmParam.getParam("pos", "csklVrart"+cskl, "",
+        "Vrsta artikla na POS-u za skladište "+cskl);
+    if (va.length() > 0) {
+      Artikli.getDataModule().setFilter(
+          (QueryDataSet) jpBl.jrfCART.getRaDataSet(),
+          Condition.equal("VRART", va));
+    }
   }
+  
   public boolean ValDPEscapeDetail(char mode) {
     /*if (getMasterSet().getBigDecimal("NETO").doubleValue()==0) {
       if (newRacun) {
