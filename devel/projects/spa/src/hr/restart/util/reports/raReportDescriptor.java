@@ -48,6 +48,7 @@ public class raReportDescriptor {
   public static final int TYPE_ELIXIR = 1;
   public static final int TYPE_MX = 2;
   public static final int TYPE_CHART = 3;
+  public static final int TYPE_JASPER = 4;
 
   private String pekidz;
   private String providerName;
@@ -137,7 +138,17 @@ public class raReportDescriptor {
     pekidz = pack.substring(pack.lastIndexOf('.') + 1);
     provider = source;    
   }
-  
+
+  private raReportDescriptor(String id, String source, String jasper, String title, boolean jas) 
+    throws Exception {
+    reportType = TYPE_JASPER;
+    providerName = id;
+    dataSource = source;
+    String pack = source.substring(0, source.lastIndexOf('.'));
+    pekidz = pack.substring(pack.lastIndexOf('.') + 1);
+    this.template = pack.replace('.', '/') + "/reports/"+jasper;
+    this.title = title;
+  }
 
   private raReportDescriptor(String id, String source, String design, String title)
       throws Exception {
@@ -204,6 +215,10 @@ public class raReportDescriptor {
     return noSignature;
   }
 
+  public boolean isJasper() {
+    return reportType == TYPE_JASPER;
+  }
+  
   public boolean isExtended() {
     return extended;
   }
