@@ -87,8 +87,11 @@ public class ElixirToJasperConverter {
 
   private void createReportEdges() throws JRException {
     JRDesignBand title = new JRDesignBand();
-    fillBand(title, model.getModel(ep.REPORT_HEADER));
+    IModel mh = model.getModel(ep.REPORT_HEADER);
+    fillBand(title, mh);
     jas.setTitle(title);
+    if (ev.AFTER.equals(mh.getPropertyValue(ep.FORCE_NEW)))
+      jas.setTitleNewPage(true);
     
     JRDesignBand summ = new JRDesignBand();
     fillBand(summ, model.getModel(ep.REPORT_FOOTER));
@@ -673,7 +676,7 @@ public class ElixirToJasperConverter {
     
     public String convert() throws JRException {
       if (conv != null) return conv;
-      if (command.equals("dsum")) { 
+      if (command.equals("dsum") || command.equals("total")) { 
         enforceArgs(1);
         String field = new VarStr(getArg(0).command).split("\"")[1];
         if (!data.getTypeMap().containsKey(field)) {
@@ -682,6 +685,8 @@ public class ElixirToJasperConverter {
         }
 
         String vname = "sum_" + currGroup.getName() + "_" + field;
+        if (command.equals("total"))
+          vname = "total_" + field;
         JRDesignVariable var = null;
         if (jas.getVariablesMap().containsKey(vname))
           var = (JRDesignVariable) jas.getVariablesMap().get(vname);
@@ -692,6 +697,8 @@ public class ElixirToJasperConverter {
           var.setExpression(createExpression(field));
           var.setCalculation(JRVariable.CALCULATION_SUM);
           var.setResetType(JRVariable.RESET_TYPE_GROUP);
+          if (command.equals("total"))
+            var.setResetType(JRVariable.RESET_TYPE_REPORT);
           var.setResetGroup(currGroup);
           var.setSystemDefined(false);
           jas.addVariable(var); 
@@ -794,6 +801,10 @@ public class ElixirToJasperConverter {
         type = "java.lang.Integer";
         if (currGroup == null) return "$V{REPORT_COUNT}";
         return "$V{"+currGroup.getName()+"_COUNT}";
+      } else if (command.equals("null")) {
+        type = "null";
+        conv = "null";
+        return "null";
       } else 
         throw new JRException("Invalid expression command: " + command);
     }
