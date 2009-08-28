@@ -175,13 +175,13 @@
           <Property Name="Model Name">Report Header</Property>
           <Property Name="Name">Report Header</Property>
           <Property Name="Caption">Report Header</Property>
-          <Property Name="Force New Page">None</Property>
+          <Property Name="Force New Page">After</Property>
           <Property Name="New Row Or Col">None</Property>
           <Property Name="Keep Together">Yes</Property>
           <Property Name="Visible">Yes</Property>
           <Property Name="Can Grow">No</Property>
           <Property Name="Can Shrink">No</Property>
-          <Property Name="Height">15300</Property>
+          <Property Name="Height">13800</Property>
           <Model Name="Rectangle2">
                <Property Name="Model Name">Rectangle</Property>
                <Property Name="Name">Rectangle2</Property>
@@ -1380,7 +1380,7 @@ o zaduženju - razduženju</Property>
           <Model Name="Text374">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text374</Property>
-               <Property Name="Control Source">=(get-var &quot;S1&quot;)</Property>
+               <Property Name="Control Source">=(total &quot;SUMZAD&quot;)</Property>
                <Property Name="Running Sum">No</Property>
                <Property Name="Locale">Template Locale</Property>
                <Property Name="Format">Number|true|#.##0,00</Property>
@@ -1410,7 +1410,7 @@ o zaduženju - razduženju</Property>
           <Model Name="Text378">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text378</Property>
-               <Property Name="Control Source">=(get-var &quot;S2&quot;)</Property>
+               <Property Name="Control Source">=(total &quot;SUMRAZ&quot;)</Property>
                <Property Name="Running Sum">No</Property>
                <Property Name="Locale">Template Locale</Property>
                <Property Name="Format">Number|true|#.##0,00</Property>
@@ -1789,7 +1789,7 @@ o zaduženju - razduženju</Property>
           <Model Name="Text210">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text210</Property>
-               <Property Name="Control Source">=(if (or (&gt; [SUMZAD] 0.) (&lt; [SUMZAD] 0.)) [SUMZAD] &quot;&quot;)</Property>
+               <Property Name="Control Source">=(if (or (&gt; [SUMZAD] 0.) (&lt; [SUMZAD] 0.)) [SUMZAD] null)</Property>
                <Property Name="Running Sum">No</Property>
                <Property Name="Locale">Template Locale</Property>
                <Property Name="Format">Number|true|#.##0,00</Property>
@@ -1849,7 +1849,7 @@ o zaduženju - razduženju</Property>
           <Model Name="Text214">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text214</Property>
-               <Property Name="Control Source">=(if (or (&gt; [SUMRAZ] 0.) (&lt; [SUMRAZ] 0.)) [SUMRAZ] &quot;&quot;)</Property>
+               <Property Name="Control Source">=(if (or (&gt; [SUMRAZ] 0.) (&lt; [SUMRAZ] 0.)) [SUMRAZ] null)</Property>
                <Property Name="Running Sum">No</Property>
                <Property Name="Locale">Template Locale</Property>
                <Property Name="Format">Number|true|#.##0,00</Property>
@@ -2319,7 +2319,7 @@ o zaduženju - razduženju</Property>
           <Model Name="Text556">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text556</Property>
-               <Property Name="Control Source">=(get-var &quot;S1&quot;)</Property>
+               <Property Name="Control Source">=(total &quot;SUMZAD&quot;)</Property>
                <Property Name="Running Sum">No</Property>
                <Property Name="Locale">Template Locale</Property>
                <Property Name="Format">Number|true|#.##0,00</Property>
@@ -2349,7 +2349,7 @@ o zaduženju - razduženju</Property>
           <Model Name="Text577">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text577</Property>
-               <Property Name="Control Source">=(get-var &quot;S2&quot;)</Property>
+               <Property Name="Control Source">=(total &quot;SUMRAZ&quot;)</Property>
                <Property Name="Running Sum">No</Property>
                <Property Name="Locale">Template Locale</Property>
                <Property Name="Format">Number|true|#.##0,00</Property>
