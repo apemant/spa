@@ -2863,7 +2863,7 @@ ST.prnc(raQueryDataSet);
   }
   
   Object getKey(JTextComponent tf) {
-  	return tf.getBounds();
+  	return tf.getBounds()+"#"+tf.getParent().getBounds();
   }
   
   public void restorePreviousValue(JTextComponent tf) {

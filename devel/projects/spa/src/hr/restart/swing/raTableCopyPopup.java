@@ -393,9 +393,11 @@ public class raTableCopyPopup extends JPopupMenu {
   
   void setQuery(Condition where) {
     try {
-      tx.setText("SELECT * FROM " + Valid.getTableName(
-          ((QueryDataSet) jt.getDataSet()).getOriginalQueryString())
-          + " WHERE " + where);
+      String tabname = "table";
+      if (jt.getDataSet() instanceof QueryDataSet)
+        tabname = Valid.getTableName(((QueryDataSet) 
+            jt.getDataSet()).getOriginalQueryString());
+      tx.setText("SELECT * FROM " + tabname + " WHERE " + where);
       tx.selectAll();
       tx.copy();
       checkPilot();
