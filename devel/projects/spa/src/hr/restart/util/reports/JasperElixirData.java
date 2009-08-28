@@ -1,6 +1,7 @@
 package hr.restart.util.reports;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -25,6 +26,7 @@ public class JasperElixirData implements JRDataSource {
   
   private IDataProvider provider;
   private Enumeration data;
+  private raReportData rdata;
   private Set usedGetters;
   private Map types;
   private Map rowValues;
@@ -35,14 +37,41 @@ public class JasperElixirData implements JRDataSource {
   String[] sortCols;
   int tableRow = 0;
 
+  public JasperElixirData(String dsource) {
+    try {
+      data = null;
+      rdata = (raReportData) Class.forName(dsource).newInstance();
+      buildTypeMap();
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+  
   public JasperElixirData(IDataSourceInfor ds, IDataProvider prov) {
     provider = prov;
     data = provider.getData();
+    rdata = null;
     buildTypeMap(ds.getModel().getModel("Dataschema"));
   }
   
   public Map getTypeMap() {
     return types;
+  }
+  
+  private void buildTypeMap() {
+    types = new HashMap();
+    getters = new HashMap();
+    params = new HashMap();
+    
+    Method[] meths = rdata.getClass().getMethods();
+    for (int i = 0; i < meths.length; i++)
+      if ((meths[i].getModifiers() & Modifier.STATIC) == 0 &&
+          (meths[i].getModifiers() & Modifier.PUBLIC) != 0 &&
+          valids.containsKey(meths[i].getReturnType().toString())) {
+        getters.put(meths[i].getName(), meths[i]);
+        types.put(meths[i].getName(),
+            valids.get(meths[i].getReturnType().toString()));
+      }
   }
 
   private void buildTypeMap(IModel dsm) {
@@ -88,6 +117,17 @@ public class JasperElixirData implements JRDataSource {
     return getters.containsKey(name);
   }
 
+  public void buildTable() {
+    List table = new ArrayList();
+    
+    for (int i = 0; i < rdata.getRowCount(); i++) {
+      buildValueMap(rdata.getRow(i));
+      table.add(new HashMap(rowValues));
+    }
+    
+    sortedTable = (HashMap[]) table.toArray(new HashMap[table.size()]);
+  }
+  
   public void buildTable(IModel template) {
     List sortFields = new ArrayList();
     IModel sects = template.getModel(ep.SECTIONS);
@@ -143,7 +183,8 @@ public class JasperElixirData implements JRDataSource {
   public boolean next() throws JRException {
     if (sortedTable != null) {
       if (tableRow >= sortedTable.length) {
-        provider.close();
+        if (rdata != null) rdata.close();
+        else provider.close();
         return false;
       }
       rowValues.clear();
