@@ -97,6 +97,8 @@ import net.sf.jasperreports.engine.design.JRJdk13Compiler;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRSaver;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.engine.xml.JasperDesignFactory;
 import net.sf.jasperreports.view.JRViewer;
 import sg.com.elixir.ReportRuntime;
 import sg.com.elixir.reportwriter.datasource.DataSourceManager;
@@ -565,6 +567,8 @@ public class dlgRunReport {
   }
 
   private void setReportTemplate(raReportDescriptor rd) {
+    if (rd.isJasper()) return;
+    
     if (rd.isJavaTemplate()) rt.setReportTemplate(rd.getJavaTemplate().getReportTemplate());
     else {
       rt.setReportTemplate(getSystemResourceAsStream(
@@ -631,7 +635,7 @@ public class dlgRunReport {
       } catch (Exception e) {}
   }
 
-  private InputStream getSystemResourceAsStream(String string) {
+  InputStream getSystemResourceAsStream(String string) {
     return dlgRunReport.class.getClassLoader().getResourceAsStream(string);
   }
 
@@ -675,7 +679,7 @@ public class dlgRunReport {
 //      System.out.println(VarStr.join(DataSourceManager.current().getSystemDSNNames(), ','));
 //      System.out.println(VarStr.join(DataSourceManager.current().getUserDSNNames(), ','));
 //      if (!rd.isExtended())
-      raElixirDatasource.build(rd);
+      if (!rd.isJasper()) raElixirDatasource.build(rd);
 
 //      DataSourceManager.current().add
       System.out.println(VarStr.join(DataSourceManager.current().getSystemDSNNames(), ','));
@@ -715,8 +719,11 @@ public class dlgRunReport {
 //      System.out.println("name "+i.getName());
 
       setReportTemplate(rd); //tu je iznad metoda
-      rt.getReportTemplate().setPropertyValue(raElixirProperties.RECORD_SOURCE, rd.getProviderName());
-      adjustGrayShades(rt.getReportTemplate());
+      
+      if (!rd.isJasper()) {
+        rt.getReportTemplate().setPropertyValue(raElixirProperties.RECORD_SOURCE, rd.getProviderName());
+        adjustGrayShades(rt.getReportTemplate());
+      }
 //      Aus.dumpModel(rt.getReportTemplate(), 0);
 
 //      rt.addDataProvider(rd.getProviderName(), elixProvider);
@@ -1447,30 +1454,46 @@ public class dlgRunReport {
       public void run() {
         try {
           raProcess.setMessage("Priprema ispisa...", false);
-          String dsnName = getCurrentDescriptor().getProviderName();
-          DataSourceManager dsm = DataSourceManager.current();
-          IDataSourceInfor dsn = dsm.getUserDSN(dsnName);
-          IDataProvider provider = getCurrentDescriptor().isExtended() 
-              ? raElixirDataProvider.getInstance() 
-              : (IDataProvider) getCurrentDescriptor().getProvider();
-          
-          JasperElixirData data = new JasperElixirData(dsn, provider);
-          JasperDesign jdes = JasperBuilder.buildFromElixir(rt.getReportTemplate(), data);
-          jdes.setName(getCurrentDescriptor().getName());
-          jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
-          raProcess.setMessage("Prevoðenje izraza...", false);
-          JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
-          JasperReport jcomp = new JRJdk13Compiler().compileReport(jdes);
-          //JasperReport jcomp = new JasperCompiler().compileReport(jdes);
-//          JasperReport jcomp = JasperCompileManager.compileReport(jdes);
-          //JRFillTextField
-          data.removeUnusedGetters();
-          raProcess.setMessage("Punjenje podataka...", false);
-          data.buildTable(rt.getReportTemplate());
-          raProcess.setMessage("Grupiranje i sortiranje...", false);
-          data.sortTable();
-          raProcess.setMessage("Formiranje ispisa...", false);
-          raProcess.yield(JasperFillManager.fillReport(jcomp, null, data));
+          raReportDescriptor rd = getCurrentDescriptor(); 
+          if (rd.isJasper()) {
+            JasperElixirData data = new JasperElixirData(rd.getDataSource());
+            JasperDesign jdes = JRXmlLoader.load(
+                getSystemResourceAsStream(rd.getTemplate()));
+            jdes.setName(getCurrentDescriptor().getName());
+            jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
+            raProcess.setMessage("Prevoðenje izraza...", false);
+            JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
+            JasperReport jcomp = new JRJdk13Compiler().compileReport(jdes);
+            raProcess.setMessage("Punjenje podataka...", false);
+            data.buildTable();
+            raProcess.setMessage("Formiranje ispisa...", false);
+            raProcess.yield(JasperFillManager.fillReport(jcomp, null, data));
+          } else {
+            String dsnName = getCurrentDescriptor().getProviderName();
+            DataSourceManager dsm = DataSourceManager.current();
+            IDataSourceInfor dsn = dsm.getUserDSN(dsnName);
+            IDataProvider provider = getCurrentDescriptor().isExtended() 
+                ? raElixirDataProvider.getInstance() 
+                : (IDataProvider) getCurrentDescriptor().getProvider();
+            
+            JasperElixirData data = new JasperElixirData(dsn, provider);
+            JasperDesign jdes = JasperBuilder.buildFromElixir(rt.getReportTemplate(), data);
+            jdes.setName(getCurrentDescriptor().getName());
+            jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
+            raProcess.setMessage("Prevoðenje izraza...", false);
+            JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
+            JasperReport jcomp = new JRJdk13Compiler().compileReport(jdes);
+            //JasperReport jcomp = new JasperCompiler().compileReport(jdes);
+  //          JasperReport jcomp = JasperCompileManager.compileReport(jdes);
+            //JRFillTextField
+            data.removeUnusedGetters();
+            raProcess.setMessage("Punjenje podataka...", false);
+            data.buildTable(rt.getReportTemplate());
+            raProcess.setMessage("Grupiranje i sortiranje...", false);
+            data.sortTable();
+            raProcess.setMessage("Formiranje ispisa...", false);
+            raProcess.yield(JasperFillManager.fillReport(jcomp, null, data));
+          }
         } catch (RuntimeException e) {
           throw e;
         } catch (Exception e) {
