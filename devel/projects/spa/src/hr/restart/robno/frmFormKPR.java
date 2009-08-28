@@ -176,11 +176,11 @@ public class frmFormKPR extends raUpitLite {
       raProcess.fail();
     }
 
-    /*if (hr.restart.sisfun.frmParam.getParam("robno","sumGotKPR","P","Ispis GOT racuna u KPR (P - pojedinacno D - sumirano po danu)").equalsIgnoreCase("D")){
+    if (hr.restart.sisfun.frmParam.getParam("robno","sumGotKPR","P","Ispis GOT racuna u KPR (P - pojedinacno D - sumirano po danu)").equalsIgnoreCase("D")){
       fillDummySumGot(dejtaSet, rbr, knjigodina);
-    } else {*/
+    } else {
       fillDummy(dejtaSet, rbr, knjigodina, tipkpr, false);
-    //}
+    }
 
     updateDoki = "update doki set stat_kpr='D' where cskl='" + tds.getString("CSKL") + "' "+
                  "and god = '"+knjigodina+"' and datdok <= '"+ut.getLastSecondOfDay(tds.getTimestamp("zavDatum"))+"' and vrdok not in ('PON','TRE','ZAH')";
