@@ -120,6 +120,15 @@ public class raReportDescriptor {
     }
   }
   
+  public static raReportDescriptor create(String id, String source, String jasper, String title, boolean jas) {
+    try {
+      return new raReportDescriptor(id, source, jasper, title, jas);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+  
   public static raReportDescriptor create(String id, String source, String title) {
     try {
       return new raReportDescriptor(id, source, title);
@@ -144,6 +153,7 @@ public class raReportDescriptor {
     reportType = TYPE_JASPER;
     providerName = id;
     dataSource = source;
+    this.title = title;
     String pack = source.substring(0, source.lastIndexOf('.'));
     pekidz = pack.substring(pack.lastIndexOf('.') + 1);
     this.template = pack.replace('.', '/') + "/reports/"+jasper;

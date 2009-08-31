@@ -218,6 +218,14 @@ public class raRunReport {
     }
   }
   
+  public void addJasper(String id, String source, String jasper, String title) {
+    rd = raReportDescriptor.create(id, source, jasper, title, true);
+    if (rd != null) {
+      allreports.add(rd);
+      reports.add(rd);
+    }
+  }
+  
   public void addReport(String id, String source, String title) {
     rd = raReportDescriptor.create(id, source, title);
     if (rd != null) {
