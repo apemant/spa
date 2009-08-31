@@ -98,6 +98,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.engine.xml.JRXmlWriter;
 import net.sf.jasperreports.engine.xml.JasperDesignFactory;
 import net.sf.jasperreports.view.JRViewer;
 import sg.com.elixir.ReportRuntime;
@@ -1464,10 +1465,12 @@ public class dlgRunReport {
             raProcess.setMessage("Prevoðenje izraza...", false);
             JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
             JasperReport jcomp = new JRJdk13Compiler().compileReport(jdes);
-            raProcess.setMessage("Punjenje podataka...", false);
-            data.buildTable();
+            if (!data.isJasperSource()) {
+              raProcess.setMessage("Punjenje podataka...", false);
+              data.buildTable();
+            }
             raProcess.setMessage("Formiranje ispisa...", false);
-            raProcess.yield(JasperFillManager.fillReport(jcomp, null, data));
+            raProcess.yield(JasperFillManager.fillReport(jcomp, null, data.getSource()));
           } else {
             String dsnName = getCurrentDescriptor().getProviderName();
             DataSourceManager dsm = DataSourceManager.current();
@@ -1478,6 +1481,7 @@ public class dlgRunReport {
             
             JasperElixirData data = new JasperElixirData(dsn, provider);
             JasperDesign jdes = JasperBuilder.buildFromElixir(rt.getReportTemplate(), data);
+            JRXmlWriter.writeReport(jdes, "design.jrxml", "UTF-8");
             jdes.setName(getCurrentDescriptor().getName());
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
             raProcess.setMessage("Prevoðenje izraza...", false);
