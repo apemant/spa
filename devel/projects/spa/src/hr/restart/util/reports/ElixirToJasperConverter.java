@@ -416,7 +416,8 @@ public class ElixirToJasperConverter {
     JRDesignTextField tf = new JRDesignTextField();
     tf.setBlankWhenNull(true);
     tf.setWrapAllowed(!ev.NO.equals(m.getPropertyValue(ep.GROW)));
-    tf.setStretchWithOverflow(true);
+    tf.setStretchWithOverflow(tf.isWrapAllowed() ||
+        ev.YES.equals(m.getPropertyValue(ep.WRAP)));
     if (m.getPropertyValue(ep.RUNNING_SUM).equals(ev.OVER_GROUP) &&
         data.getTypeMap().containsKey(cs)) {
       JRDesignVariable var = new JRDesignVariable();
