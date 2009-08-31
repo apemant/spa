@@ -27,6 +27,7 @@ public class JasperElixirData implements JRDataSource {
   private IDataProvider provider;
   private Enumeration data;
   private raReportData rdata;
+  private JRDataSource jdata;
   private Set usedGetters;
   private Map types;
   private Map rowValues;
@@ -40,8 +41,13 @@ public class JasperElixirData implements JRDataSource {
   public JasperElixirData(String dsource) {
     try {
       data = null;
-      rdata = (raReportData) Class.forName(dsource).newInstance();
-      buildTypeMap();
+      Object cl = Class.forName(dsource).newInstance();
+      if (cl instanceof raReportData) {
+        rdata = (raReportData) cl;
+        jdata = null;
+        buildTypeMap();
+      } else
+        jdata = (JRDataSource) cl;
     } catch (Exception e) {
       throw new RuntimeException(e.getMessage());
     }
@@ -51,11 +57,20 @@ public class JasperElixirData implements JRDataSource {
     provider = prov;
     data = provider.getData();
     rdata = null;
+    jdata = null;
     buildTypeMap(ds.getModel().getModel("Dataschema"));
   }
   
   public Map getTypeMap() {
     return types;
+  }
+  
+  public boolean isJasperSource() {
+    return jdata != null;
+  }
+  
+  public JRDataSource getSource() {
+    return isJasperSource() ? jdata : this;
   }
   
   private void buildTypeMap() {
