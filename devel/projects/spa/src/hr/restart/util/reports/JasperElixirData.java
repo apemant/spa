@@ -82,10 +82,11 @@ public class JasperElixirData implements JRDataSource {
     for (int i = 0; i < meths.length; i++)
       if ((meths[i].getModifiers() & Modifier.STATIC) == 0 &&
           (meths[i].getModifiers() & Modifier.PUBLIC) != 0 &&
-          valids.containsKey(meths[i].getReturnType().toString())) {
-        getters.put(meths[i].getName(), meths[i]);
-        types.put(meths[i].getName(),
-            valids.get(meths[i].getReturnType().toString()));
+          valids.containsKey(meths[i].getReturnType().getName())) {
+        String name = meths[i].getName();
+        if (name.startsWith("get")) name = name.substring(3);
+        getters.put(name, meths[i]);
+        types.put(name, valids.get(meths[i].getReturnType().toString()));
       }
   }
 
