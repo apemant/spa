@@ -342,7 +342,7 @@ System.out.println("4count:"+q1);
     catch (Exception ex) {}
   }
 
-  private void setReportProviders(){
+  protected void setReportProviders(){
     this.addReport("hr.restart.pl.repSPL", "SPL", 2);
   }
 

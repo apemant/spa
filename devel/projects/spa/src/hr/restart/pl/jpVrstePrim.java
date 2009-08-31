@@ -246,6 +246,7 @@ public class jpVrstePrim extends JPanel {
   public JraCheckBox jcPor = new JraCheckBox();
 
   public JraCheckBox jcKred = new JraCheckBox();
+  public JraCheckBox jcHar = new JraCheckBox();
 
 
 
@@ -283,7 +284,7 @@ public class jpVrstePrim extends JPanel {
 
     lay.setWidth(605);
 
-    lay.setHeight(355);
+    lay.setHeight(385);
 
     jlrNaziv.setNextFocusableComponent(jcbRnalog);
 
@@ -589,21 +590,25 @@ public class jpVrstePrim extends JPanel {
 
     jlParam.setText("Parametri");
 
-    jcDop.setHorizontalTextPosition(SwingConstants.LEADING);
+//    jcDop.setHorizontalTextPosition(SwingConstants.LEADING);
 
     jcDop.setText("Doprinose");
 
-    jcPor.setHorizontalTextPosition(SwingConstants.LEADING);
+//    jcPor.setHorizontalTextPosition(SwingConstants.LEADING);
 
     jcPor.setText("Poreze");
 
-    jcKred.setHorizontalTextPosition(SwingConstants.LEADING);
-
+//    jcKred.setHorizontalTextPosition(SwingConstants.LEADING);
+    
     jcKred.setText("Kredite");
+
+//    jcHar.setHorizontalTextPosition(SwingConstants.TRAILING);
+
+    jcHar.setText("Krizni porez");
 
     xYLayout2.setWidth(406);
 
-    xYLayout2.setHeight(57);
+    xYLayout2.setHeight(/*57*/87);
 
     jpDetail.add(jbSelCsif,    new XYConstraints(560, 90, 21, 21));
 
@@ -679,17 +684,16 @@ public class jpVrstePrim extends JPanel {
 
     jpDetail.add(jlKoef,    new XYConstraints(15, 265, -1, -1));
 
-    jpDetail.add(jPanel2,            new XYConstraints(150, 290, 406, 57));
+    jpDetail.add(jPanel2,            new XYConstraints(150, 290, 406, 87));
 
     jpDetail.add(jlParam,  new XYConstraints(15, 290, -1, -1));
 
     this.add(jpDetail, BorderLayout.CENTER);
 
-    jPanel2.add(jcKred,        new XYConstraints(325, 0, -1, -1));
-
     jPanel2.add(jcDop,  new XYConstraints(15, 0, -1, -1));
-
-    jPanel2.add(jcPor,     new XYConstraints(180, 0, -1, -1));
+    jPanel2.add(jcPor,     new XYConstraints(250, 0, -1, -1));
+    jPanel2.add(jcKred,        new XYConstraints(15, 25, -1, -1));
+    jPanel2.add(jcHar,        new XYConstraints(250, 25, -1, -1));
 
   }
 

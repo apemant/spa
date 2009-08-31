@@ -76,6 +76,7 @@ sysoutTEST ST = new sysoutTEST(false);
   boolean calcrazpor;
   //u loopPrimanja(3) formira osnovicu za kredite u odnosu na flag na vrstama primanja
   private BigDecimal osnovicaZaKredit = nula.setScale(8);
+  private BigDecimal osnovicaZaHarach = nula.setScale(8);
   /**
    * vrijednosti ranije isplacenih placa u mjesecu isplate ovog obracuna
    * mjVals[0] = porosn; mjVals[1] = iskneop
@@ -322,6 +323,7 @@ sysoutTEST ST = new sysoutTEST(false);
     } else if (mode == 3) {
       raddopr = kumulrad.getBigDecimal("NETO2");
       osnovicaZaKredit = nula.setScale(8);
+      osnovicaZaHarach = nula.setScale(8);
     }
     primanja.first();
     do {
@@ -387,6 +389,9 @@ sysoutTEST ST = new sysoutTEST(false);
         //osnovicaZaKredit
         if (raParam.getParam(_vrsteprim,3).equals("D")) {
           osnovicaZaKredit = osnovicaZaKredit.add(primanja.getBigDecimal("NETO"));
+        }
+        if (raParam.getParam(_vrsteprim,4).equals("D") || raParam.getParam(_vrsteprim,4).trim().equals("")) {
+          osnovicaZaHarach = osnovicaZaHarach.add(primanja.getBigDecimal("NETO"));
         }
         addRSsum();
       }
@@ -1232,7 +1237,7 @@ sysoutTEST ST = new sysoutTEST(false);
     String harach1stopa = Harach.getHarachParam("stopa1");
     String harach2stopa = Harach.getHarachParam("stopa2");
     if (Harach.createHarachOsnPod(harachCVRODB,harachCPOV)) odbici.null_vrsteodb();;
-    BigDecimal harachosnovica = getMjVals()[8].add(osnovicaZaKredit);
+    BigDecimal harachosnovica = getMjVals()[8].add(osnovicaZaHarach);
     QueryDataSet harachset = Odbici.getDataModule().getTempSet(
         Condition.equal("CVRODB", Short.parseShort(harachCVRODB)).and(Condition.equal("CKEY",radnici.getString("CRADNIK"))));
     harachset.open();

@@ -11,12 +11,18 @@ import hr.restart.baza.Vrsteodb;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
+import hr.restart.util.VarStr;
 import hr.restart.util.raTransaction;
+import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.ReadWriteRow;
 import com.borland.dx.dataset.Variant;
@@ -75,8 +81,8 @@ public class Harach {
       haracParams = new HashMap();
       haracParams.put("CVRODB", frmParam.getParam("pl", "krizpcvrodb", "8765", "Oznaka vrste odbitka za krizni porez"));
       haracParams.put("CPOV", frmParam.getParam("pl", "krizpcpov", "8765", "Oznaka povjerioca-virmana za krizni porez"));
-      haracParams.put("limit1", frmParam.getParam("pl", "krizposn1", "3000.00", "Minimalna osnovica za 2% kriznog poreza"));
-      haracParams.put("limit2", frmParam.getParam("pl", "krizposn2", "6000.00", "Minimalna osnovica za 4% kriznog poreza"));
+      haracParams.put("limit1", frmParam.getParam("pl", "krizposn1", "3000.01", "Minimalna osnovica za 2% kriznog poreza"));
+      haracParams.put("limit2", frmParam.getParam("pl", "krizposn2", "6000.01", "Minimalna osnovica za 4% kriznog poreza"));
       haracParams.put("stopa1", frmParam.getParam("pl", "krizpstopa1", "2.00", "Stopa za 2% kriznog poreza :)"));
       haracParams.put("stopa2", frmParam.getParam("pl", "krizpstopa2", "4.00", "Stopa za 4% kriznog poreza :)"));
     }
@@ -120,6 +126,64 @@ public class Harach {
     return _odbiciobr;
   }
   
+  public static BigDecimal[] getHaracMj(String godmj, String cradnik, String corg) {
+    BigDecimal osn = Aus.zero2, izn = Aus.zero2, cnt = Aus.zero2;
+    String t,tt,join,when, radnik;
+    VarStr q = new VarStr("SELECT [t].cradnik, [t].obrosn, [t].obriznos from [tt] where cvrodb=" + getHarachParam("CVRODB") +
+    		" [radnik] [join] [when]");
+    if (godmj==null || godmj.trim().length()!=6) {
+      t="odbiciobr";
+      tt="odbiciobr";
+      join = "";
+      when = "";
+    } else {
+      t = "odbiciarh";
+      tt = "odbiciarh, kumulorgarh, kumulradarh";
+      join = "kumulradarh.godobr = kumulorgarh.godobr " +
+      		"AND kumulradarh.mjobr = kumulorgarh.mjobr " +
+      		"AND kumulradarh.rbrobr = kumulorgarh.rbrobr " +
+      		"AND kumulradarh.cvro = kumulorgarh.cvro " +
+      		"AND kumulradarh.corg = kumulorgarh.corg " +
+      		"AND kumulradarh.godobr = odbiciarh.godobr " +
+      		"AND kumulradarh.mjobr = odbiciarh.mjobr " +
+      		"AND kumulradarh.rbrobr = odbiciarh.rbrobr " +
+      		"AND kumulradarh.cradnik = odbiciarh.cradnik";
+        //"AND odbiciarh.godobr = kumulorgarh.godobr AND odbiciarh.mjobr = kumulorgarh.mjobr AND odbiciarh.rbrobr = kumulorgarh.rbrobr";
+      Calendar c = Calendar.getInstance();
+      c.set(Integer.parseInt(godmj.substring(0, 4)), Integer.parseInt(godmj.substring(4,6))-1, 1);
+      Timestamp datumispl = new Timestamp(c.getTimeInMillis());
+      when = " AND "+Condition.between("kumulorgarh.datumispl", 
+                        Util.getUtil().getFirstDayOfMonth(datumispl), 
+                        Util.getUtil().getLastDayOfMonth(datumispl));
+    }
+    if (cradnik == null) {
+      if (godmj==null || godmj.trim().length()!=6) {
+        radnik = "";
+      } else {
+        OrgStr ors = OrgStr.getOrgStr();
+        radnik = "AND (kumulradarh.corg in "+ors.getInQuery(ors.getOrgstrAndCurrKnjig(),"kumulradarh.corg")+")";
+      }
+    } else {
+      radnik = "AND "+t+".cradnik = '" + cradnik + "'";
+    }
+    String qry = q
+      .replaceAll("[t]", t)
+      .replaceAll("[tt]", tt)
+      .replaceAll("[radnik]", radnik)
+      .replaceAll("[join]", join)
+      .replaceAll("[when]", when).toString();
+  
+    System.out.println("getHaracMj qry: "+qry);
+    QueryDataSet qds = Aus.q(qry);
+    HashSet cnter = new HashSet();
+    for (qds.first(); qds.inBounds(); qds.next()) {
+      osn = osn.add(qds.getBigDecimal("OBROSN"));
+      izn = izn.add(qds.getBigDecimal("OBRIZNOS"));
+      cnter.add(qds.getString("CRADNK"));
+    }
+    cnt = new BigDecimal(cnter.size());
+    return new BigDecimal[] {osn, izn, cnt};
+  }
   private static void setValues(ReadRow src, ReadWriteRow dest) {
     String[] dcolNames = dest.getColumnNames(dest.getColumnCount());
     String[] scolNames = src.getColumnNames(src.getColumnCount());
@@ -131,6 +195,7 @@ public class Harach {
       }
     }
   }
+  
   //hr.restart.pl.Harach.otmiHarachArhiva(2009,6,1,"01")
   public static void otmiHarachArhiva(int god, int mj, int rbr, String corg) {
     ArrayList transactsets = new ArrayList();
@@ -169,5 +234,13 @@ public class Harach {
     }
     transactsets.add(kumorgs);
     raTransaction.saveChangesInTransaction((QueryDataSet[])transactsets.toArray(new QueryDataSet[]{}));
+  }
+  
+  public static String getHaracFlag(DataSet vrsteprim) {
+    String flag = raParam.getParam(vrsteprim, 4).trim();
+    if (flag.equals("")) {
+      flag = raParam.getParam(vrsteprim, 3).trim().equals("")?"D":"N";
+    }
+    return flag;
   }
 }

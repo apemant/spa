@@ -29,6 +29,8 @@ import hr.restart.util.raNavAction;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 
@@ -127,6 +129,7 @@ public class frmVrstePrim extends raMatPodaci {
     raParam.setParam(this.getRaQueryDataSet(), 1, (jpDetail.jcDop.isSelected())? "D": "N");
     raParam.setParam(this.getRaQueryDataSet(), 2, (jpDetail.jcPor.isSelected())? "D": "N");
     raParam.setParam(this.getRaQueryDataSet(), 3, (jpDetail.jcKred.isSelected())? "D": "N");
+    raParam.setParam(this.getRaQueryDataSet(), 4, (jpDetail.jcHar.isSelected())? "D": "N");
     return true;
   }
 
@@ -176,10 +179,15 @@ public class frmVrstePrim extends raMatPodaci {
     selectParam(1);
   }
 
-  void selectParam(int i)
+  void selectParam(int i) 
   {
-    if(i == 1)
-    {
+    jpDetail.jcDop.setSelected((i != 1) || raParam.getParam(getRaQueryDataSet(), 1).equals("D"));
+    jpDetail.jcPor.setSelected((i != 1) || raParam.getParam(getRaQueryDataSet(), 2).equals("D"));
+    jpDetail.jcKred.setSelected((i != 1) || raParam.getParam(getRaQueryDataSet(), 3).equals("D"));
+    jpDetail.jcHar.setSelected((i != 1) || Harach.getHaracFlag(getRaQueryDataSet()).equals("D"));
+    
+    /* kuku menee!
+    if(i == 1) {
       if(raParam.getParam(getRaQueryDataSet(), 1).equals("D"))
         jpDetail.jcDop.setSelected(true);
       else
@@ -192,13 +200,18 @@ public class frmVrstePrim extends raMatPodaci {
         jpDetail.jcKred.setSelected(true);
       else
         jpDetail.jcKred.setSelected(false);
-    }
-    else
-    {
+      if(Harach.getHaracFlag(getRaQueryDataSet()).equals("D"))
+        jpDetail.jcHar.setSelected(true);
+      else
+        jpDetail.jcHar.setSelected(false);
+      
+    } else {
       jpDetail.jcDop.setSelected(true);
       jpDetail.jcPor.setSelected(true);
       jpDetail.jcKred.setSelected(true);
+      jpDetail.jcHar.setSelected(true);
     }
+       */
   }
 
 // overridana metoda show

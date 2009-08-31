@@ -94,6 +94,7 @@ public class frmPL extends startFrame {
   private JMenuItem jmiGenericArh = new JMenuItem();
   private JMenuItem jmiM4 = new JMenuItem();
   private JMenuItem jmiSPL = new JMenuItem();
+  private JMenuItem jmiIPP = new JMenuItem();
   private JMenuItem jmiIDObr = new JMenuItem();
   private JMenu jmSys = new JMenu("Sistemski alati");
   private JMenu jmAddDefault = new JMenu("Dodavanje obaveznih podataka");
@@ -461,6 +462,12 @@ public class frmPL extends startFrame {
         jmiSPL_actionPerformed(e);
       }
     });
+    jmiIPP.setText("Izvješæe o posebnom porezu - IPP");
+    jmiIPP.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiIPP_actionPerformed(e);
+      }
+    });
     jmiIDObr.setText("ID");
     jmiIDObr.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -561,6 +568,7 @@ public class frmPL extends startFrame {
     jmIzvObr.add(jmiGeneric);
     jmObrasciObr.add(jmiRS);
     jmObrasciObr.add(jmiSPL);
+    jmObrasciObr.add(jmiIPP);
     jmObrasciObr.add(jmiVirmani);
     jmObrasciObr.add(jmiBankSpec);
     jmObrasciObr.add(jmiIDObr);
@@ -821,6 +829,10 @@ public class frmPL extends startFrame {
 
   void jmiSPL_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.pl.frmSPL",jmiSPL.getText());
+  }
+  
+  void jmiIPP_actionPerformed(ActionEvent e) {
+    showFrame("hr.restart.pl.frmIPP",jmiIPP.getText());
   }
 
   void jmiIDObr_actionPerformed(ActionEvent e) {
