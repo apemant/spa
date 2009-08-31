@@ -4,7 +4,7 @@
  * ============================================================================
  *
  * JasperReports - Free Java report-generating library.
- * Copyright (C) 2001-2006 JasperSoft Corporation http://www.jaspersoft.com
+ * Copyright (C) 2001-2009 JasperSoft Corporation http://www.jaspersoft.com
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,17 +21,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
  * 
  * JasperSoft Corporation
- * 303 Second Street, Suite 450 North
+ * 539 Bryant Street, Suite 100
  * San Francisco, CA 94107
  * http://www.jaspersoft.com
  */
 package net.sf.jasperreports.engine.fill;
 
-import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.Format;
+import java.text.SimpleDateFormat;
 
-import net.sf.jasperreports.engine.JRAbstractObjectFactory;
-import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
@@ -41,11 +40,10 @@ import net.sf.jasperreports.engine.JRHyperlinkParameter;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintHyperlinkParameters;
 import net.sf.jasperreports.engine.JRPrintText;
-import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRTextField;
+import net.sf.jasperreports.engine.JRVisitor;
 import net.sf.jasperreports.engine.util.JRDataUtils;
 import net.sf.jasperreports.engine.util.JRStyleResolver;
-import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 
 /**
@@ -64,7 +62,6 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
     /**
      *
      */
-    private Format format = null;
     private String anchorName = null;
     private String hyperlinkReference = null;
     private String hyperlinkAnchor = null;
@@ -83,11 +80,6 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
     {
         super(filler, textField, factory);
         
-        if (JRDataUtils.useFormat(getExpression()))
-        {
-            filler.formattedTextFields.add(this);
-        }
-
         evaluationGroup = factory.getGroup(textField.getEvaluationGroup());
     }
 
@@ -96,7 +88,6 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
     {
         super(textField, factory);
 
-        this.format = textField.format;
         this.evaluationGroup = textField.evaluationGroup;
     }
 
@@ -114,13 +105,6 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
      */
     public void setStretchWithOverflow(boolean isStretchWithOverflow)
     {
-    }
-    
-    public boolean isWrapAllowed() {
-      return ((JRTextField)parent).isWrapAllowed();
-    }
-    
-    public void setWrapAllowed(boolean isWrapAllowed) {
     }
 
     /**
@@ -180,6 +164,13 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
     public void setBlankWhenNull(Boolean isBlank)
     {
     }
+    
+    public boolean isWrapAllowed() {
+      return ((JRTextField)parent).isWrapAllowed();
+    }
+    
+    public void setWrapAllowed(boolean isWrapAllowed) {
+    }
 
     /**
      *
@@ -195,6 +186,14 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
     public byte getHyperlinkTarget()
     {
         return ((JRTextField)parent).getHyperlinkTarget();
+    }
+        
+    /**
+     *
+     */
+    public String getLinkTarget()
+    {
+        return ((JRTextField)parent).getLinkTarget();
     }
         
     /**
@@ -290,16 +289,19 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
      */
     protected JRTemplateText getJRTemplateText()
     {
-        JRStyle style = getStyle();
-        JRTemplateText template = (JRTemplateText) getTemplate(style);
-        if (template == null)
-        {
-            template = new JRTemplateText(filler.getJasperPrint().getDefaultStyleProvider(), this);
-            setTemplatePattern(template);
-            
-            registerTemplate(style, template);
-        }
-        
+        return (JRTemplateText) getElementTemplate();
+    }
+
+
+    protected JRTemplateElement createElementTemplate()
+    {
+        JRTemplateText template = 
+            new JRTemplateText(
+                getElementOrigin(), 
+                filler.getJasperPrint().getDefaultStyleProvider(), 
+                this
+                );
+        setTemplatePattern(template);
         return template;
     }
 
@@ -313,10 +315,15 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
             {
                 template.setValueClassName(valueClass.getName());
 
-                String pattern = JRDataUtils.getPattern(getExpression(), format, getPattern());
+                String pattern = getTemplatePattern();
                 if (pattern != null)
                 {
                     template.setPattern(pattern);
+                }
+                
+                if (!filler.hasMasterFormatFactory())
+                {
+                    template.setFormatFactoryClass(filler.getFormatFactory().getClass().getName());
                 }
                 
                 if (!filler.hasMasterLocale())
@@ -340,11 +347,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
         byte evaluation
         ) throws JRException
     {
-        if (getEvaluationTime() == JRExpression.EVALUATION_TIME_AUTO && !delayedEvaluationsInitialized())
-        {
-            initDelayedEvaluations();
-            collectDelayedEvaluations();
-        }
+        initDelayedEvaluations();
         
         reset();
         
@@ -356,7 +359,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
             isPrintWhenTrue()))
             )
         {
-            if (getEvaluationTime() == JRExpression.EVALUATION_TIME_NOW)
+            if (isEvaluateNow())
             {
                 evaluateText(evaluation);
             }
@@ -371,6 +374,8 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
         byte evaluation
         ) throws JRException
     {
+        evaluateProperties(evaluation);
+        
         Object textFieldValue = evaluateExpression(getExpression(), evaluation);
 
         if (textFieldValue == null)
@@ -382,20 +387,15 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
         }
         else
         {
+            Format format = getFormat();
             if (format != null)
             {
                 textFieldValue = format.format(textFieldValue);
             }
         }
 
-/*
-        String newRawText = 
-            JRStringUtil.treatNewLineChars(
-                String.valueOf(textFieldValue)
-                );
-*/      
-        String newRawText = String.valueOf(textFieldValue);
         String oldRawText = getRawText();
+        String newRawText = processMarkupText(String.valueOf(textFieldValue));
 
         setRawText(newRawText);
         setTextStart(0);
@@ -419,13 +419,13 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
      *
      */
     protected boolean prepare(
-        int availableStretchHeight,
+        int availableHeight,
         boolean isOverflow
         ) throws JRException
     {
         boolean willOverflow = false;
 
-        super.prepare(availableStretchHeight, isOverflow);
+        super.prepare(availableHeight, isOverflow);
 
         if (!isToPrint())
         {
@@ -435,7 +435,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
         boolean isToPrint = true;
         boolean isReprinted = false;
 
-        if (getEvaluationTime() == JRExpression.EVALUATION_TIME_NOW)
+        if (isEvaluateNow())
         {
             if (isOverflow)
             {
@@ -516,7 +516,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 
             if (isToPrint)
             {
-                if (availableStretchHeight >= getRelativeY() - getY() - getBandBottomY())
+                if (availableHeight >= getRelativeY() + getHeight())
                 {
                     // the available vertical space is sufficient
 
@@ -536,7 +536,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
                             // the text field is allowed to stretch downwards in order to
                             // display all its content
 
-                            chopTextElement(availableStretchHeight - getRelativeY() + getY() + getBandBottomY());
+                            chopTextElement(availableHeight - getRelativeY() - getHeight());
                             if (getTextEnd() < getText().length())// - 1)
                             {
                                 // even after the current chop operation there is some text left
@@ -604,7 +604,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
             
             if (
                 isToPrint && 
-                availableStretchHeight < this.getRelativeY() - this.getY() - this.getBandBottomY()
+                availableHeight < getRelativeY() + getHeight()
                 )
             {
                 isToPrint = false;
@@ -628,7 +628,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
         
         JRTemplatePrintText text;
         JRRecordedValuesPrintText recordedValuesText;
-        if (evaluationType == JRExpression.EVALUATION_TIME_AUTO)
+        if (isEvaluateAuto())
         {
             text = recordedValuesText = new JRRecordedValuesPrintText(getJRTemplateText());
         }
@@ -651,11 +651,11 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
         }
         text.setRunDirection(getRunDirection());
 
-        if (evaluationType == JRExpression.EVALUATION_TIME_NOW)
+        if (isEvaluateNow())
         {
             copy(text);
         }
-        else if (evaluationType == JRExpression.EVALUATION_TIME_AUTO)
+        else if (isEvaluateAuto())
         {
             initDelayedEvaluationPrint(recordedValuesText);
         }
@@ -678,7 +678,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
         text.setTextHeight(getTextHeight());
         //FIXME rotation and run direction?
 
-        text.setText(textChopper.chop(this, getTextStart(), getTextEnd()));
+        setPrintText(text);
 
         text.setAnchorName(getAnchorName());
         text.setHyperlinkReference(getHyperlinkReference());
@@ -687,25 +687,71 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
         text.setHyperlinkTooltip(getHyperlinkTooltip());
         text.setBookmarkLevel(getBookmarkLevel());
         text.setHyperlinkParameters(hyperlinkParameters);
+        transferProperties(text);
     }
     
     
     /**
      *
      */
-    protected void setFormat()
+    protected Format getFormat()//FIXMEFORMAT optimize this with an interface
     {
-        format = JRDataUtils.getFormat(getExpression(), getPattern(), filler.getLocale(), filler.getTimeZone());
+        Format format = null;
+
+        JRExpression valueExpression = getExpression();
+        if (valueExpression != null)
+        {
+            Class valueClass = valueExpression.getValueClass();
+            if (java.util.Date.class.isAssignableFrom(valueClass))
+            {
+                format = filler.getDateFormat(getPattern());
+            }
+            else if (java.lang.Number.class.isAssignableFrom(valueClass))
+            {
+                format = filler.getNumberFormat(getPattern());
+            }
+        }
+        
+        return format;
     }
 
     /**
      *
      */
-    public JRChild getCopy(JRAbstractObjectFactory factory)
+    protected String getTemplatePattern()//FIXMEFORMAT optimize this with an interface
     {
-        return factory.getTextField(this);
+        String pattern = null;
+        String originalPattern = getPattern();
+        Format format = getFormat();
+        JRExpression valueExpression = getExpression();
+        if (format != null && valueExpression != null)
+        {
+            Class valueClass = valueExpression.getValueClass();
+            if (java.util.Date.class.isAssignableFrom(valueClass))
+            {
+                if (format instanceof SimpleDateFormat)
+                {
+                    pattern = ((SimpleDateFormat) format).toPattern();
+                }
+            }
+            else if (Number.class.isAssignableFrom(valueClass))
+            {
+                if (format instanceof DecimalFormat)
+                {
+                    pattern = ((DecimalFormat) format).toPattern();
+                }
+            }
+        }
+        
+        if (pattern == null)//fallback to the original pattern
+        {
+            pattern = originalPattern;
+        }
+        
+        return pattern;     
     }
-
+    
+    
     /**
      *
      */
@@ -717,11 +763,11 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
     /**
      *
      */
-    public void writeXml(JRXmlWriter xmlWriter) throws IOException
+    public void visit(JRVisitor visitor)
     {
-        xmlWriter.writeTextField(this);
+        visitor.visitTextField(this);
     }
-
+    
 
     protected void resolveElement(JRPrintElement element, byte evaluation) throws JRException
     {
@@ -739,13 +785,15 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
     }
 
 
-    public JRCloneable createClone(JRFillCloneFactory factory)
+    public JRFillCloneable createClone(JRFillCloneFactory factory)
     {
         return new JRFillTextField(this, factory);
     }
     
-    private void collectDelayedEvaluations()
+    protected void collectDelayedEvaluations()
     {
+        super.collectDelayedEvaluations();
+        
         collectDelayedEvaluations(getExpression());
         collectDelayedEvaluations(getAnchorNameExpression());
         collectDelayedEvaluations(getHyperlinkReferenceExpression());
@@ -769,6 +817,15 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
     public JRExpression getHyperlinkTooltipExpression()
     {
         return ((JRTextField) parent).getHyperlinkTooltipExpression();
+    }
+
+
+    protected boolean canOverflow()
+    {
+        return isStretchWithOverflow()
+                && getRotation() == ROTATION_NONE
+                && isEvaluateNow()
+                && filler.isBandOverFlowAllowed();
     }
     
 }

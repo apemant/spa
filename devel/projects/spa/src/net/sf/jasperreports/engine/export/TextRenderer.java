@@ -4,7 +4,7 @@
  * ============================================================================
  *
  * JasperReports - Free Java report-generating library.
- * Copyright (C) 2001-2006 JasperSoft Corporation http://www.jaspersoft.com
+ * Copyright (C) 2001-2009 JasperSoft Corporation http://www.jaspersoft.com
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
  * 
  * JasperSoft Corporation
- * 303 Second Street, Suite 450 North
+ * 539 Bryant Street, Suite 100
  * San Francisco, CA 94107
  * http://www.jaspersoft.com
  */
@@ -33,10 +33,10 @@ import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextLayout;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
-import java.text.BreakIterator;
 import java.util.StringTokenizer;
 
 import net.sf.jasperreports.engine.JRAlignment;
+import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.MaxFontSizeFinder;
 
@@ -64,13 +64,35 @@ public class TextRenderer
     private boolean isMaxHeightReached = false;
     private byte horizontalAlignment = 0;
     private int fontSize = 0;
-    private boolean wrapAllowed = true;
     
     /**
      * 
      */
     private MaxFontSizeFinder maxFontSizeFinder = null;
+    
+    /**
+     * 
+     */
+    private boolean isMinimizePrinterJobSize = true;
 
+    
+    /**
+     * 
+     */
+    public static TextRenderer getInstance()
+    {
+        return new TextRenderer(JRProperties.getBooleanProperty(JRGraphics2DExporter.MINIMIZE_PRINTER_JOB_SIZE));
+    }
+    
+    
+    /**
+     * 
+     */
+    public TextRenderer(boolean isMinimizePrinterJobSize)
+    {
+        this.isMinimizePrinterJobSize = isMinimizePrinterJobSize;
+    }
+    
     
     /**
      * 
@@ -91,7 +113,6 @@ public class TextRenderer
         float initLineSpacingFactor,
         float initLeadingOffset,
         int initFontSize,
-        boolean isWrapAllowed,
         boolean isStyledText,
         JRStyledText styledText,
         String allText
@@ -114,11 +135,10 @@ public class TextRenderer
             initLineSpacingFactor,
             initLeadingOffset,
             initFontSize,
-            isWrapAllowed,
             isStyledText
             );
         
-        AttributedCharacterIterator allParagraphs = styledText.getAttributedString().getIterator();
+        AttributedCharacterIterator allParagraphs = styledText.getAwtAttributedString().getIterator();
 
         int tokenPosition = 0;
         int lastParagraphStart = 0;
@@ -172,7 +192,6 @@ public class TextRenderer
         float initLineSpacingFactor,
         float initLeadingOffset,
         int initFontSize,
-        boolean isWrapAllowed,
         boolean isStyledText
         )
     {
@@ -222,7 +241,6 @@ public class TextRenderer
         
         this.fontSize = initFontSize;
         maxFontSizeFinder = MaxFontSizeFinder.getInstance(isStyledText);
-        this.wrapAllowed = isWrapAllowed;
     }
     
     /**
@@ -258,9 +276,7 @@ public class TextRenderer
                     ).getIterator();
         }
 
-        LineBreakMeasurer lineMeasurer = new LineBreakMeasurer(paragraph, wrapAllowed ? 
-                BreakIterator.getLineInstance() : BreakIterator.getCharacterInstance(),
-            LINE_BREAK_FONT_RENDER_CONTEXT);//grx.getFontRenderContext()
+        LineBreakMeasurer lineMeasurer = new LineBreakMeasurer(paragraph, LINE_BREAK_FONT_RENDER_CONTEXT);//grx.getFontRenderContext()
     
         while (lineMeasurer.getPosition() < paragraph.getEndIndex() && !isMaxHeightReached)
         {
@@ -270,15 +286,18 @@ public class TextRenderer
 
             TextLayout layout = lineMeasurer.nextLayout(formatWidth);
 
-            //eugene fix - start
-            AttributedString tmpText = 
-                new AttributedString(
-                    paragraph, 
-                    startIndex, 
-                    startIndex + layout.getCharacterCount()
-                    );
-            layout = new TextLayout(tmpText.getIterator(), LINE_BREAK_FONT_RENDER_CONTEXT);//grx.getFontRenderContext()
-            //eugene fix - end
+            if (isMinimizePrinterJobSize)
+            {
+                //eugene fix - start
+                AttributedString tmpText = 
+                    new AttributedString(
+                        paragraph, 
+                        startIndex, 
+                        startIndex + layout.getCharacterCount()
+                        );
+                layout = new TextLayout(tmpText.getIterator(), grx.getFontRenderContext());
+                //eugene fix - end
+            }
 
             float lineHeight = lineSpacingFactor * 
                 maxFontSizeFinder.findMaxFontSize(

@@ -1,33 +1,29 @@
 /*
- * ============================================================================
- * GNU Lesser General Public License
- * ============================================================================
- *
- * JasperReports - Free Java report-generating library.
- * Copyright (C) 2001-2006 JasperSoft Corporation http://www.jaspersoft.com
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
- * 
- * JasperSoft Corporation
- * 303 Second Street, Suite 450 North
- * San Francisco, CA 94107
+ * JasperReports - Free Java Reporting Library.
+ * Copyright (C) 2001 - 2009 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com
+ *
+ * Unless you have purchased a commercial license agreement from Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of JasperReports.
+ *
+ * JasperReports is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * JasperReports is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
 package net.sf.jasperreports.engine;
 
-import net.sf.jasperreports.engine.util.JRDataUtils;
+import net.sf.jasperreports.engine.util.DefaultFormatFactory;
 
 //import java.text.Format;
 
@@ -43,49 +39,49 @@ public interface JRTextField extends JRTextElement, JRAnchor, JRHyperlink
     /**
      * Used in the date pattern to specify the default style.
      * @see java.text.DateFormat#DEFAULT
-     * @deprecated replaced by {@link JRDataUtils#STANDARD_DATE_FORMAT_DEFAULT JRDataUtils.STANDARD_DATE_FORMAT_DEFAULT}
+     * @deprecated replaced by {@link DefaultFormatFactory#STANDARD_DATE_FORMAT_DEFAULT DefaultFormatFactory.STANDARD_DATE_FORMAT_DEFAULT}
      */
-    public static final String STANDARD_DATE_FORMAT_DEFAULT = JRDataUtils.STANDARD_DATE_FORMAT_DEFAULT;
+    public static final String STANDARD_DATE_FORMAT_DEFAULT = DefaultFormatFactory.STANDARD_DATE_FORMAT_DEFAULT;
 
     /**
      * Used in the date pattern to specify the short style.
      * @see java.text.DateFormat#SHORT
-     * @deprecated replaced by {@link JRDataUtils#STANDARD_DATE_FORMAT_SHORT JRDataUtils.STANDARD_DATE_FORMAT_SHORT}
+     * @deprecated replaced by {@link DefaultFormatFactory#STANDARD_DATE_FORMAT_SHORT DefaultFormatFactory.STANDARD_DATE_FORMAT_SHORT}
      */
-    public static final String STANDARD_DATE_FORMAT_SHORT = JRDataUtils.STANDARD_DATE_FORMAT_SHORT;
+    public static final String STANDARD_DATE_FORMAT_SHORT = DefaultFormatFactory.STANDARD_DATE_FORMAT_SHORT;
 
     /**
      * Used in the date pattern to specify the medium style.
      * @see java.text.DateFormat#MEDIUM
-     * @deprecated replaced by {@link JRDataUtils#STANDARD_DATE_FORMAT_MEDIUM JRDataUtils.STANDARD_DATE_FORMAT_MEDIUM}
+     * @deprecated replaced by {@link DefaultFormatFactory#STANDARD_DATE_FORMAT_MEDIUM DefaultFormatFactory.STANDARD_DATE_FORMAT_MEDIUM}
      */
-    public static final String STANDARD_DATE_FORMAT_MEDIUM = JRDataUtils.STANDARD_DATE_FORMAT_MEDIUM;
+    public static final String STANDARD_DATE_FORMAT_MEDIUM = DefaultFormatFactory.STANDARD_DATE_FORMAT_MEDIUM;
 
     /**
      * Used in the date pattern to specify the long style.
      * @see java.text.DateFormat#LONG
-     * @deprecated replaced by {@link JRDataUtils#STANDARD_DATE_FORMAT_LONG JRDataUtils.STANDARD_DATE_FORMAT_LONG}
+     * @deprecated replaced by {@link DefaultFormatFactory#STANDARD_DATE_FORMAT_LONG DefaultFormatFactory.STANDARD_DATE_FORMAT_LONG}
      */
-    public static final String STANDARD_DATE_FORMAT_LONG = JRDataUtils.STANDARD_DATE_FORMAT_LONG;
+    public static final String STANDARD_DATE_FORMAT_LONG = DefaultFormatFactory.STANDARD_DATE_FORMAT_LONG;
 
     /**
      * Used in the date pattern to specify the full style.
      * @see java.text.DateFormat#FULL
-     * @deprecated replaced by {@link JRDataUtils#STANDARD_DATE_FORMAT_FULL JRDataUtils.STANDARD_DATE_FORMAT_FULL}
+     * @deprecated replaced by {@link DefaultFormatFactory#STANDARD_DATE_FORMAT_FULL DefaultFormatFactory.STANDARD_DATE_FORMAT_FULL}
      */
-    public static final String STANDARD_DATE_FORMAT_FULL = JRDataUtils.STANDARD_DATE_FORMAT_FULL;
+    public static final String STANDARD_DATE_FORMAT_FULL = DefaultFormatFactory.STANDARD_DATE_FORMAT_FULL;
 
     /**
      * Used in the date pattern to specify that the date or time should not be included.
-     * @deprecated replaced by {@link JRDataUtils#STANDARD_DATE_FORMAT_HIDE JRDataUtils.STANDARD_DATE_FORMAT_HIDE}
+     * @deprecated replaced by {@link DefaultFormatFactory#STANDARD_DATE_FORMAT_HIDE DefaultFormatFactory.STANDARD_DATE_FORMAT_HIDE}
      */
-    public static final String STANDARD_DATE_FORMAT_HIDE = JRDataUtils.STANDARD_DATE_FORMAT_HIDE;
+    public static final String STANDARD_DATE_FORMAT_HIDE = DefaultFormatFactory.STANDARD_DATE_FORMAT_HIDE;
 
     /**
      * Used in the date format pattern to separate the date and time styles.
-     * @deprecated replaced by {@link JRDataUtils#STANDARD_DATE_FORMAT_SEPARATOR JRDataUtils.STANDARD_DATE_FORMAT_SEPARATOR}
+     * @deprecated replaced by {@link DefaultFormatFactory#STANDARD_DATE_FORMAT_SEPARATOR DefaultFormatFactory.STANDARD_DATE_FORMAT_SEPARATOR}
      */
-    public static final String STANDARD_DATE_FORMAT_SEPARATOR = JRDataUtils.STANDARD_DATE_FORMAT_SEPARATOR;
+    public static final String STANDARD_DATE_FORMAT_SEPARATOR = DefaultFormatFactory.STANDARD_DATE_FORMAT_SEPARATOR;
 
     
     /**
@@ -98,11 +94,10 @@ public interface JRTextField extends JRTextElement, JRAnchor, JRHyperlink
      * Set to true if the text field should stretch vertically if its text does not fit in one line.
      */
     public void setStretchWithOverflow(boolean isStretchWithOverflow);
-        
-    
+       
     public boolean isWrapAllowed();
     
-    public void setWrapAllowed(boolean isWrapAllowed);
+    public void setWrapAllowed(boolean wrapAllowed);
     
     /**
      * Gets the evaluation time for this text field.

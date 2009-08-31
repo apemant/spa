@@ -1,29 +1,25 @@
 /*
- * ============================================================================
- * GNU Lesser General Public License
- * ============================================================================
- *
- * JasperReports - Free Java report-generating library.
- * Copyright (C) 2001-2006 JasperSoft Corporation http://www.jaspersoft.com
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
- * 
- * JasperSoft Corporation
- * 303 Second Street, Suite 450 North
- * San Francisco, CA 94107
+ * JasperReports - Free Java Reporting Library.
+ * Copyright (C) 2001 - 2009 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com
+ *
+ * Unless you have purchased a commercial license agreement from Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of JasperReports.
+ *
+ * JasperReports is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * JasperReports is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
 package net.sf.jasperreports.engine.base;
 
@@ -33,17 +29,25 @@ import java.io.ObjectInputStream;
 
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBox;
+import net.sf.jasperreports.engine.JRCommonText;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRHyperlinkHelper;
+import net.sf.jasperreports.engine.JRLineBox;
 import net.sf.jasperreports.engine.JRPrintHyperlinkParameter;
 import net.sf.jasperreports.engine.JRPrintHyperlinkParameters;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRReportFont;
+import net.sf.jasperreports.engine.JRStyledTextAttributeSelector;
+import net.sf.jasperreports.engine.util.JRBoxUtil;
+import net.sf.jasperreports.engine.util.JRPenUtil;
 import net.sf.jasperreports.engine.util.JRStyleResolver;
+import net.sf.jasperreports.engine.util.JRStyledText;
+import net.sf.jasperreports.engine.util.JRStyledTextParser;
+import net.sf.jasperreports.engine.util.LineBoxWrapper;
 
 
 /**
@@ -63,6 +67,10 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
      *
      */
     protected String text = "";
+    protected Integer textTruncateIndex;
+    protected short[] lineBreakOffsets;
+    protected String textTruncateSuffix;
+    protected transient String truncatedText;
     protected float lineSpacingFactor = 0;
     protected float leadingOffset = 0;
     protected Byte horizontalAlignment = null;
@@ -71,11 +79,10 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
     protected byte runDirection = RUN_DIRECTION_LTR;
     protected float textHeight = 0;
     protected Byte lineSpacing = null;
-    protected Boolean isStyledText = null;
+    protected String markup = null;
     protected String anchorName = null;
-    protected byte hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NULL;
-    private String linkType;
-    protected byte hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
+    protected String linkType;
+    protected String linkTarget;
     protected String hyperlinkReference = null;
     protected String hyperlinkAnchor = null;
     protected Integer hyperlinkPage = null;
@@ -87,27 +94,13 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
      * @see JRAnchor#getBookmarkLevel()
      */
     protected int bookmarkLevel = JRAnchor.NO_BOOKMARK;
-    
-    protected boolean wrapAllowed = true;
 
+    protected boolean wrapAllowed = true;
+    
     /**
      *
      */
-    protected Byte border;
-    protected Byte topBorder = null;
-    protected Byte leftBorder = null;
-    protected Byte bottomBorder = null;
-    protected Byte rightBorder = null;
-    protected Color borderColor = null;
-    protected Color topBorderColor = null;
-    protected Color leftBorderColor = null;
-    protected Color bottomBorderColor = null;
-    protected Color rightBorderColor = null;
-    protected Integer padding;
-    protected Integer topPadding = null;
-    protected Integer leftPadding = null;
-    protected Integer bottomPadding = null;
-    protected Integer rightPadding = null;
+    protected JRLineBox lineBox;
 
     protected JRReportFont reportFont = null;
     protected String fontName = null;
@@ -122,6 +115,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 
     protected String valueClassName;
     protected String pattern;
+    protected String formatFactoryClass;
     protected String localeCode;
     protected String timeZoneId;
     
@@ -131,6 +125,8 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
     public JRBasePrintText(JRDefaultStyleProvider defaultStyleProvider)
     {
         super(defaultStyleProvider);
+        
+        lineBox = new JRBaseLineBox(this);
     }
 
 
@@ -147,7 +143,32 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
      */
     public String getText()
     {
-        return text;
+        if (truncatedText == null && text != null)
+        {
+            if (getTextTruncateIndex() == null)
+            {
+                truncatedText = text;
+            }
+            else
+            {
+                if (!JRCommonText.MARKUP_NONE.equals(getMarkup()))
+                {
+                    truncatedText = JRStyledTextParser.getInstance().write(
+                            getFullStyledText(JRStyledTextAttributeSelector.ALL), 
+                            0, getTextTruncateIndex().intValue());
+                }
+                else
+                {
+                    truncatedText = text.substring(0, getTextTruncateIndex().intValue());
+                }
+            }
+            
+            if (textTruncateSuffix != null)
+            {
+                truncatedText += textTruncateSuffix;
+            }
+        }
+        return truncatedText;
     }
         
     /**
@@ -156,6 +177,86 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
     public void setText(String text)
     {
         this.text = text;
+        this.truncatedText = null;
+    }
+
+    public Integer getTextTruncateIndex()
+    {
+        return textTruncateIndex;
+    }
+
+    public void setTextTruncateIndex(Integer textTruncateIndex)
+    {
+        this.textTruncateIndex = textTruncateIndex;
+        this.truncatedText = null;
+    }
+
+    public String getTextTruncateSuffix()
+    {
+        return textTruncateSuffix;
+    }
+
+    public void setTextTruncateSuffix(String textTruncateSuffix)
+    {
+        this.textTruncateSuffix = textTruncateSuffix;
+        this.truncatedText = null;
+    }
+    
+    public short[] getLineBreakOffsets()
+    {
+        return lineBreakOffsets;
+    }
+
+    public void setLineBreakOffsets(short[] lineBreakOffsets)
+    {
+        this.lineBreakOffsets = lineBreakOffsets;
+    }
+
+    public String getFullText()
+    {
+        String fullText = this.text;
+        if (textTruncateIndex == null && textTruncateSuffix != null)
+        {
+            fullText += textTruncateSuffix;
+        }
+        return fullText;
+    }
+
+    public String getOriginalText()
+    {
+        return text;
+    }
+
+    public JRStyledText getStyledText(JRStyledTextAttributeSelector attributeSelector)
+    {
+        if (getText() == null)
+        {
+            return null;
+        }
+        
+        return 
+            JRStyledTextParser.getInstance().getStyledText(
+                attributeSelector.getStyledTextAttributes(this), 
+                getText(), 
+                !JRCommonText.MARKUP_NONE.equals(getMarkup()),
+                JRStyledTextAttributeSelector.getTextLocale(this)
+                );
+    }
+
+    public JRStyledText getFullStyledText(JRStyledTextAttributeSelector attributeSelector)
+    {
+        if (getFullText() == null)
+        {
+            return null;
+        }
+
+        return 
+            JRStyledTextParser.getInstance().getStyledText(
+                attributeSelector.getStyledTextAttributes(this), 
+                getFullText(), 
+                !JRCommonText.MARKUP_NONE.equals(getMarkup()),
+                JRStyledTextAttributeSelector.getTextLocale(this)
+                );
     }
 
     /**
@@ -355,28 +456,24 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getMarkup()}
      */
     public boolean isStyledText()
     {
-        return JRStyleResolver.isStyledText(this);
+        return JRCommonText.MARKUP_STYLED_TEXT.equals(getMarkup());
     }
         
+    /**
+     * @deprecated Replaced by {@link #getOwnMarkup()}
+     */
     public Boolean isOwnStyledText()
     {
-        return isStyledText;
-    }
-    
-    public boolean isWrapAllowed() {
-      return wrapAllowed;
-    }
-    
-    public void setWrapAllowed(boolean isWrapAllowed) {
-      wrapAllowed = isWrapAllowed;
+        String mkp = getOwnMarkup();
+        return JRCommonText.MARKUP_STYLED_TEXT.equals(mkp) ? Boolean.TRUE : (mkp == null ? null : Boolean.FALSE);
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #setMarkup(String)}
      */
     public void setStyledText(boolean isStyledText)
     {
@@ -384,41 +481,71 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #setMarkup(String)}
      */
     public void setStyledText(Boolean isStyledText)
     {
-        this.isStyledText = isStyledText;
+        if (isStyledText == null)
+        {
+            setMarkup(null);
+        }
+        else
+        {
+            setMarkup(isStyledText.booleanValue() ? JRCommonText.MARKUP_STYLED_TEXT : JRCommonText.MARKUP_NONE);
+        }
     }
 
     /**
-     * @deprecated
+     *
+     */
+    public String getMarkup()
+    {
+        return JRStyleResolver.getMarkup(this);
+    }
+        
+    public String getOwnMarkup()
+    {
+        return markup;
+    }
+
+    /**
+     *
+     */
+    public void setMarkup(String markup)
+    {
+        this.markup = markup;
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getLineBox()}
      */
     public JRBox getBox()
     {
-        return this;
+        return new LineBoxWrapper(getLineBox());
     }
 
     /**
-     * @deprecated
+     *
+     */
+    public JRLineBox getLineBox()
+    {
+        return lineBox;
+    }
+
+    /**
+     * @deprecated Replaced by {@link #copyBox(JRLineBox)}
      */
     public void setBox(JRBox box)
     {
-        border = box.getOwnBorder();
-        topBorder = box.getOwnTopBorder();
-        leftBorder = box.getOwnLeftBorder();
-        bottomBorder = box.getOwnBottomBorder();
-        rightBorder = box.getOwnRightBorder();
-        borderColor = box.getOwnBorderColor();
-        topBorderColor = box.getOwnTopBorderColor();
-        leftBorderColor = box.getOwnLeftBorderColor();
-        bottomBorderColor = box.getOwnBottomBorderColor();
-        rightBorderColor = box.getOwnRightBorderColor();
-        padding = box.getOwnPadding();
-        topPadding = box.getOwnTopPadding();
-        leftPadding = box.getOwnLeftPadding();
-        bottomPadding = box.getOwnBottomPadding();
-        rightPadding = box.getOwnRightPadding();
+        JRBoxUtil.setBoxToLineBox(box, lineBox);
+    }
+
+    /**
+     *
+     */
+    public void copyBox(JRLineBox lineBox)
+    {
+        this.lineBox = lineBox.clone(this);
     }
 
     /**
@@ -484,7 +611,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
      */
     public byte getHyperlinkTarget()
     {
-        return hyperlinkTarget;
+        return JRHyperlinkHelper.getHyperlinkTarget(getLinkTarget());
     }
         
     /**
@@ -492,7 +619,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
      */
     public void setHyperlinkTarget(byte hyperlinkTarget)
     {
-        this.hyperlinkTarget = hyperlinkTarget;
+        setLinkTarget(JRHyperlinkHelper.getLinkTarget(hyperlinkTarget));
     }
 
     /**
@@ -564,354 +691,443 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public byte getBorder()
     {
-        return JRStyleResolver.getBorder(this);
-    }
-
-    public Byte getOwnBorder()
-    {
-        return border;
+        return JRPenUtil.getPenFromLinePen(lineBox.getPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public Byte getOwnBorder()
+    {
+        return JRPenUtil.getOwnPenFromLinePen(lineBox.getPen());
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setBorder(byte border)
     {
-        this.border = new Byte(border);
+        JRPenUtil.setLinePenFromPen(border, lineBox.getPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public void setBorder(Byte border)
+    {
+        JRPenUtil.setLinePenFromPen(border, lineBox.getPen());
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Color getBorderColor()
     {
-        return JRStyleResolver.getBorderColor(this, getForecolor());
-    }
-
-    public Color getOwnBorderColor()
-    {
-        return borderColor;
+        return lineBox.getPen().getLineColor();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public Color getOwnBorderColor()
+    {
+        return lineBox.getPen().getOwnLineColor();
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setBorderColor(Color borderColor)
     {
-        this.borderColor = borderColor;
+        lineBox.getPen().setLineColor(borderColor);
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public int getPadding()
     {
-        return JRStyleResolver.getPadding(this);
-    }
-
-    public Integer getOwnPadding()
-    {
-        return padding;
+        return lineBox.getPadding().intValue();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public Integer getOwnPadding()
+    {
+        return lineBox.getOwnPadding();
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setPadding(int padding)
     {
-        this.padding = new Integer(padding);
+        lineBox.setPadding(padding);
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public void setPadding(Integer padding)
+    {
+        lineBox.setPadding(padding);
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public byte getTopBorder()
     {
-        return JRStyleResolver.getTopBorder(this);
+        return JRPenUtil.getPenFromLinePen(lineBox.getTopPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Byte getOwnTopBorder()
     {
-        return topBorder;
+        return JRPenUtil.getOwnPenFromLinePen(lineBox.getTopPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setTopBorder(byte topBorder)
     {
-        this.topBorder = new Byte(topBorder);
+        JRPenUtil.setLinePenFromPen(topBorder, lineBox.getTopPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public void setTopBorder(Byte topBorder)
+    {
+        JRPenUtil.setLinePenFromPen(topBorder, lineBox.getTopPen());
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Color getTopBorderColor()
     {
-        return JRStyleResolver.getTopBorderColor(this, getForecolor());
+        return lineBox.getTopPen().getLineColor();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Color getOwnTopBorderColor()
     {
-        return topBorderColor;
+        return lineBox.getTopPen().getOwnLineColor();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setTopBorderColor(Color topBorderColor)
     {
-        this.topBorderColor = topBorderColor;
+        lineBox.getTopPen().setLineColor(topBorderColor);
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public int getTopPadding()
     {
-        return JRStyleResolver.getTopPadding(this);
+        return lineBox.getTopPadding().intValue();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Integer getOwnTopPadding()
     {
-        return topPadding;
+        return lineBox.getOwnTopPadding();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setTopPadding(int topPadding)
     {
-        this.topPadding = new Integer(topPadding);
+        lineBox.setTopPadding(topPadding);
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public void setTopPadding(Integer topPadding)
+    {
+        lineBox.setTopPadding(topPadding);
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public byte getLeftBorder()
     {
-        return JRStyleResolver.getLeftBorder(this);
+        return JRPenUtil.getPenFromLinePen(lineBox.getLeftPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Byte getOwnLeftBorder()
     {
-        return leftBorder;
+        return JRPenUtil.getOwnPenFromLinePen(lineBox.getLeftPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setLeftBorder(byte leftBorder)
     {
-        this.leftBorder = new Byte(leftBorder);
+        JRPenUtil.setLinePenFromPen(leftBorder, lineBox.getLeftPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public void setLeftBorder(Byte leftBorder)
+    {
+        JRPenUtil.setLinePenFromPen(leftBorder, lineBox.getLeftPen());
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Color getLeftBorderColor()
     {
-        return JRStyleResolver.getLeftBorderColor(this, getForecolor());
+        return lineBox.getLeftPen().getLineColor();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Color getOwnLeftBorderColor()
     {
-        return leftBorderColor;
+        return lineBox.getLeftPen().getOwnLineColor();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setLeftBorderColor(Color leftBorderColor)
     {
-        this.leftBorderColor = leftBorderColor;
+        lineBox.getLeftPen().setLineColor(leftBorderColor);
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public int getLeftPadding()
     {
-        return JRStyleResolver.getLeftPadding(this);
+        return lineBox.getLeftPadding().intValue();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Integer getOwnLeftPadding()
     {
-        return leftPadding;
+        return lineBox.getOwnLeftPadding();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setLeftPadding(int leftPadding)
     {
-        this.leftPadding = new Integer(leftPadding);
+        lineBox.setLeftPadding(leftPadding);
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public void setLeftPadding(Integer leftPadding)
+    {
+        lineBox.setLeftPadding(leftPadding);
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public byte getBottomBorder()
     {
-        return JRStyleResolver.getBottomBorder(this);
+        return JRPenUtil.getPenFromLinePen(lineBox.getBottomPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Byte getOwnBottomBorder()
     {
-        return bottomBorder;
+        return JRPenUtil.getOwnPenFromLinePen(lineBox.getBottomPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setBottomBorder(byte bottomBorder)
     {
-        this.bottomBorder = new Byte(bottomBorder);
+        JRPenUtil.setLinePenFromPen(bottomBorder, lineBox.getBottomPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public void setBottomBorder(Byte bottomBorder)
+    {
+        JRPenUtil.setLinePenFromPen(bottomBorder, lineBox.getBottomPen());
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Color getBottomBorderColor()
     {
-        return JRStyleResolver.getBottomBorderColor(this, getForecolor());
+        return lineBox.getBottomPen().getLineColor();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Color getOwnBottomBorderColor()
     {
-        return bottomBorderColor;
+        return lineBox.getBottomPen().getOwnLineColor();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setBottomBorderColor(Color bottomBorderColor)
     {
-        this.bottomBorderColor = bottomBorderColor;
+        lineBox.getBottomPen().setLineColor(bottomBorderColor);
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public int getBottomPadding()
     {
-        return JRStyleResolver.getBottomPadding(this);
+        return lineBox.getBottomPadding().intValue();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Integer getOwnBottomPadding()
     {
-        return bottomPadding;
+        return lineBox.getOwnBottomPadding();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setBottomPadding(int bottomPadding)
     {
-        this.bottomPadding = new Integer(bottomPadding);
+        lineBox.setBottomPadding(bottomPadding);
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public void setBottomPadding(Integer bottomPadding)
+    {
+        lineBox.setBottomPadding(bottomPadding);
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public byte getRightBorder()
     {
-        return JRStyleResolver.getRightBorder(this);
+        return JRPenUtil.getPenFromLinePen(lineBox.getRightPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Byte getOwnRightBorder()
     {
-        return rightBorder;
+        return JRPenUtil.getOwnPenFromLinePen(lineBox.getRightPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setRightBorder(byte rightBorder)
     {
-        this.rightBorder = new Byte(rightBorder);
+        JRPenUtil.setLinePenFromPen(rightBorder, lineBox.getRightPen());
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public void setRightBorder(Byte rightBorder)
+    {
+        JRPenUtil.setLinePenFromPen(rightBorder, lineBox.getRightPen());
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Color getRightBorderColor()
     {
-        return JRStyleResolver.getRightBorderColor(this, getForecolor());
+        return lineBox.getRightPen().getLineColor();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Color getOwnRightBorderColor()
     {
-        return rightBorderColor;
+        return lineBox.getRightPen().getOwnLineColor();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setRightBorderColor(Color rightBorderColor)
     {
-        this.rightBorderColor = rightBorderColor;
+        lineBox.getRightPen().setLineColor(rightBorderColor);
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public int getRightPadding()
     {
-        return JRStyleResolver.getRightPadding(this);
+        return lineBox.getRightPadding().intValue();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public Integer getOwnRightPadding()
     {
-        return rightPadding;
+        return lineBox.getOwnRightPadding();
     }
 
     /**
-     *
+     * @deprecated Replaced by {@link #getBox()}
      */
     public void setRightPadding(int rightPadding)
     {
-        this.rightPadding = new Integer(rightPadding);
+        lineBox.setRightPadding(rightPadding);
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getBox()}
+     */
+    public void setRightPadding(Integer rightPadding)
+    {
+        lineBox.setRightPadding(rightPadding);
     }
 
     /**
@@ -954,6 +1170,13 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
         this.fontName = fontName;
     }
 
+    public boolean isWrapAllowed() {
+      return wrapAllowed;
+    }
+    
+    public void setWrapAllowed(boolean isWrapAllowed) {
+      wrapAllowed = isWrapAllowed;
+    }
 
     /**
      *
@@ -1236,86 +1459,6 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
         this.isPdfEmbedded = isPdfEmbedded;
     }
 
-    /**
-     *
-     */
-    public void setBorder(Byte border)
-    {
-        this.border = border;
-    }
-
-    /**
-     *
-     */
-    public void setPadding(Integer padding)
-    {
-        this.padding = padding;
-    }
-
-    /**
-     *
-     */
-    public void setTopBorder(Byte topBorder)
-    {
-        this.topBorder = topBorder;
-    }
-
-    /**
-     *
-     */
-    public void setTopPadding(Integer topPadding)
-    {
-        this.topPadding = topPadding;
-    }
-
-    /**
-     *
-     */
-    public void setLeftBorder(Byte leftBorder)
-    {
-        this.leftBorder = leftBorder;
-    }
-
-    /**
-     *
-     */
-    public void setLeftPadding(Integer leftPadding)
-    {
-        this.leftPadding = leftPadding;
-    }
-
-    /**
-     *
-     */
-    public void setBottomBorder(Byte bottomBorder)
-    {
-        this.bottomBorder = bottomBorder;
-    }
-
-    /**
-     *
-     */
-    public void setBottomPadding(Integer bottomPadding)
-    {
-        this.bottomPadding = bottomPadding;
-    }
-
-    /**
-     *
-     */
-    public void setRightBorder(Byte rightBorder)
-    {
-        this.rightBorder = rightBorder;
-    }
-
-    /**
-     *
-     */
-    public void setRightPadding(Integer rightPadding)
-    {
-        this.rightPadding = rightPadding;
-    }
-
     
     public String getPattern()
     {
@@ -1338,6 +1481,18 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
     public void setValueClassName(String valueClassName)
     {
         this.valueClassName = valueClassName;
+    }
+
+    
+    public String getFormatFactoryClass()
+    {
+        return formatFactoryClass;
+    }
+
+    
+    public void setFormatFactoryClass(String formatFactoryClass)
+    {
+        this.formatFactoryClass = formatFactoryClass;
     }
 
     
@@ -1406,14 +1561,19 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
         this.linkType = linkType;
     }
     
-    
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    public String getLinkTarget()
     {
-        in.defaultReadObject();
-        normalizeLinkType();
+        return linkTarget;
     }
 
 
+    
+    public void setLinkTarget(String linkTarget)
+    {
+        this.linkTarget = linkTarget;
+    }
+    
+    
     protected void normalizeLinkType()
     {
         if (linkType == null)
@@ -1423,8 +1583,15 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
         hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NULL;
     }
 
+    protected void normalizeLinkTarget()
+    {
+        if (linkTarget == null)
+        {
+             linkTarget = JRHyperlinkHelper.getLinkTarget(hyperlinkTarget);
+        }
+        hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
+    }
 
-    
     public String getHyperlinkTooltip()
     {
         return hyperlinkTooltip;
@@ -1437,4 +1604,86 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
         this.hyperlinkTooltip = hyperlinkTooltip;
     }
 
+    /**
+     * 
+     */
+    public Color getDefaultLineColor() 
+    {
+        return getForecolor();
+    }
+
+
+    /**
+     * These fields are only for serialization backward compatibility.
+     */
+    private Byte border = null;
+    private Byte topBorder = null;
+    private Byte leftBorder = null;
+    private Byte bottomBorder = null;
+    private Byte rightBorder = null;
+    private Color borderColor = null;
+    private Color topBorderColor = null;
+    private Color leftBorderColor = null;
+    private Color bottomBorderColor = null;
+    private Color rightBorderColor = null;
+    private Integer padding = null;
+    private Integer topPadding = null;
+    private Integer leftPadding = null;
+    private Integer bottomPadding = null;
+    private Integer rightPadding = null;
+    private Boolean isStyledText = null;
+    private byte hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NULL;
+    private byte hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
+    
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+
+        if (lineBox == null)
+        {
+            lineBox = new JRBaseLineBox(this);
+            JRBoxUtil.setToBox(
+                border,
+                topBorder,
+                leftBorder,
+                bottomBorder,
+                rightBorder,
+                borderColor,
+                topBorderColor,
+                leftBorderColor,
+                bottomBorderColor,
+                rightBorderColor,
+                padding,
+                topPadding,
+                leftPadding,
+                bottomPadding,
+                rightPadding,
+                lineBox
+                );
+            border = null;
+            topBorder = null;
+            leftBorder = null;
+            bottomBorder = null;
+            rightBorder = null;
+            borderColor = null;
+            topBorderColor = null;
+            leftBorderColor = null;
+            bottomBorderColor = null;
+            rightBorderColor = null;
+            padding = null;
+            topPadding = null;
+            leftPadding = null;
+            bottomPadding = null;
+            rightPadding = null;
+        }
+
+        if (isStyledText != null)
+        {
+            markup = isStyledText.booleanValue() ? JRCommonText.MARKUP_STYLED_TEXT : JRCommonText.MARKUP_NONE;
+            isStyledText = null;
+        }
+
+        normalizeLinkType();
+        normalizeLinkTarget();
+    }
 }

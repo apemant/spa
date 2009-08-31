@@ -4,7 +4,7 @@
  * ============================================================================
  *
  * JasperReports - Free Java report-generating library.
- * Copyright (C) 2001-2006 JasperSoft Corporation http://www.jaspersoft.com
+ * Copyright (C) 2001-2009 JasperSoft Corporation http://www.jaspersoft.com
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
  * 
  * JasperSoft Corporation
- * 303 Second Street, Suite 450 North
+ * 539 Bryant Street, Suite 100
  * San Francisco, CA 94107
  * http://www.jaspersoft.com
  */
@@ -30,12 +30,10 @@ package net.sf.jasperreports.engine.design;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
-import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRAnchor;
-import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRExpression;
@@ -45,10 +43,10 @@ import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRHyperlinkHelper;
 import net.sf.jasperreports.engine.JRHyperlinkParameter;
 import net.sf.jasperreports.engine.JRTextField;
+import net.sf.jasperreports.engine.JRVisitor;
+import net.sf.jasperreports.engine.base.JRBaseStyle;
+import net.sf.jasperreports.engine.base.JRBaseTextField;
 import net.sf.jasperreports.engine.util.JRStyleResolver;
-import net.sf.jasperreports.engine.xml.JRXmlWriter;
-
-//import java.text.Format;
 
 
 /**
@@ -64,18 +62,32 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
+    
+    /*
+     * Text field properties
+     */
+    
+    public static final String PROPERTY_ANCHOR_NAME_EXPRESSION = "anchorNameExpression";
+    
+    public static final String PROPERTY_BOOKMARK_LEVEL = "bookmarkLevel";
+    
+    public static final String PROPERTY_EVALUATION_GROUP = "evaluationGroup";
+    
+    public static final String PROPERTY_EVALUATION_TIME = "evaluationTime";
+    
+    public static final String PROPERTY_EXPRESSION = "expression";
+
     /**
      *
      */
     protected boolean isStretchWithOverflow = false;
-    protected boolean wrapAllowed = true;
     protected byte evaluationTime = JRExpression.EVALUATION_TIME_NOW;
     protected String pattern = null;
     protected Boolean isBlankWhenNull = null;
-    protected byte hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NULL;
     protected String linkType;
-    protected byte hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
+    protected String linkTarget;
     private List hyperlinkParameters;
+    protected boolean wrapAllowed = true;
 
     /**
      *
@@ -160,6 +172,15 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
     {
         return isBlankWhenNull;
     }
+    
+    
+    public boolean isWrapAllowed() {
+      return wrapAllowed;
+    }
+    
+    public void setWrapAllowed(boolean isWrapAllowed) {
+      wrapAllowed = isWrapAllowed;
+    }
 
     /**
      *
@@ -174,7 +195,7 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public byte getHyperlinkTarget()
     {
-        return this.hyperlinkTarget;
+        return JRHyperlinkHelper.getHyperlinkTarget(this);
     }
         
     /**
@@ -230,23 +251,19 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setStretchWithOverflow(boolean isStretch)
     {
+        boolean old = this.isStretchWithOverflow;
         this.isStretchWithOverflow = isStretch;
+        getEventSupport().firePropertyChange(JRBaseTextField.PROPERTY_STRETCH_WITH_OVERFLOW, old, this.isStretchWithOverflow);
     }
         
-    public boolean isWrapAllowed() {
-      return wrapAllowed;
-    }
-    
-    public void setWrapAllowed(boolean isWrapAllowed) {
-      wrapAllowed = isWrapAllowed;
-    }
-
     /**
      *
      */
     public void setEvaluationTime(byte evaluationTime)
     {
+        byte old = this.evaluationTime;
         this.evaluationTime = evaluationTime;
+        getEventSupport().firePropertyChange(PROPERTY_EVALUATION_TIME, (float) old, this.evaluationTime);
     }
         
     /**
@@ -254,7 +271,9 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setPattern(String pattern)
     {
+        Object old = this.pattern;
         this.pattern = pattern;
+        getEventSupport().firePropertyChange(JRBaseStyle.PROPERTY_PATTERN, old, this.pattern);
     }
 
     /**
@@ -262,7 +281,7 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setBlankWhenNull(boolean isBlank)
     {
-        this.isBlankWhenNull = isBlank ? Boolean.TRUE : Boolean.FALSE;
+        setBlankWhenNull(isBlank ? Boolean.TRUE : Boolean.FALSE);
     }
 
     /**
@@ -270,7 +289,9 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setBlankWhenNull(Boolean isBlank)
     {
+        Object old = this.isBlankWhenNull;
         this.isBlankWhenNull = isBlank;
+        getEventSupport().firePropertyChange(JRBaseStyle.PROPERTY_BLANK_WHEN_NULL, old, this.isBlankWhenNull);
     }
 
     /**
@@ -289,7 +310,7 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setHyperlinkTarget(byte hyperlinkTarget)
     {
-        this.hyperlinkTarget = hyperlinkTarget;
+        setLinkTarget(JRHyperlinkHelper.getLinkTarget(hyperlinkTarget));
     }
         
     /**
@@ -297,7 +318,9 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setEvaluationGroup(JRGroup evaluationGroup)
     {
+        Object old = this.evaluationGroup;
         this.evaluationGroup = evaluationGroup;
+        getEventSupport().firePropertyChange(PROPERTY_EVALUATION_GROUP, old, this.evaluationGroup);
     }
         
     /**
@@ -305,7 +328,9 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setExpression(JRExpression expression)
     {
+        Object old = this.expression;
         this.expression = expression;
+        getEventSupport().firePropertyChange(PROPERTY_EXPRESSION, old, this.expression);
     }
 
     /**
@@ -313,7 +338,9 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setAnchorNameExpression(JRExpression anchorNameExpression)
     {
+        Object old = this.anchorNameExpression;
         this.anchorNameExpression = anchorNameExpression;
+        getEventSupport().firePropertyChange(PROPERTY_ANCHOR_NAME_EXPRESSION, old, this.anchorNameExpression);
     }
 
     /**
@@ -321,7 +348,9 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setHyperlinkReferenceExpression(JRExpression hyperlinkReferenceExpression)
     {
+        Object old = this.hyperlinkReferenceExpression;
         this.hyperlinkReferenceExpression = hyperlinkReferenceExpression;
+        getEventSupport().firePropertyChange(JRDesignHyperlink.PROPERTY_HYPERLINK_REFERENCE_EXPRESSION, old, this.hyperlinkReferenceExpression);
     }
 
     /**
@@ -329,7 +358,9 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setHyperlinkAnchorExpression(JRExpression hyperlinkAnchorExpression)
     {
+        Object old = this.hyperlinkAnchorExpression;
         this.hyperlinkAnchorExpression = hyperlinkAnchorExpression;
+        getEventSupport().firePropertyChange(JRDesignHyperlink.PROPERTY_HYPERLINK_ANCHOR_EXPRESSION, old, this.hyperlinkAnchorExpression);
     }
 
     /**
@@ -337,15 +368,9 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setHyperlinkPageExpression(JRExpression hyperlinkPageExpression)
     {
+        Object old = this.hyperlinkPageExpression;
         this.hyperlinkPageExpression = hyperlinkPageExpression;
-    }
-
-    /**
-     *
-     */
-    public JRChild getCopy(JRAbstractObjectFactory factory)
-    {
-        return factory.getTextField(this);
+        getEventSupport().firePropertyChange(JRDesignHyperlink.PROPERTY_HYPERLINK_PAGE_EXPRESSION, old, this.hyperlinkPageExpression);
     }
 
     /**
@@ -359,11 +384,11 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
     /**
      *
      */
-    public void writeXml(JRXmlWriter xmlWriter) throws IOException
+    public void visit(JRVisitor visitor)
     {
-        xmlWriter.writeTextField(this);
+        visitor.visitTextField(this);
     }
-
+    
 
     public int getBookmarkLevel()
     {
@@ -379,7 +404,9 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setBookmarkLevel(int bookmarkLevel)
     {
+        int old = this.bookmarkLevel;
         this.bookmarkLevel = bookmarkLevel;
+        getEventSupport().firePropertyChange(PROPERTY_BOOKMARK_LEVEL, (float) old, this.bookmarkLevel);
     }
 
 
@@ -400,7 +427,31 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setLinkType(String type)
     {
+        Object old = this.linkType;
         this.linkType = type;
+        getEventSupport().firePropertyChange(JRDesignHyperlink.PROPERTY_LINK_TYPE, old, this.linkType);
+    }
+
+    public String getLinkTarget()
+    {
+        return linkTarget;
+    }
+
+
+    /**
+     * Sets the hyperlink target name.
+     * <p>
+     * The target name can be one of the built-in names
+     * (Self, Blank, Top, Parent),
+     * or can be an arbitrary name.
+     * </p>
+     * @param target the hyperlink target name
+     */
+    public void setLinkTarget(String target)
+    {
+        Object old = this.linkTarget;
+        this.linkTarget = target;
+        getEventSupport().firePropertyChange(JRDesignHyperlink.PROPERTY_LINK_TARGET, old, this.linkTarget);
     }
 
 
@@ -439,6 +490,8 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
     public void addHyperlinkParameter(JRHyperlinkParameter parameter)
     {
         hyperlinkParameters.add(parameter);
+        getEventSupport().fireCollectionElementAddedEvent(JRDesignHyperlink.PROPERTY_HYPERLINK_PARAMETERS, 
+                parameter, hyperlinkParameters.size() - 1);
     }
     
 
@@ -449,7 +502,13 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void removeHyperlinkParameter(JRHyperlinkParameter parameter)
     {
-        hyperlinkParameters.remove(parameter);
+        int idx = hyperlinkParameters.indexOf(parameter);
+        if (idx >= 0)
+        {
+            hyperlinkParameters.remove(idx);
+            getEventSupport().fireCollectionElementRemovedEvent(JRDesignHyperlink.PROPERTY_HYPERLINK_PARAMETERS, 
+                    parameter, idx);
+        }
     }
     
     
@@ -464,23 +523,27 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void removeHyperlinkParameter(String parameterName)
     {
-        for (Iterator it = hyperlinkParameters.iterator(); it.hasNext();)
+        for (ListIterator it = hyperlinkParameters.listIterator(); it.hasNext();)
         {
             JRHyperlinkParameter parameter = (JRHyperlinkParameter) it.next();
             if (parameter.getName() != null && parameter.getName().equals(parameterName))
             {
                 it.remove();
+                getEventSupport().fireCollectionElementRemovedEvent(JRDesignHyperlink.PROPERTY_HYPERLINK_PARAMETERS, 
+                        parameter, it.nextIndex());
             }
         }
     }
     
     
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    protected void normalizeLinkTarget()
     {
-        in.defaultReadObject();
-        normalizeLinkType();
+        if (linkTarget == null)
+        {
+             linkTarget = JRHyperlinkHelper.getLinkTarget(hyperlinkTarget);
+        }
+        hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
     }
-
 
     protected void normalizeLinkType()
     {
@@ -506,7 +569,66 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
      */
     public void setHyperlinkTooltipExpression(JRExpression hyperlinkTooltipExpression)
     {
+        Object old = this.hyperlinkTooltipExpression;
         this.hyperlinkTooltipExpression = hyperlinkTooltipExpression;
+        getEventSupport().firePropertyChange(JRDesignHyperlink.PROPERTY_HYPERLINK_TOOLTIP_EXPRESSION, old, this.hyperlinkTooltipExpression);
     }
     
+    /**
+     * 
+     */
+    public Object clone() 
+    {
+        JRDesignTextField clone = (JRDesignTextField)super.clone();
+        
+        if (hyperlinkParameters != null)
+        {
+            clone.hyperlinkParameters = new ArrayList(hyperlinkParameters.size());
+            for(int i = 0; i < hyperlinkParameters.size(); i++)
+            {
+                clone.hyperlinkParameters.add(((JRHyperlinkParameter)hyperlinkParameters.get(i)).clone());
+            }
+        }
+
+        if (expression != null)
+        {
+            clone.expression = (JRExpression)expression.clone();
+        }
+        if (anchorNameExpression != null)
+        {
+            clone.anchorNameExpression = (JRExpression)anchorNameExpression.clone();
+        }
+        if (hyperlinkReferenceExpression != null)
+        {
+            clone.hyperlinkReferenceExpression = (JRExpression)hyperlinkReferenceExpression.clone();
+        }
+        if (hyperlinkAnchorExpression != null)
+        {
+            clone.hyperlinkAnchorExpression = (JRExpression)hyperlinkAnchorExpression.clone();
+        }
+        if (hyperlinkPageExpression != null)
+        {
+            clone.hyperlinkPageExpression = (JRExpression)hyperlinkPageExpression.clone();
+        }
+        if (hyperlinkTooltipExpression != null)
+        {
+            clone.hyperlinkTooltipExpression = (JRExpression)hyperlinkTooltipExpression.clone();
+        }
+
+        return clone;
+    }
+    
+    /**
+     * These fields are only for serialization backward compatibility.
+     */
+    private byte hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NULL;
+    private byte hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        normalizeLinkType();
+        normalizeLinkTarget();
+    }
+
 }

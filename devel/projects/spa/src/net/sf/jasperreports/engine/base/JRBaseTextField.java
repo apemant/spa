@@ -1,38 +1,32 @@
 /*
- * ============================================================================
- * GNU Lesser General Public License
- * ============================================================================
- *
- * JasperReports - Free Java report-generating library.
- * Copyright (C) 2001-2006 JasperSoft Corporation http://www.jaspersoft.com
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
- * 
- * JasperSoft Corporation
- * 303 Second Street, Suite 450 North
- * San Francisco, CA 94107
+ * JasperReports - Free Java Reporting Library.
+ * Copyright (C) 2001 - 2009 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com
+ *
+ * Unless you have purchased a commercial license agreement from Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of JasperReports.
+ *
+ * JasperReports is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * JasperReports is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
 package net.sf.jasperreports.engine.base;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRAnchor;
-import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionCollector;
@@ -41,8 +35,8 @@ import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRHyperlinkHelper;
 import net.sf.jasperreports.engine.JRHyperlinkParameter;
 import net.sf.jasperreports.engine.JRTextField;
+import net.sf.jasperreports.engine.JRVisitor;
 import net.sf.jasperreports.engine.util.JRStyleResolver;
-import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 
 /**
@@ -59,6 +53,8 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
      *
      */
     private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+    
+    public static final String PROPERTY_STRETCH_WITH_OVERFLOW = "stretchWithOverflow";
 
     /**
      *
@@ -68,9 +64,8 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
     protected byte evaluationTime = JRExpression.EVALUATION_TIME_NOW;
     protected String pattern;
     protected Boolean isBlankWhenNull = null;
-    protected byte hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NULL;
     protected String linkType;
-    protected byte hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
+    protected String linkTarget;
     private JRHyperlinkParameter[] hyperlinkParameters;
 
     /**
@@ -103,7 +98,7 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
         pattern = textField.getOwnPattern();
         isBlankWhenNull = textField.isOwnBlankWhenNull();
         linkType = textField.getLinkType();
-        hyperlinkTarget = textField.getHyperlinkTarget();
+        linkTarget = textField.getLinkTarget();
         hyperlinkParameters = JRBaseHyperlink.copyHyperlinkParameters(textField, factory);
 
         evaluationGroup = factory.getGroup(textField.getEvaluationGroup());
@@ -130,16 +125,11 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
      */
     public void setStretchWithOverflow(boolean isStretchWithOverflow)
     {
+        boolean old = this.isStretchWithOverflow;
         this.isStretchWithOverflow = isStretchWithOverflow;
+        getEventSupport().firePropertyChange(PROPERTY_STRETCH_WITH_OVERFLOW, old, this.isStretchWithOverflow);
     }
-
-    public boolean isWrapAllowed() {
-      return wrapAllowed;
-    }
-    
-    public void setWrapAllowed(boolean isWrapAllowed) {
-      wrapAllowed = isWrapAllowed;
-    }
+        
     /**
      *
      */
@@ -166,7 +156,9 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
      */
     public void setPattern(String pattern)
     {
+        Object old = this.pattern;
         this.pattern = pattern;
+        getEventSupport().firePropertyChange(JRBaseStyle.PROPERTY_PATTERN, old, this.pattern);
     }
         
     /**
@@ -190,7 +182,9 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
      */
     public void setBlankWhenNull(Boolean isBlank)
     {
+        Object old = this.isBlankWhenNull;
         this.isBlankWhenNull = isBlank;
+        getEventSupport().firePropertyChange(JRBaseStyle.PROPERTY_BLANK_WHEN_NULL, old, this.isBlankWhenNull);
     }
 
     /**
@@ -198,7 +192,15 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
      */
     public void setBlankWhenNull(boolean isBlank)
     {
-        this.isBlankWhenNull = isBlank ? Boolean.TRUE : Boolean.FALSE;
+        setBlankWhenNull(isBlank ? Boolean.TRUE : Boolean.FALSE);
+    }
+    
+    public boolean isWrapAllowed() {
+      return wrapAllowed;
+    }
+    
+    public void setWrapAllowed(boolean isWrapAllowed) {
+      wrapAllowed = isWrapAllowed;
     }
 
     /**
@@ -214,7 +216,7 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
      */
     public byte getHyperlinkTarget()
     {
-        return this.hyperlinkTarget;
+        return JRHyperlinkHelper.getHyperlinkTarget(this);
     }
         
     /**
@@ -268,14 +270,6 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
     /**
      *
      */
-    public JRChild getCopy(JRAbstractObjectFactory factory)
-    {
-        return factory.getTextField(this);
-    }
-
-    /**
-     *
-     */
     public void collectExpressions(JRExpressionCollector collector)
     {
         collector.collect(this);
@@ -284,9 +278,9 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
     /**
      *
      */
-    public void writeXml(JRXmlWriter xmlWriter) throws IOException
+    public void visit(JRVisitor visitor)
     {
-        xmlWriter.writeTextField(this);
+        visitor.visitTextField(this);
     }
 
 
@@ -301,19 +295,17 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
         return linkType;
     }
 
+    public String getLinkTarget()
+    {
+        return linkTarget;
+    }
+
 
     public JRHyperlinkParameter[] getHyperlinkParameters()
     {
         return hyperlinkParameters;
     }
     
-    
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
-    {
-        in.defaultReadObject();
-        normalizeLinkType();
-    }
-
 
     protected void normalizeLinkType()
     {
@@ -324,10 +316,74 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
         hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NULL;
     }
 
-    
+    protected void normalizeLinkTarget()
+    {
+        if (linkTarget == null)
+        {
+             linkTarget = JRHyperlinkHelper.getLinkTarget(hyperlinkTarget);
+        }
+        hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
+    }
+
     public JRExpression getHyperlinkTooltipExpression()
     {
         return hyperlinkTooltipExpression;
     }
     
+    /**
+     * 
+     */
+    public Object clone() 
+    {
+        JRBaseTextField clone = (JRBaseTextField)super.clone();
+        
+        if (hyperlinkParameters != null)
+        {
+            clone.hyperlinkParameters = new JRHyperlinkParameter[hyperlinkParameters.length];
+            for(int i = 0; i < hyperlinkParameters.length; i++)
+            {
+                clone.hyperlinkParameters[i] = (JRHyperlinkParameter)hyperlinkParameters[i].clone();
+            }
+        }
+
+        if (expression != null)
+        {
+            clone.expression = (JRExpression)expression.clone();
+        }
+        if (anchorNameExpression != null)
+        {
+            clone.anchorNameExpression = (JRExpression)anchorNameExpression.clone();
+        }
+        if (hyperlinkReferenceExpression != null)
+        {
+            clone.hyperlinkReferenceExpression = (JRExpression)hyperlinkReferenceExpression.clone();
+        }
+        if (hyperlinkAnchorExpression != null)
+        {
+            clone.hyperlinkAnchorExpression = (JRExpression)hyperlinkAnchorExpression.clone();
+        }
+        if (hyperlinkPageExpression != null)
+        {
+            clone.hyperlinkPageExpression = (JRExpression)hyperlinkPageExpression.clone();
+        }
+        if (hyperlinkTooltipExpression != null)
+        {
+            clone.hyperlinkTooltipExpression = (JRExpression)hyperlinkTooltipExpression.clone();
+        }
+
+        return clone;
+    }
+
+    /**
+     * These fields are only for serialization backward compatibility.
+     */
+    private byte hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NULL;
+    private byte hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
+    
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        normalizeLinkType();
+        normalizeLinkTarget();
+    }
 }
