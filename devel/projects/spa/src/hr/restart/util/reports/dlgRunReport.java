@@ -453,7 +453,8 @@ public class dlgRunReport {
     return (singleMode ? 0 : lrep.getSelectedIndex());
   }
   private boolean isElixir() {
-    return (getCurrentDescriptor().getProvider() instanceof sg.com.elixir.reportwriter.datasource.IDataProvider);
+    return (getCurrentDescriptor().getProvider() instanceof sg.com.elixir.reportwriter.datasource.IDataProvider) || 
+      getCurrentDescriptor().isJasper();
   }
 
   private DataSet getCurrentDesign(String corg, String vrsta, String vrdok, String vrsec) {
