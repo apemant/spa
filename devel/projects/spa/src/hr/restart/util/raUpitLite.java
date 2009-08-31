@@ -568,6 +568,13 @@ public abstract class raUpitLite extends raFrame implements ResetEnabled {
     dataSrcIdx = addTo(dataSrcIdx,0);
     design = addTo(design, newDesign);
   }
+  public void addJasper(String newProvider,String newSource, String newDesign, String newRTitle) {
+    provider = addTo(provider,newProvider);
+    rTitle = addTo(rTitle,newRTitle);
+    source = addTo(source,newSource);
+    dataSrcIdx = addTo(dataSrcIdx,-1);
+    design = addTo(design, newDesign);
+  }
   public void addReport(String newProvider, String newSource, String newRTitle) {
     provider = addTo(provider,newProvider);
     rTitle = addTo(rTitle,newRTitle);
@@ -595,8 +602,10 @@ public abstract class raUpitLite extends raFrame implements ResetEnabled {
         getRepRunner().addReport(provider[i],rTitle[i],dataSrcIdx[i]);
       } else if (design[i]==null) {
         getRepRunner().addReport(provider[i], source[i], rTitle[i]);
-      } else {
+      } else if (dataSrcIdx[i] >= 0) {
         getRepRunner().addReport(provider[i], source[i], design[i], rTitle[i]);
+      } else {
+        getRepRunner().addJasper(provider[i], source[i], design[i], rTitle[i]);
       }
     }
   }
