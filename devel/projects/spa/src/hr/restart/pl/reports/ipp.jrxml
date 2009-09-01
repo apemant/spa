@@ -36,43 +36,43 @@
 				<text><![CDATA[PODACi O ISPLATITELJU]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="60" width="555" height="1"/>
+				<reportElement x="0" y="60" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="90" width="555" height="1"/>
+				<reportElement x="0" y="90" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="120" width="555" height="1"/>
+				<reportElement x="0" y="120" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="150" width="555" height="1"/>
+				<reportElement x="0" y="150" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="180" width="555" height="1"/>
+				<reportElement x="0" y="180" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="1" y="210" width="555" height="1"/>
+				<reportElement x="1" y="210" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="240" width="555" height="1"/>
+				<reportElement x="0" y="240" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
@@ -173,7 +173,7 @@
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement mode="Opaque" x="555" y="60" width="1" height="375"/>
+				<reportElement mode="Opaque" x="550" y="60" width="1" height="375"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
@@ -193,43 +193,43 @@
 				<text><![CDATA[II.]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="255" width="555" height="1"/>
+				<reportElement x="0" y="255" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="285" width="555" height="1"/>
+				<reportElement x="0" y="285" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="315" width="555" height="1"/>
+				<reportElement x="0" y="315" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="345" width="555" height="1"/>
+				<reportElement x="0" y="345" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="375" width="555" height="1"/>
+				<reportElement x="0" y="375" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="405" width="555" height="1"/>
+				<reportElement x="0" y="405" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement x="0" y="435" width="555" height="1"/>
+				<reportElement x="0" y="435" width="550" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
@@ -402,7 +402,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{PLOSN}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="false">
-				<reportElement mode="Transparent" x="400" y="255" width="150" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement mode="Transparent" x="400" y="255" width="145" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
 					<font fontName="Arial" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
@@ -423,7 +423,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{MIROSN}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="false">
-				<reportElement mode="Transparent" x="401" y="285" width="150" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement mode="Transparent" x="401" y="285" width="145" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
 					<font fontName="Arial" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
@@ -444,7 +444,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{DDOSN}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="false">
-				<reportElement mode="Transparent" x="400" y="315" width="150" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement mode="Transparent" x="400" y="315" width="145" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
 					<font fontName="Arial" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
@@ -465,7 +465,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{DIVOSN}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="false">
-				<reportElement mode="Transparent" x="400" y="345" width="150" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement mode="Transparent" x="400" y="345" width="145" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
 					<font fontName="Arial" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
@@ -486,7 +486,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{UKUOSN}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="false">
-				<reportElement mode="Transparent" x="400" y="405" width="150" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement mode="Transparent" x="400" y="405" width="145" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
 					<font fontName="Arial" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
@@ -502,7 +502,7 @@
 			<line>
 				<reportElement mode="Opaque" x="15" y="504" width="100" height="1" forecolor="#000000" backcolor="#FFFFFF"/>
 				<graphicElement fill="Solid">
-					<pen lineStyle="Dotted"/>
+					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<staticText>
@@ -515,7 +515,7 @@
 			<line>
 				<reportElement mode="Opaque" x="131" y="505" width="80" height="1" forecolor="#000000" backcolor="#FFFFFF"/>
 				<graphicElement fill="Solid">
-					<pen lineStyle="Dotted"/>
+					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<staticText>
@@ -535,7 +535,7 @@
 			<line>
 				<reportElement mode="Opaque" x="395" y="506" width="160" height="1" forecolor="#000000" backcolor="#FFFFFF"/>
 				<graphicElement fill="Solid">
-					<pen lineStyle="Dotted"/>
+					<pen lineWidth="0.5" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<staticText>
