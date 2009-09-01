@@ -1009,20 +1009,21 @@ public class raIspisUraIra extends raFrame {
     QueryDataSet shkontask = Shkonta.getDataModule().getTempSet("app = 'sk'");
     shkontask.open();
     for (shkontask.first(); shkontask.inBounds(); shkontask.next()) {
+      String vrdok = shkontask.getString("VRDOK");
+      char uraira = ' ';
+      if (vrdok.equals("URN") || vrdok.equals("OKD")) {
+        uraira = 'U';
+      } else if (vrdok.equals("IRN") || vrdok.equals("OKK")) {
+        uraira = 'I';
+      }
       try {
         int ckol = new Integer(shkontask.getString("POLJE").trim()).intValue();
-        String vrdok = shkontask.getString("VRDOK");
-        char uraira = ' ';
-        if (vrdok.equals("URN") || vrdok.equals("OKD")) {
-          uraira = 'U';
-        } else if (vrdok.equals("IRN") || vrdok.equals("OKK")) {
-          uraira = 'I';
-        }
         shkontask.setString("POLJE", convertCkol09(ckol, uraira)+"");
         shkontask.post();
       } catch (Exception e) {
         System.out.println(e);
       }
+      shkontask.setString("POLJE", promoteCkol09(shkontask.getString("POLJE"), uraira));
       shkontask.post();
     }
     
@@ -1034,6 +1035,7 @@ public class raIspisUraIra extends raFrame {
         int ckol = (int)shkontaresto.getShort("CKOLONE");
         char uraira=TypeDoc.getTypeDoc().isDocUlaz(shkontaresto.getString("VRDOK"))?'U':'I';
         shkontaresto.setShort("CKOLONE", (short)convertCkol09(ckol, uraira));
+        shkontaresto.setShort("CKOLONE", Short.parseShort(promoteCkol09(shkontaresto.getShort("CKOLONE")+"", uraira)));
         shkontaresto.post();
       } catch (Exception e) {
         System.out.println(e);
@@ -1093,6 +1095,21 @@ public class raIspisUraIra extends raFrame {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+
+  private static String promoteCkol09(String polje, char uraira2) {
+    if (uraira2=='I') {
+      if (polje.trim().equals("14")) return "16";
+      if (polje.trim().equals("15")) return "17";
+    } 
+    if (uraira2=='U') {
+      if (polje.trim().equals("8")) return "9";
+      if (polje.trim().equals("14")) return "16";
+      //R-2 - popusio je u convertCkol09
+      if (polje.trim().equals("R13")) return "R16";
+    } 
+    
+    return polje;
   }
 
   private static void processPromet(QueryDataSet set) {
