@@ -1,0 +1,27 @@
+N#D#0#Ne ulazi u knjigu#I##N#N#
+N#D#6#Svota s porezom#I#D#N#N#
+N#D#7#Ne podliježe oporezivanju#I#P#N#N#
+N#D#8#Osloboðeno poreza - izvoz#I#P#N#N#
+N#D#9#Osloboðeno poreza u tuzemstvu#I#P#N#N#
+N#D#10#Osloboðeno poreza - ostalo#I#P#N#N#
+N#D#11#0% stopa poreza#I#P#N#N#
+N#D#12#Osnovica 10%#I#P#N#N#
+N#D#13#Porez 10%#I#P#N#N#
+N#D#14#Osnovica 22%#I#P#N#N#
+N#D#15#Porez - 22%#I#P#N#N#
+N#D#0#Ne ulazi u knjigu#U##N#N#
+N#D#6#Osnovica 0%#U#D#N#N#
+N#D#7#Osnovica 10%#U#D#N#N#
+N#D#8#Osnovica 22%#U#D#N#N#
+N#D#10#Iznos raèuna s porezom#U#P#N#N#
+N#D#12#Pretporez 10% - može se odbiti#U#D#N#N#
+N#D#13#Pretporez 10% - ne može se odbiti#U#D#N#N#
+N#D#14#Pretporez 22% - može se odbiti#U#D#N#N#
+N#D#15#Pretporez 22% - ne može se odbiti#U#D#N#N#
+N#D#511#Neoporezivi dio#U#D#N#N#
+N#D#512#Preporez pri uvozu#U#D#N#N#
+N#D#16#Pretporez 23% - može se odbiti#U#D#N#N#
+N#D#17#Pretporez 23% - ne može se odbiti#U#D#N#N#
+N#D#16#Osnovica 23%#I#P#N#N#
+N#D#17#Porez 23%#I#P#N#N#
+N#D#9#Osnovica 23%#U#D#N#N#
