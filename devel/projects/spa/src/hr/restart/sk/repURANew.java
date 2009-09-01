@@ -37,13 +37,15 @@ public class repURANew extends repURA {
     return raIspisUraIra.getKolona(ds,"8");
   }
 
-  public BigDecimal getKOL10() {
+  public BigDecimal getKOL11() {
     //return raIspisUraIra.getKolona(ds,"10");
     return 
-      raIspisUraIra.getKolona(ds,"11")
-      .add(raIspisUraIra.getKolona(ds,"12"))
+      raIspisUraIra.getKolona(ds,"12")
       .add(raIspisUraIra.getKolona(ds,"13"))
-      .add(raIspisUraIra.getKolona(ds,"14"));
+      .add(raIspisUraIra.getKolona(ds,"14"))
+      .add(raIspisUraIra.getKolona(ds,"15"))
+      .add(raIspisUraIra.getKolona(ds,"16"))
+      .add(raIspisUraIra.getKolona(ds,"17"));
     
   }
 }

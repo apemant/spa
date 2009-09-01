@@ -120,6 +120,14 @@ public class repIRA implements raReportData {
   public BigDecimal getKOL15() {
     return raIspisUraIra.getKolona(ds,"15");
   }
+  
+  public BigDecimal getKOL16() {
+    return raIspisUraIra.getKolona(ds,"16");
+  }
+  
+  public BigDecimal getKOL17() {
+    return raIspisUraIra.getKolona(ds,"17");
+  }
 
   public String getFirstLine(){
     return re.getFirstLine();

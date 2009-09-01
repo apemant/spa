@@ -275,6 +275,8 @@ public class raIspisUraIra extends raFrame {
     System.out.println("ROWS: "+uraira.getRowCount());
     getRepRunner().clearAllReports();
     if (jrbUraira1.isSelected()) {
+      getRepRunner().addJasper("hr.restart.sk.repURA09", "hr.restart.sk.repURANew",
+          "ura09.jrxml", "Ispis knjige URA 2009");
       getRepRunner().addReport("hr.restart.sk.repURA06", "hr.restart.sk.repURANew",
           "URA06", "Ispis knjige URA");
       getRepRunner().addReport("hr.restart.sk.repURA", "hr.restart.sk.repURA",
@@ -359,9 +361,11 @@ public class raIspisUraIra extends raFrame {
     if (ui.equals("U")) {
       cols.add(dM.createBigDecimalColumn("OCHECK10", "Greška 10% poreza"));
       cols.add(dM.createBigDecimalColumn("OCHECK22", "Greška 22% poreza"));
+      cols.add(dM.createBigDecimalColumn("OCHECK23", "Greška 23% poreza"));
     } else {
       cols.add(dM.createBigDecimalColumn("OCHECK10", "Greška 10% poreza"));
       cols.add(dM.createBigDecimalColumn("OCHECK22", "Greška 22% poreza"));
+      cols.add(dM.createBigDecimalColumn("OCHECK23", "Greška 23% poreza"));
     }
     cols.add(dM.createBigDecimalColumn("SALDO", "Greška zbroja"));
     uraira.setColumns((Column[]) cols.toArray(new Column[] {}));
@@ -396,7 +400,7 @@ public class raIspisUraIra extends raFrame {
   
   // WARNING:  HARDCODED!!
   private BigDecimal getColValue(DataSet ds, boolean ulaz) {
-    if ((ulaz && ds.getShort("CKOLONE") == 9) ||
+    if ((ulaz && ds.getShort("CKOLONE") == 10) ||
         (!ulaz && ds.getShort("CKOLONE") != 6))
       return ds.getBigDecimal("IP").subtract(ds.getBigDecimal("ID"));
     return ds.getBigDecimal("ID").subtract(ds.getBigDecimal("IP"));
@@ -405,24 +409,32 @@ public class raIspisUraIra extends raFrame {
   private void findErrors(boolean ulaz) {
     BigDecimal x10 = new BigDecimal("0.1");
     BigDecimal x22 = new BigDecimal("0.22");
+    BigDecimal x23 = new BigDecimal("0.23");
     for (uraira.first(); uraira.inBounds(); uraira.next()) {
       if (ulaz) {
         uraira.setBigDecimal("OCHECK10", uraira.getBigDecimal("KOLONA7").
               multiply(x10).setScale(2, BigDecimal.ROUND_HALF_UP).
-              subtract(uraira.getBigDecimal("KOLONA11")).
-              subtract(uraira.getBigDecimal("KOLONA12")));
+              subtract(uraira.getBigDecimal("KOLONA12")).
+              subtract(uraira.getBigDecimal("KOLONA13")));
         uraira.setBigDecimal("OCHECK22", uraira.getBigDecimal("KOLONA8").
             multiply(x22).setScale(2, BigDecimal.ROUND_HALF_UP).
-            subtract(uraira.getBigDecimal("KOLONA13")).
-            subtract(uraira.getBigDecimal("KOLONA14")));
-        uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA9").
+            subtract(uraira.getBigDecimal("KOLONA14")).
+            subtract(uraira.getBigDecimal("KOLONA15")));
+        uraira.setBigDecimal("OCHECK23", uraira.getBigDecimal("KOLONA9").
+            multiply(x22).setScale(2, BigDecimal.ROUND_HALF_UP).
+            subtract(uraira.getBigDecimal("KOLONA16")).
+            subtract(uraira.getBigDecimal("KOLONA17")));
+        uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA10").
             subtract(uraira.getBigDecimal("KOLONA6")).
             subtract(uraira.getBigDecimal("KOLONA7")).
             subtract(uraira.getBigDecimal("KOLONA8")).
-            subtract(uraira.getBigDecimal("KOLONA11")).
+            subtract(uraira.getBigDecimal("KOLONA9")).
             subtract(uraira.getBigDecimal("KOLONA12")).
             subtract(uraira.getBigDecimal("KOLONA13")).
             subtract(uraira.getBigDecimal("KOLONA14")).
+            subtract(uraira.getBigDecimal("KOLONA15")).
+            subtract(uraira.getBigDecimal("KOLONA16")).
+            subtract(uraira.getBigDecimal("KOLONA17")).
             subtract(uraira.getBigDecimal("OSTALO")));
       } else {
         uraira.setBigDecimal("OCHECK10", uraira.getBigDecimal("KOLONA12").
@@ -431,6 +443,9 @@ public class raIspisUraIra extends raFrame {
         uraira.setBigDecimal("OCHECK22", uraira.getBigDecimal("KOLONA14").
             multiply(x22).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA15")));
+        uraira.setBigDecimal("OCHECK23", uraira.getBigDecimal("KOLONA16").
+            multiply(x22).setScale(2, BigDecimal.ROUND_HALF_UP).
+            subtract(uraira.getBigDecimal("KOLONA17")));
         uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA6").
             subtract(uraira.getBigDecimal("KOLONA7")).
             subtract(uraira.getBigDecimal("KOLONA8")).
@@ -441,6 +456,8 @@ public class raIspisUraIra extends raFrame {
             subtract(uraira.getBigDecimal("KOLONA13")).
             subtract(uraira.getBigDecimal("KOLONA14")).
             subtract(uraira.getBigDecimal("KOLONA15")).
+            subtract(uraira.getBigDecimal("KOLONA16")).
+            subtract(uraira.getBigDecimal("KOLONA17")).
             subtract(uraira.getBigDecimal("OSTALO")));
       }
     }
@@ -484,6 +501,8 @@ public class raIspisUraIra extends raFrame {
     	extbr = "D".equalsIgnoreCase(frmParam.getParam("sk", "extBrSortIRA", "D", 
         "Sortirati raèune knjiga IRA po dodatnom broju? (D/N)"));
     }
+    boolean skipSum = "D".equalsIgnoreCase(frmParam.getParam("sk", "skipUIsums", "N", 
+        "Ne prikazivati sume na ispisu URA/IRA? (D/N)"));
     Timestamp firstm = ut.getFirstDayOfMonth(dmfrom);
     Timestamp lastm = ut.getLastDayOfMonth(dmto);
     Timestamp firsty = ut.getFirstDayOfYear(dmfrom);
@@ -582,7 +601,7 @@ public class raIspisUraIra extends raFrame {
 //      System.out.print(ds.getTimestamp("DATPRI") + "  " + lastpri + "  ");
       if (lastpri == null) lastpri = new Timestamp(ds.getTimestamp("DATPRI").getTime());
       if (!ut.getMonth(ds.getTimestamp("DATPRI")).equals(ut.getMonth(lastpri))) {
-        if (addSums) {
+        if (addSums && !skipSum) {
           insertSums(lastpri, lastpri, summ, ++broj);
           if (!ut.getMonth(lastpri).equals(ut.getMonth(firsty)))
             insertSums(firsty, lastpri, sumy, broj);
@@ -661,7 +680,7 @@ public class raIspisUraIra extends raFrame {
       }
     }
     if (lastpri == null) return;
-    if (addSums) {
+    if (addSums && !skipSum) {
       insertSums(lastpri, lastpri, summ, ++broj);
       if (!ut.getMonth(lastpri).equals(ut.getMonth(firsty)))
         insertSums(firsty, lastpri, sumy, broj);
@@ -948,6 +967,133 @@ public class raIspisUraIra extends raFrame {
       e.printStackTrace();
     }
   }
+  
+  public static void convert23(String oldid, 
+      Timestamp rangefrom, Timestamp rangeto) {
+    if (rangefrom == null) rangefrom = Util.getUtil().getYearBegin("2006");
+    if (rangeto == null) rangeto = Util.getUtil().getYearEnd("3006");
+    //backup
+    File ddir = new File("ui09bak");
+    ddir.mkdir();
+    int dcnt;
+    dcnt = StIzvjPDV.getDataModule().dumpTable(ddir);
+    System.out.println("Backupirano "+dcnt+" StIzvjPDV");
+    
+    dcnt = IzvjPDV.getDataModule().dumpTable(ddir);
+    System.out.println("Backupirano "+dcnt+" IzvjPDV");
+
+    dcnt = KoloneknjUI.getDataModule().dumpTable(ddir);
+    System.out.println("Backupirano "+dcnt+" KoloneknjUI");
+    
+    dcnt = Shkonta.getDataModule().dumpTable(ddir);
+    System.out.println("Backupirano "+dcnt+" Shkonta");
+    
+    //OSNOVNI PODACI
+    //izvjpdv.ciz, stizvjpdv.ciz +oldid
+    String cizfilter = "CIZ like 'I%'"; 
+    QueryDataSet stizvjpdv = StIzvjPDV.getDataModule().getTempSet("CIZ like 'I%' or CIZ like 'V%'");
+    /*QueryDataSet izvjpdv = IzvjPDV.getDataModule().getTempSet("CIZ like 'I%' or CIZ like 'V%'");
+    addIdPrefix(izvjpdv, oldid);*/
+//    addIdPrefix(stizvjpdv, oldid);
+    processPromet09(stizvjpdv);
+    
+    //koloneknjui
+    QueryDataSet kolone = KoloneknjUI.getDataModule().getTempSet("ckolone < 1000");
+    kolone.open();
+    for (kolone.first(); kolone.inBounds(); kolone.next()) {
+      kolone.setShort("CKOLONE", (short)(kolone.getShort("CKOLONE")+9000));
+      kolone.post();
+    }
+    
+    //shkonta where app='sk'.polje
+    QueryDataSet shkontask = Shkonta.getDataModule().getTempSet("app = 'sk'");
+    shkontask.open();
+    for (shkontask.first(); shkontask.inBounds(); shkontask.next()) {
+      try {
+        int ckol = new Integer(shkontask.getString("POLJE").trim()).intValue();
+        String vrdok = shkontask.getString("VRDOK");
+        char uraira = ' ';
+        if (vrdok.equals("URN") || vrdok.equals("OKD")) {
+          uraira = 'U';
+        } else if (vrdok.equals("IRN") || vrdok.equals("OKK")) {
+          uraira = 'I';
+        }
+        shkontask.setString("POLJE", convertCkol09(ckol, uraira)+"");
+        shkontask.post();
+      } catch (Exception e) {
+        System.out.println(e);
+      }
+      shkontask.post();
+    }
+    
+    //shkonta.ckolone za ostale
+    QueryDataSet shkontaresto = Shkonta.getDataModule().getTempSet("ckolone!=0 and ckolone is not null and app!='sk'");
+    shkontaresto.open();
+    for (shkontaresto.first(); shkontaresto.inBounds(); shkontaresto.next()) {
+      try {
+        int ckol = (int)shkontaresto.getShort("CKOLONE");
+        char uraira=TypeDoc.getTypeDoc().isDocUlaz(shkontaresto.getString("VRDOK"))?'U':'I';
+        shkontaresto.setShort("CKOLONE", (short)convertCkol09(ckol, uraira));
+        shkontaresto.post();
+      } catch (Exception e) {
+        System.out.println(e);
+      }
+    }
+    
+    //PROMETI
+    //uistavke.ckolone
+    QueryDataSet uistavke = UIstavke.getDataModule().getTempSet(
+        "EXISTS (SELECT * FROM skstavke where uistavke.knjig = skstavke.knjig"
+        +" AND uistavke.cpar = skstavke.cpar AND uistavke.vrdok = skstavke.vrdok"
+        +" AND uistavke.brojdok = skstavke.brojdok and "
+        +Condition.between("DATPRI",rangefrom,rangeto)+")");
+ 
+    processPromet09(uistavke);
+    
+    //skstavkerad.ckolone
+    QueryDataSet skstavkerad = Skstavkerad.getDataModule().getTempSet(Condition.between("DATPRI",rangefrom,rangeto));
+    
+    processPromet09(skstavkerad);
+    
+//    //konverzija izvjpdv i stizvjpdv vec sa prefixom dodati bez prefixa po novom
+//    QueryDataSet izvjpdvnew = IzvjPDV.getDataModule().getTempSet("0=1");
+//    for (izvjpdv.first(); izvjpdv.inBounds(); izvjpdv.next()) {
+//      String ciz = new VarStr(izvjpdv.getString("CIZ")).leftChop(oldid.length()).toString();
+//      if (ciz.startsWith("II.5.")) continue; //nema vise
+//      izvjpdvnew.insertRow(false);
+//      izvjpdv.copyTo(izvjpdvnew);
+//      izvjpdvnew.setString("CIZ", ciz);
+//      if (ciz.equals("II.3.v")) izvjpdvnew.setString("OPIS", "NENAPLAÆENI IZVOZ - vrijednost");
+//      if (ciz.equals("II.3.p")) izvjpdvnew.setString("OPIS", "NENAPLAÆENI IZVOZ - porez");
+//      if (ciz.equals("II.4.v")) izvjpdvnew.setString("OPIS", "NAKNADNO OSLOBOÐENJE IZVOZA U OKVIRU OSOBNOG PUTNIÈKOG PROMETA - vrijednost");
+//      if (ciz.equals("II.4.p")) izvjpdvnew.setString("OPIS", "NAKNADNO OSLOBOÐENJE IZVOZA U OKVIRU OSOBNOG PUTNIÈKOG PROMETA - porez");
+//      
+//      izvjpdvnew.post();
+//    }
+    
+    
+    //kraj
+    raTransaction.saveChangesInTransaction(new QueryDataSet[] {
+        stizvjpdv,
+        //izvjpdv,
+        kolone,
+        shkontask,
+        shkontaresto,
+        uistavke,
+        skstavkerad
+    });
+    
+    //uloadaj izvjpdv, stizvjpdv, koloneknjui iz uraira06
+    File ldir = new File("uraira09");
+    try {
+      /*IzvjPDV.getDataModule().insertData(ldir);
+      StIzvjPDV.getDataModule().insertData(ldir);*/
+      KoloneknjUI.getDataModule().insertData(ldir);
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 
   private static void processPromet(QueryDataSet set) {
     set.open();
@@ -955,6 +1101,16 @@ public class raIspisUraIra extends raFrame {
       int ckol = (int)set.getShort("CKOLONE");
       char uraira = set.getString("URAIRA").charAt(0);
       set.setShort("CKOLONE", (short)convertCkol06(ckol, uraira));
+      set.post();
+    }
+  }
+  
+  private static void processPromet09(QueryDataSet set) {
+    set.open();
+    for (set.first(); set.inBounds(); set.next()) {
+      int ckol = (int)set.getShort("CKOLONE");
+      char uraira = set.getString("URAIRA").charAt(0);
+      set.setShort("CKOLONE", (short)convertCkol09(ckol, uraira));
       set.post();
     }
   }
@@ -980,6 +1136,14 @@ public class raIspisUraIra extends raFrame {
         case 14: return 15;
       }      
     }
+    return ckol;
+  }
+  
+  private static int convertCkol09(int ckol, char uraira) {
+    if (uraira == 'U') {
+      if (ckol >= 9 && ckol <= 14)
+        return ckol + 1;
+    } 
     return ckol;
   }
 
