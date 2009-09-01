@@ -41,7 +41,7 @@ public class frmIPP extends frmSPL {
   }
   private void createReport() {
     BigDecimal[] vals = Harach.getHaracMj(null, null, fieldSet.getString("CORG"));
-    datarow.put("TITLE", "Izvješæe o posebnom porezu na plaæe, mirovine i druge primitke u "+fieldSet.getShort("MJESECOD")+
+    datarow.put("TITLE", "Izvješæe o posebnom porezu na plaæe, mirovine i druge primitke \n u "+fieldSet.getShort("MJESECOD")+
         ". mjesecu "+fieldSet.getShort("GODINAOD")+". godine");
     
     datarow.put("NAZIV", getKnjNaziv());
