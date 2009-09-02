@@ -26,6 +26,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.util.MathEvaluator;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.raKonta;
@@ -129,7 +130,7 @@ public class frmKnjPlace extends frmKnjizenje {
           StringTokenizer tok = new StringTokenizer(shk_PL.getString("POLJE"),":");
           String tab = tok.nextToken();
           String key = tok.nextToken();
-          if (tab.equalsIgnoreCase("ODB")) {
+          if (tab.equalsIgnoreCase("ODB") || tab.toUpperCase().indexOf("ODB") >= 0) {
 //            String qry = "SELECT cradnik, obriznos from odbiciarh WHERE cvrodb = "+key+
 //              " AND "+Condition.whereAllEqual(new String[] {"GODOBR","MJOBR","RBROBR"}, viewSet)+
 //              " AND EXISTS (SELECT cradnik FROM radnici where radnici.cradnik = odbiciarh.cradnik " +
@@ -149,7 +150,14 @@ public class frmKnjPlace extends frmKnjizenje {
             for (odb.first(); odb.inBounds(); odb.next()) {
               sumodb = sumodb.add(odb.getBigDecimal("OBRIZNOS"));
             }
-            if (!addToNewStavka(sumodb, shk_PL, kumorg)) return false;
+            BigDecimal value;
+            if (tab.equalsIgnoreCase("ODB")) {
+              value = sumodb;
+            } else {
+              String mpolje = new VarStr(shk_PL.getString("POLJE")).replace("ODB:"+key, sumodb.toString()).toString();
+              value = MathEvaluator.getEvaluatedBigDecimal(mpolje, kumorg);
+            }
+            if (!addToNewStavka(value, shk_PL, kumorg)) return false;
           }
         }
       }
