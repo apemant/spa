@@ -125,7 +125,13 @@ public class Harach {
     _odbiciobr.post();
     return _odbiciobr;
   }
-  
+  /**
+   * 
+   * @param godmj
+   * @param cradnik
+   * @param corg
+   * @return
+   */
   public static BigDecimal[] getHaracMj(String godmj, String cradnik, String corg) {
     BigDecimal osn = Aus.zero2, izn = Aus.zero2, cnt = Aus.zero2;
     String t,tt,join,when, radnik;
@@ -133,13 +139,13 @@ public class Harach {
     		" [radnik] [join] [when]");
     if (godmj==null || godmj.trim().length()!=6) {
       t="odbiciobr";
-      tt="odbiciobr";
-      join = "";
+      tt="odbiciobr, radnici";
+      join = "AND odbiciobr.cradnik = radnici.cradnik";
       when = "";
     } else {
       t = "odbiciarh";
       tt = "odbiciarh, kumulorgarh, kumulradarh";
-      join = "kumulradarh.godobr = kumulorgarh.godobr " +
+      join = "AND kumulradarh.godobr = kumulorgarh.godobr " +
       		"AND kumulradarh.mjobr = kumulorgarh.mjobr " +
       		"AND kumulradarh.rbrobr = kumulorgarh.rbrobr " +
       		"AND kumulradarh.cvro = kumulorgarh.cvro " +
@@ -158,7 +164,7 @@ public class Harach {
     }
     if (cradnik == null) {
       if (godmj==null || godmj.trim().length()!=6) {
-        radnik = "";
+        radnik = "AND radnici.corg in "+OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndKnjig(corg), "radnici.cradnik");
       } else {
         OrgStr ors = OrgStr.getOrgStr();
         radnik = "AND (kumulradarh.corg in "+ors.getInQuery(ors.getOrgstrAndCurrKnjig(),"kumulradarh.corg")+")";
@@ -179,7 +185,7 @@ public class Harach {
     for (qds.first(); qds.inBounds(); qds.next()) {
       osn = osn.add(qds.getBigDecimal("OBROSN"));
       izn = izn.add(qds.getBigDecimal("OBRIZNOS"));
-      cnter.add(qds.getString("CRADNK"));
+      cnter.add(qds.getString("CRADNIK"));
     }
     cnt = new BigDecimal(cnter.size());
     return new BigDecimal[] {osn, izn, cnt};

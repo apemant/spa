@@ -2,13 +2,13 @@ package hr.restart.pl;
 
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
-import hr.restart.swing.raNumberMask;
+import hr.restart.util.Util;
+import hr.restart.util.Valid;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 
 import com.borland.dx.dataset.Variant;
-import com.borland.dx.text.InvalidFormatException;
 import com.borland.dx.text.VariantFormatter;
 
 public class frmIPP extends frmSPL {
@@ -34,13 +34,29 @@ public class frmIPP extends frmSPL {
   }
   VariantFormatter formatter;
   private String format(BigDecimal bd) {
+    System.out.println("bd = "+bd);
     if (formatter == null) formatter = dM.createBigDecimalColumn("OGLEDNA").getFormatter();
     Variant v = new Variant();
     v.setBigDecimal(bd);
+    System.out.println("formated "+formatter.format(v));
     return formatter.format(v);
   }
   private void createReport() {
-    BigDecimal[] vals = Harach.getHaracMj(null, null, fieldSet.getString("CORG"));
+    raIniciranje.getInstance().posOrgsPl(fieldSet.getString("CORG"));
+    datumispl = dm.getOrgpl().getTimestamp("DATUMISPL");
+    short month = new Short(Util.getUtil().getMonth(datumispl)).shortValue();
+    short year = new Short(Util.getUtil().getYear(datumispl)).shortValue();
+    String godmj = fieldSet.getShort("GODINAOD")+Valid.getValid().maskZeroInteger(new Integer((int)fieldSet.getShort("MJESECOD")), 2);
+System.out.println("frmIPP.godmj = "+godmj);    
+    BigDecimal[] vals = Harach.getHaracMj(godmj, null, fieldSet.getString("CORG"));
+    //ako ima u radnima gonjaj
+    if (fieldSet.getShort("MJESECOD") == month && fieldSet.getShort("GODINAOD") == year) {
+      BigDecimal[] vals2 = Harach.getHaracMj(null, null, fieldSet.getString("CORG"));
+      for (int i = 0; i < vals.length; i++) {
+        vals[i] = vals[i].add(vals2[i]);
+      }
+    }
+    //if (fieldSet.getString("")) 
     datarow.put("TITLE", "Izvješæe o posebnom porezu na plaæe, mirovine i druge primitke \n u "+fieldSet.getShort("MJESECOD")+
         ". mjesecu "+fieldSet.getShort("GODINAOD")+". godine");
     
