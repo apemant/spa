@@ -128,7 +128,7 @@
     <target name="nonJava" depends="init" description="Copy nonJava files classes">
         <mkdir dir="${classes.dir}/hr/restart/util/images"/>
         <copy todir="${classes.dir}">
-            <fileset dir="${src.dir}" includes="**/*.template, **/*.sav, **/*.txt hr/restart/util/images/*"/>
+            <fileset dir="${src.dir}" includes="**/*.jrxml, **/*.template, **/*.sav, **/*.txt hr/restart/util/images/*"/>
         </copy>
 <!--        <copy todir="${classes.dir}/hr/restart/util/images">
             <fileset dir="${images.dir}"/>
