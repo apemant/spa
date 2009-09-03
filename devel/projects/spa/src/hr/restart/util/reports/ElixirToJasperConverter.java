@@ -58,6 +58,33 @@ public class ElixirToJasperConverter {
     this.data = data;
   }
   
+  public static void adjustReport(JasperDesign jas) {
+    adjustBand(jas.getTitle());
+    adjustBand(jas.getColumnHeader());
+    adjustBand(jas.getDetail());
+    adjustBand(jas.getColumnFooter());
+    adjustBand(jas.getSummary());
+    JRGroup[] grs = jas.getGroups();
+    for (int i = 0; i < grs.length; i++) {
+      adjustBand(grs[i].getGroupHeader());
+      adjustBand(grs[i].getGroupFooter());
+    }
+  }
+  
+  private static void adjustBand(JRBand band) {
+    if (band == null) return;
+    JRElement[] els = band.getElements();
+    for (int i = 0; i < els.length; i++)
+      if (els[i] instanceof JRDesignTextField)
+        adjustTextElement((JRDesignTextField) els[i]);
+  }
+  
+  private static void adjustTextElement(JRDesignTextField tf) {
+    if (tf.getHeight() <= tf.getFontSize() * 2 && 
+        !tf.isStretchWithOverflow()) tf.setWrapAllowed(false);
+  }
+    
+  
   public JasperDesign getJasperDesign() {
     jas = new JasperDesign();
     try {
@@ -457,6 +484,9 @@ public class ElixirToJasperConverter {
         tf.setStretchWithOverflow(false);
       tf.setWrapAllowed(true);
     }
+    if (tf.getHeight() <= tf.getFontSize()+2)
+      tf.setStretchWithOverflow(true);
+    System.out.println(tf.getExpression().getText() + " = " + tf.getHeight() + ", " + tf.getFontSize());
       
     return tf;
   }
