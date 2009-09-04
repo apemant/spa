@@ -295,6 +295,8 @@ public class raIspisUraIra extends raFrame {
       });
 //      getRepRunner().addReport("hr.restart.sk.repURADod", "Ispis knjige URA sa dodatnim kolonama", 5);
     } else {
+      getRepRunner().addJasper("hr.restart.sk.repIRA09", "hr.restart.sk.repIRA",
+          "ira09.jrxml", "Ispis knjige IRA 2009");
       getRepRunner().addReport("hr.restart.sk.repIRA06", "hr.restart.sk.repIRA",
           "IRA06", "Ispis knjige IRA");
       getRepRunner().addReport("hr.restart.sk.repIRA", "hr.restart.sk.repIRA",
@@ -421,7 +423,7 @@ public class raIspisUraIra extends raFrame {
             subtract(uraira.getBigDecimal("KOLONA14")).
             subtract(uraira.getBigDecimal("KOLONA15")));
         uraira.setBigDecimal("OCHECK23", uraira.getBigDecimal("KOLONA9").
-            multiply(x22).setScale(2, BigDecimal.ROUND_HALF_UP).
+            multiply(x23).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA16")).
             subtract(uraira.getBigDecimal("KOLONA17")));
         uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA10").
@@ -444,7 +446,7 @@ public class raIspisUraIra extends raFrame {
             multiply(x22).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA15")));
         uraira.setBigDecimal("OCHECK23", uraira.getBigDecimal("KOLONA16").
-            multiply(x22).setScale(2, BigDecimal.ROUND_HALF_UP).
+            multiply(x23).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA17")));
         uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA6").
             subtract(uraira.getBigDecimal("KOLONA7")).
