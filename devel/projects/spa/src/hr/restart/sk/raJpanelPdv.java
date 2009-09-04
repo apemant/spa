@@ -117,7 +117,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("II2p");
     }
   };
-  JLabel jlII2 = new JLabel(" 1. Za koje su izdani ra\u010Duni po stopi 22%");
+  JLabel jlII2 = new JLabel(" 2ra. Za koje su izdani ra\u010Duni po stopi 22%");
   JraTextField II3v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("II3v");

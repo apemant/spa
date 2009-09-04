@@ -115,8 +115,11 @@ public class frmPDV extends raUpitLite {
 //        JOptionPane.DEFAULT_OPTION, JOptisonPane.QUESTION_MESSAGE,
 //        null, new String[] {"za 2006 i dalje", "za 2005 i ranije"},"za 2006 i dalje");
 //    if (answ == 1) return "05";
-    if (stds.getTimestamp("DATUMDO").after(Util.getUtil().getYearEnd("2005"))) {
+    if (stds.getTimestamp("DATUMDO").after(
+        Util.getUtil().addMonths(Util.getUtil().getYearEnd("2009"), -5))) {
       return "";
+    } else if (stds.getTimestamp("DATUMDO").after(Util.getUtil().getYearEnd("2005"))) {
+      return "09";
     } else {
       return "05";
     }
