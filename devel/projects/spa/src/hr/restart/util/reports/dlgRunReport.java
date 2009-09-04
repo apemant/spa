@@ -1463,6 +1463,7 @@ public class dlgRunReport {
                 getSystemResourceAsStream(rd.getTemplate()));
             jdes.setName(getCurrentDescriptor().getName());
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
+            ElixirToJasperConverter.adjustReport(jdes);
             raProcess.setMessage("Prevoðenje izraza...", false);
             JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
             JasperReport jcomp = new JRJdk13Compiler().compileReport(jdes);
