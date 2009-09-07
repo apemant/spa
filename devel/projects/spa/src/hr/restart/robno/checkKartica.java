@@ -77,6 +77,8 @@ public class checkKartica {
   
   int totalCards;
   
+  boolean firstRow;
+  
   VarStr buffer = new VarStr();
   
   dlgErrors errs, fatal;
@@ -534,6 +536,7 @@ public class checkKartica {
       
       raProcess.checkClosing();
       showMessageIfDue(obr);
+      firstRow = true;
       for (kartica.first(); kartica.inBounds(); kartica.next()) {
         recalculKartica();
       }
@@ -554,6 +557,13 @@ public class checkKartica {
   }
 
 	public void Izlaz() {
+	  
+	    if (firstRow) {
+	      karticatmp.setBigDecimal("NC_GOOD", kartica.getBigDecimal("NC"));
+	      karticatmp.setBigDecimal("VC_GOOD", kartica.getBigDecimal("VC"));
+	      karticatmp.setBigDecimal("MC_GOOD", kartica.getBigDecimal("MC"));
+	      karticatmp.setBigDecimal("ZC_GOOD", kartica.getBigDecimal("ZC"));
+	    }
 
 		karticatmp.setBigDecimal("KOL_TRENUTNO", karticatmp.getBigDecimal(
 				"KOL_TRENUTNO").subtract(kartica.getBigDecimal("KOL")));
@@ -732,13 +742,13 @@ public class checkKartica {
 		kartica.setBigDecimal("IZAD_TRENUTNO", karticatmp
 				.getBigDecimal("IZAD_TRENUTNO"));
 
-		if (karticatmp.getBigDecimal("KOL_TRENUTNO").doubleValue() > 0) {
+		if (karticatmp.getBigDecimal("KOL_TRENUTNO").doubleValue() != 0) {
 			karticatmp.setBigDecimal("NC_GOOD", karticatmp.getBigDecimal(
 					"INAB_TRENUTNO").divide(
 					karticatmp.getBigDecimal("KOL_TRENUTNO"), 2,
 					BigDecimal.ROUND_HALF_UP));
 		} else {
-			karticatmp.setBigDecimal("NC_GOOD", Aus.zero2);
+			karticatmp.setBigDecimal("NC_GOOD", kartica.getBigDecimal("NC"));
 		}
 		//
 //System.out.println("1.Kartica tmp za "+kartica.getString("VRDOK")+" "+
@@ -822,6 +832,7 @@ public class checkKartica {
 																		 // dokumentu
 			Porav();
 		}
+		firstRow = false;
 	}
 
 	public void kartica2cloneKartica(DataSet orgKartica, DataSet cloneKartica) {
