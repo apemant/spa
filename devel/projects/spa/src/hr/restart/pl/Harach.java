@@ -27,10 +27,9 @@ import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.ReadWriteRow;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.jgoodies.forms.tutorial.basics.FirstStepsExample;
 
 public class Harach {
-  private static boolean harachOsnPodCreated = false;
+  private static boolean harachOsnPodCreated = false /*true na Derbyju ne valja condition jer ne moze usporediti short i smallint !?*/;
   public static boolean createHarachOsnPod(String harachCVRODB, String harachCPOV) {
     boolean odbicichanged = false;
     if (!harachOsnPodCreated) {
@@ -245,7 +244,7 @@ public class Harach {
   public static String getHaracFlag(DataSet vrsteprim) {
     String flag = raParam.getParam(vrsteprim, 4).trim();
     if (flag.equals("")) {
-      flag = raParam.getParam(vrsteprim, 3).trim().equals("")?"D":"N";
+      flag = vrsteprim.getString("PARAMETRI").trim().substring(0, 2).equals("NN")?"N":"D";
     }
     return flag;
   }
