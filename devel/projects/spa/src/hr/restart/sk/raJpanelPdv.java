@@ -117,7 +117,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("II2p");
     }
   };
-  JLabel jlII2 = new JLabel(" 2ra. Za koje su izdani ra\u010Duni po stopi 22%");
+  JLabel jlII2 = new JLabel(" 2. Za koje su izdani ra\u010Duni po stopi 22%");
   JraTextField II3v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("II3v");
@@ -128,7 +128,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("II3p");
     }
   };
-  JLabel jlII3 = new JLabel(" 3. Nenaplaæeni izvoz");
+  JLabel jlII3 = new JLabel(" 2. Za koje su izdani ra\u010Duni po stopi 23%");
   JraTextField II4v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("II4v");
@@ -139,7 +139,18 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("II4p");
     }
   };
-  JLabel jlII4 = new JLabel(" 4. Naknadno osloboðenje izvoza");
+  JLabel jlII4 = new JLabel(" 4. Nenaplaæeni izvoz");
+  JraTextField II5v = new JraTextField(){
+    public void valueChanged() {
+      frpdv.focusLostEv("II5v");
+    }
+  };
+  JraTextField II5p = new JraTextField(){
+    public void valueChanged() {
+      frpdv.focusLostEv("II5p");
+    }
+  };
+  JLabel jlII5 = new JLabel(" 5. Naknadno osloboðenje izvoza");
   
   JraTextField IIIp = new JraTextField();
   JraTextField IIIv = new JraTextField();
@@ -199,14 +210,38 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("III5p");
     }
   };
-  JLabel jlIII5 = new JLabel(" 5. Pla\u0107eni pretporez na usl. ino. poduzetnika 22%");
+  JLabel jlIII5 = new JLabel(" 5. Pla\u0107eni pretporez na usl. ino. poduzetnika 23%");
   
+  JraTextField III6v = new JraTextField(){
+    public void valueChanged() {
+      frpdv.focusLostEv("III6v");
+    }
+  };
   JraTextField III6p = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("III6p");
     }
   };
-  JLabel jlIII6 = new JLabel(" 6. Ispravci pretporeza");
+  JLabel jlIII6 = new JLabel(" 6. Pla\u0107eni pretporez na usl. ino. poduzetnika 22%");
+  
+  JraTextField III7v = new JraTextField(){
+    public void valueChanged() {
+      frpdv.focusLostEv("III7v");
+    }
+  };
+  JraTextField III7p = new JraTextField(){
+    public void valueChanged() {
+      frpdv.focusLostEv("III7p");
+    }
+  };
+  JLabel jlIII7 = new JLabel(" 7. Pla\u0107eni pretporez na usl. ino. poduzetnika 23%");
+  
+  JraTextField III8p = new JraTextField(){
+    public void valueChanged() {
+      frpdv.focusLostEv("III8p");
+    }
+  };
+  JLabel jlIII8 = new JLabel(" 8. Ispravci pretporeza");
   JraTextField IV = new JraTextField();
   JLabel jlIV = new JLabel("IV. Porezna obveza u obra\u010Dunskom razdoblju");
   JraTextField V = new JraTextField(){
@@ -247,10 +282,10 @@ public class raJpanelPdv extends JPanel {
     xYLay1.setHeight(200);
     jpII.setLayout(xYLay2);
     xYLay2.setWidth(550);
-    xYLay2.setHeight(135);
+    xYLay2.setHeight(160);
     jpIII.setLayout(xYLay3);
     xYLay3.setWidth(550);
-    xYLay3.setHeight(185);
+    xYLay3.setHeight(235);
     jpIV.setLayout(xYLay456);
     jpV.setLayout(xYLay456);
     jpVI.setLayout(xYLay456);
@@ -293,6 +328,9 @@ public class raJpanelPdv extends JPanel {
     jpII.add(II4v, new XYConstraints(340, 110, 100 , -1));
     jpII.add(II4p, new XYConstraints(445, 110, 100 , -1));
     jpII.add(jlII4, new XYConstraints(15, 110 ,-1,-1));
+    jpII.add(II5v, new XYConstraints(340, 135, 100 , -1));
+    jpII.add(II5p, new XYConstraints(445, 135, 100 , -1));
+    jpII.add(jlII5, new XYConstraints(15, 135 ,-1,-1));
 
     jpIII.setBorder(BorderFactory.createEtchedBorder());
     jpIII.add(IIIv, new XYConstraints(340, 5, 100 , -1));
@@ -313,8 +351,14 @@ public class raJpanelPdv extends JPanel {
     jpIII.add(III5v, new XYConstraints(340, 135, 100 , -1));
     jpIII.add(III5p, new XYConstraints(445, 135, 100 , -1));
     jpIII.add(jlIII5, new XYConstraints(15, 135 ,-1,-1));
+    jpIII.add(III6v, new XYConstraints(340, 160, 100 , -1));
     jpIII.add(III6p, new XYConstraints(445, 160, 100 , -1));
     jpIII.add(jlIII6, new XYConstraints(15, 160 ,-1,-1));
+    jpIII.add(III7v, new XYConstraints(340, 185, 100 , -1));
+    jpIII.add(III7p, new XYConstraints(445, 185, 100 , -1));
+    jpIII.add(jlIII7, new XYConstraints(15, 185 ,-1,-1));
+    jpIII.add(III8p, new XYConstraints(445, 210, 100 , -1));
+    jpIII.add(jlIII8, new XYConstraints(15, 210 ,-1,-1));
 
     jpIV.setBorder(BorderFactory.createEtchedBorder());
     jpIV.add(IV, new XYConstraints(445, 5, 100 , -1));
@@ -370,14 +414,20 @@ public class raJpanelPdv extends JPanel {
     II2v.setColumnName("NEZARACUNANE_V");
     II2p.setDataSet(frpdv.reportSet);
     II2p.setColumnName("NEZARACUNANE_P");
+    
     II3v.setDataSet(frpdv.reportSet);
-    II3v.setColumnName("VLASTITA_POT_V");
+    II3v.setColumnName("R23_V");
     II3p.setDataSet(frpdv.reportSet);
-    II3p.setColumnName("VLASTITA_POT_P");
+    II3p.setColumnName("R23_P");
+    
     II4v.setDataSet(frpdv.reportSet);
-    II4v.setColumnName("NENAP_IZVOZ_V");
+    II4v.setColumnName("VLASTITA_POT_V");
     II4p.setDataSet(frpdv.reportSet);
-    II4p.setColumnName("NENAP_IZVOZ_P");
+    II4p.setColumnName("VLASTITA_POT_P");
+    II5v.setDataSet(frpdv.reportSet);
+    II5v.setColumnName("NENAP_IZVOZ_V");
+    II5p.setDataSet(frpdv.reportSet);
+    II5p.setColumnName("NENAP_IZVOZ_P");
 /*    II5v.setDataSet(frpdv.reportSet);
     II5v.setColumnName("NAK_OSL_IZV_V");
     II5p.setDataSet(frpdv.reportSet);
@@ -406,8 +456,18 @@ public class raJpanelPdv extends JPanel {
     III5v.setColumnName("III5V");
     III5p.setDataSet(frpdv.reportSet);
     III5p.setColumnName("III5P");
+    
+    III6v.setDataSet(frpdv.reportSet);
+    III6v.setColumnName("III6V");
     III6p.setDataSet(frpdv.reportSet);
-    III6p.setColumnName("ISPRAVCI_PPORA");
+    III6p.setColumnName("III6P");
+    III7v.setDataSet(frpdv.reportSet);
+    III7v.setColumnName("III7V");
+    III7p.setDataSet(frpdv.reportSet);
+    III7p.setColumnName("III7P");
+    
+    III8p.setDataSet(frpdv.reportSet);
+    III8p.setColumnName("ISPRAVCI_PPORA");
     IV.setDataSet(frpdv.reportSet);
     IV.setColumnName("POR_OBV");
     V.setDataSet(frpdv.reportSet);

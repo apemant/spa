@@ -211,30 +211,38 @@ public class repPrijavaPDV_K implements raReportData { // implements sg.com.elix
   public BigDecimal getII2p(){
      return ds.getBigDecimal("NEZARACUNANE_P");
   }
-
+  
   public BigDecimal getII3v(){
-     return ds.getBigDecimal("VLASTITA_POT_V");
+    return ds.getBigDecimal("R23_V");
   }
 
   public BigDecimal getII3p(){
-     return ds.getBigDecimal("VLASTITA_POT_P");
+    return ds.getBigDecimal("R23_P");
   }
 
   public BigDecimal getII4v(){
-     return ds.getBigDecimal("NENAP_IZVOZ_V");
+     return ds.getBigDecimal("VLASTITA_POT_V");
   }
 
   public BigDecimal getII4p(){
+     return ds.getBigDecimal("VLASTITA_POT_P");
+  }
+
+  public BigDecimal getII5v(){
+     return ds.getBigDecimal("NENAP_IZVOZ_V");
+  }
+
+  public BigDecimal getII5p(){
      return ds.getBigDecimal("NENAP_IZVOZ_P");
   }
 
-  public BigDecimal getII5v(){ //nema u 2005
+  /*public BigDecimal getII5v(){ //nema u 2005
      return ds.getBigDecimal("NAK_OSL_IZV_V");
   }
 
   public BigDecimal getII5p(){// nema u 2005
      return ds.getBigDecimal("NAK_OSL_IZV_P");
-  }
+  }*/
 
   public BigDecimal getIIIv(){
      return ds.getBigDecimal("UKUPNO_III_V");
@@ -288,7 +296,23 @@ public class repPrijavaPDV_K implements raReportData { // implements sg.com.elix
     return ds.getBigDecimal("III5P");
   }
   
-  public BigDecimal getIII6(){//2006
+  public BigDecimal getIII6v(){ //2006
+    return ds.getBigDecimal("III6V");
+  }
+
+  public BigDecimal getIII6p(){ //2006
+    return ds.getBigDecimal("III6P");
+  }
+  
+  public BigDecimal getIII7v(){ //2006
+    return ds.getBigDecimal("III7V");
+  }
+
+  public BigDecimal getIII7p(){ //2006
+    return ds.getBigDecimal("III7P");
+  }
+  
+  public BigDecimal getIII8(){//2006
     return ds.getBigDecimal("ISPRAVCI_PPORA");
   }
 

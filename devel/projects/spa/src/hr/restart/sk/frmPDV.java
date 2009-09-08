@@ -60,6 +60,7 @@ public class frmPDV extends raUpitLite {
 
   StorageDataSet stds = new StorageDataSet();
   StorageDataSet reportSet = new StorageDataSet();
+ 
   hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
   JLabel jlPer = new JLabel("Razdoblje");
   JraTextField jraPoctDat = new JraTextField();
@@ -209,26 +210,36 @@ public class frmPDV extends raUpitLite {
         add_II_IIIP(tmpSet.getBigDecimal(i));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"II.3.v")){
-        reportSet.setBigDecimal("VLASTITA_POT_V",tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("R23_V",tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_II_V",reportSet.getBigDecimal("UKUPNO_II_V").add(tmpSet.getBigDecimal(i)));
         suma_I_II(tmpSet.getBigDecimal(i));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"II.3.p")){
-        reportSet.setBigDecimal("VLASTITA_POT_P",tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("R23_P",tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_II_P",reportSet.getBigDecimal("UKUPNO_II_P").add(tmpSet.getBigDecimal(i)));
         add_II_IIIP(tmpSet.getBigDecimal(i));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"II.4.v")){
-        reportSet.setBigDecimal("NENAP_IZVOZ_V",tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("VLASTITA_POT_V",tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_II_V",reportSet.getBigDecimal("UKUPNO_II_V").add(tmpSet.getBigDecimal(i)));
         suma_I_II(tmpSet.getBigDecimal(i));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"II.4.p")){
-        reportSet.setBigDecimal("NENAP_IZVOZ_P",tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("VLASTITA_POT_P",tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_II_P",reportSet.getBigDecimal("UKUPNO_II_P").add(tmpSet.getBigDecimal(i)));
         add_II_IIIP(tmpSet.getBigDecimal(i));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"II.5.v")){
+        reportSet.setBigDecimal("NENAP_IZVOZ_V",tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("UKUPNO_II_V",reportSet.getBigDecimal("UKUPNO_II_V").add(tmpSet.getBigDecimal(i)));
+        suma_I_II(tmpSet.getBigDecimal(i));
+        continue;
+      } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"II.5.p")){
+        reportSet.setBigDecimal("NENAP_IZVOZ_P",tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("UKUPNO_II_P",reportSet.getBigDecimal("UKUPNO_II_P").add(tmpSet.getBigDecimal(i)));
+        add_II_IIIP(tmpSet.getBigDecimal(i));
+        continue;
+      /*} else if (tmpSet.getColumn(i).getCaption().equals(pfx+"II.5.v")){
         reportSet.setBigDecimal("NAK_OSL_IZV_V",tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_II_V",reportSet.getBigDecimal("UKUPNO_II_V").add(tmpSet.getBigDecimal(i)));
         suma_I_II(tmpSet.getBigDecimal(i));
@@ -237,7 +248,7 @@ public class frmPDV extends raUpitLite {
         reportSet.setBigDecimal("NAK_OSL_IZV_P",tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_II_P",reportSet.getBigDecimal("UKUPNO_II_P").add(tmpSet.getBigDecimal(i)));
         add_II_IIIP(tmpSet.getBigDecimal(i));
-        continue;
+        continue;*/
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.1.v")){
         reportSet.setBigDecimal("PPOR_PR_RAC_V", tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_III_V",reportSet.getBigDecimal("UKUPNO_III_V").add(tmpSet.getBigDecimal(i)));
@@ -265,8 +276,8 @@ public class frmPDV extends raUpitLite {
         reportSet.setBigDecimal("UKUPNO_III_P",reportSet.getBigDecimal("UKUPNO_III_P").add(tmpSet.getBigDecimal(i)));
         subtract_II_IIIP(tmpSet.getBigDecimal(i));
         continue;
-      } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.4.") 
-          || tmpSet.getColumn(i).getCaption().equals(pfx+"III.6.")){
+      } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.6.") 
+          || tmpSet.getColumn(i).getCaption().equals(pfx+"III.8.")){
         reportSet.setBigDecimal("ISPRAVCI_PPORA", tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_III_P",reportSet.getBigDecimal("UKUPNO_III_P").add(tmpSet.getBigDecimal(i)));
         subtract_II_IIIP(tmpSet.getBigDecimal(i));
@@ -288,6 +299,16 @@ public class frmPDV extends raUpitLite {
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.5.v")){
         reportSet.setBigDecimal("III5V", tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("UKUPNO_III_P",reportSet.getBigDecimal("UKUPNO_III_P").add(tmpSet.getBigDecimal(i)));
+        subtract_II_IIIP(tmpSet.getBigDecimal(i));
+        continue;
+      } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.6.p")){
+        reportSet.setBigDecimal("III6P", tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("UKUPNO_III_P",reportSet.getBigDecimal("UKUPNO_III_P").add(tmpSet.getBigDecimal(i)));
+        subtract_II_IIIP(tmpSet.getBigDecimal(i));
+        continue;
+      } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.6.v")){
+        reportSet.setBigDecimal("III6V", tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_III_P",reportSet.getBigDecimal("UKUPNO_III_P").add(tmpSet.getBigDecimal(i)));
         subtract_II_IIIP(tmpSet.getBigDecimal(i));
         continue;
@@ -505,6 +526,7 @@ public class frmPDV extends raUpitLite {
     mainPanel.add(panelPDV, BorderLayout.CENTER);
 //    this.addReport("hr.restart.sk.repPrijavaPDV", "Obrazac PDV", 2);
 //    this.addReport("hr.restart.sk.repPrijavaPDV_K", "Obrazac PDV-K", 2);
+    this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv09.jrxml","Obrazac PDV 2009");
     this.addReport("hr.restart.sk.repPrijavaPDV","hr.restart.sk.repPrijavaPDV_K","PrijavaPDV06","Obrazac PDV");
     this.addReport("hr.restart.sk.repPrijavaPDV_K","hr.restart.sk.repPrijavaPDV_K","PrijavaPDV_K06","Obrazac PDV-K");    
     this.addReport("hr.restart.sk.repPrijavaPDV","hr.restart.sk.repPrijavaPDV_K","PrijavaPDV","Obrazac PDV 2005");
@@ -546,10 +568,16 @@ public class frmPDV extends raUpitLite {
       dm.createBigDecimalColumn("RAZLIKA",2),
       //2006
       dm.createBigDecimalColumn("OSTALO_I23",2),
+      dm.createBigDecimalColumn("R23_V",2),
+      dm.createBigDecimalColumn("R23_P",2),
       dm.createBigDecimalColumn("III4V",2),
       dm.createBigDecimalColumn("III4P",2),
       dm.createBigDecimalColumn("III5V",2),
       dm.createBigDecimalColumn("III5P",2),
+      dm.createBigDecimalColumn("III6V",2),
+      dm.createBigDecimalColumn("III6P",2),
+      dm.createBigDecimalColumn("III7V",2),
+      dm.createBigDecimalColumn("III7P",2),
       
       /* PDV-K */
 
