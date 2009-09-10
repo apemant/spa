@@ -1098,6 +1098,86 @@ public class raIspisUraIra extends raFrame {
       e.printStackTrace();
     }
   }
+  
+  public static void convertpdv() {    
+    if (IzvjPDV.getDataModule().getRowCount(
+        Condition.equal("CIZ", "II.5.v")) > 0) return;
+    
+    convertCIZ("II.4.v", "II.5.v");
+    convertCIZ("II.4.p", "II.5.p");
+    convertCIZ("II.3.v", "II.4.v");
+    convertCIZ("II.3.p", "II.4.p");
+    
+    copyCIZ("II.2.v", "II.3.v");
+    copyCIZ("II.2.p", "II.3.p");
+    
+    convertCIZ("III.6.", "III.8.");
+    convertCIZ("III.5.v", "III.6.v");
+    convertCIZ("III.5.p", "III.6.p");
+    convertCIZ("III.4.v", "III.5.v");
+    convertCIZ("III.4.p", "III.5.p");
+    convertCIZ("III.3.v", "III.4.v");
+    convertCIZ("III.3.p", "III.4.p");
+    
+    copyCIZ("III.2.v", "III.3.v");
+    copyCIZ("III.2.p", "III.3.p");
+    copyCIZ("III.6.v", "III.7.v");
+    copyCIZ("III.6.p", "III.7.p");
+  }
+  
+  static void copyCIZ(String from, String to) {
+    QueryDataSet zag = IzvjPDV.getDataModule().getTempSet(
+        Condition.equal("CIZ", from));
+    zag.open();
+    
+    QueryDataSet nz = IzvjPDV.getDataModule().getTempSet(Condition.nil);
+    nz.open();
+    nz.insertRow(false);
+    nz.setString("CIZ", to);
+    nz.setString("OPIS", new VarStr(zag.getString("OPIS")).
+        replace("22", "23").toString());
+    
+    
+    QueryDataSet st = StIzvjPDV.getDataModule().getTempSet(
+        Condition.equal("CIZ", from));
+    st.open();
+    
+    QueryDataSet nt = StIzvjPDV.getDataModule().getTempSet(Condition.nil);
+    nt.open();
+    
+    for (st.first(); st.inBounds(); st.next()) {
+      nt.insertRow(false);
+      st.copyTo(nt);
+      nt.setString("CIZ", to);
+      if ("U".equals(nt.getString("URAIRA"))) {
+        if (nt.getShort("CKOLONE") == 8)
+          nt.setShort("CKOLONE", (short) 9);
+        if (nt.getShort("CKOLONE") == 13)
+          nt.setShort("CKOLONE", (short) 16);
+      } else {
+        if (nt.getShort("CKOLONE") == 14)
+          nt.setShort("CKOLONE", (short) 16);
+        if (nt.getShort("CKOLONE") == 15)
+          nt.setShort("CKOLONE", (short) 17);
+      }
+    }
+    raTransaction.saveChangesInTransaction(new QueryDataSet[] {nz, nt});
+  }
+  
+  static void convertCIZ(String from, String to) {
+    QueryDataSet zag = IzvjPDV.getDataModule().getTempSet(
+        Condition.equal("CIZ", from));
+    QueryDataSet st = StIzvjPDV.getDataModule().getTempSet(
+        Condition.equal("CIZ", from));
+    zag.open();
+    zag.setString("CIZ", to);
+    
+    st.open();
+    for (st.first(); st.inBounds(); st.next()) {
+      st.setString("CIZ", to);
+    }
+    raTransaction.saveChangesInTransaction(new QueryDataSet[] {zag,st});
+  }
 
   private static String promoteCkol09(String polje, char uraira2) {
     if (uraira2=='I') {
