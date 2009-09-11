@@ -128,7 +128,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("II3p");
     }
   };
-  JLabel jlII3 = new JLabel(" 2. Za koje su izdani ra\u010Duni po stopi 23%");
+  JLabel jlII3 = new JLabel(" 3. Za koje su izdani ra\u010Duni po stopi 23%");
   JraTextField II4v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("II4v");
@@ -188,7 +188,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("III3p");
     }
   };
-  JLabel jlIII3 = new JLabel(" 3. Pla\u0107eni pretporez pri uvozu");
+  JLabel jlIII3 = new JLabel(" 3. Pretporez u primljenim ra\u010Dunima po stopi 23%");
   JraTextField III4v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("III4v");
@@ -199,7 +199,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("III4p");
     }
   };
-  JLabel jlIII4 = new JLabel(" 4. Pla\u0107eni pretporez na usl. ino. poduzetnika 10%");
+  JLabel jlIII4 = new JLabel(" 4. Pla\u0107eni pretporez pri uvozu");
   JraTextField III5v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("III5v");
@@ -210,7 +210,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("III5p");
     }
   };
-  JLabel jlIII5 = new JLabel(" 5. Pla\u0107eni pretporez na usl. ino. poduzetnika 23%");
+  JLabel jlIII5 = new JLabel(" 5. Pla\u0107eni pretporez na usl. ino. poduzetnika 10%");
   
   JraTextField III6v = new JraTextField(){
     public void valueChanged() {
