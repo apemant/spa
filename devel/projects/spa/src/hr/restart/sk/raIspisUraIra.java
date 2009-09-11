@@ -1152,7 +1152,7 @@ public class raIspisUraIra extends raFrame {
       if ("U".equals(nt.getString("URAIRA"))) {
         if (nt.getShort("CKOLONE") == 8)
           nt.setShort("CKOLONE", (short) 9);
-        if (nt.getShort("CKOLONE") == 13)
+        if (nt.getShort("CKOLONE") == 14)
           nt.setShort("CKOLONE", (short) 16);
       } else {
         if (nt.getShort("CKOLONE") == 14)
