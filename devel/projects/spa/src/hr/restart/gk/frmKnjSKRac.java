@@ -58,6 +58,7 @@ public class frmKnjSKRac extends frmKnjizenje {
   raPreparedStatement ps_updstavkeUI;
   String[] skstavkeKeys = new String[] {"KNJIG", "CPAR", "STAVKA", "CSKL", "VRDOK", "BROJDOK", "BROJIZV"};
   String[] uistavkeKeys = new String[] {"KNJIG", "CPAR", "STAVKA", "CSKL", "VRDOK", "BROJDOK", "RBS"};
+  private boolean prijenosUQNX = false;
   /**
    * Kolone koje su veza izmedju skstavaka i uistavaka.
    * Nisam nasao nista slicno nigdje osim u hr.restart.sk.frmPregledArhive
@@ -79,11 +80,26 @@ public class frmKnjSKRac extends frmKnjizenje {
     saveui.open();
   }
 
-/*  public boolean Validacija() {
-    System.out.println(getSKStavkeQuery());
-    return false;
-  }*/
+  public boolean Validacija() {
+    if (hr.restart.sisfun.frmParam.getParam("robno", "prijZim", "N",
+      "Transfer temeljnice u Zim aplikaciju opcije:D ili N!")
+      .equalsIgnoreCase("D")
+      && !getFake()) {
+        if (javax.swing.JOptionPane.showConfirmDialog(this,
+                "Želite li napraviti prijenos u financijsko (ZIM) ?",
+                "Upit", javax.swing.JOptionPane.YES_NO_OPTION,
+                javax.swing.JOptionPane.QUESTION_MESSAGE) == javax.swing.JOptionPane.YES_OPTION) {
+            prijenosUQNX = true;
+        } else {
+            prijenosUQNX = false;
+        }
+    } else {
+        prijenosUQNX = false;
+    }
+    return super.Validacija();
+  }
 
+  
   private String getSKStavkeQuery() {
     return "SELECT * FROM skstavke WHERE KNJIG = '"+OrgStr.getKNJCORG(false)
     +"' AND (cgkstavke is null or cgkstavke = '') AND " +
@@ -190,10 +206,24 @@ public class frmKnjSKRac extends frmKnjizenje {
         if (!knjiziUIStavku(R2Handler.getR2KnjizenjeSet(), r2opis)) return false;
       }
     }
-    
+    transfer2zim();
     return getKnjizenje().saveAll();
   }
   
+  private void transfer2zim() {
+    if (prijenosUQNX) {
+      prepare2Zim pz = new prepare2Zim();
+      pz.openFiles();
+      pz.setForKnjizenje(getKnjizenje().getStavka());
+      pz.makeTransferFiles(false);
+      pz.setForKnjizenje(getKnjizenje().getStavkaSK());
+      pz.makeTransferFiles(true);
+      pz.makeTransferFilesKnjiga();
+      pz.closeAll();
+      pz.transfer2QnxServer();
+    }
+  }
+
   void checkMonthDok(Timestamp kdat, String col, String dok) throws Exception {
   	if (!checkMonth) return;
   	
