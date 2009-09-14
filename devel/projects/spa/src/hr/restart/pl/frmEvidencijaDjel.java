@@ -72,7 +72,7 @@ public class frmEvidencijaDjel extends raFrame {
       public void run() {
         allset = (StorageDataSet)frmRadnicipl.getInstance().jpDetail.getCustomPanel()
           .getHorizontalSet("radnici", "radnicipl", 
-              "radnici.cradnik=radnicipl.cradnik and (radnicipl.corg in "+OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "radnicipl.corg"));
+              "radnici.cradnik=radnicipl.cradnik and (radnicipl.corg in "+OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "radnicipl.corg")+")");
         allset.setRowId("CRADNIK",true);
         allset.setTableName("EviDjel");
         jptv.setDataSet(allset); 
