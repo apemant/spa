@@ -426,6 +426,7 @@ public class frmSalKon extends raMasterDetail {
   }
 
   protected boolean checkIznosMaster() {
+    if (!jpMaster.jcbKnj.isSelected()) return true;
     if (getMasterSet().getBigDecimal("SALDO").signum() <= 0) {
       jpMaster.jraIznos.requestFocus();
       JOptionPane.showMessageDialog(jpMaster, "Pogrešan iznos ra\u010Duna!", "Greška",
