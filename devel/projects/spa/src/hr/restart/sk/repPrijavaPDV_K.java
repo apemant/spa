@@ -371,6 +371,18 @@ public class repPrijavaPDV_K implements raReportData { // implements sg.com.elix
   public BigDecimal getVII3(){
      return ds.getBigDecimal("POC_I_PREST");
   }
+  
+  public BigDecimal getPOV(){
+    return ds.getBigDecimal("POV");
+  }
+  
+  public BigDecimal getPRED(){
+    return ds.getBigDecimal("PRED");
+  }
+  
+  public BigDecimal getUST(){
+    return ds.getBigDecimal("UST");
+  }
 
   public String getNAPOMENA(){
     return fPDV.getNapomena();
