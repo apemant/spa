@@ -25,6 +25,7 @@ import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -54,6 +55,8 @@ public class raJpanelPdv extends JPanel {
   JPanel jpIV = new JPanel();
   JPanel jpV = new JPanel();
   JPanel jpVI = new JPanel();
+  JPanel jpDOD = new JPanel();
+  
 
   JLabel as = new JLabel();
 
@@ -253,6 +256,14 @@ public class raJpanelPdv extends JPanel {
   JraTextField VI = new JraTextField();
   JLabel jlVI = new JLabel("VI. Ukupna razlika");
 
+  JLabel jlPov = new JLabel("Za povrat");
+  JLabel jlPred = new JLabel("Predujam");
+  JLabel jlUst = new JLabel("Ustup povrata");
+  
+  JraTextField POV = new JraTextField();
+  JraTextField PRED = new JraTextField();
+  JraTextField UST = new JraTextField();
+  
   frmPDV frpdv;
 
   public raJpanelPdv(frmPDV f) {
@@ -371,7 +382,20 @@ public class raJpanelPdv extends JPanel {
     jpVI.setBorder(BorderFactory.createEtchedBorder());
     jpVI.add(VI, new XYConstraints(445, 5, 100 , -1));
     jpVI.add(jlVI, new XYConstraints(15, 5 ,-1,-1));
+    
+    jlPov.setHorizontalAlignment(SwingConstants.CENTER);
+    jlPred.setHorizontalAlignment(SwingConstants.CENTER);
+    jlUst.setHorizontalAlignment(SwingConstants.CENTER);
+    jpDOD.setLayout(new XYLayout(550, 55));
+    jpDOD.setBorder(BorderFactory.createEtchedBorder());
+    jpDOD.add(jlPov, new XYConstraints(110, 5, 100, -1));
+    jpDOD.add(jlPred, new XYConstraints(225, 5, 100, -1));
+    jpDOD.add(jlUst, new XYConstraints(340, 5, 100, -1));
+    jpDOD.add(POV, new XYConstraints(110, 25, 100, -1));
+    jpDOD.add(PRED, new XYConstraints(225, 25, 100, -1));
+    jpDOD.add(UST, new XYConstraints(340, 25, 100, -1));
 
+    
     jpPanel1.add(jpI, BorderLayout.NORTH);
     jpPanel1.add(jpII, BorderLayout.CENTER);
     jpPanel1.add(jpIII, BorderLayout.SOUTH);
@@ -380,9 +404,13 @@ public class raJpanelPdv extends JPanel {
     jpPanel2.add(jpV, BorderLayout.CENTER);
     jpPanel2.add(jpVI, BorderLayout.SOUTH);
 
+    JPanel bot = new JPanel(new BorderLayout());
+    bot.add(jpPanel2, BorderLayout.CENTER);
+    bot.add(jpDOD, BorderLayout.SOUTH);
+    
     this.add(jpS, BorderLayout.NORTH);
     this.add(jpPanel1, BorderLayout.CENTER);
-    this.add(jpPanel2, BorderLayout.SOUTH);
+    this.add(bot, BorderLayout.SOUTH);
   }
 
   public void rebindFields() {
@@ -474,6 +502,13 @@ public class raJpanelPdv extends JPanel {
     V.setColumnName("PO_PRETHOD_OBR");
     VI.setDataSet(frpdv.reportSet);
     VI.setColumnName("RAZLIKA");
+    
+    POV.setDataSet(frpdv.reportSet);
+    POV.setColumnName("POV");
+    PRED.setDataSet(frpdv.reportSet);
+    PRED.setColumnName("PRED");
+    UST.setDataSet(frpdv.reportSet);
+    UST.setColumnName("UST");
   }
 
   void disableDownwards(boolean enable){

@@ -197,6 +197,9 @@
 	<field name="III7p" class="java.math.BigDecimal"/>
 	<field name="III7v" class="java.math.BigDecimal"/>
 	<field name="III8" class="java.math.BigDecimal"/>
+	<field name="POV" class="java.math.BigDecimal"/>
+	<field name="PRED" class="java.math.BigDecimal"/>
+	<field name="UST" class="java.math.BigDecimal"/>
 	<group name="Section0">
 		<groupExpression><![CDATA[$F{NAZIV}]]></groupExpression>
 		<groupHeader>
@@ -2121,6 +2124,66 @@ POREZNE UPRAVE]]></text>
 					</textElement>
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III7p}]]></textFieldExpression>
 				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="21" y="681" width="72" height="11" forecolor="#000000">
+						<printWhenExpression><![CDATA[$F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{POV}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="237" y="681" width="72" height="11" forecolor="#000000">
+						<printWhenExpression><![CDATA[$F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{PRED}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="448" y="681" width="72" height="11" forecolor="#000000">
+						<printWhenExpression><![CDATA[$F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{UST}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="426" y="679" width="14" height="14" forecolor="#000000">
+						<printWhenExpression><![CDATA[$F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="679" width="14" height="14" forecolor="#000000">
+						<printWhenExpression><![CDATA[$F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="216" y="679" width="14" height="14" forecolor="#000000">
+						<printWhenExpression><![CDATA[$F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X]]></text>
+				</staticText>
 			</band>
 		</groupHeader>
 		<groupFooter>
