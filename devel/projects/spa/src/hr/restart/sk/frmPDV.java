@@ -588,7 +588,12 @@ public class frmPDV extends raUpitLite {
       dm.createBigDecimalColumn("PRO_OSTALO",2),
       dm.createBigDecimalColumn("NAB_OSTALO",2),
       dm.createBigDecimalColumn("OTUDJ_STJEC",2),
-      dm.createBigDecimalColumn("POC_I_PREST",2)
+      dm.createBigDecimalColumn("POC_I_PREST",2),
+      
+      dm.createBigDecimalColumn("POV",2),
+      dm.createBigDecimalColumn("PRED",2),
+      dm.createBigDecimalColumn("UST",2)
+      
       });
   }
 
