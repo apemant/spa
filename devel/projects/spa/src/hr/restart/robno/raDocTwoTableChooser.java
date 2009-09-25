@@ -24,6 +24,7 @@ import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
@@ -102,6 +103,7 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
   Column colVRDOK = new Column();
   Column colDATUM = new Column();
   String vrsta,masterkey;
+  boolean rep, cag, arh;
   public raDocTwoTableChooser(String vrd) {
     vrsta=vrd;
     try {
@@ -232,6 +234,7 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
   	ukupno=new BigDecimal(0);
   	bCancelPress=false;
     isEverythingOK = true;
+    arh = master.getString("CSKL").startsWith("#");
     if (vrsta.equals("GRC")) {
       table="POS";
       tabledet="STPOS";
@@ -250,6 +253,11 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
       doctype = Condition.whereAllEqual(
             new String[] {"CSKL", "GOD", "VRDOK"}, qdsRight);
       brdoks = Condition.in("BRDOK", qdsRight);
+      cag = frmParam.getParam("pos", "cagentHack", "N",
+          "Naèin plaæanja u cagent (D,N)").equals("D");
+      rep = true;
+      for (qdsRight.first(); qdsRight.inBounds(); qdsRight.next())
+        if (!qdsRight.getString("CNACPL").equals("R")) rep = false;
 
       DataSet arts = getArtikliSet();
       
@@ -291,10 +299,12 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
       vl.execSQL(str);
       DataSet arts = vl.getDataAndClear();*/
       
-      stanje = Stanje.getDataModule().getTempSet(
-          Condition.whereAllEqual(new String[] {"CSKL", "GOD"}, qdsRight).
-          and(Condition.in("CART", arts)));
-      stanje.open();
+      if (!arh) {
+        stanje = Stanje.getDataModule().getTempSet(
+            Condition.whereAllEqual(new String[] {"CSKL", "GOD"}, qdsRight).
+            and(Condition.in("CART", arts)));
+        stanje.open();
+      }
       obrada();
       
       int br = 1;
@@ -315,10 +325,13 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
     KreirDrop kdp = vrsta.equals("GRC") ? 
         (KreirDrop) Pos.getDataModule() : 
         (KreirDrop) doki.getDataModule();
+        
+    Condition cskcond = !arh ? Condition.equal("CSKL", tds) :
+      Condition.equal("CSKL", "#" + tds.getString("CSKL"));
 
-    qdsLeft = kdp.getTempSet("cskl god vrdok brdok datdok uirac",
+    qdsLeft = kdp.getTempSet("cskl god vrdok brdok datdok cnacpl uirac",
         Condition.equal("STATUS", "N").
-        and(Condition.equal("CSKL", tds)).
+        and(cskcond).
         and(Condition.equal("VRDOK", vrsta)).
         and(Condition.till("DATDOK", tds)).
         and(Condition.from("DATDOK", 
@@ -455,6 +468,7 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
 //    master.setString("GOD", val.findYear(master.getTimestamp("DATDOK")));
 //    master.setString("CUSER",hr.restart.sisfun.raUser.getInstance().getUser());
     master.setInt("BRDOK", (val.findSeqInteger(util.getSeqString(master),false)).intValue());
+    if (cag) master.setInt("CAGENT", rep ? 2 : 1);
     System.out.println("UIRAC: "+ukupno);
     master.setBigDecimal("UIRAC", ukupno);
     masterkey = raControlDocs.getKey(master);
@@ -541,6 +555,8 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
     detail.setBigDecimal("MC", qds.getBigDecimal("MC"));
     detail.setBigDecimal("IPRODSP", qds.getBigDecimal("IPRODSP"));*/
     detail.setString("CSKLART", qds.getString("CSKL"));
+    detail.post();
+    if (arh) return;
     if (raVart.isStanje(qds.getInt("CART")) && (!raVart.isNorma(qds.getInt("CART")) 
          || !lookupData.getlookupData().raLocate(dm.getSortedNorme(), 
              "CARTNOR", Integer.toString(qds.getInt("CART"))))) {
@@ -598,7 +614,7 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
     detail.setBigDecimal("IRAZ", util.multiValue(dm.getStanje().getBigDecimal("ZC"), qds.getBigDecimal("KOL")));
     */
     //    kalkSkladAndStanje();
-    detail.post();
+    
 //    detail.saveChanges();
 //    dm.getStanje().saveChanges();    // ovo Spliniša pukni u transakšn
   }
@@ -624,7 +640,7 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
         
       	raTransaction.saveChanges(master);
       	raTransaction.saveChanges(detail);
-      	raTransaction.saveChanges(stanje);
+      	if (!arh) raTransaction.saveChanges(stanje);
       	raTransaction.saveChanges(dm.getSeq());
       	if (raDocTwoTableChooser.this instanceof frmPos2POS)
       	  raTransaction.runSQL("update "+table+
