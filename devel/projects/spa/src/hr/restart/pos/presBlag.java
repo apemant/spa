@@ -157,7 +157,7 @@ public class presBlag extends PreSelect {
     } else {
       jrfCPRODMJ.requestFocusLater();
     }
-    jraVRDOK.getDataSet().setString("VRDOK", getVRDOK());
+    if (stolovi) jraVRDOK.getDataSet().setString("VRDOK", getVRDOK());
   }
 
   public boolean Validacija() {
