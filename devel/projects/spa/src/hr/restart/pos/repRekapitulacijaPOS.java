@@ -160,6 +160,10 @@ public class repRekapitulacijaPOS extends mxReport {
       
       if (ts.getString("CNACPL").equals("V"))
         vrati +="<#UKUPNO "+ts.getString("NACPL")+"|25|left#> <#"+sgq.format(ts.getBigDecimal("IZNOS"),2)+"|"+(width-26)+"|right#><$newline$><$newline$>";
+      
+      if (ts.getString("CNACPL").startsWith("K") && ts.getString("CNACPL").length() > 1)
+        vrati +="<#UKUPNO "+ts.getString("NACPL")+"|25|left#> <#"+sgq.format(ts.getBigDecimal("IZNOS"),2)+"|"+(width-26)+"|right#><$newline$><$newline$>";
+      
       /*else */if (ts.getString("CNACPL").equals("K")){
 //        System.out.println("Kartice"); //XDEBUG delete when no more needed
 //        System.out.println("BANKA _ "+ts.getString("CBANKA"));
