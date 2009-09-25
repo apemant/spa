@@ -270,7 +270,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 
 
 
-    String artikliString = "SELECT max(Stpos.cart) as cart, max(Stpos.cart1) as cart1, max(Stpos.bc) as bc, max(Stpos.nazart) as nazart, sum(Stpos.kol) as kol FROM pos, Stpos "+
+    String artikliString = "SELECT Stpos.cart, max(Stpos.cart1) as cart1, max(Stpos.bc) as bc, Stpos.nazart, sum(Stpos.kol) as kol FROM pos, Stpos "+
                            "WHERE pos.cskl = stpos.cskl "+
                            "AND pos.vrdok = stpos.vrdok "+
                            "AND pos.god = stpos.god "+
