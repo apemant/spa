@@ -17,6 +17,14 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import javax.swing.SwingConstants;
+
+import com.borland.jbcl.layout.XYConstraints;
+
+import hr.restart.sisfun.raUser;
+import hr.restart.swing.JraCheckBox;
+import hr.restart.util.VarStr;
+
 /**
  * <p>Title: Robno poslovanje</p>
  * <p>Description: </p>
@@ -28,6 +36,10 @@ package hr.restart.robno;
 
 public class presPOS extends jpPreselectDoc {
   static presPOS prespos;
+  
+  JraCheckBox jcbDel = new JraCheckBox();
+  boolean isSuper;
+  
   public void defaultMatDocAllowed(){
     isMatDocAllowed = false;
   }
@@ -36,12 +48,34 @@ public class presPOS extends jpPreselectDoc {
     isMatDocifObracAllowed = false;
   }
 
-
+  public void resetDefaults() {
+    super.resetDefaults();
+    jcbDel.setSelected(false);
+  }
 
   public presPOS() {
     super('N', 'F');    
 //  	super('D', 'D');
+    if (isSuper = raUser.getInstance().isSuper()) {
+      jcbDel.setText(" Arhiva ");
+      jcbDel.setHorizontalTextPosition(SwingConstants.LEADING);
+      jcbDel.setHorizontalAlignment(SwingConstants.TRAILING);
+      jpSelDoc.add(jcbDel, new XYConstraints(460, 20, 75, -1));
+    }
     prespos=this;
+  }
+  public void copySelValues() {
+    // TODO Auto-generated method stub
+    super.copySelValues();
+    if (isSuper && jcbDel.isSelected())
+      getSelDataSet().setString("CSKL", 
+          "#" + getSelRow().getString("CSKL")); 
+      
+  }
+  public String refineSQLFilter(String orig) {
+    return !isSuper || !jcbDel.isSelected() ? orig : new VarStr(orig).
+        replace("'" + getSelRow().getString("CSKL") + "'", 
+            "'#" + getSelRow().getString("CSKL") + "'").toString();
   }
   public static jpPreselectDoc getPres() {
     if (prespos==null) {
