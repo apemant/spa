@@ -17,17 +17,35 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
+import hr.restart.baza.Condition;
+import hr.restart.baza.Stanje;
+import hr.restart.baza.dM;
+import hr.restart.baza.stdoki;
 import hr.restart.sisfun.Asql;
+import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.raOptionDialog;
+import hr.restart.util.Aus;
+import hr.restart.util.lookupData;
+import hr.restart.util.raImages;
+import hr.restart.util.raNavAction;
+import hr.restart.util.raProcess;
 import hr.restart.util.sysoutTEST;
 
+import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -37,15 +55,21 @@ public class frmNorme extends raMasterFakeDetailArtikl {
   _Main ma;
 //  raCommonClass rcc = raCommonClass.getraCommonClass();
 //  Valid vl = Valid.getValid();
+  
+  lookupData ld = lookupData.getlookupData();
+  hr.restart.robno.Util rut = hr.restart.robno.Util.getUtil();
 
   JPanel jPanel1 = new JPanel();
   JLabel jlKol = new JLabel();
   XYLayout xYLayout1 = new XYLayout();
   JraTextField jraKol = new JraTextField();
   rapancart rpn = new rapancart();
+  rapancskl1 rps = new rapancskl1(false, 250);
+  raOptionDialog rod = new raOptionDialog();
 //  raArtiklUnos rpn = new raArtiklUnos();
 
-  private com.borland.dx.sql.dataset.QueryDataSet qdsFakeArtikl;
+  
+  frmTableDataView viewReq = new frmTableDataView(false, false, true);
 
   String[] key = new String[] {"CARTNOR"};
   
@@ -131,6 +155,17 @@ public class frmNorme extends raMasterFakeDetailArtikl {
     return "SELECT * FROM norme WHERE cartnor = " + mast.getInt("CARTNOR");
   }
 
+  
+  public void beforeShowDetail() {
+    // TODO Auto-generated method stub
+    super.beforeShowDetail();
+  }
+  
+  public boolean ValidacijaPrijeIzlazaDetail() {
+    // TODO Auto-generated method stub
+    return super.ValidacijaPrijeIzlazaDetail();
+  }
+
   private void jbInit() throws Exception {
     Asql.createMasterNorme(mast);
 
@@ -155,6 +190,12 @@ public class frmNorme extends raMasterFakeDetailArtikl {
     jPanel1.add(jlKol, new XYConstraints(15, 0, -1, -1));
     jPanel1.add(jraKol, new XYConstraints(150, 0, 100, -1));
 
+    this.raMaster.addOption(new raNavAction("Pregled cijena", raImages.IMGMOVIE, KeyEvent.VK_F8) {
+      public void actionPerformed(java.awt.event.ActionEvent ev) {
+        showRequirementsMaster();
+      }
+    },4);
+    
     SetPanels(rpn, jPanel1, false);
     initRpn();
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repFormatNorme","hr.restart.robno.repFormatNorme","FormatNorme","Normirani artikli s normama");
@@ -194,6 +235,81 @@ public class frmNorme extends raMasterFakeDetailArtikl {
     
     sysoutTEST st = new sysoutTEST(false); //XDEBUG delete when no more needed
     st.prn(detailReportSet);
+  }
+  
+  String[] reqc = {"CART", "CART1", "BC", "NAZART", "JM", "KOL"};
+  void showRequirementsMaster() {
+    JPanel pan = new JPanel(new BorderLayout());
+    JPanel p2 = new JPanel(new BorderLayout());
+    p2.add(rps);
+    p2.setBorder(BorderFactory.createEmptyBorder(10, 15, 20, 10));
+    pan.add(p2);
+    pan.add(rod.getOkPanel(), BorderLayout.SOUTH);
+    if (!rod.show(raMaster.getWindow(), pan, "Izbor skladišta"))
+      return;
+    
+    
+    
+    if (getMasterSet().getRowCount() == 0) return;
+    
+    final StorageDataSet reqs = stdoki.getDataModule().getScopedSet(
+        "CSKL CART CART1 BC NAZART JM KOL NC INAB");
+    reqs.open();
+    
+    raProcess.runChild(raMaster.getWindow(), new Runnable() {
+      public void run() {
+        DataSet exp = Aut.getAut().expandArt(
+            getMasterSet().getInt("CARTNOR"), Aus.one0, true);
+        if (exp == null) return;
+
+        for (exp.first(); exp.inBounds(); exp.next())
+           addToExpanded(reqs, exp, rps.getCSKL());
+        
+        String[] cols = {"GOD", "CART"};
+        String god = vl.getKnjigYear("robno");
+        System.out.println(god);
+        for (reqs.first(); reqs.inBounds(); reqs.next()) {
+          raProcess.checkClosing();
+          int cart = reqs.getInt("CART");
+          DataSet st = Stanje.getDataModule().getTempSet(Condition.whereAllEqual(cols, 
+              new Object[] {god, new Integer(cart)}));
+          st.open();
+          if (st.rowCount() > 0) {
+            if (!ld.raLocate(st, "CSKL", reqs.getString("CSKL"))) st.first();
+            reqs.setBigDecimal("NC", st.getBigDecimal("NC"));
+            reqs.setString("CSKL", st.getString("CSKL"));
+          } else {
+            DataSet art = Artikli.getDataModule().getTempSet(Condition.equal("CART", cart));
+            art.open();
+            reqs.setBigDecimal("NC", art.getBigDecimal("NC"));
+            reqs.setString("CSKL", "artikl");
+          }
+          reqs.setBigDecimal("INAB", rut.multiValue(reqs.getBigDecimal("KOL"), 
+              reqs.getBigDecimal("NC")));
+        }
+      }
+    });
+    
+    if (!raProcess.isCompleted()) return;
+    
+    viewReq.setDataSet(reqs);
+    viewReq.setSums(new String[] {"INAB"});
+    viewReq.setSaveName("Pregled-normativa");
+    viewReq.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+    viewReq.setTitle("Prikaz ukupne potrošnje materijala normativa");
+    viewReq.setVisibleCols(new int[] {0, Aut.getAut().getCARTdependable(1, 2, 3), 4, 5, 6, 7, 8});
+    viewReq.show();
+  }
+  
+  void addToExpanded(StorageDataSet expanded, DataSet art, String cskl) {
+    if (!ld.raLocate(expanded, "CART", Integer.toString(art.getInt("CART")))) {
+      expanded.last();
+      expanded.insertRow(false);
+      dM.copyColumns(art, expanded, reqc);
+    } else expanded.setBigDecimal("KOL", 
+        expanded.getBigDecimal("KOL").add(art.getBigDecimal("KOL")));
+    expanded.setString("CSKL", cskl);
+    expanded.post();
   }
 
   public void Funkcija_ispisa_master() {
