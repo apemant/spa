@@ -91,6 +91,7 @@ public class repNarPOS extends mxReport {
          "\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
          (fmb.getNarSet().getString("AKTIV").equalsIgnoreCase("D") ? "" :
            Aus.spc((width - 9) / 2) + "(kopija!)<$newline$>") + 
+           "Broj stola: " + fmb.getStol() + "<$newline$>" + 
            doubleLineSep + "<$newline$>"+ 
          Aut.getAut().getCARTdependable("RBR ŠIFRA   NAZIV<$newline$>",
                                         "RBR OZNAKA        NAZIV<$newline$>",
@@ -121,7 +122,7 @@ public class repNarPOS extends mxReport {
     try {
       //int crm = dm.getMxPrinterRM().getInt("CRM");//jebiga
       String crm = fmb.getDestination();
-      String str = frmParam.getParam("sisfun", "endPOSRM"+crm, "\\u001B\\u0064\\u0000", "Sekvenca koja dolazi na kraju ispisa POS racuna za rm "+crm);
+      String str = frmParam.getParam("sisfun", "endnarPOSRM"+crm, "\\u001B\\u0064\\u0000", "Sekvenca koja dolazi na kraju ispisa POS narudžbe za rm "+crm);
 //String str = "\\u0041\\u004e\\u0044\\u0052\\u0045\\u004a";
       StringTokenizer tok = new StringTokenizer(str,"\\u");
       char[] ret = new char[tok.countTokens()];
