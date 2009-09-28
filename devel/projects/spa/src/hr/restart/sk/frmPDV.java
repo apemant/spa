@@ -286,8 +286,7 @@ public class frmPDV extends raUpitLite {
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.4.v")){
         reportSet.setBigDecimal("III4V", tmpSet.getBigDecimal(i));
-        reportSet.setBigDecimal("UKUPNO_III_P",reportSet.getBigDecimal("UKUPNO_III_P").add(tmpSet.getBigDecimal(i)));
-        subtract_II_IIIP(tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("UKUPNO_III_V",reportSet.getBigDecimal("UKUPNO_III_V").add(tmpSet.getBigDecimal(i)));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.5.p")){
         reportSet.setBigDecimal("III5P", tmpSet.getBigDecimal(i));
@@ -296,8 +295,7 @@ public class frmPDV extends raUpitLite {
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.5.v")){
         reportSet.setBigDecimal("III5V", tmpSet.getBigDecimal(i));
-        reportSet.setBigDecimal("UKUPNO_III_P",reportSet.getBigDecimal("UKUPNO_III_P").add(tmpSet.getBigDecimal(i)));
-        subtract_II_IIIP(tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("UKUPNO_III_V",reportSet.getBigDecimal("UKUPNO_III_V").add(tmpSet.getBigDecimal(i)));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.6.p")){
         reportSet.setBigDecimal("III6P", tmpSet.getBigDecimal(i));
@@ -306,8 +304,16 @@ public class frmPDV extends raUpitLite {
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.6.v")){
         reportSet.setBigDecimal("III6V", tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("UKUPNO_III_V",reportSet.getBigDecimal("UKUPNO_III_V").add(tmpSet.getBigDecimal(i)));
+        continue;
+      } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.7.p")){
+        reportSet.setBigDecimal("III7P", tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_III_P",reportSet.getBigDecimal("UKUPNO_III_P").add(tmpSet.getBigDecimal(i)));
         subtract_II_IIIP(tmpSet.getBigDecimal(i));
+        continue;
+      } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"III.7.v")){
+        reportSet.setBigDecimal("III7V", tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("UKUPNO_III_V",reportSet.getBigDecimal("UKUPNO_III_V").add(tmpSet.getBigDecimal(i)));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"VII.1.1")){
         reportSet.setBigDecimal("NAB_NEK_ISPOR", tmpSet.getBigDecimal(i));
