@@ -189,12 +189,16 @@ public class Valid {
     return oQ.substring(0,endidx);
   }
   public static String getTableName(String oQ) {
-    oQ = oQ.toLowerCase();
-    StringTokenizer t = new StringTokenizer(oQ," ");
-    do {
-      String s1 = t.nextToken();
-      if (s1.toLowerCase().equals("from")) return t.nextToken();
-    } while (t.hasMoreTokens());
+    try {
+      oQ = oQ.toLowerCase();
+      StringTokenizer t = new StringTokenizer(oQ," ");
+      do {
+        String s1 = t.nextToken();
+        if (s1.toLowerCase().equals("from")) return t.nextToken();
+      } while (t.hasMoreTokens());
+    } catch (Exception e) {
+      //
+    }
     return "unknown";
   }
 /**
