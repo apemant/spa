@@ -263,12 +263,22 @@ public class raDbaseChooser extends JDialog {
     popmu.setEnabled(bases.getSelectedIndex() > 0 && vb.size() > 1);
     popmd.setEnabled(bases.getSelectedIndex() >= 0 &&
         bases.getSelectedIndex() < vb.size() - 1 && vb.size() > 1);
-    popa.setEnabled(vb.size() < 32);
+    popa.setEnabled(vb.size() < getMaxChooseDB());
     pope.setEnabled(bases.getSelectedIndex() >= 0 && vb.size() > 0);
     popd.setEnabled(bases.getSelectedIndex() >= 0 && vb.size() > 1);
     pop.show(bases, x, y);
   }
   
+  private int getMaxChooseDB() {
+    try {
+      int mcdb = Integer.parseInt(IntParam.getTag("maxchoosedb"));
+      if (mcdb > 0) return mcdb;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return 32;
+  }
+
   BaseDef getParams(String title) {
     return cpan.getBaseDef(this, title, (BaseDef) bases.getSelectedValue());
   }
