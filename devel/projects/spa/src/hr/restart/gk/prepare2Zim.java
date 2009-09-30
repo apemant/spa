@@ -416,7 +416,7 @@ public class prepare2Zim {
     //      xkontp    alpha    8     // sifra konta
           fhdeik9107.write(prepareString(forKnjizenje.getString("BROJKONTA"),8,true));
     //      xojp      alpha    6     // sifra organizacijske jedinice
-          fhdeik9107.write(prepareString(forKnjizenje.getString("CORG"),6,true));
+          fhdeik9107.write(prepareString(/*forKnjizenje.getString("CORG")*/"",6,true));
     //      xpartnp   alpha    5     // sifra partnera
           if (tecVersionTrans) {
           	QueryDataSet td = hr.restart.util.Util.getNewQueryDataSet("SELECT * FROM TransData where ndat = '"+forKnjizenje.getInt("CPAR")+"'",true);
@@ -443,7 +443,7 @@ public class prepare2Zim {
     //      xgod      numeric  8     // mjesec iz xdatk
           fhdeik9107.write(prepareString(rd.getYear2Digit(forKnjizenje.getTimestamp("DATDOK")),8,true));
     //      xdvo      numeric  8     // datum dvo
-          fhdeik9107.write(prepareString(sdf.format(forKnjizenje.getTimestamp("DATDOSP")),8,true));
+          fhdeik9107.write(prepareString(sdf.format(forKnjizenje.getTimestamp("DATDOK")),8,true));
     //      xdup      numeric  8     // datum uplate
           fhdeik9107.write(prepareString(sdf.format(forKnjizenje.getTimestamp("DATDOK")),8,true));
 //        fhdeik9107.write(prepareString("",8,true));
@@ -473,7 +473,7 @@ public class prepare2Zim {
     //      xsistdat  numeric  8
           fhdeik9107.write(prepareString("",8,false));
     //      ufa       alpha    8
-          fhdeik9107.write(prepareString("",8,false));
+          fhdeik9107.write(prepareString(forKnjizenje.getString("EXTBRDOK"),8,false));
     //      brzak     alpha    8
           fhdeik9107.write(prepareString("",8,false));
     //      sifvalute alpha    3
