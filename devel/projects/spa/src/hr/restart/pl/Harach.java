@@ -33,8 +33,8 @@ public class Harach {
   public static boolean createHarachOsnPod(String harachCVRODB, String harachCPOV) {
     boolean odbicichanged = false;
     if (!harachOsnPodCreated) {
-      QueryDataSet vrsteodb = Vrsteodb.getDataModule().getFilteredDataSet(Condition.equal("CVRODB", harachCVRODB));
-      QueryDataSet povjerioci = Povjerioci.getDataModule().getFilteredDataSet(Condition.equal("CPOV", harachCPOV));
+      QueryDataSet vrsteodb = Vrsteodb.getDataModule().getFilteredDataSet(Condition.equal("CVRODB", Short.parseShort(harachCVRODB)));
+      QueryDataSet povjerioci = Povjerioci.getDataModule().getFilteredDataSet(Condition.equal("CPOV", Integer.parseInt(harachCPOV)));
       vrsteodb.open();
       povjerioci.open();
       if (vrsteodb.getRowCount() == 0) {
