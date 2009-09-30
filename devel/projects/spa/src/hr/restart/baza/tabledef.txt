@@ -49,6 +49,9 @@
 # Ukoliko za neki modul nema definicije u ovoj datoteci, onda mora postojati stari
 # oblik inicijalizacije (onaj s hrpom poziva tipa KOLONA.setBlaBla(nesto)).
 
+$Verinfo
+azversion;char;50;pkey;;Verzija
+
 $approdok
 
 #definicija robnog dokumenta iz appro07 aplikacije
