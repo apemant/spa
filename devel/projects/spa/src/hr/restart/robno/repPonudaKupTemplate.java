@@ -80,8 +80,10 @@ public class repPonudaKupTemplate extends repIzlazOrigTemplate {
     if (hr.restart.sisfun.frmParam.getParam("robno", "GOTcijena", "VC").equalsIgnoreCase("MC")){
       raGRSectionFooterMCLines rgsfml = new raGRSectionFooterMCLines(this);
       rgsfml.Text1.defaultAlterer().setControlSource("=(dsum \"PonIznos\")");
+      /*rgsfml.Text2.defaultAlterer().setControlSource
+      ("=(-(+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")) (- (dsum \"PonIznos\"))))");*/
       rgsfml.Text2.defaultAlterer().setControlSource
-      ("=(-(+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")) (- (dsum \"PonIznos\"))))");
+      ("=(- (dsum \"PonIznos\") (+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\"))))");
       return rgsfml;
     }
     else return new raIzlazSectionFooterLines(this);
