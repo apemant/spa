@@ -23,12 +23,14 @@ import hr.restart.baza.Partneri;
 import hr.restart.baza.Telemark;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitFat;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 
 import javax.swing.JLabel;
@@ -45,6 +47,7 @@ public class raPrviKupci extends raUpitFat {
   private hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
   private hr.restart.util.Util ut = hr.restart.util.Util.getUtil();
   private Valid vl = Valid.getValid();
+  lookupData ld = lookupData.getlookupData();
   private TableDataSet tds = new TableDataSet();
   JPanel jp = new JPanel();
   XYLayout myXyLayout = new XYLayout();
@@ -152,6 +155,12 @@ public class raPrviKupci extends raUpitFat {
     );
     
     if (tmp.rowCount() < 1) setNoDataAndReturnImmediately();
+    
+    QueryDataSet minSet = ut.getNewQueryDataSet("SELECT doki.cpar, min(doki.datdok) as datpf " +
+        "FROM doki WHERE doki.vrdok in ('ROT','RAC','POD') AND " +
+        "doki.cskl = '1' group by doki.cpar");
+    
+    if (minSet.rowCount() < 1) setNoDataAndReturnImmediately();
 
     QueryDataSet prikaz = new QueryDataSet();
     prikaz.setColumns(new Column[] {
@@ -159,7 +168,8 @@ public class raPrviKupci extends raUpitFat {
         dm.createStringColumn("AGENT","Agent",50),
         dm.createStringColumn("TELE","Telemarketer",50),
         (Column) dm.getPartneri().getColumn("NAZPAR").clone(),
-        dm.createStringColumn("ARTIKLZ", "Roba", 200),
+        dm.createStringColumn("KUPOD","Kupac od",8),
+        dm.createStringColumn("ARTIKLZ", "Roba", 400),
         dm.createBigDecimalColumn("PROMET", "Promet", 2)
     });
     prikaz.open();
@@ -200,6 +210,11 @@ public class raPrviKupci extends raUpitFat {
         lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", tmp.getInt("CPAR") + "");
         prikaz.setString("NAZPAR", dm.getPartneri().getString("NAZPAR"));
         prikaz.setBigDecimal("PROMET", tmp.getBigDecimal("PROMET"));
+        
+        if (ld.raLocate(minSet, "CPAR", String.valueOf(tmp.getInt("CPAR")))) {
+          Timestamp beg = minSet.getTimestamp("DATPF");
+          prikaz.setString("KUPOD", ut.getMonth(beg) + "." + vl.findYear(beg)+".");
+        }
         
         if (agenti.containsKey(tmp.getInt("CAGENT")+""))
           prikaz.setString("AGENT",agenti.get(tmp.getInt("CAGENT")+"").toString());
