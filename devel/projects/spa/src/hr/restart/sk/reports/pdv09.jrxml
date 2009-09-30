@@ -545,7 +545,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="393" y="157" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="393" y="157" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -593,7 +593,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="393" y="178" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="393" y="178" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -633,7 +633,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="393" y="200" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="393" y="200" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -681,7 +681,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="393" y="220" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="393" y="220" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -729,7 +729,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="393" y="237" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="393" y="237" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -769,7 +769,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="393" y="252" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="393" y="252" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -809,7 +809,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="393" y="267" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="393" y="267" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -857,7 +857,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="393" y="287" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="393" y="287" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -1513,7 +1513,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="260" y="590" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="260" y="590" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -1578,7 +1578,7 @@ ZA UPLATU (II.-III.) ILI ZA POVRAT (III.-II.)]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="260" y="614" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="260" y="614" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -1626,7 +1626,7 @@ ZA UPLATU (II.-III.) ILI ZA POVRAT (III.-II.)]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="260" y="636" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="260" y="636" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -1666,7 +1666,7 @@ ZA UPLATU (II.-III.) ILI ZA POVRAT (III.-II.)]]></text>
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="260" y="658" width="128" height="14" forecolor="#000000"/>
+					<reportElement x="260" y="658" width="128" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
@@ -2155,7 +2155,7 @@ POREZNE UPRAVE]]></text>
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{UST}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="426" y="679" width="14" height="14" forecolor="#000000">
+					<reportElement x="426" y="679" width="14" height="15" forecolor="#000000">
 						<printWhenExpression><![CDATA[$F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
@@ -2165,7 +2165,7 @@ POREZNE UPRAVE]]></text>
 					<text><![CDATA[X]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="0" y="679" width="14" height="14" forecolor="#000000">
+					<reportElement x="0" y="679" width="14" height="15" forecolor="#000000">
 						<printWhenExpression><![CDATA[$F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
@@ -2175,7 +2175,7 @@ POREZNE UPRAVE]]></text>
 					<text><![CDATA[X]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="216" y="679" width="14" height="14" forecolor="#000000">
+					<reportElement x="216" y="679" width="14" height="15" forecolor="#000000">
 						<printWhenExpression><![CDATA[$F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
