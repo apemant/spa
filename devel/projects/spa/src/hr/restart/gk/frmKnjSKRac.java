@@ -279,8 +279,10 @@ public class frmKnjSKRac extends frmKnjizenje {
   }
     //punjenje nove stavke
     stavka.setTimestamp("DATDOK",skstavke.getTimestamp("DATDOK"));
+    stavka.setTimestamp("DATDOSP",skstavke.getTimestamp("DATDOSP"));
     //ako je rbs od uistavke 1 onda ona prezentira skstavku i treba drugacije napuniti
     stavka.setString("BROJDOK",skstavke.getString("BROJDOK"));
+    stavka.setString("EXTBRDOK",skstavke.getString("EXTBRDOK"));
     stavka.setInt("CPAR",uistavke.getInt("CPAR"));
     VarStr opis = new VarStr();
     if (opis_to_override == null || r2opis.equals(opis_to_override)) {
