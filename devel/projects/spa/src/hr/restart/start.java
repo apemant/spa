@@ -17,12 +17,16 @@
 ****************************************************************************/
 package hr.restart;
 import hr.restart.baza.BazaOper;
+import hr.restart.baza.HTSZipcodes;
+import hr.restart.baza.Verinfo;
 import hr.restart.baza.kreator;
+import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.IntParam;
 import hr.restart.util.Util;
 import hr.restart.util.VarStr;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raDbaseChooser;
+import hr.restart.util.raDbaseCreator;
 import hr.restart.util.raFrame;
 import hr.restart.util.raImages;
 import hr.restart.util.raLLFrames;
@@ -32,6 +36,8 @@ import hr.restart.util.startFrame;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,6 +49,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+
+import com.borland.dx.sql.dataset.QueryDataSet;
 /**
  * Title:
  * Description:
@@ -551,6 +559,10 @@ System.out.println("no port starting shell");
     handleAppleStart();
     runtimeArgs = args;
     handleAlterIcons();
+    if (checkArgs("-updatedb")) {
+      new DbUpdater();
+      //System.exit(0);
+    }
     if (checkArgs("-adbchoose")) {
       if (!raDbaseChooser.showInstance(true)) System.exit(0);
     } else if (checkArgs("-dbchoose")) {
@@ -558,9 +570,13 @@ System.out.println("no port starting shell");
     } else if (checkArgs("-dbinit")) {
       if (!raDbaseChooser.initFrom()) System.exit(0);
     }
+//ai: HTS init (temporary)
+//     HTSZipcodes.initMe();
+//
+    
     String runArg = getRunArg();
     if (runArg.equals("initialize")) {
-      
+      System.out.println("flag -Rinitialize je zamijenjen sa -dbinit");
 //      if (!checkArgs("direct")) hr.restart.util.Util.redirectSystemOut();
 //      startFrame sfr = startFrame.getStartFrame();
 //      sfr.ShowMe(true, "Inicijalizacija baze");
@@ -589,6 +605,8 @@ System.out.println("no port starting shell");
     } else {
       raSplashAWT.splashMSG("Izrada sigurnosne kopije...");
       new raMiniBackup();
+      raSplashAWT.splashMSG("Provjera verzije baze...");
+      dbVersionCheck();
       if (runArg.equals("") || !checkModule(runArg)) {
         raSplashAWT.splashMSG("Provjera parametara...");
         parseURL();
@@ -598,6 +616,59 @@ System.out.println("no port starting shell");
       } else {
         hr.restart.util.startFrame.main(runtimeArgs);
       }
+    }
+  }
+
+  private static void dbVersionCheck() {
+    if (!IntParam.getTag("dbvcheck").equalsIgnoreCase("true")) return;
+    boolean versioncurrent = false;
+    String appver = raSplashWorker.verMF.trim();
+    String dbver = "";
+    try {
+      QueryDataSet vi = Verinfo.getDataModule().getQueryDataSet();
+      vi.open();
+      vi.first();
+      dbver = vi.getString("azversion").trim();
+      if (appver.equals(dbver)) {
+        versioncurrent = true;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    if (!versioncurrent) {
+      if (JOptionPane.showConfirmDialog(null,
+          new raMultiLineMessage("Verzija programa (" + appver + ") ne odgovara verziji baze ("+dbver+") !! \n"
+            +"Restartati program i ažurirati bazu?."), 
+            "Upit", JOptionPane.OK_CANCEL_OPTION) 
+                != JOptionPane.OK_OPTION) {
+        return;
+      }
+      //ajsad
+      Util.redirectSystemOut();
+      int answ = JOptionPane.showConfirmDialog(null, "Napraviti sigurnosnu kopiju prije ažuriranja baze?", "Pitanje", JOptionPane.YES_NO_CANCEL_OPTION);
+      if (answ == 0) {// da
+        raDbaseCreator.displayDumpDialog(null);
+      } else if (answ == 2) {
+        return;
+      }
+      String startcommand = System.getProperty("user.dir")+File.separatorChar;
+      if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+        startcommand += "starter.exe";
+      } else {
+        startcommand += "startSPA.sh";
+      }
+      startcommand += " -updatedb";
+      final String sc = startcommand;
+      Runtime.getRuntime().addShutdownHook(new Thread() {
+        public void run() {
+          try {
+            Process p = Runtime.getRuntime().exec(sc,null,new File(System.getProperty("user.dir")));
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      });
+      System.exit(0);
     }
   }
 

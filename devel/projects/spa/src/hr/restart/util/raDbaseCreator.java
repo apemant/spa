@@ -1,5 +1,6 @@
 package hr.restart.util;
 
+import hr.restart.DbUpdater;
 import hr.restart.baza.Condition;
 import hr.restart.baza.ConsoleCreator;
 import hr.restart.baza.KreirDrop;
@@ -217,6 +218,7 @@ public class raDbaseCreator {
         }
       }
     
+    DbUpdater.updateDBVersion();
     if (!source.isDirectory()) {
       raProcess.setMessage("Brisanje privremenih datoteka ...", false);
       for (int i = 0; i < dats.length; i++)
