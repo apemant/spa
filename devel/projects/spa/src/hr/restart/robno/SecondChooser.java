@@ -128,6 +128,7 @@ public class SecondChooser extends JraDialog {
     private boolean rnlOpis = false;
     
     private boolean transOtp = false;
+    private boolean transPnbz = false;
     
     private boolean copySkladParam = false;
     private boolean copySklad = false;
@@ -165,8 +166,11 @@ public class SecondChooser extends JraDialog {
         rnlOpis = frmParam.getParam("robno", "rnlTransOpis", "N",
             "Prenijeti opis radnog naloga na raèun (D,N)?").equals("D");
         
-        transOtp = frmParam.getParam("robro", "transBrdokOtp", "D",
+        transOtp = frmParam.getParam("robno", "transBrdokOtp", "D",
             "Prenijeti broj otpremnice na raèun (D,N)").equals("D");
+        
+        transPnbz = frmParam.getParam("robno", "transPoziv", "D",
+        "Prenijeti poziv na broj s ponude na raèun (D,N)").equals("D");
         
         copySkladParam = frmParam.getParam("robno", "copySkladPrice", "N",
              "Prepisati skladišne cijene kod prijenosa (D,N)").equals("D");
@@ -325,7 +329,7 @@ public class SecondChooser extends JraDialog {
     	 dM.copyColumns(ZaglavljeSet, rIT.getMasterSet(), new String[] {"DATDOK", "DVO", "DATDOSP"});
      }
         
-		if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("PON")
+		if (transPnbz && ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("PON")
 				&& (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase(
 						"RAC") || rIT.getMasterSet().getString("VRDOK")
 						.equalsIgnoreCase("ROT"))) {
