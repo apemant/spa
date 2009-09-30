@@ -17,7 +17,6 @@
 ****************************************************************************/
 package hr.restart;
 import hr.restart.baza.BazaOper;
-import hr.restart.baza.HTSZipcodes;
 import hr.restart.baza.Verinfo;
 import hr.restart.baza.kreator;
 import hr.restart.swing.raMultiLineMessage;
