@@ -361,7 +361,7 @@ public class ConsoleCreator {
                                 
 								if (!status.endsWith("spremanja!")) {
 									if (tabtab) tabCreated = true;
-									if (!kdp.DropTable() || !checkTab) {
+									if (!kdp.DropTable() /*|| !checkTab*/) {
 										status = "Tablica zauzeta!";
 									} else {
                                         kdp.KreirTable();
@@ -840,6 +840,6 @@ public class ConsoleCreator {
             "hr.restart.baza.Urvrdok", "hr.restart.baza.Urstat",
             "hr.restart.baza.Urshist", "hr.restart.baza.Approdok",
             "hr.restart.baza.Imageinfo", "hr.restart.baza.Artrans",
-            "hr.restart.baza.stdokitmp", "hr.restart.baza.Stolovi"
+            "hr.restart.baza.stdokitmp", "hr.restart.baza.Stolovi", "hr.restart.baza.Verinfo"
       };
 }
