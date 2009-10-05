@@ -531,9 +531,10 @@ public class frmPDV extends raUpitLite {
 //    this.addReport("hr.restart.sk.repPrijavaPDV_K", "Obrazac PDV-K", 2);
     this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv09.jrxml","Obrazac PDV 2009");
     this.addReport("hr.restart.sk.repPrijavaPDV","hr.restart.sk.repPrijavaPDV_K","PrijavaPDV06","Obrazac PDV");
+    this.addJasper("hr.restart.sk.repPrijavaPDV_Kj","hr.restart.sk.repPrijavaPDV_K","pdvk09.jrxml","Obrazac PDV-K 2009");
     this.addReport("hr.restart.sk.repPrijavaPDV_K","hr.restart.sk.repPrijavaPDV_K","PrijavaPDV_K06","Obrazac PDV-K");    
-    this.addReport("hr.restart.sk.repPrijavaPDV","hr.restart.sk.repPrijavaPDV_K","PrijavaPDV","Obrazac PDV 2005");
-    this.addReport("hr.restart.sk.repPrijavaPDV_K","hr.restart.sk.repPrijavaPDV_K","PrijavaPDV_K","Obrazac PDV-K 2005");
+/*    this.addReport("hr.restart.sk.repPrijavaPDV","hr.restart.sk.repPrijavaPDV_K","PrijavaPDV","Obrazac PDV 2005");
+    this.addReport("hr.restart.sk.repPrijavaPDV_K","hr.restart.sk.repPrijavaPDV_K","PrijavaPDV_K","Obrazac PDV-K 2005");*/
   }
 
   void formatReportSet(){
