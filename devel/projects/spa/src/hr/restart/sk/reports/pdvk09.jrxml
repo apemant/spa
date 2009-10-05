@@ -230,7 +230,7 @@
 					</graphicElement>
 				</rectangle>
 				<staticText>
-					<reportElement positionType="Float" x="484" y="0" width="52" height="16" forecolor="#000000"/>
+					<reportElement positionType="Float" x="484" y="0" width="52" height="17" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="13" isBold="false" pdfEncoding="Cp1250"/>
@@ -2045,9 +2045,9 @@ ZA POVRAT]]></text>
 	<group name="Section1" isStartNewPage="true">
 		<groupExpression><![CDATA[$F{NAZIV}]]></groupExpression>
 		<groupHeader>
-			<band height="676" splitType="Prevent">
+			<band height="677" splitType="Prevent">
 				<staticText>
-					<reportElement positionType="Float" x="484" y="0" width="52" height="16" forecolor="#000000"/>
+					<reportElement positionType="Float" x="484" y="0" width="52" height="17" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="13" isBold="false" pdfEncoding="Cp1250"/>
@@ -2651,15 +2651,7 @@ POREZNE UPRAVE]]></text>
 					</graphicElement>
 				</line>
 				<staticText>
-					<reportElement positionType="Float" mode="Opaque" x="0" y="374" width="537" height="8" forecolor="#000000" backcolor="#FFFFFF"/>
-					<box topPadding="1" leftPadding="2"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
-					</textElement>
-					<text><![CDATA[]]></text>
-				</staticText>
-				<staticText>
-					<reportElement positionType="Float" mode="Opaque" x="0" y="375" width="537" height="297" forecolor="#000000" backcolor="#EBEBEB"/>
+					<reportElement positionType="Float" mode="Opaque" x="0" y="378" width="537" height="297" forecolor="#000000" backcolor="#EBEBEB"/>
 					<box topPadding="1" leftPadding="4">
 						<pen lineWidth="0.5" lineStyle="Solid" lineColor="#D7D7D7"/>
 					</box>

@@ -217,7 +217,7 @@
 					</graphicElement>
 				</rectangle>
 				<staticText>
-					<reportElement positionType="Float" x="484" y="0" width="52" height="16" forecolor="#000000"/>
+					<reportElement positionType="Float" x="484" y="0" width="52" height="17" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="13" isBold="false" pdfEncoding="Cp1250"/>
