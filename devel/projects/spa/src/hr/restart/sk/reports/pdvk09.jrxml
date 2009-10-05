@@ -1978,7 +1978,7 @@ ZA POVRAT]]></text>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement x="21" y="681" width="72" height="11" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -1988,7 +1988,7 @@ ZA POVRAT]]></text>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement x="237" y="681" width="72" height="11" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -1998,7 +1998,7 @@ ZA POVRAT]]></text>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement x="448" y="681" width="72" height="11" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -2008,7 +2008,7 @@ ZA POVRAT]]></text>
 				</textField>
 				<staticText>
 					<reportElement x="426" y="679" width="14" height="15" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -2018,7 +2018,7 @@ ZA POVRAT]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="0" y="679" width="14" height="15" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -2028,7 +2028,7 @@ ZA POVRAT]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="216" y="679" width="14" height="15" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -2042,7 +2042,7 @@ ZA POVRAT]]></text>
 			<band/>
 		</groupFooter>
 	</group>
-	<group name="Section1">
+	<group name="Section1" isStartNewPage="true">
 		<groupExpression><![CDATA[$F{NAZIV}]]></groupExpression>
 		<groupHeader>
 			<band height="676" splitType="Prevent">
@@ -2705,9 +2705,9 @@ NAPOMENA:]]></text>
 		<band/>
 	</columnFooter>
 	<pageFooter>
-		<band height="72" splitType="Prevent">
+		<band height="32" splitType="Prevent">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="64" width="250" height="8" forecolor="#808080"/>
+				<reportElement positionType="Float" x="1" y="22" width="250" height="8" forecolor="#808080"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="5" isBold="false" pdfEncoding="Cp1250"/>
@@ -2716,18 +2716,6 @@ NAPOMENA:]]></text>
 			</staticText>
 		</band>
 	</pageFooter>
-	<lastPageFooter>
-		<band height="72" splitType="Prevent">
-			<staticText>
-				<reportElement positionType="Float" x="0" y="64" width="250" height="8" forecolor="#808080"/>
-				<box topPadding="1" leftPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="5" isBold="false" pdfEncoding="Cp1250"/>
-				</textElement>
-				<text><![CDATA[(c) REST@RT Sustav poslovnih aplikacija (SPA)]]></text>
-			</staticText>
-		</band>
-	</lastPageFooter>
 	<summary>
 		<band/>
 	</summary>

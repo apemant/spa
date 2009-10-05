@@ -2126,7 +2126,7 @@ POREZNE UPRAVE]]></text>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement x="21" y="681" width="72" height="11" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -2136,7 +2136,7 @@ POREZNE UPRAVE]]></text>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement x="237" y="681" width="72" height="11" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -2146,7 +2146,7 @@ POREZNE UPRAVE]]></text>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement x="448" y="681" width="72" height="11" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -2156,7 +2156,7 @@ POREZNE UPRAVE]]></text>
 				</textField>
 				<staticText>
 					<reportElement x="426" y="679" width="14" height="15" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -2166,7 +2166,7 @@ POREZNE UPRAVE]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="0" y="679" width="14" height="15" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -2176,7 +2176,7 @@ POREZNE UPRAVE]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="216" y="679" width="14" height="15" forecolor="#000000">
-						<printWhenExpression><![CDATA[$F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
