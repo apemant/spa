@@ -216,7 +216,7 @@
 	<group name="Section0">
 		<groupExpression><![CDATA[$F{NAZIV}]]></groupExpression>
 		<groupHeader>
-			<band height="705" splitType="Prevent">
+			<band height="719" splitType="Prevent">
 				<rectangle>
 					<reportElement mode="Opaque" x="0" y="32" width="288" height="62" forecolor="#000000" backcolor="#FFFFFF"/>
 					<graphicElement>
@@ -1579,7 +1579,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[POREZNA OBVEZA U OBRAČUNSKOM RAZDOBLJU:
+					<text><![CDATA[UKUPNA POREZNA OBVEZA ZA POREZNO RAZDOBLJE:
 ZA UPLATU (II.-III.) ILI ZA POVRAT (III.-II.)]]></text>
 				</staticText>
 				<staticText>
@@ -1628,7 +1628,7 @@ ZA UPLATU (II.-III.) ILI ZA POVRAT (III.-II.)]]></text>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[PO PRETHODNOM OBRAČUNU: NEUPLAĆENI POREZ DO DANA PODNOŠENJA OVE PRIJAVE - VIŠE UPLAĆENO - POREZNI KREDIT]]></text>
+					<text><![CDATA[UPLAĆENO DO DANA PODNOŠENJA OVE PRIJAVE]]></text>
 				</staticText>
 				<staticText>
 					<reportElement mode="Opaque" x="393" y="636" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
@@ -1703,7 +1703,7 @@ ZA UPLATU (II.-III.) ILI ZA POVRAT (III.-II.)]]></text>
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VI}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="23" y="661" width="234" height="13" forecolor="#000000"/>
+					<reportElement x="23" y="657" width="234" height="17" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
@@ -1711,7 +1711,7 @@ ZA UPLATU (II.-III.) ILI ZA POVRAT (III.-II.)]]></text>
 					<text><![CDATA[UKUPNO RAZLIKA: ZA UPLATU / ZA POVRAT]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="314" y="678" width="15" height="19" forecolor="#000000"/>
+					<reportElement x="315" y="692" width="15" height="19" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
@@ -1720,7 +1720,7 @@ ZA UPLATU (II.-III.) ILI ZA POVRAT (III.-II.)]]></text>
 Kn]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="524" y="678" width="15" height="19" forecolor="#000000"/>
+					<reportElement x="525" y="692" width="13" height="19" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
@@ -1729,7 +1729,7 @@ Kn]]></text>
 Kn]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="98" y="678" width="15" height="19" forecolor="#000000"/>
+					<reportElement x="99" y="692" width="15" height="19" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
@@ -1738,25 +1738,25 @@ Kn]]></text>
 Kn]]></text>
 				</staticText>
 				<rectangle>
-					<reportElement mode="Opaque" x="216" y="679" width="14" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+					<reportElement mode="Opaque" x="217" y="693" width="14" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Solid"/>
 					</graphicElement>
 				</rectangle>
 				<rectangle>
-					<reportElement mode="Opaque" x="426" y="679" width="14" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+					<reportElement mode="Opaque" x="427" y="693" width="14" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Solid"/>
 					</graphicElement>
 				</rectangle>
 				<rectangle>
-					<reportElement mode="Opaque" x="0" y="679" width="14" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+					<reportElement mode="Opaque" x="1" y="693" width="14" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Solid"/>
 					</graphicElement>
 				</rectangle>
 				<staticText>
-					<reportElement x="230" y="687" width="82" height="15" forecolor="#000000"/>
+					<reportElement x="231" y="701" width="82" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
@@ -1765,7 +1765,7 @@ Kn]]></text>
 PREDUJAM]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="440" y="687" width="82" height="15" forecolor="#000000"/>
+					<reportElement x="441" y="701" width="82" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
@@ -1774,7 +1774,7 @@ PREDUJAM]]></text>
 USTUP POVRATA]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="14" y="687" width="82" height="15" forecolor="#000000"/>
+					<reportElement x="15" y="701" width="82" height="15" forecolor="#000000"/>
 					<box topPadding="1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
@@ -1783,19 +1783,19 @@ USTUP POVRATA]]></text>
 ZA POVRAT]]></text>
 				</staticText>
 				<line>
-					<reportElement x="231" y="693" width="81" height="1" forecolor="#000000"/>
+					<reportElement x="232" y="707" width="81" height="1" forecolor="#000000"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Solid"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement x="441" y="693" width="81" height="1" forecolor="#000000"/>
+					<reportElement x="442" y="707" width="81" height="1" forecolor="#000000"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Solid"/>
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement x="15" y="693" width="81" height="1" forecolor="#000000"/>
+					<reportElement x="16" y="707" width="81" height="1" forecolor="#000000"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineStyle="Solid"/>
 					</graphicElement>
@@ -1977,7 +1977,7 @@ ZA POVRAT]]></text>
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III7p}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement x="21" y="681" width="72" height="11" forecolor="#000000">
+					<reportElement x="22" y="695" width="72" height="11" forecolor="#000000">
 						<printWhenExpression><![CDATA[new java.lang.Boolean($F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="2"/>
@@ -1987,7 +1987,7 @@ ZA POVRAT]]></text>
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{POV}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement x="237" y="681" width="72" height="11" forecolor="#000000">
+					<reportElement x="238" y="695" width="72" height="11" forecolor="#000000">
 						<printWhenExpression><![CDATA[new java.lang.Boolean($F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="2"/>
@@ -1997,7 +1997,7 @@ ZA POVRAT]]></text>
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{PRED}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement x="448" y="681" width="72" height="11" forecolor="#000000">
+					<reportElement x="449" y="695" width="72" height="11" forecolor="#000000">
 						<printWhenExpression><![CDATA[new java.lang.Boolean($F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="2"/>
@@ -2007,7 +2007,7 @@ ZA POVRAT]]></text>
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{UST}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="426" y="679" width="14" height="15" forecolor="#000000">
+					<reportElement x="427" y="693" width="14" height="15" forecolor="#000000">
 						<printWhenExpression><![CDATA[new java.lang.Boolean($F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
@@ -2017,7 +2017,7 @@ ZA POVRAT]]></text>
 					<text><![CDATA[X]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="0" y="679" width="14" height="15" forecolor="#000000">
+					<reportElement x="1" y="693" width="14" height="15" forecolor="#000000">
 						<printWhenExpression><![CDATA[new java.lang.Boolean($F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
@@ -2027,7 +2027,7 @@ ZA POVRAT]]></text>
 					<text><![CDATA[X]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="216" y="679" width="14" height="15" forecolor="#000000">
+					<reportElement x="217" y="693" width="14" height="15" forecolor="#000000">
 						<printWhenExpression><![CDATA[new java.lang.Boolean($F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1"/>
