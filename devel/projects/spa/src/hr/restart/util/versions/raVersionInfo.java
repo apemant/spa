@@ -23,8 +23,6 @@
 
 package hr.restart.util.versions;
 
-import hr.restart.util.IntParam;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -113,6 +111,7 @@ public class raVersionInfo {
 	  	}
 	  	if (v!=null) return v;
 		} catch (Exception e) {
+		  System.out.println("jarfile = "+jarFile);
 			e.printStackTrace();
 		}
   	return "N/A";
@@ -166,13 +165,21 @@ public class raVersionInfo {
     }
   }
   /**
-   * Vraca ra-spa.jar ako nije drukcije zapisano u restart-properties 
+   * Vraca ra-spa.jar ako nije drukcije zapisano u restart.properties 
    * (npr. appjarname=pra-spa.jar)
-   * @return ra-spa.jar ako nije drukcije zapisano u restart-properties
+   * @return ra-spa.jar ako nije drukcije zapisano u restart.properties
    */
   public static String getAppJarName() {
-    String r = IntParam.getTag("appjarname");
-    return r.equals("")?"ra-spa.jar":r;
+    try {
+      String r = (String)Class.forName("hr.restart.util.IntParam")
+        .getMethod("getTag", new Class[] {String.class})
+        .invoke(null, new Object[] {"appjarname"});
+      System.out.println("appjarname = "+r);
+      return r.equals("")?"ra-spa.jar":r;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return "ra-spa.jar";
   }
   
   public static String getCurrentVersion() {
