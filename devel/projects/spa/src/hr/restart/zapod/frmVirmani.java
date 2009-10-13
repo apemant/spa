@@ -857,8 +857,8 @@ public class frmVirmani extends raMatPodaci {
           getRepRunner().addReport("hr.restart.zapod.repIspVirNewSmall2", "Ispis svih virmana (HUB 1)");
           getRepRunner().addReport("hr.restart.zapod.repIspVirNew", "Ispis virmana (HUB 1-1)");
           getRepRunner().addReport("hr.restart.zapod.repIspVirNew2", "Ispis svih virmana (HUB 1-1)");
-          getRepRunner().addReport("hr.restart.zapod.repVirman", "hr.restart.zapod.repVirman", "Virmani", "Laserski ispis virmana (HUB 1-1)");
-          getRepRunner().addReport("hr.restart.zapod.repVirmani", "hr.restart.zapod.repVirmani", "Virmani", "Laserski ispis svih virmana (HUB 1-1)");
+          getRepRunner().addJasper("hr.restart.zapod.repVirman", "hr.restart.zapod.repVirman", "virman.jrxml", "Laserski ispis virmana (HUB 1-1)");
+          getRepRunner().addJasper("hr.restart.zapod.repVirmani", "hr.restart.zapod.repVirmani", "virman.jrxml", "Laserski ispis svih virmana (HUB 1-1)");
         }
         catch (Exception ex) {
           ex.printStackTrace();
