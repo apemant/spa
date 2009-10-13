@@ -23,6 +23,8 @@
 
 package hr.restart.util.versions;
 
+import hr.restart.util.IntParam;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +51,7 @@ public class raVersionInfo {
    * @return sve vrijednosti i nazive tagova u common sekciji manifesta
    */
   public static String getVersionInfo() {
-    return getCommonManifestEntry(getJarPathFromClassPath("ra-spa.jar"),null);
+    return getCommonManifestEntry(getJarPathFromClassPath(getAppJarName()),null);
   }
   /**
    * Vrati vrijednost Date taga u manifestu jar file-a
@@ -67,7 +69,7 @@ public class raVersionInfo {
    * @return vrijednost Date taga u manifestu jar file-a ili 'N/A'
    */  
   public static String getBuildDateMF() {
-    return getBuildDateMF(getJarPathFromClassPath("ra-spa.jar"));
+    return getBuildDateMF(getJarPathFromClassPath(getAppJarName()));
   }
   /**
    * Vrati vrijednost Version taga u manifestu jar file-a
@@ -85,7 +87,7 @@ public class raVersionInfo {
    * @return vrijednost Version taga u manifestu jar file-a ili 'N/A'
    */  
   public static String getBuildVersionMF() {
-    return getBuildDateMF(getJarPathFromClassPath("ra-spa.jar"));
+    return getBuildDateMF(getJarPathFromClassPath(getAppJarName()));
   }
   /**
    * Vrati vrijednost zadanog taga 'common' sekcije u manifestu jar file-a
@@ -163,9 +165,18 @@ public class raVersionInfo {
       return new Timestamp(0);
     }
   }
+  /**
+   * Vraca ra-spa.jar ako nije drukcije zapisano u restart-properties 
+   * (npr. appjarname=pra-spa.jar)
+   * @return ra-spa.jar ako nije drukcije zapisano u restart-properties
+   */
+  public static String getAppJarName() {
+    String r = IntParam.getTag("appjarname");
+    return r.equals("")?"ra-spa.jar":r;
+  }
   
   public static String getCurrentVersion() {
-    return getBuildVersionMF(getJarPathFromClassPath("ra-spa.jar"));
+    return getBuildVersionMF(getJarPathFromClassPath(getAppJarName()));
   }
   /**
    * @deprecated stari nacin trazenja verzije u ra.jar/version.info novo: getBuildDateMF()
