@@ -86,15 +86,15 @@ public class frmRekPrim extends frmIzvjestajiPL {
 
     if (!super.Validacija()) return false;
 
-    qstr01 = "SELECT max(cradnik) as cradnik, max(cvrp) as cvrp, '" + fieldSet.getString("CORG") + "' as corg, sum(sati) as sati,  " +
+    qstr01 = "SELECT max(cradnik) as cradnik, cvrp, '" + fieldSet.getString("CORG") + "' as corg, sum(sati) as sati,  " +
              "sum(bruto) as bruto, sum(doprinosi) as doprinosi, sum(neto) as neto FROM " + getTableName() + " WHERE " +
              getWhereQuery() + " GROUP BY cvrp";
 
-    qstr02 = "SELECT max(cradnik) as cradnik, max(cvrp) as cvrp, max(corg) as corg, sum(sati) as sati,  " +
+    qstr02 = "SELECT max(cradnik) as cradnik, cvrp, corg, sum(sati) as sati,  " +
              "sum(bruto) as bruto, sum(doprinosi) as doprinosi, sum(neto) as neto FROM " + getTableName() + " WHERE " +
              getWhereQuery() + " GROUP BY corg, cvrp";
 
-    qstr02A= "SELECT max(corg) as corg, sum(sati) as sumsati,  sum(bruto) as sumbruto, sum(doprinosi) as sumdoprinosi, "+
+    qstr02A= "SELECT corg, sum(sati) as sumsati,  sum(bruto) as sumbruto, sum(doprinosi) as sumdoprinosi, "+
              "sum(neto) as sumneto FROM " + getTableName() + " WHERE " +
              getWhereQuery() + " GROUP BY corg";
 
@@ -102,7 +102,7 @@ public class frmRekPrim extends frmIzvjestajiPL {
              "bruto, doprinosi, neto FROM " + getTableName() + " WHERE " +
              getWhereQuery() + " ORDER BY cradnik";
 
-    qstr03A= "SELECT max(cradnik) as cradnik, sum(sati) as sumsati,  sum(bruto) as sumbruto, sum(doprinosi) as sumdoprinosi, "+
+    qstr03A= "SELECT cradnik, sum(sati) as sumsati,  sum(bruto) as sumbruto, sum(doprinosi) as sumdoprinosi, "+
              "sum(neto) as sumneto FROM " + getTableName() + " WHERE " +
              getWhereQuery() + " GROUP BY cradnik";
 
