@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stdoku;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.JraTextMultyKolField;
@@ -57,6 +58,7 @@ import com.borland.jbcl.layout.XYLayout;
 public class jpUlazDetail extends JPanel {
   String oldValue = "";
   boolean isCSKL=false;
+  boolean edion = false;
   _Main main;
   frmUlazTemplate frm;
   java.util.ResourceBundle res = java.util.ResourceBundle.getBundle("hr.restart.robno.Res");
@@ -173,7 +175,20 @@ public class jpUlazDetail extends JPanel {
   };
   
   JraButton trans = new JraButton();
-
+  
+  JPanel edi = new JPanel();
+  
+  JLabel jlDatPro = new JLabel();
+  JLabel jlRok = new JLabel();
+  JLabel jlLot = new JLabel();
+  JLabel jlReg = new JLabel();
+  
+  JraTextField jraDatPro = new JraTextField();
+  JraTextField jraRok = new JraTextField();
+  JraTextField jraLot = new JraTextField();
+  JraTextField jraReg = new JraTextField();
+  
+  
   public void MYmetToDo_after_lookUp(){
     if ("PST".equals(frm.vrDok) &&
         Stdoku.getDataModule().getRowCount(
@@ -257,6 +272,10 @@ public class jpUlazDetail extends JPanel {
         jtfKOL_focusGained(e);
       }
     });
+    
+    edion = frmParam.getParam("robno", "ediUlaz", "N",
+        "Panel za unos EDI podataka na ulazu (D,N)").equals("D");
+    
     trans.setIcon(raImages.getImageIcon(raImages.IMGSENDMAIL));
     trans.setAutomaticFocusLost(true);
     trans.setToolTipText("Dohvat unaprijed razduženih stavki izlaza");
@@ -488,7 +507,46 @@ public class jpUlazDetail extends JPanel {
     jpDetailCenter.add(jtfIBP, new XYConstraints(500, 225, 130, -1));
     jpDetailCenter.add(jtfDC_VAL, new XYConstraints(360, 75, 130, -1));
     jpDetailCenter.add(jtfIDOB_VAL, new XYConstraints(500, 75, 130, -1));
+    
+    if (edion && frm.prSTAT == 'P') addEdi();
     this.add(rpcart, BorderLayout.NORTH);
+  }
+  
+  /*JLabel jlDatPro = new JLabel();
+  JLabel jlRok = new JLabel();
+  JLabel jlLot = new JLabel();
+  JLabel jlReg = new JLabel();
+  
+  JraTextField jraDatPro = new JraTextField();
+  JraTextField jraRok = new JraTextField();
+  JraTextField jraLot = new JraTextField();
+  JraTextField jraReg = new JraTextField();*/
+  
+  void addEdi() {
+    XYLayout lay = new XYLayout(645, 70);
+    edi.setLayout(lay);
+    edi.setBorder(BorderFactory.createEtchedBorder());
+    jlLot.setText("Šarža");
+    jlLot.setHorizontalAlignment(JLabel.CENTER);
+    jlReg.setText("Reg. oznaka");
+    jlReg.setHorizontalAlignment(JLabel.CENTER);
+    jlDatPro.setText("Datum proizvodnje");
+    jlDatPro.setHorizontalAlignment(JLabel.CENTER);
+    jlRok.setText("Rok uporabe");
+    jlRok.setHorizontalAlignment(JLabel.CENTER);
+    jraLot.setColumnName("LOT");
+    jraReg.setColumnName("CREG");
+    jraDatPro.setColumnName("DATPRO");
+    jraRok.setColumnName("DATROK");
+    edi.add(jlLot, new XYConstraints(80, 10, 130, -1));
+    edi.add(jlReg, new XYConstraints(220, 10, 130, -1));
+    edi.add(jlDatPro, new XYConstraints(360, 10, 130, -1));
+    edi.add(jlRok, new XYConstraints(500, 10, 130, -1));
+    edi.add(jraLot, new XYConstraints(80, 30, 130, -1));
+    edi.add(jraReg, new XYConstraints(220, 30, 130, -1));
+    edi.add(jraDatPro, new XYConstraints(360, 30, 130, -1));
+    edi.add(jraRok, new XYConstraints(500, 30, 130, -1));
+    this.add(edi, BorderLayout.SOUTH);
   }
 
   void jtfKOL_focusGained(FocusEvent e) {
@@ -789,6 +847,12 @@ public class jpUlazDetail extends JPanel {
     jtfPZT.setDataSet(qds);
     jtfDC_VAL.setDataSet(qds);
     jtfIDOB_VAL.setDataSet(qds);
+    if (edion) {
+      jraLot.setDataSet(qds);
+      jraReg.setDataSet(qds);
+      jraDatPro.setDataSet(qds);
+      jraRok.setDataSet(qds);
+    }
     rpcart.setGodina(hr.restart.util.Valid.getValid().findYear(qds2.getTimestamp("DATDOK")));
 //ai//    rpcart.setCskl(qds.getString("CSKL"));
     rpcart.setTabela(qds);
