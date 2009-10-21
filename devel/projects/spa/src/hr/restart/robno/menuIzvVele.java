@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
@@ -47,6 +49,7 @@ public class menuIzvVele extends JMenu {
   JMenuItem jmMiniSaldak = new JMenuItem();  
   JMenuItem jmPreglProdPoArt = new JMenuItem();
   JMenuItem jmPreglNeiskalkPrim = new JMenuItem();
+  JMenuItem jmPregHCCP = new JMenuItem();
   
   JMenuItem jmPorezUgostiteljstvo = new JMenuItem();
 
@@ -158,6 +161,13 @@ public class menuIzvVele extends JMenu {
       }
     });
     
+    jmPregHCCP.setText("Pregled evidencije dopreme hrane");
+    jmPregHCCP.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent ae) {
+        jmPregHCCP_actionPerformed(ae);
+      }
+    });
+    
     this.add(jmPorezList);
     this.add(jmPorezUgostiteljstvo);
     this.add(jmPopustList);
@@ -173,6 +183,13 @@ public class menuIzvVele extends JMenu {
     this.add(jmPreglNeiskalkPrim);
     this.addSeparator();
     this.add(jmIspisCjenik);
+    
+    if (frmParam.getParam("robno", "ediUlaz", "N",
+    "Panel za unos HCCP podataka na ulazu (D,N)").equals("D")) {
+      this.addSeparator();
+      this.add(jmPregHCCP);
+    }
+    
     this.addSeparator();
     this.add(jmOstaliRep);
 /*    this.add(jmUIDok);
@@ -221,6 +238,11 @@ public class menuIzvVele extends JMenu {
   void jmPreglProdPoArt_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmIzvArtVp", jmPreglProdPoArt.getText());
   }
+  
+  void jmPregHCCP_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.robno.frmIzvHCCP", jmPregHCCP.getText());
+  }
+  
   void jmPregledNeiskalkPrim_actionPerformed(ActionEvent ae) {
     SF.showFrame("hr.restart.robno.frmNeiskalkPrim", jmPreglNeiskalkPrim.getText());
   }
