@@ -57,7 +57,7 @@ public class repNarPOS extends mxReport {
   }
 
   public void makeReport(){
-    String wdt = frmParam.getParam("pos", "sirPOSpr", "41", 
+    String wdt = frmParam.getParam("pos", "sirPOSnar", "42", 
             "Sirina pos ispisa. Preporuka 39 - 46", true);
     width = Integer.parseInt(wdt);
     dbWidth = width/2;
