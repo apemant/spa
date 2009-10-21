@@ -154,10 +154,10 @@ public class FrmNerealiziraneDostavnice extends raUpitFat {
     
     upitnik = "SELECT "+
 
-    "max(doki.cskl) as cskl, "+
-    "max(doki.vrdok)as vrdok, "+ 
-    "max(doki.god) as god, "+
-    "max(doki.brdok) as brdok, "+ 
+    "doki.cskl, "+
+    "doki.vrdok, "+ 
+    "doki.god, "+
+    "doki.brdok, "+ 
     "max(doki.cpar) as cpar, "+
     "max(doki.datdok) as datdok, "+ 
     "count(*) as bnsp "+ 
@@ -173,7 +173,8 @@ public class FrmNerealiziraneDostavnice extends raUpitFat {
     cskl +
     period +
     
-    "group by cskl,vrdok,brdok order by datdok";
+    "group by doki.cskl,doki.vrdok,doki.god,doki.brdok " +
+    "order by datdok";
     
     System.out.println(upitnik);
     
