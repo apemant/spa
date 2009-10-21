@@ -173,6 +173,10 @@ public class frmPartneri extends raMatPodaci {
   raComboBox raCSTATUS = new raComboBox();
   JLabel jlSTATUS = new JLabel();
   
+  JLabel jlOIB = new JLabel();
+  JraTextField jtfOIB = new JraTextField();
+  JraCheckBox jcbR2 = new JraCheckBox();
+  
   JlrNavField jlrTELIME = new JlrNavField();
   JLabel jlCTEL = new JLabel();
   JlrNavField jlrCTEL = new JlrNavField();
@@ -363,7 +367,7 @@ public class frmPartneri extends raMatPodaci {
 //    jpDodatniPodaci.add(jdblNAZPAR2, new XYConstraints(150, 20, 200, -1));
 //  MAKNUTO ZBOG GRESKE U PROJEKTU BAZE partneri.agent int(4,0) == agenti.Cagent int(6,0) ????
     xYLayout1.setWidth(600);
-    xYLayout1.setHeight(405);
+    xYLayout1.setHeight(430);
     raCSTATUS.setRaColumn("STATUS");
     raCSTATUS.setRaDataSet(getRaQueryDataSet());
     raCSTATUS.setRaItems(new String[][] {
@@ -388,6 +392,19 @@ public class frmPartneri extends raMatPodaci {
     jlrTELIME.setNavProperties(jlrCTEL);
 
     jlSTATUS.setText("Status");
+    
+    jcbR2.setText("Partner je obrtnik R2");
+    jcbR2.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbR2.setHorizontalTextPosition(SwingConstants.LEFT);
+    jcbR2.setColumnName("OBRT");
+    jcbR2.setDataSet(getRaQueryDataSet());
+    jcbR2.setSelectedDataValue("D");
+    jcbR2.setUnselectedDataValue("N");
+    
+    jtfOIB.setColumnName("OIB");
+    jtfOIB.setDataSet(getRaQueryDataSet());
+    jlOIB.setText("OIB");
+    
     jpOsnovniPodaci.add(jtfCPAR,   new XYConstraints(150, 30, 100, -1));
     jpOsnovniPodaci.add(jlCPAR,  new XYConstraints(150, 12, -1, -1));
     jpOsnovniPodaci.add(jlpartner,  new XYConstraints(15, 30, -1, -1));
@@ -452,6 +469,10 @@ public class frmPartneri extends raMatPodaci {
     jpOsnovniPodaci.add(jlrCTEL,  new XYConstraints(150, 360, 100, -1));
     jpOsnovniPodaci.add(jlrTELIME,  new XYConstraints(255, 360, 310, -1));
     jpOsnovniPodaci.add(jbGetTel,  new XYConstraints(570, 360, 21, 21));
+    
+    jpOsnovniPodaci.add(jlOIB,  new XYConstraints(15, 385, -1, -1));
+    jpOsnovniPodaci.add(jtfOIB,  new XYConstraints(150, 385, 100, -1));
+    jpOsnovniPodaci.add(jcbR2,  new XYConstraints(365, 385, 200, 20));
 
     this.addOption(rnvPJ,3);
     this.addOption(rnvZiro,4);
