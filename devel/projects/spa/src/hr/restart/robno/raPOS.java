@@ -26,6 +26,7 @@ import hr.restart.baza.dM;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.raMultiLineMessage;
+import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
@@ -130,8 +131,10 @@ public class raPOS extends raIzlazTemplate  {
     if (getMasterSet().getRowCount() == 0) return;
     
     final StorageDataSet reqs = stdoki.getDataModule().getScopedSet(
-    "CSKL CART CART1 BC NAZART JM KOL NC INAB");
+    "CSKL CART CART1 BC NAZART JM KOL NC INAB KOL1 KOL2");
     reqs.open();
+    reqs.getColumn("KOL1").setCaption("Stanje");
+    reqs.getColumn("KOL2").setCaption("Rezultat");
     
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
@@ -168,12 +171,14 @@ public class raPOS extends raIzlazTemplate  {
           st.open();
           if (st.rowCount() > 0) {
             if (!lD.raLocate(st, "CSKL", reqs.getString("CSKL"))) st.first();
+            else Aus.set(reqs, "KOL1", st, "KOL");
             reqs.setBigDecimal("NC", st.getBigDecimal("NC"));
           } else {
             DataSet art = Artikli.getDataModule().getTempSet(Condition.equal("CART", cart));
             art.open();
             reqs.setBigDecimal("NC", art.getBigDecimal("NC"));
           }
+          Aus.sub(reqs, "KOL2", "KOL1", "KOL");
           reqs.setBigDecimal("INAB", util.multiValue(reqs.getBigDecimal("KOL"), 
               reqs.getBigDecimal("NC")));
         }
