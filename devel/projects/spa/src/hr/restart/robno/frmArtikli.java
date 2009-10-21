@@ -17,15 +17,21 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.VTCartPart;
 import hr.restart.baza.dM;
+import hr.restart.baza.norme;
+import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raTextMask;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
+import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raImages;
 import hr.restart.util.raMatPodaci;
@@ -51,6 +57,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import com.borland.dbswing.JdbLabel;
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataRow;
+import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.TableDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
@@ -74,6 +83,8 @@ public class frmArtikli extends raMatPodaci {
   hr.restart.util.raCommonClass rcc = hr.restart.util.raCommonClass.getraCommonClass();
   hr.restart.robno.Util util = hr.restart.robno.Util.getUtil();
   hr.restart.baza.dM dm;
+  lookupData ld = lookupData.getlookupData();
+  
   JPanel jp = new JPanel();
   BorderLayout borderLayout1 = new BorderLayout();
   JraTextField jtfMC = new JraTextField() {
@@ -268,6 +279,13 @@ public class frmArtikli extends raMatPodaci {
 	    }
 	    
 	  };
+	  
+	  raNavAction rnvNorm = new raNavAction("Normativ", raImages.IMGHISTORY, KeyEvent.VK_F7){
+        public void actionPerformed(ActionEvent e) {
+            rnvNorm_actionPerformed(e);
+        }
+        
+      };
   
   
   JlrNavField jlrVrsub = new JlrNavField() {
@@ -282,6 +300,7 @@ public class frmArtikli extends raMatPodaci {
 	  };
 	  JraButton jbVrsub = new JraButton();
 
+  frmTableDataView viewReq = new frmTableDataView(false, false, true);
   
 
   public frmArtikli() {
@@ -958,7 +977,8 @@ public class frmArtikli extends raMatPodaci {
 //        new String[] {"CART1","BC","TIPART","VRART"});
     jtpArtikli.setSelectedIndex(0);
     this.addOption(rnvSifArt,5);
-    this.addOption(rnvImgLoad,6);
+    this.addOption(rnvNorm,6);
+    this.addOption(rnvImgLoad,7);
   }
 /*
 
@@ -1383,7 +1403,39 @@ public boolean  doWithSave(char mode) {
     fPa.show();
   }
   
- 
+  void  rnvNorm_actionPerformed(ActionEvent e) {
+    DataSet ds = norme.getDataModule().getTempSet(
+        Condition.equal("CART", getRaQueryDataSet()));
+    ds.open();
+    if (ds.rowCount() == 0) {
+      JOptionPane.showMessageDialog(this.getWindow(),
+          "Artikl nije sadržan niti u jednom normativu.",
+          "Normativ", JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
+    
+    StorageDataSet reqs = stdoki.getDataModule().getScopedSet(
+        "CART CART1 BC NAZART JM KOL");
+    reqs.open();
+    String[] cc = {"CART", "CART1", "BC", "NAZART", "JM"};
+    
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      DataRow dr =  ld.raLookup(getRaQueryDataSet(), "CART",
+          Integer.toString(ds.getInt("CARTNOR")));
+      if (dr != null) {
+        reqs.insertRow(false);
+        dM.copyColumns(dr, reqs, cc);
+        Aus.set(reqs, "KOL", ds);
+      }
+    }
+    
+    viewReq.setDataSet(reqs);
+    viewReq.setSaveName("Pregled-art-norm");
+    viewReq.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+    viewReq.setTitle("Popis normativa koji sadrže artikl " + getRaQueryDataSet().getInt("CART"));
+    viewReq.setVisibleCols(new int[] {Aut.getAut().getCARTdependable(0, 1, 2), 3, 4, 5});
+    viewReq.show();
+  }
   
   void  rnvImgLoad_actionPerformed(ActionEvent e) {
 	    ImageLoad imgload= new ImageLoad();
