@@ -24,6 +24,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 
 import java.awt.BorderLayout;
@@ -208,6 +209,7 @@ public class jpVlasnik extends JPanel {
     if (!(field instanceof JlrNavField)) return;
     JlrNavField jlrfield = (JlrNavField)field;
     jlrfield.setSearchMode(1);
+    jlrfield.setSearchMode(jlrfield.NULL, jlrfield.getSearchModeF9());
     jlrfield.setNavProperties(jlrCkupac);
     jlrfield.setFocusLostOnShow(false);
   }
