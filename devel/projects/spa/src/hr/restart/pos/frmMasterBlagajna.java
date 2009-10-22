@@ -29,10 +29,12 @@ import hr.restart.robno.Rbr;
 import hr.restart.robno.Util;
 import hr.restart.robno._Main;
 import hr.restart.robno.allStanje;
+import hr.restart.robno.dlgKupac;
 import hr.restart.robno.frmPlacanje;
 import hr.restart.robno.raVart;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
+import hr.restart.sk.dlgSplitAmount;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raColors;
 import hr.restart.swing.raOptionDialog;
@@ -53,7 +55,9 @@ import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
@@ -138,6 +142,12 @@ public class frmMasterBlagajna extends raMasterDetail {
     }
   };
   
+  raNavAction navSPLIT = new raNavAction("Razdijeli stavku",raImages.IMGPAUSE,KeyEvent.VK_F2,KeyEvent.SHIFT_MASK) {
+    public void actionPerformed(ActionEvent e) {
+      split();
+    }
+  };
+  
   raNavAction navEXIT = new raNavAction("Spremanje raèuna",raImages.IMGHISTORY,KeyEvent.VK_F10) {
     public void actionPerformed(ActionEvent e) {
       pressF10('B');
@@ -169,6 +179,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   Column IZNOS = new Column();
   XYLayout xYLayout3 = new XYLayout();
   JLabel jLabel5 = new JLabel();
+  dlgKupac dlgkup = null;
   jpDetBlagajna jpBl = new jpDetBlagajna() {
     public void afterCART() {
       if (getDetailSet().getString("BC").trim().equals("") && getDetailSet().getString("CART1").trim().equals("") && getDetailSet().getInt("CART")==0) 
@@ -625,25 +636,50 @@ public class frmMasterBlagajna extends raMasterDetail {
     globalPopust();
   }
   
-  void joinStavke() {
-    if ("D".equalsIgnoreCase(frmParam.getParam("pos", "joinArt", "N",
-        "Spojiti stavke s istim artiklom i istim popustom (D,N)"))) {
-      String[] cols = {"CART", "PPOPUST1", "RBR"};
-      DataSet ds = getDetailSet();
-      DataRow orig = new DataRow(ds, cols);
-      DataRow row = new DataRow(ds, cols);
-      ds.getDataRow(orig);
+  void joinAll() {
+    if (!"R".equalsIgnoreCase(frmParam.getParam("pos", "joinArt", "N",
+    "Spojiti stavke s istim artiklom i istim popustom (D,N,R)"))) return;
+    
+    String[] cols = {"CART", "PPOPUST1", "RBR", "KOL"};
+    DataSet ds = getDetailSet();
+    DataRow row = new DataRow(ds, cols);
+    for (ds.first(); ds.inBounds(); ds.next()) {
       for (int i = 0; i < ds.rowCount(); i++) {
         ds.getDataRow(i, row);
-        if ("RBR".equals(dM.compareColumns(row, orig, cols))) {
-          BigDecimal kol = ds.getBigDecimal("KOL");
-          ds.emptyRow();
-          ds.goToRow(i);
-          Aus.add(ds, "KOL", kol);
-          ds.post();
-          calcIZNOS(1);
-          break;
-        }
+        if ("RBR".equals(dM.compareColumns(row, ds, cols)))
+          if (ds.getRow() > i) ds.setBigDecimal("KOL", Aus.zero0);
+          else {
+            Aus.add(ds, "KOL", row);
+            ld.raLocate(dm.getArtikli(), "CART", Integer.toString(ds.getInt("CART")));
+            cporez = dm.getArtikli().getString("CPOR");
+            calcIZNOS(2);
+          }
+      }
+    }
+    for (ds.first(); ds.inBounds(); )
+      if (ds.getBigDecimal("KOL").signum() != 0) ds.next();
+      else ds.deleteRow();
+    ds.saveChanges();
+  }
+  
+  void joinStavke() {
+    if (!"D".equalsIgnoreCase(frmParam.getParam("pos", "joinArt", "N",
+        "Spojiti stavke s istim artiklom i istim popustom (D,N,R)"))) return;
+    String[] cols = {"CART", "PPOPUST1", "RBR"};
+    DataSet ds = getDetailSet();
+    DataRow orig = new DataRow(ds, cols);
+    DataRow row = new DataRow(ds, cols);
+    ds.getDataRow(orig);
+    for (int i = 0; i < ds.rowCount(); i++) {
+      ds.getDataRow(i, row);
+      if ("RBR".equals(dM.compareColumns(row, orig, cols))) {
+        BigDecimal kol = ds.getBigDecimal("KOL");
+        ds.emptyRow();
+        ds.goToRow(i);
+        Aus.add(ds, "KOL", kol);
+        ds.post();
+        calcIZNOS(1);
+        break;
       }
     }
   }
@@ -730,8 +766,10 @@ public class frmMasterBlagajna extends raMasterDetail {
     raDetail.addOption(navBEFEXIT,5);
     raDetail.addOption(navPOPUST,6);
     raDetail.addOption(navEXIT,7);
-    if (raUser.getInstance().isSuper())
+    if (raUser.getInstance().isSuper()) {
       raDetail.addOption(navREM,4,false);
+      raDetail.addOption(navSPLIT,5,false);
+    }
     raDetail.setSaveChanges(false);
     raDetail.setSaveChangesMessage(null);
     raDetail.setDefaultSaveChangesAnsw(1);
@@ -840,6 +878,7 @@ public class frmMasterBlagajna extends raMasterDetail {
 //    jPanel2.add(jbCKUPAC, new XYConstraints(609, 10, 21, 21));
 
     this.setJPanelMaster(new JPanel());
+    
     raMaster.getTab().remove(1);
     raMaster.getRepRunner().addReport("hr.restart.robno.repRacunPOS", "Raèun");
     raDetail.getRepRunner().addReport("hr.restart.robno.repRacunPOS", "Raèun");
@@ -986,13 +1025,15 @@ public class frmMasterBlagajna extends raMasterDetail {
   public void calcIZNOS(int mod) {
 	  lookupData.getlookupData().raLocate(dm.getPorezi(), "CPOR", cporez);
 
-	if (mod==2) {
-      getDetailSet().setBigDecimal("PPOPUST2", getMasterSet().getBigDecimal("UPPOPUST2"));
-    }
     getDetailSet().setBigDecimal("UKUPNO", util.multiValue(getDetailSet().getBigDecimal("MC"), getDetailSet().getBigDecimal("KOL")));
     getDetailSet().setBigDecimal("IPOPUST1", util.multiValue(getDetailSet().getBigDecimal("UKUPNO"), getDetailSet().getBigDecimal("PPOPUST1").divide(util.sto,BigDecimal.ROUND_HALF_UP)));
     //getDetailSet().setBigDecimal("IPOPUST2", getDetailSet().getBigDecimal("MC").multiply(getDetailSet().getBigDecimal("PPOPUST2").divide(util.sto,1)));
     getDetailSet().setBigDecimal("IZNOS", getDetailSet().getBigDecimal("UKUPNO").subtract(getDetailSet().getBigDecimal("IPOPUST1")));
+    if (mod==2) {
+      getDetailSet().setBigDecimal("PPOPUST2", getMasterSet().getBigDecimal("UPPOPUST2"));
+      getDetailSet().setBigDecimal("IPOPUST2", util.multiValue(getDetailSet().getBigDecimal("IZNOS"), util.divideValue(getDetailSet().getBigDecimal("PPOPUST2"), util.sto)));
+      getDetailSet().setBigDecimal("NETO", util.negateValue(getDetailSet().getBigDecimal("IZNOS"), getDetailSet().getBigDecimal("IPOPUST2")));
+    }
     BigDecimal osnovica = new BigDecimal(getDetailSet().getBigDecimal("IZNOS").doubleValue()/((100+dm.getPorezi().getBigDecimal("UKUPOR").doubleValue())/100));
 //    getDetailSet().setBigDecimal("POR1", util.findIznos(getDetailSet().getBigDecimal("IZNOS"), dm.getPorezi().getBigDecimal("UNPOR1")));
 //    getDetailSet().setBigDecimal("POR2", util.findIznos(getDetailSet().getBigDecimal("IZNOS"), dm.getPorezi().getBigDecimal("UNPOR2")));
@@ -1052,10 +1093,22 @@ public class frmMasterBlagajna extends raMasterDetail {
   	frmPlacanje.entryRate(this);
   }
   void pressF11(char mode) {
-    checkUnos(mode);
-    _Main.getStartFrame().showFrame("hr.restart.robno.dlgKupac", "Unos kupca za R-1");
+
+    //_Main.getStartFrame().showFrame("hr.restart.robno.dlgKupac", "Unos kupca za R-1");
+    if (dlgkup == null) {
+      if (raDetail.getWindow() instanceof Frame)
+        dlgkup = new dlgKupac((Frame) raDetail.getWindow(), getMasterSet());
+      else if (raDetail.getWindow() instanceof Dialog)
+        dlgkup = new dlgKupac((Dialog) raDetail.getWindow(), getMasterSet());
+      else dlgkup = new dlgKupac((Frame) null, getMasterSet());
+      dlgkup.pack();
+      Aus.centerWindow(dlgkup);
+    }
+    
+    dlgkup.setVisible(true);
     System.out.println("********* after dlgKupac");
-    jpDetBlagajna.grabFocusPOS();
+    checkUnos(mode);
+    //jpDetBlagajna.grabFocusPOS();
   }
   
   void closeRac() {
@@ -1122,6 +1175,47 @@ public class frmMasterBlagajna extends raMasterDetail {
       jpBl.jtfKOL.requestFocus();
       raDetail.getOKpanel().jPrekid_actionPerformed();
     }
+  }
+  
+  void split() {
+    if (getDetailSet().rowCount() == 0) return;
+    
+    dlgSplitAmount dlg = null;
+    if (raDetail.getWindow() instanceof Frame)
+      dlg= new dlgSplitAmount((Frame) raDetail.getWindow());
+    if (raDetail.getWindow() instanceof Dialog)
+      dlg = new dlgSplitAmount((Dialog) raDetail.getWindow());
+    BigDecimal result = dlg.performSplit("Stavka br. "+
+        getDetailSet().getShort("RBR"), getDetailSet().getBigDecimal("KOL"));
+    if (result != null && result.signum() > 0 && 
+        result.compareTo(getDetailSet().getBigDecimal("KOL")) < 0) {
+      cporez = Aus.q("SELECT * FROM artikli WHERE " + 
+          Condition.equal("CART", getDetailSet())).getString("CPOR");
+      DataRow copy = new DataRow(getDetailSet());
+      getDetailSet().copyTo(copy);
+      getDetailSet().setBigDecimal("KOL", getDetailSet().getBigDecimal("KOL").subtract(result));
+      calcIZNOS(1);
+      raDetail.getJpTableView().enableEvents(false);
+      int rbs = 0;
+      for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next())
+        if (getDetailSet().getShort("RBR") > rbs)
+          rbs = getDetailSet().getShort("RBR");
+      getDetailSet().insertRow(false);
+      copy.copyTo(getDetailSet());
+      getDetailSet().setShort("RBR", (short) (rbs + 1));
+      getDetailSet().setBigDecimal("KOL", result);
+      calcIZNOS(1);
+      calcGlobalPopust();
+      try {
+        getDetailSet().saveChanges();
+      } catch (Exception e) {
+        JOptionPane.showMessageDialog(raDetail.getWindow(), "Greška kod dodavanja stavke!",
+            "Greška", JOptionPane.ERROR_MESSAGE);
+      }
+      getDetailSet().last();
+      raDetail.getJpTableView().enableEvents(true);
+    }
+    
   }
   
   
@@ -1393,7 +1487,9 @@ public class frmMasterBlagajna extends raMasterDetail {
   	  justExit=true;
   	  makeNext=newRacun;
   	} else return;
-
+  	
+  	joinAll();
+  	
   	justPrintGRC();
     raDetail.rnvExit_action();
 //    pressF10('B');
@@ -1447,10 +1543,8 @@ public class frmMasterBlagajna extends raMasterDetail {
     getMasterSet().setBigDecimal("UIPOPUST1", util.negateValue(getMasterSet().getBigDecimal("UKUPNO"), getMasterSet().getBigDecimal("IZNOS")));
     getDetailSet().first();
     do {
-  	  String str="select CPOR from ARTIKLI where CART="+getDetailSet().getInt("CART");  		
-      vl.execSQL(str);
-  	  vl.RezSet.open();
-  	  lookupData.getlookupData().raLocate(dm.getPorezi(), "CPOR", vl.RezSet.getString("CPOR"));
+      ld.raLocate(dm.getArtikli(), "CART", Integer.toString(getDetailSet().getInt("CART")));
+  	  ld.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"));
   	  getDetailSet().setBigDecimal("PPOPUST2", getMasterSet().getBigDecimal("UPPOPUST2"));
       getDetailSet().setBigDecimal("IPOPUST2", util.multiValue(getDetailSet().getBigDecimal("IZNOS"), util.divideValue(getDetailSet().getBigDecimal("PPOPUST2"), util.sto)));
       getDetailSet().setBigDecimal("NETO", util.negateValue(getDetailSet().getBigDecimal("IZNOS"), getDetailSet().getBigDecimal("IPOPUST2")));
