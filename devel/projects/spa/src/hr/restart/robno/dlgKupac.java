@@ -106,7 +106,9 @@ public class dlgKupac extends JraDialog {
     okp.registerOKPanelKeys(this);
   }
   void pressOK() {
-    jpvlas.updateRecords();
+    if (!jpvlas.updateRecords())
+      resolvSet.setUnassignedNull("CKUPAC");
+    
     this.hide();
   }
   void pressCancel() {
@@ -125,9 +127,10 @@ public class dlgKupac extends JraDialog {
     } else {
       jpvlas.jraCkupac.setText("");
       ((JlrNavField)jpvlas.jraCkupac).emptyTextFields();
+      jpvlas.setUpdated(false);
     }
-    jpvlas.jraIme.requestFocus();
-//    System.out.println("width mora biti 700 a sad je "+jpvlas.getWidth()+"X"+jpvlas.getHeight());
+    jpvlas.jraIme.requestFocusLater();
+    //System.out.println("width mora biti 700 a sad je "+jpvlas.getWidth()+"X"+jpvlas.getHeight());
   }
 
 public static void main(String[] args) {
