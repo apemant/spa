@@ -198,7 +198,7 @@ public class repIzlazni implements raReportData {
       if (mb.equals("")) {
         tm = "";
       } else {
-        tm = (mb.startsWith("MB")?"  ":"  MB ")+mb+" ("+getCPAR()+")";
+        tm = "  "+mb+" ("+getCPAR()+")";
       }
     }
 //    System.out.println("van ifa " +tf + " "+ fx);
@@ -370,10 +370,20 @@ public class repIzlazni implements raReportData {
   public String getMB() {
     String cached = cache.getValue("MB", Integer.toString(ds.getInt("CPAR")));
     if (cached != null) return cached;
-    String mb = "MB ";
-    colname[0] = "CPAR";    
-    if (cache.returnValue(ru.getSomething(colname,dm.getPartneri(),"MB").getString()).equalsIgnoreCase("")) mb = "";
-    return mb+cache.returnValue(ru.getSomething(colname,dm.getPartneri(),"MB").getString());
+    String result = "";
+    if (!oib.equalsIgnoreCase("MB")) {
+      colname[0] = "CPAR";
+      String br = ru.getSomething(colname,dm.getPartneri(),"OIB").toString();
+      if (br.length() == 0) result = "";
+      else result = "OIB " + br;
+    } 
+    if (oib.equalsIgnoreCase("MB") || result.length() == 0) {
+      colname[0] = "CPAR";
+      String mb = ru.getSomething(colname,dm.getPartneri(),"MB").toString();
+      if (mb.length() == 0) result = "";
+      else result = "MB " + mb; 
+    }    
+    return cache.returnValue(result);
   }
 
   public String getZR() {
@@ -1587,6 +1597,7 @@ public BigDecimal getIPRODSP() {
   String ispisPJ = "D";
   String conVl = "N";
   String metroDob = "";
+  String oib = "";
   boolean specChars = false;
   boolean iznosPop = false;
   private void setParams() {
@@ -1599,6 +1610,8 @@ public BigDecimal getIPRODSP() {
         "Prikaz ukupnog iznosa stavke izaza s popustom (D/N)").equalsIgnoreCase("D");
     metroDob = frmParam.getParam("robno","MetroCpar","20196",
         "Šifra dobavljaèa na raèunu i otpremnici za Metro");
+    oib = frmParam.getParam("robno", "oibMode", "MB", 
+        "Staviti matièni broj (MB) ili OIB?");
   }
 
   private void modParams() {
