@@ -157,6 +157,9 @@ public class repRekapitulacijaPOS extends mxReport {
     do {
       if (ts.getString("CNACPL").equals("G"))
         vrati +="<#UKUPNO "+ts.getString("NACPL")+"|20|left#> <#"+sgq.format(ts.getBigDecimal("IZNOS"),2)+"|"+(width-21)+"|right#><$newline$><$newline$>";
+
+      if (ts.getString("CNACPL").equals("R"))
+        vrati +="<#UKUPNO "+ts.getString("NACPL")+"|25|left#> <#"+sgq.format(ts.getBigDecimal("IZNOS"),2)+"|"+(width-26)+"|right#><$newline$><$newline$>";
       
       if (ts.getString("CNACPL").equals("V"))
         vrati +="<#UKUPNO "+ts.getString("NACPL")+"|25|left#> <#"+sgq.format(ts.getBigDecimal("IZNOS"),2)+"|"+(width-26)+"|right#><$newline$><$newline$>";
