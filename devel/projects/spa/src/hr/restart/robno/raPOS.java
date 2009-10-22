@@ -72,7 +72,7 @@ public class raPOS extends raIzlazTemplate  {
       public void actionPerformed(java.awt.event.ActionEvent ev) {
         showRequirementsMaster();
       }
-    },4);
+    },4,false);
     MP.BindComp();
     DP.BindComp();
   }
