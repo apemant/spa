@@ -29,15 +29,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.swing.jpCpar;
 import hr.restart.swing.raButtonGroup;
 import hr.restart.swing.raDateRange;
-import hr.restart.util.Assert;
-import hr.restart.util.AssertionNotTrueException;
-import hr.restart.util.Aus;
-import hr.restart.util.JlrNavField;
-import hr.restart.util.OKpanel;
-import hr.restart.util.Valid;
-import hr.restart.util.lookupData;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raFrame;
+import hr.restart.util.*;
 import hr.restart.util.reports.raRunReport;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.raKnjigChangeListener;
@@ -70,7 +62,7 @@ import com.borland.jbcl.layout.XYLayout;
  * @version 1.0
  */
 
-public class raObrKamata extends raFrame {
+public class raObrKamata extends raFrame implements ResetEnabled {
   raCommonClass rcc = raCommonClass.getraCommonClass();
   dM dm = dM.getDataModule();
   Valid vl = Valid.getValid();
@@ -293,7 +285,13 @@ public class raObrKamata extends raFrame {
     return RepRun;
   }
 
+  boolean firstTime = true;
   public void SetFokus() {
+    if (firstTime) resetDefaults();
+  }
+  
+  public void resetDefaults() {
+    firstTime = false;
     kamtab.refresh();
     if (kamtab.rowCount() > 0) {
       fset.setInt("CKAM", kamtab.getInt("CKAM"));
@@ -564,9 +562,12 @@ public class raObrKamata extends raFrame {
 
   private DataSet getUplate() {
     if (outside) return outsideUpl;
+    
+    Condition minimumCond = Aus.getKnjigCond().and(jpp.getCondition()); 
+    
+    /*      "knjig = '"+hr.restart.zapod.OrgStr.getKNJCORG(false)+
+                             (cpar > 0 ? "' AND cpar="+cpar : "'");*/
 
-    String minimumCond = "knjig = '"+hr.restart.zapod.OrgStr.getKNJCORG(false)+
-                         (cpar > 0 ? "' AND cpar="+cpar : "'");
     nepokriveneUplate = null;
     if (standalone)
       return ut.getNewQueryDataSet("SELECT brojdok, datdok, iznos, cracuna, iznos as signi " +
@@ -612,8 +613,10 @@ public class raObrKamata extends raFrame {
   private DataSet getRacuni() {
     if (outside) return outsideRac;
 
-    String minimumCond = "knjig = '"+hr.restart.zapod.OrgStr.getKNJCORG(false)+
-                         (cpar > 0 ? "' AND cpar="+cpar : "'");
+    Condition minimumCond = Aus.getKnjigCond().and(jpp.getCondition()); 
+      
+/*      "knjig = '"+hr.restart.zapod.OrgStr.getKNJCORG(false)+
+                         (cpar > 0 ? "' AND cpar="+cpar : "'");*/
     if (standalone)
       return ut.getNewQueryDataSet("SELECT cpar, brojdok, datdosp, iznos, cracuna"+
              " FROM kamrac WHERE "+minimumCond+" AND dugpot="+(kupac ? "'D'" : "'P'")+
@@ -745,6 +748,8 @@ public class raObrKamata extends raFrame {
     SetFokus();
     jpp.focusCparLater();
   }
+  
+  
 
   private void jbInit() throws Exception {
     
@@ -793,6 +798,10 @@ public class raObrKamata extends raFrame {
     jpp.bind(fset);
     jpp.setKupci(true);
     jpp.init();
+    
+    jpp.setAllowMultiple(true);
+    
+    okp.addResetButton(this);
 
     getRepRunner().addReport("hr.restart.sk.repObrKamata", "hr.restart.sk.repObrKamata", 
          "ObrKamata", "Ispis obra\u010Duna kamata");
@@ -814,7 +823,7 @@ public class raObrKamata extends raFrame {
     bg2.add(jrbProg, " Konformna ");
     bg2.add(jrbLin, " Proporcionalna ");
     bg2.add(jrbKomb, " Kombinirana ");
-    bg2.setSelected(jrbKomb);
+    bg2.setSelected(jrbLin);
 
     jrbKomb.setToolTipText("<HTML>Komforna za kašnjenje do godine dana,<br>proporcionalna za duže periode</HTML>");
 
@@ -915,17 +924,17 @@ public class raObrKamata extends raFrame {
     xyV.setWidth(411);
     xyV.setHeight(25);
     jpV.setBorder(BorderFactory.createEtchedBorder());
-    jpV.add(jrbPla, new XYConstraints(20, 0, 80, -1));
-    jpV.add(jrbNepla, new XYConstraints(165, 0, 80, -1));
-    jpV.add(jrbSvi, new XYConstraints(310, 0, 60, -1));
+    jpV.add(jrbPla, new XYConstraints(20, 0, 120, -1));
+    jpV.add(jrbNepla, new XYConstraints(155, 0, 120, -1));
+    jpV.add(jrbSvi, new XYConstraints(290, 0, 120, -1));
 
     jpM.setLayout(xyM);
     xyM.setWidth(411);
     xyM.setHeight(25);
     jpM.setBorder(BorderFactory.createEtchedBorder());
-    jpM.add(jrbProg, new XYConstraints(20, 0, 100, -1));
-    jpM.add(jrbLin, new XYConstraints(165, 0, 110, -1));
-    jpM.add(jrbKomb, new XYConstraints(310, 0, 100, -1));
+    jpM.add(jrbProg, new XYConstraints(20, 0, 120, -1));
+    jpM.add(jrbLin, new XYConstraints(155, 0, 120, -1));
+    jpM.add(jrbKomb, new XYConstraints(290, 0, 120, -1));
 
 
     jpO.add(jlRac, new XYConstraints(15, 54, -1, -1));
