@@ -226,6 +226,7 @@ public class frmKartica extends raMatPodaci {
   public void beforeShow() {
     oldcsk = "";
     changed = false;
+    beginGod = Aus.getFreeYear();
     setPreselectValues();
     modifySaldoOutOfRange(false);
     //    prepareColumns();
