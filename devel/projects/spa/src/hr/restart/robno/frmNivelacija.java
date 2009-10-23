@@ -19,20 +19,12 @@ package hr.restart.robno;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stanje;
+import hr.restart.baza.Stdoku;
 import hr.restart.baza.dM;
 import hr.restart.baza.stdoki;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
-import hr.restart.util.Aus;
-import hr.restart.util.JlrNavField;
-import hr.restart.util.Valid;
-import hr.restart.util.lookupData;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raImages;
-import hr.restart.util.raMasterDetail;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raProcess;
-import hr.restart.util.raTransaction;
+import hr.restart.util.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -40,6 +32,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -544,6 +537,16 @@ public class frmNivelacija extends raMasterDetail {
         "stanje.god = '" + this.getMasterSet().getString("GOD") + "'");
     
     int count = 0, crbr = 0;
+    DataSet cartds = Stdoku.getDataModule().getTempSet(
+        Condition.whereAllEqual(Util.mkey, getMasterSet()));
+    cartds.open();
+    HashSet carts = new HashSet();
+    for (cartds.first(); cartds.inBounds(); cartds.next()) {
+      carts.add(new Integer(cartds.getInt("CART")));
+      if (cartds.getShort("RBR") > count)
+        count = cartds.getShort("RBR");
+    }
+    
     raDetail.getJpTableView().enableEvents(false);
     QueryDataSet st = Stanje.getDataModule().getTempSet(
         Condition.whereAllEqual(new String[] {"CSKL", "GOD"}, getMasterSet()));
@@ -552,6 +555,11 @@ public class frmNivelacija extends raMasterDetail {
     raProcess.setMessage("Kalkulacija cijena ...", false);
     
     for (all.first(); all.inBounds(); all.next()) {
+      if (carts.contains(new Integer(all.getInt("CART")))) {
+        System.out.println(all.getInt("CART") + " postoji, preskocen..");
+        continue;
+      }
+
       ld.raLocate(dm.getPorezi(), "CPOR", all.getString("CPOR"));
       ld.raLocate(st, "CART", all.getInt("CART")+"");
       BigDecimal ukpor = dm.getPorezi().getBigDecimal("UKUPOR");
@@ -562,7 +570,8 @@ public class frmNivelacija extends raMasterDetail {
       if (vc.signum() > 0) {
         BigDecimal oldpor = mc.subtract(vc).divide(vc, 4, 
             BigDecimal.ROUND_HALF_UP).movePointRight(2);
-        if (oldpor.subtract(ukpor).abs().compareTo(Aus.one0) >= 0) {
+        if (oldpor.add(oldpor).subtract(ukpor.add(ukpor)).abs().
+            compareTo(Aus.one0) >= 0) {
           BigDecimal nmc = mc;
           BigDecimal nvc = vc;
           if (mpc) nvc = nmc.divide(realpor, 2, BigDecimal.ROUND_HALF_UP);
