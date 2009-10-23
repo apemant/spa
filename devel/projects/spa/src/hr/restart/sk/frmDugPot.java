@@ -48,6 +48,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.swing.SwingUtilities;
+
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.MetaDataUpdate;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -76,7 +78,7 @@ public class frmDugPot extends raFrame {
 
   static frmDugPot frm;
 
-  raNavAction aPok, aMog, aPres;
+//  raNavAction aPok, aMog, aPres;
 
   JTablePrintRun printer = new JTablePrintRun();
   raJPTableView jp = new raJPTableView() {
@@ -382,10 +384,12 @@ public class frmDugPot extends raFrame {
     if (kupci) {
       this.getRepRunner().enableReport("hr.restart.sk.repPnP");
       this.getRepRunner().enableReport("hr.restart.sk.repOpomena");
+      this.getRepRunner().enableReport("hr.restart.sk.repOpomenaPT");
       this.getRepRunner().enableReport("hr.restart.sk.repTamara");
     } else {
       this.getRepRunner().disableReport("hr.restart.sk.repPnP");
       this.getRepRunner().disableReport("hr.restart.sk.repOpomena");
+      this.getRepRunner().disableReport("hr.restart.sk.repOpomenaPT");
       this.getRepRunner().disableReport("hr.restart.sk.repTamara");
     }
   }
@@ -501,6 +505,10 @@ public class frmDugPot extends raFrame {
     if (jp.getSelectCount() == 0) opo.setTitle("Ispis opomene ozna\u010Denog partnera");
     else if (jp.getSelectCount() == 1) opo.setTitle("Ispis opomene odabranog partnera");
     else opo.setTitle("Grupni ispis opomena odabranih partnera");
+    raReportDescriptor opopt = this.getRepRunner().getReport("hr.restart.sk.repOpomenaPT");
+    if (jp.getSelectCount() == 0) opopt.setTitle("Ispis opomene pred tužbu ozna\u010Denog partnera");
+    else if (jp.getSelectCount() == 1) opopt.setTitle("Ispis opomene pred tužbu odabranog partnera");
+    else opopt.setTitle("Grupni ispis opomena pred tužbu odabranih partnera");
     raReportDescriptor dosp = this.getRepRunner().getReport("hr.restart.sk.repDosp");
     if (jp.getSelectCount() == 0) dosp.setTitle("Ispis dospjelih raèuna ozna\u010Denog partnera");
     else if (jp.getSelectCount() == 1) dosp.setTitle("Ispis dospjelih raèuna odabranog partnera");
@@ -553,6 +561,7 @@ public class frmDugPot extends raFrame {
     this.getRepRunner().addReport("hr.restart.sk.repDosp","hr.restart.sk.repKarticaDosp","Dosp", "Ispis dospjelih raèuna partnera"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repPnP","hr.restart.sk.repOpomena","PodsjetnikNaPlacanje", "Ispis podsjetnika za plaæanje oznaèenog partnera"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repOpomena","hr.restart.sk.repOpomena","Opomena", "Ispis opomene oznaèenog partnera"/*, 42*/);
+    this.getRepRunner().addReport("hr.restart.sk.repOpomenaPT","hr.restart.sk.repOpomena","OpomenaPT", "Ispis opomene pred tužbu oznaèenog partnera"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repTamara","hr.restart.sk.repKarticaTamara","Dosp", "Ispis neplaæenih raèuna dospjelih 120 dana prije nove godine"/*, 42*/);
 //    this.getRepRunner().addReport("hr.restart.sk.repKartica", "Grupni ispis kartica ozna\u010Denih partnera", 42);
 
@@ -577,13 +586,46 @@ public class frmDugPot extends raFrame {
           doubleClick(SHOW_UPL);
       }
     });
+    jp.getNavBar().addOption(new raNavAction("Obraèun kamata", raImages.IMGSENDMAIL, KeyEvent.VK_F8) {
+      public void actionPerformed(ActionEvent e) {
+        if (zbir.rowCount() > 0) {
+          if (hr.restart.util.raLoader.isLoaderLoaded("hr.restart.sk.raObrKamata")) {
+            if (raObrKamata.getInstance().isBusy()) return;
+            if (raObrKamata.getInstance().isStandAlone()) {
+              if (raObrKamata.getInstance().isShowing())
+                raObrKamata.getInstance().hide();
+              raObrKamata.getInstance().setStandAlone(false);
+            }
+          }
+          startFrame.getStartFrame().showFrame("hr.restart.sk.raObrKamata", "Obraèun kamata");
+          
+          SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+              raObrKamata rok = raObrKamata.getInstance();
+              if (jp.getSelectCount() > 1) {
+                rok.jpp.nazpar.setText(VarStr.join(jp.getSelection(), ',').toString());
+                rok.jpp.cpar.setLastNavValues();
+              } else {
+                int cp = jp.getSelectCount() == 0 ? zbir.getInt("CPAR")
+                    : ((Integer) jp.getSelection()[0]).intValue();
+                rok.jpp.setCpar(cp);                  
+              }
+              rok.fset.setTimestamp("DATUMDO", dto);
+              rok.fset.setTimestamp("DATUMOD", dfrom);
+              if (raSaldaKonti.isDirect())                
+                rok.jpk.setKonto(konto);
+            }
+          });
+        }
+      }
+    });
 /*    jp.getNavBar().addOption(new raNavAction("Ispis", raImages.IMGPRINT, KeyEvent.VK_F5) {
       public void actionPerformed(ActionEvent e) {
         prepareIspis();
         printer.runIt();
       }
     }); */
-    jp.getNavBar().addOption(aPres = new raNavAction("Valuta", raImages.IMGMOVIE,KeyEvent.VK_F7) {
+    jp.getNavBar().addOption(new raNavAction("Valuta", raImages.IMGMOVIE,KeyEvent.VK_F7) {
       public void actionPerformed(ActionEvent e) {
         val.show(frmDugPot.this.getWindow());
         if (val.getOznval() != null) {
@@ -594,6 +636,7 @@ public class frmDugPot extends raFrame {
         }
       }
     });
+    
     jp.getNavBar().addOption(new raNavAction("Predselekcija", raImages.IMGZOOM,KeyEvent.VK_F12) {
       public void actionPerformed(ActionEvent e) {
         pres.showPreselect(frmDugPot.this, "Zbirni pregled dugovanja / potraživanja");
