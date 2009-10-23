@@ -471,6 +471,7 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
     if (cag) master.setInt("CAGENT", rep ? 2 : 1);
     System.out.println("UIRAC: "+ukupno);
     master.setBigDecimal("UIRAC", ukupno);
+    if (arh) master.setString("STATKNJ", "K");
     masterkey = raControlDocs.getKey(master);
 //    master.post();
 //    master.saveChanges();
