@@ -170,7 +170,8 @@ public class jpSelKonto extends JPanel {
   }
 
   public void setKonto(String kon) {
-    setKontaAllow(true);
+    if (kon == null) kon = "";
+    setKontaAllow(kon.length() > 0);
     konto.setText(kon);
     konto.forceFocLost();
   }

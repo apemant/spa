@@ -77,7 +77,6 @@ public class presKartica extends presCommonSk {
     jpp.setCpar(cpar);
     jpc.setCorg(corg);
     if (raSaldaKonti.isDirect()) {
-      jpk.setKontaAllow(kon != null);
       getSelRow().setString("BROJKONTA", kon == null ? "" : kon);
       jpk.setKonto(kon);
     }
