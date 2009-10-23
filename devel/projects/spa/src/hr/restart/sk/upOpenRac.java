@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.sk;
 
+import hr.restart.baza.Agenti;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Partneri;
 import hr.restart.baza.dM;
@@ -287,6 +288,8 @@ public class upOpenRac extends raUpitLite {
     String datumCol = rcbDat.getSelectedIndex() == 0 ? "DATDOK" : "DATUMKNJ";
     Timestamp dan = ut.getLastSecondOfDay(fields.getTimestamp("DATUM"));
     Condition dat = Aus.getCurrGKDatumCond(datumCol, dan);
+    Timestamp d2 = Aus.getGkYear(dan);
+    d2 = Util.getUtil().addDays(d2, 1);
     Condition kon = raSaldaKonti.isDirect() ? jpk.getCondition() : Condition.none;
     //Condition dat = Condition.where("DATDOK", Condition.BEFORE, dan);
     String sort, select;
@@ -294,11 +297,11 @@ public class upOpenRac extends raUpitLite {
       sort = getOrderBy();
       select = "skstavke.cpar,partneri.nazpar,skstavke.saldo,skstavke.datdosp," +
       		"skstavke.vrdok,skstavke.id,skstavke.ip,skstavke.cskstavke," +
-      		"skstavke.tecaj,skstavke.oznval FROM skstavke,partneri " +
+      		"skstavke.tecaj,skstavke.oznval,skstavke.datumknj FROM skstavke,partneri " +
             "WHERE partneri.cpar=skstavke.cpar AND ";
     } else {
       sort = " ORDER BY cpar";
-      select = "cpar,saldo,datdosp,vrdok,id,ip,cskstavke,tecaj,oznval FROM skstavke WHERE ";
+      select = "cpar,saldo,datdosp,vrdok,id,ip,cskstavke,tecaj,oznval,datumknj FROM skstavke WHERE ";
     }
 
     String vrd = jpp.isKupci() ? "('IRN','UPL','OKK')" : "('URN','IPL','OKD')";
@@ -325,7 +328,7 @@ public class upOpenRac extends raUpitLite {
     for (ds.first(); ds.inBounds(); ds.next()) {
       checkClosing();
       BigDecimal sal = ds.getBigDecimal("SALDO");
-      if (sal.signum() == 0) continue;
+      if (sal.signum() == 0 && raVrdokMatcher.isUplataTip(ds)) continue;
       if (first || cpar != ds.getInt("CPAR")) {
         first = false;
         cpar = ds.getInt("CPAR");
@@ -336,6 +339,12 @@ public class upOpenRac extends raUpitLite {
           repQDS.insertRow(false);
           repQDS.setInt("CPAR", cpar);
           repQDS.setString("NAZPAR", dm.getPartneri().getString("NAZPAR"));
+          if (!dm.getPartneri().isNull("CAGENT")) {
+            repQDS.setInt("CAGENT", dm.getPartneri().getInt("CAGENT"));
+            ld.raLocate(dm.getAgenti(), "CAGENT", 
+                String.valueOf(repQDS.getInt("CAGENT")));
+            repQDS.setString("NAZAGENT", dm.getAgenti().getString("NAZAGENT"));
+          }
         }
       }
       if (!okPartner) continue;
@@ -344,6 +353,8 @@ public class upOpenRac extends raUpitLite {
       if (raVrdokMatcher.isUplataTip(ds))
         repQDS.setBigDecimal("TOTALU", repQDS.getBigDecimal("TOTALU").add(sal));
       else {
+        if (!ds.getTimestamp("DATUMKNJ").before(d2))
+          Aus.add(repQDS, "TOTALR", ds, jpp.isKupci() ? "ID" : "IP");
         repQDS.setBigDecimal("TOTAL", repQDS.getBigDecimal("TOTAL").add(sal));
         if (!dosp.after(dan) ^ dospPer) {
           repQDS.setBigDecimal("NDOSP", repQDS.getBigDecimal("NDOSP").add(sal));
@@ -615,7 +626,10 @@ public class upOpenRac extends raUpitLite {
   public void initRepQDSColumnsBasic() {
     repQDS.setColumns(new Column[] {
       dM.createIntColumn("CPAR", "Šifra"),
-      Partneri.getDataModule().getColumn("NAZPAR").cloneColumn(),      
+      Partneri.getDataModule().getColumn("NAZPAR").cloneColumn(),
+      dM.createIntColumn("CAGENT", "Agent"),
+      Agenti.getDataModule().getColumn("NAZAGENT").cloneColumn(),
+      dM.createBigDecimalColumn("TOTALR", "Ukupni promet"),
       dM.createBigDecimalColumn("TSAL", "Ukupni saldo"),
       dM.createBigDecimalColumn("TOTALU", "Otvorene uplate"),
       dM.createBigDecimalColumn("TOTAL", "Otvoreni raèuni"),
