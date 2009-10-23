@@ -24,19 +24,9 @@ import hr.restart.baza.stdoki;
 import hr.restart.baza.stugovor;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
-import hr.restart.util.Aus;
-import hr.restart.util.JlrNavField;
-import hr.restart.util.Valid;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raFrame;
-import hr.restart.util.raImages;
-import hr.restart.util.raJPTableView;
-import hr.restart.util.raLocalTransaction;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raProcess;
-import hr.restart.util.raTransaction;
-import hr.restart.util.startFrame;
+import hr.restart.util.*;
 import hr.restart.zapod.frmUgovori;
 
 import java.awt.BorderLayout;
@@ -53,6 +43,7 @@ import java.util.Calendar;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
@@ -151,7 +142,15 @@ public class raAutomatRac extends raFrame {
     private XYLayout XYLayoutmali = new XYLayout();
     private boolean datdvo = frmParam.getParam("robno", "autodvo","D","Odredjuje li se datum DVO pri autom. izradi racuna iz ugovora (D) ili dospijece (N)").equalsIgnoreCase("D");
     private String dattxt = datdvo?"Datum dok. / DVO":"Dat.dok / dosp";
+    private String vrdok = "RAC";
     private JLabel ldatum = new JLabel(dattxt);
+    private raComboBox rcbVRDOK = new raComboBox() {
+      public void this_itemStateChanged() {
+        // nothing
+      }
+    };
+    private JLabel jlVRDOK = new JLabel();
+    
 
     private JraTextField datum = new JraTextField() {
       public void valueChanged() {
@@ -430,13 +429,21 @@ public class raAutomatRac extends raFrame {
         getContentPane().add(panel1, BorderLayout.CENTER);
         getContentPane().add(okp, BorderLayout.SOUTH);
         panel1.setLayout(xYLayout1);
-        xYLayout1.setHeight(210/*250*/);
+        xYLayout1.setHeight(235/*250*/);
         xYLayout1.setWidth(570);
 
         panelmali.setLayout(XYLayoutmali);
         panelmali.setBorder(BorderFactory.createEtchedBorder());
         XYLayoutmali.setHeight(42);
         XYLayoutmali.setWidth(270);
+        
+        jlVRDOK.setText("Vrsta dokumenta");
+        rcbVRDOK.setRaItems(new String[][] {
+            {"Raèun", "RAC"},
+            {"Ponuda", "PON"},
+            {"Predraèun", "PRD"}
+          });
+        rcbVRDOK.setSelectedIndex(0);
 
         panel1.add(jlCORG, new XYConstraints(15, 10, -1, -1));
         panel1.add(jlrCORG, new XYConstraints(150, 10, 100, -1));
@@ -473,6 +480,8 @@ public class raAutomatRac extends raFrame {
         panel1.add(jbGetNap, new XYConstraints(539, 120/*160*/, 21, 21));
         panel1.add(jlNapomenaD, new XYConstraints(15, 145/*185*/, -1, -1));
         panel1.add(jraNapomena, new XYConstraints(150, 145/*185*/, 381, 60));
+        panel1.add(jlVRDOK, new XYConstraints(15, 210, -1, -1));
+        panel1.add(rcbVRDOK, new XYConstraints(150, 210, 100, -1));
         okp.registerOKPanelKeys(this);
     }
 
@@ -772,6 +781,8 @@ public class raAutomatRac extends raFrame {
 
     public void presOK() {
         isOK = true;
+        vrdok = rcbVRDOK.getDataValue();
+        System.out.println(vrdok);
         if (Validacija()) {
             rcc.EnabDisabAll(this, false);
 
@@ -990,7 +1001,7 @@ public class raAutomatRac extends raFrame {
         zagRac.setString("CUSER",
                 hr.restart.sisfun.raUser.getInstance().getUser());
         zagRac.setString("CSKL", jlrCORG.getText());
-        zagRac.setString("VRDOK", "RAC");
+        zagRac.setString("VRDOK", vrdok);
         zagRac.setString("GOD",
                 val.findYear(DummySet.getTimestamp("DATUM")));
         // zagRac.setInt("BRDOK", brrac);
@@ -1047,7 +1058,7 @@ public class raAutomatRac extends raFrame {
         
         stavRac.insertRow(false);
         stavRac.setString("CSKL", zagRac.getString("CSKL"));
-        stavRac.setString("VRDOK", "RAC");
+        stavRac.setString("VRDOK", vrdok);
         stavRac.setString("GOD", zagRac.getString("GOD"));
         stavRac.setInt("BRDOK", zagRac.getInt("BRDOK"));
         stavRac.setShort("RBR", (short) rbr);
@@ -1165,7 +1176,7 @@ public class raAutomatRac extends raFrame {
                 Valid.getValid().findYear(datum.getDataSet().getTimestamp("DATUM"))+ "' AND doki.cskl='"+
                 jlrCORG.getText().trim()+"' and doki.brdok <="+
                 ((int[])alSEQS.get(alSEQS.size()-1))[0]+
-                " and doki.brdok>="+((int[])alSEQS.get(0))[0],"RAC");        
+                " and doki.brdok>="+((int[])alSEQS.get(0))[0],vrdok);        
     }
 
     public void maintanceUgovori() {
