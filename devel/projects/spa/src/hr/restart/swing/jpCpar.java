@@ -184,8 +184,12 @@ public class jpCpar extends JPanel {
     return cpar.getText().trim().length() == 0;
   }
   
+  public void setAllowMultiple(boolean allow) {
+    nazpar.setAllowMultiple(allow);
+  }
+  
   public Condition getCondition() {
-    return isEmpty() ? Condition.none : Condition.equal("CPAR", getCpar());
+    return nazpar.getCondition();
   }
 
   public void shiftLabel() {

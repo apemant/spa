@@ -87,6 +87,24 @@ public class raSelectTableModifier extends raTableModifier {
     sel = new HashSet();
   }
   
+  public void refreshKeyList() {
+    if (key == null && orig != null) {
+      HashSet nl = new HashSet();
+      for (int i = 0; i < orig.getRowCount(); i++) {
+        orig.getVariant(colName, i, v);
+        if (type == Variant.INT)
+          nl.add(new Integer(v.getInt()));
+        else if (type == Variant.STRING)
+          nl.add(v.getString());
+        else if (type == Variant.TIMESTAMP)
+          nl.add(v.getTimestamp());
+        else if (type == Variant.SHORT)
+          nl.add(new Short(v.getShort()));
+      }
+      nl.retainAll(sel);
+      sel = nl;
+    }
+  }
 
   public boolean doModify() {
     if (key == null) {
@@ -180,13 +198,18 @@ public class raSelectTableModifier extends raTableModifier {
     
     type = orig.getColumn(colName).getDataType();
     String[] l = new VarStr(list).splitTrimmed(',');
-    for (int i = 0; i < l.length; i++)
-      if (type == Variant.INT)
-        sel.add(new Integer(Integer.parseInt(l[i])));
-      else if (type == Variant.STRING)
-        sel.add(l[i]);
-      else if (type == Variant.SHORT)
-        sel.add(new Short(Short.parseShort(l[i])));
+    try {
+      for (int i = 0; i < l.length; i++)
+        if (type == Variant.INT)
+          sel.add(new Integer(Integer.parseInt(l[i])));
+        else if (type == Variant.STRING)
+          sel.add(l[i]);
+        else if (type == Variant.SHORT)
+          sel.add(new Short(Short.parseShort(l[i])));
+    } catch (RuntimeException e) {
+      // ignore
+    }
+    refreshKeyList();
   }
 
   public void addToSelection(ReadRow row) {
