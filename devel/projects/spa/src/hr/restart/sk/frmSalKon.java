@@ -564,6 +564,15 @@ public class frmSalKon extends raMasterDetail {
         || (vl.isEmpty(jpMaster.jlrCskl) && !virtual) || vl.isEmpty(jpMaster.jraDatknj))
       return false;
     if (!Aus.checkDatAndDosp(jpMaster.jraDatdok, jpMaster.jraDatdosp)) return false;
+    if (!Aus.checkSanityRange(jpMaster.jraDatknj)) return false;
+    if (getMasterSet().getTimestamp("DATPRI").before(Util.getUtil().getFirstSecondOfDay(getMasterSet().getTimestamp("DATDOK")))) {
+    	jpMaster.jraDatknj.requestFocus();
+      JOptionPane.showMessageDialog(raMaster.getWindow(),
+        "Datum primitka je ispred datuma dokumenta!",
+        "Greška", JOptionPane.ERROR_MESSAGE);
+      return false;
+    }
+    
     if (!virtual && !checkIznosMaster()) return false;
     if (mode == 'N' && !virtual) {
       if (saveRow != null && !checkSaveRow()) return false;
