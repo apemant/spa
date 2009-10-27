@@ -466,7 +466,11 @@ sysoutTEST ST = new sysoutTEST(false);
     jTabPane.add(jpTableView,res.getString("Tabli_u010Dni_prikaz"),0);
 
     jTabPane.add(jpDetailView,res.getString("Detaljni_prikaz"),1);
-
+  
+  }
+  
+  public JraPanel getDetailView() {
+    return jpDetailView;
   }
 
   void createVer2() {
@@ -491,7 +495,7 @@ sysoutTEST ST = new sysoutTEST(false);
 
     }
 
-    jTabPane.add(jSplitPaneMP,0);
+    jTabPane.add(jSplitPaneMP,"",0);
 
   }
 
@@ -1428,6 +1432,10 @@ sysoutTEST ST = new sysoutTEST(false);
   public void setAutoFirstOnShow(boolean autoFirst) {
     this.autoFirst = autoFirst;
   }
+  
+  public boolean isNormal() {
+    return true;
+  }
 
   void initShow() {
 
@@ -1435,7 +1443,7 @@ sysoutTEST ST = new sysoutTEST(false);
       jTabPane.setSelectedIndex(0); //version=1
     }
 
-    if (version>1) myCC.EnabDisabAll(getRaDetailPanel(),false); //version=2 i 3
+    if (version>1 && isNormal()) myCC.EnabDisabAll(getRaDetailPanel(),false); //version=2 i 3
     showing_s2t = true;//da ne unlocka ako je zalokan
     switch2table();
 
@@ -2876,7 +2884,7 @@ ST.prnc(raQueryDataSet);
 
   private void ChangeEnabDisab(boolean onoff){
 
-    if (raDetailPanel!=null) myCC.EnabDisabAll(raDetailPanel,onoff);
+    if (raDetailPanel!=null && isNormal()) myCC.EnabDisabAll(raDetailPanel,onoff);
 
     okp.jBOK.setEnabled(onoff);
 
