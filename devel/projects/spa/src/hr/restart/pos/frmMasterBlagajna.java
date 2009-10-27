@@ -154,6 +154,14 @@ public class frmMasterBlagajna extends raMasterDetail {
     }
   };
   
+  raNavAction navPRINT = new raNavAction("Ispis",raImages.IMGPAUSE,KeyEvent.VK_F5,KeyEvent.SHIFT_MASK) {
+    public void actionPerformed(ActionEvent e) {
+      racDest = hr.restart.sisfun.frmParam.getParam(
+          "sisfun", "printerRMcmndAlt", "", "Radno mjesto (alt)", true);
+      pressF5('B');
+    }
+  };
+  
   raNavAction navZatvori = new raNavAction("Zatvori raèun", raImages.IMGDOWN, KeyEvent.VK_F8) {
     public void actionPerformed(ActionEvent e) {
       closeRac();
@@ -766,6 +774,10 @@ public class frmMasterBlagajna extends raMasterDetail {
     raDetail.addOption(navBEFEXIT,5);
     raDetail.addOption(navPOPUST,6);
     raDetail.addOption(navEXIT,7);
+    if (hr.restart.sisfun.frmParam.getParam(
+        "sisfun", "printerRMcmndAlt", "", "Radno mjesto (alt)", true).length()>0) {
+      raDetail.addOption(navPRINT,7,false);
+    }
     if (raUser.getInstance().isSuper()) {
       raDetail.addOption(navREM,4,false);
       raDetail.addOption(navSPLIT,5,false);
@@ -799,6 +811,15 @@ public class frmMasterBlagajna extends raMasterDetail {
     });
     raDetail.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F5) {
       public void keyAction() {
+        racDest = hr.restart.sisfun.frmParam.getParam(
+            "sisfun", "printerRMcmnd", "1", "Radno mjesto", true);
+        pressF5('U');
+      }
+    });
+    raDetail.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F5, KeyEvent.SHIFT_MASK) { 
+      public void keyAction() {
+        racDest = hr.restart.sisfun.frmParam.getParam(
+          "sisfun", "printerRMcmndAlt", "", "Radno mjesto (alt)", true);
         pressF5('U');
       }
     });
@@ -808,13 +829,11 @@ public class frmMasterBlagajna extends raMasterDetail {
     if (np.length() > 0) {
       raDetail.addOption(new raNavAction("Ispis narudžbe",
           raImages.IMGALIGNLEFT, KeyEvent.VK_F6) {
-    
         public void actionPerformed(ActionEvent e) {
           printNar();
         }
       }, 8);
       raDetail.addKeyAction(new raKeyAction(KeyEvent.VK_F6) {
-    
         public void keyAction() {
           checkUnos('U');
           printNar();
@@ -1474,6 +1493,9 @@ public class frmMasterBlagajna extends raMasterDetail {
     return true;
   }
   
+  
+  String racDest;
+  
   public void pressF5(char mode) {
   	System.out.println("press F5");
   	checkUnos(mode);
@@ -1606,6 +1628,10 @@ public class frmMasterBlagajna extends raMasterDetail {
     return narDest;
   }
   
+  public String getRacDestination() {
+    return racDest;
+  }
+  
   public String getStol() {
     return getMasterSet().getString("STOL");
   }
@@ -1621,6 +1647,8 @@ public class frmMasterBlagajna extends raMasterDetail {
     pressF5('A');
   }*/
   public void Funkcija_ispisa_detail(){
+    racDest = hr.restart.sisfun.frmParam.getParam(
+        "sisfun", "printerRMcmnd", "1", "Radno mjesto", true);
     pressF5('B');
     //super.Funkcija_ispisa_detail();
   }

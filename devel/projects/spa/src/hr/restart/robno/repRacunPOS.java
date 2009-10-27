@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
+import hr.restart.util.reports.mxRM;
 import hr.restart.util.reports.mxReport;
 
 import java.math.BigDecimal;
@@ -81,6 +82,12 @@ public class repRacunPOS extends mxReport {
 //     st.prn(master);
      this.setDataSet(hr.restart.baza.Stpos.getDataModule().getFilteredDataSet("cskl='"+master.getString("CSKL")+"' and vrdok = 'GRC' and god =  '"+master.getString("GOD")+"' and brdok =  "+master.getInt("BRDOK")));
      this.getDataSet().open();
+     
+     String vc = fmb.getRacDestination();
+     lD.raLocate(dm.getMxPrinterRM(), "CRM", vc);
+     mxRM rm = new mxRM();
+     rm.init(dm.getMxPrinterRM());
+     setRM(rm);
      
      String uk = frmParam.getParam("pos", "iznosStavka", "UKUPNO",
          "Kolona iznosa koja se prikazuje na pos raèunu (UKUPNO,IZNOS,NETO)");
