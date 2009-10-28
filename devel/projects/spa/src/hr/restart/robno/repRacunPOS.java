@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.pos.frmMasterBlagajna;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
@@ -46,10 +47,10 @@ public class repRacunPOS extends mxReport {
   hr.restart.util.Util ut = hr.restart.util.Util.getUtil();
   hr.restart.util.lookupData lD =  hr.restart.util.lookupData.getlookupData();
   String[] detail = new String[1];
-  hr.restart.pos.frmMasterBlagajna fmb = hr.restart.pos.frmMasterBlagajna.getInstance();
   repUtil ru = repUtil.getrepUtil();
   hr.restart.robno.sgQuerys sgq = hr.restart.robno.sgQuerys.getSgQuerys();
   String god = "";
+  DataSet master;
 
   String porezString;
   int width = 40;
@@ -70,25 +71,36 @@ public class repRacunPOS extends mxReport {
     System.out.println("WIDTH - "+ width);
     dbWidth = width/2;
     doubleLineSep = getDoubleLineLength();
+    setData();
     makeIspis();
     super.makeReport();
+  }
+  
+  public void setData() {
+    frmMasterBlagajna fmb = frmMasterBlagajna.getInstance();
+    master = fmb.getMasterSet();
+    god =master.getString("GOD");
+//    hr.restart.util.sysoutTEST st = new hr.restart.util.sysoutTEST(false);
+//    st.prn(master);
+    this.setDataSet(hr.restart.baza.Stpos.getDataModule().getFilteredDataSet("cskl='"+master.getString("CSKL")+"' and vrdok = 'GRC' and god =  '"+master.getString("GOD")+"' and brdok =  "+master.getInt("BRDOK")));
+    this.getDataSet().open();
+    
+    String vc = fmb.getRacDestination();
+    if (vc == null || vc.length() == 0) {
+      fmb.setRacDestination();
+      vc = fmb.getRacDestination();
+    }
+    lD.raLocate(dm.getMxPrinterRM(), "CRM", vc);
+    mxRM rm = new mxRM();
+    rm.init(dm.getMxPrinterRM());
+    setRM(rm);
+    
+    
   }
 
   private void makeIspis(){
      dm.getLogotipovi().open();
-     QueryDataSet master = fmb.getMasterSet();
-     god =master.getString("GOD");
-//     hr.restart.util.sysoutTEST st = new hr.restart.util.sysoutTEST(false);
-//     st.prn(master);
-     this.setDataSet(hr.restart.baza.Stpos.getDataModule().getFilteredDataSet("cskl='"+master.getString("CSKL")+"' and vrdok = 'GRC' and god =  '"+master.getString("GOD")+"' and brdok =  "+master.getInt("BRDOK")));
-     this.getDataSet().open();
-     
-     String vc = fmb.getRacDestination();
-     lD.raLocate(dm.getMxPrinterRM(), "CRM", vc);
-     mxRM rm = new mxRM();
-     rm.init(dm.getMxPrinterRM());
-     setRM(rm);
-     
+          
      String uk = frmParam.getParam("pos", "iznosStavka", "UKUPNO",
          "Kolona iznosa koja se prikazuje na pos raèunu (UKUPNO,IZNOS,NETO)");
      boolean pop = "D".equalsIgnoreCase(frmParam.getParam("pos", 
@@ -355,7 +367,7 @@ public class repRacunPOS extends mxReport {
         "\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
   }
 
-  private String getUkupno(QueryDataSet qds) {
+  private String getUkupno(DataSet qds) {
     
     BigDecimal ukupno = ut.setScale(qds.getBigDecimal("UKUPNO"),2);
     BigDecimal ppop = ut.setScale(qds.getBigDecimal("UPPOPUST2"),2);
