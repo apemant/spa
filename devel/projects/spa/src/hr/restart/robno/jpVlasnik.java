@@ -28,6 +28,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
@@ -63,9 +64,9 @@ public class jpVlasnik extends JPanel {
   JLabel jlJmbg = new JLabel();
   JLabel jlPrezime = new JLabel();
   JraTextField jraAdr;
-  JraTextField jraCkupac;
+  public JraTextField jraCkupac;
   JraTextField jraEmadr;
-  JraTextField jraIme;
+  public JraTextField jraIme;
   JraTextField jraJmbg;
   JlrNavField jraMj;
   JlrNavField jraPbr;
@@ -113,6 +114,7 @@ public class jpVlasnik extends JPanel {
   public jpVlasnik() {
     this(new StorageDataSet(),-5, new Insets(5, 0, 0, 5));//instanciraju ga ovako uglavnom kada ga zele dodati u postojeci panel pa bezi pet u desno
     ((StorageDataSet)resolvSet).addColumn("CKUPAC",Variant.INT);
+    resolvSet.open();
   }
 
   private int imewidth;
@@ -179,6 +181,7 @@ public class jpVlasnik extends JPanel {
       dummySet = new StorageDataSet();
       dummySet.setColumns(
         hr.restart.util.Util.getUtil().cloneCols(dm.getKupci().getColumns()));
+      dummySet.open();
       rebind(dummySet);
       JlrNavField jlrCkupac = (JlrNavField)jraCkupac;
       jlrCkupac.setRaDataSet(dm.getKupci());
@@ -247,9 +250,9 @@ public class jpVlasnik extends JPanel {
     jpDetail.add(jraJmbg, new XYConstraints(150+left, 75, 165-5, -1));
     jpDetail.add(jraTel, new XYConstraints(320+left-5, 75, 165-5, -1));
     jpDetail.add(jraEmadr, new XYConstraints(490+left-10, 75, 165-5, -1));
+    
     this.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right));
     this.add(jpDetail, BorderLayout.CENTER);
-
     //test
 /*    jraIme.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
       public void insertUpdate(javax.swing.event.DocumentEvent e) {
@@ -304,6 +307,9 @@ public class jpVlasnik extends JPanel {
 //    System.out.println("nije browse mode!!!");
     setUpdated(jlr.isLastLookSuccessfull());
   }
+  public int getKupac() {
+    return jraCkupac.getDataSet().getInt("CKUPAC");
+  }
   public boolean updateRecords() {
     if (Valid.getValid().chkIsEmpty(jraIme)) return false;
     try {
@@ -346,6 +352,21 @@ public class jpVlasnik extends JPanel {
     } catch (Exception ex) {
       ex.printStackTrace();
       return false;
+    }
+  }
+  
+  public void setFromSet(DataSet ds) {
+    dummySet.setInt("CKUPAC", ds.getInt("CKUPAC"));
+    if (ds.getInt("CKUPAC") != 0) {
+      ((JlrNavField) jraCkupac).forceFocLost();
+      if (!((JlrNavField) jraCkupac).isLastLookSuccessfull())
+        ((JlrNavField) jraCkupac).setNormalColors();
+    } else {
+      dummySet.setUnassignedNull("CKUPAC");
+      jraCkupac.setText("");
+      ((JlrNavField) jraCkupac).setNormalColors();
+      ((JlrNavField) jraCkupac).emptyTextFields();
+      setUpdated(false);
     }
   }
 
