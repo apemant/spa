@@ -107,6 +107,8 @@ public class frmMasterBlagajna extends raMasterDetail {
   boolean justExit;
   boolean makeNext=false;
   boolean allowEdit=true;
+  static DataSet alterMaster, alterDetail;
+  
   QueryDataSet qdsStPos = new QueryDataSet();
   QueryDataSet qdsRate= new QueryDataSet();
   StorageDataSet olds;
@@ -1494,7 +1496,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   }
   
   
-  String racDest;
+  static String racDest;
   
   public void pressF5(char mode) {
   	System.out.println("press F5");
@@ -1628,8 +1630,17 @@ public class frmMasterBlagajna extends raMasterDetail {
     return narDest;
   }
   
-  public String getRacDestination() {
+  public static String getRacDestination() {
     return racDest;
+  }
+  
+  public static void setRacDestination(String dest) {
+    racDest = dest;
+  }
+  
+  public static void setRacDestination() {
+    racDest = hr.restart.sisfun.frmParam.getParam(
+        "sisfun", "printerRMcmnd", "1", "Radno mjesto", true);
   }
   
   public String getStol() {
@@ -1647,8 +1658,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     pressF5('A');
   }*/
   public void Funkcija_ispisa_detail(){
-    racDest = hr.restart.sisfun.frmParam.getParam(
-        "sisfun", "printerRMcmnd", "1", "Radno mjesto", true);
+    setRacDestination();
     pressF5('B');
     //super.Funkcija_ispisa_detail();
   }
@@ -1725,6 +1735,26 @@ public class frmMasterBlagajna extends raMasterDetail {
   }
   
   public void ZatvoriOstaloMaster() {
+  }
+
+  
+  public static DataSet getAlterMaster() {
+    return alterMaster;
+  }
+
+  
+  public static void setAlterMaster(DataSet alter) {
+    alterMaster = alter;
+  }
+
+  
+  public static DataSet getAlterDetail() {
+    return alterDetail;
+  }
+
+  
+  public static void setAlterDetail(DataSet alter) {
+    alterDetail = alter;
   }
 
   /**
