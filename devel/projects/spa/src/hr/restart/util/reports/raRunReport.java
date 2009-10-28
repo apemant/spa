@@ -61,6 +61,10 @@ public class raRunReport {
   protected raRunReport() {
 //    UT = hr.restart.util.Util.getUtil();
   }
+  
+  public static raRunReport createEmpty() {
+    return new raRunReport();
+  }
 
   public static raRunReport getRaRunReport(String providerClassNameC) {
     raRunReport rr = new raRunReport();
