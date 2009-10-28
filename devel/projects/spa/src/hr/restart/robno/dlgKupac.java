@@ -121,14 +121,8 @@ public class dlgKupac extends JraDialog {
   }
 
   void this_componentShown(ComponentEvent e) {
-    jpvlas.dummySet.setInt("CKUPAC", resolvSet.getInt("CKUPAC"));
-    if (resolvSet.getInt("CKUPAC") != 0) {
-      ((JlrNavField)jpvlas.jraCkupac).forceFocLost();
-    } else {
-      jpvlas.jraCkupac.setText("");
-      ((JlrNavField)jpvlas.jraCkupac).emptyTextFields();
-      jpvlas.setUpdated(false);
-    }
+    jpvlas.setFromSet(resolvSet);
+
     jpvlas.jraIme.requestFocusLater();
     //System.out.println("width mora biti 700 a sad je "+jpvlas.getWidth()+"X"+jpvlas.getHeight());
   }
