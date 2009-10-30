@@ -1137,7 +1137,7 @@ System.out.println("desetice "+inTxtVal.substring(9,11));
 
 
 
-  public boolean containsArr(Object[] arr,Object tocont) {
+  public static boolean containsArr(Object[] arr,Object tocont) {
 
     for (int i=0;i<arr.length;i++) {
 
