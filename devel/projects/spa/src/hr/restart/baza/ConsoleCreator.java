@@ -703,7 +703,7 @@ public class ConsoleCreator {
 	}
 
 	public static void addModuleClass(String mc) {
-	  if (Util.getUtil().containsArr(moduleClasses, mc)) return;
+	  if (Util.containsArr(moduleClasses, mc)) return;
 	  String[] newModuleClasses = new String[moduleClasses.length+1];
 	  for (int i = 0; i < moduleClasses.length; i++) {
 	    newModuleClasses[i] = moduleClasses[i];
