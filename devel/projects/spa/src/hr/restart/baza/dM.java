@@ -77,8 +77,8 @@ public class dM implements DataModule {
   Database database1 = new Database();
   private static boolean refreshBegin = false;
   private static boolean safeMode = false;
-  private List tabledef;
-  private Map tabledefStart;
+  private static List tabledef;
+  private static Map tabledefStart;
   
   static IDataSetSynchronizer sync = new DBDataSetSynchronizer();
 
@@ -104,6 +104,7 @@ public class dM implements DataModule {
 
   public static dM getDataModule() {
     if (myDM == null) {
+//      new Throwable().printStackTrace();
       myDM = new dM();
       if (!safeMode) raVart.init();
 //      myDM.initCart();
@@ -412,8 +413,9 @@ public class dM implements DataModule {
    * Mogucnost dodavanja tablica u letu 
    * @param resource
    */
-  public void addTableDefinition(InputStream resource) {
+  public static void addTableDefinition(InputStream resource) {
     try {
+      loadTableDefinitions();
       TextFile tf = TextFile.read(resource);
       String line;
       while ((line = tf.in()) != null) {
@@ -441,7 +443,8 @@ public class dM implements DataModule {
     return ((Integer) tabledefStart.get(table)).intValue();
   }
 
-  private void loadTableDefinitions() {
+  private static void loadTableDefinitions() {
+    if (tabledef != null && tabledefStart != null) return; 
     try {
       InputStream is = null;
       try {
