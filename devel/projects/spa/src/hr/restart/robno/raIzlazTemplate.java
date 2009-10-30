@@ -53,6 +53,7 @@ import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
@@ -165,6 +166,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	int oldCPAR = -1;
 
 	boolean isUsluga = false;
+	boolean hideKup = false;
 
 	// private String vrzal="";
 
@@ -428,6 +430,12 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		super(1, 3);
 		initialiser();
 		// setUserCheck(true);
+		
+		hideKup =  (what_kind_of_dokument.equals("GOT") ||
+            what_kind_of_dokument.equals("GRN")) &&
+            frmParam.getParam("robno", "kupacHack", "N",
+                "Omoguæiti skrivanje kupca na gotovinskim raèunima (D,N)").equals("D");
+		
 		setUserCheck(hr.restart.sisfun.frmParam
 				.getParam("robno", "userCheck", "D",
 						"Da li se provjerava korisnik kod izmjene dokumenta (D/N)")
@@ -451,7 +459,18 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 				"PJ", "NAZPJ" }, new String[] { "CPAR", "PJ" }, dm.getPjpar());
 		TCM2 = new hr.restart.swing.raTableColumnModifier("CKUPAC",
 				new String[] { "CKUPAC", "IME", "PREZIME" },
-				new String[] { "CKUPAC" }, dm.getKupci());
+				new String[] { "CKUPAC" }, dm.getKupci()) {
+		  Variant var = new Variant();
+		  public void modify() {
+		    if (!hideKup) {
+		      super.modify();
+		      return;
+		    }
+		    ((JraTable2) getTable()).getDataSet().getVariant("AKTIV", getRow(), var);
+		    if (var.getString().equals("D")) super.modify();
+		    else setComponentText("");
+		  }
+		};
 		TCM2.ostaliVeznici = " ";
 		/*
 		 * TCMORGS = new hr.restart.swing.raTableColumnModifier("CORG", new

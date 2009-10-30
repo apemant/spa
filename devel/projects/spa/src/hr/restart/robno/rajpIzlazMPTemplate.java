@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraRadioButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
@@ -1595,6 +1596,8 @@ SwingUtilities.invokeLater(new Runnable(){
 		JraButton jbZiro = new JraButton();
 
 		JlrNavField jrfZiro = new JlrNavField();
+		
+		JraCheckBox jcbAktivan = new JraCheckBox();
 
 		//    JlrNavField jrfTMPZiro = new JlrNavField();
 
@@ -1723,6 +1726,17 @@ SwingUtilities.invokeLater(new Runnable(){
 			add(jrfZiro, new XYConstraints(150, 115, 150, -1));
 			add(jbZiro, new XYConstraints(612, 115, 21, 21));
 			
+			if (fDI.hideKup) {
+			  jcbAktivan.setHorizontalAlignment(SwingConstants.RIGHT);
+			  jcbAktivan.setHorizontalTextPosition(SwingConstants.LEFT);
+			  jcbAktivan.setText("Sakrij kupca");
+			  jcbAktivan.setColumnName("AKTIV");
+			  jcbAktivan.setSelectedDataValue("N");
+			  jcbAktivan.setUnselectedDataValue("D");
+			  jcbAktivan.setHorizontalAlignment(SwingConstants.RIGHT);
+			  add(jcbAktivan, new XYConstraints(350, 140, 256, -1));
+			}
+			
 			if (frmParam.getParam("robno","idpartner","N","ID parner instaliran na dokumentima").
 					equalsIgnoreCase("D")) {
 			add(jlIDPART, new XYConstraints(15, 140, -1, -1));
@@ -1794,6 +1808,7 @@ SwingUtilities.invokeLater(new Runnable(){
 			jrfKO.setDataSet(fDI.getMasterSet());
 			jrfAgent.setDataSet(fDI.getMasterSet());
 			jrfZiro.setDataSet(fDI.getMasterSet());
+			jcbAktivan.setDataSet(fDI.getMasterSet());
 			jraIDPART.setDataSet(fDI.getMasterSet());
 		}
 	}

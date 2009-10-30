@@ -1141,13 +1141,21 @@ public BigDecimal getIPRODSP() {
     return ds.getString("ZIRO");
   }
 
+  boolean isHide() {
+    return hideKup && (ds.getString("VRDOK").equals("GOT") ||
+        ds.getString("VRDOK").equals("GRN")) &&
+        ds.getString("AKTIV").equals("N");
+  }
+  
   public int getCKUPAC() {
+    if (isHide()) return -99;
    return ds.getInt("CKUPAC");
   }
 
   public String getIME() {
     String cached = cache.getValue("IME", Integer.toString(ds.getInt("CKUPAC")));
-    if (cached != null) return cached; 
+    if (cached != null) return cached;
+    if (isHide()) return cache.returnValue("");
    colname[0] = "CKUPAC";
    return cache.returnValue(ru.getSomething(colname,dm.getKupci(),"IME").getString());
   }
@@ -1155,6 +1163,7 @@ public BigDecimal getIPRODSP() {
   public String getPREZIME() {
     String cached = cache.getValue("PREZIME", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached; 
+    if (isHide()) return cache.returnValue("");
    colname[0] = "CKUPAC";
    return cache.returnValue(ru.getSomething(colname,dm.getKupci(),"PREZIME").getString());
   }
@@ -1172,6 +1181,7 @@ public BigDecimal getIPRODSP() {
   public String getMJKUPCA() {
     String cached = cache.getValue("MJKUPCA", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
+    if (isHide()) return cache.returnValue("");
    colname[0] = "CKUPAC";
    return cache.returnValue(ru.getSomething(colname,dm.getKupci(),"MJ").getString());
   }
@@ -1179,11 +1189,13 @@ public BigDecimal getIPRODSP() {
   public String getADRKUPCA() {
     String cached = cache.getValue("ADRKUPCA", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
+    if (isHide()) return cache.returnValue("");
    colname[0] = "CKUPAC";
    return cache.returnValue(ru.getSomething(colname,dm.getKupci(),"ADR").getString());
   }
 
   public int getPBRKUPCA() {
+    
    colname[0] = "CKUPAC";
    return ru.getSomething(colname,dm.getKupci(),"PBR").getAsInt();
   }
@@ -1191,6 +1203,7 @@ public BigDecimal getIPRODSP() {
   public String getTELKUPCA() {
     String cached = cache.getValue("TELKUPCA", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
+    if (isHide()) return cache.returnValue("");
     colname[0] = "CKUPAC";
     return "Tel "+cache.returnValue(ru.getSomething(colname,dm.getKupci(),"TEL").getString());
   }
@@ -1198,6 +1211,7 @@ public BigDecimal getIPRODSP() {
   public String getPbrMjestoKupca() {
     String cached = cache.getValue("PBRMJKUPCA", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
+    if (isHide()) return cache.returnValue("");
     String pm ="";
     colname[0] = "CKUPAC";
     if (ru.getSomething(colname,dm.getKupci(),"PBR").getAsInt() != 0){
@@ -1211,6 +1225,7 @@ public BigDecimal getIPRODSP() {
   public String getJMBG() {
     String cached = cache.getValue("JMBG", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
+    if (isHide()) return cache.returnValue("");
     String mb = "MB ";
    colname[0] = "CKUPAC";
    System.out.println("JMBG - '"+cache.returnValue(ru.getSomething(colname,dm.getKupci(),"JMBG").getString())+"'");
@@ -1598,6 +1613,7 @@ public BigDecimal getIPRODSP() {
   String conVl = "N";
   String metroDob = "";
   String oib = "";
+  boolean hideKup = false;
   boolean specChars = false;
   boolean iznosPop = false;
   private void setParams() {
@@ -1612,6 +1628,8 @@ public BigDecimal getIPRODSP() {
         "Šifra dobavljaèa na raèunu i otpremnici za Metro");
     oib = frmParam.getParam("robno", "oibMode", "MB", 
         "Staviti matièni broj (MB) ili OIB?");
+    hideKup = frmParam.getParam("robno", "kupacHack", "N",
+        "Omoguæiti skrivanje kupca na gotovinskim raèunima (D,N)").equals("D");
   }
 
   private void modParams() {
