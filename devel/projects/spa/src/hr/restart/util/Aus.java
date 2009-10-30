@@ -67,6 +67,7 @@ import javax.swing.InputMap;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
@@ -1196,6 +1197,19 @@ public class Aus {
     }
     Collections.sort(l);
     return l;
+  }
+  
+  public static void fontSize(int size, JComponent[] comps) {
+    for (int i = 0; i < comps.length; i++)
+      comps[i].setFont(comps[i].getFont().deriveFont((float) size));
+  }
+  
+  public static void fontSize(int size, JPanel cont) {
+    for (int i = 0; i < cont.getComponentCount(); i++)
+      if (cont.getComponent(i) instanceof JPanel)
+        fontSize(size, (JPanel) cont.getComponent(i));
+      else cont.getComponent(i).setFont(
+          cont.getComponent(i).getFont().deriveFont((float) size));
   }
     
   public static String leg(int cond, String less, String eq, String greater) {
