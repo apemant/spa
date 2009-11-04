@@ -46,6 +46,7 @@ public class raPatchMaker {
     HashSet otherFiles;
     String cvsPath;
     String classesPath;
+    String encoding;
     String[] otherFilesFilter = {".template",".sav", "tabledef.txt",".jrxml"};
     String jarscript;
     String makescript;
@@ -55,11 +56,12 @@ public class raPatchMaker {
 
     /** Creates a new instance of raPatchMaker */
     
-    public raPatchMaker(String _cvsPath, String _classesPath, Timestamp _datefrom, Timestamp _dateto) {
+    public raPatchMaker(String _cvsPath, String _classesPath, Timestamp _datefrom, Timestamp _dateto, String _encoding) {
       cvsentries = new raCVSEntries(_cvsPath);
       patchfilter = new PatchFilter(_datefrom,_dateto);
       cvsPath = _cvsPath;
       classesPath = _classesPath;
+      encoding = _encoding;
     }
     public File make() {
       raProcess.runChild(new Runnable() {
@@ -136,7 +138,7 @@ public class raPatchMaker {
       File tmpdirforclasses = new File(tmpclassesPath);
       tmpdirforclasses.mkdirs();
       FileHandler.delTree(tmpdirforclasses);
-      String options = "-encoding Cp1250\n"+
+      String options = "-encoding "+encoding+"\n"+
                        "-sourcepath "+cvsPath+"\n"+
                        "-classpath "+classesPath+"\n"+
                        "-d "+tmpdirforclasses+"\n"+

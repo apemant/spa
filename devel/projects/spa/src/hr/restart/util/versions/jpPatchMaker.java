@@ -70,12 +70,14 @@ public class jpPatchMaker extends JPanel implements okFrame, loadFrame {
   JLabel jlSource = new JLabel();
   JLabel jlJavac = new JLabel("Compiler");
   JLabel jlJar = new JLabel("Jar utility");
+  JLabel jlEnc = new JLabel("Encoding");
   JLabel jlOutput = new JLabel();
   JraTextField jraClass = new JraTextField();
   JraTextField jraDatefrom = new JraTextField();
   JraTextField jraSource = new JraTextField();
   JraTextField jraJavac = new JraTextField();
   JraTextField jraJar = new JraTextField();
+  JraTextField jraEnc = new JraTextField();
   JraButton jbMake = new JraButton();
   JraButton jbCChoose = new JraButton();
   JraButton jbCChooseAll = new JraButton();
@@ -94,6 +96,7 @@ public class jpPatchMaker extends JPanel implements okFrame, loadFrame {
     jraSource.setDataSet(ds);
     jraJavac.setDataSet(ds);
     jraJar.setDataSet(ds);
+    jraEnc.setDataSet(ds);
   }
   
   private void jbInit() throws Exception {
@@ -110,6 +113,7 @@ public class jpPatchMaker extends JPanel implements okFrame, loadFrame {
     jraSource.setColumnName("SOURCE");
     jraJavac.setColumnName("JAVAC");
     jraJar.setColumnName("JAR");
+    jraEnc.setColumnName("ENC");
     jbMake.setText("MAKE PATCH!");
     jbMake.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -136,6 +140,7 @@ public class jpPatchMaker extends JPanel implements okFrame, loadFrame {
     jpDetail.add(jlSource, new XYConstraints(15, 20, -1, -1));
     jpDetail.add(jlJavac, new XYConstraints(15, 95, -1, -1));
     jpDetail.add(jlJar, new XYConstraints(15, 120, -1, -1));
+    jpDetail.add(jlEnc, new XYConstraints(15, 145, -1, -1));
     jpDetail.add(jraClass, new XYConstraints(150, 45, 350, -1));
     jpDetail.add(getGetButton("CLASS"), new XYConstraints(505, 45, 21, 21));
     jpDetail.add(jraDatefrom, new XYConstraints(150, 70, 100, -1));
@@ -145,10 +150,11 @@ public class jpPatchMaker extends JPanel implements okFrame, loadFrame {
     jpDetail.add(getGetButton("SOURCE"), new XYConstraints(505, 20, 21, 21));
     jpDetail.add(jraJavac, new XYConstraints(150, 95, 350, -1));
     jpDetail.add(jraJar, new XYConstraints(150, 120, 350, -1));
+    jpDetail.add(jraEnc, new XYConstraints(150, 145, 150, -1));
     jpDetail.add(getGetButton("JAVAC"), new XYConstraints(505, 95, 21, 21));
     jpDetail.add(getGetButton("JAR"), new XYConstraints(505, 120, 21, 21));
-    jpDetail.add(jbMake, new XYConstraints(15, 145, 515, -1));
-    jpDetail.add(jlOutput, new XYConstraints(15, 190, 515, -1));
+    jpDetail.add(jbMake, new XYConstraints(15, 170, 515, -1));
+    jpDetail.add(jlOutput, new XYConstraints(15, 215, 515, -1));
     BindComponents(pmset);
     this.add(jpDetail, BorderLayout.CENTER);
   }
@@ -203,6 +209,7 @@ public class jpPatchMaker extends JPanel implements okFrame, loadFrame {
     pmset.addColumn("JAVAC",Variant.STRING);
     pmset.addColumn("JAR",Variant.STRING);
     pmset.addColumn("CVSCOMM",Variant.STRING);
+    pmset.addColumn("ENC",Variant.STRING);
     pmset.open();
   }
   
@@ -213,6 +220,7 @@ public class jpPatchMaker extends JPanel implements okFrame, loadFrame {
     pmset.setString("JAR", IntParam.getTag("patchmaker.jar"));
     pmset.setString("CVSCOMM", getCVSCOMMAND());
     pmset.setTimestamp("DATEFROM", new Timestamp(System.currentTimeMillis()));
+    pmset.setString("ENC", "Cp1250");
   }
   private String getCVSCOMMAND() {
     String ret = IntParam.getTag("patchmaker.cvscommand");
@@ -226,9 +234,11 @@ public class jpPatchMaker extends JPanel implements okFrame, loadFrame {
     createPatchMaker(pmset.getTimestamp("DATEFROM"));
   }
   private void createPatchMaker(Timestamp from) {
-    if (patchMaker == null) 
+//    if (patchMaker == null) { 
       patchMaker = new raPatchMaker(pmset.getString("SOURCE"), pmset.getString("CLASS"), 
-        getFSDay(from),null);    
+        getFSDay(from),null, pmset.getString("ENC"));
+      System.out.println("Creating patchmaker with encoding "+pmset.getString("ENC"));
+//    }
   }
   private Timestamp getFSDay(Timestamp source) {
     if (source == null) return null;
