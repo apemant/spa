@@ -763,7 +763,7 @@ public class frmIzvodi extends raMasterDetail {
     if (!jpDetail.jpDevI.validate(mode)) return false;
     
     //  ako se promijenila stavka, ponisti pokrivanje
-    if (rowChanged()) 
+    if (rowChanged() && match.getPokriveni() != null) 
       match.getPokriveni().deleteAllRows();
 
     saveRow = null;
@@ -856,7 +856,7 @@ public class frmIzvodi extends raMasterDetail {
   public void AfterSaveDetail(char mode) {
     knjizenje.getFNalozi().getMasterSet().saveChanges();
     updStatus();
-    // ab.f - snimanje eventualnog radnog pokrivanja
+    // ab.f - snimanje eventualnog radnog pokrivanja b
     match.saveChanges(mode);
   }
 
