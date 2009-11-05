@@ -20,6 +20,7 @@ package hr.restart.sk;
 import hr.restart.baza.Condition;
 import hr.restart.baza.ShemevezeUI;
 import hr.restart.baza.Shkonta;
+import hr.restart.baza.Vrdokum;
 import hr.restart.baza.Vrshemek;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
@@ -166,7 +167,7 @@ public class frmShemevezeUI extends raMasterDetail {
 
   private boolean MasterNotUnique() {
     return ShemevezeUI.getDataModule().getRowCount(
-        Condition.equal("CSKL", mast)) > 0;
+        Condition.equal("CSKL", mast).and(Condition.in("VRDOK", Vrdokum.getDataModule().getTempSet(Condition.equal("APP", getApp()))))) > 0;
   }
 
   public void refilterDetailSet() {
@@ -255,7 +256,7 @@ public class frmShemevezeUI extends raMasterDetail {
   
   private LinkMap getLinks() {
     DataSet ds = ShemevezeUI.getDataModule().getTempSet("STAVKA1 STAVKA2",
-        Condition.equal("CSKL", mast));
+        Condition.equal("CSKL", mast).and(Condition.equal("VRDOK", mast)));
     ds.open();
     LinkMap links = new LinkMap();
     for (ds.first(); ds.inBounds(); ds.next())
@@ -286,13 +287,15 @@ public class frmShemevezeUI extends raMasterDetail {
     return ShemevezeUI.getDataModule().getRowCount(
         Condition.equal("CSKL", mast).and(
         Condition.equal("STAVKA1", getDetailSet())).and(
-        Condition.equal("STAVKA2", getDetailSet()))) > 0;
+        Condition.equal("STAVKA2", getDetailSet())).and(
+        Condition.equal("VRDOK", getDetailSet()))) > 0;
   }
 
   private void setMasterData() {
     String sql = "SELECT shemevezeui.cskl, MAX(vrshemek.opisvrsk) as opisvrsk, "+
-                 "MAX(vrshemek.vrdok) as vrdok FROM shemevezeui,vrshemek "+
-                 "WHERE shemevezeui.cskl=vrshemek.cvrsk GROUP BY shemevezeui.cskl";
+                 "MAX(vrshemek.vrdok) as vrdok FROM shemevezeui,vrshemek,vrdokum "+
+                 "WHERE shemevezeui.cskl=vrshemek.cvrsk and shemevezeui.vrdok=vrdokum.vrdok and vrdokum.app='" + getApp() + "'" +
+                 " GROUP BY shemevezeui.cskl";
     mast.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(
       dM.getDataModule().getDatabase1(),sql));
     mast.setColumns(new Column[] {
@@ -527,11 +530,14 @@ public class frmShemevezeUI extends raMasterDetail {
 
   private QueryDataSet getVrsk() {
     QueryDataSet vrsk = Vrshemek.getDataModule().getFilteredDataSet(
-      "app = 'sk' AND vrdok IS NOT NULL AND vrdok != '' AND "+
+      "app = '"+getApp()+"' AND vrdok IS NOT NULL AND vrdok != '' AND "+
       "EXISTS (SELECT * FROM shkonta where shkonta.cskl=vrshemek.cvrsk)");
     return vrsk;
   }
-
+  
+  protected String getApp() {
+    return "sk";
+  }
 /*  public void raQueryDataSet_navigated(NavigationEvent e) {
     if (!this.getDetailSet().getString("CSKL").equals(shema) ||
         !this.getDetailSet().getString("VRDOK").equals(vrdok)) {
