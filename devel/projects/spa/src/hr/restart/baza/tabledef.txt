@@ -939,6 +939,7 @@ POSTOINV;numeric;15,3;;0;Postotak otpisa
 TIPINV;char;1;;I;Naèin kalk. dopuš. manjka
 CVRSUBJ;short;2;;;Vrsta subjekta
 CSUBRN;char;20;;;Subjekt;15
+NAZPRI;char;50;;;Naziv za prikaz;20
 UIDX=cart1
 UIDX=bc
 
