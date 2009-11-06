@@ -95,7 +95,14 @@ public class frmArtikli extends raMatPodaci {
   JraButton jbDODTXT = new JraButton();
   JLabel jlNAZPROIZ = new JLabel();
   JPanel jpOsnovniPodaci = new JPanel();
-  JraTextField jtfNAZART = new JraTextField();
+  JraTextField jtfNAZART = new JraTextField() {
+    public void valueChanged() {
+      if (getRaQueryDataSet().getString("NAZPRI").trim().length() == 0)
+        getRaQueryDataSet().setString("NAZPRI", jtfNAZART.getText());
+    }
+  };
+  JLabel jlNAZPRI = new JLabel();
+  JraTextField jtfNAZPRI = new JraTextField();
   JLabel jlVC = new JLabel();
   JraTextField jtfIPOR = new JraTextField();
   JraTextField jtfSIFZANAR = new JraTextField();
@@ -342,6 +349,7 @@ public class frmArtikli extends raMatPodaci {
     jlCART1.setText(res.getString("jlCART1_text"));
     jlBC.setText(res.getString("jlBC_text"));
     jlNAZART.setText(res.getString("jlNAZART_text"));
+    jlNAZPRI.setText("Naziv za prikaz");
     jlNAZART2.setText(res.getString("jlNAZART_text"));
     jlNAZART3.setText(res.getString("jlNAZART_text"));
     jlNAZART4.setText(res.getString("jlNAZART_text"));
@@ -377,6 +385,8 @@ public class frmArtikli extends raMatPodaci {
     jtfMC.setColumnName("MC");
     jtfNAZART.setColumnName("NAZART");
     jtfNAZART.setDataSet(getRaQueryDataSet());
+    jtfNAZPRI.setColumnName("NAZPRI");
+    jtfNAZPRI.setDataSet(getRaQueryDataSet());
     jtfIPOR.setColumnName("IPOR");
     jtfIPOR.setDataSet(getRaQueryDataSet());
     jtfSIFZANAR.setColumnName("SIFZANAR");
@@ -809,20 +819,22 @@ public class frmArtikli extends raMatPodaci {
     jpOsnovniPodaci.add(jtfCART, new XYConstraints(150, 20, 100, -1));
     jpOsnovniPodaci.add(jcbAKTIV, new XYConstraints(415, 18, 100, -1));
     jpOsnovniPodaci.add(jtfCART1, new XYConstraints(150, 45, 150, -1));
-    jpOsnovniPodaci.add(jdbCheckBox1, new XYConstraints(375, 168, 140, -1));
+    jpOsnovniPodaci.add(jdbCheckBox1, new XYConstraints(375, 193, 140, -1));
     jpOsnovniPodaci.add(jlBC, new XYConstraints(315, 50, -1, -1));
     jpOsnovniPodaci.add(jtfBC, new XYConstraints(395, 45, 120, -1));
     jpOsnovniPodaci.add(jlNAZART, new XYConstraints(15, 70, -1, -1));
     jpOsnovniPodaci.add(jtfNAZART, new XYConstraints(150, 70, 365, -1));
+    jpOsnovniPodaci.add(jlNAZPRI, new XYConstraints(15, 170, -1, -1));
+    jpOsnovniPodaci.add(jtfNAZPRI, new XYConstraints(150, 170, 365, -1));
     jpOsnovniPodaci.add(jbDODTXT, new XYConstraints(519, 70, 21, 21));
     jpOsnovniPodaci.add(jlJM, new XYConstraints(15, 95, -1, -1));
     jpOsnovniPodaci.add(jlCPOR, new XYConstraints(15, 120, -1, -1));
     jpOsnovniPodaci.add(jlCGRART, new XYConstraints(15, 145, -1, -1));
-    jpOsnovniPodaci.add(jlVRART, new XYConstraints(15, 170, -1, -1));
+    jpOsnovniPodaci.add(jlVRART, new XYConstraints(15, 195, -1, -1));
     jpOsnovniPodaci.add(jrfJM, new XYConstraints(150, 95, 50, -1));
     jpOsnovniPodaci.add(jrfCPOR, new XYConstraints(150, 120, 50, -1));
     jpOsnovniPodaci.add(jrfCGRART, new XYConstraints(150, 145, -1, -1));
-    jpOsnovniPodaci.add(rcbVRART, new XYConstraints(150, 170, 100, -1));
+    jpOsnovniPodaci.add(rcbVRART, new XYConstraints(150, 195, 100, -1));
 //    jpOsnovniPodaci.add(jrfCVRART, new XYConstraints(150, 170, 50, -1));
     jpOsnovniPodaci.add(jrfNAZJM, new XYConstraints(210, 95, 305, -1));
     jpOsnovniPodaci.add(jrfNAZPOR, new XYConstraints(210, 120, 305, -1));
@@ -1027,6 +1039,8 @@ public boolean  doWithSave(char mode) {
         return false;
     }
     if (hr.restart.util.Valid.getValid().isEmpty(jtfNAZART))
+      return false;
+    if (hr.restart.util.Valid.getValid().isEmpty(jtfNAZPRI))
       return false;
     if (hr.restart.util.Valid.getValid().isEmpty(jrfJM))
       return false;
