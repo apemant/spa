@@ -283,8 +283,8 @@ public class sgStuff {
    *@return      The akontacijaZaObracun value
    */
   public DataSet getAkontacijaZaObracun(String cpn) {
-    String qstr = "select sum(izdatak) as izdatak, sum(pvizdatak) as pvizdatak, max(oznval) as oznval from stavblag where cpn='" + cpn +
-        "' and cskl='6' and stavka='1' group by oznval union select sum(izdatak) as izdatak,  sum(pvizdatak) as pvizdatak, max(oznval) as oznval from stavkeblarh where cpn='" + cpn +
+    String qstr = "select sum(izdatak) as izdatak, sum(pvizdatak) as pvizdatak, oznval from stavblag where cpn='" + cpn +
+        "' and cskl='6' and stavka='1' group by oznval union select sum(izdatak) as izdatak,  sum(pvizdatak) as pvizdatak, oznval from stavkeblarh where cpn='" + cpn +
         "' and cskl='6' and stavka='1' group by oznval";
     QueryDataSet qds = ut.getNewQueryDataSet(qstr);
     return qds;
@@ -416,8 +416,8 @@ public class sgStuff {
    *@return      The isplacenaRazlika value
    */
   public DataSet getIsplacenaRazlika(String cpn) {
-    String qstr = "select sum(primitak) as primitak, sum(izdatak) as izdatak, max(oznval) as oznval from stavblag where cpn='" + cpn +
-        "' and cskl='6' and stavka='2' group by oznval union select sum(primitak) as primitak, sum(izdatak) as izdatak, max(oznval) as oznval from stavkeblarh where cpn='" + cpn +
+    String qstr = "select sum(primitak) as primitak, sum(izdatak) as izdatak, oznval from stavblag where cpn='" + cpn +
+        "' and cskl='6' and stavka='2' group by oznval union select sum(primitak) as primitak, sum(izdatak) as izdatak, oznval from stavkeblarh where cpn='" + cpn +
         "' and cskl='6' and stavka='2' group by oznval";
 //    System.out.println("QSTR za razliku \n" + qstr);
     vl.execSQL(qstr);
@@ -950,12 +950,12 @@ public class sgStuff {
 
   /**
    *  Gets the troskoveZaObracun attribute of the sgStuff object
-   *
+   *1
    *@param  cpn  Description of the Parameter
    *@return      The troskoveZaObracun value
    */
   public DataSet getTroskoveZaObracun(String cpn) {
-    String qstr = "select sum(iznos) as iznos, sum(pviznos) as pviznos, max(oznval) as oznval from stavkepn where cpn='" + cpn + "'  group by oznval";
+    String qstr = "select sum(iznos) as iznos, sum(pviznos) as pviznos, oznval from stavkepn where cpn='" + cpn + "'  group by oznval";
     // and ispl='N'
 //    vl.execSQL(qstr);
 //    vl.RezSet.open();
