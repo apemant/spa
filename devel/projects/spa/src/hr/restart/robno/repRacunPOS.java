@@ -55,8 +55,8 @@ public class repRacunPOS extends mxReport {
   String porezString;
   int width = 40;
   int dbWidth = width/2;
-  String doubleLineSep;
-  boolean ispSif;
+  String doubleLineSep, uk;
+  boolean ispSif, oneRow, pop;
 
   public repRacunPOS() {
 
@@ -67,6 +67,13 @@ public class repRacunPOS extends mxReport {
             "Sirina pos ispisa. Preporuka 39 - 46", true);
     ispSif = frmParam.getParam("pos", "ispSifra", "N",
         "Ispis šifre na raèunima POS-a (D,N)", true).equalsIgnoreCase("D");
+    oneRow = frmParam.getParam("pos", "oneRow", "N",
+        "Ispis raèuna u jednoj liniji (D,N)").equalsIgnoreCase("D");
+    uk = frmParam.getParam("pos", "iznosStavka", "UKUPNO",
+    "Kolona iznosa koja se prikazuje na pos raèunu (UKUPNO,IZNOS,NETO)");
+    pop = "D".equalsIgnoreCase(frmParam.getParam("pos", 
+    "popustPrikaz", "N", "Prikaz popusta na pos raèunima (D,N)"));
+    
     width = Integer.parseInt(wdt);
     System.out.println("WIDTH - "+ width);
     dbWidth = width/2;
@@ -94,17 +101,10 @@ public class repRacunPOS extends mxReport {
     mxRM rm = new mxRM();
     rm.init(dm.getMxPrinterRM());
     setRM(rm);
-    
-    
   }
 
   private void makeIspis(){
      dm.getLogotipovi().open();
-          
-     String uk = frmParam.getParam("pos", "iznosStavka", "UKUPNO",
-         "Kolona iznosa koja se prikazuje na pos raèunu (UKUPNO,IZNOS,NETO)");
-     boolean pop = "D".equalsIgnoreCase(frmParam.getParam("pos", 
-         "popustPrikaz", "N", "Prikaz popusta na pos raèunima (D,N)"));
 
      QueryDataSet sks = hr.restart.baza.Sklad.getDataModule().getTempSet("cskl = '"+master.getString("CSKL")+"'");
      QueryDataSet prm = hr.restart.baza.Prod_mj.getDataModule().getTempSet("cprodmj = '"+master.getString("CPRODMJ")+"'");
@@ -138,29 +138,24 @@ public class repRacunPOS extends mxReport {
          getPhones()+
 //         "<#"+prodMjesto+"|"+width+"|center#><$newline$>"+
          jeliR1(master.getInt("BRDOK"), master.getInt("CKUPAC"))+
-         doubleLineSep+"<$newline$>"+ (!ispSif ? "RBR  NAZIV<$newline$>" :
-         Aut.getAut().getCARTdependable("RBR ŠIFRA   NAZIV<$newline$>",
-                                        "RBR OZNAKA        NAZIV<$newline$>",
-                                        "RBR BARCODE       NAZIV<$newline$>")
-                                        )+   /** @todo prilagodit cart, cart1, bc uvjetima */
-         (!pop ? " KOLIÈINA   JM       CIJENA       "+getRazlikaWidthBlank()+"IZNOS<$newline$>"
-             : " KOLIÈINA  JM     CIJENA   % POP  "+Aus.spc(width-39)+"IZNOS<$newline$>")+
-         doubleLineSep+"");
+         (oneRow ? "" : doubleLineSep+"<$newline$>")+ getDetailHeader() +
+         doubleLineSep+getManualDetail());
      detail[0] = (!ispSif ? "<#RBR|3|right#>  <#NAZART|"+(width-6)+"|left#><$newline$>" :
          Aut.getAut().getCARTdependable("<#RBR|3|right#> <#CART|7|left#> <#NAZART|"+(width-12)+"|left#><$newline$>",
                                         "<#RBR|3|right#> <#CART1|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>",
                                         "<#RBR|3|right#> <#BC|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>"))+     /** @todo prilagodit cart, cart1, bc uvjetima */
           (!pop ? "<#KOL|9|right#>   <#JM|3|left#> <#MC|11|right#> <#"+uk+"|"+(width-28)+"|right#>"
               : "<#KOL|9|right#>  <#JM|3|left#> <#MC|9|right#>   <#PPOPUST1|5|right#> <#"+uk+"|"+(width-33)+"|right#>");
-     this.setDetail(detail);
+     if (!oneRow) this.setDetail(detail);
      this.setRepFooter(
-         doubleLineSep+"<$newline$>"+ getUkupno(master) +
+         doubleLineSep+"<$newline$>"+(oneRow ? "<$newline$>" : "")+ 
+         getUkupno(master) +
 //         "<#UKUPNO |26|left#> <#"+master.getBigDecimal("UKUPNO")+"|15|right#><$newline$>"+
 //         "<#POPUST |26|left#> <#"+master.getBigDecimal("UIPOPUST1").add(master.getBigDecimal("UIPOPUST2"))+"|15|right#><$newline$>"+
 //         "<#PLATITI |26|left#> <#"+master.getBigDecimal("NETO")+"|15|right#><$newline$>"+   //   %sum(IZNOS|15|right)%
-         doubleLineSep+"<$newline$>"+
+         (oneRow ? "" : doubleLineSep)+"<$newline$>"+
          /*"NAÈIN PLAÆANJA - "+*/getNacinPlacanja(master.getInt("BRDOK"),master.getString("CSKL"))+//"<$newline$>"+
-         doubleLineSep+"<$newline$>"+
+         (oneRow ? "" : doubleLineSep)+"<$newline$>"+
          porezString+
          getBlagajnaOperater(prodMjesto,user)+
          "<$newline$>"+ getPotpis_i_MP(master.getInt("CKUPAC")) +/*"<$newline$>"+ */
@@ -170,12 +165,44 @@ public class repRacunPOS extends mxReport {
 //         "<$newline$>"+
          "Nadnevak: "+raDateUtil.getraDateUtil().dataFormatter(master.getTimestamp("DATDOK"))+"  "+getRazlikaWidthBlank()+"Vrijeme: " + master.getTimestamp("DATDOK").toString().substring(11,19) +   "<$newline$>"+
          "<$newline$><$newline$><$newline$>"+
-         "<$newline$><$newline$><$newline$>"+
-         "<$newline$><$newline$><$newline$>"+
+         "<$newline$><$newline$>"+
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
     );
   }
+  
+  private String getDetailHeader() {
+    if (oneRow) return "NAZIV" + Aus.spc(width-24) +  "KOL  CIJENA   IZNOS<$newline$>";
+    return (!ispSif ? "RBR  NAZIV<$newline$>" :
+      Aut.getAut().getCARTdependable("RBR ŠIFRA   NAZIV<$newline$>",
+                                     "RBR OZNAKA        NAZIV<$newline$>",
+                                     "RBR BARCODE       NAZIV<$newline$>")
+                                     )+   /** @todo prilagodit cart, cart1, bc uvjetima */
+      (!pop ? " KOLIÈINA   JM       CIJENA       "+getRazlikaWidthBlank()+"IZNOS<$newline$>"
+          : " KOLIÈINA  JM     CIJENA   % POP  "+Aus.spc(width-39)+"IZNOS<$newline$>");
+  }
+  
+  private String getManualDetail() {
+    if (!oneRow) return "";
+    String data = "";
+    DataSet ds = this.getDataSet();
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      data = data + "<$newline$><#"+ds.getString("NAZART")+"|"+(width-19)+"|left#>";
+      BigDecimal kol = ds.getBigDecimal("KOL");      
+      if (kol.setScale(0, BigDecimal.ROUND_DOWN).compareTo(kol) == 0)
+        data = data + "<#" + kol.intValue() + "|3|right#>"+
+                  "<#" + ds.getBigDecimal("MC") + "|8|right#>"+
+                  "<#" + ds.getBigDecimal(uk)+"|8|right#>";
+      else data = data + "<#1|3|right#>"+
+         "<#" + ds.getBigDecimal("MC").multiply(ds.getBigDecimal("KOL")).
+           setScale(2, BigDecimal.ROUND_HALF_UP) + "|8|right#>"+
+         "<#" + ds.getBigDecimal(uk)+"|8|right#><$newline$>"+
+         "    ("+ds.getBigDecimal("KOL")+" "+ds.getString("JM")+" x "+
+                 ds.getBigDecimal("MC")+")";
+    }
+    return data;
+  }
+  
   private String getLastEscapeString() {
     try {
       int crm = dm.getMxPrinterRM().getInt("CRM");//jebiga
@@ -220,7 +247,7 @@ public class repRacunPOS extends mxReport {
     if (dset == null || dset.rowCount() < 1 ) return;
     dset.first();
 
-    porezString = "<#P R E G L E D  P O R E Z A|"+width+"|center#><$newline$>"+
+    porezString = (oneRow ? "" : "<#P R E G L E D  P O R E Z A|"+width+"|center#><$newline$>")+
                   "<#NAZIV|6|left#> <#STOPA|8|right#> <#OSNOVICA|12|right#> <#POREZ|"+(width-29)+"|right#><$newline$>"+
                   doubleLineSep+"<$newline$>";
     do {
@@ -251,9 +278,9 @@ public class repRacunPOS extends mxReport {
     
     //TODO obrati paznju na sgQuerys.getSgQuerys().format(BD,int) ;)
 
-    String np = "<#P R E G L E D  P L A Æ A N J A|"+width+"|center#><$newline$>"+
+    String np = (oneRow ? "" : "<#P R E G L E D  P L A Æ A N J A|"+width+"|center#><$newline$>"+
 //                  "<#NAÈINA PLAÆANJA|21|left#>               IZNOS<$newline$>"+
-                  doubleLineSep+"<$newline$>";
+                  doubleLineSep+"<$newline$>");
     do {
       np +=  "<#"+npos.getString("NAZNACPL").toUpperCase()+"|21|left#> <#"+sgq.format(npos.getBigDecimal("IRATA"),2)+"|"+(width-22)+"|right#><$newline$>";
     } while (npos.next());
@@ -415,7 +442,7 @@ public class repRacunPOS extends mxReport {
   private String getDoubleLineLength(){
    String dl = "";
    for (int i=1; i <= width; i++){
-     dl += "=";
+     dl += oneRow ? "-" : "=";
    }
    return dl;
   }
