@@ -79,7 +79,7 @@ public class mxReport {
 
   public static String TMPPRINTFILE = "ispis.txt";
 //  private java.io.FileWriter file;i
-  private hr.restart.util.FileHandler file = new hr.restart.util.FileHandler(TMPPRINTFILE);
+  protected hr.restart.util.FileHandler file = new hr.restart.util.FileHandler(TMPPRINTFILE);
   private boolean fileEmpty = true;
   private String repHeader="";
   private String repFooter="";
@@ -210,7 +210,7 @@ public class mxReport {
     if (RM == null) setRM(mxRM.getDefaultMxRM());
     return true;
   }
-  private boolean openFile() {
+  protected boolean openFile() {
     try {
 /*      java.io.File delfile = new java.io.File(TMPPRINTFILE);
 //      file = new java.io.RandomAccessFile(delfile,"rw");
