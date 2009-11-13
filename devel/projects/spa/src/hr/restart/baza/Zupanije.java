@@ -28,7 +28,6 @@ public class Zupanije extends KreirDrop implements DataModule {
 
   dM dm  = dM.getDataModule();
   private static Zupanije Zupanijeclass;
-
   QueryDataSet zup = new raDataSet();
 
   Column zupLOKK = new Column();
