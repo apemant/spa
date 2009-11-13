@@ -30,11 +30,21 @@ public class repDrawer extends mxReport {
           ret[i] = (char)Integer.parseInt(tok.nextToken(), 16);
           i++;
         }
-        this.setPgHeader(new String(ret));
+        send(new String(ret));
+        
       } catch (NumberFormatException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
-      }    
-    super.makeReport();
+      }
+  }
+  
+  void send(String seq) {
+    if (!openFile()) return;
+    file.write(seq);
+    try {
+      file.close();
+    } catch (Exception e) {
+      System.out.println("Unable to close file "+e);
+    }
   }
 }
