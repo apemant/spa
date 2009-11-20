@@ -448,7 +448,7 @@ public class JlrNavField extends JraTextField {
           return getMultiCondition();
     if (navProperties != null) 
       return navProperties.getCondition();
-    if (textFields == null) 
+    if (textFields == null || getText().length() > 0) 
       return super.getCondition();
     for (int i = 0; i < textFields.length; i++)
       if (textFields[i] instanceof JlrNavField) {
