@@ -827,7 +827,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     });
     
     String np = frmParam.getParam("pos", "narPrint", "",
-    "Definicije grupa artikala -> radno mjesto narudžbe");
+    "Definicije grupa artikala -> radno mjesto narudžbe", true);
     if (np.length() > 0) {
       raDetail.addOption(new raNavAction("Ispis narudžbe",
           raImages.IMGALIGNLEFT, KeyEvent.VK_F6) {
