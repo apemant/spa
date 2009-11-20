@@ -341,6 +341,13 @@ public class SecondChooser extends JraDialog {
 						ZaglavljeSet.getInt("CAGENT"));
 			}
 		}
+		
+        if (!ZaglavljeSet.isNull("DATUG"))
+          rIT.getMasterSet().setTimestamp("DATUG", 
+              ZaglavljeSet.getTimestamp("DATUG"));
+        if (!ZaglavljeSet.isNull("CUG"))
+          rIT.getMasterSet().setString("CUG", 
+              ZaglavljeSet.getString("CUG"));
 
 		if (rIT.raMaster.getMode() != 'I') {
 			rIT.doBeforeSaveMaster(rIT.raMaster.getMode());
