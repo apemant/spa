@@ -88,25 +88,37 @@ public class raPONSectionHeader0TF extends raReportSection {
   public raReportElement TextMJ;
   private String[] TextMJProps = new String[] {"MJ", "", "", "", "", "", "", "", "640", "1380", 
      "4360", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", ""};
+  
+  public raReportElement TextSgetDATUG;
+  private String[] TextSgetDATUGProps = new String[] {"SgetDATUG", "", "", "", "", "", "", "", 
+     "9600", "1480", "1240", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", 
+     "Right", "No"};
+  public raReportElement TextCUG;
+  private String[] TextCUGProps = new String[] {"CUG", "", "", "", "", "", "", "", "7280", 
+     "1480", "2300", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+  public raReportElement LabelUgovor;
+  private String[] LabelUgovorProps = new String[] {"Ugovor", "", "5760", "1480", "", "220", "", 
+     "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
+  
   public raReportElement TextSgetDATNARIZ;
   private String[] TextSgetDATNARIZProps = new String[] {"SgetDATNARIZ", "", "", "", "", "", "", "", 
-     "9600", "1480", "1240", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", 
+     "9600", "1700", "1240", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", 
      "Right", "No"};
   public raReportElement TextBRNARIZ;
   private String[] TextBRNARIZProps = new String[] {"BRNARIZ", "", "", "", "", "", "", "", "7280", 
-     "1480", "2300", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+     "1700", "2300", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
   public raReportElement LabelNarudzba;
-  private String[] LabelNarudzbaProps = new String[] {"Narudžba", "", "5760", "1480", "", "220", "", 
+  private String[] LabelNarudzbaProps = new String[] {"Narudžba", "", "5760", "1700", "", "220", "", 
      "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextKONTOSOB;
   private String[] TextKONTOSOBProps = new String[] {"KONTOSOB", "", "", "", "", "", "Yes", "", 
      "640", "1640", "4360", "480", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", ""};
   public raReportElement LabelNacin_placanja;
   private String[] LabelNacin_placanjaProps = new String[] {"Na\u010Din pla\u0107anja", "", "5760", 
-     "1700", "", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
+     "1920", "", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextNAZNACPL;
   private String[] TextNAZNACPLProps = new String[] {"NAZNACPL", "", "", "", "", "", "", "", "7280", 
-     "1700", "3020", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+     "1920", "3020", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
 //  public raReportElement TextFAX;
 //  private String[] TextFAXProps = new String[] {"FAX", "", "", "", "", "", "", "", "2840", "1900", 
 //     "2160", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "No"};
@@ -116,11 +128,11 @@ public class raPONSectionHeader0TF extends raReportSection {
 //  private String[] TextTELProps = new String[] {"TEL", "", "", "", "", "", "", "", "640", "1900", 
 //     "2160", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "No"};
   public raReportElement LabelNacin_otpreme;
-  private String[] LabelNacin_otpremeProps = new String[] {"Na\u010Din otpreme", "", "5760", "1920", 
+  private String[] LabelNacin_otpremeProps = new String[] {"Na\u010Din otpreme", "", "5760", "2140", 
      "", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextNAZNAC;
   private String[] TextNAZNACProps = new String[] {"NAZNAC", "", "", "", "", "", "", "", "7280", 
-     "1920", "3020", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+     "2140", "3020", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
   public raReportElement TextCPAR;
   private String[] TextCPARProps = new String[] {"CPAR", "", "", "", "", "", "", "", "3940", p_getYzaKoloneUKucici(2120), 
      "1080", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
@@ -128,11 +140,11 @@ public class raPONSectionHeader0TF extends raReportSection {
   private String[] TextMBProps = new String[] {"MB", "", "", "", "", "", "", "", "640", p_getYzaKoloneUKucici(2120), 
      "3200", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
   public raReportElement LabelParitet;
-  private String[] LabelParitetProps = new String[] {"Paritet", "", "5760", "2140", "", "220", "", 
+  private String[] LabelParitetProps = new String[] {"Paritet", "", "5760", "2360", "", "220", "", 
      "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextNAZFRA;
   private String[] TextNAZFRAProps = new String[] {"NAZFRA", "", "", "", "", "", "", "", "7280", 
-     "2140", "3020", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+     "2360", "3020", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
   public raReportElement LabelObrazac;
   private String[] LabelObrazacProps = new String[] {"Obrazac", "No", "9480", "2400", "1000", "", 
      "", "", "", "", "", "", "Lucida Bright", "7", "Bold", "", "", "Right"};
@@ -187,6 +199,9 @@ public class raPONSectionHeader0TF extends raReportSection {
     TextDDOSP = addModel(ep.TEXT, TextDDOSPProps);
     LabelOpcija_dana = addModel(ep.LABEL, LabelOpcija_danaProps);
     TextMJ = addModel(ep.TEXT, TextMJProps);
+    TextSgetDATUG = addModel(ep.TEXT, TextSgetDATUGProps);
+    TextCUG = addModel(ep.TEXT, TextCUGProps);
+    LabelUgovor = addModel(ep.LABEL, LabelUgovorProps);
     TextSgetDATNARIZ = addModel(ep.TEXT, TextSgetDATNARIZProps);
     TextBRNARIZ = addModel(ep.TEXT, TextBRNARIZProps);
     LabelNarudzba = addModel(ep.LABEL, LabelNarudzbaProps);
