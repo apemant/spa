@@ -22,7 +22,7 @@ public class repDrawer extends mxReport {
     setRM(rm);
       try {
         String str = frmParam.getParam("pos", "openDrawer", 
-            "\\u001B\\u0064\\u0000", "Sekvenca za otvaranje ladice", true);
+            "\\u0007", "Sekvenca za otvaranje ladice", true);
         StringTokenizer tok = new StringTokenizer(str,"\\u");
         char[] ret = new char[tok.countTokens()];
         int i=0;
