@@ -34,6 +34,7 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.text.JTextComponent;
 
 import com.borland.dx.dataset.DataSet;
@@ -53,6 +54,7 @@ public class jpVlasnik extends JPanel {
   DataSet resolvSet;
   StorageDataSet dummySet;
   private boolean updated = false;
+  private boolean dbl = false;
 
   private boolean allowedupdated = true;
 
@@ -73,7 +75,7 @@ public class jpVlasnik extends JPanel {
   JraButton jbSelMj;
   JraTextField jraPrezime;
   JraTextField jraTel;
-  JraButton jbGetKup;
+  public JraButton jbGetKup;
 
   private int leftMargin = 0;
   private Insets insets;
@@ -96,11 +98,15 @@ public class jpVlasnik extends JPanel {
   }
 
   public jpVlasnik(DataSet _ds) {
-    this(_ds,0,null);
+    this(_ds,0,null,false);
   }
-
   public jpVlasnik(DataSet _ds, int _margin, Insets _insets) {
+    this(_ds, _margin, _insets, false);
+  }
+  
+  public jpVlasnik(DataSet _ds, int _margin, Insets _insets, boolean d) {
     try {
+      dbl = d;
       resolvSet = _ds;
       fVlasnik = null;
       leftMargin = _margin;
@@ -112,7 +118,11 @@ public class jpVlasnik extends JPanel {
   }
 
   public jpVlasnik() {
-    this(new StorageDataSet(),-5, new Insets(5, 0, 0, 5));//instanciraju ga ovako uglavnom kada ga zele dodati u postojeci panel pa bezi pet u desno
+    this(false);
+  }
+  
+  public jpVlasnik(boolean d) {
+    this(new StorageDataSet(),-5, new Insets(5, 0, 0, 5), d);//instanciraju ga ovako uglavnom kada ga zele dodati u postojeci panel pa bezi pet u desno
     ((StorageDataSet)resolvSet).addColumn("CKUPAC",Variant.INT);
     resolvSet.open();
   }
@@ -131,7 +141,7 @@ public class jpVlasnik extends JPanel {
     jlPrezime.setText("Prezime");
     imewidth = 400-15;
     if (fVlasnik==null) {
-      imewidth =  400-15-21-5; //button i razmak
+      imewidth =  400-15-(dbl ? 40 :21)-5; //button i razmak
       jraCkupac = createNavField();
       jraAdr = createNavField();
       jraEmadr = createNavField();
@@ -201,7 +211,7 @@ public class jpVlasnik extends JPanel {
       prepareNavField(jraPbr, jlrCkupac);
       prepareNavField(jraTel, jlrCkupac);
 
-      jlrCkupac.setNavButton(jbGetKup);
+      if (!dbl) jlrCkupac.setNavButton(jbGetKup);
 
     } else {
       rebind(fVlasnik.getRaQueryDataSet());
@@ -224,32 +234,41 @@ public class jpVlasnik extends JPanel {
       };
   }
   private void createPanel(int left, int imewidth) {
-    jpDetail.add(jlAdr, new XYConstraints(15+left, 50, -1, -1));
-    jpDetail.add(jlCkupac, new XYConstraints(15+left, 0, -1, -1));
-    jpDetail.add(jlJmbg, new XYConstraints(15+left, 75, -1, -1));
-    jpDetail.add(jlPrezime, new XYConstraints(15+left, 25, -1, -1));
+    int d = dbl ? 2 : 1;
+    int h = dbl ? 40 : 21;
+    int a = dbl ? 40 : 0;
+    if (dbl) {
+      jlAdr.setFont(jlAdr.getFont().deriveFont((float) 12));
+      jlCkupac.setFont(jlCkupac.getFont().deriveFont((float) 12));
+      jlJmbg.setFont(jlJmbg.getFont().deriveFont((float) 12));
+      jlPrezime.setFont(jlPrezime.getFont().deriveFont((float) 12));
+    }
+    jpDetail.add(jlAdr, new XYConstraints(15+left, 50*d, -1, h));
+    jpDetail.add(jlCkupac, new XYConstraints(15+left, 0*d, -1, h));
+    jpDetail.add(jlJmbg, new XYConstraints(15+left, 75*d, -1, h));
+    jpDetail.add(jlPrezime, new XYConstraints(15+left, 25*d, -1, h));
 
-    jpDetail.add(jraCkupac, new XYConstraints(150+left, 0, 100, -1));
-    jpDetail.add(jraIme, new XYConstraints(255+left, 0, imewidth, -1));//imewidth-15
+    jpDetail.add(jraCkupac, new XYConstraints(150+left+a, 0*d, 100, h));
+    jpDetail.add(jraIme, new XYConstraints(255+left+a, 0*d, imewidth, h));//imewidth-15
 
     if (jbGetKup != null)
-      jpDetail.add(jbGetKup, new XYConstraints(255+400-15-21+leftMargin, 0, 21, 21));
+      jpDetail.add(jbGetKup, new XYConstraints(255+400-15-h+a+leftMargin, 0*d, h, h));
 
 
-    jpDetail.add(jraPrezime, new XYConstraints(150+left, 25, 505-15, -1));
+    jpDetail.add(jraPrezime, new XYConstraints(150+left+a, 25*d, 505-15, h));
 
-    jpDetail.add(jraAdr, new XYConstraints(150+left, 50, 265-5, -1));
-    jpDetail.add(jraPbr, new XYConstraints(420+left-5, 50, 65-5, -1));
+    jpDetail.add(jraAdr, new XYConstraints(150+left+a, 50*d, 265-5, h));
+    jpDetail.add(jraPbr, new XYConstraints(420+left-5+a, 50*d, 65-5, h));
     if (jbSelMj == null)
-      jpDetail.add(jraMj, new XYConstraints(490+left-10, 50, 165-5, -1));
+      jpDetail.add(jraMj, new XYConstraints(490+left-10+a, 50*d, 165-5, h));
     else {
-      jpDetail.add(jraMj, new XYConstraints(490+left-10, 50, 165-10-21, -1));
-      jpDetail.add(jbSelMj, new XYConstraints(255+400-15-21+leftMargin, 50, 21, 21));
+      jpDetail.add(jraMj, new XYConstraints(490+left-10+a, 50*d, 165-10-21, h));
+      jpDetail.add(jbSelMj, new XYConstraints(255+400-15-21+a+leftMargin, 50*d, h, h));
     }
 
-    jpDetail.add(jraJmbg, new XYConstraints(150+left, 75, 165-5, -1));
-    jpDetail.add(jraTel, new XYConstraints(320+left-5, 75, 165-5, -1));
-    jpDetail.add(jraEmadr, new XYConstraints(490+left-10, 75, 165-5, -1));
+    jpDetail.add(jraJmbg, new XYConstraints(150+left+a, 75*d, 165-5, h));
+    jpDetail.add(jraTel, new XYConstraints(320+left-5+a, 75*d, 165-5, h));
+    jpDetail.add(jraEmadr, new XYConstraints(490+left-10+a, 75*d, 165-5, h));
     
     this.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right));
     this.add(jpDetail, BorderLayout.CENTER);
