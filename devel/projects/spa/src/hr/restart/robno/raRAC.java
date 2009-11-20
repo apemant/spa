@@ -105,7 +105,8 @@ final public class raRAC extends raIzlazTemplate {
     }
 
     public void cskl2csklart() {
-      getDetailSet().setString("REZKOL", "D");
+      if (!isUslugaOrTranzit())
+        getDetailSet().setString("REZKOL", "D");
     }
 
     private boolean flipflop = true;
