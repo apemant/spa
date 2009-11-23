@@ -662,6 +662,9 @@ public abstract class KreirDrop {
                       v.setFromString(existingCols[i].getDataType(), val);
                       ps.setValue(existingNames[i], v.getAsObject(), false);
                     } catch (IllegalArgumentException ie) {
+                      if (val.trim().length()<11) {
+                        val = val.trim().concat(" 00:00:00.0");
+                      }
                       ps.setTimestamp(existingNames[i], java.sql.Timestamp.valueOf(val), false);
                     }                    
                   if (existingCols[i].getDataType() == Variant.INPUTSTREAM) {
