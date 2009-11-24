@@ -90,10 +90,12 @@ public class raIzvjPDV {
   private void pribroji(Column col, ReadRow row) {
     if (validate(col.getCaption(),row)) {
 //      System.out.println(col.getCaption() + " = "+col.getDataSet().getBigDecimal(col.getColumnName())+" + "+row.getBigDecimal("ID").add(row.getBigDecimal("IP")));
-      BigDecimal val = row.getBigDecimal("ID").add(row.getBigDecimal("IP")).abs();
-      if (row.getBigDecimal("SSALDO").signum() < 0) val = val.negate();
+      BigDecimal val = row.getBigDecimal("ID").subtract(row.getBigDecimal("IP"));
+      if (row.getString("URAIRA").equals("I")) val = val.negate();
+      /*if (row.getBigDecimal("SSALDO").signum() < 0) val = val.negate();*/
       col.getDataSet().setBigDecimal(col.getColumnName(),
         col.getDataSet().getBigDecimal(col.getColumnName()).add(val));
+      
     }
   }
   private QueryDataSet tmp_stizvjPDV;
