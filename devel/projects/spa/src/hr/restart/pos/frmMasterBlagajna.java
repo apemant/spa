@@ -1644,6 +1644,14 @@ public class frmMasterBlagajna extends raMasterDetail {
   }
   
   public String getStol() {
+    try {
+      DataSet ds = Aus.q("SELECT * FROM places WHERE id='" +
+            getMasterSet().getString("STOL")+"'");
+      if (ds.rowCount() > 0)
+        return ds.getString("NAME");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     return getMasterSet().getString("STOL");
   }
 
