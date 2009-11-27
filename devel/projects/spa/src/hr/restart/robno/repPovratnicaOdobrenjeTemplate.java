@@ -43,8 +43,10 @@ public class repPovratnicaOdobrenjeTemplate extends repIzlazOrigTemplate {
     deleteElementsPushDown(sh, new raReportElement[] {sh.LabelDospijeceDatum, sh.LabelDospijeceDatum,
     sh.LabelNacin_otpreme, sh.LabelNacin_placanja, sh.LabelNarudzba,
     sh.LabelParitet, sh.TextSgetDATDOSP, sh.TextSgetDDOSP, sh.TextBRNARIZ,
-    sh.TextSgetDATNARIZ, sh.TextSgetDVO, sh.TextNAZNAC, sh.TextNAZNACPL, sh.TextNAZFRA});
+    sh.TextSgetDATNARIZ, sh.TextNAZNAC, sh.TextNAZNACPL, sh.TextNAZFRA});
 //    sh.LabelR1.setDefault(ep.VISIBLE, raElixirPropertyValues.NO);
+    sh.TextLogoMjestoZarez.defaultAlterer().setTop(
+        sh.LabelMjestoDatum.defaultAlterer().getTop());
     return sh;
   }
 
