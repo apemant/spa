@@ -1010,7 +1010,9 @@ public class raAutomatRac extends raFrame {
         zagRac.setString("CNAC", zagugovora.getString("CNAC"));
         zagRac.setString("CNAMJ", zagugovora.getString("CNAMJ"));
         zagRac.setString("CNAP", DummySet.getString("CNAP"));
-        zagRac.setString("PARAM", "_A_");
+        if (vrdok.equals("PON"))
+          zagRac.setString("PARAM", "OJ");
+        else zagRac.setString("PARAM", "_A_");
         zagRac.setInt("CPAR", zagugovora.getInt("CPAR"));
         zagRac.setInt("PJ", zagugovora.getInt("PJ"));
         zagRac.setTimestamp("DATDOK", DummySet.getTimestamp("DATUM"));
