@@ -138,7 +138,7 @@ public class repRacunPOS extends mxReport {
          getPhones()+
 //         "<#"+prodMjesto+"|"+width+"|center#><$newline$>"+
          jeliR1(master.getInt("BRDOK"), master.getInt("CKUPAC"))+
-         (oneRow ? "" : doubleLineSep+"<$newline$>")+ getDetailHeader() +
+         (oneRow ? "<$newline$>" : doubleLineSep+"<$newline$>")+ getDetailHeader() +
          doubleLineSep+getManualDetail());
      detail[0] = (!ispSif ? "<#RBR|3|right#>  <#NAZART|"+(width-6)+"|left#><$newline$>" :
          Aut.getAut().getCARTdependable("<#RBR|3|right#> <#CART|7|left#> <#NAZART|"+(width-12)+"|left#><$newline$>",
@@ -416,15 +416,18 @@ public class repRacunPOS extends mxReport {
   }
 
   private String getBlagajnaOperater(String blag, String user){
-    String blop = hr.restart.sisfun.frmParam.getParam("pos","BlOp","0","Ispis i pozicija blagajne i operatora na malim raèunima (0,1,2)");
+    String blop = hr.restart.sisfun.frmParam.getParam("pos","BlOp","0","Ispis i pozicija blagajne i operatora na malim raèunima (0,1,2,3)");
     if (!blop.equalsIgnoreCase("0")){
       DataRow usr = lD.raLookup(hr.restart.baza.dM.getDataModule().getUseri(),"CUSER", user);
       String operater = usr.getString("NAZIV");
       if (blop.equalsIgnoreCase("1")){
         return "BLAGAJNA: "+blag+"<$newline$>"+
                "OPERATER: "+operater+"<$newline$>";
-      } else {
+      } else if (blop.equalsIgnoreCase("2")) {
         return blag+", "+operater+"<$newline$>";
+      } else {
+        return "Poslužio: "+operater+"<$newline$>"+
+        "Broj stola: " + frmMasterBlagajna.getInstance().getStol() + "<$newline$>";
       }
     }
     return "";
