@@ -51,7 +51,7 @@ public class repNarPOS extends mxReport {
   int width = 40;
   int dbWidth = width/2;
   String doubleLineSep;
-  boolean ispSif;
+  boolean ispSif, oneRow;
 
   public repNarPOS() {
   }
@@ -59,6 +59,8 @@ public class repNarPOS extends mxReport {
   public void makeReport(){
     String wdt = frmParam.getParam("pos", "sirPOSnar", "42", 
             "Sirina pos ispisa. Preporuka 39 - 46", true);
+    oneRow = frmParam.getParam("pos", "oneRow", "N",
+    "Ispis raèuna u jednoj liniji (D,N)").equalsIgnoreCase("D");
     width = Integer.parseInt(wdt);
     dbWidth = width/2;
     doubleLineSep = getDoubleLineLength();
@@ -87,26 +89,22 @@ public class repNarPOS extends mxReport {
      ru.setDataSet(master);
 
      this.setPgHeader(
-         "\u0007<$newline$>\u000E<#NARUDŽBA|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
-         "\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
+         "<$newline$>\u000E<#NARUDŽBA|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
+         "\u000E<#"+master.getInt("BRDOK")+"|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
          (fmb.getNarSet().getString("AKTIV").equalsIgnoreCase("D") ? "" :
            Aus.spc((width - 9) / 2) + "(kopija!)<$newline$>") + 
            "Broj stola: " + fmb.getStol() + "<$newline$>" + 
-           doubleLineSep + "<$newline$>"+ 
-         Aut.getAut().getCARTdependable("RBR ŠIFRA   NAZIV<$newline$>",
-                                        "RBR OZNAKA        NAZIV<$newline$>",
-                                        "RBR BARCODE       NAZIV<$newline$>") +
-         Aus.spc(width-14)+"JM    KOLIÈINA<$newline$>"+
+           doubleLineSep + "<$newline$>"+ getDetailHeader() +
          doubleLineSep+"");
-     detail[0] = Aut.getAut().getCARTdependable("<#RBR|3|right#> <#CART|7|left#> <#NAZART|"+(width-12)+"|left#><$newline$>",
-                                        "<#RBR|3|right#> <#CART1|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>",
-                                        "<#RBR|3|right#> <#BC|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>")+
+     detail[0] = oneRow ? "<#NAZART|"+(width-8)+"|left#> <#KOL|7|right#>" :
+         Aut.getAut().getCARTdependable(
+             "<#RBR|3|right#> <#CART|7|left#> <#NAZART|"+(width-12)+"|left#><$newline$>",
+             "<#RBR|3|right#> <#CART1|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>",
+             "<#RBR|3|right#> <#BC|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>")+
                                         Aus.spc(width-14)+"<#JM|5|left#> <#KOL|8|right#>";
      this.setDetail(detail);
      this.setRepFooter(
-         doubleLineSep+"<$newline$>"+
-         getBlagajnaOperater(prodMjesto,user)+
-         "<$newline$><$newline$>"+
+         doubleLineSep+"<$newline$><$newline$>"+
          "Nadnevak: "+raDateUtil.getraDateUtil().dataFormatter(
              master.getTimestamp("DATDOK"))+Aus.spc(width-38)+
          "Vrijeme: " + master.getTimestamp("DATDOK").
@@ -116,6 +114,15 @@ public class repNarPOS extends mxReport {
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
     );
+  }
+  
+  private String getDetailHeader() {
+    if (oneRow) return "NAZIV" + Aus.spc(width-8) + "KOL<$newline$>"; 
+    return Aut.getAut().getCARTdependable(
+        "RBR ŠIFRA   NAZIV<$newline$>",
+        "RBR OZNAKA        NAZIV<$newline$>",
+        "RBR BARCODE       NAZIV<$newline$>") +
+        Aus.spc(width-14)+"JM    KOLIÈINA<$newline$>";
   }
   
   private String getLastEscapeString() {
