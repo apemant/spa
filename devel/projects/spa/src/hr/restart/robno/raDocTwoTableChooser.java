@@ -256,8 +256,12 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
       cag = frmParam.getParam("pos", "cagentHack", "N",
           "Naèin plaæanja u cagent (D,N)").equals("D");
       rep = true;
+      String cn = "";
       for (qdsRight.first(); qdsRight.inBounds(); qdsRight.next())
-        if (!qdsRight.getString("CNACPL").equals("R")) rep = false;
+        if (!(cn = qdsRight.getString("CNACPL")).equals("R")) rep = false;
+      
+      for (qdsRight.first(); qdsRight.inBounds(); qdsRight.next())
+        if (!qdsRight.getString("CNACPL").equals(cn)) cn = "";
 
       DataSet arts = getArtikliSet();
       
@@ -317,6 +321,7 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
         errors = errors + "\n ( ... još " + 
              Aus.getNum(errnum - 5, "greška", "greške", "grešaka") + " ... )";
       master.setBigDecimal("UIRAC", ukupno);
+      master.setString("CNACPL", cn);
       adisab(true);
       getTTC().getRightJPTW().enableEvents(true);
       //this.hide();
