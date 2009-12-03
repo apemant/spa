@@ -1,6 +1,9 @@
 package hr.restart.robno;
 
+import com.borland.dx.dataset.DataSet;
+
 import hr.restart.pos.frmMasterBlagajna;
+import hr.restart.util.Aus;
 import hr.restart.util.reports.mxRM;
 
 
@@ -17,5 +20,17 @@ public class repRacPOS extends repRacunPOS {
     mxRM rm = new mxRM();
     rm.init(dm.getMxPrinterRM());
     setRM(rm);
+  }
+  
+  protected String getStol() {
+    try {
+      DataSet ds = Aus.q("SELECT * FROM places WHERE id='" +
+          master.getString("STOL")+"'");
+      if (ds.rowCount() > 0)
+        return ds.getString("NAME");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return master.getString("STOL");
   }
 }

@@ -427,10 +427,14 @@ public class repRacunPOS extends mxReport {
         return blag+", "+operater+"<$newline$>";
       } else {
         return "Poslužio: "+operater+"<$newline$>"+
-        "Broj stola: " + frmMasterBlagajna.getInstance().getStol() + "<$newline$>";
+        "Broj stola: " + getStol() + "<$newline$>";
       }
     }
     return "";
+  }
+  
+  protected String getStol() {
+    return frmMasterBlagajna.getInstance().getStol();
   }
 
   private String getFooting(){
