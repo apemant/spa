@@ -26,6 +26,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.swing.JraToggleButton;
 import hr.restart.swing.raButtonGroup;
 import hr.restart.swing.raTableModifier;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raImages;
@@ -263,6 +264,8 @@ public class UpStanjeRobno extends raUpitFat {
 
       if (mainData == null)
         setNoDataAndReturnImmediately();
+      
+      setTitle("Stanje artikala za godinu "+tds.getString("GODINA")+".");
 
       this.getJPTV().addTableModifier(new SignalColorModifier());
       setDataSetAndSums(mainData, new String[]{"NAB", "MAR", "POR", "VRI"});
@@ -271,6 +274,8 @@ public class UpStanjeRobno extends raUpitFat {
       mainData = rlsp.datasetZaEkran(rpcskl.getCSKL(), rpcart.getCART(), rpcart.getCGRART(), rpcart.findCART("stanje"), /*tds.getString("GODINA"),*/ kol0(), tds.getTimestamp("NADAN"), podgrupe, parart, parcart1);
       if (mainData == null)
         setNoDataAndReturnImmediately();
+      
+      setTitle("Stanje artikala na dan "+Aus.formatTimestamp(tds.getTimestamp("NADAN")));
       
       this.getJPTV().addTableModifier(new SignalColorModifier());
       setDataSetAndSums(mainData, new String[]{"NAB", "MAR", "POR", "VRI"});
@@ -295,6 +300,7 @@ public class UpStanjeRobno extends raUpitFat {
       this.getJPTV().clearDataSet();
 
       removeNav();
+      setTitle("Stanje artikala");
 
       rpcart.setCART();
       rpcskl.jrfCSKL.requestFocus();
@@ -365,6 +371,7 @@ public class UpStanjeRobno extends raUpitFat {
   
   public void cancelPress() {
     super.cancelPress();
+    setTitle("Stanje artikala");
     upKartica.getupKartica().clearOutsideData();
   }
 
