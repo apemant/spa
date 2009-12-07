@@ -178,6 +178,7 @@ public class jpRadnicipl extends JPanel {
 //******************************************************
 //******** PANEL 1 **********************************
   JLabel jlBrobveze = new JLabel();
+  JLabel jlOIB = new JLabel();
   JLabel jlBrosigzo = new JLabel();
   JLabel jlBrradknj = new JLabel();
   JLabel jlBrutdod = new JLabel();
@@ -228,6 +229,7 @@ public class jpRadnicipl extends JPanel {
     }
   };
   JraTextField jraJmbg = new JraTextField();
+  JraTextField jraOIB = new JraTextField();
   JraTextField jraBrojTek = new JraTextField();
   JraTextField jraKoef = new JraTextField();
   JraTextField jraKoefzar = new JraTextField();
@@ -519,6 +521,7 @@ public class jpRadnicipl extends JPanel {
       }
     });*/
     jraJmbg.setHorizontalAlignment(SwingConstants.RIGHT);
+    jraOIB.setHorizontalAlignment(SwingConstants.RIGHT);
     jraRegbrmio.setHorizontalAlignment(SwingConstants.RIGHT);
     jraZijmbgzo.setHorizontalAlignment(SwingConstants.RIGHT);
     jraBrobveze.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -608,6 +611,7 @@ public class jpRadnicipl extends JPanel {
 
 
     jlBrobveze.setText("Obveza - zdr. kart.");
+    jlOIB.setText("OIB");
     jlBrosigzo.setText("Os. osoba iz zd. kart.");
     jlBrradknj.setText("Radna knjižica");
     jlBrutdod.setText("Dodatni");
@@ -656,6 +660,8 @@ public class jpRadnicipl extends JPanel {
     jraGodstaz.setDataSet(fRadnicipl.getRaQueryDataSet());
     jraJmbg.setColumnName("JMBG");
     jraJmbg.setDataSet(fRadnicipl.getRaQueryDataSet());
+    jraOIB.setColumnName("OIB");
+    jraOIB.setDataSet(fRadnicipl.getRaQueryDataSet());
     jraBrojTek.setColumnName("BROJTEK");
     jraBrojTek.setDataSet(fRadnicipl.getRaQueryDataSet());
 
@@ -707,6 +713,8 @@ public class jpRadnicipl extends JPanel {
     jPanel3.add(jraBrosigzo,      new XYConstraints(425, 75, 120, -1));
     jPanel3.add(jraBrobveze,        new XYConstraints(150, 75, 120, -1));
     jPanel3.add(jlBrobveze,    new XYConstraints(15, 75, -1, -1));
+    jPanel3.add(jlOIB,    new XYConstraints(15, 100, -1, -1));
+    jPanel3.add(jraOIB,    new XYConstraints(150, 100, 120, -1));
     jPanel3.add(jlClanomf,   new XYConstraints(250, 75, -1, -1));
     jPanel3.add(jcbClanomf,      new XYConstraints(427, 100, 119, -1));
     jPanel3.add(jlBrojTek,   new XYConstraints(310, 25, -1, -1));

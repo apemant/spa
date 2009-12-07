@@ -31,7 +31,7 @@ public class Radnicipl extends KreirDrop implements DataModule {
 
   QueryDataSet rpl = new raDataSet();
   QueryDataSet rplaktiv = new raDataSet();
-
+/*
   Column rplLOKK = new Column();
   Column rplAKTIV = new Column();
   Column rplCRADNIK = new Column();
@@ -73,7 +73,7 @@ public class Radnicipl extends KreirDrop implements DataModule {
   Column rplADRESA = new Column();
   Column rplBROJTEK = new Column();
   Column rplPARAMETRI = new Column();
-
+*/
   public static Radnicipl getDataModule() {
     if (Radniciplclass == null) {
       Radniciplclass = new Radnicipl();
@@ -100,6 +100,9 @@ public class Radnicipl extends KreirDrop implements DataModule {
   }
 
   private void jbInit() throws Exception {
+    initModule();
+    createFilteredDataSet(rplaktiv, "aktiv='D'");
+    /*
     rplLOKK.setCaption("Status zauzetosti");
     rplLOKK.setColumnName("LOKK");
     rplLOKK.setDataType(com.borland.dx.dataset.Variant.STRING);
@@ -459,10 +462,9 @@ public class Radnicipl extends KreirDrop implements DataModule {
         rplBRUTMR, rplBRUTUK, rplGODSTAZ, rplSTOPASTAZ, rplDATSTAZ, rplPODSTAZ, rplDATPODSTAZ, rplNACOBRB, rplKOEF, rplKOEFZAR, rplDATDOL, rplDATODL,
         rplDATREGRES, rplOLUK, rplOLOS, rplJMBG, rplBRRADKNJ, rplREGBRRK, rplREGBRMIO, rplBROSIGZO, rplZIJMBGZO, rplBROBVEZE, rplCLANOMF, rplRSB, rplRSZ,
         rplCORG, rplADRESA, rplBROJTEK, rplPARAMETRI});
-
-    createFilteredDataSet(rplaktiv, "aktiv='D'");
+*/
   }
-
+/*
   public void setall() {
 
     ddl.create("Radnicipl")
@@ -519,4 +521,5 @@ public class Radnicipl extends KreirDrop implements DataModule {
     DefIndex = ddl.getIndices(idx, uidx);
     NaziviIdx = ddl.getIndexNames(idx, uidx);
   }
+*/
 }

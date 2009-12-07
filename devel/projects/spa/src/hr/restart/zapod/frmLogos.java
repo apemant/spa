@@ -87,6 +87,8 @@ public class frmLogos extends raMatPodaci {
   JraTextField jtSIFDJEL = new JraTextField();
   JLabel jlPORISP = new JLabel();
   JraTextField jtPORISP = new JraTextField();
+  JLabel jlOIB = new JLabel("OIB");
+  JraTextField jtOIB = new JraTextField();
   JLabel jlTELEFONI = new JLabel();
   JraTextField jtTEL1 = new JraTextField();
   JraTextField jtTEL2 = new JraTextField();
@@ -163,7 +165,7 @@ public class frmLogos extends raMatPodaci {
     jtNAZIVLOG.setColumnName("NAZIVLOG");
     jtNAZIVLOG.setDataSet(getRaQueryDataSet());
     xYLayout1.setWidth(485);
-    xYLayout1.setHeight(290);
+    xYLayout1.setHeight(315);
     jlADRESA.setText("Adresa");
     jtADRESA.setDataSet(getRaQueryDataSet());
     jtADRESA.setColumnName("ADRESA");
@@ -191,6 +193,8 @@ public class frmLogos extends raMatPodaci {
     jlPORISP.setText("Porezna ispostava");
     jtPORISP.setColumnName("PORISP");
     jtPORISP.setDataSet(getRaQueryDataSet());
+    jtOIB.setColumnName("OIB");
+    jtOIB.setDataSet(getRaQueryDataSet());
     jlTELEFONI.setText("Telefoni / fax");
     jtTEL1.setDataSet(getRaQueryDataSet());
     jtTEL1.setColumnName("TEL1");
@@ -281,10 +285,12 @@ public class frmLogos extends raMatPodaci {
     jp.add(jcbAKTIV, new XYConstraints(350, 20, 100, 21));
     jp.add(jtEMAIL, new XYConstraints(250, 145, 200, -1));
     jp.add(jtURL, new XYConstraints(250, 170, 200, -1));
-    jp.add(jlIzdok, new XYConstraints(15, 250, -1, -1));
-    jp.add(jbHeader, new XYConstraints(150, 250, 150, 21));
-    jp.add(jbFooter, new XYConstraints(305, 250, 145, 21));
-    jp.add(jbVrdoks, new XYConstraints(455, 250, 21, 21));
+    jp.add(jlOIB, new XYConstraints(15, 245, -1, -1));
+    jp.add(jtOIB, new XYConstraints(150, 245, 300, -1));
+    jp.add(jlIzdok, new XYConstraints(15, 275, -1, -1));
+    jp.add(jbHeader, new XYConstraints(150, 275, 150, 21));
+    jp.add(jbFooter, new XYConstraints(305, 275, 145, 21));
+    jp.add(jbVrdoks, new XYConstraints(455, 275, 21, 21));
 //    jp.add(jLabel1,    new XYConstraints(15, 230, -1, -1));
 //    jp.add(jtfFOOTER1,    new XYConstraints(150, 230, 300, -1));
 //    jp.add(jtfFOOTER2,   new XYConstraints(150, 255, 300, -1));

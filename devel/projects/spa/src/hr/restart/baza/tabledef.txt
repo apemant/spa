@@ -1120,3 +1120,67 @@ $Stolovi
 PODIJ;text;30;;;Podij
 STOL;text;20;pkey;;Stol
 
+$Radnicipl
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CRADNIK;char;6;pkey;;Matièni broj
+CRADMJ;char;6;;;Oznaka radnog mjesta
+CSS;char;5;;;Oznaka struène spreme
+CVRO;char;6;;;Oznaka vrste radnog odnosa
+CISPLMJ;short;2;;;Oznaka isplatnog mjesta
+COPCINE;char;3;;;Opæina poreza
+RSINV;char;5;;;Oznaka invalidnosti
+RSOO;char;5;;;Osnova osiguranja
+BRUTOSN;numeric;17,2;;0;Bruto osnovni;15
+BRUTDOD;numeric;17,2;;0;Bruto dodatni;15
+BRUTMR;numeric;17,2;;0;Bruto radni staž;15
+BRUTUK;numeric;17,2;;0;Bruto ukupno;15
+GODSTAZ;short;2;;0;Godine staža
+STOPASTAZ;numeric;9,5;;0;Stopa za radni staž
+DATSTAZ;date;;;;Datum postizanja pune godine staža;10
+PODSTAZ;short;2;;;Godine staža u poduzeæu
+DATPODSTAZ;date;;;;Datum postizanja pune godine staža u poduzeæu;10
+NACOBRB;char;1;;0;Naèin obraèuna bruta
+KOEF;numeric;9,5;;0;Koeficijent
+KOEFZAR;numeric;9,5;;0;Koeficijent za zaradu
+DATDOL;date;;;;Datum zapošljavanja;10
+DATODL;date;;;;Datum odlaska;10
+DATREGRES;date;;;;Datum regresa;10
+OLUK;numeric;9,5;;1;Olakšica ukupno
+OLOS;numeric;9,5;;1;Osnovna olakšica
+JMBG;char;13;;;JMBG
+BRRADKNJ;char;15;;;Broj radne knjižice
+REGBRRK;char;15;;;Registarski broj obveznika iz radne knjižice
+REGBRMIO;char;15;;;Registarski broj MIO
+BROSIGZO;char;15;;;Broj osigurane osobe iz zdravstvene kartice
+ZIJMBGZO;char;1;;;Znak ispred JMBG-a iz zdravstvene kartice
+BROBVEZE;char;15;;;Broj obveze - zdravstvena kartica
+CLANOMF;char;1;;N;Èlan OMF (II stup)
+RSB;char;5;;0;Oznaka staža sa uveæanim trajanjem
+RSZ;char;5;;;Oznaka zdravstvenog osiguranja
+CORG;char;12;;;Org. Jedinica
+ADRESA;char;50;;;Adresa;30
+BROJTEK;char;30;;;Broj raèuna
+PARAMETRI;char;20;;;Parametri;*
+OIB;char;20;;;OIB
+
+$Logotipovi
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CORG;char;12;pkey;;Organizacijska jedinica
+NAZIVLOG;char;50;;;Naziv;15
+MJESTO;char;30;;;Mjesto;15
+PBR;int;6;;;Poštanski broj;15
+ADRESA;char;50;;;Adresa;15
+ZIRO;char;40;;;Žiro raèun;15
+MATBROJ;char;13;;;Matièni broj
+SIFDJEL;char;20;;;Šifra djelatnosti;15
+PORISP;char;50;;;Porezna ispostava;15
+FAX;char;20;;;Fax;15
+TEL1;char;20;;;Telefon 1;15
+TEL2;char;20;;;Telefon 2;15
+EMAIL;char;30;;;e-mail;15
+URL;char;30;;;URL;15
+IDIH;int;6;;;Zaglavlje logotipa izlaznih dokumenata;15
+IDIF;int;6;;;Podnožje logotipa izlaznih dokumenata;15
+OIB;char;20;;;OIB
