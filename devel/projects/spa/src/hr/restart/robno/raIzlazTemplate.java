@@ -3057,9 +3057,13 @@ System.out.println("findCjenik::else :: "+sql);
       if (prep == null) prepareQuery(odabrano);
       dcz.setSelected(odabrano);
       dcz.setDataSet(prep == null ? qDS : prep);
+      String[] dods = (prep == null ? 
+          qDS.hasColumn("CPAR") != null : 
+            prep.hasColumn("CPAR") != null) ?
+              new String[] {"DATDOK", "CPAR", "UIRAC"} : 
+              new String[] {"DATDOK"};
       dcz.setUpClass(this);
-      dcz.setDataSetKey(new String[] { "CSKL", "GOD", "VRDOK", "BRDOK" }, 
-          new String[] {"DATDOK", "CPAR", "UIRAC"});
+      dcz.setDataSetKey(new String[] { "CSKL", "GOD", "VRDOK", "BRDOK" }, dods);
       dcz.initialise();
       if (prep == null) {
         dcz.pack();
