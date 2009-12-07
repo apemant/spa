@@ -532,7 +532,7 @@ public class frmServis extends frmRadniNalog {
     raMaster.getNavBar().getStandardOption(raNavBar.ACTION_UPDATE).setEnabled(enabde);
     raMaster.getNavBar().getStandardOption(raNavBar.ACTION_DELETE).setEnabled(enabde);
     potob.setEnabled(getMasterSet().rowCount() > 0);
-    makerac.setEnabled(getMasterSet().rowCount() > 0 && !isf && (lazyIZD || enabde));
+    makerac.setEnabled(getMasterSet().rowCount() > 0 && !isf && (lazyIZD || !enabde));
     hist.setEnabled(getMasterSet().rowCount() > 0);
     chgdat.setEnabled(getMasterSet().rowCount() > 0 && 
         (raUser.getInstance().isSuper() || raUser.getInstance().isTest()));
