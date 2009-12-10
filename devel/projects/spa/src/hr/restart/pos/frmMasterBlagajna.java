@@ -1302,8 +1302,7 @@ public class frmMasterBlagajna extends raMasterDetail {
        Aus.add(zag, "UIRAC", det, "NETO");
     }
     
-    raTransaction.saveChangesInTransaction(new QueryDataSet[] {zag,det});
-  }
+    raTransaction.saveChangesInTransaction(new QueryDataSet[] {zag,det});  }
 /*  boolean pressESC() {
     if (jpBl.jrfCART.getText().equals("")) {
       if (!exitQuestion()) {
@@ -1466,12 +1465,12 @@ public class frmMasterBlagajna extends raMasterDetail {
         raDetail.getRepRunner().setOneTimeDirectReport("hr.restart.robno.repNarPOS");
         System.out.println("Zovem Funkcija_ispisa ... za destinaciju "+narDest);
         raDetail.Funkcija_ispisa();
-        try {
+        /*try {
           System.out.println("Spavam 250 ...");
           Thread.sleep(250);
         } catch (InterruptedException e) {
           e.printStackTrace();
-        }
+        }*/
       }
     }
     
