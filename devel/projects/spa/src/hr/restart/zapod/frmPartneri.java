@@ -659,6 +659,7 @@ public class frmPartneri extends raMatPodaci {
     
     //if (getRaQueryDataSet().getString("MB").length() == 13)
       kup.setString("JMBG", getRaQueryDataSet().getString("MB"));
+      kup.setString("OIB", getRaQueryDataSet().getString("OIB"));
     kup.setString("ADR", getRaQueryDataSet().getString("ADR"));
     kup.setInt("PBR", getRaQueryDataSet().getInt("PBR"));
     kup.setString("MJ", getRaQueryDataSet().getString("MJ"));
