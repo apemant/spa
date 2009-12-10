@@ -1036,7 +1036,7 @@ public class frmServis extends frmRadniNalog {
         vlasnikMJ = dm.getKupci().getString("MJ");
         vlasnikPBR = String.valueOf(dm.getKupci().getInt("PBR"));
         vlasnikTel = dm.getKupci().getString("TEL");
-        vlasnikMatBr = dm.getKupci().getString("JMBG");
+        vlasnikMatBr = dm.getKupci().getString("OIB");
       } else {
         if (!ld.raLocate(dm.getPartneri(), "CPAR", rn.getInt("CKUPAC") + "")) {
         	vlasnikIme = vlasnikAdr = vlasnikMJ = vlasnikPBR = vlasnikTel = vlasnikMatBr = "";
@@ -1959,7 +1959,7 @@ public class frmServis extends frmRadniNalog {
       vlasnikMJ = dm.getKupci().getString("MJ");
       vlasnikPBR = String.valueOf(dm.getKupci().getInt("PBR"));
       vlasnikTel = dm.getKupci().getString("TEL");
-      vlasnikMatBr = dm.getKupci().getString("JMBG");
+      vlasnikMatBr = dm.getKupci().getString("OIB");
       jlImeT.setText(vlasnikIme);
       if (vlasnikAdr.length() > 0)
         jlAdrT.setText(vlasnikAdr+",  "/*+vlasnikPBR+" "*/+vlasnikMJ);

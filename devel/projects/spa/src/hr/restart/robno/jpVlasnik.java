@@ -137,7 +137,7 @@ public class jpVlasnik extends JPanel {
 //    lay.setHeight(135);
     jlAdr.setText("Adresa");
     jlCkupac.setText("Oznaka / Ime / Naziv");
-    jlJmbg.setText("JMBG / Tel / E-Mail");
+    jlJmbg.setText("OIB / Tel / E-Mail");
     jlPrezime.setText("Prezime");
     imewidth = 400-15;
     if (fVlasnik==null) {
@@ -182,7 +182,7 @@ public class jpVlasnik extends JPanel {
     jraCkupac.setColumnName("CKUPAC");
     jraEmadr.setColumnName("EMADR");
     jraIme.setColumnName("IME");
-    jraJmbg.setColumnName("JMBG");
+    jraJmbg.setColumnName("OIB");
     
     jraPbr.setColumnName("PBR");
     jraPrezime.setColumnName("PREZIME");
@@ -196,7 +196,7 @@ public class jpVlasnik extends JPanel {
       JlrNavField jlrCkupac = (JlrNavField)jraCkupac;
       jlrCkupac.setRaDataSet(dm.getKupci());
       jlrCkupac.setColNames(
-        new String[] {"ADR", "EMADR", "MJ", "IME", "PREZIME", "JMBG", "PBR", "TEL"});
+        new String[] {"ADR", "EMADR", "MJ", "IME", "PREZIME", "OIB", "PBR", "TEL"});
       jlrCkupac.setVisCols(new int[] {0,1,2});
       jlrCkupac.setTextFields(
         new javax.swing.text.JTextComponent[] {jraAdr,jraEmadr,jraMj,jraIme,jraPrezime,jraJmbg,jraPbr,jraTel});
