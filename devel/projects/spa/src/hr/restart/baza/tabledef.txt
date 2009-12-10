@@ -468,6 +468,7 @@ PBR;int;6;;;Poštanski broj
 MJ;char;30;;;Mjesto;15
 TEL;char;20;;;Telefon;12
 EMADR;char;30;;;E-mail;15
+OIB;char;20;;;Oib
 
 $VTCartPart
 LOCK;char;1;;N;Status zauzetosti;*
