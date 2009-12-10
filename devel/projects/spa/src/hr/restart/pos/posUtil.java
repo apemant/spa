@@ -40,7 +40,7 @@ public class posUtil {
     vl.RezSet.open();
     return "Kupac: "+vl.RezSet.getInt("CKUPAC")+"<$newline$>"+
            "       "+vl.RezSet.getString("IME")+" "+vl.RezSet.getString("PREZIME")+"<$newline$>"+
-           "       "+vl.RezSet.getString("JMBG")+"<$newline$>";
+           "       "+vl.RezSet.getString("OIB")+"<$newline$>";
   }
 
 }
