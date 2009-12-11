@@ -56,7 +56,7 @@ public class repRacunPOS extends mxReport {
   int width = 40;
   int dbWidth = width/2;
   String doubleLineSep, uk;
-  boolean ispSif, oneRow, pop;
+  boolean ispSif, oneRow, pop, cash;
 
   public repRacunPOS() {
 
@@ -73,7 +73,8 @@ public class repRacunPOS extends mxReport {
     "Kolona iznosa koja se prikazuje na pos raèunu (UKUPNO,IZNOS,NETO)");
     pop = "D".equalsIgnoreCase(frmParam.getParam("pos", 
     "popustPrikaz", "N", "Prikaz popusta na pos raèunima (D,N)"));
-    
+    cash = "D".equalsIgnoreCase(frmParam.getParam("pos",
+      "autoCash", "D", "Otvoriti blagajnu kod ispisa raèuna (D,N)"));
     width = Integer.parseInt(wdt);
     System.out.println("WIDTH - "+ width);
     dbWidth = width/2;
@@ -129,7 +130,7 @@ public class repRacunPOS extends mxReport {
      }
 
      this.setPgHeader(
-         "\u0007"+prep+
+         (cash ? "\u0007" : "")+prep+
          "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
          "<#"+dm.getLogotipovi().getString("ADRESA")+"|"+width+"|center#><$newline$>"+
          "<#"+String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO")+"|"+width+"|center#><$newline$>"+
