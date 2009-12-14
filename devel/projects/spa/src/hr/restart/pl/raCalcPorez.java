@@ -37,6 +37,7 @@ public class raCalcPorez {
   private BigDecimal stprir;
   //rezultat
   private BigDecimal[] res_por;
+  private BigDecimal[] res_osn;
   private BigDecimal res_prir;
   private BigDecimal izlaz;
   //temp
@@ -96,7 +97,9 @@ public class raCalcPorez {
     BigDecimal porosn = ulaz.add(getOldosn());
     BigDecimal lim = null;
     res_por = new BigDecimal[stope.length];
+    res_osn = new BigDecimal[stope.length];
     Arrays.fill(res_por,nula);
+    Arrays.fill(res_osn,nula);
     for (int i = 0; i < stope.length; i++) {
       if (i==0) {
         lim = limits[i];
@@ -106,12 +109,15 @@ public class raCalcPorez {
       }
       if (lim.compareTo(nula) == 0) {
         res_por[i] = porosn.multiply(stope[i]);
+        res_osn[i] = porosn;
         break;
       } else if (porosn.compareTo(lim) >= 0) {
         porosn = porosn.add(lim.negate());
         res_por[i] = lim.multiply(stope[i]);
+        res_osn[i] = lim;
       } else if (porosn.compareTo(nula) >= 0) {
         res_por[i] = porosn.multiply(stope[i]);
+        res_osn[i] = porosn;
         break;
       }
     }
@@ -271,6 +277,9 @@ public class raCalcPorez {
 
   public BigDecimal[] getRes_por() {
     return res_por;
+  }
+  public BigDecimal[] getRes_osn() {
+    return res_osn;
   }
 
   public BigDecimal getRes_prir() {

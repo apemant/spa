@@ -808,48 +808,50 @@ sysoutTEST ST = new sysoutTEST(false);
     calcporez.init(kumulrad.getBigDecimal("POROSN"),stope,mjVals[0],oldpor,prir,limits);
     calcporez.calc();
     // kumulrad
-    kumulrad.setBigDecimal("POR1",calcporez.getRes_por()[0]);
-    kumulrad.setBigDecimal("POR2",calcporez.getRes_por()[1]);
-    kumulrad.setBigDecimal("POR3",calcporez.getRes_por()[2]);
-    kumulrad.setBigDecimal("POR4",calcporez.getRes_por()[3]);
-    kumulrad.setBigDecimal("POR5",calcporez.getRes_por()[4]);
-    kumulrad.setBigDecimal("PORUK",
-                           calcporez.getRes_por()[0]
-                           .add(calcporez.getRes_por()[1])
-                           .add(calcporez.getRes_por()[2])
-                           .add(calcporez.getRes_por()[3])
-                           .add(calcporez.getRes_por()[4]));
+    kumulrad.setBigDecimal("POR1",calcporez.getRes_por()[0].setScale(2, BigDecimal.ROUND_HALF_UP));
+    kumulrad.setBigDecimal("POR2",calcporez.getRes_por()[1].setScale(2, BigDecimal.ROUND_HALF_UP));
+    kumulrad.setBigDecimal("POR3",calcporez.getRes_por()[2].setScale(2, BigDecimal.ROUND_HALF_UP));
+    kumulrad.setBigDecimal("POR4",calcporez.getRes_por()[3].setScale(2, BigDecimal.ROUND_HALF_UP));
+    kumulrad.setBigDecimal("POR5",calcporez.getRes_por()[4].setScale(2, BigDecimal.ROUND_HALF_UP));
+    kumulrad.setBigDecimal("PORUK",Aus.zero2); // za svaki slucaj
+//    kumulrad.setBigDecimal("PORUK",
+//                           calcporez.getRes_por()[0]
+//                           .add(calcporez.getRes_por()[1])
+//                           .add(calcporez.getRes_por()[2])
+//                           .add(calcporez.getRes_por()[3])
+//                           .add(calcporez.getRes_por()[4]));
+    Aus.addTo(kumulrad, "PORUK", new String[] {"POR1","POR2","POR3","POR4","POR5"});
     //dodaj odbiciobr za porez
     QueryDataSet _qodbici = odbici.getPorez(kumulrad.getString("CRADNIK"),raOdbici.DEF);
     for (int i = 0; i < 5; i++) {
       if (calcporez.getRes_por()[i].compareTo(nula) > 0) {
         ld.raLocate(_qodbici,"RBRODB",Integer.toString(i+1));
-        addOdbitakPorez(_qodbici,calcporez.getRes_por()[i]);
+        addOdbitakPorez(_qodbici,calcporez.getRes_por()[i], calcporez.getRes_osn()[i]);
       }
     }
     // kumulorg
-    addBigDec_kumulorg("POR1",calcporez.getRes_por()[0]);
-    addBigDec_kumulorg("POR2",calcporez.getRes_por()[1]);
-    addBigDec_kumulorg("POR3",calcporez.getRes_por()[2]);
-    addBigDec_kumulorg("POR4",calcporez.getRes_por()[3]);
-    addBigDec_kumulorg("POR5",calcporez.getRes_por()[4]);
+    addBigDec_kumulorg("POR1",kumulrad.getBigDecimal("POR1"));
+    addBigDec_kumulorg("POR2",kumulrad.getBigDecimal("POR2"));
+    addBigDec_kumulorg("POR3",kumulrad.getBigDecimal("POR3"));
+    addBigDec_kumulorg("POR4",kumulrad.getBigDecimal("POR4"));
+    addBigDec_kumulorg("POR5",kumulrad.getBigDecimal("POR5"));
     addBigDec_kumulorg("PORUK",kumulrad.getBigDecimal("PORUK"));
     if (kumulrad.getBigDecimal("PORUK").compareTo(nula) <= 0) return;
     //prirez
-    if (obrprireza) addOdbitakPorez(qprirez,calcporez.getRes_prir(),true);
+    if (obrprireza) addOdbitakPorez(qprirez,calcporez.getRes_prir(),null,true);
     //kumulrad
-    kumulrad.setBigDecimal("PRIR",calcporez.getRes_prir());
+    kumulrad.setBigDecimal("PRIR",calcporez.getRes_prir().setScale(2, BigDecimal.ROUND_HALF_UP));
     kumulrad.setBigDecimal("PORIPRIR",kumulrad.getBigDecimal("PORUK")
-                           .add(calcporez.getRes_prir()));
+                           .add(calcporez.getRes_prir().setScale(2, BigDecimal.ROUND_HALF_UP)));
     //kumulorg
-    addBigDec_kumulorg("PRIR",calcporez.getRes_prir());
+    addBigDec_kumulorg("PRIR",kumulrad.getBigDecimal("PRIR"));
     addBigDec_kumulorg("PORIPRIR",kumulrad.getBigDecimal("PORIPRIR"));
   }
   
-  private void addOdbitakPorez(QueryDataSet _qodbici,BigDecimal _porez) {
-    addOdbitakPorez(_qodbici,_porez,false);
+  private void addOdbitakPorez(QueryDataSet _qodbici,BigDecimal _porez, BigDecimal _osnovica) {
+    addOdbitakPorez(_qodbici,_porez,_osnovica,false);
   }
-  private void addOdbitakPorez(QueryDataSet _qodbici,BigDecimal _porez,boolean prirez) {
+  private void addOdbitakPorez(QueryDataSet _qodbici,BigDecimal _porez,BigDecimal _osnovica, boolean prirez) {
     if (_porez.compareTo(nula) <= 0) return;
     if (_qodbici.getRowCount() == 0) return;
     odbiciobr.insertRow(false);
@@ -862,7 +864,7 @@ sysoutTEST ST = new sysoutTEST(false);
     if (prirez) {
       odbiciobr.setBigDecimal("OBROSN",ut.setScale(kumulrad.getBigDecimal("PORUK"),2));
     } else {
-      odbiciobr.setBigDecimal("OBROSN",ut.setScale(kumulrad.getBigDecimal("POROSN"),2));
+      odbiciobr.setBigDecimal("OBROSN",ut.setScale(_osnovica,2));
     }
     odbiciobr.post();
   }
@@ -881,9 +883,9 @@ sysoutTEST ST = new sysoutTEST(false);
   private void calcDoNetaPK() throws Exception {
     //kumulrad
     //neto2 = neto - poriprir
-    kumulrad.setBigDecimal("NETO2",kumulrad.getBigDecimal("NETO").add(kumulrad.getBigDecimal("PORIPRIR").negate()));
+    kumulrad.setBigDecimal("NETO2",kumulrad.getBigDecimal("NETO").setScale(2, BigDecimal.ROUND_HALF_UP).add(kumulrad.getBigDecimal("PORIPRIR").setScale(2, BigDecimal.ROUND_HALF_UP).negate()));
     //netopk = neto2 + naknade
-    kumulrad.setBigDecimal("NETOPK",kumulrad.getBigDecimal("NETO2").add(kumulrad.getBigDecimal("NAKNADE")));
+    kumulrad.setBigDecimal("NETOPK",kumulrad.getBigDecimal("NETO2").add(kumulrad.getBigDecimal("NAKNADE").setScale(2, BigDecimal.ROUND_HALF_UP)));
     addBigDec_kumulorg("NETO2",kumulrad.getBigDecimal("NETO2"));
     addBigDec_kumulorg("NAKNADE",kumulrad.getBigDecimal("NAKNADE"));
     addBigDec_kumulorg("NETOPK",kumulrad.getBigDecimal("NETOPK"));
