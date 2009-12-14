@@ -288,7 +288,11 @@ public class raOdbici {
         );
   }
 
-
+  public static void clearCache() {
+    getInstance().qds_porez = null;
+    getInstance().qds_prirez = null;
+    getInstance().qds_doprinosiNa = null;
+  }
   /**
    * dohvaca poreze za radnika - odbitke koji imaju vrsteodb (nivo,tip,vrsta,osnovica) = OPVR,S,2,4
    * @param cradnik radnik za kojeg trebamo podatke
