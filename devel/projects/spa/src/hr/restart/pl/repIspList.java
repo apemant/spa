@@ -21,6 +21,7 @@ import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.util.Valid;
 import hr.restart.util.reports.raReportData;
+import hr.restart.util.reports.raReportDescriptor;
 
 import java.math.BigDecimal;
 
@@ -306,8 +307,24 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
       return "";
   }
 
+  public String getPor1txt() {
+    return fil.getPor1txt(radnici);
+  }
+  public String getPor2txt() {
+    return fil.getPor2txt(radnici);
+  }
+  public String getPor3txt() {
+    return fil.getPor3txt(radnici);
+  }
+  public String getPor4txt() {
+    return fil.getPor4txt(radnici);
+  }
+  public String getPrirtxt() {
+    return fil.getPrirtxt(radnici);
+  }
+  
   public String getFirstLine(){
-    return rpm.getFirstLine();
+    return fil.shouldPrintLogo()?"":rpm.getFirstLine();
   }
   public String getSecondLine(){
     return rpm.getSecondLine();

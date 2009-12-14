@@ -32,6 +32,7 @@ import hr.restart.zapod.repNaljepnice;
 
 import java.awt.BorderLayout;
 import java.math.BigDecimal;
+import java.util.HashMap;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -361,7 +362,7 @@ public class frmIspList extends frmIzvjestajiPL {
 
     vrprim = hr.restart.util.Util.getNewQueryDataSet("SELECT cvrp, naziv, parametri FROM vrsteprim");
     vrodb = hr.restart.util.Util.getNewQueryDataSet("SELECT cvrodb, opisvrodb FROM vrsteodb");
-    radpl = hr.restart.util.Util.getNewQueryDataSet("SELECT cradnik, cradmj, brojtek, cisplmj, cvro, jmbg FROM radnicipl");
+    radpl = hr.restart.util.Util.getNewQueryDataSet("SELECT cradnik, cradmj, brojtek, cisplmj, cvro, jmbg, adresa, copcine, oib, BRUTOSN FROM radnicipl");
     radmj = hr.restart.util.Util.getNewQueryDataSet("SELECT cradmj, nazivrm FROM radmj");
     mainPanel.add(jpr, BorderLayout.CENTER);
     jPanel2.add(jrcbPrikaz, new XYConstraints(475, 25, 100, -1));
@@ -464,14 +465,16 @@ public class frmIspList extends frmIzvjestajiPL {
     if (isArh) return raOdbici.getInstance().getKrediti(rad, raOdbici.ARH);
     return raOdbici.getInstance().getKrediti(rad, raOdbici.OBR);
   }
-
-  protected String format(DataSet set, String colName) {
-    com.borland.dx.text.VariantFormatter formater = dm.getVrsteodb().getColumn("IZNOS").getFormatter();
-    BigDecimal bd = getEvaluatedBigDecimal("ilmz_",set,colName);
-    if (bd.signum() == 0) return "";
+  public String justFormat(BigDecimal bd) {
     com.borland.dx.dataset.Variant v = new com.borland.dx.dataset.Variant();
+    com.borland.dx.text.VariantFormatter formater = dm.getVrsteodb().getColumn("IZNOS").getFormatter();
     v.setBigDecimal(bd);
     return formater.format(v);
+  }
+  protected String format(DataSet set, String colName) {
+    BigDecimal bd = getEvaluatedBigDecimal("ilmz_",set,colName);
+    if (bd.signum() == 0) return "";
+    return justFormat(bd);
   }
   String getNetoColParam() {
     return frmParam.getParam("pl", "netildoh", "N", "Da li se na listicu po zaradama prikazuje (N)eto ili (D)ohodak?")
@@ -482,7 +485,7 @@ public class frmIspList extends frmIzvjestajiPL {
   String nazivPrim, sati, koef, neto, bruto, nazivDop, osnovicaDop, stopa, iznos;
   String nazivNak, satiNaknada, iznosNak, nazivKred, iznosKred;
   String cradmj, nazradmj;
-  String brojtek, nazbanke, tipIsplate, nazvro;
+  String brojtek, nazbanke, tipIsplate, nazvro, copcine, oib, adresa;
   short cisplmj;
   int cbanke;
   public void findStrings(String crad, short rbrObr, short mjObr, short godObr) {
@@ -582,12 +585,12 @@ public class frmIspList extends frmIzvjestajiPL {
             && mjObr == ds.getShort("MJOBR")
             && godObr == ds.getShort("GODOBR")){
           ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
-          _nazivK.append(getVrodb().getString("OPISVRODB")).append("\n");
+          _nazivK.append(getVrodb().getString("OPISVRODB")).append(getKreditInfo(ds)).append("\n");
           _iznosK.append(format(ds, "OBRIZNOS")).append("\n");
         }
       } else {
         ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
-        _nazivK.append(getVrodb().getString("OPISVRODB")).append("\n");
+        _nazivK.append(getVrodb().getString("OPISVRODB")).append(getKreditInfo(ds)).append("\n");
         _iznosK.append(format(ds, "OBRIZNOS")).append("\n");
       }
     }
@@ -615,6 +618,9 @@ public class frmIspList extends frmIzvjestajiPL {
     cradmj = radpl.getString("CRADMJ");
     brojtek = radpl.getString("BROJTEK");
     cisplmj = radpl.getShort("CISPLMJ");
+    adresa = radpl.getString("ADRESA");
+    copcine = radpl.getString("COPCINE");
+    oib = radpl.getString("OIB");
     ld.raLocate(radmj, "CRADMJ", cradmj);
     nazradmj = radmj.getString("NAZIVRM");
     ld.raLocate(dm.getIsplMJ(), "CISPLMJ" ,String.valueOf(cisplmj));
@@ -629,12 +635,31 @@ public class frmIspList extends frmIzvjestajiPL {
 //    this.addReports();
 
   }
+  private String getKreditInfo(DataSet ds) {
+System.out.println("KreditInfo za "+ds);
+    if (ds.getBigDecimal("OBRSTOPA").signum()!=0 && ds.getBigDecimal("OBROSN").signum()!=0) {
+      //u postotku
+      return " "+justFormat(ds.getBigDecimal("OBROSN"))+" x "+justFormat(ds.getBigDecimal("OBRSTOPA"))+"%";
+    }
+    if (ds.getBigDecimal("SALDO").signum()!= 0) {
+      //rate i glavnica
+      return " - ostatak duga "+justFormat(ds.getBigDecimal("SALDO"));
+    }
+    return "";
+  }
+
   public String getNazivVRO() {
     return nazvro;
   }
   public String getInformLine() {
-    String infolispl = frmParam.getParam("pl", "infolispl", "MRJ", "Na infou ispod imena na ispl.list. treba biti M=radno mjesto, R=Radni odnos, J=JMBG");
+    String infolispl = frmParam.getParam("pl", "infolispl", "MRJ", "(AOMRJBU) Na infou ispod imena na ispl.list. treba biti M=RM, R=Rad.odn, J=JMBG, A,O,B,U");
     String il = "";
+    if (infolispl.indexOf("A")!=-1) {
+      il+= "\nAdresa: "+adresa;
+    }
+    if (infolispl.indexOf("O")!=-1) {
+      il+= "\nOpæina: "+copcine+" "+getNazivOpcine(copcine);
+    }
     if (infolispl.indexOf("M")!=-1) {
       il+= "\nRadno mjesto: "+getRadnoMjesto()+" "+getNazivRadnogMjesta();
     }
@@ -643,6 +668,12 @@ public class frmIspList extends frmIzvjestajiPL {
     }
     if (infolispl.indexOf("J")!=-1) {
       il+= "\nJMBG: "+getRadnicipl().getString("JMBG");
+    }
+    if (infolispl.indexOf("B")!=-1) {
+      il+= "\nOIB: "+oib;
+    }
+    if (infolispl.indexOf("U")!=-1) {
+      il+= "\nUgovoreni bruto: "+format(getRadnicipl(), "BRUTOSN");
     }
     return il;
     
@@ -1065,5 +1096,62 @@ public class frmIspList extends frmIzvjestajiPL {
     return neoporezivo.divide(getMinimalac(r), 2, BigDecimal.ROUND_HALF_UP);
   }
 
+  public boolean shouldPrintLogo() {
+    return getRepRunner().getReport("hr.restart.pl.repIspList").shouldPrintLogo();
+  }
+  private boolean isDetPorezi() {
+    return frmParam.getParam("pl", "ildetpor", "N", "Ispisuje li se stopa i osnovica poreza na listicu (D/N)").equals("D");
+  }
+  
+  public String getPor1txt(DataSet radnici) {
+    return isDetPorezi()?getPorText(radnici,1):"Porez 1";
+  }
+  public String getPor2txt(DataSet radnici) {
+    return isDetPorezi()?getPorText(radnici,2):"Porez 2";
+  }
+  public String getPor3txt(DataSet radnici) {
+    return isDetPorezi()?getPorText(radnici,3):"Porez 3";
+  }
+  public String getPor4txt(DataSet radnici) {
+    return isDetPorezi()?getPorText(radnici,4):"Porez 4";
+  }
+  public String getPrirtxt(DataSet radnici) {
+    return isDetPorezi()?getPorText(radnici,-1):"Prirez";
+  }
+
+  private String cachept_cradnik = "#$@!";
+  private HashMap cachept;
+  private String getPorText(DataSet radnici, int rbr) {
+    if (!cachept_cradnik.equals(radnici.getString("CRADNIK"))) createCachept(radnici);
+    String s = (String)cachept.get(rbr+"");
+    if (s==null) return "";
+    return s;
+  }
+  private void createCachept(DataSet radnici) {
+    cachept_cradnik = radnici.getString("CRADNIK");
+    cachept = new HashMap();
+    raOdbici.clearCache();
+    QueryDataSet porezi = raOdbici.getInstance().getPorez(cachept_cradnik, isArh?raOdbici.ARH:raOdbici.OBR);
+    for (porezi.first(); porezi.inBounds(); porezi.next()) {
+System.out.println(porezi);
+      String s = "Porez "+
+      //justFormat(porezi.getBigDecimal("OBRIZNOS").divide(porezi.getBigDecimal("OBRSTOPA"),4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)))
+      format(porezi,"OBROSN")
+      +" x "+format(porezi,"OBRSTOPA")+"%";
+      cachept.put(porezi.getShort("RBRODB")+"",s);
+    }
+    QueryDataSet prirez = raOdbici.getInstance().getPrirez(cachept_cradnik, isArh?raOdbici.ARH:raOdbici.OBR);
+    prirez.first();
+    if (prirez.getRowCount()>0) {
+      String p = "Prirez "+format(prirez, "OBRSTOPA")+"% "+getNazivOpcine(prirez.getString("CKEY"));
+      cachept.put("-1", p);
+    }
+  }
+  private String getNazivOpcine(String c) {
+    QueryDataSet opc = dM.getDataModule().getOpcine();
+    opc.open();
+    if (lookupData.getlookupData().raLocate(opc, "COPCINE", c)) return opc.getString("NAZIVOP");
+    return "";
+  }
 }
 
