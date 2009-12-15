@@ -232,14 +232,14 @@ public class upUnrealPonude extends raUpitFat {
       mc = mc.and(Condition.equal("CSKL", tds)).
           and(Condition.where("PARAM", Condition.NOT_EQUAL, "OJ"));
     
-    Condition dc = Condition.equal("REZKOL", "D");
+    //Condition dc = Condition.equal("REZKOL", "D");
     
     String q = "SELECT doki.cskl, doki.god, doki.vrdok, doki.brdok, " +
     		"MAX(doki.cpar) as cpar, MAX(doki.datdok) as datdok, " +
     		"MAX(doki.datdosp) as datdosp, MAX(doki.uirac) as uirac, " +
     		"MAX(doki.param) as param, COUNT(*) as nums FROM doki,stdoki " +
     		"WHERE " + rut.getDoc("doki", "stdoki") + " AND " + 
-    		mc.qualified("doki").and(dc.qualified("stdoki")) +
+    		mc.qualified("doki") +
     		" GROUP BY doki.cskl, doki.god, doki.vrdok, doki.brdok";
     
     System.out.println("Query: " + q);
