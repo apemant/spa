@@ -70,6 +70,7 @@ public class jpVlasnik extends JPanel {
   JraTextField jraEmadr;
   public JraTextField jraIme;
   JraTextField jraJmbg;
+  JraTextField jraOib;
   JlrNavField jraMj;
   JlrNavField jraPbr;
   JraButton jbSelMj;
@@ -149,6 +150,7 @@ public class jpVlasnik extends JPanel {
       jraIme = createNavField();
       jraPrezime = createNavField();
       jraJmbg = createNavField();
+      jraOib = createNavField();
       jraPbr = createNavField();
       jraTel = createNavField();
       jraMj.setColumnName("MJ");
@@ -161,6 +163,7 @@ public class jpVlasnik extends JPanel {
       jraIme = new JraTextField();
       jraPrezime = new JraTextField();
       jraJmbg = new JraTextField();
+      jraOib = new JraTextField();
       jraTel = new JraTextField();
       jbSelMj = new JraButton();
       jraPbr = new JlrNavField();
@@ -182,7 +185,8 @@ public class jpVlasnik extends JPanel {
     jraCkupac.setColumnName("CKUPAC");
     jraEmadr.setColumnName("EMADR");
     jraIme.setColumnName("IME");
-    jraJmbg.setColumnName("OIB");
+    jraJmbg.setColumnName("JMBG");
+    jraOib.setColumnName("OIB");
     
     jraPbr.setColumnName("PBR");
     jraPrezime.setColumnName("PREZIME");
@@ -196,10 +200,10 @@ public class jpVlasnik extends JPanel {
       JlrNavField jlrCkupac = (JlrNavField)jraCkupac;
       jlrCkupac.setRaDataSet(dm.getKupci());
       jlrCkupac.setColNames(
-        new String[] {"ADR", "EMADR", "MJ", "IME", "PREZIME", "OIB", "PBR", "TEL"});
+        new String[] {"ADR", "EMADR", "MJ", "IME", "PREZIME", "JMBG", "OIB", "PBR", "TEL"});
       jlrCkupac.setVisCols(new int[] {0,1,2});
       jlrCkupac.setTextFields(
-        new javax.swing.text.JTextComponent[] {jraAdr,jraEmadr,jraMj,jraIme,jraPrezime,jraJmbg,jraPbr,jraTel});
+        new javax.swing.text.JTextComponent[] {jraAdr,jraEmadr,jraMj,jraIme,jraPrezime,jraJmbg,jraOib,jraPbr,jraTel});
       jlrCkupac.setSearchMode(0);
       //jlrCkupac.setDataSet(resolvSet);
       prepareNavField(jraAdr, jlrCkupac);
@@ -208,6 +212,7 @@ public class jpVlasnik extends JPanel {
       prepareNavField(jraIme, jlrCkupac);
       prepareNavField(jraPrezime, jlrCkupac);
       prepareNavField(jraJmbg, jlrCkupac);
+      prepareNavField(jraOib, jlrCkupac);
       prepareNavField(jraPbr, jlrCkupac);
       prepareNavField(jraTel, jlrCkupac);
 
@@ -266,9 +271,10 @@ public class jpVlasnik extends JPanel {
       jpDetail.add(jbSelMj, new XYConstraints(255+400-15-21+a+leftMargin, 50*d, h, h));
     }
 
-    jpDetail.add(jraJmbg, new XYConstraints(150+left+a, 75*d, 165-5, h));
+    jpDetail.add(jraOib, new XYConstraints(150+left+a, 75*d, 165-5, h));
     jpDetail.add(jraTel, new XYConstraints(320+left-5+a, 75*d, 165-5, h));
     jpDetail.add(jraEmadr, new XYConstraints(490+left-10+a, 75*d, 165-5, h));
+    jpDetail.add(jraJmbg, new XYConstraints(495+left+-10+a, 75*d, 0, 0));
     
     this.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right));
     this.add(jpDetail, BorderLayout.CENTER);
@@ -293,6 +299,7 @@ public class jpVlasnik extends JPanel {
     jraEmadr.setDataSet(ds);
     jraIme.setDataSet(ds);
     jraJmbg.setDataSet(ds);
+    jraOib.setDataSet(ds);
     jraMj.setDataSet(ds);
     jraPbr.setDataSet(ds);
     jraPrezime.setDataSet(ds);
