@@ -52,7 +52,7 @@ public class jpVlasnik extends JPanel {
 
   frmVlasnik fVlasnik;
   DataSet resolvSet;
-  StorageDataSet dummySet;
+  public StorageDataSet dummySet;
   private boolean updated = false;
   private boolean dbl = false;
 
