@@ -55,7 +55,7 @@ public class raRunReport {
   static ReportRuntime rt;
   static Frame lastFrame;
   private String ownerName, immedName;
-  private boolean ownerlock;
+  private boolean ownerlock, immedView;
   private TemplateModifier temod;
 //  private static raRunReport rr;
   protected raRunReport() {
@@ -230,6 +230,11 @@ public class raRunReport {
     }
   }
   
+  public void addReport(raReportDescriptor rd) {
+    allreports.add(rd);
+    reports.add(rd);
+  }
+  
   public void addReport(String id, String source, String title) {
     rd = raReportDescriptor.create(id, source, title);
     if (rd != null) {
@@ -298,6 +303,12 @@ public class raRunReport {
 
   public void setOneTimeDirectReport(String reportName) {
     immedName = reportName;
+    immedView = false;
+  }
+  
+  public void setOneTimeDirectReport(String reportName, boolean view) {
+    immedName = reportName;
+    immedView = view;
   }
 
   public int getDirectReport() {
@@ -306,6 +317,10 @@ public class raRunReport {
       if (((raReportDescriptor) reports.get(i)).getName().equals(immedName))
         return i;
     return -1;
+  }
+  
+  public boolean isDirectView() {
+    return immedView;
   }
 
   public void clearDirectReport() {

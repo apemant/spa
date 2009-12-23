@@ -284,6 +284,8 @@ public class dlgRunReport {
       dlgRR.customSections.clear();
       if (runner.getDirectReport() == -1)
         dlgRR.dlg.show();
+      else if (runner.isDirectView())
+        dlgRR.previewReport();
       else dlgRR.printReport();
     }
     catch(Exception ex) {
