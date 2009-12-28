@@ -297,10 +297,14 @@ public class frmRS extends raUpitLite {
 
   public void addRep() {
     this.killAllReports();
+    //R-Sm 2010 OIB
+    this.addJasper("hr.restart.pl.repRSm_AOIB","hr.restart.pl.repRS_A","repRSm_A.jrxml", "R-Sm obrazac stranica A OIB");
+    this.addJasper("hr.restart.pl.repRSm_BOIB","hr.restart.pl.repRS_B","repRSm_B.jrxml", "R-Sm obrazac stranica B OIB");
+    this.addReport("hr.restart.pl.repDiskRSm2010","R-Sm obrazac OIB - DISKETA");
     //R-Sm obrazac 2005g i dalje
-    this.addReport("hr.restart.pl.repRSm_A","hr.restart.pl.repRS_A","RSm_A", "R-Sm obrazac stranica A");
-    this.addReport("hr.restart.pl.repRSm_B","hr.restart.pl.repRS_B","RSm_B", "R-Sm obrazac stranica B");    
-    this.addReport("hr.restart.pl.repDiskRSm","R-Sm obrazac - DISKETA");
+//    this.addReport("hr.restart.pl.repRSm_A","hr.restart.pl.repRS_A","RSm_A", "R-Sm obrazac stranica A MB");
+//    this.addReport("hr.restart.pl.repRSm_B","hr.restart.pl.repRS_B","RSm_B", "R-Sm obrazac stranica B MB");    
+//    this.addReport("hr.restart.pl.repDiskRSm","R-Sm obrazac - DISKETA");
     ////R-S obrazac 2000-2004
 //    this.addReport("hr.restart.pl.repRS_A", "R-S obrazac stranica A", 2);
     this.addReport("hr.restart.pl.repRS_B", "STARI R-S stranica B", 2);

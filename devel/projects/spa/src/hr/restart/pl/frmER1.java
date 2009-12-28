@@ -361,7 +361,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
                   "max(radnici.ime) as ime, "+
                   "max(radnici.prezime) as prezime, "+
                   "max(radnici.cradnik) as cradnik, "+
-                  "max(radnicipl.jmbg) as jmbg, "+
+                  "max(radnicipl.oib) as jmbg, "+
                   "max(radnicipl.brobveze) as brobveze, "+
                   "max(radnicipl.brosigzo) as brosigzo, "+
                   "max(radnicipl.clanomf) as clanomf "+

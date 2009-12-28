@@ -572,7 +572,7 @@ OPCINE</Property>
           <Model Name="Label11">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label11</Property>
-               <Property Name="Caption">MBG</Property>
+               <Property Name="Caption">OIB</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">8200</Property>
                <Property Name="Top">2020</Property>
@@ -648,7 +648,7 @@ OPCINE</Property>
           <Model Name="Label13">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label13</Property>
-               <Property Name="Caption">MATIČNI BROJ / MBG</Property>
+               <Property Name="Caption">OIB</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">300</Property>
                <Property Name="Top">2020</Property>

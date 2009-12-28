@@ -1147,7 +1147,7 @@ PODACI O IZNOSIMA PLAĆE KOJA JE OSIGURANIKU ISPLAĆENA U POSLJEDNJIH ŠEST MJES
           <Model Name="Label3">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label3</Property>
-               <Property Name="Caption">JMBG ili MB</Property>
+               <Property Name="Caption">OIB</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">5440</Property>
                <Property Name="Top">3380</Property>

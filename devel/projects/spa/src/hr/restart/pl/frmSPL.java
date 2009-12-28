@@ -324,9 +324,11 @@ System.out.println("4count:"+q1);
       pomocnaNet = "Kumulorgarh";
     }
   }
-
+  
   private void setKnjigovodstvo() {
-    String knjigovodstvo = "SELECT Orgstruktura.naziv, Orgstruktura.mjesto, Orgstruktura.adresa, Orgstruktura.hpbroj, Orgstruktura.ziro, Logotipovi.matbroj, Logotipovi.sifdjel "+
+    String knjigovodstvo = "SELECT Orgstruktura.naziv, Orgstruktura.mjesto, Orgstruktura.adresa, Orgstruktura.hpbroj, Orgstruktura.ziro, " +
+    		(raObracunPL.isOIB()?"Logotipovi.oib":"Logotipovi.matbroj") +" AS MATBROJ" +
+    		", Logotipovi.sifdjel "+
                            "FROM Orgstruktura, Logotipovi "+
                            "WHERE orgstruktura.corg = logotipovi.corg and orgstruktura.corg ='" + hr.restart.zapod.OrgStr.getKNJCORG() + "'";
     knjig = Util.getNewQueryDataSet(knjigovodstvo);

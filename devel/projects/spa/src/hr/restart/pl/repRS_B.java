@@ -128,6 +128,10 @@ public class repRS_B implements sg.com.elixir.reportwriter.datasource.IDataProvi
   public String getJMBG(){
      return ds.getString("JMBG");
   }
+  public short getGODINA(){
+    return hs.getShort("GODINA");
+  }
+
 
   public String getCOPCINE(){
     return raIzvjestaji.convertCopcineToRS(ds.getString("COPCINE"));
@@ -145,7 +149,7 @@ public class repRS_B implements sg.com.elixir.reportwriter.datasource.IDataProvi
 //    if (fRS.getVrstaUplate().equals("03")){
 //      obrosn = oo.concat("0  0  1");
 //    } else {
-    if (dlgRunReport.getCurrentDlgRunReport().getCurrentDescriptor().getName().equals("hr.restart.pl.repRSm_B")) {
+    if (!dlgRunReport.getCurrentDlgRunReport().getCurrentDescriptor().getName().startsWith("hr.restart.pl.repRS_B")) {
       obrosn = oo+b;
     } else {
       obrosn = oo+i+b+z;

@@ -136,8 +136,7 @@ public class repPK implements raReportData, IDataProvider {
   public String getJMBG(){
     String cRad = ds.getString("cradnik");
     lookupData.getlookupData().raLocate(dm.getAllRadnicipl(), new String[] {"CRADNIK"}, new String[] {""+cRad});
-    return dm.getAllRadnicipl().getString("JMBG");
-
+    return dm.getAllRadnicipl().getString(raObracunPL.isOIB()?"OIB":"JMBG");
   }
 
   public String getGodObr()

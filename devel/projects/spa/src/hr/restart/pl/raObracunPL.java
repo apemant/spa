@@ -987,13 +987,16 @@ sysoutTEST ST = new sysoutTEST(false);
 //    System.out.println("__osnmio.divide(__bto ... "+__osnmio.divide(__bto,8,BigDecimal.ROUND_HALF_UP));
     return __osnmio.divide(__bto,8,BigDecimal.ROUND_HALF_UP);
   }
+  public static boolean isOIB() {
+    return !frmParam.getParam("pl", "forceJMBG", "N", "Forsirati punjenje periodaRS JMBG-om").equals("D");
+  }
   private boolean numsLoaded = false;
   private void fillDefRSPeriodObr(QueryDataSet rsp, String rsoo, boolean fillNumbers) {
     String _cradnik = kumulrad.getString("CRADNIK");
     rsp.setString("CRADNIK",_cradnik);
     rsp.setInt("RBR",1);
     rsp.setString("RSOO",rsoo);
-    rsp.setString("JMBG",radnici.getString("JMBG"));
+    rsp.setString("JMBG",radnici.getString(isOIB()?"OIB":"JMBG"));
     rsp.setString("COPCINE",dm.getOrgpl().getString("COPCINE"));//RSm 2005+
     String rsinv = radnici.getString("RSINV");
     rsp.setString("RSINV",rsinv.equals("")?"0":rsinv);

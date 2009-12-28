@@ -182,7 +182,8 @@ public class frmDNR extends raUpitLite {
   }
 
   public String getKnjigovodstvoSQL() {
-    String knjigovodstvo = "SELECT Orgstruktura.naziv, Orgstruktura.mjesto, Orgstruktura.adresa, Orgstruktura.hpbroj, Logotipovi.matbroj "+
+    String knjigovodstvo = "SELECT Orgstruktura.naziv, Orgstruktura.mjesto, Orgstruktura.adresa, Orgstruktura.hpbroj, " +
+    		(raObracunPL.isOIB()?"Logotipovi.oib":"Logotipovi.matbroj") +" AS MATBROJ " +
                            "FROM Orgstruktura, Logotipovi "+
                            "WHERE orgstruktura.corg = logotipovi.corg and Orgstruktura.corg ='" + orgs.getKNJCORG() + "'"; // fieldSet.getString("CORG") + "'";
     return knjigovodstvo;

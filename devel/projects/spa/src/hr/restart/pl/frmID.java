@@ -498,7 +498,9 @@ public class frmID extends raUpitLite {
   }
 
   private String getKnjigovodstvoSQL() {
-    String knjst = "SELECT Logotipovi.nazivlog as naziv, Logotipovi.mjesto, Logotipovi.adresa, Logotipovi.pbr as hpbroj, Logotipovi.ziro, Logotipovi.matbroj, Logotipovi.sifdjel "+
+    String knjst = "SELECT Logotipovi.nazivlog as naziv, Logotipovi.mjesto, Logotipovi.adresa, Logotipovi.pbr as hpbroj, Logotipovi.ziro, " +
+        (raObracunPL.isOIB()?"Logotipovi.oib":"Logotipovi.matbroj") +" AS MATBROJ" +		
+    		", Logotipovi.sifdjel "+
                    "FROM Logotipovi "+
                    "WHERE logotipovi.corg ='" + hr.restart.zapod.OrgStr.getKNJCORG() + "'";
 
