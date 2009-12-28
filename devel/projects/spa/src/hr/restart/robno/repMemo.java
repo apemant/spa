@@ -105,6 +105,7 @@ public class repMemo  {
   public String getLogoAdresa(){return test()?ds.getString("adresa"):"";}
   public String getLogoZiro(){return   test()?ds.getString("ziro"):"";}
   public String getLogoMatbroj(){return test()?ds.getString("matbroj"):"";}
+  public String getLogoOIB(){return test()?ds.getString("OIB"):"";}
   public String getLogoSifdjel(){return test()?ds.getString("sifdjel"):"";}
   public String getLogoPorisp(){return  test()?ds.getString("porisp"):"";}
   public String getLogoFax(){return test()?ds.getString("fax"):"";}
