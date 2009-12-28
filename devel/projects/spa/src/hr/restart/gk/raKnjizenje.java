@@ -752,8 +752,8 @@ public class raKnjizenje {
         sval.skip = sval.skip.setScale(2, BigDecimal.ROUND_HALF_UP);
         sval.uiid = sval.uiid.setScale(2, BigDecimal.ROUND_HALF_UP);
         sval.uiip = sval.uiip.setScale(2, BigDecimal.ROUND_HALF_UP);
-        if (sval.skid.add(sval.skip).compareTo(sval.uiid) != 0 ||
-            sval.uiid.compareTo(sval.uiip) != 0) {
+        if ((sval.skid.add(sval.skip).compareTo(sval.uiid) != 0 ||
+            sval.uiid.compareTo(sval.uiip) != 0) && (sval.uiid.signum()!=0 || sval.uiip.signum()!=0)) {//ako su oba nula - nema stavaka - vjerojatno protustavka koja i tako ne ide u knjigu
 /*        BigDecimal[] sval = (BigDecimal[]) cmap.get(skey);
         to2dec(sval);
         if (sval[0].add(sval[1]).compareTo(sval[2]) == 0
