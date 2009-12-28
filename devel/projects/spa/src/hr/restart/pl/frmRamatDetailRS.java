@@ -82,18 +82,18 @@ public class frmRamatDetailRS extends raMatPodaci {
   public boolean Validacija(char mode) {
     if (vl.isEmpty(jpDetail.jlrCradnik)) return false;
     if (vl.isEmpty(jpDetail.jlrRadOdnos)) return false;
-    if (vl.isEmpty(jpDetail.jlrInvalidnost)) return false;
-    if (vl.isEmpty(jpDetail.jlrStaz)) return false;
+//    if (vl.isEmpty(jpDetail.jlrInvalidnost)) return false;
+//    if (vl.isEmpty(jpDetail.jlrStaz)) return false;
 
     if (mode == 'N'){
       setAllTogether();
     }
-    if (!frmRSPeriod.chkDan(fRS.getTweekSet().getShort("ODDANA"), fRS.getTweekSet().getShort("DODANA"),
-                            frmRSPeriod.getZadnjiDan(fRS.getTweekSet().getShort("GODINA"),fRS.getTweekSet().getShort("MJESEC")))){
-      jpDetail.jraOD.requestFocus();
-      javax.swing.JOptionPane.showMessageDialog(this.getRaDetailPanel(),"Od - Do period nije ispravan","Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
-      return false;
-    }
+//    if (!frmRSPeriod.chkDan(fRS.getTweekSet().getShort("ODDANA"), fRS.getTweekSet().getShort("DODANA"),
+//                            frmRSPeriod.getZadnjiDan(fRS.getTweekSet().getShort("GODINA"),fRS.getTweekSet().getShort("MJESEC")))){
+//      jpDetail.jraOD.requestFocus();
+//      javax.swing.JOptionPane.showMessageDialog(this.getRaDetailPanel(),"Od - Do period nije ispravan","Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
+//      return false;
+//    }
     return true;
 
   }
