@@ -144,7 +144,8 @@ public class frmPK extends frmDNR{
     disejblajPanel();
     try {
       this.killAllReports();
-      this.addReport("hr.restart.pl.repIP","hr.restart.pl.repPK","IP", "Obrazac IP");
+      this.addJasper("hr.restart.pl.repIP","hr.restart.pl.repPK","repIP.jrxml", "Obrazac IP");
+//      this.addReport("hr.restart.pl.repIP","hr.restart.pl.repPK","IP", "Obrazac IP");
       this.addReport("hr.restart.pl.repIPDisk","Obrazac IP disketa");
       this.addReport("hr.restart.pl.repPK", "Obrazac PK-1", 5);
       this.addReport("hr.restart.pl.repPKDisk","Obrazac PK-1 disketa");
@@ -175,6 +176,7 @@ public class frmPK extends frmDNR{
     repSetPK.setColumns(repSet.cloneColumns());
     repSetPK.addColumn(dM.createStringColumn("MJISPL",2));
     repSetPK.addColumn(dM.createBigDecimalColumn("OSIG"));
+    repSetPK.addColumn(dM.createBigDecimalColumn("HARACH"));
 
     repSet.first();
 
@@ -227,6 +229,7 @@ public class frmPK extends frmDNR{
         //IP
         repSetPK.setString("COPCINE", repSet.getString("COPCINE"));
         repSetPK.setBigDecimal("NETOPK", repSet.getBigDecimal("NETOPK"));
+        repSetPK.setBigDecimal("HARACH", Harach.getHaracMj(getGodPK(repSet)+mjIspl, repSet.getString("CRADNIK"), null)[1]);
       } else {
         repSetPK.setBigDecimal("BRUTO",repSetPK.getBigDecimal("BRUTO").add(repSet.getBigDecimal("BRUTO")));
         repSetPK.setBigDecimal("DOPRINOSI",repSetPK.getBigDecimal("DOPRINOSI").add(repSet.getBigDecimal("DOPRINOSI")));

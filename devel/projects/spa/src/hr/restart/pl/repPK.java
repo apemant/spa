@@ -142,7 +142,7 @@ public class repPK implements raReportData, IDataProvider {
   public String getGodObr()
   {
 
-    return "PODACI O PLAÆI, MIROVINI, DOPRINOSIMA, POREZU I PRIREZU U "+ds.getShort("GODOBR")+". GODINI"; //   IDENTIFIKATOR "+getIdentifikator();
+    return "III. PODACI O PLAÆI, MIROVINI, DOPRINOSIMA, POREZU I PRIREZU U "+ds.getShort("GODOBR")+". GODINI"; //   IDENTIFIKATOR "+getIdentifikator();
   }
 
   public String getIdentifikator() {
@@ -177,7 +177,9 @@ public class repPK implements raReportData, IDataProvider {
     BigDecimal bnet = ut.setScale(ds.getBigDecimal("BRUTO")
         .add(ds.getBigDecimal("DOPRINOSI").negate())
         .add(ds.getBigDecimal("OSIG").negate()) //??
-        .add(ds.getBigDecimal("PORIPRIR").negate()),2);
+        .add(ds.getBigDecimal("PORIPRIR").negate())
+        .add(ds.getBigDecimal("HARACH").negate())
+        ,2);
     return bnet.doubleValue();
   }
   //ip
@@ -188,6 +190,9 @@ public class repPK implements raReportData, IDataProvider {
     return bdoh.doubleValue();
   }
 
+  public double getHARACH() {
+    return ds.getBigDecimal("HARACH").doubleValue();
+  }
   public raReportData getRow(int i) {
     ds.goToRow(i);
     return this;
