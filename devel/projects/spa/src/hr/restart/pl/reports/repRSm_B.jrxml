@@ -36,6 +36,9 @@
 	<field name="MB" class="java.lang.String">
 		<fieldDescription><![CDATA[MB]]></fieldDescription>
 	</field>
+	<field name="OIB" class="java.lang.String">
+		<fieldDescription><![CDATA[OIB]]></fieldDescription>
+	</field>
 	<field name="MIO1" class="java.math.BigDecimal">
 		<fieldDescription><![CDATA[MIO1]]></fieldDescription>
 	</field>
@@ -126,7 +129,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{MB}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{OIB}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="642" y="25" width="32" height="13" forecolor="#000000"/>

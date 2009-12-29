@@ -104,7 +104,12 @@ public class repRS_B implements sg.com.elixir.reportwriter.datasource.IDataProvi
 
     return dm.getLogotipovi().getString("MATBROJ");
   }
-
+  public String getOIB(){
+    if (ld.raLocate(dm.getLogotipovi(), new String[] {"CORG"}, new String[] {hr.restart.zapod.OrgStr.getKNJCORG()})) {
+      return dm.getLogotipovi().getString("OIB");
+    }
+    return "";
+  }
 //  public String getJMBGVL(){
 //    ld.raLocate(dm.getLogotipovi(), new String[] {"CORG"}, new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
 //    Integer mb = Integer.valueOf(dm.getLogotipovi().getString("MATBROJ"));
