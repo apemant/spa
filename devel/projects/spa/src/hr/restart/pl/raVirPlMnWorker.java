@@ -65,7 +65,7 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
     addVar(new raMnemVar("$matbr","Matièni broj poduzeæa") {
       public String getText() {
         ld.raLocate(dm.getLogotipovi(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
-        return dm.getLogotipovi().getString("MATBROJ");
+        return dm.getLogotipovi().getString(raObracunPL.isOIB()?"OIB":"MATBROJ");
       }
     });
     
