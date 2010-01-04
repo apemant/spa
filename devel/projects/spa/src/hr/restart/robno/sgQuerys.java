@@ -1310,10 +1310,10 @@ System.out.println("QS : " + queryString);
 //        stds.setBigDecimal("KOL", stds.getBigDecimal("KOL").add(ts.getBigDecimal("KOL")));
         stds.setBigDecimal("IRAZ", stds.getBigDecimal("IRAZ").add(ts.getBigDecimal("IRAZ")));
         stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
-        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(dbl ? BigDecimal.valueOf(ts.getDouble("POR")) : ts.getBigDecimal("POR")));
+        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(dbl ? new BigDecimal(ts.getDouble("POR")) : ts.getBigDecimal("POR")));
         stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
         stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(dbl ? BigDecimal.valueOf(ts.getDouble("RUC")) : ts.getBigDecimal("RUC")));
+        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(dbl ? new BigDecimal(ts.getDouble("RUC")) : ts.getBigDecimal("RUC")));
         try {
           stds.setBigDecimal("PostoRUC",stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),4,java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
         }
