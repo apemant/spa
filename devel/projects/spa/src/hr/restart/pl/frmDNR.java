@@ -149,9 +149,9 @@ public class frmDNR extends raUpitLite {
 
     jlrCradnikOd.setText("");
     jlrCradnikOd.forceFocLost();
-
-    fieldSet.setTimestamp("DATISPLOD", ut.getFirstSecondOfDay(ut.getFirstDayOfYear(vl.getToday())));
-    fieldSet.setTimestamp("DATISPLDO", ut.getLastSecondOfDay(ut.getLastDayOfYear(vl.getToday())));
+    java.sql.Timestamp lastyear = new java.sql.Timestamp(vl.getNowMS()-(1000*60*60*24*365));
+    fieldSet.setTimestamp("DATISPLOD", ut.getFirstSecondOfDay(ut.getFirstDayOfYear(lastyear)));
+    fieldSet.setTimestamp("DATISPLDO", ut.getLastSecondOfDay(ut.getLastDayOfYear(lastyear)));
 
     rcc.setLabelLaF(jlrIme, false);
     rcc.setLabelLaF(jlrPrezime, false);
