@@ -481,7 +481,7 @@ public class frmPL extends startFrame {
       }
     });
 
-    jmiPK.setText("Porezna kartica PK-1");
+    jmiPK.setText("IP obrazac (Porezna kartica)");
     jmiPK.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiPK_actionPerformed(e);
