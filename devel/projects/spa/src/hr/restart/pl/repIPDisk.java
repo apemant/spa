@@ -17,7 +17,7 @@
 ****************************************************************************/
 package hr.restart.pl;
 
-import hr.porezna_uprava.e_porezna.obrasci.ip.Generator;
+import hr.porezna_uprava.e_porezna.obrasci.ip.v2_0.Generator;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.FileHandler;
@@ -70,10 +70,10 @@ public class repIPDisk extends repDisk {
     StringTokenizer ti = new StringTokenizer(raUser.getInstance().getImeUsera(), " ");
     if (ti.hasMoreTokens()) ime = ti.nextToken();
     if (ti.hasMoreTokens()) prezime = ti.nextToken();
-    String qry = "SELECT MATBROJ,'"+god+"' as GOD,'"+ime+"' as IME,'"+prezime+"' as PREZIME,tel1, tel2,  email, '0' as STORNO FROM logotipovi WHERE corg='"+OrgStr.getKNJCORG()+"'";
+    String qry = "SELECT OIB,'"+god+"' as GOD,'"+ime+"' as IME,'"+prezime+"' as PREZIME,tel1, tel2,  email, '0' as STORNO FROM logotipovi WHERE corg='"+OrgStr.getKNJCORG()+"'";
     QueryDataSet headset = Util.getNewQueryDataSet(qry, true);
     headset.first();
-    String dump = headset.getString("MATBROJ")+separator
+    String dump = headset.getString("OIB")+separator
     +headset.getString("GOD")+separator
     +headset.getString("IME")+separator
     +headset.getString("PREZIME")+separator
@@ -126,8 +126,10 @@ public class repIPDisk extends repDisk {
           +ut.setScale(qds.getBigDecimal("BRUTO")
               .add(qds.getBigDecimal("DOPRINOSI").negate())
               .add(qds.getBigDecimal("OSIG").negate()) //??
-              .add(qds.getBigDecimal("PORIPRIR").negate()),2)
-          //+qds.getBigDecimal("NETOPK")
+              .add(qds.getBigDecimal("PORIPRIR").negate())
+              .add(qds.getBigDecimal("HARACH").negate())
+              ,2)+separator
+          +qds.getBigDecimal("HARACH")
           ;
         retci = retci + redak + "\n";
       }
@@ -137,7 +139,7 @@ public class repIPDisk extends repDisk {
   public String getJMBG(){
     String cRad = qds.getString("cradnik");
     ld.raLocate(dm.getAllRadnicipl(), new String[] {"CRADNIK"}, new String[] {""+cRad});
-    return dm.getAllRadnicipl().getString("JMBG");
+    return dm.getAllRadnicipl().getString("OIB");
   }
     
 }
