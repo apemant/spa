@@ -636,6 +636,7 @@ public class frmIspList extends frmIzvjestajiPL {
 
   }
   private String getKreditInfo(DataSet ds) {
+    if (frmParam.getParam("pl", "ildetkred", "D", "Detaljna specifikacija kredita na ispl.listi").equalsIgnoreCase("N")) return "";
 System.out.println("KreditInfo za "+ds);
     if (ds.getBigDecimal("OBRSTOPA").signum()!=0 && ds.getBigDecimal("OBROSN").signum()!=0) {
       //u postotku
