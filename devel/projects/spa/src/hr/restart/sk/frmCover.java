@@ -260,18 +260,21 @@ public class frmCover extends raMatPodaci {
       new String[] {"IZNOS"}, new String[] {"CSKSTAVKE"}, new String[] {cthis}, pok)*/ {
       Column dsCol;
       Variant v = new Variant();
+      DataRow dr;
       public boolean doModify() {
         if (getTable() instanceof JraTable2) {
           dsCol = ((JraTable2) getTable()).getDataSetColumn(getColumn());
           if (dsCol == null) return false;
           ((JraTable2) getTable()).getDataSet().getVariant("CSKSTAVKE", getRow(), v);
-          if (dsCol.getColumnName().equalsIgnoreCase("RSALDO"))
-            return ld.raLocate(pok, cthis, v.toString());
+          if (dsCol.getColumnName().equalsIgnoreCase("RSALDO")) {
+            dr = ld.raLookup(pok, cthis, v.toString());
+            return dr != null;
+          } 
         }
         return false;
       }
       public void modify() {
-        pok.getVariant("IZNOS", v);
+        dr.getVariant("IZNOS", v);
         setComponentText(dsCol.format(v));
       }
       public void setComponentText(String txt) {
