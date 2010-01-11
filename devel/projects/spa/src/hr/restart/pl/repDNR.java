@@ -21,13 +21,14 @@ import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.robno.repUtil;
 import hr.restart.util.Valid;
+import hr.restart.util.reports.raReportData;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 
 import com.borland.dx.dataset.DataSet;
 
-public class repDNR implements sg.com.elixir.reportwriter.datasource.IDataProvider {
+public class repDNR implements raReportData, sg.com.elixir.reportwriter.datasource.IDataProvider {
 
   hr.restart.robno._Main main;
   frmDNR frDNR = frmDNR.getInstance();
@@ -98,8 +99,11 @@ public class repDNR implements sg.com.elixir.reportwriter.datasource.IDataProvid
      return rdu.dataFormatter(ds.getTimestamp("DATUMISPL"));
   }
 
-  public Date getDATUMISPLATEDT(){
-     return Date.valueOf(ds.getTimestamp("DATUMISPL").toString().substring(0,10));
+//  public Date getDATUMISPLATEDT(){
+//    return Date.valueOf(ds.getTimestamp("DATUMISPL").toString().substring(0,10));
+//  }
+  public String getDATUMISPLATEDT(){
+    return rdu.dataFormatter(ds.getTimestamp("DATUMISPL"));
   }
 
   public BigDecimal getBRUTO(){
@@ -131,10 +135,22 @@ public class repDNR implements sg.com.elixir.reportwriter.datasource.IDataProvid
   }
 
   public BigDecimal getPORIPRIR(){
-     return ds.getBigDecimal("PORIPRIR");
+    return ds.getBigDecimal("PORIPRIR");
+  }
+  public BigDecimal getNETO(){
+     return ds.getBigDecimal("BRUTO").subtract(ds.getBigDecimal("DOPRINOSI")).subtract(ds.getBigDecimal("PORIPRIR"));
   }
 
   public String getJMBG(){
-     return ds.getString("JMBG");
+     return ds.getString("OIB");
+  }
+
+  public raReportData getRow(int i) {
+    ds.goToRow(i);
+    return this;
+  }
+
+  public int getRowCount() {
+    return ds.getRowCount();
   }
 }

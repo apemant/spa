@@ -35,6 +35,7 @@ import javax.swing.SwingConstants;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.MetaDataUpdate;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
@@ -196,7 +197,7 @@ public class frmDNR extends raUpitLite {
                   " kumulradarh.por1, kumulradarh.por2, kumulradarh.por3,"+
                   " kumulradarh.por4, kumulradarh.por5, kumulradarh.poruk,"+
                   " kumulradarh.prir, kumulradarh.poriprir,"+
-                  " radnici.ime, radnici.prezime, radnici.cradnik, radnicipl.jmbg,"+
+                  " radnici.ime, radnici.prezime, radnici.cradnik, radnicipl.jmbg, radnicipl.oib,"+
                   " radnicipl.adresa," +
                   " kumulradarh.copcine, kumulradarh.netopk"+//ip
                   " from Kumulorgarh, Kumulradarh, Radnici, Radnicipl"+
@@ -215,6 +216,8 @@ public class frmDNR extends raUpitLite {
                   " and (kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulradarh.corg")+")";
     String nadoprc = " and kumulradarh.cradnik between '"+ fieldSet.getInt("CRADNIKOD") + "' and '" + fieldSet.getInt("CRADNIKDO") + "'";
     if (!jlrCradnikOd.getText().equals("")) return qstr.concat(nadoprc);
+    qstr+=" ORDER BY radnici.ime, radnici.prezime, radnici.cradnik, kumulorgarh.godobr, kumulorgarh.mjobr, kumulorgarh.rbrobr";
+    System.out.println(qstr);
     return qstr;
   }
 
@@ -284,8 +287,9 @@ public class frmDNR extends raUpitLite {
     repSet.addColumn(dm.createBigDecimalColumn("DOP1"));
     repSet.addColumn(dm.createBigDecimalColumn("DOP2"));
     repSet.addColumn(dm.createBigDecimalColumn("OSIG"));
+    repSet.setMetaDataUpdate(repSet.getMetaDataUpdate() & ~MetaDataUpdate.ROWID);
     repSet.open();
-
+    repSet.getColumn("CRADNIK").setRowId(true);
     repSet.first();
     do {
       repSet.setBigDecimal("DOP1", getHartAttack(
@@ -364,7 +368,10 @@ public class frmDNR extends raUpitLite {
 
   private void jbInit() throws Exception {
     orgs = hr.restart.zapod.OrgStr.getOrgStr();
-    this.addReport("hr.restart.pl.repDNR", "DNR", 2);
+//    addJasper("repIPP", "hr.restart.pl.repIPP", "ipp.jrxml", "IPP Obrazac");
+
+    this.addJasper("repDNR","hr.restart.pl.repDNR", "dnr.jrxml", "Obrazac DNR");
+//    this.addReport("hr.restart.pl.repDNR", "DNR", 2);
 
     colRadnikOd = dm.createIntColumn("CRADNIKOD");
     colRadnikDo = dm.createIntColumn("CRADNIKDO");
