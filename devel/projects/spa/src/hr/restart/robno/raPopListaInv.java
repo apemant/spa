@@ -17,14 +17,18 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
+import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraRadioButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raButtonGroup;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
+import hr.restart.util.reports.raReportDescriptor;
 
 import java.awt.Color;
 import java.sql.Timestamp;
@@ -142,9 +146,42 @@ public class raPopListaInv extends raUpitLite {
   }
 
   public boolean ispisNow() {
-    return true;
+    if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(this,
+        "Prikazati rezultat u tablici?", "Tablièni prikaz",
+        JOptionPane.OK_CANCEL_OPTION)) return true;
+    
+    showTable();
+    firstESC();
+    return false;
   }
 
+  void updateColumn(String name, String title) {
+    if (repSet.hasColumn(name) == null) return;
+    if (title == null) repSet.hasColumn(name).setVisible(0);
+    else {
+      repSet.hasColumn(name).setCaption(title);
+      repSet.hasColumn(name).setWidth(
+          Artikli.getDataModule().getColumn(name).getWidth());
+    }
+  }
+  
+  void showTable() {
+    frmTableDataView view = new frmTableDataView();
+    view.setTitle("Popisna lista za skladište " + fieldSet.getString("CSKL"));
+    updateColumn("CSKL", null);
+    updateColumn("CART", "Šifra");
+    updateColumn("CART1", "Oznaka");
+    updateColumn("BC", "Barkod");
+    updateColumn("NAZART", "Naziv");
+    updateColumn("JM", "Jmj");
+    updateColumn("NAZSKL", null);
+    view.setDataSet(repSet);
+    view.setSaveName("popisna-lista");
+    view.setCustomReport(raReportDescriptor.create("hr.restart.robno.repPopLista","hr.restart.robno.repPopLista","PopLista","Popisna lista"));
+    view.show();
+    view.resizeLater();
+  }
+    
   public boolean runFirstESC() {
     if (!fieldSet.getString("CSKL").equals("")) return true;
     return false;
