@@ -65,6 +65,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   hr.restart.util.Valid vl = hr.restart.util.Valid.getValid();
   hr.restart.util.raCommonClass rcc = hr.restart.util.raCommonClass.getraCommonClass();
   dM dm = hr.restart.baza.dM.getDataModule();
+  lookupData ld = lookupData.getlookupData();
 
   java.sql.Timestamp minDat, maxDat;
   int minDok, maxDok;
@@ -132,7 +133,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     jrfNazivBlagajnika.setText("");
     jcbPoArtiklima.setSelected(false);
     tds.setString("IspisRek","N");
-    findMpSkl();
+    //findMpSkl();
     jrfCBLAG.requestFocus();
   }
 
@@ -189,8 +190,8 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     
     if (isPdv) {
       String porezString = 
-        "SELECT sum(stpos.por1) as por1, sum(stpos.por2) as por2, " +
-        "sum(stpos.por3) as por3 FROM pos, Stpos "+
+      "SELECT pos.cnacpl, stpos.neto, stpos.por1, stpos.por2 " +
+      "FROM pos, Stpos "+
       "WHERE pos.cskl = stpos.cskl "+
       "AND pos.vrdok = stpos.vrdok "+
       "AND pos.god = stpos.god "+
@@ -199,25 +200,42 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
       "and pos.vrdok = 'GRC' "+
       "and pos.cprodmj = '"+tds.getString("CPRODMJ")+"' "+
       "and pos.cskl = '"+tds.getString("CSKL")+"' "+
-      "and "+kondishnDatumOrBroj()+kondishnOperater(); // kondishnOperator diprektid...
+      "and "+kondishnDatumOrBroj()+kondishnOperater();
       
       System.out.println(porezString);
       QueryDataSet qdsp = Aus.q(porezString);
       qdsp.open();
-      if (qdsp.getBigDecimal("POR1").signum() != 0) {
-        porezSet.insertRow(false);
-        porezSet.setString("NAZIV", "PDV");
-        porezSet.setBigDecimal("IZNOS", qdsp.getBigDecimal("POR1"));
-        porezSet.post();
-      }
-      if (qdsp.getBigDecimal("POR2").signum() != 0) {
-        porezSet.insertRow(false);
-        porezSet.setString("NAZIV", "PNP");
-        porezSet.setBigDecimal("IZNOS", qdsp.getBigDecimal("POR2"));
-        porezSet.post();
+      for (qdsp.first(); qdsp.inBounds(); qdsp.next()) {
+        if (qdsp.getBigDecimal("POR1").signum() != 0) {
+          if (!ld.raLocate(porezSet, new String[] {"CNACPL", "NAZIV"},
+              new String[] {qdsp.getString("CNACPL"), "PDV"})) {
+            porezSet.insertRow(false);
+            porezSet.setString("CNACPL", qdsp.getString("CNACPL"));
+            porezSet.setString("NAZIV", "PDV");
+          }
+          Aus.add(porezSet, "PROMET", qdsp, "NETO");
+          porezSet.setBigDecimal("STOPA", new BigDecimal(23));
+          Aus.add(porezSet, "IZNOS", qdsp, "POR1");
+          Aus.add(porezSet, "OSNOVICA", qdsp, "NETO");
+          Aus.sub(porezSet, "OSNOVICA", qdsp, "POR1");
+          Aus.sub(porezSet, "OSNOVICA", qdsp, "POR2");
+        }
+        if (qdsp.getBigDecimal("POR2").signum() != 0) {
+          if (!ld.raLocate(porezSet, new String[] {"CNACPL", "NAZIV"},
+              new String[] {qdsp.getString("CNACPL"), "PNP"})) {
+            porezSet.insertRow(false);
+            porezSet.setString("CNACPL", qdsp.getString("CNACPL"));
+            porezSet.setString("NAZIV", "PNP");
+          }
+          Aus.add(porezSet, "PROMET", qdsp, "NETO");
+          porezSet.setBigDecimal("STOPA", new BigDecimal(3));
+          Aus.add(porezSet, "IZNOS", qdsp, "POR2");
+          Aus.add(porezSet, "OSNOVICA", qdsp, "NETO");
+          Aus.sub(porezSet, "OSNOVICA", qdsp, "POR1");
+          Aus.sub(porezSet, "OSNOVICA", qdsp, "POR2");
+        }
       }
     }
-    
     
 //    System.out.println("\n"+Condition.between("DATDOK",tds.getTimestamp("POCDATUM"),tds.getTimestamp("ZAVDATUM")).toString()+"\n");
 //    System.out.println(Condition.between("BRDOK",tds.getInt("POCBROJ"),tds.getInt("ZAVBROJ")).toString()+"\n");
@@ -713,8 +731,12 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
      });
     
     porezSet.setColumns(new Column[] {
+        dm.createStringColumn("CNACPL", 12),
         dm.createStringColumn("NAZIV", 30),
-        dm.createBigDecimalColumn("IZNOS") 
+        dm.createBigDecimalColumn("PROMET"),
+        dm.createBigDecimalColumn("OSNOVICA"),
+        dm.createBigDecimalColumn("STOPA"),
+        dm.createBigDecimalColumn("IZNOS")
     });
 
     artikliReportQDS.setColumns(new Column[]{(Column)dm.getArtikli().getColumn("CART").clone(),
@@ -848,7 +870,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 
     hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
       public void knjigChanged(String oldKnj, String newKnj){
-        jrfCSKL.setRaDataSet(hr.restart.robno.Util.getUtil().getMPSklDataset());
+        jrfCSKL.setRaDataSet(Sklad.getDataModule().getTempSet(Aus.getKnjigCond()));
       }
     });
   }
