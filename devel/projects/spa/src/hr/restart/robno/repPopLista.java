@@ -38,6 +38,7 @@ public class repPopLista implements raReportData { //sg.com.elixir.reportwriter.
 
 
   public repPopLista() {
+    ds.enableDataSetEvents(false);
   }
 
   public raReportData getRow(int i) {
@@ -50,6 +51,7 @@ public class repPopLista implements raReportData { //sg.com.elixir.reportwriter.
   }
 
   public void close() {
+    ds.enableDataSetEvents(true);
     ds = null;
   }
 
