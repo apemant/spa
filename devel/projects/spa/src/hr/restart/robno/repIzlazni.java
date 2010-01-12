@@ -1226,11 +1226,19 @@ public BigDecimal getIPRODSP() {
     String cached = cache.getValue("JMBG", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
     if (isHide()) return cache.returnValue("");
-    String mb = "MB ";
    colname[0] = "CKUPAC";
-   System.out.println("JMBG - '"+cache.returnValue(ru.getSomething(colname,dm.getKupci(),"JMBG").getString())+"'");
-   if (cache.returnValue(ru.getSomething(colname,dm.getKupci(),"JMBG").getString().trim()).equalsIgnoreCase("")) mb = "";
-   return mb+cache.returnValue(ru.getSomething(colname,dm.getKupci(),"JMBG").getString());
+   String result = "";
+   if (!oib.equalsIgnoreCase("MB")) {
+     String br = ru.getSomething(colname,dm.getKupci(),"OIB").toString();
+     if (br.length() == 0) result = "";
+     else result = "OIB " + br;
+   } 
+   if (oib.equalsIgnoreCase("MB") || result.length() == 0) {
+     String mb = ru.getSomething(colname,dm.getKupci(),"JMBG").toString();
+     if (mb.length() == 0) result = "";
+     else result = "MB " + mb; 
+   }   
+   return cache.returnValue(result);
   }
 
   public String getRADNOMJESTO(){
@@ -1255,7 +1263,7 @@ public BigDecimal getIPRODSP() {
     }
     return cache.returnValue("");
   }
-  //ai trebovanja CKO = CRADNIK
+  //ai trebovanja CKO = CRADNIK    lnydrn
   public String getNaruciteljCKO() {
     String cached = cache.getValue("IMEIBEZIME", ds.getInt("CKO")+"");
     if (cached != null) return cached;

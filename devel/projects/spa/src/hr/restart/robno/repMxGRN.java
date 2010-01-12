@@ -93,7 +93,7 @@ public class repMxGRN extends mxReport {
             "<#"+rm.getLogoNazivlog()+"|"+width+"|center#><$newline$>"+
             "<#"+rm.getLogoAdresa()+"|"+width+"|center#><$newline$>"+
             "<#"+rm.getLogoPbr()+" "+rm.getLogoMjesto()+"|"+width+"|center#><$newline$>"+
-            "<#Matièni broj "+rm.getLogoMatbroj()+"|"+width+"|center#><$newline$>"+
+            "<#OIB "+rm.getLogoOIB()+"|"+width+"|center#><$newline$>"+
             ((prodavaonica.equals("")) ? "" : "<#"+prodavaonica+"|"+width+"|center#><$newline$>")+
             findPrintString(ds.getInt("CKUPAC"))+
             "<$newline$>"+

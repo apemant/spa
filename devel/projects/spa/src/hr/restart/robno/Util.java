@@ -936,7 +936,7 @@ public class Util {
         "<$DoubleWidthON$>"+rm.getLogoNazivlog()+"<$DoubleWidthOFF$><$newline$>"+
         rm.getLogoAdresa()+", "+rm.getLogoPbr()+" "+rm.getLogoMjesto()+"<$newline$>"+
         "Telefon: "+rm.getLogoTel1()+", "+rm.getLogoTel2()+",Fax: "+rm.getLogoFax()+"<$newline$>"+
-        "Žiro raèun: "+rm.getLogoZiro()+" MB: "+rm.getLogoMatbroj()+
+        "Žiro raèun: "+rm.getLogoZiro()+" OIB: "+rm.getLogoOIB()+
         "";
     } else {
       String slogo = hr.restart.sisfun.frmParam.getParam("robno","sirLogo");

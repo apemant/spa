@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
@@ -63,6 +64,7 @@ public class repMxRacun extends mxReport {
   int brRedFooter = 6;
   int brRedRekap = 0;
   int brRedRekPl = 3;
+  String oib;
   String parametar = hr.restart.sisfun.frmParam.getParam("robno","GOTcijena","VC");
   ArrayList nacinPlacanja,rata,datumNaplate ;
   dM dm = dM.getDataModule();
@@ -86,6 +88,9 @@ public class repMxRacun extends mxReport {
     QueryDataSet printerRM = hr.restart.baza.dM.getDataModule().getMxPrinterRM();
     printerRM.open();
     printerRM.first();
+    
+    oib = frmParam.getParam("robno", "oibMode", "MB", 
+    "Staviti matièni broj (MB) ili OIB?");
 
     mxRM matIsp = new mxRM();
     try {
@@ -256,7 +261,16 @@ public class repMxRacun extends mxReport {
         secondRow += ", " +dm.getKupci().getInt("PBR")+" "+dm.getKupci().getString("MJ");
       }
 
-      if(!dm.getKupci().getString("JMBG").equals(""))
+      if (!oib.equalsIgnoreCase("MB") && 
+          dm.getKupci().getString("OIB").length() > 0) {
+        if(secondRow.equals(""))
+          secondRow = "<$newline$>"+formatStr("",14)+"OIB: "+dm.getKupci().getString("OIB")+"<$newline$>"+"<$newline$>";
+        else
+          secondRow += ", OIB: "+dm.getKupci().getString("OIB")+"<$newline$>"+"<$newline$>";
+        brRedKupac +=1;
+      } else       
+      if(!oib.equalsIgnoreCase("OIB") &&
+          !dm.getKupci().getString("JMBG").equals(""))
       {
         if(secondRow.equals(""))
           secondRow = "<$newline$>"+formatStr("",14)+"MB: "+dm.getKupci().getString("JMBG")+"<$newline$>"+"<$newline$>";

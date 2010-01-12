@@ -45,7 +45,7 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
   protected int getCPAR_OTP() {
     return ds.getInt("CPAR");
   }
-  
+
   public repOTP() {
     //ds.setSort(new SortDescriptor(new String[] {"BRDOK", "RBR"}));
     ru.setDataSet(ds);
@@ -64,7 +64,7 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
     ru.setDataSet(null);
     ds = null;
   }
-/*
+  /*
   public repOTP(int idx) {
     ds.goToRow(idx);
   }
@@ -87,8 +87,8 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
 
   public void close() {
   }
- */
- public int getCPAR() {
+   */
+  public int getCPAR() {
     if (!ds.isNull("CPAR") && ds.getInt("CPAR") != 0){
       return ds.getInt("CPAR");
     }else if (!ds.isNull("CKUPAC") && ds.getInt("CKUPAC") != 0){
@@ -96,18 +96,18 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
       return dr.getInt("CKUPAC");
     }
     return 0;
-   }
+  }
 
-   public String getNAZPAR() {
+  public String getNAZPAR() {
     if (!ds.isNull("CPAR") && ds.getInt("CPAR") != 0){
-    ru.setDataSet(ds);
+      ru.setDataSet(ds);
       colname[0] = "CPAR";
       String np = ru.getSomething(colname, dm.getPartneri(), "NAZPAR").getString();
       if(ds.getInt("PJ")>0){
         lookupData.getlookupData().raLocate(dm.getPjpar(),
-                                            new String[]{"CPAR", "PJ"}
-                                            ,
-                                            new String[]{ds.getInt("CPAR")+"", ds.getInt("PJ")+""});
+            new String[]{"CPAR", "PJ"}
+        ,
+        new String[]{ds.getInt("CPAR")+"", ds.getInt("PJ")+""});
         np += "\n"+dm.getPjpar().getString("NAZPJ");
       }
       return np;
@@ -116,18 +116,18 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
       return dr.getString("IME")+" "+dr.getString("PREZIME");
     }
     return "";
-   }
+  }
 
-   public String getMJ() {
+  public String getMJ() {
     if (!ds.isNull("CPAR") && ds.getInt("CPAR") != 0){
       ru.setDataSet(ds);
       colname[0] = "CPAR";
       String mj = "";
       if(ds.getInt("PJ")>0){
         lookupData.getlookupData().raLocate(dm.getPjpar(),
-                                            new String[]{"CPAR", "PJ"}
-                                            ,
-                                            new String[]{ds.getInt("CPAR")+"", ds.getInt("PJ")+""});
+            new String[]{"CPAR", "PJ"}
+        ,
+        new String[]{ds.getInt("CPAR")+"", ds.getInt("PJ")+""});
         if(dm.getPjpar().getInt("PBRPJ")>0)mj = dm.getPjpar().getInt("PBRPJ")+" "+dm.getPjpar().getString("MJPJ");
         else mj = dm.getPjpar().getString("MJPJ");
       } else{
@@ -142,16 +142,16 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
       else return dr.getString("MJ");
     }
     return "";
-   }
+  }
 
-   public String getADR() {
+  public String getADR() {
     if (!ds.isNull("CPAR") && ds.getInt("CPAR") != 0){
       String adr = "";
       if(ds.getInt("PJ")>0){
         lookupData.getlookupData().raLocate(dm.getPjpar(),
-                                            new String[]{"CPAR", "PJ"}
-                                            ,
-                                            new String[]{ds.getInt("CPAR")+"", ds.getInt("PJ")+""});
+            new String[]{"CPAR", "PJ"}
+        ,
+        new String[]{ds.getInt("CPAR")+"", ds.getInt("PJ")+""});
         adr = dm.getPjpar().getString("ADRPJ");
       } else{
         lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", ds.getInt("CPAR")+"");
@@ -163,7 +163,7 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
       return dr.getString("ADR");
     }
     return "";
-   }
+  }
 
 
   public String getKONTOSOB() {
@@ -175,23 +175,23 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
     return koso;
   }
 
-//  public String getNAZPAR() {
-//	 ru.setDataSet(ds);
-//	 colname[0] = "CPAR";
-//	 return ru.getSomething(colname,dm.getPartneri(),"NAZPAR").getString();
-//  }
+//public String getNAZPAR() {
+//ru.setDataSet(ds);
+//colname[0] = "CPAR";
+//return ru.getSomething(colname,dm.getPartneri(),"NAZPAR").getString();
+//}
 
-//  public String getMJ() {
-//	 ru.setDataSet(ds);
-//	 colname[0] = "CPAR";
-//	 return ru.getSomething(colname,dm.getPartneri(),"MJ").getString();
-//  }
+//public String getMJ() {
+//ru.setDataSet(ds);
+//colname[0] = "CPAR";
+//return ru.getSomething(colname,dm.getPartneri(),"MJ").getString();
+//}
 
-//  public String getADR() {
-//	 ru.setDataSet(ds);
-//	 colname[0] = "CPAR";
-//	 return ru.getSomething(colname,dm.getPartneri(),"ADR").getString();
-//  }
+//public String getADR() {
+//ru.setDataSet(ds);
+//colname[0] = "CPAR";
+//return ru.getSomething(colname,dm.getPartneri(),"ADR").getString();
+//}
 
   public int getPBR(){
     ru.setDataSet(ds);
@@ -201,249 +201,245 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
 
   public String getMB(){
     if(!ds.isNull("CPAR")&&ds.getInt("CPAR")!=0){
-      ru.setDataSet(ds);
-      colname[0] = "CPAR";
-      return ru.getSomething(colname, dm.getPartneri(), "MB").getString();
+      return super.getMB();
     } else if(!ds.isNull("CKUPAC")&&ds.getInt("CKUPAC")!=0){
-      DataRow dr = hr.restart.util.lookupData.getlookupData().raLookup(hr.restart.baza.dM.getDataModule().getKupci(),
-          "CKUPAC", ds.getInt("CKUPAC")+"");
-      return dr.getString("JMBG");
+      return super.getJMBG();
     }
     return "";
 
   }
 
   public String getZR() {
-	 ru.setDataSet(ds);
-	 colname[0] = "CPAR";
-	 return ru.getSomething(colname,dm.getPartneri(),"ZR").getString();
+    ru.setDataSet(ds);
+    colname[0] = "CPAR";
+    return ru.getSomething(colname,dm.getPartneri(),"ZR").getString();
   }
 
   public String getCSKL() {
-	 return ds.getString("CSKL");
+    return ds.getString("CSKL");
   }
 
   public String getVRDOK() {
-	 return ds.getString("VRDOK");
+    return ds.getString("VRDOK");
   }
 
   public String getGOD(){
     return ds.getString("GOD");
   }
-/*
+  /*
   public int getBRDOK() {
    return ds.getInt("BRDOK");
   }
-*/
-//  public String getBRDOK(){
-//    return ds.getInt("BRDOK")+ds.getString("CSKL")+ds.getString("GOD");
-//  }
+   */
+//public String getBRDOK(){
+//return ds.getInt("BRDOK")+ds.getString("CSKL")+ds.getString("GOD");
+//}
 
 
   public int getBRDOK1() {
-	 return ds.getInt("BRDOK");
+    return ds.getInt("BRDOK");
   }
 
   public String getUI() {
-	 return ds.getString("UI");
+    return ds.getString("UI");
   }
 
   public Timestamp getSYSDAT() {
-	 return ds.getTimestamp("SYSDAT");
+    return ds.getTimestamp("SYSDAT");
   }
 
   public String SgetSYSDAT() {
-	 return rdu.dataFormatter(getSYSDAT());
+    return rdu.dataFormatter(getSYSDAT());
   }
 
   public Timestamp getDATDOK() {
-	 return ds.getTimestamp("DATDOK");
+    return ds.getTimestamp("DATDOK");
   }
   public String SgetDATDOK() {
-	 return rdu.dataFormatter(getDATDOK());
+    return rdu.dataFormatter(getDATDOK());
   }
 
   public int getPJ() {
-	 return ds.getInt("PJ");
+    return ds.getInt("PJ");
   }
 
   public String getCORG() {
-	 return ds.getString("CORG");
+    return ds.getString("CORG");
   }
 
   public String getCVRTR() {
-	 return ds.getString("CVRTR");
+    return ds.getString("CVRTR");
   }
 
   public String getCUG() {
-	 return ds.getString("CUG");
+    return ds.getString("CUG");
   }
 
   public Timestamp getDATUG() {
-	 return ds.getTimestamp("DATUG");
+    return ds.getTimestamp("DATUG");
   }
   public String SgetDATUG() {
-	 return rdu.dataFormatter(getDATUG());
+    return rdu.dataFormatter(getDATUG());
   }
 
   public Timestamp getDVO() {
-	 return ds.getTimestamp("DVO");
+    return ds.getTimestamp("DVO");
   }
 
   public String SgetDVO() {
-	 return rdu.dataFormatter(getDVO());
+    return rdu.dataFormatter(getDVO());
   }
 
   public short getDDOSP() {
-	 return ds.getShort("DDOSP");
+    return ds.getShort("DDOSP");
   }
 
   public Timestamp getDATDOSP() {
-	 return ds.getTimestamp("DATDOSP");
+    return ds.getTimestamp("DATDOSP");
   }
 
   public String SgetDATDOSP() {
-	 return rdu.dataFormatter(getDATDOSP());
+    return rdu.dataFormatter(getDATDOSP());
   }
 
   public String getBRDOKIZ() {
-	 return ds.getString("BRDOKIZ");
+    return ds.getString("BRDOKIZ");
   }
 
   public Timestamp getDATDOKIZ() {
-	 return ds.getTimestamp("DATDOKIZ");
+    return ds.getTimestamp("DATDOKIZ");
   }
 
   public String SgetDATDOKIZ() {
-	 return rdu.dataFormatter(getDATDOKIZ());
+    return rdu.dataFormatter(getDATDOKIZ());
   }
 
   public String getBRPRD() {
-	 return ds.getString("BRPRD");
+    return ds.getString("BRPRD");
   }
 
   public Timestamp getDATPRD() {
-	 return ds.getTimestamp("DATPRD");
+    return ds.getTimestamp("DATPRD");
   }
 
   public String SgetDATPRD() {
-	 return rdu.dataFormatter(getDATPRD());
+    return rdu.dataFormatter(getDATPRD());
   }
 
   public String getBRNARIZ() {
-	 return ds.getString("BRNARIZ");
+    return ds.getString("BRNARIZ");
   }
 
   public Timestamp getDATNARIZ() {
-	 return ds.getTimestamp("DATNARIZ");
+    return ds.getTimestamp("DATNARIZ");
   }
 
   public String SgetDATNARIZ() {
-	 return rdu.dataFormatter(getDATNARIZ());
+    return rdu.dataFormatter(getDATNARIZ());
   }
 
   public String getOZNVAL() {
-	 return ds.getString("OZNVAL");
+    return ds.getString("OZNVAL");
   }
 
   public BigDecimal getTECAJ() {
-	 return ds.getBigDecimal("TECAJ");
+    return ds.getBigDecimal("TECAJ");
   }
 
   public String getBRNAL() {
-	 return ds.getString("BRNAL");
+    return ds.getString("BRNAL");
   }
 
   public Timestamp getDATKNJ() {
-	 return ds.getTimestamp("DATKNJ");
+    return ds.getTimestamp("DATKNJ");
   }
 
   public String SgetDATKNJ() {
-	 return rdu.dataFormatter(getDATKNJ());
+    return rdu.dataFormatter(getDATKNJ());
   }
 
   public String getCRADNAL() {
-	 return ds.getString("CRADNAL");
+    return ds.getString("CRADNAL");
   }
 
   public Timestamp getDATRADNAL() {
-	 return ds.getTimestamp("DATRADNAL");
+    return ds.getTimestamp("DATRADNAL");
   }
 
   public String SgetDATRADNAL() {
-	 return rdu.dataFormatter(getDATRADNAL());
+    return rdu.dataFormatter(getDATRADNAL());
   }
 
   public String getSTATUS1() {
-	 return ds.getString("STATUS1");
+    return ds.getString("STATUS1");
   }
 
   public String getSTATKNJ() {
-	 return ds.getString("STATKNJ");
+    return ds.getString("STATKNJ");
   }
 
   public String getSTATPLA() {
-	 return ds.getString("STATPLA");
+    return ds.getString("STATPLA");
   }
 
   public String getSTATIRA() {
-	 return ds.getString("STATIRA");
+    return ds.getString("STATIRA");
   }
 
   public String getCFRA() {
-	 return ds.getString("CFRA");
+    return ds.getString("CFRA");
   }
 
   public String getCNACPL() {
-	 return ds.getString("CNACPL");
+    return ds.getString("CNACPL");
   }
 
   public String getCNAMJ() {
-	 return ds.getString("CNAMJ");
+    return ds.getString("CNAMJ");
   }
 
   public String getCNAC() {
-	 return ds.getString("CNAC");
+    return ds.getString("CNAC");
   }
 
   public String getCNAP() {
-	 return ds.getString("CNAP");
+    return ds.getString("CNAP");
   }
 
   public BigDecimal getUPZT() {
-	 return ds.getBigDecimal("UPZT");
+    return ds.getBigDecimal("UPZT");
   }
 
   public String getCSHZT() {
-	 return ds.getString("CSHZT");
+    return ds.getString("CSHZT");
   }
 
   public BigDecimal getUPRAB() {
-	 return ds.getBigDecimal("UPRAB");
+    return ds.getBigDecimal("UPRAB");
   }
 
   public String getCSHRAB() {
-	 return ds.getString("CSHRAB");
+    return ds.getString("CSHRAB");
   }
 
   public String getOPIS() {
-	 return ds.getString("OPIS");
+    return ds.getString("OPIS");
   }
 
   public short getRBR() {
-	 return ds.getShort("RBR");
+    return ds.getShort("RBR");
   }
 
   public String getSHIFRA() {
-	 return "" + ds.getInt("CART");
+    return "" + ds.getInt("CART");
   }
 
   public String getCART1() {
-	 return ds.getString("CART1");
+    return ds.getString("CART1");
   }
 
   public String getBC() {
-	 return ds.getString("BC");
+    return ds.getString("BC");
   }
 
   public String getCART() {
@@ -451,57 +447,57 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
   }
 
   public String getNAZART() {
-	 return ds.getString("NAZART");
+    return ds.getString("NAZART");
   }
 
   public String getJM() {
-	 return ds.getString("JM");
+    return ds.getString("JM");
   }
 
   public BigDecimal getKOL() {
     if (!ds.getString("VRDOK").equals("DOS") || frmParam.getParam("robno","ispDOS-"+ds.getString("JM"),"D","Ispisati isporucenu kolicinu za mjernu jedinicu "+ds.getString("JM")).equalsIgnoreCase("D")) {
-	 return ds.getBigDecimal("KOL");
+      return ds.getBigDecimal("KOL");
     } else {
       return Aus.zero2;
     }
   }
 
   public BigDecimal getKOL1() {
-	 return ds.getBigDecimal("KOL1");
+    return ds.getBigDecimal("KOL1");
   }
 
   public BigDecimal getKOL2() {
-	 return ds.getBigDecimal("KOL2");
+    return ds.getBigDecimal("KOL2");
   }
 
   public BigDecimal getUPRAB1() {
-	 return ds.getBigDecimal("UPRAB1");
+    return ds.getBigDecimal("UPRAB1");
   }
 
   public double getUIRAB() {
-	 return ds.getBigDecimal("UIRAB").doubleValue();
+    return ds.getBigDecimal("UIRAB").doubleValue();
   }
 
   public BigDecimal getUPZT1() {
-	 return ds.getBigDecimal("UPZT1");
+    return ds.getBigDecimal("UPZT1");
   }
 
   public BigDecimal getUIZT() {
-	 return ds.getBigDecimal("UIZT");
+    return ds.getBigDecimal("UIZT");
   }
 
   public BigDecimal getFC() {
-	 return ds.getBigDecimal("FC");
+    return ds.getBigDecimal("FC");
   }
 
   public double getINETO() {
-	 return ds.getBigDecimal("INETO").doubleValue();
+    return ds.getBigDecimal("INETO").doubleValue();
   }
 
   public BigDecimal getFVC() {
-	 return ds.getBigDecimal("FVC");
+    return ds.getBigDecimal("FVC");
   }
-/*
+  /*
   public BigDecimal getIPRODBP() {
 	 return ds.getBigDecimal("IPRODBP");
   }
@@ -517,111 +513,111 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
   public BigDecimal getPOR3() {
 	 return ds.getBigDecimal("POR3");
   }
-*/
+   */
   public double getIPRODBP() {
-	 return ds.getBigDecimal("IPRODBP").doubleValue();
+    return ds.getBigDecimal("IPRODBP").doubleValue();
   }
 
   public double getPOR1() {
-	 return ds.getBigDecimal("POR1").doubleValue();
+    return ds.getBigDecimal("POR1").doubleValue();
   }
 
   public double getPOR2() {
-	 return ds.getBigDecimal("POR2").doubleValue();
+    return ds.getBigDecimal("POR2").doubleValue();
   }
 
   public double getPOR3() {
-	 return ds.getBigDecimal("POR3").doubleValue();
+    return ds.getBigDecimal("POR3").doubleValue();
   }
 
 
   public double getUKPOR3() {
-	 return getPOR1()+getPOR2()+getPOR3();
+    return getPOR1()+getPOR2()+getPOR3();
   }
 
   public BigDecimal getFMC() {
-	 return ds.getBigDecimal("FMC");
+    return ds.getBigDecimal("FMC");
   }
 
-/*
+  /*
   public BigDecimal getIPRODSP() {
 	 return ds.getBigDecimal("IPRODSP");
   }
-*/
+   */
   public double getIPRODSP() {
-	 return ds.getBigDecimal("IPRODSP").doubleValue();
+    return ds.getBigDecimal("IPRODSP").doubleValue();
   }
 
   public BigDecimal getNC() {
-	 return ds.getBigDecimal("NC");
+    return ds.getBigDecimal("NC");
   }
 
   public BigDecimal getINAB() {
-	 return ds.getBigDecimal("INAB");
+    return ds.getBigDecimal("INAB");
   }
 
   public BigDecimal getIMAR() {
-	 return ds.getBigDecimal("IMAR");
+    return ds.getBigDecimal("IMAR");
   }
 
   public BigDecimal getVC() {
-	 return ds.getBigDecimal("VC");
+    return ds.getBigDecimal("VC");
   }
 
   public BigDecimal getIBP() {
-	 return ds.getBigDecimal("IBP");
+    return ds.getBigDecimal("IBP");
   }
 
   public BigDecimal getIPOR() {
-	 return ds.getBigDecimal("IPOR");
+    return ds.getBigDecimal("IPOR");
   }
 
   public BigDecimal getMC() {
-	 return ds.getBigDecimal("MC");
+    return ds.getBigDecimal("MC");
   }
 
   public double getISP() {
-	 return ds.getBigDecimal("ISP").doubleValue();
+    return ds.getBigDecimal("ISP").doubleValue();
   }
 
   public BigDecimal getZC() {
-	 return ds.getBigDecimal("ZC");
+    return ds.getBigDecimal("ZC");
   }
 
   public double getIRAZ() {
-	 return ds.getBigDecimal("IRAZ").doubleValue();
+    return ds.getBigDecimal("IRAZ").doubleValue();
   }
 
   public String getBRPRI() {
-	 return ds.getString("BRPRI");
+    return ds.getString("BRPRI");
   }
 
   public short getRBRPRI() {
-	 return ds.getShort("RBRPRI");
+    return ds.getShort("RBRPRI");
   }
 
   public String getNAZNAP() {
-	 ru.setDataSet(ds);
-	 colname[0] = "CNAP";
-	 return ru.getSomething(colname,dm.getNapomene(),"NAZNAP").getString();
+    ru.setDataSet(ds);
+    colname[0] = "CNAP";
+    return ru.getSomething(colname,dm.getNapomene(),"NAZNAP").getString();
   }
 
   public String getNAZNACPL() {
-	 ru.setDataSet(ds);
-	 colname[0] = "CNACPL";
-	 return ru.getSomething(colname,dm.getNacpl(),"NAZNACPL").getString();
+    ru.setDataSet(ds);
+    colname[0] = "CNACPL";
+    return ru.getSomething(colname,dm.getNacpl(),"NAZNACPL").getString();
   }
 
   public String getNAZNAC() {
-	 ru.setDataSet(ds);
-	 colname[0] = "CNAC";
-	 return ru.getSomething(colname,dm.getNacotp(),"NAZNAC").getString();
+    ru.setDataSet(ds);
+    colname[0] = "CNAC";
+    return ru.getSomething(colname,dm.getNacotp(),"NAZNAC").getString();
   }
 
   public String getNAZFRA() {
-	 ru.setDataSet(ds);
-	 colname[0] = "CFRA";
-	 return ru.getSomething(colname,dm.getFranka(),"NAZFRA").getString();
+    ru.setDataSet(ds);
+    colname[0] = "CFRA";
+    return ru.getSomething(colname,dm.getFranka(),"NAZFRA").getString();
   }
 
   public String getUSER(){
@@ -632,7 +628,7 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
     }
   }
 
-/*
+  /*
   public String getFormatBroj(){
     try {
 	 ru.setDataSet(ds);
@@ -642,62 +638,62 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
       return"ERROR";
     }
   }
-*/
+   */
   public String getPorezPos() {
-	 ru.setDataSet(ds);
-	 colname[0]="CART";
-	 return ru.getSomething(colname,dm.getArtikli(),"CPOR").getString();
+    ru.setDataSet(ds);
+    colname[0]="CART";
+    return ru.getSomething(colname,dm.getArtikli(),"CPOR").getString();
   }
 
   public String getPor1Naz(){
-	 getPorezPos();
-	 colname[0] ="CPOR";
-	 return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"nazpor1").getString();
+    getPorezPos();
+    colname[0] ="CPOR";
+    return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"nazpor1").getString();
   }
   public int getImaPor1(){
-	 return (getPor1Naz().equals(""))?0:1;
+    return (getPor1Naz().equals(""))?0:1;
   }
   public String getPor2Naz(){
-	 ru.setDataSet(ds);
-	 getPorezPos();
-	 colname[0] ="CPOR";
-	 return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"nazpor2").getString();
+    ru.setDataSet(ds);
+    getPorezPos();
+    colname[0] ="CPOR";
+    return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"nazpor2").getString();
   }
   public int getImaPor2(){
-	 return (getPor2Naz().equals(""))?0:1;
+    return (getPor2Naz().equals(""))?0:1;
   }
   public String getPor3Naz(){
-	 ru.setDataSet(ds);
-	 getPorezPos();
-	 colname[0] ="CPOR";
-	 return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"nazpor3").getString();
+    ru.setDataSet(ds);
+    getPorezPos();
+    colname[0] ="CPOR";
+    return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"nazpor3").getString();
   }
   public int getImaPor3(){
-	 return (getPor3Naz().equals(""))?0:1;
+    return (getPor3Naz().equals(""))?0:1;
   }
   public BigDecimal getPOSPor1(){
-   /*ru.setDataSet(ds);
+    /*ru.setDataSet(ds);
    getPorezPos();
    colname[0] ="CPOR";
    return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"por1").getBigDecimal();
-   */
-   return ds.getBigDecimal("PPOR1");
+     */
+    return ds.getBigDecimal("PPOR1");
   }
   public BigDecimal getPOSPor3(){
-   /*ru.setDataSet(ds);
+    /*ru.setDataSet(ds);
    getPorezPos();
    colname[0] ="CPOR";
    return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"por3").getBigDecimal();
-   */
-   return ds.getBigDecimal("PPOR3");
+     */
+    return ds.getBigDecimal("PPOR3");
   }
   public BigDecimal getPOSPor2(){
-   /*ru.setDataSet(ds);
+    /*ru.setDataSet(ds);
    getPorezPos();
    colname[0] ="CPOR";
    return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"por2").getBigDecimal();
-   */
-   return ds.getBigDecimal("PPOR2");
+     */
+    return ds.getBigDecimal("PPOR2");
   }
 
   public BigDecimal getPor1p2p3Naz(){
@@ -706,22 +702,22 @@ public class repOTP extends repIzlazni implements raReportData {//sg.com.elixir.
    getPorezPos();
    colname[0] ="CPOR";
    return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"ukupor").getBigDecimal();
-   */
-   return ds.getBigDecimal("PPOR1").add(ds.getBigDecimal("PPOR2")).add(ds.getBigDecimal("PPOR3"));
+     */
+    return ds.getBigDecimal("PPOR1").add(ds.getBigDecimal("PPOR2")).add(ds.getBigDecimal("PPOR3"));
   }
   public String getSLOVIMA() {
-	 return ut.numToLet(ds.getBigDecimal("UIRAC").doubleValue());
+    return ut.numToLet(ds.getBigDecimal("UIRAC").doubleValue());
   }
   public int getLogoPotvrda() {
-	 if (rm.test()) return 1;
-	 return 0;
+    if (rm.test()) return 1;
+    return 0;
   }
   public String getLogoFullAdr() {
-	 if (!rm.test()) return "";
-	 else return rm.getLogoAdresa() + " ,  " + rm.getLogoPbr() + " " + rm.getLogoMjesto();
+    if (!rm.test()) return "";
+    else return rm.getLogoAdresa() + " ,  " + rm.getLogoPbr() + " " + rm.getLogoMjesto();
   }
   public String getLineName() {
-	 return ClassLoader.getSystemResource("hr/restart/robno/reports/line2.jpg").toString();
+    return ClassLoader.getSystemResource("hr/restart/robno/reports/line2.jpg").toString();
   }
   public String getLogoCorg(){return rm.getLogoCorg();}
   public String getLogoNazivlog(){return rm.getLogoNazivlog();}
