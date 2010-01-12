@@ -34,6 +34,7 @@ import hr.restart.util.raImages;
 import hr.restart.util.raJPTableView;
 import hr.restart.util.raNavAction;
 import hr.restart.util.reports.JTablePrintRun;
+import hr.restart.util.reports.raReportDescriptor;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -144,6 +145,7 @@ public class frmTableDataView extends JraFrame {
   boolean editable = true, coldefs = true, reusable = false, changed = false;
 
   JTablePrintRun printer = new JTablePrintRun();
+  raReportDescriptor custom;
   raNavAction ex;
 
   FileFilter filterCSV = new raFileFilter("Excel datoteke (*.csv)");
@@ -338,6 +340,10 @@ public class frmTableDataView extends JraFrame {
     });
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     jp.initKeyListener(this);
+  }
+  
+  public void setCustomReport(raReportDescriptor rd) {
+    custom = rd;
   }
   
   void multiDelete() {
@@ -661,6 +667,10 @@ public class frmTableDataView extends JraFrame {
     printer.setInterTitle(getClass().getName());
     printer.setColB(jp.getNavBar().getColBean());
     printer.setRTitle(this.getTitle());
+    if (custom != null) {
+      printer.getReportRunner().clearAllCustomReports();
+      printer.getReportRunner().addReport(custom);
+    }
     printer.runIt();
   }
 
