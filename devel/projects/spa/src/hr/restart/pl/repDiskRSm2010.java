@@ -7,6 +7,7 @@ import hr.restart.zapod.OrgStr;
 public class repDiskRSm2010 extends repDiskRSm {
   public StringBuffer insertSlog0() {
     StringBuffer b = super.insertSlog0();
+    b.replace(0, 12, "             ");
     String o = getOIB();
     b.replace(12, 12+o.length(),o);
     return b;

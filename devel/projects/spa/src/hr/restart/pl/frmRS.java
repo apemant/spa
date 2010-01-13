@@ -620,7 +620,7 @@ public class frmRS extends raUpitLite {
   int sha1Length;
 
   protected void setSHA1(){
-    repDiskRSm repdisk = new repDiskRSm();
+    repDiskRSm repdisk = new repDiskRSm2010();
     repdisk.makeReport();
     String sha1 = FileHandler.getSHA1(hr.restart.util.reports.mxReport.TMPPRINTFILE);
     sha1formated = "";
