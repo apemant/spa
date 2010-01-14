@@ -55,7 +55,7 @@ public class repRacunPOS extends mxReport {
   String porezString;
   int width = 40;
   int dbWidth = width/2;
-  String doubleLineSep, uk;
+  String doubleLineSep, uk, oib;
   boolean ispSif, oneRow, pop, cash;
 
   public repRacunPOS() {
@@ -75,6 +75,8 @@ public class repRacunPOS extends mxReport {
     "popustPrikaz", "N", "Prikaz popusta na pos raèunima (D,N)"));
     cash = "D".equalsIgnoreCase(frmParam.getParam("pos",
       "autoCash", "D", "Otvoriti blagajnu kod ispisa raèuna (D,N)"));
+    oib = frmParam.getParam("robno", "oibMode", "MB", 
+          "Staviti matièni broj (MB) ili OIB?");
     width = Integer.parseInt(wdt);
     System.out.println("WIDTH - "+ width);
     dbWidth = width/2;
@@ -134,7 +136,7 @@ public class repRacunPOS extends mxReport {
          "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
          "<#"+dm.getLogotipovi().getString("ADRESA")+"|"+width+"|center#><$newline$>"+
          "<#"+String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO")+"|"+width+"|center#><$newline$>"+
-         "<#Matièni broj "+dm.getLogotipovi().getString("MATBROJ")+"|"+width+"|center#><$newline$>"+
+         "<#OIB "+dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>"+
          "<#"+prodavaonica+"|"+width+"|center#><$newline$>"+
          getPhones()+
 //         "<#"+prodMjesto+"|"+width+"|center#><$newline$>"+
@@ -382,7 +384,7 @@ public class repRacunPOS extends mxReport {
             ((!dr.getString("ADR").equals(""))?"       "+dr.getString("ADR")+"<$newline$>":"")+
             ((dr.getInt("PBR")!=0)?"       "+dr.getInt("PBR")+" ":"")+
             ((!dr.getString("MJ").equals(""))?((dr.getInt("PBR")==0)? "       "+dr.getString("MJ"):dr.getString("MJ")):"")+
-            ((!dr.getString("JMBG").equals(""))?"<$newline$>       MB: "+dr.getString("JMBG"):"");
+            getJMBG(dr);
 
         kupac += "<$newline$><$newline$>\u000E<#RAÈUN R-1|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
             "\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
@@ -393,6 +395,21 @@ public class repRacunPOS extends mxReport {
     return "<$newline$>\u000E<#RAÈUN|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
 //        "\u001B\u0045<#"+ru.getFormatBroj()+"|20|center#>\u001B\u0046<$newline$>";
         "\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
+  }
+  
+  public String getJMBG(DataRow dr) {
+    String result = "";
+    if (!oib.equalsIgnoreCase("MB")) {
+      String br = dr.getString("OIB");
+      if (br.length() == 0) result = "";
+      else result = "<$newline$>       OIB: " + br;
+    } 
+    if (oib.equalsIgnoreCase("MB") || result.length() == 0) {
+      String mb = dr.getString("JMBG");
+      if (mb.length() == 0) result = "";
+      else result = "<$newline$>       MB: " + mb; 
+    }   
+    return result;
   }
 
   private String getUkupno(DataSet qds) {
