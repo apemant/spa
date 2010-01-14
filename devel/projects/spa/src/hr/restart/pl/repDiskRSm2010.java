@@ -7,7 +7,7 @@ import hr.restart.zapod.OrgStr;
 public class repDiskRSm2010 extends repDiskRSm {
   public StringBuffer insertSlog0() {
     StringBuffer b = super.insertSlog0();
-    b.replace(0, 12, "             ");
+    b.replace(0, 12, "            ");
     String o = getOIB();
     b.replace(12, 12+o.length(),o);
     return b;
@@ -15,22 +15,21 @@ public class repDiskRSm2010 extends repDiskRSm {
   public StringBuffer insertSlog3() {
     StringBuffer b = super.insertSlog3();
     String o = getOIB();
-    b.replace(0, 12, "             ");
+    b.replace(0, 12, "            ");
     b.replace(12, 12+o.length(), o);
-    
     return b;
   }
   public StringBuffer insertSlog7() {
     StringBuffer b = super.insertSlog7();
     String o = getOIB();
-    b.replace(0, 12, "             ");
+    b.replace(0, 12, "            ");
     b.replace(12, 12+o.length(), o);
     return b;
   }
   public StringBuffer insertSlog9() {
     StringBuffer b = super.insertSlog9();
     String o = getOIB();
-    b.replace(0, 12, "             ");
+    b.replace(0, 12, "            ");
     b.replace(12, 12+o.length(), o);
     return b;
   }
@@ -38,7 +37,7 @@ public class repDiskRSm2010 extends repDiskRSm {
     StringBuffer b= super.getSlog5(rbr);
     String oib = qds.getString("JMBG");
     String o = Valid.getValid().maskString(oib.trim(),' ',13);
-    b.replace(5,17,o);
+    b.replace(5,18,o);
     return b;
   }
   public static String getOIB() {

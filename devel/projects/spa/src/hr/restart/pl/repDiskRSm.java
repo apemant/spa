@@ -76,7 +76,6 @@ public class repDiskRSm extends repDiskRS {
     String mio2 =formatIznos(qds.getBigDecimal("MIO2"),14);
     String netopk = formatIznos(qds.getBigDecimal("NETOPK"),14);
     String srbr = vl.maskZeroInteger(new Integer(rbr),5);
-	
 	b.replace(0,4,srbr);
   	b.replace(5,17,jmbg);
   	b.replace(18,47,imePrezime);
