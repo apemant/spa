@@ -748,11 +748,11 @@ public class raRekalkulacijaStanja extends raUpitLite {
     String dod =  (cart != 0) ? " and cart="+cart : "";
     setNewMessage("Priprema zadnjih kalkulacija (meðuskladišnice) ...");
     QueryDataSet dsmeu = hr.restart.util.Util.getNewQueryDataSet(
-        "SELECT meskla.datdok,cart,nc,vc,mc,stmeskla.csklul,stmeskla.cskliz,stmeskla.vrdok," +
-        "stmeskla.god,stmeskla.brdok,rbsid FROM meskla,stmeskla WHERE meskla.csklul = stmeskla.csklul " +
+        "SELECT meskla.datdok,stmeskla.cart,stmeskla.nc,stmeskla.vc,stmeskla.mc,stmeskla.csklul,stmeskla.cskliz,stmeskla.vrdok," +
+        "stmeskla.god,stmeskla.brdok,stmeskla.rbsid FROM meskla,stmeskla WHERE meskla.csklul = stmeskla.csklul " +
         "AND meskla.cskliz = stmeskla.cskliz AND meskla.vrdok = stmeskla.vrdok " +
         "AND meskla.god = stmeskla.god AND meskla.brdok = stmeskla.brdok " + dod +
-        " AND stmeskla.csklul='" + cskl + "' AND stmeskla.god='" + god + "' order by cart,datdok", false);
+        " AND stmeskla.csklul='" + cskl + "' AND stmeskla.vrdok in ('MES','MEU') AND stmeskla.god='" + god + "' order by 2,1", false);
     openScratchDataSet(dsmeu);
     dsmeu.setTableName("stmeskla");
      
@@ -761,10 +761,10 @@ public class raRekalkulacijaStanja extends raUpitLite {
     
     setMessage("Priprema zadnjih kalkulacija (ulazi) ...");
     QueryDataSet dsul = hr.restart.util.Util.getNewQueryDataSet(
-        "SELECT doku.datdok,cart,nc,vc,mc,stdoku.cskl,stdoku.vrdok,stdoku.god,stdoku.brdok,rbsid " +
+        "SELECT doku.datdok,stdoku.cart,stdoku.nc,stdoku.vc,stdoku.mc,stdoku.cskl,stdoku.vrdok,stdoku.god,stdoku.brdok,stdoku.rbsid " +
         "FROM doku,stdoku WHERE doku.cskl = stdoku.cskl AND doku.vrdok = stdoku.vrdok " +
         "AND doku.god = stdoku.god AND doku.brdok = stdoku.brdok " + dod +
-        " AND stdoku.cskl='" + cskl + "' AND stdoku.god='" + god + "' order by cart,datdok", false);
+        " AND stdoku.cskl='" + cskl + "' AND stdoku.god='" + god + "' order by 2,1", false);
     openScratchDataSet(dsul);
     dsul.setTableName("stdoki");
 
