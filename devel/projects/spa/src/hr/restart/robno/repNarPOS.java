@@ -89,11 +89,11 @@ public class repNarPOS extends mxReport {
      ru.setDataSet(master);
 
      this.setPgHeader(
-         "<$newline$>\u000E<#NARUDŽBA|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
-         "\u000E<#"+master.getInt("BRDOK")+"|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
+         "<$newline$>\u000E<#NARUDŽBA br. " + master.getInt("BRDOK") + "|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
+         "<$newline$>"+
          (fmb.getNarSet().getString("AKTIV").equalsIgnoreCase("D") ? "" :
            Aus.spc((width - 9) / 2) + "(kopija!)<$newline$>") + 
-           "Broj stola: " + fmb.getStol() + "<$newline$>" + 
+           "Stol: " + fmb.getStol() + "<$newline$>" + 
            doubleLineSep + "<$newline$>"+ getDetailHeader() +
          doubleLineSep+"");
      detail[0] = oneRow ? "<#NAZART|"+(width-8)+"|left#> <#KOL|7|right#>" :
