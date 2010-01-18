@@ -195,7 +195,7 @@ public class raDateUtil {
   public String getYear2Digit(java.sql.Timestamp dat){
     DateCal1.setTime(dat);
     String forReturn = String.valueOf(DateCal1.get(DateCal1.YEAR));
-    return forReturn.substring(forReturn.length()-1);
+    return Integer.parseInt(forReturn.substring(forReturn.length()-2))+"";
 
 /*
     if (DateCal1.get(DateCal1.YEAR) <10) {
