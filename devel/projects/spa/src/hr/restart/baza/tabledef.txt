@@ -1185,3 +1185,9 @@ URL;char;30;;;URL;15
 IDIH;int;6;;;Zaglavlje logotipa izlaznih dokumenata;15
 IDIF;int;6;;;Podnožje logotipa izlaznih dokumenata;15
 OIB;char;20;;;OIB
+
+$artnap
+CAN;char;6;pkey;;Šifra
+NAZAN;char;50;;;Naziv
+TEXTNAP;char;50;;;Tekst
+PM;char;1;;D;Plus-minus
