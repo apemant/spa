@@ -562,7 +562,7 @@ System.out.println("**** DEVIZNI ANLAGE");
         String opisstavke = getOpisStavke(data);
         String brojdok = TD.isDocUlaz(data.getString("VRDOK")) ? (data
                 .getString("BRRAC").equalsIgnoreCase("") ? opisstavke : data
-                .getString("BRRAC")) : data.getString("PNBZ2");
+                .getString("BRRAC")) : getPNBZ2Prefix()+data.getString("PNBZ2");
         String ident = null;
         if (data.hasColumn("CPAR") != null) {
             ident = brojdok
@@ -664,7 +664,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                  */
             } else {
                 try {
-                    tmpskstavke.setString("BROJDOK", data.getString("PNBZ2"));
+                    tmpskstavke.setString("BROJDOK", getPNBZ2Prefix()+data.getString("PNBZ2"));
                     tmpskstavke.setString("IDENT", ident);
                     tmpskstavke.setString("EXTBRDOK", String.valueOf(data
                             .getInt("BRDOK")));
@@ -727,7 +727,11 @@ System.out.println("**** DEVIZNI ANLAGE");
             }
         }
     }
-
+    String pnbz2prefix = null;
+    private String getPNBZ2Prefix() {
+      if (pnbz2prefix==null) pnbz2prefix = frmParam.getParam("gk", "pnbz2prefix","","Prefiks pozivu na broj pri prijemu iz robnog");
+      return pnbz2prefix;
+    }
     private boolean detaljniOpisNonSK() {
       return frmParam.getParam("robno", "knjdetopisNSK", "D", 
           "Ubaciti broj dokumenta u opis pojedinacne financijske stavke pri knjizenju u GK (D'N)")

@@ -220,7 +220,7 @@ public class frmKnjSKRac extends frmKnjizenje {
       pz.makeTransferFiles(true);
       pz.makeTransferFilesKnjiga();
       pz.closeAll();
-      pz.transfer2QnxServer();
+      pz.transfer2QnxServer(null, 0, null, null, hr.restart.sisfun.frmParam.getParam("sk","QNXfolderSK","/zimdb/trius09"));
     }
   }
 

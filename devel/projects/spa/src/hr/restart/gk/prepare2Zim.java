@@ -546,17 +546,33 @@ public class prepare2Zim {
     }
     fhsturir.close();
   }
-
+  public String[] checkParams(String addr, int port, String username, String passwd, String folder) {
+    String[] ret = new String[] {addr, port+"",username, passwd, folder};
+    if (addr==null || addr.trim().equals("")) 
+      ret[0] = hr.restart.sisfun.frmParam.getParam("robno","QNXaddr","161.53.200.89");
+    if (port <= 0) 
+      ret[1] = hr.restart.sisfun.frmParam.getParam("robno","QNXport","21");
+    if (username==null || username.trim().equals("")) 
+      ret[2] = hr.restart.sisfun.frmParam.getParam("robno","QNXuser","fist_ftp");
+    if (passwd==null || passwd.trim().equals("")) 
+      ret[3] = hr.restart.sisfun.frmParam.getParam("robno","QNXpasswd","fist_ftp");
+    if (folder==null || folder.trim().equals(""))
+      ret[4] = hr.restart.sisfun.frmParam.getParam("robno","QNXfolder","/zimdb/ECOS/bazaet");
+    
+    return ret;
+  }
 
   public void transfer2QnxServer() {
+    String[] ret = checkParams(null, 0, null, null, null);
+    transfer2QnxServer(ret[0], Integer.parseInt(ret[1]), ret[2], ret[3], ret[4]);
+  }
+  public void transfer2QnxServer(String addr, int port, String username, String passwd, String folder) {
+    String[] ret = checkParams(addr, port, username, passwd, folder);
+    addr = ret[0]; port = Integer.parseInt(ret[1]); username = ret[2]; passwd = ret[3]; folder = ret[4]; 
     BufferedReader in  = null;
     BufferedWriter out  = null;
 
-    String addr = hr.restart.sisfun.frmParam.getParam("robno","QNXaddr","161.53.200.89");
-    int port = Integer.valueOf(hr.restart.sisfun.frmParam.getParam("robno","QNXport","21")).intValue();
-    String username = hr.restart.sisfun.frmParam.getParam("robno","QNXuser","fist_ftp");
-    String passwd = hr.restart.sisfun.frmParam.getParam("robno","QNXpasswd","fist_ftp");
-    String folder = hr.restart.sisfun.frmParam.getParam("robno","QNXfolder","/zimdb/ECOS/bazaet");
+    
 System.out.println(addr);
 System.out.println(port);
 System.out.println(username);
