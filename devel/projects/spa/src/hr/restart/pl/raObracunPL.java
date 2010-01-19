@@ -1076,7 +1076,7 @@ sysoutTEST ST = new sysoutTEST(false);
       rsp.setBigDecimal("PRIREZ",prirez);
       rsp.setBigDecimal("PRIREZMJ",prirez);
       //netopk
-      rsp.setBigDecimal("NETOPK",kumulrad.getBigDecimal("NETOPK").add(getSumPrimNeto(_cradnik, raIzvjestaji.RS_NE_99).negate()));
+      rsp.setBigDecimal("NETOPK",kumulrad.getBigDecimal("NETOPK").add(getSumPrimNeto(_cradnik, raIzvjestaji.RS_NE_99).negate()).add(getSumDoprinos(_cradnik, raIzvjestaji.RS_NE_99).negate()));
     } else {
       rsp.setBigDecimal("SATI",nula);
       rsp.setBigDecimal("BRUTO",nula);
