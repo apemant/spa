@@ -458,7 +458,7 @@
           <Model Name="Label9">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label9</Property>
-               <Property Name="Caption">MB/JMBG poslodavca</Property>
+               <Property Name="Caption">Porezni broj poslodavca</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">860</Property>
                <Property Name="Top">3360</Property>
