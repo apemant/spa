@@ -53,8 +53,8 @@ public class repIPDisk extends repDisk {
         this.setPrinter(mxPrinter.getDefaultMxPrinter());
         this.getPrinter().setNewline(System.getProperty("line.separator"));
         qds = (StorageDataSet)frPK.getRepSet();
-        QueryDataSet mbs = Util.getNewQueryDataSet("SELECT MATBROJ FROM logotipovi WHERE corg='"+OrgStr.getKNJCORG()+"'",true);
-        this.setPrint("IP_"+mbs.getString("MATBROJ")+"_01.xml");
+        QueryDataSet mbs = Util.getNewQueryDataSet("SELECT OIB FROM logotipovi WHERE corg='"+OrgStr.getKNJCORG()+"'",true);
+        this.setPrint("IP_"+mbs.getString("OIB")+"_01.xml");
         qds.open();
         qds.first();
       }
