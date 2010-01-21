@@ -287,7 +287,9 @@ public class ColumnsBean extends JPanel {
 
       public void ancestorRemoved(AncestorEvent e) {
 
-        if (!isMaximized(e.getAncestor()) && !isMaximized(e.getAncestorParent()))
+        if (!isMaximized(e.getAncestor()) && 
+            (e.getAncestor() instanceof Window || 
+                !isMaximized(e.getAncestorParent())))
           saveSettings();
 
       }
