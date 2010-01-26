@@ -666,7 +666,8 @@ public class frmRS extends raUpitLite {
 //      			" AND RBROBR="+_rsperarh.getShort("RBROBR"));
       String _q;
       QueryDataSet _datispl = Util.getNewQueryDataSet(_q = "SELECT DATUMISPL FROM kumulorgarh, rsperiodarh WHERE " +
-      		"kumulorgarh.godobr = rsperiodarh.godobr AND kumulorgarh.mjobr = rsperiodarh.mjobr AND kumulorgarh.rbrobr = rsperiodarh.rbrobr " +
+      		"kumulorgarh.knjig='" + OrgStr.getKNJCORG() + "' AND " +
+       		"kumulorgarh.godobr = rsperiodarh.godobr AND kumulorgarh.mjobr = rsperiodarh.mjobr AND kumulorgarh.rbrobr = rsperiodarh.rbrobr " +
       		"AND rsperiodarh.IDENTIFIKATOR = '"+getHead().getString("IDENTIFIKATOR")+"'");
       System.out.println(_q);
       _datispl.open();
