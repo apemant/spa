@@ -213,6 +213,9 @@
 	<field name="UST" class="java.math.BigDecimal">
 		<fieldDescription><![CDATA[UST]]></fieldDescription>
 	</field>
+	<field name="OIB" class="java.lang.String">
+		<fieldDescription><![CDATA[OIB]]></fieldDescription>
+	</field>
 	<group name="Section0">
 		<groupExpression><![CDATA[$F{NAZIV}]]></groupExpression>
 		<groupHeader>
@@ -307,7 +310,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[MB ili JMBG - POREZNI BROJ]]></text>
+					<text><![CDATA[OIB]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement x="310" y="116" width="20" height="12" forecolor="#000000"/>
@@ -441,7 +444,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{MB}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{OIB}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement x="0" y="117" width="169" height="11" forecolor="#000000"/>

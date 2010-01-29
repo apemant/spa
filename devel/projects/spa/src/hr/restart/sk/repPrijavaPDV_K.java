@@ -109,6 +109,11 @@ public class repPrijavaPDV_K implements raReportData { // implements sg.com.elix
     ld.raLocate(dm.getLogotipovi(), new String[] {"CORG"}, new String[] {knjig()});
     return dm.getLogotipovi().getString("MATBROJ");
   }
+  
+  public String getOIB(){
+    ld.raLocate(dm.getLogotipovi(), new String[] {"CORG"}, new String[] {knjig()});
+    return dm.getLogotipovi().getString("OIB");
+  }
 
   public String getSIFDJEL(){
     ld.raLocate(dm.getLogotipovi(), new String[] {"CORG"}, new String[] {knjig()});

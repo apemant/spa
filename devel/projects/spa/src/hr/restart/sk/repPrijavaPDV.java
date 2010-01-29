@@ -94,6 +94,11 @@ public class repPrijavaPDV implements sg.com.elixir.reportwriter.datasource.IDat
     ld.raLocate(dm.getLogotipovi(), new String[] {"CORG"}, new String[] {knjig()});
     return dm.getLogotipovi().getString("MATBROJ");
   }
+  
+  public String getOIB(){
+    ld.raLocate(dm.getLogotipovi(), new String[] {"CORG"}, new String[] {knjig()});
+    return dm.getLogotipovi().getString("OIB");
+  }
 
   public String getSIFDJEL(){
     ld.raLocate(dm.getLogotipovi(), new String[] {"CORG"}, new String[] {knjig()});
