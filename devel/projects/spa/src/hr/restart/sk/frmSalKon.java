@@ -40,7 +40,6 @@ import hr.restart.swing.raCurrencyTableModifier;
 import hr.restart.swing.raTableColumnModifier;
 import hr.restart.swing.raTableModifier;
 import hr.restart.util.Aus;
-import hr.restart.util.PreSelect;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -600,7 +599,8 @@ public class frmSalKon extends raMasterDetail {
         this.getMasterSet().setString("BROJKONTA", vl.RezSet.getString("BROJKONTA"));
 //      this.getMasterSet().setString("DUGPOT", vl.RezSet.getString("KARAKTERISTIKA"));
       
-      if (!ira && ld.raLocate(dm.getPartneri(), "CPAR",
+      if (isR2CheckKnjig() &&
+          !ira && ld.raLocate(dm.getPartneri(), "CPAR",
     		  Integer.toString(getMasterSet().getInt("CPAR")))) {
         boolean r2 = R2Handler.isR2Shema(getMasterSet().getString("CSKL"), vrdokSheme);
     	boolean r2p = dm.getPartneri().getString("OBRT").equalsIgnoreCase("D");
@@ -635,7 +635,10 @@ public class frmSalKon extends raMasterDetail {
     newBrojdok = getMasterSet().getString("BROJDOK");
     return true;
   }
-
+  //false ako ne treba checkirati R2 flag na partneru za to knjigovodstvo
+  private boolean isR2CheckKnjig() {
+    return frmParam.getParam("sk", "r2check"+dlgGetKnjig.getKNJCORG(), "D", "Provjeravati R2 flag na partneru za knjigovodstvo "+dlgGetKnjig.getKNJCORG()).equalsIgnoreCase("D");
+  }
   public boolean isNewDetailNeeded() {
     return false;
   }
