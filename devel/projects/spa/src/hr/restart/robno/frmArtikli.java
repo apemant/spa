@@ -17,10 +17,12 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artnap;
 import hr.restart.baza.Condition;
 import hr.restart.baza.VTCartPart;
 import hr.restart.baza.dM;
 import hr.restart.baza.norme;
+import hr.restart.baza.raDataSet;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
@@ -270,8 +272,13 @@ public class frmArtikli extends raMatPodaci {
   JlrNavField jlrPreSub = new JlrNavField();
   JlrNavField jlrNazSub = new JlrNavField();
   JraButton jbPreSub = new JraButton();
-
   
+  JLabel JlNap = new JLabel("Grupa napomena");
+  JlrNavField jlrCAN = new JlrNavField();
+  JlrNavField jlrNAZAN = new JlrNavField();
+  JraButton jbNap = new JraButton();
+  
+  JraCheckBox jbKasa = new JraCheckBox();
   
   raNavAction rnvSifArt = new raNavAction("Šifre Artikala",raImages.IMGOPEN,KeyEvent.VK_F12){
     public void actionPerformed(ActionEvent e) {
@@ -929,6 +936,31 @@ public class frmArtikli extends raMatPodaci {
     jlrNazSub.setColumnName("BROJ");
     jlrNazSub.setNavProperties(jlrPreSub);
     
+    raDataSet artnap = new raDataSet();
+    frmArtNap.createMain(artnap);
+    artnap.setTableName("artnap");
+    
+    jlrCAN.setColumnName("CAN");
+    jlrCAN.setColNames(new String[] {"NAZAN"});
+    jlrCAN.setTextFields(new javax.swing.text.JTextComponent[] {jlrNAZAN});
+    jlrCAN.setVisCols(new int[] {0,1});
+    jlrCAN.setSearchMode(0);
+    jlrCAN.setRaDataSet(artnap);
+    jlrCAN.setDataSet(getRaQueryDataSet());
+    jlrCAN.setNavButton(jbNap);
+    
+    jlrNAZAN.setColumnName("NAZAN");
+    jlrNAZAN.setSearchMode(1);
+    jlrNAZAN.setNavProperties(jlrCAN);
+    
+    jbKasa.setDataSet(getRaQueryDataSet());
+    jbKasa.setColumnName("KASA");
+    jbKasa.setSelectedDataValue("D");
+    jbKasa.setUnselectedDataValue("N");
+    jbKasa.setText(" Artikl za kasu ");
+    jbKasa.setHorizontalTextPosition(JLabel.LEADING);
+    jbKasa.setHorizontalAlignment(JLabel.TRAILING);
+    
     jpSubjekt.add(jlrNazvrsub, new XYConstraints(255, 20, 250, -1));
     jpSubjekt.add(jlrVrsub, new XYConstraints(150, 20, 100, -1));
     jpSubjekt.add(jbVrsub, new XYConstraints(510, 20, 21, 21));
@@ -938,6 +970,13 @@ public class frmArtikli extends raMatPodaci {
     jpSubjekt.add(jlrPreSub, new XYConstraints(150, 45, 100, -1));
     jpSubjekt.add(jbPreSub, new XYConstraints(510, 45, 21, 21));
     jpSubjekt.add(new JLabel("Subjekt"), new XYConstraints(15, 45, -1, -1));
+    
+    jpSubjekt.add(JlNap, new XYConstraints(15, 80, -1, -1));
+    jpSubjekt.add(jlrCAN, new XYConstraints(150, 80, 100, -1));
+    jpSubjekt.add(jlrNAZAN, new XYConstraints(255, 80, 250, -1));
+    jpSubjekt.add(jbNap, new XYConstraints(510, 80, 21, 21));
+    jpSubjekt.add(jbKasa, new XYConstraints(255, 105, 250, -1));
+
     
     jpNarucivanje.add(jtfNAZPROIZ, new XYConstraints(150, 70, 390, -1));
     jpNarucivanje.add(jlKOLZANAR, new XYConstraints(15, 145, -1, -1));
@@ -969,7 +1008,7 @@ public class frmArtikli extends raMatPodaci {
     jPanel2.add(jbJMKOL,   new XYConstraints(485, 5, 21, 21));
 //    jtpArtikli.add(jpOsnovniPodaci, "jpOsnovniPodaci");
 //    jp.add(jtpArtikli, BorderLayout.NORTH);
-    jtpArtikli.add(jpSubjekt, "Subjekt");
+    jtpArtikli.add(jpSubjekt, "Ostalo");
     int size = Integer.parseInt(frmParam.getParam("robno","cartSize","0"));
     if (size > 0 ) {
       new raTextMask(jtfCART1,size,false,raTextMask.ALL | raTextMask.PLACEHOLDER).

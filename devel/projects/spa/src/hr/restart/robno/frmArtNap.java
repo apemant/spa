@@ -17,19 +17,31 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artnap;
 import hr.restart.baza.dM;
+import hr.restart.sisfun.Asql;
+import hr.restart.swing.JraCheckBox;
+import hr.restart.swing.JraTextField;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
+import hr.restart.util.raImages;
 import hr.restart.util.raMasterDetail;
+import hr.restart.util.raNavAction;
 
 import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
+import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 
 public class frmArtNap extends raMasterDetail {
@@ -41,6 +53,15 @@ public class frmArtNap extends raMasterDetail {
   JPanel jpMasterMain;
   JPanel jpDetailMain = new JPanel();
   JPanel jpDetail;
+  
+  JLabel jlGrupa = new JLabel();
+  JLabel jlCAN = new JLabel();
+  JLabel jlNAZAN = new JLabel();
+  JraTextField jraCAN = new JraTextField();
+  JraTextField jraNAZAN = new JraTextField();
+  JLabel jlText = new JLabel();
+  JraTextField jraTEXTNAP = new JraTextField();
+  JraCheckBox jbPM = new JraCheckBox();
   
 //  private String deleteSQL;
 //  private boolean unlock = false;
@@ -57,7 +78,14 @@ public class frmArtNap extends raMasterDetail {
 
 
   public frmArtNap() {
-    this.setMasterDeleteMode(DELDETAIL);
+    super(1,2);
+    try {
+      this.setMasterDeleteMode(DELDETAIL);
+      jbInit();
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
   }
 
   public void beforeShowMaster() {
@@ -66,6 +94,34 @@ public class frmArtNap extends raMasterDetail {
     this.getDetailSet().open();
   }
 
+  
+  public void EntryPointMaster(char mode) {
+    if (mode == 'N') {
+      rcc.EnabDisabAll(jpMasterMain, true);
+    }
+    if (mode == 'I') {
+      rcc.EnabDisabAll(jpMasterMain, false);
+    }
+  }
+
+  public void SetFokusMaster(char mode) {
+    if (mode == 'N') {
+      rcc.EnabDisabAll(jpMasterMain, true);
+      jraCAN.requestFocusLater();
+    }
+  }
+  
+  public boolean ValidacijaMaster(char mode) {
+    if (mode == 'N' && MasterNotUnique()) {
+      jraCAN.requestFocus();
+      JOptionPane.showMessageDialog(this.getJPanelMaster(),
+         "Normativ ve\u0107 postoji!", "Greška", JOptionPane.ERROR_MESSAGE);
+      return false;
+    }
+
+    return true;
+  }
+  
 /*  public boolean DeleteCheckMaster() {
     deleteSQL = "";
     this.refilterDetailSet();
@@ -99,66 +155,23 @@ public class frmArtNap extends raMasterDetail {
       this.getMasterSet().goToClosestRow(row);
   }
 
-  public void EntryPointDetail(char mode) {
-    if (mode == 'N') {
-      EraseFields();
-    } else if (mode == 'I') {
-      rcc.EnabDisabAll(jpDetail, true);
-    }
-  }
-
   public void SetFokusDetail(char mode) {
-//    rpc.InitRaPanCart();
-    if (mode == 'N') {
-      EraseFields();
-    } else if (mode == 'I' ){
-      SetFokusIzmjena();
-    }
-    /*if (unlock) {
-      unlock = false;
-      raDetail.setLockedMode('O');
-    }*/
-  }
-
-  public void SetFokusIzmjena() {
-    
+    jraTEXTNAP.requestFocusLater();
   }
 
   public boolean ValidacijaDetail(char mode) {
-    return Validacija(mode);
-  }
-
-  public boolean Validacija(char mode) {
+    if (Valid.getValid().isEmpty(jraTEXTNAP)) return false;
+    
+    getDetailSet().setString("CAN", mast.getString("CAN"));
+    getDetailSet().setString("NAZAN", mast.getString("NAZAN"));
     return true;
-  }
-
-  public void AfterSaveDetail(char mode) {
-    if (mode == 'N') {
-
-    }
-  }
-
-  public boolean ValDPEscapeDetail(char mode) {
-    return true;
-  }
-
-  public void ClearFields() {}
-
-  protected void EraseFields() {
-    ClearFields();
-    rcc.EnabDisabAll(jpDetail, false);
-  }
-
-  public void enabAll() {
-    rcc.EnabDisabAll(jpDetail, true);
   }
 
   protected boolean MasterNotUnique() {
-    //vl.execSQL(CheckMasterKeySQLString());
+    vl.execSQL("SELECT * FROM artnap WHERE can = '" + mast.getString("CAN") + "'");
     vl.RezSet.open();
     return (vl.RezSet.rowCount() > 0);
   }
-
 
   /*public void handleError(String msg) {
     JlrNavField errf;
@@ -190,5 +203,71 @@ public class frmArtNap extends raMasterDetail {
 
     jpMasterMain = master;
     this.setJPanelMaster(jpMasterMain);
+  }
+  
+  private void jbInit() throws Exception {
+    createMain(mast);
+
+    this.setMasterSet(mast);
+    this.setNaslovMaster("Grupe napomena");
+    this.setVisibleColsMaster(new int[] {0, 1});
+    this.setMasterKey(new String[] {"CAN"});
+
+    this.setDetailSet(Artnap.getDataModule().getFilteredDataSet("1=0"));
+    this.setNaslovDetail("Napomene grupe");
+    this.setVisibleColsDetail(new int[] {0,2,3});
+    this.setDetailKey(new String[] {"CAN", "TEXTNAP"});
+
+    jlGrupa.setText("Grupa napomena");
+    jlCAN.setText("Šifra");
+    jlNAZAN.setText("Naziv");
+    jraCAN.setDataSet(mast);
+    jraCAN.setColumnName("CAN");
+    jraNAZAN.setDataSet(mast);
+    jraNAZAN.setColumnName("NAZAN");
+    
+    jlText.setText("Tekst napomene");
+    jraTEXTNAP.setColumnName("TEXTNAP");
+    jraTEXTNAP.setDataSet(getDetailSet());
+    
+    jbPM.setDataSet(getDetailSet());
+    jbPM.setColumnName("KASA");
+    jbPM.setSelectedDataValue("D");
+    jbPM.setUnselectedDataValue("N");
+    jbPM.setText(" Plus/minus ");
+    jbPM.setHorizontalTextPosition(JLabel.LEADING);
+    jbPM.setHorizontalAlignment(JLabel.TRAILING);
+    
+    JPanel master = new JPanel(new XYLayout(500, 70));
+    master.add(jlGrupa, new XYConstraints(15, 30, -1, -1));
+    master.add(jlCAN, new XYConstraints(151, 10, -1, -1));
+    master.add(jraCAN, new XYConstraints(150, 30, 75, -1));
+    master.add(jlNAZAN, new XYConstraints(231, 10, -1, -1));
+    master.add(jraNAZAN, new XYConstraints(230, 30, 250, -1));
+    
+    JPanel detail = new JPanel(new XYLayout(520, 60));
+    detail.add(jlText, new XYConstraints(15, 20, -1, -1));
+    detail.add(jraTEXTNAP, new XYConstraints(150, 20, 200, -1));
+    detail.add(jbPM, new XYConstraints(355, 20, 150, -1));
+
+    SetPanels(master, detail, false);
+  }
+  
+  public static void createMain(QueryDataSet ds) {
+    //vl.execSQL(sql);
+    ds.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dM.getDataModule().getDatabase1(),
+      "SELECT can, MAX(nazan) as nazan "+
+      "FROM artnap GROUP BY can"
+    ));
+    //part = vl.RezSet;
+    ds.setColumns(new Column[] {
+        Artnap.getDataModule().getColumn("CAN").cloneColumn(),
+        Artnap.getDataModule().getColumn("NAZAN").cloneColumn()
+    });
+
+    ds.open();
+    ds.setRowId("CAN", true);
+    ds.setRowId("NAZAN", false);
+    ds.setTableName("artnap_master");
   }
 }
