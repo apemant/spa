@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.mp;
 
+import hr.restart.robno.frmArtNap;
 import hr.restart.robno.frmNorme;
 import hr.restart.util.raLoader;
 
@@ -45,6 +46,7 @@ public class menuOpMp extends JMenu {
   public JMenuItem jmGrupaArt = new JMenuItem();
   public JMenuItem jmArtikli = new JMenuItem();
   public JMenuItem jmNormativi = new JMenuItem();
+  public JMenuItem jmArtnap = new JMenuItem();
   public JMenuItem jmShemeKonta = new JMenuItem();
   public JMenuItem jmShemeKontaOJ = new JMenuItem();
   public JMenuItem jmProdMjesta = new JMenuItem();
@@ -104,6 +106,12 @@ public class menuOpMp extends JMenu {
         jmNormativi_actionPerformed(e);
       }
     });
+    jmArtnap.setText("Napomene za artikle");
+    jmArtnap.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmArtnap_actionPerformed(e);
+      }
+    });
     jmShemeKonta.setText("Sheme kontiranja");
     jmShemeKonta.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -141,6 +149,7 @@ public class menuOpMp extends JMenu {
     //this.add(jmVrArt);
     this.add(jmArtikli);
     this.add(jmNormativi);
+    this.add(jmArtnap);
     this.addSeparator();
     this.add(jmShemeKonta);
     this.add(jmShemeKontaOJ);
@@ -164,10 +173,17 @@ public class menuOpMp extends JMenu {
   public void jmArtikli_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmArtikli", jmArtikli.getText());
   }
+  
   void jmNormativi_actionPerformed(ActionEvent e) {
     frmNorme fNorme = (frmNorme)raLoader.load("hr.restart.robno.frmNorme");
     fNorme.go();
   }
+  
+  void jmArtnap_actionPerformed(ActionEvent e) {
+    frmArtNap fan = (frmArtNap) raLoader.load("hr.restart.robno.frmArtNap");
+    fan.go();
+  }
+  
   public void jmShemeKonta_actionPerformed(ActionEvent e) {
     frmShemeKontaMp fShKonta = (frmShemeKontaMp) SF.showFrame("hr.restart.mp.frmShemeKontaMp", 0, jmShemeKonta.getText(), false);
     fShKonta.go();
