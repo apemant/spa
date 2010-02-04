@@ -274,7 +274,8 @@ public class jpVlasnik extends JPanel {
     jpDetail.add(jraOib, new XYConstraints(150+left+a, 75*d, 165-5, h));
     jpDetail.add(jraTel, new XYConstraints(320+left-5+a, 75*d, 165-5, h));
     jpDetail.add(jraEmadr, new XYConstraints(490+left-10+a, 75*d, 165-5, h));
-    jpDetail.add(jraJmbg, new XYConstraints(495+left+-10+a, 75*d, 0, 0));
+    jpDetail.add(jraJmbg, new XYConstraints(655+left+-10+a, 75*d, 1, 1));
+    jraJmbg.setVisible(false);
     
     this.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right));
     this.add(jpDetail, BorderLayout.CENTER);
