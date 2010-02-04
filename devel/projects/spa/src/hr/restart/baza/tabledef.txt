@@ -941,6 +941,8 @@ TIPINV;char;1;;I;Naèin kalk. dopuš. manjka
 CVRSUBJ;short;2;;;Vrsta subjekta
 CSUBRN;char;20;;;Subjekt;15
 NAZPRI;char;50;;;Naziv za prikaz;20
+CAN;char;6;;;Dodatni opis
+KASA;char;1;;D;Artikl za kasu
 UIDX=cart1
 UIDX=bc
 
@@ -1189,5 +1191,5 @@ OIB;char;20;;;OIB
 $artnap
 CAN;char;6;pkey;;Šifra
 NAZAN;char;50;;;Naziv
-TEXTNAP;char;50;;;Tekst
+TEXTNAP;char;50;pkey;;Tekst
 PM;char;1;;D;Plus-minus
