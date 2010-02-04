@@ -1455,6 +1455,7 @@ public class frmMasterBlagajna extends raMasterDetail {
           narSet.insertRow(false);
           dM.copyColumns(det, narSet);
           det.setString("AKTIV", "N");
+          narSet.setInt("BRDOK", getMasterSet().getInt("BRDOK"));
           narSet.post();
           System.out.println(narSet);
           needSave = true;
