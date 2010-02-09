@@ -179,7 +179,7 @@ public class menuOpMp extends JMenu {
     fNorme.go();
   }
   
-  void jmArtnap_actionPerformed(ActionEvent e) {
+  public void jmArtnap_actionPerformed(ActionEvent e) {
     frmArtNap fan = (frmArtNap) raLoader.load("hr.restart.robno.frmArtNap");
     fan.go();
   }
