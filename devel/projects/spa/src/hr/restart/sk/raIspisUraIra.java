@@ -651,7 +651,7 @@ public class raIspisUraIra extends raFrame {
         String mj = dm.getPartneri().getString("MJ");
         uraira.setString("OPISPAR", dm.getPartneri().getString("NAZPAR") +
           (mj.trim().length() == 0 ? "" : ", " + mj));
-        uraira.setString("MB", dm.getPartneri().getString("MB"));
+        uraira.setString("MB", dm.getPartneri().getString("OIB"));
       }
 //      System.out.println(lastpri);
       short ckol = ds.getShort("CKOLONE");      
