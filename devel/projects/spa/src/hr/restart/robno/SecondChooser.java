@@ -535,7 +535,7 @@ public class SecondChooser extends JraDialog {
 	String[] cc = { "CART", "CART1", "BC", "NAZART", "JM", "KOL" };
 
 	void initNormExpansion() {
-		needNorm = (selected.equals("POS") || selected.equals("RAC"))
+		needNorm = (selected.equals("POS") || selected.equals("RAC") || selected.equals("GRN"))
 				&& (rIT.what_kind_of_dokument.equals("IZD") || rIT.what_kind_of_dokument
 						.equals("OTP"));
 		
@@ -755,7 +755,7 @@ System.out.println(StavkeSet.getInt("CARt"));
 				dM.copyColumns(realrow, StavkeSet);
 				// TODO: ako je artikl tipa usluge slucajno zalutao ovdje
 				// kod razduzenja pos-a, preskoci ga
-                if ((selected.equals("POS") || selected.equals("RAC")) &&
+                if ((selected.equals("POS") || selected.equals("RAC") || selected.equals("GRN")) &&
                     !raVart.isStanje(StavkeSet.getInt("CART")))
                     //Aut.getAut().artTipa(StavkeSet.getInt("CART"), "U")) 
                       continue;
