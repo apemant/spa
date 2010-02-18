@@ -204,7 +204,12 @@ public class Harach {
   //hr.restart.pl.Harach.otmiHarachArhiva(2009,6,1,"01")
   public static void otmiHarachArhiva(int god, int mj, int rbr, String corg) {
     ArrayList transactsets = new ArrayList();
-    QueryDataSet kumorgs = Kumulorgarh.getDataModule().getFilteredDataSet("GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+" and "+sjQuerys.getPripOrg(corg, "", ""));
+    QueryDataSet kumorgs;
+    if (corg!=null) {
+      kumorgs = Kumulorgarh.getDataModule().getFilteredDataSet("GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+" and "+sjQuerys.getPripOrg(corg, "", ""));
+    } else {
+      kumorgs = Kumulorgarh.getDataModule().getFilteredDataSet("GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr);
+    }
     kumorgs.open();
     for (kumorgs.first(); kumorgs.inBounds(); kumorgs.next()) {
       QueryDataSet kumrads = Kumulradarh.getDataModule().getFilteredDataSet(Condition.whereAllEqual(new String[] {"GODOBR","MJOBR","RBROBR","CORG"}, kumorgs));
