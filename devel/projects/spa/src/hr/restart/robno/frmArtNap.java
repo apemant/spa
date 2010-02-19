@@ -118,7 +118,7 @@ public class frmArtNap extends raMasterDetail {
          "Normativ ve\u0107 postoji!", "Greška", JOptionPane.ERROR_MESSAGE);
       return false;
     }
-
+    mast.post();
     return true;
   }
   
@@ -191,6 +191,10 @@ public class frmArtNap extends raMasterDetail {
 
   public void detailSet_navigated(NavigationEvent e) {
 
+  }
+  
+  public void masterSet_navigated(NavigationEvent e) {
+    //new Throwable().printStackTrace();
   }
   
   public void SetPanels(JPanel master, JPanel detail, boolean detailBorder) {
