@@ -20,8 +20,8 @@ package hr.restart.util.reports;
 import hr.restart.util.Aus;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TreeSet;
@@ -44,7 +44,7 @@ public class raReportSection extends raReportElement {
 
   private LinkedList elements = new LinkedList();
 
-  private HashSet modifiers = new HashSet();
+  private ArrayList modifiers = new ArrayList();
 
   /**
    * Default konstruktor (ne koristiti).
