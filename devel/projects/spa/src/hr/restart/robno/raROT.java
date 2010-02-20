@@ -226,6 +226,7 @@ public class raROT extends raIzlazTemplate  {
      //TODO e sad ovaj ispis da li ga dopustiti za sve raèune, ili samo za one koji imaju sheme popusta (tzv. popusti na popust)???
 
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniPnP","hr.restart.robno.repRacuniPnP","RacuniPnP","Raèun-otpremnica s popustima");
+     raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniNorm","hr.restart.robno.repIzlazniNorm","RacuniNorm","Raèun-otpremnica s normativima");
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniSifKup","hr.restart.robno.repRacuniPnP","ROTSifKup","Raèun-otpremnica sa šifrom kupca");
      
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuni2","hr.restart.robno.repIzlazni","Racuni2",ReportValuteTester.titleROT2R);
@@ -279,6 +280,7 @@ public class raROT extends raIzlazTemplate  {
      //TODO e sad ovaj ispis da li ga dopustiti za sve raèune, ili samo za one koji imaju sheme popusta (tzv. popusti na popust)???
      
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniPnP","hr.restart.robno.repRacuniPnP","RacuniPnP","Raèun-otpremnica s popustima");
+     raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniNorm","hr.restart.robno.repIzlazniNorm","RacuniNorm","Raèun-otpremnica s normativima");
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniSifKup","hr.restart.robno.repRacuniPnP","ROTSifKup","Raèun-otpremnica sa šifrom kupca");
      
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuni2","hr.restart.robno.repIzlazni","Racuni2",ReportValuteTester.titleROT2R);
