@@ -3149,6 +3149,8 @@ System.out.println("findCjenik::else :: "+sql);
 			} else if ((getMasterSet().getString("VRDOK").equalsIgnoreCase(
 					"IZD") && odabrano.equalsIgnoreCase("POS"))
 					|| (getMasterSet().getString("VRDOK").equalsIgnoreCase(
+                    "IZD") && odabrano.equalsIgnoreCase("RAC"))
+					|| (getMasterSet().getString("VRDOK").equalsIgnoreCase(
 							"OTP") && odabrano.equalsIgnoreCase("POS"))) {
 				VarStr vs = new VarStr("");
 				StorageDataSet stt = OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
@@ -3158,7 +3160,7 @@ System.out.println("findCjenik::else :: "+sql);
 				vs.chopRight(1);
 
 				upit = "statira='N' and god = '"
-						+ year + "' and vrdok= 'POS'" + dodatak
+						+ year + "' and vrdok= '" + odabrano.toUpperCase() + "'" + dodatak
 						+ " and cskl in (" + vs + ")"; // samo
 
 			} else if (TD.isDocFinanc(getMasterSet().getString("VRDOK"))
