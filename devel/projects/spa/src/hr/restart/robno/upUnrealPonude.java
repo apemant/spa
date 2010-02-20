@@ -219,8 +219,7 @@ public class upUnrealPonude extends raUpitFat {
     String year = vl.findYear(dan);
     Timestamp tol = ut.addDays(dan, -tds.getInt("TOL"));
     
-    Condition mc = Condition.equal("GOD", year).
-        and(Condition.equal("VRDOK", "PON")).
+    Condition mc = Condition.equal("VRDOK", "PON").
         and(Condition.till("DATDOK", dan)).
         and(Condition.where("DATDOSP", Condition.BEFORE, tol)).
         and(Condition.equal("STATIRA", "N"));
