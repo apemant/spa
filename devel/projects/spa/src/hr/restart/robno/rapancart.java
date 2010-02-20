@@ -673,7 +673,8 @@ System.out.println("layheight="+lay.getHeight());
 //  	System.out.println("enableUsluga "+enableUsluga);
     if (!isMyAfterLookup()) return;
     if (!this.jrfCART.getText().trim().equals("")) {
-      if (isUsluga() && (!enableUsluga || ulazIzlaz == 'U')) {
+      if (isUsluga() && !mode.trim().equals("DOH") && 
+          (!enableUsluga || ulazIzlaz == 'U')) {
 //        System.out.println("Usluga je a nije dozvoljena");
         this.jrfCART.setText("");
         if (ulazIzlaz == 'U') {
