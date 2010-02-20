@@ -23,19 +23,20 @@ import hr.restart.util.Aus;
 
 public class raIzlazNormDetail extends raIzlazDetail {
 
+  public raReportElement Line1;
+  private String[] Line1Props = new String[] {"", "", "1500", "240", "9000", "0", "", "White", ""};
    
   public raReportElement TextNORMNAZART;
-  private String[] TextNORMNAZARTProps = new String[] {"NORMNAZART", "", "", "", "", "", "Yes", "Yes", "1500", "240",
-     "5000", "0", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "Yes"};
+  private String[] TextNORMNAZARTProps = new String[] {"NORMNAZART", "", "", "", "", "", "Yes", "Yes", "1500", "260",
+     "7480", "0", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "Yes"};
   
   public raReportElement TextNORMKOL;
-  private String[] TextNORMKOLProps = new String[] {"NORMKOL", "", "", "", "", "", "Yes", "Yes", "6600", "240",
-     "500", "0", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "Yes"};
+  private String[] TextNORMKOLProps = new String[] {"NORMKOL", "", "", "", "", "", "Yes", "Yes", "9000", "260",
+     "960", "0", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", "Yes"};
   
   public raReportElement TextNORMJM;
-  private String[] TextNORMJMProps = new String[] {"NORMJM", "", "", "", "", "", "Yes", "Yes", "7200", "240",
-     "500", "0", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "Yes"};
-
+  private String[] TextNORMJMProps = new String[] {"NORMJM", "", "", "", "", "", "Yes", "Yes", "10000", "260",
+     "780", "0", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "Yes"};
 
   public raIzlazNormDetail(raReportTemplate owner) {
     super(owner);
@@ -48,11 +49,14 @@ public class raIzlazNormDetail extends raIzlazDetail {
   }
 
   private void addElements() {
+    Line1 = addModel(ep.LINE, Line1Props);
     TextNORMNAZART = addModel(ep.TEXT, TextNORMNAZARTProps);
     TextNORMKOL = addModel(ep.TEXT, TextNORMKOLProps);
     TextNORMJM = addModel(ep.TEXT, TextNORMJMProps);
   }
 
   private void modifyThis() {
+    TextNORMNAZART.setLeft(TextNAZART.getLeft() + 60);
+    TextNORMNAZART.setWidth(TextNORMKOL.getLeft() - TextNORMNAZART.getLeft() - 20);
   }
 }
