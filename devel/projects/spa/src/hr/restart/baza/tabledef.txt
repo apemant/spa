@@ -1188,8 +1188,25 @@ IDIH;int;6;;;Zaglavlje logotipa izlaznih dokumenata;15
 IDIF;int;6;;;Podnožje logotipa izlaznih dokumenata;15
 OIB;char;20;;;OIB
 
-$artnap
+$Artnap
 CAN;char;6;pkey;;Šifra
 NAZAN;char;50;;;Naziv
 TEXTNAP;char;50;pkey;;Tekst
 PM;char;1;;D;Plus-minus
+
+$Akcije
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CAK;char;6;pkey;;Šifra
+NAZAK;char;50;;;Naziv
+TIP;char;1;;A;Tip akcije
+DATOD;date;;;;Datum od
+DATDO;date;;;;Datum do
+VRIOD;int;6;;;Vrijeme od
+VRIDO;int;6;;;Vrijeme do
+PPOP;numeric;10,2;;0;Pop (%);8
+
+$Stakcije
+CAK;char;6;pkey;;Akcija
+CART;int;6;pkey;;Artikl
+MC;numeric;15,2;;0;Cijena
