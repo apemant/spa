@@ -77,6 +77,10 @@ public class raOTP extends raIzlazTemplate {
 		raMaster.getRepRunner().addReport("hr.restart.robno.repOTPvri",
 				"hr.restart.robno.repOTPvri", "OTPvri",
 				"Otpremnica vrijednosna");
+		raMaster.getRepRunner().addReport("hr.restart.robno.repOTPsif",
+				"hr.restart.robno.repRacuniPnP",
+				"OTPsifKup",
+				"Otpremnica sa šifrom kupca");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repMxOTP",
 				"Matri\u010Dni ispis otpremnice");
 	}
@@ -90,6 +94,10 @@ public class raOTP extends raIzlazTemplate {
 		raDetail.getRepRunner().addReport("hr.restart.robno.repOTPvri",
 				"hr.restart.robno.repOTPvri", "OTPvri",
 				"Otpremnica vrijednosna");
+		raDetail.getRepRunner().addReport("hr.restart.robno.repOTPsif",
+				"hr.restart.robno.repRacuniPnP",
+				"OTPsifKup",
+				"Otpremnica sa šifrom kupca");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repMxOTP",
 				"Matri\u010Dni ispis otpremnice");
 	}
@@ -126,6 +134,7 @@ public class raOTP extends raIzlazTemplate {
 		
 		MP.BindComp();
 		DP.BindComp();
+		DP.jraLOT.setDataSet(getDetailSet());
 	}
 
 	public void stozbroiti(){
@@ -186,6 +195,7 @@ public class raOTP extends raIzlazTemplate {
 
 	public void RestPanelSetup() {
 		DP.addRestOTP();
+		DP.addLOT();
 	}
 
 	public void RestPanelMPSetup() {
