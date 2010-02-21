@@ -234,6 +234,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 			return false;
 		}
 	};
+	JraTextField jraLOT = new JraTextField();
 
 	JraTextField jraIPRODSP = new JraTextField() {
 		public boolean isFocusTraversable() {
@@ -756,6 +757,18 @@ public class rajpIzlazDPTemplate extends JPanel {
 		jpDetailCenter.add(jlCBP, new XYConstraints(460, 0, 150, -1));
 		jpDetailCenter.add(jraIRAZ, new XYConstraints(460, 16, 150, -1));
 		jpDetailCenter.add(focusField, new XYConstraints(360, 501, 1, -1));
+	}
+	
+	public void addLOT() {
+		if (rpcart.isbPrikazKolicina()) {
+			setPreferredSize(new Dimension(660, 210));
+		} else {
+			setPreferredSize(new Dimension(660, 170));
+		}
+		xYLayoutDC.setHeight(70);
+		jraLOT.setColumnName("LOT");
+		jpDetailCenter.add(new JLabel("Šarža"), new XYConstraints(18, 41, -1, -1));
+		jpDetailCenter.add(jraLOT, new XYConstraints(153, 41, 150, -1));
 	}
 
 	void setEnabledAll(boolean trut) {
