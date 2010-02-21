@@ -513,6 +513,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repMeuExtendedVersion", "MEU", "", ""},
       {"hr.restart.robno.repOTP", "OTP", "D", ""},
       {"hr.restart.robno.repOTPvri", "OTP", "D", ""},
+      {"hr.restart.robno.repOTPsif", "OTP", "D", ""},
       {"hr.restart.robno.repDOS", "DOS", "D", ""},
       {"hr.restart.robno.repDOS2", "DOS", "D", ""},
       {"hr.restart.robno.repDOS3", "DOS", "D", ""},
