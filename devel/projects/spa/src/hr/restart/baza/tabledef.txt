@@ -1210,3 +1210,9 @@ $Stakcije
 CAK;char;6;pkey;;Akcija
 CART;int;6;pkey;;Artikl
 MC;numeric;15,2;;0;Cijena
+
+$UplRobno
+CDOC;char;48;pkey;;Šifra dokumenta;*
+RBR;short;2;pkey;;Rbr;*
+IZNOS;numeric;17,2;;;Uplata
+DATUM;date;;;;Datum
