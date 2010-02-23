@@ -761,6 +761,8 @@ public class checkKartica {
 						"IZAD_TRENUTNO").divide(
 						kartica.getBigDecimal("KOL_TRENUTNO"), 2,
 						BigDecimal.ROUND_HALF_UP));
+			} else {
+			  karticatmp.setBigDecimal("ZC_GOOD", kartica.getBigDecimal("NC"));
 			}
 		} else if (vrzal.equalsIgnoreCase("V")) {
 			karticatmp.setBigDecimal("ZC_GOOD", kartica.getBigDecimal("VC"));
