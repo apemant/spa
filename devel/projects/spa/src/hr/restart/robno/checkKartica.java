@@ -748,7 +748,7 @@ public class checkKartica {
 					karticatmp.getBigDecimal("KOL_TRENUTNO"), 2,
 					BigDecimal.ROUND_HALF_UP));
 		} else {
-			karticatmp.setBigDecimal("NC_GOOD", kartica.getBigDecimal("NC"));
+			karticatmp.setBigDecimal("NC_GOOD", kartica.getBigDecimal("ZC"));
 		}
 		//
 //System.out.println("1.Kartica tmp za "+kartica.getString("VRDOK")+" "+
@@ -762,7 +762,7 @@ public class checkKartica {
 						kartica.getBigDecimal("KOL_TRENUTNO"), 2,
 						BigDecimal.ROUND_HALF_UP));
 			} else {
-			  karticatmp.setBigDecimal("ZC_GOOD", kartica.getBigDecimal("NC"));
+			  karticatmp.setBigDecimal("ZC_GOOD", kartica.getBigDecimal("ZC"));
 			}
 		} else if (vrzal.equalsIgnoreCase("V")) {
 			karticatmp.setBigDecimal("ZC_GOOD", kartica.getBigDecimal("VC"));
