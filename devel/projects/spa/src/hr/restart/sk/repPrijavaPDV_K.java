@@ -182,11 +182,15 @@ public class repPrijavaPDV_K implements raReportData { // implements sg.com.elix
   }
 
   public BigDecimal getI22(){
-     return ds.getBigDecimal("IZVOZNE");//u stvari TUZEMNE od 2006 g. (jip)
+    return ds.getBigDecimal("PRIJEVOZ");//u stvari TUZEMNE od 2006 g. (jip)
   }
   
   public BigDecimal getI23(){
-    return ds.getBigDecimal("OSTALO_I23");
+     return ds.getBigDecimal("IZVOZNE");//u stvari TUZEMNE od 2006 g. (jip)
+  }
+  
+  public BigDecimal getI24(){
+    return ds.getBigDecimal("OSTALO_I24");
   }
   
   public BigDecimal getI3(){

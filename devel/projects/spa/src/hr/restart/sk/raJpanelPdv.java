@@ -83,13 +83,19 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("I22");
     }
   };
-  JLabel jlI22 = new JLabel("  2.2. Inozemne");
+  JLabel jlI22 = new JLabel("  2.2. Prijevoz");
   JraTextField I23 = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("I23");
     }
   };
-  JLabel jlI23 = new JLabel("  2.3. Ostalo");
+  JLabel jlI23 = new JLabel("  2.3. Inozemne");
+  JraTextField I24 = new JraTextField(){
+    public void valueChanged() {
+      frpdv.focusLostEv("I24");
+    }
+  };
+  JLabel jlI24 = new JLabel("  2.4. Ostalo");
   JraTextField I3 = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("I3");
@@ -290,7 +296,7 @@ public class raJpanelPdv extends JPanel {
     jpS.setLayout(xYLay456);
     jpI.setLayout(xYLay1);
     xYLay1.setWidth(550);
-    xYLay1.setHeight(200);
+    xYLay1.setHeight(225);
     jpII.setLayout(xYLay2);
     xYLay2.setWidth(550);
     xYLay2.setHeight(160);
@@ -320,8 +326,10 @@ public class raJpanelPdv extends JPanel {
     jpI.add(jlI22, new XYConstraints(15, 120 ,-1,-1));
     jpI.add(I23, new XYConstraints(340, 145, 100 , -1));
     jpI.add(jlI23, new XYConstraints(15, 145 ,-1,-1));
-    jpI.add(I3, new XYConstraints(340, 175, 100 , -1));
-    jpI.add(jlI3, new XYConstraints(15, 175 ,-1,-1));
+    jpI.add(I24, new XYConstraints(340, 170, 100 , -1));
+    jpI.add(jlI24, new XYConstraints(15, 170 ,-1,-1));
+    jpI.add(I3, new XYConstraints(340, 200, 100 , -1));
+    jpI.add(jlI3, new XYConstraints(15, 200 ,-1,-1));
 
     jpII.setBorder(BorderFactory.createEtchedBorder());
     jpII.add(IIv, new XYConstraints(340, 5, 100 , -1));
@@ -425,9 +433,11 @@ public class raJpanelPdv extends JPanel {
     I21.setDataSet(frpdv.reportSet);
     I21.setColumnName("TUZEMNE");
     I22.setDataSet(frpdv.reportSet);
-    I22.setColumnName("IZVOZNE");
+    I22.setColumnName("PRIJEVOZ");
     I23.setDataSet(frpdv.reportSet);
-    I23.setColumnName("OSTALO_I23");
+    I23.setColumnName("IZVOZNE");
+    I24.setDataSet(frpdv.reportSet);
+    I24.setColumnName("OSTALO_I24");
     I3.setDataSet(frpdv.reportSet);
     I3.setColumnName("STOPA_NULA");
     IIv.setDataSet(frpdv.reportSet);
