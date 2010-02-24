@@ -169,13 +169,19 @@ public class frmPDV extends raUpitLite {
         suma_I_II(tmpSet.getBigDecimal(i));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"I.2.2.")){
-        reportSet.setBigDecimal("IZVOZNE",tmpSet.getBigDecimal(i));//TUZEMNE!!!
+        reportSet.setBigDecimal("PRIJEVOZ",tmpSet.getBigDecimal(i));//TUZEMNE!!!
         reportSet.setBigDecimal("UKUPNO_I",reportSet.getBigDecimal("UKUPNO_I").add(tmpSet.getBigDecimal(i)));
         reportSet.setBigDecimal("UKUPNO_I2",reportSet.getBigDecimal("UKUPNO_I2").add(tmpSet.getBigDecimal(i)));
         suma_I_II(tmpSet.getBigDecimal(i));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"I.2.3.")){
-        reportSet.setBigDecimal("OSTALO_I23",tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("IZVOZNE",tmpSet.getBigDecimal(i));//TUZEMNE!!!
+        reportSet.setBigDecimal("UKUPNO_I",reportSet.getBigDecimal("UKUPNO_I").add(tmpSet.getBigDecimal(i)));
+        reportSet.setBigDecimal("UKUPNO_I2",reportSet.getBigDecimal("UKUPNO_I2").add(tmpSet.getBigDecimal(i)));
+        suma_I_II(tmpSet.getBigDecimal(i));
+        continue;
+      } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"I.2.4.")){
+        reportSet.setBigDecimal("OSTALO_I24",tmpSet.getBigDecimal(i));
         reportSet.setBigDecimal("UKUPNO_I",reportSet.getBigDecimal("UKUPNO_I").add(tmpSet.getBigDecimal(i)));
         reportSet.setBigDecimal("UKUPNO_I2",reportSet.getBigDecimal("UKUPNO_I2").add(tmpSet.getBigDecimal(i)));
         suma_I_II(tmpSet.getBigDecimal(i));
@@ -571,7 +577,8 @@ public class frmPDV extends raUpitLite {
       dm.createBigDecimalColumn("PO_PRETHOD_OBR",2),
       dm.createBigDecimalColumn("RAZLIKA",2),
       //2006
-      dm.createBigDecimalColumn("OSTALO_I23",2),
+      dm.createBigDecimalColumn("PRIJEVOZ",2),
+      dm.createBigDecimalColumn("OSTALO_I24",2),
       dm.createBigDecimalColumn("R23_V",2),
       dm.createBigDecimalColumn("R23_P",2),
       dm.createBigDecimalColumn("III4V",2),
