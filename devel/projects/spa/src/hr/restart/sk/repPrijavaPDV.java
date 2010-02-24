@@ -133,9 +133,17 @@ public class repPrijavaPDV implements sg.com.elixir.reportwriter.datasource.IDat
   public BigDecimal getI21(){
      return ds.getBigDecimal("TUZEMNE");
   }
-
+  
   public BigDecimal getI22(){
+    return ds.getBigDecimal("PRIJEVOZ");
+ }
+
+  public BigDecimal getI23(){
      return ds.getBigDecimal("IZVOZNE");
+  }
+  
+  public BigDecimal getI24(){
+    return ds.getBigDecimal("OSTALO_I24");
   }
 
   public BigDecimal getI3(){
