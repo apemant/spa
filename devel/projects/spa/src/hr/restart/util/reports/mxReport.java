@@ -17,7 +17,9 @@
 ****************************************************************************/
 package hr.restart.util.reports;
 
+import bsh.Interpreter;
 import hr.restart.util.Aus;
+import hr.restart.util.FileHandler;
 import hr.restart.util.Util;
 
 /**
@@ -581,28 +583,40 @@ public class mxReport {
       System.out.println("Niti dataSet niti dataObject nisu setirani. Nemam od kuda ispisati report");
     }
   }
+  /**
+   * 
+   * @param printCommand
+   * @param _f
+   * @return
+   */
+  public static boolean bshEvalPrintCommand(String printCommand, String _f) {
+    if (!(printCommand.startsWith("$shc") || printCommand.startsWith("$shf"))) return false;
+    if (_f == null) _f = System.getProperty("user.dir")+System.getProperty("file.separator")+mxReport.TMPPRINTFILE;
+    try {
+      String shellcmd = printCommand.substring(4).trim();
+      if (printCommand.startsWith("$shf")) {
+        String _c = FileHandler.readFile(Aus.findFileAnywhere(shellcmd).getPath());
+        shellcmd = _c;
+      }
+      Interpreter i = new Interpreter();
+      i.set("_f", _f);
+      i.eval(shellcmd);
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
 /**
  * Ispisuje report koristeci mxRM.printCommand kao externu komandu
  */
   public void print() {
     try {
+      if (!bshEvalPrintCommand(RM.getPrintCommand(), null)) {
 System.out.println("mxReport:: exec proc "+RM.getPrintCommand());
-      Process proc = java.lang.Runtime.getRuntime().exec(RM.getPrintCommand());
+        Process proc = java.lang.Runtime.getRuntime().exec(RM.getPrintCommand());
 System.out.println("mxReport:: waitFor proc "+RM.getPrintCommand());
-      //proc.waitFor();
-      /*int cnt = 0;
-      while (true) {
-          try {
-            cnt ++;
-            if (cnt>10) break;
-            print("pokusaj "+cnt);
-            System.out.println(proc.exitValue());
-            break;
-          } catch (IllegalThreadStateException itse) {
-            print(itse);
-            //Thread.sleep(300);
-          }
-      }*/
+
 System.out.println("mxReport:: outputting input stream for "+proc);
       Util.bufferedReadOut(proc.getInputStream());
 System.out.println("mxReport:: outputting error stream for "+proc);
@@ -610,6 +624,7 @@ System.out.println("mxReport:: outputting error stream for "+proc);
 System.out.println("mxReport:: done with proc "+proc);
 //      while ((ch = proc.getErrorStream().read()) > -1) System.out.write(ch);
 //      while ((ch = proc.getInputStream().read()) > -1) System.out.write(ch);
+      }
 
     } catch (Exception e) {
       e.printStackTrace();

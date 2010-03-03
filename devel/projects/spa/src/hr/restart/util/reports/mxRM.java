@@ -45,6 +45,7 @@ public class mxRM {
   }
   public String getPrintCommand() {
     int hPos = printCommand.indexOf("#");
+    if (hPos<0) return printCommand;
     String print_file = System.getProperty("user.dir")+System.getProperty("file.separator")+mxReport.TMPPRINTFILE;
     String retVal = printCommand.substring(0,hPos).concat(print_file).concat(printCommand.substring(hPos+1));
     return retVal;

@@ -1378,7 +1378,9 @@ public class dlgRunReport {
   
   private void sendAlterFile(String expfn, String exp) throws IOException {
     String comm = frmParam.getParam("sisfun","altprintcomm","","OS komanda za ispis exportiranog reporta (#=file)",true);
-    String oscomm = new VarStr(comm).replaceAll("#",new File(expfn+"."+exp.toLowerCase()).getAbsolutePath()).toString();
+    String _f = new File(expfn+"."+exp.toLowerCase()).getAbsolutePath();
+    if (mxReport.bshEvalPrintCommand(comm, _f)) return;
+    String oscomm = new VarStr(comm).replaceAll("#",_f).toString();
     Runtime.getRuntime().exec(oscomm);
   }
   
