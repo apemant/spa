@@ -222,7 +222,8 @@ public class raGlob {
     if (glob.size() == 0)
       return lastMatch = (source.length() == 0);
     int gpos = 0, spos = 0, cont = 0, last = 0, prev = 0;
-
+    if (source.length() == 0) gpos = 1;
+    
     while ((prev = spos) < source.length() && gpos < glob.size()) {
       GlobElement ge = (GlobElement) glob.get(gpos++);
 
