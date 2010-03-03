@@ -354,7 +354,13 @@ public class raTableCopyPopup extends JPopupMenu {
     });
     adminMenu.add(replaceAll = new AbstractAction("Zamijeni uzorak teksta") {
       public void actionPerformed(ActionEvent e) {
-        replaceAll();
+        
+        try {
+          replaceAll();
+        } catch (RuntimeException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
       }
     });
   }
@@ -538,7 +544,7 @@ public class raTableCopyPopup extends JPopupMenu {
         ds.goToInternalRow(rows[i]);
         if (glob.matches(ds.getString(col))) {
           buf.clear().append(glob.morphLastMatch(repl));
-          System.out.println(buf);
+          replaceFields(buf, ds);
           ds.setString(col, buf.toString());
           ds.post();
         }
@@ -547,6 +553,19 @@ public class raTableCopyPopup extends JPopupMenu {
       ds.enableDataSetEvents(true);
       jt.startFire();
       jt.fireTableDataChanged();
+    }
+  }
+  
+  void replaceFields(VarStr buf, DataSet ds) {
+    int left = 0, right = 0;
+    
+    while ((left = buf.indexOf('{', left)) >= 0) {
+      String col = buf.mid(left + 1, right = buf.indexOf('}'));
+      if (ds.hasColumn(col) != null) {
+        String repl = ds.format(col);
+        buf.replace(left, right + 1, repl);
+        left += repl.length();
+      }
     }
   }
   
