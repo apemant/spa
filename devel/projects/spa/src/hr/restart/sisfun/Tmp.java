@@ -58,6 +58,8 @@ public class Tmp {
       int from = buf.indexOfIgnoreCase(" from ");
       int where = buf.indexOfIgnoreCase(" where ");
       int gb = buf.indexOfIgnoreCase(" group by ");
+      int ob = buf.indexOfIgnoreCase(" order by ");
+      if (ob > 0) buf.truncate(ob);
       String[] cols = tmp.clear().append(buf.mid(sel + 7, from)).splitTrimmed(',');
       String[] tables = tmp.clear().append(buf.mid(from + 6, where).toLowerCase()).splitTrimmed(',');
       String[] groups = (gb < 0) ? null : tmp.clear().
