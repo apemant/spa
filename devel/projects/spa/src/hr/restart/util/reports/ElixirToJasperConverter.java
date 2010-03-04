@@ -274,8 +274,8 @@ public class ElixirToJasperConverter {
     } else exp.addTextChunk('"' + getter + '"');
     exp.addTextChunk(")");
     img.setExpression(exp);
-    img.setEvaluationTime(JRExpression.EVALUATION_TIME_GROUP);
-    img.setEvaluationGroup(currGroup);
+    /*img.setEvaluationTime(JRExpression.EVALUATION_TIME_GROUP);
+    img.setEvaluationGroup(currGroup);*/
     return img;
   }
   
