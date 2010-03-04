@@ -347,7 +347,8 @@ public class raIspisUraIra extends raFrame {
     cols.add(dm.getSkstavke().getColumn("DATDOK").clone());
     cols.add(dm.getPartneri().getColumn("CPAR").clone());
     cols.add(dM.createStringColumn("OPISPAR", "Naziv partnera", 180));
-    cols.add(dm.getPartneri().getColumn("MB").clone());
+    //cols.add(dm.getPartneri().getColumn("MB").clone());
+    cols.add(dM.createStringColumn("MB","OIB", 30));
     cols.add(dM.createStringColumn("SORTER", 16));
     tkol.open();
     for (tkol.first(); tkol.inBounds(); tkol.next()) {
