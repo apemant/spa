@@ -663,6 +663,10 @@ public class repIzlazni implements raReportData {
     return Aut.getAut().getIzlazCARTdep(ds);
   }
 
+  public String getEANCODE() {
+    return ds.getString("BC");
+  }
+  
   public String getCART() {
 //    return Aut.getAut().getCARTdependable(ds);
 //    return Aut.getAut().getIzlazCARTdep(ds);
