@@ -23,7 +23,7 @@ import hr.restart.util.Aus;
 
 public class raIzlazDetail extends raReportSection {
 
-  private String[] thisProps = new String[] {"", "", "", "", "", "", "", "300"};
+  private String[] thisProps = new String[] {"", "", "", "", "", "", "", "280"};
   public raReportElement Text1;
   private String[] Text1Props = new String[] {"=(if (= [ImaPor1] 1) (put-var \"tpor1\" 1) \"\")",
      "", "", "", "No", "", "", "", "2300", "", "0", "0", "", "", "", "", "", "", "", "", "", "", "",
@@ -124,7 +124,16 @@ public class raIzlazDetail extends raReportSection {
   }
 
   private void modifyThis() {
-    resizeElement(this.TextCART, Aut.getAut().getIzlazCARTwidth(), this.TextNAZART);
+    int wid = Aut.getAut().getIzlazCARTwidth();
+    boolean ean = frmParam.getParam("robno", "barcodeBc", "N",
+        "Iscrtavanje šifre artikla kao barkod (D,N)").equalsIgnoreCase("D");
+    if (ean) {
+      TextCART.setControlSource("EANCODE");
+      TextCART.setHeight(220);
+      setProperty(raElixirProperties.SHRINK,raElixirPropertyValues.NO);
+    }
+    System.out.println(wid);
+    resizeElement(this.TextCART, wid, this.TextNAZART);
     TextNAZARText.setLeft(TextNAZART.getLeft());
     boolean wide = frmParam.getParam("robno", "extNazartWide", "N", 
         "Široki dodatni opis artikla (D,N)?").equalsIgnoreCase("D");
