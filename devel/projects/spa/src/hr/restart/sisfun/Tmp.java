@@ -93,6 +93,7 @@ public class Tmp {
               ch.changes += "grouped: " + cols[i] + " -> " + groups[g] + "\n";
               cols[i] = groups[g];
               change = true;
+              continue;
             }
           }
         }
