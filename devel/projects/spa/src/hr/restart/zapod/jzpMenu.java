@@ -54,7 +54,7 @@ public class jzpMenu extends javax.swing.JMenu {
 
   java.util.ResourceBundle Res = java.util.ResourceBundle.getBundle(hr.restart.zapod.frmZapod.RESBUNDLENAME);
 
-  JMenuItem jzpMenuOrgJed = new JMenuItem();
+  public JMenuItem jzpMenuOrgJed = new JMenuItem();
 
   JMenuItem jzpMenuKonta = new JMenuItem();
 
@@ -552,7 +552,7 @@ public class jzpMenu extends javax.swing.JMenu {
 
 
 
-  void jzpMenuOrgJed_actionPerformed(ActionEvent e) {
+  public void jzpMenuOrgJed_actionPerformed(ActionEvent e) {
 
 //    SF.showFrame(forgstr);
 
