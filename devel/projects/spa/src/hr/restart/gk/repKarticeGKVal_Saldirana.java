@@ -74,8 +74,8 @@ public class repKarticeGKVal_Saldirana implements sg.com.elixir.reportwriter.dat
   }
 
   public String getNASLOV(){
-    if(fkgk.isPrivremeno()) return "\nKONTO KARTICA U VALUTI - SALDIRANA - PRIVREMENA";
-    return "\nKONTO KARTICA U VALUTI - SALDIRANA";
+    if(fkgk.isPrivremeno()) return "KONTO KARTICA U VALUTI - SALDIRANA - PRIVREMENA";
+    return "KONTO KARTICA U VALUTI - SALDIRANA";
   }
 
   /*public String getDATDOK(){

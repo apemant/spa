@@ -69,8 +69,8 @@ public class repKarticeGKVal implements raReportData { // implements sg.com.elix
   }
 
   public String getNASLOV(){
-    if(fkgk.isPrivremeno()) return "\nKONTO KARTICA U VALUTI - PRIVREMENA";
-    return "\nKONTO KARTICA U VALUTI";
+    if(fkgk.isPrivremeno()) return "KONTO KARTICA U VALUTI - PRIVREMENA";
+    return "KONTO KARTICA U VALUTI";
   }
 
   public String getOznVal()

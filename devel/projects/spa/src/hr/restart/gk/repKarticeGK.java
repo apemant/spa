@@ -96,8 +96,8 @@ public class repKarticeGK implements raReportData { //implements sg.com.elixir.r
   }
 */
   public String getNASLOV(){
-    if(fkgk.isPrivremeno()) return "\nKONTO KARTICA - PRIVREMENA";
-    return "\nKONTO KARTICA";
+    if(fkgk.isPrivremeno()) return "KONTO KARTICA - PRIVREMENA";
+    return "KONTO KARTICA";
   }
 
   public String getDATDOK(){
