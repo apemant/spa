@@ -115,6 +115,16 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
       setPreferredSize(new java.awt.Dimension(100,21));
       raDisabledPopup.installFor(this);
       this.setEnablePopupMenu(false);
+      installTouchKeyboard();
+    }
+    public void installTouchKeyboard() {
+      try {
+        Class clz = Class.forName("hr.restart.spapos.touch.TouchKeyboardPopup");
+        clz.getMethod("installFor", new Class[] {JraTextField.class}).invoke(this, new Object[] {this});
+        System.out.println("TouchKeyboardPopup installed");
+      } catch (Exception e) {
+//        System.out.println(e);
+      }
     }
 
     public void setDataSet(DataSet dataSet)
