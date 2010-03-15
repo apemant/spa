@@ -698,6 +698,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	}
 
 	public void maintanceRabat(boolean novi) {
+	  if (isRabatShema) initRab();
 		vtrabat = hr.restart.util.Util
 				.getNewQueryDataSet("SELECT * FROM vtrabat where cskl ='"
 						+ getDetailSet().getString("CSKL") + "' AND VRDOK='"
@@ -746,7 +747,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 			oneRabat();
 			return;
 		}
-
+		
 		for (rDR.getDPDataSet().first(); rDR.getDPDataSet().inBounds(); rDR
 				.getDPDataSet().next()) {
 			vtrabat.insertRow(false);
@@ -775,6 +776,9 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 			vtrabat.setBigDecimal("IRAB", iznosrabat);
 			sumarabat = sumarabat.add(iznosrabat);
 		}
+		// poravnaj eventualne lipe na ukupni popust na stavci, zbog zaokruzenja
+		if (sumarabat.compareTo(getDetailSet().getBigDecimal("UIRAB")) != 0)
+		  Aus.addSub(vtrabat, "IRAB", getDetailSet(), "UIRAB", sumarabat);
 	}
 
 	public void deleteRabat() {
@@ -1668,12 +1672,12 @@ ST.prn(radninal);
 				}
 				if (retValue) {
 					retValue = UpdateDoki();
-					if (retValue) {
+					/*if (retValue) {
 						retValue = addRabati();
 						if (retValue) {
 							retValue = addZavtr();
 						}
-					}
+					}*/
 				}
 			}
 
@@ -2319,11 +2323,16 @@ System.out.println("findCjenik::else :: "+sql);
 	 * else { getMasterSet().setBigDecimal("TECAJ",new BigDecimal("0.0000")); } }
 	 */
 
+	void initRab() {
+	  if (!isRabatCallBefore)
+        getrDR().getMyDataSet();
+    
+	  isRabatCallBefore = true;
+	}
+	
 	void jbRabat_actionPerformed(ActionEvent e) {
-		if (!isRabatCallBefore)
-			getrDR().getMyDataSet();
+		initRab();
 		getrDR().show();
-		isRabatCallBefore = true;
 	}
 
 	public void jpRabat_afterJob() {
@@ -2377,7 +2386,7 @@ System.out.println("findCjenik::else :: "+sql);
 		boolean forReturn = true;
 
 		if (!getMasterSet().getString("CSHRAB").equals("")
-				&& isKupArtExist == false) {
+				&& !isKupArtExist) {
 
 			if (getrDR().getDPDataSet().isEmpty() && raDetail.getMode() == 'N') {
 				rEDM.InsertVTrabat(getDetailSet(), (int) getDetailSet()
