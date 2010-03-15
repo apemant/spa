@@ -1216,3 +1216,4 @@ CDOC;char;48;pkey;;Šifra dokumenta;*
 RBR;short;2;pkey;;Rbr;*
 IZNOS;numeric;17,2;;;Uplata
 DATUM;date;;;;Datum
+NAP;text;50;;;Napomena;20
