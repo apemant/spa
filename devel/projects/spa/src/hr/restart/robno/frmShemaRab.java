@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raMasterDetail;
@@ -200,7 +201,7 @@ public class frmShemaRab extends raMasterDetail{
     {
       findNSTAVKA();
       getDetailSet().setShort("rbr",nStavka);
-      getDetailSet().setBigDecimal("PRAB", parseTextField(jlrPRAB1.getText()));
+      getDetailSet().setBigDecimal("PRAB", Aus.getDecNumber(jlrPRAB1.getText()));
       getDetailSet().setString("CRAB",  jlrCRAB1.getText());
       getDetailSet().setString("RABNARAB",  jltRABRAB.getText());
     }
