@@ -89,7 +89,7 @@ public class raExtraDBManipulation {
          rbr1+" as rbr, rbr as lrbr,crab,prab,0 as irab,rabnarab from vshrab_rab where cshrab = '"+
          cshrab+"'";
 */
-    dm.getVtrabat().open();
+    /*dm.getVtrabat().open();
     dm.getVtrabat().insertRow(true);
     QueryDataSet Qvtrabat = hr.restart.util.Util.getNewQueryDataSet(
         "select lokk,aktiv,'"+ds.getString("CSKL")+"' as cskl,'"+
@@ -98,7 +98,7 @@ public class raExtraDBManipulation {
         ds.getInt("BRDOK")+" as brdok,"+
         rbr1+" as rbr, rbr as lrbr,crab,prab,0 as irab,rabnarab from vshrab_rab where cshrab = '"+
          cshrab+"'",true);
-
+*/
 //    dm.getVtrabat().setString("CSKL",ds.getString("CSKL"));
 //    dm.getVtrabat().setString("VRDOK",ds.getString("VRDOK"));
 
