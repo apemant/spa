@@ -20,12 +20,12 @@ package hr.restart.robno;
 import hr.restart.baza.Condition;
 import hr.restart.baza.UplRobno;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraComboBox;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
-import hr.restart.swing.raExtendedTable;
 import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.OKpanel;
@@ -129,6 +129,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 	private JraComboBox JCdosp = new JraComboBox(new String[] { "Svi",
 			"Dospjelo", "Nedospjelo" });
+	
+	JraCheckBox jcbPON = new JraCheckBox();
 
 	private hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(
 			false);
@@ -203,6 +205,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		jrfCORG.emptyTextFields();
 		JCstatus.setSelectedIndex(1);
 		JCdosp.setSelectedIndex(1);
+		jcbPON.setSelected(false);
 	}
 
 	public void componentShow() {
@@ -483,6 +486,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 				dm.createTimestampColumn("zavDatum", "Završni datum"),
 				dm.createBigDecimalColumn("UPLATA", "Uplata", 2),
 				dm.createTimestampColumn("DATUPL", "Datum Uplate"),
+				dm.createStringColumn("NAP", 50),
 				dm.createStringColumn("PK", 1) });
 
 		rcbPartnerKupac.setRaDataSet(tds);
@@ -527,6 +531,10 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		jrfNAZORG.setNavProperties(jrfCORG);
 		jbcorg.setText("...");
 		jrfCORG.setNavButton(jbcorg);
+		
+		jcbPON.setText("Prikaz ponuda");
+		jcbPON.setHorizontalTextPosition(SwingConstants.LEADING);
+		jcbPON.setHorizontalAlignment(SwingConstants.TRAILING);
 
 		JCstatus.addItemListener(new java.awt.event.ItemListener() {
 			public void itemStateChanged(java.awt.event.ItemEvent i) {
@@ -1028,6 +1036,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 	private JraTextField datupl = new JraTextField();
 	
+	private JraTextField opis = new JraTextField();
+	
 	JraButton delUpl = new JraButton();
 	JraButton addUpl = new JraButton();
 	
@@ -1056,7 +1066,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 		if (tds.getString("PK").equals("K")) {
 			if (tds.getBigDecimal("UPLATA").signum() != 0) {
-				addUpl(tds.getBigDecimal("UPLATA"), tds.getTimestamp("DATUPL"));
+				addUpl(tds.getBigDecimal("UPLATA"), tds.getTimestamp("DATUPL"), tds.getString("NAP"));
 			}
 			qdsPojedIzlaz.setBigDecimal("PLATITI", Aus.sum("IZNOS", upls));
 			/*if (qdsPojedIzlaz.getBigDecimal("UIRAC").compareTo(
@@ -1131,7 +1141,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			miniFrame.dispose();
 		} else {
 			if (tds.getBigDecimal("UPLATA").signum() != 0) {
-				addUpl(tds.getBigDecimal("UPLATA"), tds.getTimestamp("DATUPL"));
+				addUpl(tds.getBigDecimal("UPLATA"), tds.getTimestamp("DATUPL"), tds.getString("NAP"));
 			}
 			qdsPojedUlaz.setBigDecimal("PLATITI", Aus.sum("IZNOS", upls));
 			/*if (qdsPojedUlaz.getBigDecimal("UIRAC").compareTo(
@@ -1221,16 +1231,17 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			}
 		});*/
 		
-		JPanel left = new JPanel(new XYLayout(260,120));
+		JPanel left = new JPanel(new XYLayout(310,150));
 		
 		left.add(new JLabel("Iznos raèuna"), new XYConstraints(15, 15, -1, -1));
-		left.add(racun, new XYConstraints(150, 15, 100, -1));
+		left.add(racun, new XYConstraints(200, 15, 100, -1));
 		left.add(new JLabel("Prijašnje uplate"), new XYConstraints(15, 40, -1, -1));
-		left.add(platiti, new XYConstraints(150, 40, 100, -1));
-		left.add(new JLabel("Uplate"), new XYConstraints(15, 65, -1, -1));
-		left.add(uplata, new XYConstraints(150, 65, 100, -1));
+		left.add(platiti, new XYConstraints(200, 40, 100, -1));
+		left.add(new JLabel("Uplata"), new XYConstraints(15, 65, -1, -1));
+		left.add(uplata, new XYConstraints(200, 65, 100, -1));
 		left.add(new JLabel("Datum uplate"), new XYConstraints(15, 90, -1, -1));
-		left.add(datupl, new XYConstraints(150, 90, 100, -1));
+		left.add(datupl, new XYConstraints(200, 90, 100, -1));
+		left.add(opis, new XYConstraints(15, 115, 285, -1));
 		left.setBorder(BorderFactory.createEtchedBorder());
 		
 		JPanel but = new JPanel(new GridLayout(1, 0));
@@ -1240,7 +1251,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		but.add(delUpl);
 		addUpl.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				addUpl(tds.getBigDecimal("UPLATA"), tds.getTimestamp("DATUPL"));
+				addUpl(tds.getBigDecimal("UPLATA"), tds.getTimestamp("DATUPL"), tds.getString("NAP"));
 				jup.fireTableDataChanged();
 				tds.setBigDecimal("UPLATA", Aus.zero2);
 				uplata.selectAll();
@@ -1437,7 +1448,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		}
 	}
 	
-	void addUpl(BigDecimal iznos, Timestamp datum) {
+	void addUpl(BigDecimal iznos, Timestamp datum, String nap) {
 		Valid.getValid().execSQL("SELECT MAX(rbr) as mrbr FROM UplRobno WHERE cdoc='"+dockey+"'");
 		DataSet ds = Valid.getValid().getDataAndClear();
 		ds.open();
@@ -1452,6 +1463,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		upls.setShort("RBR", ++rbr);
 		upls.setBigDecimal("IZNOS", iznos);
 		upls.setTimestamp("DATUM", datum);
+		upls.setString("NAP", nap);
 		upls.post();
 	}
 
@@ -1468,17 +1480,20 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			uplata.setColumnName("UPLATA");
 			datupl.setDataSet(tds);
 			datupl.setColumnName("datupl");
+			opis.setDataSet(tds);
+            opis.setColumnName("NAP");
 
 			uplata.getDataSet().setBigDecimal("UPLATA",
 					qdsPojedIzlaz.getBigDecimal("SALDO"));
 			datupl.getDataSet().setTimestamp("datupl",
 					hr.restart.util.Valid.getValid().findDate(false, -1));
 			
-			upls = UplRobno.getDataModule().getTempSet(Condition.equal("CDOC", dockey = raControlDocs.getKey(qdsPojedIzlaz, "doki")));
+			upls = UplRobno.getDataModule().getTempSet("CDOC RBR NAP DATUM IZNOS",
+			    Condition.equal("CDOC", dockey = raControlDocs.getKey(qdsPojedIzlaz, "doki")));
 			upls.open();
 			upls.setSort(new SortDescriptor(new String[] {"DATUM"}));
 			if (upls.rowCount() == 0 && qdsPojedIzlaz.getBigDecimal("PLATITI").signum() != 0) {
-				addUpl(qdsPojedIzlaz.getBigDecimal("PLATITI"), qdsPojedIzlaz.getTimestamp("DATUPL"));
+				addUpl(qdsPojedIzlaz.getBigDecimal("PLATITI"), qdsPojedIzlaz.getTimestamp("DATUPL"), "");
 				upls.saveChanges();
 			}
 			jup.setDataSet(upls);
@@ -1520,11 +1535,12 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 					qdsPojedUlaz.getBigDecimal("SALDO"));
 			datupl.getDataSet().setTimestamp("datupl",
 					hr.restart.util.Valid.getValid().findDate(false, -1));
-			upls = UplRobno.getDataModule().getTempSet(Condition.equal("CDOC", dockey = raControlDocs.getKey(qdsPojedUlaz, "doku")));
+			upls = UplRobno.getDataModule().getTempSet("CDOC RBR NAP DATUM IZNOS",
+			    Condition.equal("CDOC", dockey = raControlDocs.getKey(qdsPojedUlaz, "doku")));
 			upls.open();
 			upls.setSort(new SortDescriptor(new String[] {"DATUM"}));
 			if (upls.rowCount() == 0 && qdsPojedUlaz.getBigDecimal("PLATITI").signum() != 0) {
-				addUpl(qdsPojedUlaz.getBigDecimal("PLATITI"), qdsPojedUlaz.getTimestamp("DATUPL"));
+				addUpl(qdsPojedUlaz.getBigDecimal("PLATITI"), qdsPojedUlaz.getTimestamp("DATUPL"), "");
 				upls.saveChanges();
 			}
 			jup.setDataSet(upls);
