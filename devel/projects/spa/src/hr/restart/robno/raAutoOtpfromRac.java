@@ -26,6 +26,7 @@ import hr.restart.util.raTransaction;
 
 import java.util.HashMap;
 
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
@@ -72,6 +73,8 @@ public class raAutoOtpfromRac {
 	private StorageDataSet greske = new StorageDataSet();
 	
 	boolean isMinusAllowed = false;
+	
+	String ncskl = "CSKLART";
 
 	public raAutoOtpfromRac() {
 	}
@@ -94,10 +97,11 @@ public class raAutoOtpfromRac {
 	}
 
 	protected boolean smijem_li_dalje() {
+
 		if (!stavke_rac.getString("STATUS").equalsIgnoreCase("N")) {
 			return false;
 		}
-		if (stavke_rac.getString("CSKLART").equalsIgnoreCase("")) {
+		if (stavke_rac.getString(ncskl).equalsIgnoreCase("")) {
 			return false;
 		}
 		return raVart.isStanje(stavke_rac.getInt("CART"));
@@ -113,6 +117,77 @@ public class raAutoOtpfromRac {
 		//return true;
 	}
 
+	int fillStavka(DataSet stav) {
+	  if (!lD.raLocate(stanje, new String[] { "CSKL", "GOD", "CART" },
+          new String[] { stav.getString(ncskl),
+//                stavke_rac.getString("GOD"),
+          zaglavlja_otp.getString("GOD"),
+                  String.valueOf(stav.getInt("CART")) })) {
+      return -3;
+      }
+      stavke_otp.insertRow(false);
+      stavke_otp.setString("CSKL", zaglavlja_otp.getString("CSKL"));
+      stavke_otp.setString("CSKLART", zaglavlja_otp.getString("CSKL"));
+      stavke_otp.setString("GOD", zaglavlja_otp.getString("GOD"));
+      stavke_otp.setString("VRDOK", zaglavlja_otp.getString("VRDOK"));
+      stavke_otp.setInt("BRDOK", zaglavlja_otp.getInt("BRDOK"));
+      if (!hmrbr.containsKey(stavke_otp.getString("CSKL"))) {
+          return 1;
+      }
+      stavke_otp.setShort("RBR", ((Integer) hmrbr.get(stavke_otp
+              .getString("CSKL"))).shortValue());
+      stavke_otp.setInt("RBSID", ((Integer) hmrbr.get(stavke_otp
+              .getString("CSKL"))).intValue());
+      hmrbr.put(stavke_otp.getString("CSKL"), new Integer(stavke_otp
+              .getInt("RBSID") + 1));
+      stavke_otp.setInt("CART", stav.getInt("CART"));
+      stavke_otp.setString("CART1", stav.getString("CART1"));
+      stavke_otp.setString("BC", stav.getString("BC"));
+      stavke_otp.setString("NAZART", stav.getString("NAZART"));
+      stavke_otp.setString("JM", stav.getString("JM"));
+      stavke_otp.setBigDecimal("KOL", stav.getBigDecimal("KOL"));
+      stavke_otp.setString("id_stavka", raControlDocs.getKey(stavke_otp,
+              new String[] { "cskl", "vrdok", "god", "brdok", "rbsid" },
+              "stdoki"));
+      stavke_otp.setString("VEZA", stav.getString("ID_STAVKA"));
+      stavke_otp.setString("REZKOL", stav.getString("REZKOL"));
+    
+      rKD.stanje.Init();
+      rKD.stavka.Init();
+      rKD.stavkaold.Init();
+    //QueryDataSet skltmp = hr.restart.util.Util.getNewQueryDataSet(
+    //        "select vrzal from sklad where cskl='"
+    //                + zaglavlja_otp.getString("CSKL") + "'", true);
+      rKD.setVrzal(zaglavlja_otp.getString("CSKL"));
+      lc.TransferFromDB2Class(stavke_otp, rKD.stavka);
+      lc.TransferFromDB2Class(stanje, rKD.stanje);
+      rKD.SetupPriceForSkladSide();
+      rKD.setWhat_kind_of_document("OTP");
+      rKD.kalkSkladPart();
+      /*BigDecimal bd = rKD.stanje.kolrez;
+      rKD.stanje.kolrez = Aus.zero2;*/
+      if (rKD.TestStanje() == rKD.rKS.NEG_KOL && !isMinusAllowed) {
+          return -5;
+      }
+      rKD.KalkulacijaStanje("OTP");
+      rKD.VratiRezervu("OTP");
+      lc.TransferFromClass2DB(stavke_otp, rKD.stavka);
+      //rKD.stanje.kolrez = bd;
+      lc.TransferFromClass2DB(stanje, rKD.stanje);
+      rCD.unosIzlaz(stavke_otp, stanje);
+      
+      // ako se otpremnica radi iz racuna koji je nastao iz DOS-a!!
+      if (stav.getString("VEZA").indexOf("-DOS-") >= 0) {
+        stanje.setBigDecimal("KOLSKLADIZ", stanje.getBigDecimal("KOLSKLADIZ")
+                      .subtract(stavke_otp.getBigDecimal("KOL")));
+        stanje.setBigDecimal("KOLSKLAD", stanje.getBigDecimal("KOLSKLADUL")
+                      .subtract(stanje.getBigDecimal("KOLSKLADIZ")));
+      }
+      stav.setString("STATUS", "P");
+      stav.setString("VEZA", stavke_otp.getString("ID_STAVKA"));
+      return 0;
+	}
+	
 	// sdfsdfs
 	protected int makeStavke() {
 
@@ -124,77 +199,11 @@ public class raAutoOtpfromRac {
 			}
 
 			if (!lD.raLocate(zaglavlja_otp, "CSKL", stavke_rac
-					.getString("CSKLART"))) {
+					.getString(ncskl))) {
 				return -2;
 			}
 
-			if (!lD.raLocate(stanje, new String[] { "CSKL", "GOD", "CART" },
-					new String[] { stavke_rac.getString("CSKLART"),
-//							stavke_rac.getString("GOD"),
-					zaglavlja_otp.getString("GOD"),
-							String.valueOf(stavke_rac.getInt("CART")) })) {
-				return -3;
-			}
-			stavke_otp.insertRow(false);
-			stavke_otp.setString("CSKL", zaglavlja_otp.getString("CSKL"));
-			stavke_otp.setString("CSKLART", zaglavlja_otp.getString("CSKL"));
-			stavke_otp.setString("GOD", zaglavlja_otp.getString("GOD"));
-			stavke_otp.setString("VRDOK", zaglavlja_otp.getString("VRDOK"));
-			stavke_otp.setInt("BRDOK", zaglavlja_otp.getInt("BRDOK"));
-			if (!hmrbr.containsKey(stavke_otp.getString("CSKL"))) {
-				return 1;
-			}
-			stavke_otp.setShort("RBR", ((Integer) hmrbr.get(stavke_otp
-					.getString("CSKL"))).shortValue());
-			stavke_otp.setInt("RBSID", ((Integer) hmrbr.get(stavke_otp
-					.getString("CSKL"))).intValue());
-			hmrbr.put(stavke_otp.getString("CSKL"), new Integer(stavke_otp
-					.getInt("RBSID") + 1));
-			stavke_otp.setInt("CART", stavke_rac.getInt("CART"));
-			stavke_otp.setString("CART1", stavke_rac.getString("CART1"));
-			stavke_otp.setString("BC", stavke_rac.getString("BC"));
-			stavke_otp.setString("NAZART", stavke_rac.getString("NAZART"));
-			stavke_otp.setString("JM", stavke_rac.getString("JM"));
-			stavke_otp.setBigDecimal("KOL", stavke_rac.getBigDecimal("KOL"));
-			stavke_otp.setString("id_stavka", raControlDocs.getKey(stavke_otp,
-					new String[] { "cskl", "vrdok", "god", "brdok", "rbsid" },
-					"stdoki"));
-			stavke_otp.setString("VEZA", stavke_rac.getString("ID_STAVKA"));
-			stavke_otp.setString("REZKOL", stavke_rac.getString("REZKOL"));
-
-			rKD.stanje.Init();
-			rKD.stavka.Init();
-			rKD.stavkaold.Init();
-//			QueryDataSet skltmp = hr.restart.util.Util.getNewQueryDataSet(
-//					"select vrzal from sklad where cskl='"
-//							+ zaglavlja_otp.getString("CSKL") + "'", true);
-			rKD.setVrzal(zaglavlja_otp.getString("CSKL"));
-			lc.TransferFromDB2Class(stavke_otp, rKD.stavka);
-			lc.TransferFromDB2Class(stanje, rKD.stanje);
-			rKD.SetupPriceForSkladSide();
-			rKD.setWhat_kind_of_document("OTP");
-			rKD.kalkSkladPart();
-			/*BigDecimal bd = rKD.stanje.kolrez;
-			rKD.stanje.kolrez = Aus.zero2;*/
-			if (rKD.TestStanje() == rKD.rKS.NEG_KOL && !isMinusAllowed) {
-				return -5;
-			}
-			rKD.KalkulacijaStanje("OTP");
-			rKD.VratiRezervu("OTP");
-			lc.TransferFromClass2DB(stavke_otp, rKD.stavka);
-			//rKD.stanje.kolrez = bd;
-			lc.TransferFromClass2DB(stanje, rKD.stanje);
-			rCD.unosIzlaz(stavke_otp, stanje);
-            
-            // ako se otpremnica radi iz racuna koji je nastao iz DOS-a!!
-            if (stavke_rac.getString("VEZA").indexOf("-DOS-") >= 0) {
-              stanje.setBigDecimal("KOLSKLADIZ", stanje.getBigDecimal("KOLSKLADIZ")
-                            .subtract(stavke_otp.getBigDecimal("KOL")));
-              stanje.setBigDecimal("KOLSKLAD", stanje.getBigDecimal("KOLSKLADUL")
-                            .subtract(stanje.getBigDecimal("KOLSKLADIZ")));
-            }
-			stavke_rac.setString("STATUS", "P");
-			stavke_rac.setString("VEZA", stavke_otp.getString("ID_STAVKA"));
+			
 		}
 		return 0;
 	}
@@ -207,14 +216,16 @@ public class raAutoOtpfromRac {
 			/*
 			 * preskaèu se oni kojima ne postoji oznaka skladišta u rapancartu
 			 */
-			if (stavke_rac.getString("CSKLART").equalsIgnoreCase("")) {
+			if (stavke_rac.getString(ncskl).equalsIgnoreCase("")) {
 				continue;
 			}
 			/*
 			 * tražim artikle u bazi artikala i preskaèem ih ako su usluga ili
 			 * tranzit ili iz nekog razloga nisu uopæe u bazi što je merde
 			 */
-			if (!raVart.isStanje(stavke_rac.getInt("CART"))) continue;
+			if ((!stavke_rac.getString("STATUS").equals("X") ||
+			    !stavke_rac.getString("VRDOK").equals("ROT")) &&
+			    !raVart.isStanje(stavke_rac.getInt("CART"))) continue;
 			
 /*			QueryDataSet arts = hr.restart.util.Util.getNewQueryDataSet(
 					"select * from artikli where cart="
@@ -235,11 +246,11 @@ public class raAutoOtpfromRac {
 			 * Ako dosad nije dodano zaglavlje e sad ce biti
 			 */
 			if (!lD.raLocate(zaglavlja_otp, "CSKL", stavke_rac
-					.getString("CSKLART"))) {
+					.getString(ncskl))) {
 				zaglavlja_otp.insertRow(false);
 				zaglavlja_otp.setString("CUSER", zaglavlje_rac
 						.getString("CUSER"));
-				zaglavlja_otp.setString("CSKL", stavke_rac.getString("CSKLART"));
+				zaglavlja_otp.setString("CSKL", stavke_rac.getString(ncskl));
 				zaglavlja_otp.setString("VRDOK", "OTP");
 				zaglavlja_otp.setTimestamp("SYSDAT",
 				hr.restart.util.Util.getUtil().getCurrentDatabaseTime());
@@ -315,6 +326,7 @@ public class raAutoOtpfromRac {
 
 	public int makeOtp(String cskl, String vrdok, int brdok, String god) {
 		init();
+		ncskl = vrdok.equals("ROT") ? "CSKL" : "CSKLART";
 		zaglavlje_rac = hr.restart.util.Util.getNewQueryDataSet(
 				"select * from doki where cskl='" + cskl + "' and vrdok='"
 						+ vrdok + "' and god='" + god + "' and brdok=" + brdok,

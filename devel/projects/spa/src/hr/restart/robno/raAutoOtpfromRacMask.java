@@ -51,7 +51,8 @@ public class raAutoOtpfromRacMask  {
         ("select Count(*) as sve from stdoki where "+
         "cskl='"+cskl+"' and vrdok='"+vrdok+
         "' and god='"+god+"' and brdok="+brdok+
-        " and status='N'",true);
+        " and ((status='N' and vrdok!='ROT') or " +
+        "      (status='X' and vrdok='ROT'))",true);
     if (qds.getInt("sve")!=0){
       if (auto || javax.swing.JOptionPane.showConfirmDialog(null,
           "Želite li napraviti otpremnice za ovaj raèun ?","Poruka",
