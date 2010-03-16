@@ -104,6 +104,38 @@ public class raIzlazSectionFooterLines extends raReportSection {
      "1300", "2180", "240", "", "", "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right"};
   public raReportElement Line3;
   private String[] Line3Props = new String[] {"", "No", "420", "1740", "9540", "0", "", "", ""};
+  public raReportElement Line4;
+  private String[] Line4Props = new String[] {"", "No", "660", "960", "5440", "0", "", "", ""};
+  
+  public raReportElement TextPOPNASLOV;
+  private String[] TextPOPNASLOVProps = new String[] {"POPNASLOV", "", "", "",
+     "", "", "Yes", "", "640", "1260", "5020", "240", "", "Light Gray", "", "", "", "",
+     "Lucida Bright", "9", "", "", "", "Center", ""};
+  
+  public raReportElement TextPOPPOST;
+  private String[] TextPOPPOSTProps = new String[] {"POPPOST", "", "",
+     "Number|false|1|309|2|2|true|3|false", "", "", "Yes", "", "2320", "1540", "720", "20", "",
+     "Light Gray", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement TextPOPCRTICA;
+  private String[] TextPOPCRTICAProps = new String[] {"POPCRTICA", "", "",
+     "", "", "", "Yes", "", "2000", "1540", "180", "20", "", "Light Gray", "", "", "", "",
+     "Lucida Bright", "8", "", "", "", "", ""};
+  public raReportElement TextPOPNAZ;
+  private String[] TextPOPNAZProps = new String[] {"POPNAZ", "", "", "",
+     "", "", "Yes", "", "660", "1540", "1200", "20", "", "Light Gray", "", "", "", "",
+     "Lucida Bright", "8", "", "", "", "", ""};
+  public raReportElement TextPOPIZNOS;
+  private String[] TextPOPIZNOSProps = new String[] {"POPIZNOS", "", "",
+     "Number|false|1|309|2|2|true|3|false", "", "", "Yes", "", "4800", "1540", "1300", "20", "",
+     "Light Gray", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement TextPOPOSN;
+  private String[] TextPOPOSNProps = new String[] {"POPOSN", "", "",
+     "Number|false|1|309|2|2|true|3|false", "", "", "Yes", "", "3200", "1540", "1300", "20", "",
+     "Light Gray", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  
+  public raReportElement Line5;
+  private String[] Line5Props = new String[] {"", "No", "660", "1600", "5440", "0", "", "", ""};
+  
   public raReportElement TextSLOVIMA;
   private String[] TextSLOVIMAProps = new String[] {"SLOVIMA", "", "", "", "", "", "Yes", "", "900",
      "1800", "8500", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
@@ -149,6 +181,14 @@ public class raIzlazSectionFooterLines extends raReportSection {
     LabelUkupno_s_porezom = addModel(ep.LABEL, LabelUkupno_s_porezomProps);
     Line2 = addModel(ep.LINE, Line2Props);
     Line3 = addModel(ep.LINE, Line3Props);
+    Line4 = addModel(ep.LINE, Line4Props);
+    TextPOPNASLOV = addModel(ep.TEXT, TextPOPNASLOVProps);
+    TextPOPPOST = addModel(ep.TEXT, TextPOPPOSTProps);
+    TextPOPCRTICA = addModel(ep.TEXT, TextPOPCRTICAProps);
+    TextPOPNAZ = addModel(ep.TEXT, TextPOPNAZProps);
+    TextPOPIZNOS = addModel(ep.TEXT, TextPOPIZNOSProps);
+    TextPOPOSN = addModel(ep.TEXT, TextPOPOSNProps);
+    Line5 = addModel(ep.LINE, Line5Props);
     TextSLOVIMA = addModel(ep.TEXT, TextSLOVIMAProps);
     LabelSlovima_ = addModel(ep.LABEL, LabelSlovima_Props);
   }
