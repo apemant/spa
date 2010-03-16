@@ -202,11 +202,32 @@ public class raAutoOtpfromRac {
 					.getString(ncskl))) {
 				return -2;
 			}
-
+			int ret = fillStavka(stavke_rac);
+			if (ret != 0) return ret;
 			
 		}
 		return 0;
 	}
+	
+	protected int breakStavke() {
+
+      for (stavke_rac.first(); stavke_rac.inBounds(); stavke_rac.next()) {
+
+          if (!smijem_li_dalje()) {
+              stavke_rac.setString("STATUS", "P");
+              continue;
+          }
+
+          if (!lD.raLocate(zaglavlja_otp, "CSKL", stavke_rac
+                  .getString(ncskl))) {
+              return -2;
+          }
+          int ret = fillStavka(stavke_rac);
+          if (ret != 0) return ret;
+          
+      }
+      return 0;
+    }
 
 	protected void makeZaglavlja() {
       boolean datToday = frmParam.getParam("robno", "otpToday", "D",
@@ -359,7 +380,7 @@ public class raAutoOtpfromRac {
 		}
 		makeZaglavlja();
 		if (zaglavlja_otp.getRowCount() != 0) {
-			int ret = makeStavke();
+			int ret = vrdok.equals("ROT") ? breakStavke() : makeStavke();
 			if (ret != 0)
 				return ret;
 		}
