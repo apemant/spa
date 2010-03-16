@@ -21,16 +21,22 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.RN;
 import hr.restart.baza.RN_subjekt;
 import hr.restart.baza.dM;
+import hr.restart.baza.stdoki;
+import hr.restart.baza.vtrabat;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
+import hr.restart.util.sysoutTEST;
 import hr.restart.util.reports.raReportData;
 import hr.restart.util.reports.raStringCache;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
@@ -85,7 +91,7 @@ public class repIzlazni implements raReportData {
       checkSpecGroup();
       lastDok = getFormatBroj();
     }
-    setParams();
+  	setParams();
     cache.clear();
     //dm.getVTText().refresh();    
   }
@@ -1059,8 +1065,107 @@ public BigDecimal getIPRODSP() {
   static BigDecimal DPOSTO;
   
 //  static DataSet qdsIzd_porez = null;
+  
+  static VarStr POPNASLOV;
+  static VarStr POPPOST;
+  static VarStr POPCRTICA;
+  static VarStr POPNAZ;
+  static VarStr POPIZNOS;
+  static VarStr POPOSN;
+  
+  static class Rabat {
+  	String ckey;
+  	String naziv;
+  	BigDecimal posto;
+  	BigDecimal osn;
+  	BigDecimal iznos;
+  	
+  	public Rabat(DataSet ds) {
+  		ckey = ds.getString("CRAB");
+  		posto = ds.getBigDecimal("PRAB");
+  		iznos = ds.getBigDecimal("IRAB");
+  		osn = Aus.zero2;
+  		naziv = "";
+  	}
+
+  	public String getKey() {
+  		return ckey + "-" + posto;
+  	}
+  }
+  
+  protected void rekapPopust() {
+  	POPNASLOV=new VarStr();
+  	POPPOST=new VarStr();
+  	POPCRTICA=new VarStr();
+  	POPNAZ=new VarStr();
+  	POPIZNOS=new VarStr();
+  	POPOSN=new VarStr();
+  	if (!frmParam.getParam("robno", "showPopust", "N",
+  		"Prikazati rekapitulaciju popusta na izlaznim raèunima (D,N)").equals("D")) return;
+	
+		DataSet pops = vtrabat.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ds));
+		pops.open();
+		System.out.println("RABATI: " + ds);
+		pops.setSort(new SortDescriptor(new String[] {"RBR", "LRBR"}));
+		DataSet stav = stdoki.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ds));
+		stav.open();
+		HashMap rabs = new HashMap();
+		BigDecimal sumarabat = Aus.zero2;
+		short lastrbr = -1;
+		for (pops.first(); pops.inBounds(); pops.next()) {
+			if (pops.getShort("RBR") == 0) continue;
+			
+			lD.raLocate(stav, "RBR", "" + pops.getShort("RBR"));
+			if (lastrbr != pops.getShort("RBR")) {
+				sumarabat = Aus.zero2;
+				lastrbr = pops.getShort("RBR");
+			}
+			BigDecimal osnovica = stav.getBigDecimal("INETO");
+			if (pops.getString("RABNARAB").equalsIgnoreCase("D"))
+				osnovica = osnovica.subtract(sumarabat);
+			sumarabat = sumarabat.add(pops.getBigDecimal("IRAB"));
+			Rabat r = new Rabat(pops);
+			Rabat o = (Rabat) rabs.get(r.getKey());
+			if (o == null) {
+				r.osn = osnovica;
+				lD.raLocate(dm.getRabati(), "CRAB", pops.getString("CRAB"));
+				r.naziv = dm.getRabati().getString("NRAB");
+				rabs.put(r.getKey(), r);
+			} else {
+				o.iznos = o.iznos.add(pops.getBigDecimal("IRAB"));
+				o.osn = o.osn.add(osnovica);
+			}
+		}
+		System.out.println(rabs);
+		if (rabs.size() == 0) return;
+		
+		POPNASLOV.append("REKAPITULACIJA POPUSTA");
+		POPNAZ.append("Vrsta");
+		POPPOST.append("%");
+		POPOSN.append("Osnovica");
+		POPIZNOS.append("Iznos");
+		
+		ArrayList sorted = new ArrayList();
+		pops.setSort(new SortDescriptor(new String[] {"LRBR" , "CRAB"}));
+		for (pops.first(); pops.inBounds(); pops.next()) {
+			Rabat r = new Rabat(pops);
+			if (rabs.containsKey(r.getKey()))
+				sorted.add(rabs.remove(r.getKey()));
+		}
+		
+		for (Iterator i = sorted.iterator(); i.hasNext(); ) {
+			Rabat r = (Rabat) i.next();
+			POPNAZ.append('\n').append(r.naziv);
+			POPCRTICA.append("\n-");
+			POPPOST.append('\n').append(Aus.formatBigDecimal(r.posto));
+			POPOSN.append('\n').append(Aus.formatBigDecimal(r.osn));
+			POPIZNOS.append('\n').append(Aus.formatBigDecimal(r.iznos));
+		}
+  }
 
   protected void rekapPorez(){
+  	rekapPopust();
+  	
     CPOR=new VarStr();
     UKUPOR=new VarStr();
     IPRODBP=new VarStr();
@@ -1138,6 +1243,30 @@ public BigDecimal getIPRODSP() {
     return separator.toString();
   }
 
+  public String getPOPNASLOV() {
+  	return POPNASLOV.toString();
+  }
+  
+  public String getPOPNAZ() {
+  	return POPNAZ.toString();
+  }
+  
+  public String getPOPCRTICA() {
+  	return POPCRTICA.toString();
+  }
+  
+  public String getPOPPOST() {
+  	return POPPOST.toString();
+  }
+  
+  public String getPOPOSN() {
+  	return POPOSN.toString();
+  }
+  
+  public String getPOPIZNOS() {
+  	return POPIZNOS.toString();
+  }
+  
   public String getPNBZ2(){
     return ds.getString("PNBZ2");
   }
@@ -1628,6 +1757,7 @@ public BigDecimal getIPRODSP() {
   boolean hideKup = false;
   boolean specChars = false;
   boolean iznosPop = false;
+  boolean showPop = false;
   private void setParams() {
     modParams();
     conVl = frmParam.getParam("robno","ConVl","N",
@@ -1642,6 +1772,8 @@ public BigDecimal getIPRODSP() {
         "Staviti matièni broj (MB) ili OIB?");
     hideKup = frmParam.getParam("robno", "kupacHack", "N",
         "Omoguæiti skrivanje kupca na gotovinskim raèunima (D,N)").equals("D");
+    showPop = frmParam.getParam("robno", "showPopust", "N",
+    	"Prikazati rekapitulaciju popusta na izlaznim raèunima (D,N)").equals("D");
   }
 
   private void modParams() {
@@ -1670,4 +1802,5 @@ public BigDecimal getIPRODSP() {
   //-------------------------------------------------------------
 
 }
+
 
