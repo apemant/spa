@@ -62,13 +62,13 @@ public class raEDI {
         "", "Šifra dobavljaèa za Getro");
   	
   	Element root = doc.getRootElement();
-    if (!root.getName().equals("Document")) 
-      throw new RuntimeException("Pogrešan format datoteke!");
+    if (!root.getName().equals("Order")) 
+      throw new RuntimeException("Pogrešan format datoteke: '"+root.getName()+"'");
     
-    List docs = root.getChildren("Order");
-    System.out.println("loop started");
-    for (Iterator n = docs.iterator(); n.hasNext(); ) {
-      Element nar = (Element) n.next();
+//    List docs = root.getChildren("Order");
+//    System.out.println("loop started");
+//    for (Iterator n = docs.iterator(); n.hasNext(); ) {
+      Element nar = root;//(Element) n.next();
       System.out.println("nar: " + nar);
 
       Element party = nar.getChild("OrderParty");
@@ -89,12 +89,17 @@ public class raEDI {
       zag.setString("VRDOK", "NKU");
       zag.setInt("CPAR", Integer.parseInt(gsif));
       zag.setTimestamp("DATDOK", getTimestamp(head, "OrderIssueDate", null));
-      zag.setTimestamp("DATDOSP", getTimestamp(head, "RequestedDeliverByDate", "RequestedDeliverByTime"));
+      zag.setTimestamp("DATDOSP", getTimestamp(head, "RequestedDeliverDate", null));
       
       zag.setString("GOD", hr.restart.util.Util.getUtil().
           getYear(zag.getTimestamp("DATDOK")));
-      if (pj != null && pj.length() > 0)
-      	zag.setInt("PJ", Integer.parseInt(pj));
+      if (pj != null && pj.length() > 0) {
+        try {
+          zag.setInt("PJ", Integer.parseInt(pj));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
       
       String vri = head.getChildText("RequestedDeliverByTime");
       if (vri != null) {
@@ -127,7 +132,7 @@ public class raEDI {
       }
       
       saveOrder(zag, st);
-    }
+//    }
   }
   
   private static void saveOrder(final QueryDataSet zag, final QueryDataSet st) {
@@ -157,9 +162,12 @@ public class raEDI {
     String sd = parent.getChildText(date);
     String st = parent.getChildText(time);
     Calendar cal = Calendar.getInstance();
+    //2010-03-02T09:25:45
     cal.set(cal.YEAR, Integer.parseInt(sd.substring(0, 4)));
-    cal.set(cal.MONTH, Integer.parseInt(sd.substring(4, 6)) - 1);
-    cal.set(cal.DAY_OF_MONTH, Integer.parseInt(sd.substring(6, 8)));
+//    cal.set(cal.MONTH, Integer.parseInt(sd.substring(4, 6)) - 1);
+    cal.set(cal.MONTH, Integer.parseInt(sd.substring(5, 7)) - 1);
+//    cal.set(cal.DAY_OF_MONTH, Integer.parseInt(sd.substring(6, 8)));
+    cal.set(cal.DAY_OF_MONTH, Integer.parseInt(sd.substring(8, 10)));
     if (time != null) {
       cal.set(cal.HOUR_OF_DAY, Integer.parseInt(st.substring(0, 2)));
       cal.set(cal.MINUTE, Integer.parseInt(st.substring(2, 4)));

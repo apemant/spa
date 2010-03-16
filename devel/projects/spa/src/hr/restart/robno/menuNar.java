@@ -48,6 +48,7 @@ public class menuNar extends JMenu {
   JMenuItem jmNDO = new JMenuItem();
   JMenuItem jmNKU = new JMenuItem();
   JMenuItem jmNKUedi = new JMenuItem();
+  JMenuItem jmNKUedi2 = new JMenuItem();
   
   JFileChooser fc = new JFileChooser();
 
@@ -95,6 +96,12 @@ public class menuNar extends JMenu {
         jmNKUedi_actionPerformed(e);
       }
     });
+    jmNKUedi2.setText("Preuzimanje narudžbi kupca putem EDI");
+    jmNKUedi2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmNKUedi2_actionPerformed(e);
+      }
+    });
     this.add(jmZAH);
     this.add(jmUZP);
     this.add(jmNDO);
@@ -102,12 +109,15 @@ public class menuNar extends JMenu {
     frmParam.getParam("robno", "ediCskl", "",
       "Šifra OJ ili skladišta za EDI narudžbe");
     if (frmParam.getParam("robno", "ediOrder", "N",
-        "Omoguæiti import narudžbi kupca preko EDI (D,N)").equals("D")) {
+        "Omoguæiti import narudžbi kupca preko EDI (D,N,I)").equals("D")) {
       this.add(jmNKUedi);
       fc.setCurrentDirectory(new File("."));
       FileFilter ff = new raFileFilter("EDI XML datoteke (*.xml)");
       fc.addChoosableFileFilter(ff);
       fc.setFileFilter(ff);
+    } else if (frmParam.getParam("robno", "ediOrder", "N",
+    "Omoguæiti import narudžbi kupca preko EDI (D,N,I)").equals("I")) {
+      this.add(jmNKUedi2);
     }
   }
   void jmZAH_actionPerformed(ActionEvent e) {
@@ -127,6 +137,9 @@ public class menuNar extends JMenu {
     presNKU.getPres().showJpSelectDoc("NKU", ranku, true, "Narudžbe kupca");
   }
   
+  void jmNKUedi2_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.robno.frmEDI", jmNKUedi2.getText());
+  }
   void jmNKUedi_actionPerformed(ActionEvent e) {
     if (fc.showOpenDialog(null) == fc.APPROVE_OPTION) {
       
