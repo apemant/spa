@@ -260,7 +260,7 @@ public class ImageLoad implements ActionListener{
   public static ImageIcon loadImage(String protocol, String file) {
     if (protocol.equals("ftp")) {
         ImageIcon imi = new raImageUtil().loadImage(file);
-        lastF = raImageUtil.lastLoadedFile;
+        lastF = raImageUtil.getLastLoadedFile();
         return imi;
     } else if (protocol.equals("file")) {
         try {
