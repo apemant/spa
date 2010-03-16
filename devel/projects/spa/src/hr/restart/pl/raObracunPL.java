@@ -1252,13 +1252,20 @@ sysoutTEST ST = new sysoutTEST(false);
       odbiciobr.insertRow(false);
       setValues(_odbiciobr, odbiciobr);
       odbiciobr.post();
-      
-      
       kumulrad.setBigDecimal("KREDITI",kumulrad.getBigDecimal("KREDITI").add(odbiciobr.getBigDecimal("OBRIZNOS")));
       kumulrad.setBigDecimal("NARUKE",kumulrad.getBigDecimal("NARUKE").add(odbiciobr.getBigDecimal("OBRIZNOS").negate()));
-//        addBigDec_kumulorg("KREDITI",kumulrad.getBigDecimal("KREDITI"));
-//        addBigDec_kumulorg("NARUKE",kumulrad.getBigDecimal("NARUKE"));
+    } else if (harachset.getRowCount() > 0 && !obrkredita && harachosnovica.signum() > 0) {//obracun fixnog haracha ali ne i kredita, 
+      try {
+        BigDecimal[] stopaIznos = calcOdbiciRadnik(harachset,"NARUKE",true);
+        kumulrad.setBigDecimal("KREDITI",kumulrad.getBigDecimal("KREDITI").add(stopaIznos[1]));
+//        kumulrad.setBigDecimal("NARUKE",kumulrad.getBigDecimal("NARUKE").add(stopaIznos[1].negate()));
+        addBigDec_kumulorg("KREDITI",kumulrad.getBigDecimal("KREDITI"));
+        addBigDec_kumulorg("NARUKE",kumulrad.getBigDecimal("NARUKE"));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
+    
   }
 
   
