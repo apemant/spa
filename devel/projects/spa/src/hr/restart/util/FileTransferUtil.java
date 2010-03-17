@@ -14,6 +14,7 @@ import com.oroinc.net.ftp.FTPReply;
 public class FileTransferUtil {
   Properties props;
   boolean isFS;
+  private FTPClient ncftp = null;
   public FileTransferUtil() {
   }
   /**
@@ -26,7 +27,8 @@ public class FileTransferUtil {
     isFS = _p.getProperty("type", "ftp").equalsIgnoreCase("fs"); 
   }
   protected FTPClient getNetComponentsFTPClient() throws Exception {
-    FTPClient ncftp = new FTPClient();
+    if (ncftp != null && ncftp.isConnected()) return ncftp;
+    ncftp = new FTPClient();
     ncftp.connect(props.getProperty("url"));
     int reply = ncftp.getReplyCode();
     if (!FTPReply.isPositiveCompletion(reply)) 
@@ -67,18 +69,27 @@ public class FileTransferUtil {
       e.printStackTrace();
       return false;
     } finally {
-      close(ftp);
+      closeFTP();
     }
   }
   private void close(FTPClient ftp) {
     try {
-      if (ftp != null) ftp.disconnect();
+      if (ftp != null) {
+        ftp.disconnect();
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
+  public void closeFTP() {
+    close(ncftp);
+    ncftp = null;
+  }
   public static File lastLoadedFile;
   public File loadFile(String name) {
+    return loadFile(name, false);
+  }
+  public File loadFile(String name, boolean stayConnected) {
     if (isFS) {
       try {
         return new File(props.getProperty("serverlib")+File.separator+name);
@@ -108,7 +119,7 @@ public class FileTransferUtil {
       e.printStackTrace();
       return null;
     } finally {
-      close(ftp);
+      if (!stayConnected) closeFTP();//(ftp);
 //      if (temp != null) temp.delete();
       lastLoadedFile = temp;
     }
@@ -134,7 +145,7 @@ public class FileTransferUtil {
       e.printStackTrace();
       return false;
     } finally {
-      close(ftp);
+      closeFTP();
     }
   }
   public String[] list() {
@@ -149,7 +160,7 @@ public class FileTransferUtil {
       e.printStackTrace();
       return null;
     } finally {
-      close(ftp);
+      closeFTP();
     }
   }
 }
