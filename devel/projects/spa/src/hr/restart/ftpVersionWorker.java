@@ -25,6 +25,7 @@ package hr.restart;
 
 import hr.restart.db.ftpTransfer;
 import hr.restart.util.FileHandler;
+import hr.restart.util.FileTransferUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,8 +52,14 @@ public class ftpVersionWorker {
   private static Properties verProps;
   private static Properties pversions;
   private static Properties pversions_local;
+  private static FileTransferUtil ftu = null;
   
   protected ftpVersionWorker() {
+  }
+  private static FileTransferUtil getFileTransferUtil() {
+    if (verProps == null) verProps = getVersionProperties(); //malo vjerojatno :)
+    if (ftu == null) ftu = new FileTransferUtil(verProps);
+    return ftu;
   }
   static int start() throws Exception {
     if (verProps == null) verProps = getVersionProperties();
@@ -67,6 +74,7 @@ public class ftpVersionWorker {
     transferNewResources();
     start();
   }
+  
   public static void transferNewResources() throws Exception {
     verProps = getVersionProperties();
     String CVFile = verProps.getProperty("locallib")+File.separator+CHECKVERSIONFILE;
@@ -90,7 +98,8 @@ public class ftpVersionWorker {
       if (!checkVersion(pverkey)) getFile(pverkey, "Instalacija nove verzije ("+no_curr+"/"+no_all+") ...");
       no_curr++;
     }
-    cleanNcftp();
+//    cleanNcftp();
+    getFileTransferUtil().closeFTP();
     //obrisi kojih vise nema
     no_curr = 1;
     while (pverkeys_local.hasMoreElements()) {
@@ -128,39 +137,52 @@ public class ftpVersionWorker {
   private static void getFile(String fileName) throws Exception {
     getFile(fileName, null);
   }
-  private static boolean downloadFromURL(String fileName) {
+//  private static boolean downloadFromURL(String fileName) {
+//    try {
+//      java.net.URL url = new java.net.URL("ftp://" 
+//            +verProps.getProperty("user")+":"
+//            +verProps.getProperty("pass")+"@"
+//            +verProps.getProperty("url")+":"
+//            +verProps.getProperty("port")+"/"
+//            +verProps.getProperty("serverlib")
+//            +"/"
+//            +fileName
+//      );
+//      java.io.InputStream stream = url.openStream();
+//      File file = new File(verProps.getProperty("locallib")+File.separator+fileName);
+//      FileOutputStream outstr = new FileOutputStream(file);
+//      int ch;
+//      while ((ch = stream.read())>-1) outstr.write(ch);
+//      outstr.close();
+//      return true;
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//      return false;
+//    }
+//  }
+//  private static boolean downloadWithCustomClient(String fileName) {
+//    File file = new File(verProps.getProperty("locallib")+File.separator+fileName);
+//    return ftpTransfer.getftpTransfer(true).get(
+//        verProps.getProperty("url"), 
+//        Integer.parseInt(verProps.getProperty("port")), 
+//        verProps.getProperty("user"), 
+//        verProps.getProperty("pass"),
+//        verProps.getProperty("serverlib"), 
+//        file);
+//  }
+  private static boolean downloadFile(String fileName) throws Exception {
     try {
-      java.net.URL url = new java.net.URL("ftp://" 
-            +verProps.getProperty("user")+":"
-            +verProps.getProperty("pass")+"@"
-            +verProps.getProperty("url")+":"
-            +verProps.getProperty("port")+"/"
-            +verProps.getProperty("serverlib")
-            +"/"
-            +fileName
-      );
-      java.io.InputStream stream = url.openStream();
-      File file = new File(verProps.getProperty("locallib")+File.separator+fileName);
-      FileOutputStream outstr = new FileOutputStream(file);
-      int ch;
-      while ((ch = stream.read())>-1) outstr.write(ch);
-      outstr.close();
+      File dlf = getFileTransferUtil().loadFile(fileName, true);
+      File f = new File(verProps.getProperty("locallib")+File.separator+fileName);
+//      dlf.renameTo(f);
+      FileHandler.copy(dlf, f);
       return true;
     } catch (Exception e) {
       e.printStackTrace();
       return false;
     }
   }
-  private static boolean downloadWithCustomClient(String fileName) {
-    File file = new File(verProps.getProperty("locallib")+File.separator+fileName);
-    return ftpTransfer.getftpTransfer(true).get(
-        verProps.getProperty("url"), 
-        Integer.parseInt(verProps.getProperty("port")), 
-        verProps.getProperty("user"), 
-        verProps.getProperty("pass"),
-        verProps.getProperty("serverlib"), 
-        file);
-  }
+  /*
   private static boolean downloadWithNetComponents(String fileName) throws Exception {
     FTPClient c = getNetComponentsFTPClient();
 //    FileHandler fh = new FileHandler(verProps.getProperty("locallib")+File.separator+fileName);
@@ -172,35 +194,36 @@ public class ftpVersionWorker {
     fos.close();
     return ret;
   }
+  */
   //Netcomponents
-  private static FTPClient ncftp = null; 
-  private static FTPClient getNetComponentsFTPClient() throws Exception {
-    if (ncftp == null) {
-      ncftp = new FTPClient();
-      ncftp.connect(verProps.getProperty("url"));
-      int reply = ncftp.getReplyCode();
-      if (!FTPReply.isPositiveCompletion(reply)) {
-        throw new Exception("Server refuses connection");
-      }
-      ncftp.login(verProps.getProperty("user"),verProps.getProperty("pass"));
-      ncftp.setFileType(FTPClient.IMAGE_FILE_TYPE);
-      ncftp.changeWorkingDirectory(verProps.getProperty("serverlib"));
-    }
-    return ncftp;
-  }
-  private static void cleanNcftp() {
-    try {
-      if (ncftp != null) {
-        ncftp.disconnect();
-        ncftp = null;
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-  private static boolean isBSDftpd() {
-    return verProps.getProperty("ftpdtype").equalsIgnoreCase("bsd");
-  }
+//  private static FTPClient ncftp = null; 
+//  private static FTPClient getNetComponentsFTPClient() throws Exception {
+//    if (ncftp == null) {
+//      ncftp = new FTPClient();
+//      ncftp.connect(verProps.getProperty("url"));
+//      int reply = ncftp.getReplyCode();
+//      if (!FTPReply.isPositiveCompletion(reply)) {
+//        throw new Exception("Server refuses connection");
+//      }
+//      ncftp.login(verProps.getProperty("user"),verProps.getProperty("pass"));
+//      ncftp.setFileType(FTPClient.IMAGE_FILE_TYPE);
+//      ncftp.changeWorkingDirectory(verProps.getProperty("serverlib"));
+//    }
+//    return ncftp;
+//  }
+//  private static void cleanNcftp() {
+//    try {
+//      if (ncftp != null) {
+//        ncftp.disconnect();
+//        ncftp = null;
+//      }
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
+//  }
+//  private static boolean isBSDftpd() {
+//    return verProps.getProperty("ftpdtype").equalsIgnoreCase("bsd");
+//  }
   private static void getFile(String fileName, String message) throws Exception {
     //provjeri jel ima lib
     File locallib = new File(verProps.getProperty("locallib"));
@@ -211,7 +234,8 @@ public class ftpVersionWorker {
     
     //boolean transfered = isBSDftpd()?downloadWithCustomClient(fileName):downloadFromURL(fileName);
     //boolean transfered = downloadWithCustomClient(fileName);
-    boolean transfered = downloadWithNetComponents(fileName);
+//    boolean transfered = downloadWithNetComponents(fileName);
+    boolean transfered = downloadFile(fileName);
     if (!transfered) throw new Exception("Transfer datoteke "+fileName+" neuspjesan !!");
     ftpStart.splashMessg(message+" uspjeh!");
   }
