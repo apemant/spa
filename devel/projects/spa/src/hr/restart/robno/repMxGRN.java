@@ -204,10 +204,10 @@ public class repMxGRN extends mxReport {
 //                                              "' and rate.cskl= '" + cskl + "' group by naznacpl");
 
 
-    QueryDataSet npos = hr.restart.util.Util.getUtil().getNewQueryDataSet("SELECT max(nacpl.naznacpl) as naznacpl, sum(rate.irata) as irata FROM rate,nacpl "+
+    QueryDataSet npos = hr.restart.util.Util.getUtil().getNewQueryDataSet("SELECT nacpl.naznacpl, sum(rate.irata) as irata FROM rate,nacpl "+
                                               "WHERE rate.cnacpl = nacpl.cnacpl "+
                                               "and rate.brdok = " + brdok + " and rate.vrdok = '"+vrdok+"' and rate.god='"+ Aut.getAut().getKnjigodRobno() +
-                                              "' and rate.cskl= '" + cskl + "' group by naznacpl");
+                                              "' and rate.cskl= '" + cskl + "' group by nacpl.naznacpl");
     hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
     syst.prn(npos);
     npos.first();
