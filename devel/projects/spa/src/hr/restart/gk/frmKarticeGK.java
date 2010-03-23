@@ -906,6 +906,11 @@ System.out.println(queryString);
   public QueryDataSet getRepQDS() {
     return outSet;
   }
+  
+  public void beforeReport() {
+    fkgk = this;
+    super.beforeReport();
+  }
 
   public void showDefaultValues() {
 //    kontoPanel.jlrKontoBroj.setText("");
