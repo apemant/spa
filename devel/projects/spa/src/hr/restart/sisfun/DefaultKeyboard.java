@@ -66,7 +66,11 @@ public class DefaultKeyboard implements Keyboard{
   }
 
   private void autoAdapt_impl() {
-    Toolkit.getDefaultToolkit().setLockingKeyState(KeyEvent.VK_CAPS_LOCK, false);
+    try {
+      Toolkit.getDefaultToolkit().setLockingKeyState(KeyEvent.VK_CAPS_LOCK, false);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     try {
       Borg.flush();
     } catch (Exception e) {}
