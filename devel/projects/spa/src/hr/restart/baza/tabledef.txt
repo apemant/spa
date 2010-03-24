@@ -585,6 +585,7 @@ CNACPL;char;3;;;Na\u10din plaæanja
 CNAMJ;char;3;;;Namjena robe
 CNAC;char;3;;;Naèin otpreme
 KNJIG;text;12;pkey;01;Knjigovodstvo
+ZIRO;char;40;;;Žiro raèun;15
 IDX=cpar
 IDX=pj
 

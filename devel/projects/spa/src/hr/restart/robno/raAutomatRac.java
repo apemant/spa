@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Orgstruktura;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
@@ -27,6 +28,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.*;
+import hr.restart.zapod.dlgGetKnjig;
 import hr.restart.zapod.frmUgovori;
 
 import java.awt.BorderLayout;
@@ -47,6 +49,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -546,9 +549,9 @@ public class raAutomatRac extends raFrame {
                                 .getCurrentKnjigziro(),
                         new String[] { "CORG" },
                         new String[] { hr.restart.zapod.OrgStr.getKNJCORG() });
-        jlrZiro.setText(hr.restart.zapod.OrgStr.getOrgStr()
-                .getCurrentKnjigziro().getString("ZIRO"));
-        // jlrZiro
+//        jlrZiro.setText(hr.restart.zapod.OrgStr.getOrgStr()
+//                .getCurrentKnjigziro().getString("ZIRO"));
+         jlrZiro.setText("");
         if (DummyArtiklSet.getRowCount() == 1)
             jlrCART.keyF9Pressed();
 
@@ -878,7 +881,8 @@ public class raAutomatRac extends raFrame {
             jlrCVRUGO.setText("");
             jlrCVRUGO.emptyTextFields();
             
-            if (jlrZiro.getRaDataSet().getRowCount() > 1) jlrZiro.setText("");
+//            if (jlrZiro.getRaDataSet().getRowCount() > 1) 
+              jlrZiro.setText("");
             escPresBefore = true;
 
             jlrCORG.requestFocusLater();
@@ -995,7 +999,21 @@ public class raAutomatRac extends raFrame {
     void danidosp_focusLost(FocusEvent e) {
         dvo_focusLost(null);
     }
-
+    private String getZiro(ReadRow zag) {
+      String p1 = jlrZiro.getText().trim();
+      String p2 = zag.getString("ZIRO").trim();
+      return (
+          p1.length()>0?p1:
+            p2.length()>0?p2:
+              izmisliZiro());
+    }
+    private String izmisZR = null;
+    private String izmisliZiro() {
+      if (izmisZR != null) return izmisZR;
+      QueryDataSet tajoj = Orgstruktura.getDataModule().getFilteredDataSet(Condition.equal("CORG", dlgGetKnjig.getKNJCORG()));
+      tajoj.open();
+      return (izmisZR = tajoj.getString("ZIRO"));
+    }
     public void addDoki(QueryDataSet zagugovora) {
         zagRac.insertRow(false);
         zagRac.setString("CUSER",
@@ -1042,7 +1060,7 @@ public class raAutomatRac extends raFrame {
         Util.getUtil().getBrojDokumenta(zagRac);
         alSEQS.add(new int[]{zagRac.getInt("BRDOK")});
         zagRac.setString("OPIS", changeMnemonics(jraNapomena.getText()));
-        zagRac.setString("ZIRO", jlrZiro.getText());
+        zagRac.setString("ZIRO", getZiro(zagugovora));
         zagRac.setString(
                 "PNBZ2",
                 raPozivNaBroj.getraPozivNaBrojClass().getPozivNaBroj(

@@ -21,6 +21,7 @@ import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Porezi;
 import hr.restart.baza.Ugovori;
+import hr.restart.baza.zirorn;
 import hr.restart.robno.Aut;
 import hr.restart.robno.frmDodatniTxt;
 import hr.restart.robno.raControlDocs;
@@ -1298,6 +1299,10 @@ System.out.println("Oðe bi trebao biti");
 		JlrNavField jlrNAZPJ = new JlrNavField();
 
 		JraButton jbGetPJ = new JraButton();
+		
+	  JlrNavField jdbZIRO = new JlrNavField();
+	  JLabel jLZiroOrg = new JLabel("Žiro raèun");
+	  JraButton jBgetZiro = new JraButton();
 
 		JlrNavField jlrCPAR = new JlrNavField() {
 			public void after_lookUp() {
@@ -1317,6 +1322,17 @@ System.out.println("jlrCPAR_after_lookUp()");
 		};
 
 		public void dodatakJelima() {
+	   
+		  jdbZIRO.setColumnName("ZIRO");
+	    jdbZIRO.setRaDataSet(zirorn.getDataModule().getFilteredDataSet(Condition.equal("CORG", dlgGetKnjig.getKNJCORG())));
+	    jdbZIRO.setFocusLostOnShow(false);
+	    jdbZIRO.setColNames(new String[] {"ZIRO"});
+	    jdbZIRO.setTextFields(new javax.swing.text.JTextComponent[] {jdbZIRO});
+	    jdbZIRO.setVisCols(new int[] {1});
+	    jdbZIRO.setHandleError(false);
+	    jdbZIRO.setSearchMode(1);
+	    jdbZIRO.setNavButton(jBgetZiro);
+
 
 			jlrFRANKA.setColumnName("CFRA");
 			jlrFRANKA.setVisCols(new int[] { 0, 1 });
@@ -1392,13 +1408,16 @@ System.out.println("jlrCPAR_after_lookUp()");
 			add(jlrCNAMJ, new XYConstraints(346, 220, 30, -1));
 			add(jlrNAZNAMJ, new XYConstraints(380, 220, 130, -1));
 			add(jbCNAMJ, new XYConstraints(515, 220, 21, 21));
-
+			
+			add(jLZiroOrg, new XYConstraints(15, 245, -1, -1));
+	    add(jdbZIRO, new XYConstraints(150, 245, 360, -1));
+	    add(jBgetZiro, new XYConstraints(515, 245, 21, 21));
 		}
 
 		public UgovoriMasterPanel() {
 			setLayout(xYLayout1);
 			xYLayout1.setWidth(540);
-			xYLayout1.setHeight(255);
+			xYLayout1.setHeight(285);
 
 			// **** labele
 			jlUGOVOR.setText("Broj");
@@ -1578,6 +1597,7 @@ System.out.println("jlrCPAR_after_lookUp()");
 			jlrCNAC.setDataSet(ds);
 			jlrCNACPL.setDataSet(ds);
 			jlrCNAMJ.setDataSet(ds);
+			jdbZIRO.setDataSet(ds);
 
             jlrCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig()); 
             jlrNAZORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
