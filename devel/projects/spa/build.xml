@@ -407,6 +407,7 @@
 		<copy file="src/hr/restart/util/FileHandler.java" todir="ftpstart.tmp/hr/restart/util"/>
 		<copy file="src/hr/restart/util/VarStr.java" todir="ftpstart.tmp/hr/restart/util"/>
 		<copy file="src/hr/restart/util/Encrypter.java" todir="ftpstart.tmp/hr/restart/util"/>
+		<copy file="src/hr/restart/util/FileTransferUtil.java" todir="ftpstart.tmp/hr/restart/util"/>
 		<copy file="src/hr/restart/util/versions/raVersionInfo.java" todir="ftpstart.tmp/hr/restart/util/versions"/>
 		
 		<unjar src="thirdparty-jars/NetComponents.jar" dest="ftpstart.cls"/>
