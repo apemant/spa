@@ -1437,7 +1437,7 @@ String getPripOrgAm(String str, String corgTable) {
         datLik = " and os_sredstvo.datlikvidacije <= "+zavDat+" and os_sredstvo.datlikvidacije is not null ";
       String qStr="";
       qStr= "select max(os_promjene.dokument) as dokument, max(os_sredstvo.corg2) as corg, max(os_sredstvo.brojkonta) as brojkonta, max(os_sredstvo.cgrupe) as cgrupe, max(os_sredstvo.clokacije) as clokacije, "+
-            "max(os_sredstvo.cskupine) as cskupine, max(os_sredstvo.cartikla) as cartikla, max(os_sredstvo.invbroj) as invbr, max(os_sredstvo.nazsredstva) as nazsredstva, max(os_promjene.datpromjene) as datum, "+
+            "max(os_sredstvo.cskupine) as cskupine, max(os_sredstvo.cartikla) as cartikla, max(os_sredstvo.invbroj) as invbr, max(os_sredstvo.nazsredstva) as nazsredstva, max(os_sredstvo.datpromjene) as datum, "+
             "sum(os_promjene.osnpocetak) as osnpocetak, sum(os_promjene.isppocetak) as isppocetak, "+
             "sum(os_promjene.osnduguje) as osnduguje, sum(os_promjene.osnpotrazuje) as osnpotrazuje, sum(os_promjene.ispduguje) as ispduguje, sum(os_promjene.isppotrazuje) as isppotrazuje "+
             "from os_sredstvo "+

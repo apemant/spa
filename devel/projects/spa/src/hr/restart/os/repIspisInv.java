@@ -21,6 +21,7 @@ import hr.restart.robno._Main;
 import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.robno.repUtil;
+import hr.restart.util.reports.raReportData;
 
 import com.borland.dx.dataset.DataSet;
 /**
@@ -32,7 +33,7 @@ import com.borland.dx.dataset.DataSet;
  * @version 1.0
  */
 
-public class repIspisInv implements sg.com.elixir.reportwriter.datasource.IDataProvider
+public class repIspisInv implements raReportData, sg.com.elixir.reportwriter.datasource.IDataProvider
 {
 
   _Main main;
@@ -149,6 +150,15 @@ public class repIspisInv implements sg.com.elixir.reportwriter.datasource.IDataP
   }
   public String getDatumIsp(){
     return rdu.dataFormatter(val.getToday());
+  }
+
+  public raReportData getRow(int i) {
+    ds.goToRow(i);
+    return this;
+  }
+
+  public int getRowCount() {
+    return ds.getRowCount();
   }
 
 }

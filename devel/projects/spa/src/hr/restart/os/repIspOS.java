@@ -303,15 +303,24 @@ public class repIspOS implements raReportData {
         tempOL="artiklu";
         break;
     }
-    if (iosng.getOblikListe()){
-      if(iosng.getPripadnostOrgJedinici())
-        return "( po org. jedinicama i "+tempOL+" s pripadajuæim org. jedinicama )";
-      return "( po org. jedinicama i "+tempOL+" )";
-    } else {
-      if(iosng.getPripadnostOrgJedinici())
-        return "( po org. jedinicama s pripadajuæim org. jedinicama )";
-      return "( po org. jedinicama )";
-    }
+//    if (iosng.getOblikListe()){
+//      if(iosng.getPripadnostOrgJedinici()) {
+//        if (iosng.getPoOrgJedinici())
+//          return "( po org. jedinicama i "+tempOL+" s pripadajuæim org. jedinicama )";
+//        return "(po "+tempOL+" s pripadajuæim org. jedinicama )";
+//      }
+//      if (iosng.getPoOrgJedinici())
+//        return "( po org. jedinicama i "+tempOL+" )";
+//      return "(po "+tempOL+" )";
+//    } else {
+//      if(iosng.getPripadnostOrgJedinici())
+//        return "( po org. jedinicama s pripadajuæim org. jedinicama )";
+//      return "( po org. jedinicama )";
+//    }
+    String saprip = iosng.getPripadnostOrgJedinici()?"s pripadajuæim org. jedinicama":"";
+    String poorg = iosng.getPoOrgJedinici()?"po org. jedinicama":"";
+    String sve = iosng.getOblikListe()? (poorg + " i "+tempOL+" "+saprip) : (poorg + " " + saprip); 
+    return "( "+sve.trim()+" )";
   }
 
   public String getcaption3() {

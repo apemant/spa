@@ -198,7 +198,8 @@ public class ispInv extends raUpitLite {
     rows = prepareIspis();
     if (rows == 0) setNoDataAndReturnImmediately();
     killAllReports();
-    addReport("hr.restart.os.repIspisInv","Rekapitulacija", 5);
+    //addReport("hr.restart.os.repIspisInv","Rekapitulacija", 5);
+    addJasper("repIspisInv", "hr.restart.os.repIspisInv", "repIspisInv.jrxml", "Inventurna lista");
   }
 
   //******* report

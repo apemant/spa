@@ -233,7 +233,7 @@ public class ispOS_NextGeneration extends raUpitLite {
       }
       else if(!jcbOrgJed.isSelected() && jcbOblikListe.isSelected() && jcbInvBr.isSelected()) {
         System.out.println("\nOS_6\n");
-        this.addReport("hr.restart.os.repIspOS1","hr.restart.os.repIspOS","IspOS","Ispis osnovnih sredstava NEW");
+        this.addReport("hr.restart.os.repIspOS1","hr.restart.os.repIspOS","IspOS_06","Ispis osnovnih sredstava NEW");
 //        this.addReport("hr.restart.os.repIspisOS_6","hr.restart.os.repIspOS","IspisOS_6","Ispis osnovnih sredstava repIspisOS_6 OLD");
 //        this.addReport("hr.restart.os.repIspisOS_6","Ispis osnovnih sredstava", 5);
       }
