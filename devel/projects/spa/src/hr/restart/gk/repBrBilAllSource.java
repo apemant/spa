@@ -47,19 +47,21 @@ public class repBrBilAllSource implements raReportData {
 
   public repBrBilAllSource() {
     fbb = frmBrBilAll.getInstance();
-    if (fbb.isKompletnaBilanca()){
-      System.out.println("ds = fbb.getBroutoBilancaReportSet()"); //XDEBUG delete when no more needed
-      ds = fbb.getBroutoBilancaReportSet();
-    } else {
-      System.out.println("ds = fbb.getSintetikAnalitikSet()"); //XDEBUG delete when no more needed
-      ds = fbb.getSintetikAnalitikSet();
-    }
+    ds = getDS();
     ru.setDataSet(ds);
 //    sysoutTEST s = new sysoutTEST(false);
 //    s.prn(ds);
 //    s.showInFrame(ds,"...");
   }
-
+  public DataSet getDS() {
+    if (fbb.isKompletnaBilanca()){
+      System.out.println("ds = fbb.getBroutoBilancaReportSet()"); //XDEBUG delete when no more needed
+      return fbb.getBroutoBilancaReportSet();
+    } else {
+      System.out.println("ds = fbb.getSintetikAnalitikSet()"); //XDEBUG delete when no more needed
+      return fbb.getSintetikAnalitikSet();
+    }
+  }
   public raReportData getRow(int i) {
     ds.goToRow(i);
     return this;
