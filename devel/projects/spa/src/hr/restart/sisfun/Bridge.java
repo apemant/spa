@@ -63,6 +63,7 @@ public class Bridge implements Server.Service {
     while (true) {
       String line = br.readLine();
       if (line == null || line.equals("END")) break;
+      System.out.println("-> " + line);
       if (line.startsWith("GET ")) getTable(line.substring(4), pw);
       else if (line.startsWith("SELECT ")) query(line, pw);
       else if (line.startsWith("PUT ")) store(line.substring(4), br, pw);
@@ -76,7 +77,7 @@ public class Bridge implements Server.Service {
   
   void query(String q, PrintWriter out) {
     try {
-      QueryDataSet ds = Aus.q(q);
+      QueryDataSet ds = Aus.qq(q);
       VarStr f = new VarStr();
       for (int i = 0; i < ds.columnCount(); i++)
         if (ds.getColumn(i).getSqlType() != java.sql.Types.NULL)
