@@ -2062,16 +2062,16 @@ sysoutTEST ST = new sysoutTEST(false);
       }
     }
     
-    getRaQueryDataSet().first();
+    getRaQueryDataSet().last();
     do {
       if (!LegalDelete(true)) {
         return false;
       }
 
-    } while (getRaQueryDataSet().next());
+    } while (getRaQueryDataSet().prior());
 
     do {
-      getRaQueryDataSet().first();
+      getRaQueryDataSet().last();
       if (!LegalDelete(false,false)) {
         return false;
       }
@@ -2649,6 +2649,10 @@ ST.prnc(raQueryDataSet);
     return true;
   }
 ///////////////////////////////
+  
+  public boolean isDeletingAll() {
+    return deletingAll;
+  }
   
   // koje tablice i datasetove treba markirati kao promijenjene
   private Set markTables = new HashSet();
