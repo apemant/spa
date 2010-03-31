@@ -21,6 +21,7 @@ import hr.restart.start;
 import hr.restart.baza.Condition;
 import hr.restart.baza.ConsoleCreator;
 import hr.restart.baza.Knjigod;
+import hr.restart.baza.Refresher;
 import hr.restart.baza.dM;
 import hr.restart.robno.raDateUtil;
 import hr.restart.sisfun.frmParam;
@@ -75,6 +76,7 @@ import sg.com.elixir.reportwriter.xml.IModel;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.MetaDataUpdate;
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.ReadWriteRow;
 import com.borland.dx.dataset.RowFilterListener;
@@ -317,14 +319,16 @@ public class Aus {
    * pretvara string u bigdecimal. Pokusava i varijantu s decimalnom tockom i sa decimalnim zarezom.
    */
   public static BigDecimal getDecNumber(String snum) {
-    try {
-      return new BigDecimal(snum);
-    } catch (NumberFormatException e) {}
-    try {
-      return new BigDecimal(nf.parse(snum).doubleValue());
-    } catch (ParseException ex) {
-      return new BigDecimal(0);
-    }
+    VarStr v = new VarStr(snum);
+    int comma = v.lastIndexOf(',');
+    int dot = v.lastIndexOf('.');
+    int cnum = v.countOccurences(',');
+    int dnum = v.countOccurences('.');
+    if (comma > dot && cnum <= 1 || dnum > 1) {
+      v.remove('.');
+      v.replace(',', '.');
+    } else v.remove(',');
+    return new BigDecimal(v.toString());
   }
   
   /**
@@ -1107,6 +1111,22 @@ public class Aus {
   
   public static QueryDataSet q(String query) {
     return Util.getNewQueryDataSet(query, true);
+  }
+  
+  public static QueryDataSet qq(String query) {
+    QueryDataSet retSet = new com.borland.dx.sql.dataset.QueryDataSet();
+
+    retSet.setLocale(Aus.hr);
+    
+    retSet.setQuery(new QueryDescriptor(dM.getDataModule().getDatabase1(),query));
+    
+    Refresher.postpone();
+    
+    retSet.setMetaDataUpdate(retSet.getMetaDataUpdate() & ~MetaDataUpdate.ROWID);
+
+    retSet.open();
+
+    return retSet;
   }
   
   /**
