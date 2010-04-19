@@ -355,7 +355,8 @@ public class TypeDoc {
 
   public boolean isMnogostrukPrijenos(String what_kind_of_document){
     return ("OTP".equalsIgnoreCase(what_kind_of_document)||
-        "DOS".equalsIgnoreCase(what_kind_of_document));
+        "DOS".equalsIgnoreCase(what_kind_of_document)||
+        "PON".equalsIgnoreCase(what_kind_of_document));
 //    return false;
   }
 
