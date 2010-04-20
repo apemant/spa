@@ -469,9 +469,10 @@ public class frmCover extends raMatPodaci {
 //    bset.setBigDecimal("SALDO", bs.subtract(ts));
 //    view.setBigDecimal("SALDO", cs.subtract(ts));
     
-    if (!R2Handler.saveChangesInTransaction(new QueryDataSet[] {bset,view,pok})) {
-        dM.getDataModule().getSynchronizer().markAsDirty("pokriveni");
-    } else refreshBase();
+    if (R2Handler.saveChangesInTransaction(new QueryDataSet[] {bset,view,pok}))
+      refreshBase();
+    
+    dM.getDataModule().getSynchronizer().markAsDirty("pokriveni");
 //    base.getJpTableView().fireTableDataChanged();
     if (toNext) {
       if (!view.next()) getJpTableView().fireTableDataChanged();
