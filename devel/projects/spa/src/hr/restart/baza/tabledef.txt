@@ -82,7 +82,7 @@ VrstaPla;char;3;pkey;;VrstaPla
 BrojOtpr;char;10;;;BrojOtpr
 DatumOtpr;timestamp;;;;DatumOtpr
 DatumDVO;timestamp;;;;DatumDVO
-Napomena;char;50;;;Napomena
+Napomena;char;600;;;Napomena
 BrojNar;char;20;;;BrojNar
 DatumNar;timestamp;;;;DatumNar
 Vozilo;char;20;;;Vozilo
