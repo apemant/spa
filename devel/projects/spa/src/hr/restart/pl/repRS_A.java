@@ -20,6 +20,7 @@ package hr.restart.pl;
 import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.robno.repUtil;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
@@ -80,6 +81,9 @@ public class repRS_A implements sg.com.elixir.reportwriter.datasource.IDataProvi
     return hr.restart.zapod.OrgStr.getKNJCORG();
   }
 
+  public String getINFO() {
+    return frmParam.getParam("pl", "RSinfo", "", "Informacija koja se nalazi kod potpisa na RS obrascu npr. br.tel.");
+  }
   public String getNAZIV(){
     ld.raLocate(dm.getLogotipovi(), new String[] {"CORG"}, new String[] {knjig()});
     return dm.getLogotipovi().getString("NAZIVLOG");

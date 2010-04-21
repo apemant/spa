@@ -103,6 +103,9 @@
 		<fieldDescription><![CDATA[JMBGVL]]></fieldDescription>
 	</field>
 	<field name="OIB" class="java.lang.String"/>
+	<field name="INFO" class="java.lang.String">
+		<fieldDescription><![CDATA[INFO]]></fieldDescription>
+	</field>
 	<group name="Section0">
 		<groupExpression><![CDATA[$F{IDENTIFIKATOR}]]></groupExpression>
 		<groupHeader>
@@ -987,6 +990,13 @@ službene osobe]]></text>
 				</textElement>
 				<text><![CDATA[(c) REST@RT Sustav poslovnih aplikacija (SPA)]]></text>
 			</staticText>
+			<textField>
+				<reportElement mode="Opaque" x="309" y="6" width="224" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{INFO}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<lastPageFooter>
@@ -1082,6 +1092,13 @@ službene osobe]]></text>
 				</textElement>
 				<text><![CDATA[(c) REST@RT Sustav poslovnih aplikacija (SPA)]]></text>
 			</staticText>
+			<textField>
+				<reportElement mode="Opaque" x="309" y="6" width="224" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
+					<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{INFO}]]></textFieldExpression>
+			</textField>
 		</band>
 	</lastPageFooter>
 	<summary>
