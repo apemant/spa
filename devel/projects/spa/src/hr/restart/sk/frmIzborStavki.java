@@ -167,7 +167,9 @@ public class frmIzborStavki extends raFrame {
       raProcess.setMessage("Dokument " + (++now) + " od " + total + " ...", false);
       if ((found = all.locate(loc, Locate.FIRST)) &&
           all.getString("POKRIVENO").equalsIgnoreCase("D")) {
-        if (knjiziJednu()) {
+        if (all.getString("ZIRO").startsWith("BL#:")) {
+          raProcess.addError("Raèun je unesen kroz blagajnu i potvrðuje se zajedno sa blagajnièkim izvještajem", all);
+        } else if (knjiziJednu()) {
           ++countknj;
           if (raSaldaKonti.matchLast())
             ++countpok;
