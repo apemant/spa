@@ -838,7 +838,7 @@ public class frmUplIspl extends raMasterDetail {
       sk.setString("CGKSTAVKE", "N");
     }
     sk.saveChanges();
-    frmIzborStavki.proknjizi(sk);
+    frmIzborStavki.proknjizi(sk, true);
   }
 
   public String getUIKnjige() {

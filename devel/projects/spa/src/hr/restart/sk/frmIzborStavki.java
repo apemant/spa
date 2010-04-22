@@ -167,7 +167,7 @@ public class frmIzborStavki extends raFrame {
       raProcess.setMessage("Dokument " + (++now) + " od " + total + " ...", false);
       if ((found = all.locate(loc, Locate.FIRST)) &&
           all.getString("POKRIVENO").equalsIgnoreCase("D")) {
-        if (all.getString("ZIRO").startsWith("BL#:")) {
+        if (!isBlagajna() && all.getString("ZIRO").startsWith("BL#:")) {
           raProcess.addError("Raèun je unesen kroz blagajnu i potvrðuje se zajedno sa blagajnièkim izvještajem", all);
         } else if (knjiziJednu()) {
           ++countknj;
@@ -190,6 +190,10 @@ public class frmIzborStavki extends raFrame {
         System.out.println(all);
       } else raProcess.addError("Dokument nije u balansu", all);
     }
+  }
+
+  public boolean isBlagajna() {
+    return false;
   }
 
   private void OKPress() {
@@ -273,8 +277,15 @@ public class frmIzborStavki extends raFrame {
    * @param qds
    */
   public static void proknjizi(QueryDataSet qds) {
+    proknjizi(qds, false);
+  }
+  public static void proknjizi(QueryDataSet qds, final boolean blagajna) {
     qds.open();
-    frmIzborStavki fiz = new frmIzborStavki();
+    frmIzborStavki fiz = new frmIzborStavki() {
+      public boolean isBlagajna() {
+        return blagajna;
+      }
+    };
     fiz.all = qds;
     fiz.initLeft();
     fiz.jpttc.initialize();
