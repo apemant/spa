@@ -120,6 +120,7 @@ public class frmKnjPlace extends frmKnjizenje {
     }
 
     if (!getKnjizenje().startKnjizenje(this)) return false;
+    
     for (kumorg.first(); kumorg.inBounds(); kumorg.next()) {
       for (shk_PL.first(); shk_PL.inBounds(); shk_PL.next()) {
         //orgs:
@@ -141,6 +142,7 @@ public class frmKnjPlace extends frmKnjizenje {
             " AND "+Condition.whereAllEqual(new String[] {"GODOBR","MJOBR","RBROBR"}, viewSet)+
             " AND EXISTS (SELECT cradnik FROM kumulradarh where kumulradarh.cradnik = odbiciarh.cradnik " +
             " AND kumulradarh.corg='"+kumorg.getString("CORG")+"' AND "+
+            "kumulradarh.cvro='"+kumorg.getString("CVRO")+"' AND "+
             Condition.whereAllEqual(new String[] {"GODOBR","MJOBR","RBROBR"}, viewSet)
             +")";
             
