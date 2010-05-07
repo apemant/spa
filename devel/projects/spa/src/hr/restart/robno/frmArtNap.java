@@ -235,7 +235,7 @@ public class frmArtNap extends raMasterDetail {
     jraTEXTNAP.setDataSet(getDetailSet());
     
     jbPM.setDataSet(getDetailSet());
-    jbPM.setColumnName("KASA");
+    jbPM.setColumnName("PM");
     jbPM.setSelectedDataValue("D");
     jbPM.setUnselectedDataValue("N");
     jbPM.setText(" Plus/minus ");
