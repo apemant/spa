@@ -20,6 +20,7 @@ package hr.restart.pl;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
@@ -37,6 +38,7 @@ import javax.swing.SwingConstants;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.ReadWriteRow;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
@@ -294,23 +296,42 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
       repSet.setBigDecimal("FONDSATI", fondSati);
 
       repSet.setBigDecimal("ALIKVOTNI", new java.math.BigDecimal(0)); /** @todo ALIKVOTNI DIO PLACHE */
+      fillSpecSati(raIzvjestaji.ER1_6, "SATIDUZE");
+      fillSpecSati(raIzvjestaji.ER1_7, "SATIKRACE");
+      fillSpecSati(raIzvjestaji.ER1_9, "SATIBOL");
+//      String er6, er7, er8;
+//      if ((er6 = raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.ER1_6)).equals("")){
+//        repSet.setBigDecimal("SATIDUZE", new java.math.BigDecimal(0));
+//      } else {
+//        System.out.println("ER1_6 ="+er6);
+//        
+//      }
+//
+//      if ((er7=raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.ER1_7)).equals("")){
+//        repSet.setBigDecimal("SATIKRACE", new java.math.BigDecimal(0));
+//      } else {
+//        System.out.println("ER1_7 ="+er7);
+//      }
+//
+//      if ((er8=raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.ER1_9)).equals("")){
+//        repSet.setBigDecimal("SATIBOL", new java.math.BigDecimal(0));
+//      } else {
+//        System.out.println("ER1_8 ="+er8);
+//      }
 
-      if (raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.ER1_6).equals("")){
-        repSet.setBigDecimal("SATIDUZE", new java.math.BigDecimal(0));
-      } //else {/*System.out.println("ER1_6 WARNING!!!!");*/}
-
-      if (raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.ER1_7).equals("")){
-        repSet.setBigDecimal("SATIKRACE", new java.math.BigDecimal(0));
-      } //else {/*System.out.println("ER1_7 WARNING!!!!");*/}
-
-      if (raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.ER1_9).equals("")){
-        repSet.setBigDecimal("SATIBOL", new java.math.BigDecimal(0));
-      } //else {/*System.out.println("ER1_9 WARNING!!!!");*/}
-
-      repSet.setBigDecimal("SATIPUNORV", repSet.getBigDecimal("SATI").subtract(repSet.getBigDecimal("SATIDUZE").subtract(repSet.getBigDecimal("SATIKRACE"))));
+      repSet.setBigDecimal("SATIPUNORV", repSet.getBigDecimal("SATI").subtract(repSet.getBigDecimal("SATIDUZE")).subtract(repSet.getBigDecimal("SATIKRACE")));
     } while (repSet.next());
   }
-
+  private void fillSpecSati(short[] iz, String cn) {
+    String izq;
+    if ((izq=raIzvjestaji.getPrimanjaWhQueryIzv(iz)).equals("")){
+      repSet.setBigDecimal(cn, new java.math.BigDecimal(0));
+    } else {
+      System.out.println(izq);
+      repSet.setBigDecimal(cn, Aus.q(getPrimSql(repSet.getShort("mjobrdoh"), repSet.getShort("godobrdoh"), izq)).getBigDecimal("sumsati"));
+      repSet.post();
+    }
+  }
   private String getKnjigovodstvoSQL() {
     String qstr = "SELECT Orgstruktura.naziv, Orgstruktura.mjesto, Orgstruktura.adresa, Orgstruktura.hpbroj, Logotipovi.matbroj "+
                   "FROM Orgstruktura, Logotipovi "+
@@ -386,6 +407,16 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
     return qstr;
   }
 
+  private String getPrimSql(short mjobr,short godobr,String izvjqry) {
+    String qstr = "select sum(primanjaarh.sati) as sumsati" +
+    		    " from primanjaarh " +
+    		    " where primanjaarh.cradnik = '"+ fieldSet.getInt("CRADNIK") + "'" +
+    		    " AND primanjaarh.mjobr = "+mjobr+
+    				" AND primanjaarh.godobr = "+godobr+
+    				" AND "+izvjqry;
+    return qstr;
+    
+  }
   private String getGodPrimSQL(){
     String qstr = "select kumulorgarh.datumispl,vrsteprim.naziv,primanjaarh.bruto,primanjaarh.irazod,primanjaarh.irazdo"+
                   " from Vrsteprim, Primanjaarh, Kumulorgarh, radnicipl"+
@@ -396,10 +427,10 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
                   " AND primanjaarh.corg = kumulorgarh.corg"+
                   " AND radnicipl.cradnik = primanjaarh.cradnik"+
                   " AND radnicipl.cvro = kumulorgarh.cvro"+
-                  " AND vrsteprim.regres = 'D'"+
                   " AND kumulorgarh.datumispl between '"+ fieldSet.getTimestamp("DATOD") +
                   "' and '" + ut.getLastSecondOfDay(fieldSet.getTimestamp("DATDO")) + "'" +
                   " AND primanjaarh.cradnik = '" + fieldSet.getInt("CRADNIK") + "'"+
+                  " AND vrsteprim.regres = 'D'"+
                   " order by kumulorgarh.datumispl";
 
         /*"select kumulorgarh.datumispl,vrsteprim.naziv,primanjaarh.bruto,primanjaarh.irazod,primanjaarh.irazdo"+
