@@ -182,14 +182,15 @@ System.out.println("setting filter "+knjigsql+andNotIn);
       String in = "(";
       _orgs.first();
       do {
-        in = in+"'"+_orgs.getString("CORG")+"',";
-        if (cnt > Condition.MAXINQUERY) {
+        if (cnt >= Condition.MAXINQUERY) {
           in = in.substring(0,in.length()-1)+") OR "+col+" in (";
           cnt=0;
         }        
+        in = in+"'"+_orgs.getString("CORG")+"',";
         cnt++;
       } while (_orgs.next());
       in = in.substring(0,in.length()-1)+")";
+//      System.err.println("*** I N *** "+in);
       return in;
   }
 

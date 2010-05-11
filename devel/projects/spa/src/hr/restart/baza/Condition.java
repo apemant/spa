@@ -509,17 +509,19 @@ class SimpleCondition extends Condition {
   private String createList(VarStr st) {
     st.append(" IN (");
     boolean overflow = false;
-    for (int i = 0, n = 0; i < Array.getLength(val); i++, n++) {
-      st.append(del).append(Array.get(val, i)).append(del).append(',');
+    int l = Array.getLength(val);
+    for (int i = 0, n = 0; i < l; i++, n++) {
       if (n > MAXINQUERY) {
         String qual = (table == null)?"":table+".";
         st.chop().append(')').append(" OR ").append(qual).append(column).append(" IN (");
         n = 0;
         overflow = true;
       }
+      st.append(del).append(Array.get(val, i)).append(del).append(',');
     }
     st.chop().append(')');
     if (overflow) st.insert(0, '(').append(')');
+//    System.err.println("*** Condition.in (l=" +l+")*** "+st.toString());
     return st.toString();
   }
 
