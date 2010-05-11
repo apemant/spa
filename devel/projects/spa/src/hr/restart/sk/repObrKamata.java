@@ -60,7 +60,7 @@ public class repObrKamata implements raReportData {
 
   public String getNAZPAR() {
     lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", String.valueOf(ds.getInt("CPAR")));
-    return getCPAR() + "  " + dm.getPartneri().getString("NAZPAR");
+    return getCPAR() + "  " + dm.getPartneri().getString("NAZPAR") + ", " + dm.getPartneri().getString("ADR") + " " + dm.getPartneri().getInt("PBR")+ " " + dm.getPartneri().getString("MJ")+"; OIB:" + dm.getPartneri().getString("OIB");
   }
 
   public int getRBR() {

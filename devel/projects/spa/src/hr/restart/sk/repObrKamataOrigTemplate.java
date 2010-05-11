@@ -76,7 +76,7 @@ public abstract class repObrKamataOrigTemplate extends raReportTemplate {
      "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextNAZPAR;
   private String[] TextNAZPARProps = new String[] {"NAZPAR", "", "", "", "", "", "", "", "1320",
-     "2140", "3900", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "No"};
+     "2140", /*3900*/"9300", "500", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "Yes"};
   public raReportSection SectionHeader1;
   private String[] SectionHeader1Props = new String[] {"CPAR", "", "", "", "Yes", "", "", "Yes", "320"};
   public raReportElement Line4;
