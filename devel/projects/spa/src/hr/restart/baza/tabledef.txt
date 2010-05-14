@@ -944,6 +944,7 @@ CSUBRN;char;20;;;Subjekt;15
 NAZPRI;char;50;;;Naziv za prikaz;20
 CAN;char;6;;;Dodatni opis
 KASA;char;1;;D;Artikl za kasu
+POV;char;1;;D;Povratna naknada
 UIDX=cart1
 UIDX=bc
 

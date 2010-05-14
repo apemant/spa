@@ -112,6 +112,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   QueryDataSet qdsStPos = new QueryDataSet();
   QueryDataSet qdsRate= new QueryDataSet();
   StorageDataSet olds;
+  BigDecimal pov;
   String cporez;
   int brojchek;
   short delStavka;      // redni broj stavke koja se briše
@@ -299,6 +300,9 @@ public class frmMasterBlagajna extends raMasterDetail {
     String cps = frmParam.getParam("zapod", "knjigCpar"+knjig, "",
         "Šifra partnera koji predstavlja knjigovodstvo "+knjig);
     cpar = Aus.getNumber(cps);
+    
+    pov = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
+        "Iznos povratne naknade"));
     
     if (presBlag.stolovi) {
       getMasterSet().last();
@@ -1045,6 +1049,7 @@ public class frmMasterBlagajna extends raMasterDetail {
 
   public void calcIZNOS(int mod) {
 	  lookupData.getlookupData().raLocate(dm.getPorezi(), "CPOR", cporez);
+	  lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", getDetailSet().getInt("CART")+"");
 
     getDetailSet().setBigDecimal("UKUPNO", util.multiValue(getDetailSet().getBigDecimal("MC"), getDetailSet().getBigDecimal("KOL")));
     getDetailSet().setBigDecimal("IPOPUST1", util.multiValue(getDetailSet().getBigDecimal("UKUPNO"), getDetailSet().getBigDecimal("PPOPUST1").divide(util.sto,BigDecimal.ROUND_HALF_UP)));
@@ -1055,7 +1060,10 @@ public class frmMasterBlagajna extends raMasterDetail {
       getDetailSet().setBigDecimal("IPOPUST2", util.multiValue(getDetailSet().getBigDecimal("IZNOS"), util.divideValue(getDetailSet().getBigDecimal("PPOPUST2"), util.sto)));
       getDetailSet().setBigDecimal("NETO", util.negateValue(getDetailSet().getBigDecimal("IZNOS"), getDetailSet().getBigDecimal("IPOPUST2")));
     }
-    BigDecimal osnovica = new BigDecimal(getDetailSet().getBigDecimal("IZNOS").doubleValue()/((100+dm.getPorezi().getBigDecimal("UKUPOR").doubleValue())/100));
+    BigDecimal sub = Aus.zero0;
+    if ("D".equals(dm.getArtikli().getString("POV")))
+      sub = pov.multiply(getDetailSet().getBigDecimal("KOL")).setScale(2, BigDecimal.ROUND_HALF_UP);
+    BigDecimal osnovica = new BigDecimal(getDetailSet().getBigDecimal("IZNOS").subtract(sub).doubleValue()/((100+dm.getPorezi().getBigDecimal("UKUPOR").doubleValue())/100));
 //    getDetailSet().setBigDecimal("POR1", util.findIznos(getDetailSet().getBigDecimal("IZNOS"), dm.getPorezi().getBigDecimal("UNPOR1")));
 //    getDetailSet().setBigDecimal("POR2", util.findIznos(getDetailSet().getBigDecimal("IZNOS"), dm.getPorezi().getBigDecimal("UNPOR2")));
 //    getDetailSet().setBigDecimal("POR3", util.findIznos(getDetailSet().getBigDecimal("IZNOS"), dm.getPorezi().getBigDecimal("UNPOR3")));
@@ -1572,8 +1580,11 @@ public class frmMasterBlagajna extends raMasterDetail {
   	  getDetailSet().setBigDecimal("PPOPUST2", getMasterSet().getBigDecimal("UPPOPUST2"));
       getDetailSet().setBigDecimal("IPOPUST2", util.multiValue(getDetailSet().getBigDecimal("IZNOS"), util.divideValue(getDetailSet().getBigDecimal("PPOPUST2"), util.sto)));
       getDetailSet().setBigDecimal("NETO", util.negateValue(getDetailSet().getBigDecimal("IZNOS"), getDetailSet().getBigDecimal("IPOPUST2")));
-
-      BigDecimal osnovica = new BigDecimal(getDetailSet().getBigDecimal("NETO").doubleValue()/((100+dm.getPorezi().getBigDecimal("UKUPOR").doubleValue())/100));
+      
+      BigDecimal sub = Aus.zero0;
+      if ("D".equals(dm.getArtikli().getString("POV")))
+        sub = pov.multiply(getDetailSet().getBigDecimal("KOL")).setScale(2, BigDecimal.ROUND_HALF_UP);
+      BigDecimal osnovica = new BigDecimal(getDetailSet().getBigDecimal("NETO").subtract(sub).doubleValue()/((100+dm.getPorezi().getBigDecimal("UKUPOR").doubleValue())/100));
 //    getDetailSet().setBigDecimal("POR1", util.findIznos(getDetailSet().getBigDecimal("IZNOS"), dm.getPorezi().getBigDecimal("UNPOR1")));
 //    getDetailSet().setBigDecimal("POR2", util.findIznos(getDetailSet().getBigDecimal("IZNOS"), dm.getPorezi().getBigDecimal("UNPOR2")));
 //    getDetailSet().setBigDecimal("POR3", util.findIznos(getDetailSet().getBigDecimal("IZNOS"), dm.getPorezi().getBigDecimal("UNPOR3")));
