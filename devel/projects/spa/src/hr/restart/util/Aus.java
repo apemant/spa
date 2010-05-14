@@ -319,16 +319,20 @@ public class Aus {
    * pretvara string u bigdecimal. Pokusava i varijantu s decimalnom tockom i sa decimalnim zarezom.
    */
   public static BigDecimal getDecNumber(String snum) {
-    VarStr v = new VarStr(snum);
-    int comma = v.lastIndexOf(',');
-    int dot = v.lastIndexOf('.');
-    int cnum = v.countOccurences(',');
-    int dnum = v.countOccurences('.');
-    if (comma > dot && cnum <= 1 || dnum > 1) {
-      v.remove('.');
-      v.replace(',', '.');
-    } else v.remove(',');
-    return new BigDecimal(v.toString());
+    try {
+      VarStr v = new VarStr(snum);
+      int comma = v.lastIndexOf(',');
+      int dot = v.lastIndexOf('.');
+      int cnum = v.countOccurences(',');
+      int dnum = v.countOccurences('.');
+      if (comma > dot && cnum <= 1 || dnum > 1) {
+        v.remove('.');
+        v.replace(',', '.');
+      } else v.remove(',');
+      return new BigDecimal(v.toString());
+    } catch (Exception e) {
+      return Aus.zero0;
+    }
   }
   
   /**
