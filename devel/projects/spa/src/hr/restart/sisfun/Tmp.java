@@ -86,16 +86,18 @@ public class Tmp {
         int as = col.lastIndexOf(" as ");
         if (as > 0) col = col.substring(0, as);
         if (groups != null && col.indexOf("max") >= 0) {
+          boolean gr = false;
           for (int g = 0; g < groups.length; g++) {
             if (col.indexOf(groups[g]) >= 0 ||
                 col.indexOf(groups[g].substring(
                     groups[g].indexOf('.') + 1)) >= 0) {
               ch.changes += "grouped: " + cols[i] + " -> " + groups[g] + "\n";
               cols[i] = groups[g];
-              change = true;
-              continue;
+              change = gr = true;
+              break;
             }
           }
+          if (gr) continue;
         }
         boolean ink = false;
         int beg = 0;
@@ -110,6 +112,7 @@ public class Tmp {
             ink = false;
           }
         }
+        if (ink) ids.add(new Range(beg, col.length()));
         tmp.clear().append(cols[i]);
         for (int j = ids.size() - 1; j >= 0; j--) {
           Range r = (Range) ids.get(j);
