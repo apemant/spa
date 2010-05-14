@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.dM;
 import hr.restart.pos.frmMasterBlagajna;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
@@ -57,6 +58,8 @@ public class repRacunPOS extends mxReport {
   int dbWidth = width/2;
   String doubleLineSep, uk, oib;
   boolean ispSif, oneRow, pop, cash;
+  
+  BigDecimal pov;
 
   public repRacunPOS() {
 
@@ -77,6 +80,8 @@ public class repRacunPOS extends mxReport {
       "autoCash", "D", "Otvoriti blagajnu kod ispisa raèuna (D,N)"));
     oib = frmParam.getParam("robno", "oibMode", "MB", 
           "Staviti matièni broj (MB) ili OIB?");
+    pov = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
+    "Iznos povratne naknade"));
     width = Integer.parseInt(wdt);
     System.out.println("WIDTH - "+ width);
     dbWidth = width/2;
@@ -122,6 +127,7 @@ public class repRacunPOS extends mxReport {
      
      String prep = frmParam.getParam("pos", "addHeader", "",
          "Dodatni header ispred POS raèuna");
+     
      if (prep.length() > 0) {
        String[] parts = new VarStr(prep).split('|');
        VarStr buf = new VarStr();
@@ -245,6 +251,7 @@ public class repRacunPOS extends mxReport {
    return phoneString+"|"+width+"|center#><$newline$>"; 
   }
 
+  BigDecimal izpov = Aus.zero2;
   private void calculatePorez(QueryDataSet dset){
     porezString = "";
     if (dset == null || dset.rowCount() < 1 ) return;
@@ -253,12 +260,15 @@ public class repRacunPOS extends mxReport {
     porezString = (oneRow ? "" : "<#P R E G L E D  P O R E Z A|"+width+"|center#><$newline$>")+
                   "<#NAZIV|6|left#> <#STOPA|8|right#> <#OSNOVICA|12|right#> <#POREZ|"+(width-29)+"|right#><$newline$>"+
                   doubleLineSep+"<$newline$>";
+    
     do {
-      porezString += "<#"+dset.getString("NAZPOR")+"|6|left#> <#"+sgq.format(dset.getBigDecimal("UKUPOR"),2)+"%|8|right#> <#"+sgq.format(dset.getBigDecimal("NETO").subtract(dset.getBigDecimal("POR1").add(dset.getBigDecimal("POR2").add(dset.getBigDecimal("POR3")))),2)+"|12|right#> <#"+sgq.format(dset.getBigDecimal("POREZ"),2)+"|"+(width-29)+"|right#>"+ "<$newline$>";
-      
+      porezString += "<#"+dset.getString("NAZPOR")+"|6|left#> <#"+sgq.format(dset.getBigDecimal("UKUPOR"),2)+"%|8|right#> <#"+sgq.format(dset.getBigDecimal("NETO").subtract(dset.getBigDecimal("POV").add(dset.getBigDecimal("POR1")).add(dset.getBigDecimal("POR2").add(dset.getBigDecimal("POR3")))),2)+"|12|right#> <#"+sgq.format(dset.getBigDecimal("POREZ"),2)+"|"+(width-29)+"|right#>"+ "<$newline$>";
       System.out.println(porezString); //XDEBUG delete when no more needed
     } while (dset.next());
-
+    if (izpov.signum() > 0) {
+      porezString = porezString + "<$newline$>" +
+          "POVRATNA NAKNADA  " + izpov + "<$newline$>";
+    }
     porezString = porezString + doubleLineSep+"<$newline$>";
   }
 
@@ -315,11 +325,13 @@ public class repRacunPOS extends mxReport {
         (Column) dm.getStdoki().getColumn("POR1").clone(),
         (Column) dm.getStdoki().getColumn("POR2").clone(),
         (Column) dm.getStdoki().getColumn("POR3").clone(),
+        dM.createBigDecimalColumn("POV"),
         new com.borland.dx.dataset.Column("KEY","KEY",com.borland.dx.dataset.Variant.STRING)});
 
     qds.open();
     ds.open();
     ds.first();
+    izpov = Aus.zero2;
     do {
       lD.raLocate(dm.getArtikli(), new String[]{"CART"}, new String[]{String.valueOf(ds.getInt("CART"))});
       lD.raLocate(dm.getPorezi(), new String[]{"CPOR"}, new String[]{dm.getArtikli().getString("CPOR")});
@@ -328,6 +340,9 @@ public class repRacunPOS extends mxReport {
 //      
 //      sysoutTEST st = new sysoutTEST(false); //XDEBUG delete when no more needed
 //      st.prn(ds);
+      if ("D".equals(dm.getArtikli().getString("POV")))
+        izpov = izpov.add(pov.multiply(ds.getBigDecimal("KOL")).
+                  setScale(2, BigDecimal.ROUND_HALF_UP));
 
       for (int i = 1 ; i<4;i++) {
         if(!dm.getPorezi().getString("NAZPOR"+String.valueOf(i)).equals("")){
@@ -352,6 +367,9 @@ public class repRacunPOS extends mxReport {
             qds.setBigDecimal("POR1", ds.getBigDecimal("POR1"));
             qds.setBigDecimal("POR2", ds.getBigDecimal("POR2"));
             qds.setBigDecimal("POR3", ds.getBigDecimal("POR3"));
+            if ("D".equals(dm.getArtikli().getString("POV")))
+              qds.setBigDecimal("POV", pov.multiply(ds.getBigDecimal("KOL")).
+                  setScale(2, BigDecimal.ROUND_HALF_UP));
 
             qds.setString("KEY", key);
           } else {
@@ -361,6 +379,9 @@ public class repRacunPOS extends mxReport {
             qds.setBigDecimal("POR1", qds.getBigDecimal("POR1").add(ds.getBigDecimal("POR1")));
             qds.setBigDecimal("POR2", qds.getBigDecimal("POR2").add(ds.getBigDecimal("POR2")));
             qds.setBigDecimal("POR3", qds.getBigDecimal("POR3").add(ds.getBigDecimal("POR3")));
+            if ("D".equals(dm.getArtikli().getString("POV")))
+              Aus.add(qds, "POV", pov.multiply(ds.getBigDecimal("KOL")).
+                  setScale(2, BigDecimal.ROUND_HALF_UP));
           }
         }
       }

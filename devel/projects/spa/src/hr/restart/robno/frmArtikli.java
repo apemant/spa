@@ -279,6 +279,7 @@ public class frmArtikli extends raMatPodaci {
   JraButton jbNap = new JraButton();
   
   JraCheckBox jbKasa = new JraCheckBox();
+  JraCheckBox jbPov = new JraCheckBox();
   
   raNavAction rnvSifArt = new raNavAction("Šifre Artikala",raImages.IMGOPEN,KeyEvent.VK_F12){
     public void actionPerformed(ActionEvent e) {
@@ -961,6 +962,14 @@ public class frmArtikli extends raMatPodaci {
     jbKasa.setHorizontalTextPosition(JLabel.LEADING);
     jbKasa.setHorizontalAlignment(JLabel.TRAILING);
     
+    jbPov.setDataSet(getRaQueryDataSet());
+    jbPov.setColumnName("POV");
+    jbPov.setSelectedDataValue("D");
+    jbPov.setUnselectedDataValue("N");
+    jbPov.setText(" Povratna naknada ");
+    jbPov.setHorizontalTextPosition(JLabel.LEADING);
+    jbPov.setHorizontalAlignment(JLabel.TRAILING);
+    
     jpSubjekt.add(jlrNazvrsub, new XYConstraints(255, 20, 250, -1));
     jpSubjekt.add(jlrVrsub, new XYConstraints(150, 20, 100, -1));
     jpSubjekt.add(jbVrsub, new XYConstraints(510, 20, 21, 21));
@@ -976,6 +985,7 @@ public class frmArtikli extends raMatPodaci {
     jpSubjekt.add(jlrNAZAN, new XYConstraints(255, 80, 250, -1));
     jpSubjekt.add(jbNap, new XYConstraints(510, 80, 21, 21));
     jpSubjekt.add(jbKasa, new XYConstraints(255, 105, 250, -1));
+    jpSubjekt.add(jbPov, new XYConstraints(255, 105, 250, -1));
 
     
     jpNarucivanje.add(jtfNAZPROIZ, new XYConstraints(150, 70, 390, -1));
