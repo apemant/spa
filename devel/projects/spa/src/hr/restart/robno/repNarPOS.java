@@ -17,14 +17,19 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.VTText;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
+import hr.restart.util.VarStr;
 import hr.restart.util.reports.mxRM;
 import hr.restart.util.reports.mxReport;
 
+import java.math.BigDecimal;
 import java.util.StringTokenizer;
 
 import com.borland.dx.dataset.DataRow;
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 /**
@@ -95,14 +100,14 @@ public class repNarPOS extends mxReport {
            Aus.spc((width - 9) / 2) + "(kopija!)<$newline$>") + 
            "Stol: " + fmb.getStol() + "<$newline$>" + 
            doubleLineSep + "<$newline$>"+ getDetailHeader() +
-         doubleLineSep+"");
+         doubleLineSep+""+getManualDetail());
      detail[0] = oneRow ? "<#NAZART|"+(width-8)+"|left#> <#KOL|7|right#>" :
          Aut.getAut().getCARTdependable(
              "<#RBR|3|right#> <#CART|7|left#> <#NAZART|"+(width-12)+"|left#><$newline$>",
              "<#RBR|3|right#> <#CART1|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>",
              "<#RBR|3|right#> <#BC|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>")+
                                         Aus.spc(width-14)+"<#JM|5|left#> <#KOL|8|right#>";
-     this.setDetail(detail);
+     //this.setDetail(detail);
      this.setRepFooter(
          doubleLineSep+"<$newline$><$newline$>"+
          "Nadnevak: "+raDateUtil.getraDateUtil().dataFormatter(
@@ -114,6 +119,28 @@ public class repNarPOS extends mxReport {
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
     );
+  }
+  
+  private String getManualDetail() {
+    String data = "";
+    DataSet ds = this.getDataSet();
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      data = data + "<$newline$><#"+ds.getString("NAZART")+"|"+(width-8)+"|left#>";
+      BigDecimal kol = ds.getBigDecimal("KOL");
+      data = data + "<#"+kol+"|7|right#>";
+      QueryDataSet vttx = VTText.getDataModule().getTempSet(Condition.equal(
+          "CKEY", raControlDocs.getKey(ds, "stpos")));
+      vttx.open();
+      System.out.println(ds);
+      System.out.println(raControlDocs.getKey(ds, "stpos"));
+      if (vttx.getRowCount() > 0) {
+        String[] lin = new VarStr(vttx.getString("TEXTFAK")).splitTrimmed(',');
+        for (int i = 0; i < lin.length; i++) {
+          data = data + "<$newline$>   "+lin[i];
+        }
+      }
+    }
+    return data;
   }
   
   private String getDetailHeader() {
