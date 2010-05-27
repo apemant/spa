@@ -145,7 +145,7 @@ public class DBDataSetSynchronizer implements IDataSetSynchronizer {
         TableInfo tl = (TableInfo) localChanges.get(table);
         if (tl.time > ti.time || ti.serial != tl.serial) return false;
       }
-      if (ti.time + 10000 > System.currentTimeMillis()) return true;      
+      if (ti.time + 500 > System.currentTimeMillis()) return true;      
     }
     return false;
   }
