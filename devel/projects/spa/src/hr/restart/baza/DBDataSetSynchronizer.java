@@ -244,7 +244,7 @@ public class DBDataSetSynchronizer implements IDataSetSynchronizer {
     try {
       table = table.toUpperCase();
       TableInfo ti = (TableInfo) localChanges.get(table);
-      if (ti != null && (ti.time + 10000 > System.currentTimeMillis()))
+      if (ti != null && (ti.time + 500 > System.currentTimeMillis()))
         return ti.serial;
       
       TableRow tr = getTableStatus(table);
