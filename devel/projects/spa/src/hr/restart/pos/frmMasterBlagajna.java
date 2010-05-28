@@ -171,6 +171,13 @@ public class frmMasterBlagajna extends raMasterDetail {
     }
   };
 
+  raNavAction navPonisti = new raNavAction("Arhiviraj raèun", raImages.IMGSENDMAIL, KeyEvent.VK_F7) {
+    public void actionPerformed(ActionEvent e) {
+      arhRac();
+    }
+  };
+
+  
   raOptionDialog dlgStol = new raOptionDialog();
   JPanel jpStol = new JPanel();
   JraTextField jraStol = new JraTextField() {
@@ -876,9 +883,10 @@ public class frmMasterBlagajna extends raMasterDetail {
       jpStol.add(dlgStol.getOkPanel(), BorderLayout.SOUTH);
       dlgStol.getOkPanel().setEnterEnabled(true);
       raMaster.addOption(navZatvori, 4);
+      raMaster.addOption(navPonisti, 5);
       
       raMaster.getJpTableView().addTableModifier(msc);
-    }
+    } else raMaster.addOption(navPonisti, 4);
     
     raDetail.getNavBar().removeStandardOption(raNavBar.ACTION_TOGGLE_TABLE);
 
@@ -1138,6 +1146,37 @@ public class frmMasterBlagajna extends raMasterDetail {
     System.out.println("********* after dlgKupac");
     checkUnos(mode);
     //jpDetBlagajna.grabFocusPOS();
+  }
+  
+  void arhRac() {
+    if (getMasterSet().isEmpty()) return;
+    if (getMasterSet().getString("STATUS").equalsIgnoreCase("P") &&
+        getMasterSet().getString("RDOK").equalsIgnoreCase("arh")) {
+      if (JOptionPane.showConfirmDialog(raMaster.getWindow(),
+          "Želite li dearhivirati raèun?", "Dearhiviranje raèuna", 
+          JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+      
+      getMasterSet().setString("STATUS", "N");
+      getMasterSet().setString("RDOK", "");
+    } else {
+      if (!getMasterSet().getString("STATUS").equalsIgnoreCase("N")) {
+          JOptionPane.showMessageDialog(raMaster.getWindow(),
+          "Raèun je veæ prenešen!", "Arhiviranje", JOptionPane.INFORMATION_MESSAGE);
+       return;
+      }
+      if (JOptionPane.showConfirmDialog(raMaster.getWindow(),
+        "Želite li arhivirati raèun?", "Arhiviranje raèuna", 
+        JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+      getMasterSet().setString("STATUS", "P");
+      getMasterSet().setString("RDOK", "arh");
+    }
+    
+    getMasterSet().saveChanges();
+    int row = getMasterSet().getRow();
+    getMasterSet().refresh();
+    getMasterSet().goToClosestRow(row);
+    raMaster.getJpTableView().fireTableDataChanged();
+    raMaster.jeprazno();
   }
   
   void closeRac() {
