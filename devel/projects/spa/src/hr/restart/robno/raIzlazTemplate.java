@@ -3422,8 +3422,11 @@ System.out.println("findCjenik::else :: "+sql);
 				|| descriptor.equals("hr.restart.robno.repRac2V")
 				|| descriptor.equals("hr.restart.robno.repRacV")
 				|| descriptor.equals("hr.restart.robno.repPonudaV")
-				|| descriptor.equals("hr.restart.robno.repPonuda2V") || descriptor
-				.equals("hr.restart.robno.repNarDobV"));
+				|| descriptor.equals("hr.restart.robno.repPonuda2V") 
+				|| descriptor.equals("hr.restart.robno.repNarDobV")
+				|| descriptor.equals("hr.restart.robno.repOdobrenjaV")
+				|| descriptor.equals("hr.restart.robno.repOdobrenjaPV")
+				);
 
 	}
 

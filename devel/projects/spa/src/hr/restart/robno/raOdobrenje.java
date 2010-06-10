@@ -29,11 +29,15 @@ public class raOdobrenje extends raIzlazTemplate {
   
   public void MyaddIspisMaster(){
     raMaster.getRepRunner().addReport("hr.restart.robno.repOdobrenja", "hr.restart.robno.repIzlazni", "Odobrenja", "Ispis odobrenja");
-    raMaster.getRepRunner().addReport("hr.restart.robno.repOdobrenja", "hr.restart.robno.repRacuniPnP", "OdobrenjaPnP", "Ispis odobrenja s popustima");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repOdobrenjaV", "hr.restart.robno.repIzlazni", "Odobrenja", "Ispis odobrenja u valuti");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repOdobrenjaP", "hr.restart.robno.repRacuniPnP", "OdobrenjaPnP", "Ispis odobrenja s popustima");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repOdobrenjaPV", "hr.restart.robno.repRacuniPnP", "OdobrenjaPnP", "Ispis odobrenja s popustima u valuti");
   }
   public void MyaddIspisDetail(){
     raDetail.getRepRunner().addReport("hr.restart.robno.repOdobrenja", "hr.restart.robno.repIzlazni", "Odobrenja", "Ispis odobrenja");
-    raDetail.getRepRunner().addReport("hr.restart.robno.repOdobrenja", "hr.restart.robno.repRacuniPnP", "OdobrenjaPnP", "Ispis odobrenja s popustima");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repOdobrenjaV", "hr.restart.robno.repIzlazni", "Odobrenja", "Ispis odobrenja u valuti");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repOdobrenjaP", "hr.restart.robno.repRacuniPnP", "OdobrenjaPnP", "Ispis odobrenja s popustima");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repOdobrenjaPV", "hr.restart.robno.repRacuniPnP", "OdobrenjaPnP", "Ispis odobrenja s popustima u valuti");
 //    raDetail.getRepRunner().addReport("hr.restart.robno.repOdobrenja", "Ispis odobrenja", 2);
   }
   
