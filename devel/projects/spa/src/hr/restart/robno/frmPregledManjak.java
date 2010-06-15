@@ -271,11 +271,11 @@ public class frmPregledManjak extends raMasterDetail {
               vl.findYear(getMasterSet().getTimestamp("DATDOK"));
     if (!rut.checkSeq(srcString,Integer.toString(getMasterSet().getInt("BRDOK")))) return false;
 
-    if (!this.getDetailSet().isEmpty()) {
+    /*if (!this.getDetailSet().isEmpty()) {
       javax.swing.JOptionPane.showConfirmDialog(null,"Nisu pobrisane stavke dokumenta !","Gre\u0161ka",
           javax.swing.JOptionPane.DEFAULT_OPTION,javax.swing.JOptionPane.ERROR_MESSAGE);
       return false;
-    }
+    }*/
     return true;
   }
 
@@ -329,6 +329,7 @@ public class frmPregledManjak extends raMasterDetail {
 
   private void jbInit() throws Exception {
 
+    this.setMasterDeleteMode(DELDETAIL);
     this.setMasterSet(dm.getZagInm());
     this.setNaslovMaster("Inventurni manjak");
     this.setVisibleColsMaster(new int[] {1,4,5});
@@ -459,7 +460,7 @@ public class frmPregledManjak extends raMasterDetail {
     return true;
   }
   public boolean doWithSaveDetail(char mode){
-    if (mode=='B') {
+    if (mode=='B' && !raDetail.isDeletingAll()) {
       try {
         vl.recountDataSet(raDetail, "RBR", oldRbr, false);
         raTransaction.saveChanges(getDetailSet());
