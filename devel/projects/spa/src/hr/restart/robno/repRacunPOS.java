@@ -24,6 +24,7 @@ import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
 import hr.restart.util.reports.mxRM;
 import hr.restart.util.reports.mxReport;
+import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
 import java.util.StringTokenizer;
@@ -113,20 +114,33 @@ public class repRacunPOS extends mxReport {
 
   private void makeIspis(){
      dm.getLogotipovi().open();
+     
+     lD.raLocate(dm.getLogotipovi(), "CORG", OrgStr.getKNJCORG(false));
+     
+     String kh = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
+     "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+
+     "<#OIB "+dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>"+ getPhones();
+     
 
      QueryDataSet sks = hr.restart.baza.Sklad.getDataModule().getTempSet("cskl = '"+master.getString("CSKL")+"'");
      QueryDataSet prm = hr.restart.baza.Prod_mj.getDataModule().getTempSet("cprodmj = '"+master.getString("CPRODMJ")+"'");
      sks.open();
      prm.open();
+     
+     String ph = kh;
+     if (!sks.getString("CORG").equals(OrgStr.getKNJCORG(false)) &&
+         lD.raLocate(dm.getLogotipovi(), "CORG", sks.getString("CORG"))) {
+       ph = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
+       "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ getPhones();
+     }
 
-     String prodavaonica = sks.getString("NAZSKL");
      String prodMjesto = prm.getString("NAZPRODMJ");
      String user = master.getString("CUSER");
 
      ru.setDataSet(master);
      
-     String prep = frmParam.getParam("pos", "addHeader", "",
-         "Dodatni header ispred POS raèuna");
+/*     String prep = frmParam.getParam("pos", "addHeader", "",
+         "Dodatni header ispred POS raèuna", true);
      
      if (prep.length() > 0) {
        String[] parts = new VarStr(prep).split('|');
@@ -135,16 +149,18 @@ public class repRacunPOS extends mxReport {
          buf.append("<#").append(parts[i]).append('|').
            append(width).append("|center#><$newline$>");
        prep = buf.toString();
-     }
+     }*/
+     
+     String th = frmParam.getParam("pos", "posHeader", "",
+         "POS header (1 - poslovnica, knjigovodstvo  2 - obrnuto, ostalo - samo knjigovodstvo)");
+     String header = kh;
+     if (th.equals("1") && !kh.equals(ph))
+       header = ph + "<$newline$>" + kh;
+     if (th.equals("2") && !kh.equals(ph))
+       header = kh + "<$newline$>" + ph;
 
      this.setPgHeader(
-         (cash ? "\u0007" : "")+prep+
-         "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
-         "<#"+dm.getLogotipovi().getString("ADRESA")+"|"+width+"|center#><$newline$>"+
-         "<#"+String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO")+"|"+width+"|center#><$newline$>"+
-         "<#OIB "+dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>"+
-         "<#"+prodavaonica+"|"+width+"|center#><$newline$>"+
-         getPhones()+
+         (cash ? "\u0007" : "")+header+
 //         "<#"+prodMjesto+"|"+width+"|center#><$newline$>"+
          jeliR1(master.getInt("BRDOK"), master.getInt("CKUPAC"))+
          (oneRow ? "<$newline$>" : doubleLineSep+"<$newline$>")+ getDetailHeader() +
@@ -407,15 +423,15 @@ public class repRacunPOS extends mxReport {
             ((!dr.getString("MJ").equals(""))?((dr.getInt("PBR")==0)? "       "+dr.getString("MJ"):dr.getString("MJ")):"")+
             getJMBG(dr);
 
-        kupac += "<$newline$><$newline$>\u000E<#RAÈUN R-1|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
-            "\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
+        kupac += "<$newline$><$newline$>\u000E<#RAÈUN R-1 br. " + getDataSet().getInt("BRDOK") + "|"+((width-2)/2)+"|center#>\u0014<$newline$>";
+            //"\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
         return kupac;
       } System.out.println("Kupac je (ako ga ima) null!!!");
     }
 //    porezString = "";
-    return "<$newline$>\u000E<#RAÈUN|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
+    return "<$newline$>\u000E<#RAÈUN br. " + getDataSet().getInt("BRDOK") + "|"+((width-2)/2)+"|center#>\u0014<$newline$>";
 //        "\u001B\u0045<#"+ru.getFormatBroj()+"|20|center#>\u001B\u0046<$newline$>";
-        "\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
+        //"\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
   }
   
   public String getJMBG(DataRow dr) {
