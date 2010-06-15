@@ -124,7 +124,16 @@ public class repNarPOS extends mxReport {
   private String getManualDetail() {
     String data = "";
     DataSet ds = this.getDataSet();
+    int slijed = 1;
     for (ds.first(); ds.inBounds(); ds.next()) {
+      if (ds.getShort("SLIJED") > slijed) {
+        slijed = ds.getShort("SLIJED");
+        data = data + "<$newline$><$newline$>";
+        data = data + "<#- " + slijed + ". SLIJED -|"+width+"|center#>";
+        data = data + "<$newline$>";
+      }
+        
+      slijed = ds.getShort("SLIJED");
       data = data + "<$newline$><#"+ds.getString("NAZART")+"|"+(width-8)+"|left#>";
       BigDecimal kol = ds.getBigDecimal("KOL");
       data = data + "<#"+kol+"|7|right#>";
