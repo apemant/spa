@@ -328,6 +328,9 @@ public class SecondChooser extends JraDialog {
  				&& rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC")) {
     	 dM.copyColumns(ZaglavljeSet, rIT.getMasterSet(), new String[] {"DATDOK", "DVO", "DATDOSP"});
      }
+     if (fixDOS) {
+       dM.copyColumns(ZaglavljeSet, rIT.getMasterSet(), new String[] {"DVO", "DATDOSP"});
+     }
         
 		if (transPnbz && ZaglavljeSet.rowCount() == 1 && ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("PON")
 				&& (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase(
