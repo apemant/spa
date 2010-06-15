@@ -709,6 +709,7 @@ PPOR2;numeric;15,2;;0;Posto poreza 2;14
 PPOR3;numeric;15,2;;0;Posto poreza 3;14
 CPRODMJ;char;3;pkey;;Blagajna;5
 REZKOL;char;1;;N;Rezervirano
+SLIJED;short;2;;;Slijed
 IDX=cskl,vrdok,god,brdok,cprodmj
 IDX=cart
 
@@ -944,7 +945,7 @@ CSUBRN;char;20;;;Subjekt;15
 NAZPRI;char;50;;;Naziv za prikaz;20
 CAN;char;6;;;Dodatni opis
 KASA;char;1;;D;Artikl za kasu
-POV;char;1;;D;Povratna naknada
+POV;char;1;;N;Povratna naknada
 UIDX=cart1
 UIDX=bc
 
@@ -1195,6 +1196,8 @@ CAN;char;6;pkey;;Šifra
 NAZAN;char;50;;;Naziv
 TEXTNAP;char;50;pkey;;Tekst
 PM;char;1;;D;Plus-minus
+CART;int;6;;;Artikl
+KOL;numeric;17,3;;;Kolièina
 
 $Akcije
 LOKK;char;1;;N;LOKK;*
