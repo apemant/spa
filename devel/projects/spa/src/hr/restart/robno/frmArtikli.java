@@ -985,7 +985,7 @@ public class frmArtikli extends raMatPodaci {
     jpSubjekt.add(jlrNAZAN, new XYConstraints(255, 80, 250, -1));
     jpSubjekt.add(jbNap, new XYConstraints(510, 80, 21, 21));
     jpSubjekt.add(jbKasa, new XYConstraints(255, 105, 250, -1));
-    jpSubjekt.add(jbPov, new XYConstraints(255, 105, 250, -1));
+    jpSubjekt.add(jbPov, new XYConstraints(255, 130, 250, -1));
 
     
     jpNarucivanje.add(jtfNAZPROIZ, new XYConstraints(150, 70, 390, -1));
