@@ -58,7 +58,7 @@ public class repRacunPOS extends mxReport {
   int width = 40;
   int dbWidth = width/2;
   String doubleLineSep, uk, oib;
-  boolean ispSif, oneRow, pop, cash;
+  boolean ispSif, oneRow, pop, cash, isnac;
   
   BigDecimal pov;
 
@@ -81,6 +81,8 @@ public class repRacunPOS extends mxReport {
       "autoCash", "D", "Otvoriti blagajnu kod ispisa raèuna (D,N)"));
     oib = frmParam.getParam("robno", "oibMode", "MB", 
           "Staviti matièni broj (MB) ili OIB?");
+    isnac = "D".equalsIgnoreCase(frmParam.getParam("pos", "ispisNacpl", 
+        "D", "Ispis naèina plaæanja na POS raèunu (D,N)"));
     pov = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
     "Iznos povratne naknade"));
     width = Integer.parseInt(wdt);
@@ -173,13 +175,13 @@ public class repRacunPOS extends mxReport {
               : "<#KOL|9|right#>  <#JM|3|left#> <#MC|9|right#>   <#PPOPUST1|5|right#> <#"+uk+"|"+(width-33)+"|right#>");
      if (!oneRow) this.setDetail(detail);
      this.setRepFooter(
-         doubleLineSep+"<$newline$>"+(oneRow ? "<$newline$>" : "")+ 
+         doubleLineSep+"<$newline$>"+//(oneRow ? "<$newline$>" : "")+ 
          getUkupno(master) +
 //         "<#UKUPNO |26|left#> <#"+master.getBigDecimal("UKUPNO")+"|15|right#><$newline$>"+
 //         "<#POPUST |26|left#> <#"+master.getBigDecimal("UIPOPUST1").add(master.getBigDecimal("UIPOPUST2"))+"|15|right#><$newline$>"+
 //         "<#PLATITI |26|left#> <#"+master.getBigDecimal("NETO")+"|15|right#><$newline$>"+   //   %sum(IZNOS|15|right)%
-         (oneRow ? "" : doubleLineSep)+"<$newline$>"+
-         /*"NAÈIN PLAÆANJA - "+*/getNacinPlacanja(master.getInt("BRDOK"),master.getString("CSKL"))+//"<$newline$>"+
+         (isnac ? (oneRow ? "" : doubleLineSep + "<$newline$>")+
+         /*"NAÈIN PLAÆANJA - "+*/getNacinPlacanja(master.getInt("BRDOK"),master.getString("CSKL")) : "")+//"<$newline$>"+
          (oneRow ? "" : doubleLineSep)+"<$newline$>"+
          porezString+
          getBlagajnaOperater(prodMjesto,user)+
@@ -458,12 +460,12 @@ public class repRacunPOS extends mxReport {
     
     String izn = sgq.format(neto,2);
     if ((qds.getBigDecimal("UIPOPUST1").add(qds.getBigDecimal("UIPOPUST2"))).compareTo(Aus.zero2) == 0)
-      return "<#PLATITI|"+(width-24)+"|left#>\u000E<#"+izn+"|12|right#>\u0014<$newline$>";
+      return "\u000E<#PLATITI|7|left#>\u0014" + Aus.spc(width-38) + "\u000E<#"+izn+"|12|right#>\u0014<$newline$>";
 
     return
       "<#UKUPNO |26|left#> <#"+sgq.format(ukupno,2)+"|"+(width-26)+"|right#><$newline$>"+
       "<#POPUST |10|left#> <#"+sgq.format(ppop,2)+" %|15|left#> <#"+sgq.format(popust,2)+"|"+(width-26)+"|right#><$newline$>"+
-      "<#PLATITI|"+(width-24)+"|left#>\u000E<#"+izn+"|12|right#>\u0014<$newline$>";
+      "\u000E<#PLATITI|7|left#>\u0014" + Aus.spc(width-38) + "\u000E<#"+izn+"|12|right#>\u0014<$newline$>";
 //          "<#UKUPNO |26|left#> <#"+qds.getBigDecimal("UKUPNO")+"|15|right#><$newline$>"+
 //          "<#POPUST |26|left#> <#"+qds.getBigDecimal("UIPOPUST1").add(qds.getBigDecimal("UIPOPUST2"))+"|15|right#><$newline$>"+
 //          "<#PLATITI |26|left#> <#"+qds.getBigDecimal("NETO")+"|15|right#><$newline$>"
@@ -481,8 +483,9 @@ public class repRacunPOS extends mxReport {
       } else if (blop.equalsIgnoreCase("2")) {
         return blag+", "+operater+"<$newline$>";
       } else {
-        return "Poslužio: "+operater+"<$newline$>"+
-        "Broj stola: " + getStol() + "<$newline$>";
+        //return "Poslužio: "+operater+"<$newline$>"+
+        //"Broj stola: " + getStol() + "<$newline$>";
+        return "Stol: " + getStol() + "   Poslužio: " + operater + "<$newline$>";
       }
     }
     return "";
@@ -496,7 +499,7 @@ public class repRacunPOS extends mxReport {
     String sadrzaj = "Hvala na povjerenju";
     String footing = "";
     if (!sadrzaj.equals("")){
-      footing = "<#"+sadrzaj+"|"+width+"|center#><$newline$><$newline$>";
+      footing = "<#"+sadrzaj+"|"+width+"|center#><$newline$>";
     }
     return footing;
   }
