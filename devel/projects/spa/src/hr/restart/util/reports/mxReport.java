@@ -419,7 +419,7 @@ public class mxReport {
     if (endTag == -1) return null;
 
     String tagName = str.substring(startTag,endTag);
-//    System.out.println("TagName - "+tagName);
+//    System.err.println("TagName - "+tagName);
     int tagLen = -1;
     int tagAligment = -1;
 // parametri iz taga
@@ -453,7 +453,7 @@ public class mxReport {
       tagValue = getEscapeSequence(tagName);
       if (tagValue.equals(printer.getNewline())) tagValue = tagValue + getLeftMarginString();
     } else {
-      tagValue = tagName.toUpperCase(); //return null;
+      tagValue = tagName; //return null; toUpperCase
     }
     if (tagName.equals("")) return null;
 //    System.out.println("TagValue "+tagValue);
