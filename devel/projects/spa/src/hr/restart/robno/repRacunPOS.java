@@ -157,9 +157,9 @@ public class repRacunPOS extends mxReport {
          "POS header (1 - poslovnica, knjigovodstvo  2 - obrnuto, ostalo - samo knjigovodstvo)");
      String header = kh;
      if (th.equals("1") && !kh.equals(ph))
-       header = ph + "<$newline$>" + kh;
+       header = ph + kh;
      if (th.equals("2") && !kh.equals(ph))
-       header = kh + "<$newline$>" + ph;
+       header = kh + ph;
 
      this.setPgHeader(
          (cash ? "\u0007" : "")+header+
