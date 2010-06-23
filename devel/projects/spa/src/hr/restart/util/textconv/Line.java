@@ -90,7 +90,11 @@ public class Line implements ILine {
    * @see hr.restart.util.textconv.ILine#getColumnValue(java.lang.String)
    */
   public Object getColumnValue(String id) {
-    return getColumn(id).getValue();
+    try {
+      return getColumn(id).getValue();
+    } catch (Exception e) {
+      throw new RuntimeException(getContent()+ " is wrong :"+e.getMessage());
+    }
   }
   
   public ILineVerifier getLineVerifier() {
