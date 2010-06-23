@@ -3,22 +3,37 @@
  */
 package hr.restart.gk;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Gkstavkerad;
+import hr.restart.baza.PNBKonto;
 import hr.restart.baza.Virmani;
+import hr.restart.baza.Ziropar;
+import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
+import hr.restart.util.raImages;
+import hr.restart.util.raNavAction;
 import hr.restart.util.textconv.FileParser;
 import hr.restart.util.textconv.ILine;
 import hr.restart.util.textconv.ParserManager;
 import hr.restart.zapod.OrgStr;
+import hr.restart.zapod.dlgGetKnjig;
 import hr.restart.zapod.frmVirmani;
+import hr.restart.zapod.raKonta;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.TreeMap;
 
+import com.borland.dx.dataset.ReadRow;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 /**
@@ -27,9 +42,14 @@ import com.borland.dx.sql.dataset.QueryDataSet;
  * i prikazuje u frmTableDataView 
  */
 public class IzvodFromFile {
-  QueryDataSet showSet;
+  private char cmode;
+  StorageDataSet showSet;
   frmVirmani fvirmani;
-  public IzvodFromFile() {
+  private TreeMap parsed;
+  static String kontoKup = frmParam.getParam("gk", "defKontoKup", "1200", "Defaultni konto kupca pri auto izvodima");
+  static String kontoDob = frmParam.getParam("gk", "defKontoDob", "2200", "Defaultni konto dobavljaca pri auto izvodima");
+  public IzvodFromFile(char conversionMode) {
+    cmode = conversionMode;
     String context = frmParam.getParam("zapod","izvod_ctx_xml","izvod.xml","Konfiguracijski XML za prihvat izvoda iz datoteke");
     String classID = frmParam.getParam("zapod","izvod_fp_id","FP","ID klase fileparsera u izvod_context_xml"); 
     FileParser parser = ParserManager.getFileParser(context,classID);
@@ -37,24 +57,142 @@ public class IzvodFromFile {
     if (chooser.showOpenDialog(null) == javax.swing.JFileChooser.APPROVE_OPTION) {
 	    File file = chooser.getSelectedFile();
 	    parser.setFile(file);
-	    TreeMap parsed = ParserManager.getParsedLines(parser,file);
-	    
-	    //konverzija u virmane
-	    convertToVirmani(parsed);
-	    frmTableDataView view = new frmTableDataView(true,false);
-	    view.setDataSet(fvirmani.getRaQueryDataSet());
-	    view.setVisibleCols(new int[] {2,4,5,6,7,10,16,17,19});
-	    view.show();
-	    //fvirmani.show();
-	    
+	    parsed = ParserManager.getParsedLines(parser,file);
+	    if (conversionMode == 'V') {
+  	    //konverzija u virmane
+  	    convertToVirmani();
+	    } else if (conversionMode == 'I') {//konverzija u gkstavkerad
+	      convertToGkStavke();
+	    }
     } else {
       //nisi odabrao pa nemogu dalje bla bla bla
     }
   }
+  
+  public void showInSet() {
+    frmTableDataView view = new frmTableDataView() {//true,false) {
+      protected void OKPress() {
+        hide();
+        commitTransfer();
+      }
+    };
+    view.jp.getNavBar().addOption(new raNavAction("Izmjena polja", raImages.IMGCHANGE, KeyEvent.VK_F4) {
+      public void actionPerformed(ActionEvent e) {
+        //ekran za dodavanje ziropar i pnbkonto
+        new PNBKontoZiroParDlg(getShowSet());          
+        
+      }
+    });
+    view.setDataSet(getShowSet());
+//    view.setVisibleCols(new int[] {2,4,5,6,7,10,16,17,19});
+    view.show();
+  }
+  protected void commitTransfer() {
+    
+  }
+
+  public StorageDataSet getShowSet() {
+    return showSet;
+  }
+
+  public void setShowSet(StorageDataSet showSet) {
+    this.showSet = showSet;
+  }
+
+  public QueryDataSet convertToGkStavke() {
+    StorageDataSet helperset = new StorageDataSet();
+    helperset.addColumn(dM.createIntColumn("RBS"));
+    helperset.addColumn(dM.createStringColumn("NAZPAR","Naziv partnera", 200));
+    helperset.addColumn(dM.createStringColumn("ZIRO","Žiro", 200));
+    helperset.addColumn(dM.createStringColumn("PNBZ","Poziv na broj", 200));
+    helperset.addColumn(dM.createIntColumn("CPAR"));
+    helperset.addColumn(dM.createStringColumn("BROJKONTA","Konto",12));
+    helperset.addColumn(dM.createStringColumn("SALDAK","Kup/Dob",1));
+    helperset.open();
+    
+    QueryDataSet gksr = Gkstavkerad.getDataModule().getFilteredDataSet(Condition.nil);
+    gksr.open();
+    int rbs = 0;
+    for (Iterator iter = parsed.keySet().iterator(); iter.hasNext();) {
+      Object key = iter.next();
+      System.out.println("key = "+key);
+      System.out.println("value = "+parsed.get(key));
+      ILine line = (ILine)parsed.get(key);
+      if (line.getColumn("NAZPAR")==null) continue; //nije line 5
+      rbs++;
+      //10 1200-ip, 20 2200-id
+      String ozntra = (String)line.getColumnValue("OZNTRA");
+      boolean isKupac = ozntra.trim().equals("20");
+      gksr.insertRow(false);
+      helperset.insertRow(false);
+      gksr.setInt("RBS", rbs);
+      String vbdi = (String)line.getColumnValue("VBDIPAR");
+      String zr = (String)line.getColumnValue("ZIROPAR");
+      if (zr.startsWith(vbdi)) zr = zr.substring(vbdi.length());
+      String ziro = vbdi.trim()+"-"+zr.trim();
+      String broj = (String)line.getColumnValue("PNBO");
+      String broj1 = broj.substring(0,2);
+      String broj2 = broj.substring(2).trim();
+
+      gksr.setString("BROJKONTA", getKonto(isKupac, ziro, broj2));
+      gksr.setString("CORG", dlgGetKnjig.getKNJCORG());
+      gksr.setTimestamp("DATDOK", (Timestamp)line.getColumnValue("DATUM"));
+      gksr.setString("BROJDOK", broj2);
+      if (raKonta.isSaldak(gksr.getString("BROJKONTA"))) {
+        gksr.setString("VRDOK", isKupac?"UPL":"IPL");
+        gksr.setInt("CPAR", getCPar(ziro));
+      }
+      gksr.setString("OPIS", ((String)line.getColumnValue("SVRHA")).trim());
+      gksr.setBigDecimal("ID", isKupac?Aus.zero2:getIznos((Integer)line.getColumnValue("IZNOS")));
+      gksr.setBigDecimal("IP", isKupac?getIznos((Integer)line.getColumnValue("IZNOS")):Aus.zero2);
+      gksr.post();
+      
+      helperset.setInt("RBS", rbs);
+      helperset.setString("NAZPAR", (String)line.getColumnValue("NAZPAR"));
+      helperset.setString("ZIRO", ziro);
+      helperset.setString("PNBZ", broj2);
+      helperset.setInt("CPAR", gksr.getInt("CPAR"));
+      helperset.setString("BROJKONTA", gksr.getString("BROJKONTA"));
+      helperset.setString("SALDAK", isKupac?"K":"D");
+      helperset.post();
+    }
+    setShowSet(helperset);
+    return gksr;
+  }
+  public static int getCPar(String ziro) {
+    //locate in ziropar po zircu
+    if (lookupData.getlookupData().raLocate(getZiropar(), "ZIRO", ziro)) {
+      return getZiropar().getInt("CPAR");
+    }
+    return -1;
+  }
+  static QueryDataSet pnbkonto = null;
+  static QueryDataSet ziropar = null;
+  private static QueryDataSet getZiropar() {
+    if (ziropar == null) ziropar = Ziropar.getDataModule().copyDataSet();
+    ziropar.open();
+    return ziropar;
+  }
+  private static QueryDataSet getPNBKonto() {
+    if (pnbkonto == null) pnbkonto = PNBKonto.getDataModule().copyDataSet();
+    pnbkonto.open();
+    return pnbkonto;
+  }
+  public static String getKonto(boolean kup, String ziro, String broj) {
+    //locate in pnbkonto po broju
+    if (lookupData.getlookupData().raLocate(getPNBKonto(), "PNB", broj)) {
+      return getPNBKonto().getString("BROJKONTA");
+    }
+    //locate in pnbkonto po zircu
+    if (lookupData.getlookupData().raLocate(getPNBKonto(), "PNB", ziro)) {
+      return getPNBKonto().getString("BROJKONTA");
+    }
+    return kup?kontoKup:kontoDob;
+  }
+
   /**
-   * @param parsed
    */
-  private void convertToVirmani(TreeMap parsed) {
+  private void convertToVirmani() {
     fvirmani = new frmVirmani("zapod", true);
     fvirmani.ckey = generateKey(parsed);
     for (Iterator iter = parsed.keySet().iterator(); iter.hasNext();) {
@@ -62,6 +200,7 @@ public class IzvodFromFile {
       System.out.println("key = "+key);
       System.out.println("value = "+parsed.get(key));
       ILine line = (ILine)parsed.get(key);
+      if (line.getColumn("NAZPAR")==null) continue; //nije line 5
       fvirmani.add(
           "",//  Jedinica zavoda    
           (String)line.getColumnValue("NAZPAR"),//  Na teret racuna  
@@ -84,9 +223,10 @@ public class IzvodFromFile {
           );
     }
     fvirmani.save();
-    fvirmani.setRaQueryDataSet(Virmani.getDataModule()
-        .getFilteredDataSet("app='zapod' and ckey='"+fvirmani.ckey+"'"));
-    fvirmani.getRaQueryDataSet().open();
+    setShowSet(Virmani.getDataModule().getFilteredDataSet("app='zapod' and ckey='"+fvirmani.ckey+"'"));
+//    fvirmani.setRaQueryDataSet(Virmani.getDataModule()
+//        .getFilteredDataSet("app='zapod' and ckey='"+fvirmani.ckey+"'"));
+//    fvirmani.getRaQueryDataSet().open();
   }
   /**
    * @return
@@ -115,9 +255,10 @@ public class IzvodFromFile {
    */
   private String generateKey(TreeMap parsed) {
     // TODO Auto-generated method stub
+    Timestamp t = hr.restart.util.Valid.getValid().getToday();
     return OrgStr.getKNJCORG()+"-"+
-    hr.restart.sisfun.raUser.getInstance().getUser()+"-"+
-    Valid.getValid().getToday();
+//    hr.restart.sisfun.raUser.getInstance().getUser()+"-"+
+    new java.util.Formatter().format("%tF %tT",  new Object[] {t,t});
   }
   
 }

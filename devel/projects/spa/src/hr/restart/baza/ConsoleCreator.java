@@ -844,6 +844,6 @@ public class ConsoleCreator {
             "hr.restart.baza.stdokitmp", "hr.restart.baza.Stolovi", 
             "hr.restart.baza.Verinfo", "hr.restart.baza.Artnap",
             "hr.restart.baza.Akcije", "hr.restart.baza.Stakcije",
-            "hr.restart.baza.UplRobno",
+            "hr.restart.baza.UplRobno","hr.restart.baza.PNBKonto"
       };
 }

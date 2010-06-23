@@ -20,6 +20,7 @@ package hr.restart.gk;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Gkstavkerad;
 import hr.restart.baza.Izvodi;
+import hr.restart.baza.Partneri;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raMatchDialog;
@@ -30,6 +31,7 @@ import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
 import hr.restart.util.raAdditionalLookupFilter;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raImages;
@@ -42,6 +44,8 @@ import hr.restart.util.raTransaction;
 import hr.restart.zapod.raKonta;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
@@ -50,6 +54,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataRow;
@@ -1391,6 +1396,17 @@ public class frmIzvodi extends raMasterDetail {
           match.saveChanges('I');
       }
     }, 5, true);
+    raDetail.addOption(new raNavAction("Dodaj iz datoteke", raImages.IMGOPEN, KeyEvent.VK_F7) {
+      public void actionPerformed(ActionEvent e) {
+        if (getMasterSet().getString("STATUS").equals("K") || getDetailSet().getRowCount() > 0) return;
+        IzvodFromFile izf = new IzvodFromFile('I') {
+          protected void commitTransfer() {
+            commitFromFile(this);
+          }
+        };
+        izf.showInSet();
+      }
+    }, 6, false);
     raMaster.addOption(rnvObrada, 5, false);
     raMaster.addOption(new raNavAction("Obradi sve odabrane",
         raImages.IMGMOVIE, KeyEvent.VK_F10, KeyEvent.SHIFT_MASK) {
@@ -1531,4 +1547,66 @@ public class frmIzvodi extends raMasterDetail {
   //  {
   //    jpDetail.setPanelsVisible(1);
   //  }
+  private void commitFromFile(IzvodFromFile izf) {
+    QueryDataSet gks = izf.convertToGkStavke();
+    QueryDataSet cpartneri = Partneri.getDataModule().getTempSet();
+    cpartneri.open();
+    posNalozi();
+    BigDecimal tid = Aus.zero2, tip = Aus.zero2;
+    int brojstavki = 0;//getDetailSet().getRowCount();
+    int error = 0;
+    for (gks.first(); gks.inBounds(); gks.next()) {
+      int rbs = gks.getInt("RBS");
+      //KNJIG, GOD, CVRNAL, RBR, DATUMKNJ, (DATDOSP=DATDOK), BROJIZV, GODMJ, TECAJ=1.0, CNALOGA
+//      gks.setString("KNJIG", getMasterSet().getString("KNJIG"));
+//      gks.setString("GOD", getMasterSet().getString("GOD"));
+//      gks.setString("CVRNAL", knjizenjeSet.getString("CVRNAL"));
+//      gks.setInt("RBR", getKnjizenje().getFNalozi().getMasterSet().getInt("RBR"));
+//      gks.setTimestamp("DATUMKNJ", knjizenjeSet.getTimestamp("DATUMKNJ"));
+//      
+      knjizenje.getFNalozi().prepareForSaveStavka(gks);
+      gks.setTimestamp("DATDOSP", gks.getTimestamp("DATDOK"));
+      gks.setInt("BROJIZV", getMasterSet().getInt("BROJIZV"));
+      gks.setBigDecimal("TECAJ", Aus.one0);
+      gks.setString("CNALOGA", getMasterSet().getString("CNALOGA"));
+      gks.setString("POKRIVENO", "N");
+      gks.setInt("RBS", rbs);
+      tid = tid.add(gks.getBigDecimal("ID"));
+      tip = tip.add(gks.getBigDecimal("IP"));
+      //check
+      if (raKonta.isSaldak(gks.getString("BROJKONTA"))) {
+        if (!lookupData.getlookupData().raLocate(cpartneri, "CPAR", gks.getInt("CPAR")+"")) {
+          error++;
+        }
+        if (gks.getString("BROJDOK").trim().length() == 0) error ++;
+        if (gks.getString("VRDOK").trim().length() == 0) error ++;
+      }
+      gks.post();
+      brojstavki ++;
+      System.out.println(gks);
+    }
+    if (error > 0) {
+      JOptionPane.showMessageDialog(null, "Postoji "+error+" nepotpunih podataka. Molim ispravite ih dodavajuæi žiro raèune partnerima ili veze poziv - konto ili žiro - konto");
+      return;
+    }
+    /** @TODO azurirati izvod, nalog i sve u transakciji s: */
+    getMasterSet().setInt("BROJSTAVKI", brojstavki);
+    getMasterSet().setBigDecimal("ID", tid);
+    getMasterSet().setBigDecimal("IP", tip);
+    getMasterSet().setBigDecimal("NOVOSTANJE", getExpectedNovoStanje());
+
+    getKnjizenje().getFNalozi().getMasterSet().setBigDecimal("ID", tid);
+    getKnjizenje().getFNalozi().getMasterSet().setBigDecimal("IP", tip);
+    getKnjizenje().getFNalozi().getMasterSet().setBigDecimal("SALDO", tid.subtract(tip));
+    
+    raTransaction.saveChangesInTransaction(new QueryDataSet[] {gks, getMasterSet(), getKnjizenje().getFNalozi().getMasterSet()});
+    updStatus();
+    //raDetail.refreshTable();
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        raDetail.getJpTableView().fireTableDataChanged();
+        raMaster.getJpTableView().fireTableDataChanged();
+      }
+    });
+  }
 }

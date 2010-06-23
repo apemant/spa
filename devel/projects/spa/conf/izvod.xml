@@ -201,7 +201,7 @@
 	<bean id="line5Verifier" class="hr.restart.util.textconv.BshLineVerifier">
 		<property name="verifyStatement">
 			<value>
-				result = line.getContent().substring(249).equals("5");
+				result = line.getContent().substring(249).startsWith("5");
 			</value>
 		</property>
 	</bean>
@@ -379,7 +379,7 @@
 	<bean id="line7Verifier" class="hr.restart.util.textconv.BshLineVerifier">
 		<property name="verifyStatement">
 			<value>
-				result = line.getContent().substring(249).equals("7");
+				result = line.getContent().substring(249).startsWith("7");
 			</value>
 		</property>
 	</bean>

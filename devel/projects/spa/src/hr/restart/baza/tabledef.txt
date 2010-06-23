@@ -1222,3 +1222,7 @@ RBR;short;2;pkey;;Rbr;*
 IZNOS;numeric;17,2;;;Uplata
 DATUM;date;;;;Datum
 NAP;text;50;;;Napomena;20
+
+$PNBKonto
+PNB;char;200;pkey;;Poziv na broj
+BROJKONTA;text;8;pkey;;Konto
