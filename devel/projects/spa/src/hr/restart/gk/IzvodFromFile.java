@@ -257,8 +257,8 @@ public class IzvodFromFile {
     // TODO Auto-generated method stub
     Timestamp t = hr.restart.util.Valid.getValid().getToday();
     return OrgStr.getKNJCORG()+"-"+
-//    hr.restart.sisfun.raUser.getInstance().getUser()+"-"+
-    new java.util.Formatter().format("%tF %tT",  new Object[] {t,t});
+//    new java.util.Formatter().format("%tF %tT",  new Object[] {t,t}); //ne shljaka na 1.4
+    System.currentTimeMillis();
   }
   
 }
