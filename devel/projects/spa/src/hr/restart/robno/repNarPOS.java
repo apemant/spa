@@ -91,6 +91,9 @@ public class repNarPOS extends mxReport {
      String prodMjesto = prm.getString("NAZPRODMJ");
      String user = master.getString("CUSER");
 
+     DataRow usr = lD.raLookup(hr.restart.baza.dM.getDataModule().getUseri(),"CUSER", user);
+     String operater = usr.getString("NAZIV");
+
      ru.setDataSet(master);
 
      this.setPgHeader(
@@ -98,7 +101,7 @@ public class repNarPOS extends mxReport {
          "<$newline$>"+
          (fmb.getNarSet().getString("AKTIV").equalsIgnoreCase("D") ? "" :
            Aus.spc((width - 9) / 2) + "(kopija!)<$newline$>") + 
-           "Stol: " + fmb.getStol() + "<$newline$>" + 
+           "Stol: " + fmb.getStol() + "   Poslužio: " + operater + "<$newline$>" + 
            doubleLineSep + "<$newline$>"+ getDetailHeader() +
          doubleLineSep+""+getManualDetail());
      detail[0] = oneRow ? "<#NAZART|"+(width-8)+"|left#> <#KOL|7|right#>" :
