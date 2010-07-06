@@ -435,7 +435,7 @@ CDJEL;char;10;;;Djelatnost
 ZR;char;40;;;Žiro raèun;15
 TEL;char;40;;;Telefon;15
 TELFAX;char;20;;;Fax;15
-EMADR;char;50;;;E-mail;15
+EMADR;char;60;;;E-mail;15
 ULOGA;char;1;;O;Uloga
 DI;char;1;;D;Tuz / Ino
 DOSP;short;2;;;Dani dospijeæa;15
