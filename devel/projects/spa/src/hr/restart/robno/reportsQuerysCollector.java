@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.util.raMasterDetail;
+
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -86,12 +88,14 @@ public class reportsQuerysCollector {
 
   hr.restart.baza.dM dm  = hr.restart.baza.dM.getDataModule();
   QueryDataSet repQDS = new QueryDataSet();
+  public raMasterDetail caller = null;
+  
 
   public static reportsQuerysCollector getRQCModule() {
 
     if (RQCclass == null) {
       RQCclass = new reportsQuerysCollector();
-    }
+    } 
     return RQCclass;
   }
 
@@ -113,6 +117,7 @@ public class reportsQuerysCollector {
 
   public void ReSql(String Sqlr,String what){
     this.what=what;
+    caller = null;
     SQLracdod=Sqlr;
 //    setQuery(what);
 /*    repQDS = hr.restart.util.Util.getNewQueryDataSet(SQLrealone,true); */
