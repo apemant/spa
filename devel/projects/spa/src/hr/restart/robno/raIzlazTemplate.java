@@ -1931,6 +1931,7 @@ ST.prn(radninal);
 			return;
 		reportsQuerysCollector.getRQCModule().ReSql(PrepSql(true, true),
 				what_kind_of_dokument);
+		reportsQuerysCollector.getRQCModule().caller = this;
 		// reportsQuerysCollector.getRQCModule().ReSql(PrepSql(true),what_kind_of_dokument);
 		// ST.prn(reportsQuerysCollector.getRQCModule().getQueryDataSet());
 		if (!isMasterInitIspis) {
