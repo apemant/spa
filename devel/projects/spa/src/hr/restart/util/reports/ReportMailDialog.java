@@ -59,6 +59,8 @@ public class ReportMailDialog extends JraDialog {
   
   JraButton jbOptions = new JraButton();
   
+  boolean valid = true;
+  
   protected ReportMailDialog() {
     setModal(true);
     retValue = new StorageDataSet();
@@ -192,22 +194,20 @@ public class ReportMailDialog extends JraDialog {
   }
 
   protected void cancelPress() {
-    this.hide();
-    this.dispose();
     retValue = null;
+    this.dispose();
   }
 
   protected void okPress() {
     if (validation()) { 
       retValue.post();
-      this.hide();
       this.dispose();
     }
   }
 
   private boolean validation() {
-    if (Valid.getValid().isEmpty(jrEMADR)) return false;
-    if (Valid.getValid().isEmpty(jtNaslov)) return false;
+    if (valid && Valid.getValid().isEmpty(jrEMADR)) return false;
+    if (valid && Valid.getValid().isEmpty(jtNaslov)) return false;
     if (Mailer.getMailProperties().getProperty("mailfrom").equals("errors@rest-art.hr")) {
       if (!showMailOptions()) return false;
     }
@@ -217,12 +217,19 @@ public class ReportMailDialog extends JraDialog {
   public static StorageDataSet showMailDialog() {
     return showMailDialog(null,null,null);
   }
+  public static StorageDataSet showMailDialog(boolean check) {
+    return showMailDialog(null,null,null,check);
+  }
   public static StorageDataSet showMailDialog(String kome, String naslov, String txt) {
+    return showMailDialog(kome, naslov, txt, true);
+  }
+  public static StorageDataSet showMailDialog(String kome, String naslov, String txt, boolean check) {
     ReportMailDialog rmd = new ReportMailDialog();
     if (kome!=null) rmd.retValue.setString("EMADR", kome);
     if (naslov!=null) rmd.retValue.setString("NASLOV", naslov);
     if (txt!=null) rmd.retValue.setString("TXT", txt);
 //    rmd.pack();
+    rmd.valid = check;
     startFrame.getStartFrame().centerFrame((JDialog)rmd,0,"Slanje e-mailom");
     rmd.setVisible(true);
     return rmd.retValue;
