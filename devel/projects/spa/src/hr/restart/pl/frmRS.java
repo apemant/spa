@@ -665,10 +665,22 @@ public class frmRS extends raUpitLite {
 //      			+" AND MJOBR="+_rsperarh.getShort("MJOBR")+
 //      			" AND RBROBR="+_rsperarh.getShort("RBROBR"));
       String _q;
-      QueryDataSet _datispl = Util.getNewQueryDataSet(_q = "SELECT DATUMISPL FROM kumulorgarh, rsperiodarh WHERE " +
+      QueryDataSet _datispl = Util.getNewQueryDataSet(_q = "SELECT datumispl FROM rsperiodarh, kumulradarh, kumulorgarh WHERE rsperiodarh.godobr = kumulradarh.godobr " +
+      		"AND rsperiodarh.mjobr = kumulradarh.mjobr " +
+      		"AND rsperiodarh.rbrobr = kumulradarh.rbrobr " +
+      		"AND rsperiodarh.cradnik = kumulradarh.cradnik " +
+      		"AND kumulradarh.godobr = kumulorgarh.godobr " +
+      		"AND kumulradarh.mjobr = kumulorgarh.mjobr " +
+      		"AND kumulradarh.rbrobr = kumulorgarh.rbrobr " +
+      		"AND kumulradarh.cvro = kumulorgarh.cvro " +
+      		"AND kumulradarh.corg = kumulorgarh.corg " +
+      		"AND kumulorgarh.knjig='" + OrgStr.getKNJCORG() + "' " +
+      		"AND rsperiodarh.IDENTIFIKATOR = '"+getHead().getString("IDENTIFIKATOR")+"'"
+        /* "SELECT DATUMISPL FROM kumulorgarh, rsperiodarh WHERE " +
       		"kumulorgarh.knjig='" + OrgStr.getKNJCORG() + "' AND " +
        		"kumulorgarh.godobr = rsperiodarh.godobr AND kumulorgarh.mjobr = rsperiodarh.mjobr AND kumulorgarh.rbrobr = rsperiodarh.rbrobr " +
-      		"AND rsperiodarh.IDENTIFIKATOR = '"+getHead().getString("IDENTIFIKATOR")+"'");
+      		"AND rsperiodarh.IDENTIFIKATOR = '"+getHead().getString("IDENTIFIKATOR")+"'"*/
+        );
       System.out.println(_q);
       _datispl.open();
       _datispl.first();
