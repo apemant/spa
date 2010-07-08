@@ -21,23 +21,16 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Logodat;
 import hr.restart.baza.dM;
 import hr.restart.robno.TypeDoc;
+import hr.restart.robno.repIzlazni;
+import hr.restart.robno.repUtil;
+import hr.restart.robno.reportsQuerysCollector;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraDialog;
-import hr.restart.util.Aus;
-import hr.restart.util.FileHandler;
-import hr.restart.util.OKpanel;
-import hr.restart.util.VarStr;
-import hr.restart.util.lookupData;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raImages;
-import hr.restart.util.raJPNavContainer;
-import hr.restart.util.raKeyActionSupport;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raProcess;
-import hr.restart.util.startFrame;
+import hr.restart.swing.raSelectTableModifier;
+import hr.restart.util.*;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -1629,21 +1622,78 @@ public class dlgRunReport {
         }
 }//endif alterExport        
       } else if (mode == 3) {
-        StorageDataSet ret = ReportMailDialog.showMailDialog();
-        if (ret != null) {
-          try {
-            Timestamp now = new Timestamp(System.currentTimeMillis());
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
-            String time_suffix = sdf.format(now);
-            JasperPrint jpr = getJasperPrint(dlg);
-            String fn = "SPA-ERP_ispis"+time_suffix+".pdf";
-            if (jpr == null) rt.saveAsPDF(fn); 
-            else JasperExportManager.exportReportToPdfFile(jpr, fn);
-            ReportMailDialog.sendMail(new File(fn), ret);
-          } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Slanje neuspješno!!! Greška :"+e);
-            e.printStackTrace();
+        raReportDescriptor rd = getCurrentDescriptor();
+        reportsQuerysCollector rqc = reportsQuerysCollector.getRQCModule();
+        boolean spec = rd.isCustomIzlaz() && rqc.caller != null &&
+            rqc.caller.raMaster.getSelectionTracker().countSelected() > 1;
+        StorageDataSet ret = null;
+        if (spec) ret = ReportMailDialog.showMailDialog(false);
+        else {
+          String kome = null;
+          String naslov = null;
+          if (rd.isCustomIzlaz() && rqc.caller != null) {
+            if (lookupData.getlookupData().raLocate(
+                dM.getDataModule().getPartneri(), "CPAR", 
+                Integer.toString(rqc.getQueryDataSet().getInt("CPAR"))))
+              kome = dM.getDataModule().getPartneri().getString("EMADR");
+            if (kome != null && kome.length() < 10) kome = null;
+            naslov = TypeDoc.getTypeDoc().nazivDokumenta(
+                rqc.getQueryDataSet().getString("VRDOK")) + 
+                " br. " + repUtil.getFormatBroj(rqc.getQueryDataSet());
           }
+          ret = ReportMailDialog.showMailDialog(kome, naslov, null);
+        }
+        if (ret != null) {
+          if (spec) {
+            int sent = 0;
+            raSelectTableModifier sel = rqc.caller.raMaster.getSelectionTracker();
+            DataSet ds = sel.getSelectedView(rqc.caller.getMasterSet());
+            int total = ds.rowCount();
+            try {
+              String[] cc = {"CSKL", "GOD", "BRDOK"};
+              DataSet par = dM.getDataModule().getPartneri();
+              for (ds.first(); ds.inBounds(); ds.next()) {
+                rqc.ReSql(" AND " + Condition.whereAllEqual(cc, ds).qualified("doki"), ds.getString("VRDOK"));
+                if (!lookupData.getlookupData().raLocate(par, "CPAR", 
+                    Integer.toString(rqc.getQueryDataSet().getInt("CPAR"))) ||
+                    par.getString("EMADR").length() < 10) continue;
+                try {
+                  ret.setString("EMADR", par.getString("EMADR"));
+                  ret.setString("NASLOV", TypeDoc.getTypeDoc().nazivDokumenta(
+                  rqc.getQueryDataSet().getString("VRDOK")) + 
+                    " br. " + repUtil.getFormatBroj(rqc.getQueryDataSet()));
+                  
+                  Timestamp now = new Timestamp(System.currentTimeMillis());
+                  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
+                  String time_suffix = sdf.format(now);
+                  JasperPrint jpr = getJasperPrint(dlg);
+                  String fn = "SPA-ERP_ispis"+time_suffix+".pdf";
+                  if (jpr == null) rt.saveAsPDF(fn); 
+                  else JasperExportManager.exportReportToPdfFile(jpr, fn);
+                  ReportMailDialog.sendMail(new File(fn), ret);
+                  
+                  ++sent;
+                } catch (Exception e) {
+                  e.printStackTrace();
+                }
+              }
+            } finally {
+              sel.destroySelectedView();
+            }
+            //JOptionPane.showMessageDialog(dlg, "Poslano " + sent + " od " + total + " mailova.");
+          } else try {
+              Timestamp now = new Timestamp(System.currentTimeMillis());
+              SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
+              String time_suffix = sdf.format(now);
+              JasperPrint jpr = getJasperPrint(dlg);
+              String fn = "SPA-ERP_ispis"+time_suffix+".pdf";
+              if (jpr == null) rt.saveAsPDF(fn); 
+              else JasperExportManager.exportReportToPdfFile(jpr, fn);
+              ReportMailDialog.sendMail(new File(fn), ret);
+            } catch (Exception e) {
+              JOptionPane.showMessageDialog(null, "Slanje neuspješno!!! Greška :"+e);
+              e.printStackTrace();
+            }
           System.out.println(ret);
         }
         //JOptionPane.showMessageDialog(null, "Slanje reporta e-mailom nije moguæe");
