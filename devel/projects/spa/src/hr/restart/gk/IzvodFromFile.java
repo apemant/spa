@@ -133,7 +133,8 @@ public class IzvodFromFile {
       String broj = (String)line.getColumnValue("PNBO");
       String broj1 = broj.substring(0,2);
       String broj2 = broj.substring(2).trim();
-
+      if (broj2.equals("")) broj2 = ((String)line.getColumnValue("SVRHA")).trim();
+      if (broj2.equals("")) broj2 = "N/A";
       gksr.setString("BROJKONTA", getKonto(isKupac, ziro, broj2));
       gksr.setString("CORG", dlgGetKnjig.getKNJCORG());
       gksr.setTimestamp("DATDOK", (Timestamp)line.getColumnValue("DATUM"));
