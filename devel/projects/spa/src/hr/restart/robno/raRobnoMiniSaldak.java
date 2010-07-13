@@ -792,9 +792,9 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 	private void findKarticaUlaz() { // ovo je novo.... gledati prk i kal
 
 		boolean isCPAR4ALL = jrfCPAR.getText().equalsIgnoreCase("");
-
-		String sqlpitanje = "select max(doku.cskl) as cskl, max(doku.vrdok) as vrdok, max(doku.god) as god, "
-				+ "max(doku.brdok) as brdok, max(doku.brrac) as brrac, max(doku.cpar) as cpar, max(partneri.nazpar) as nazpar, max(doku.cskl||'-'||doku.vrdok||'-'||doku.god||'-'||doku.brdok) as kljuc, "
+//group by cskl, vrdok, brdok, god order by nazpar
+		String sqlpitanje = "select doku.cskl as cskl, doku.vrdok as vrdok, doku.god as god, "
+				+ "doku.brdok as brdok, max(doku.brrac) as brrac, max(doku.cpar) as cpar, max(partneri.nazpar) as nazpar, max(doku.cskl||'-'||doku.vrdok||'-'||doku.god||'-'||doku.brdok) as kljuc, "
 				+ "max(doku.pnbz2) as pnbz2, max(doku.dvo) as dvo, max(doku.datdosp) as datdosp, max(doku.datupl) as datupl, max(doku.cpar) as cpar, max(doku.statpla) as statpla, "
 				+ "max(doku.platiti) as platiti, max(doku.uiprpor) as uiprpor, max(doku.uikal) as uikal "
 				+ "from doku, partneri where doku.cpar = partneri.cpar ";
@@ -819,7 +819,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		}
 
 		if (!isCPAR4ALL)
-			sqlpitanje += " and cpar = " + jrfCPAR.getText() + " ";
+			sqlpitanje += " and doku.cpar = " + jrfCPAR.getText() + " ";
 
 		if (status.equalsIgnoreCase("DA")) {
 			sqlpitanje += " and doku.statpla='D'";
@@ -883,7 +883,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		}
 
 		//debug
-		//    System.out.println("sqlPitanje " + sqlpitanje);
+		    System.out.println("sqlPitanje " + sqlpitanje);
 		//    sysoutTEST s = new sysoutTEST(false);
 
 		QueryDataSet tmpqds = hr.restart.util.Util.getNewQueryDataSet(
