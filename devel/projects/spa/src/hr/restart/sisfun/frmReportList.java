@@ -68,7 +68,7 @@ public class frmReportList extends raFrame {
 
   private QueryDataSet reps = new raDataSet();
   private boolean busy;
-  static String app;
+  String app;
 
   public frmReportList() {
     try {
