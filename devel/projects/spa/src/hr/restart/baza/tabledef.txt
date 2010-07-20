@@ -1224,5 +1224,5 @@ DATUM;date;;;;Datum
 NAP;text;50;;;Napomena;20
 
 $PNBKonto
-PNB;char;200;pkey;;Poziv na broj
+PNB;char;150;pkey;;Poziv na broj
 BROJKONTA;text;8;pkey;;Konto
