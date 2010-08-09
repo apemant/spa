@@ -467,6 +467,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repRacuni2V", "ROT", "D", ""},
       {"hr.restart.robno.repRacuniPnP", "ROT", "D", ""},
       {"hr.restart.robno.repRacuniSifKup", "ROT", "D", ""},
+      {"hr.restart.robno.repMesklaPnP", "ROT", "D", ""},
       {"hr.restart.robno.repRacuniGetro", "ROT", "D", ""},
       {"hr.restart.robno.repRacuniMetro", "ROT", "D", ""},
       {"hr.restart.robno.repRacuniEAN", "ROT", "D", ""},

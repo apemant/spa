@@ -146,6 +146,8 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repMeskla","hr.restart.robno.repMeskla","Meskla","Me\u0111uskladišnice-koli\u010Dinske");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repMesklaExtendedVersion","hr.restart.robno.repMeskla","MesklaExtendedVersion","Me\u0111uskladišnice-vrijednosne");
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repMesklaExtendedVersion","hr.restart.robno.repMeskla","MesklaExtendedVersion","Me\u0111uskladišnice-vrijednosne");
+    this.raMaster.getRepRunner().addReport("hr.restart.robno.repMesklaPnP","hr.restart.robno.repMesklaPnP","ROTSifKup","Me\u0111uskladišnica-raèun");
+    this.raDetail.getRepRunner().addReport("hr.restart.robno.repMesklaPnP","hr.restart.robno.repMesklaPnP","ROTSifKup","Me\u0111uskladišnica-raèun");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repMesklaNiv","hr.restart.robno.repMesNivel","Nivel","Poravnanje - nivelacija");
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repMesklaNiv","hr.restart.robno.repMesNivel","Nivel","Poravnanje - nivelacija");
     EntryModeinDM();
