@@ -131,6 +131,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			"Dospjelo", "Nedospjelo" });
 	
 	JraCheckBox jcbPON = new JraCheckBox();
+	JraCheckBox jcbUPL = new JraCheckBox();
 
 	private hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(
 			false);
@@ -206,6 +207,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		JCstatus.setSelectedIndex(1);
 		JCdosp.setSelectedIndex(1);
 		jcbPON.setSelected(false);
+		jcbUPL.setSelected(false);
 	}
 
 	public void componentShow() {
@@ -535,6 +537,10 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		jcbPON.setText("Prikaz ponuda");
 		jcbPON.setHorizontalTextPosition(SwingConstants.LEADING);
 		jcbPON.setHorizontalAlignment(SwingConstants.TRAILING);
+		
+		jcbUPL.setText("Prikaz uplata iz izvoda");
+		jcbUPL.setHorizontalTextPosition(SwingConstants.LEADING);
+		jcbUPL.setHorizontalAlignment(SwingConstants.TRAILING);
 
 		JCstatus.addItemListener(new java.awt.event.ItemListener() {
 			public void itemStateChanged(java.awt.event.ItemEvent i) {
@@ -574,6 +580,9 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		panel_za_upit.add(jrfCORG, new XYConstraints(150, 40, 100, -1));
 		panel_za_upit.add(jrfNAZORG, new XYConstraints(255, 40, 350, -1));
 		panel_za_upit.add(jbcorg, new XYConstraints(610, 40, 21, 21));
+		
+		panel_za_upit.add(jcbPON, new XYConstraints(365, 90, 240, -1));
+		panel_za_upit.add(jcbUPL, new XYConstraints(365, 115, 240, -1));
 
 		panel_za_upit.add(/* jlCPAR */rcbPartnerKupac, new XYConstraints(15, 65,
 				130, -1));
@@ -616,32 +625,39 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 					+ "doki.cpar,partneri.nazpar,doki.uirac,doki.platiti,doki.datupl from doki, partneri where doki.uirac != 0 and doki.cpar = "
 					+ jrfCPAR.getText() + " and doki.cpar = partneri.cpar and ";
 		}
+		Condition svd = Condition.in("VRDOK", new String[] {"ROT", "POD"});
+        Condition fvd = Condition.in("VRDOK", new String[] {"RAC", "PRD", "TER", "ODB"});
+        if (jcbPON.isSelected()) {
+          svd = svd.or(Condition.equal("VRDOK", "PON").and(Condition.equal("PARAM", "P")).and(Condition.equal("STATIRA", "N")));
+          fvd = fvd.or(Condition.equal("VRDOK", "PON").and(Condition.equal("PARAM", "OJ")).and(Condition.equal("STATIRA", "N")));              
+        }
 
 		if (jrfCSKL.getText().equalsIgnoreCase("")
 				&& jrfCORG.getText().equalsIgnoreCase("")) {
-		    Condition svd = Condition.in("VRDOK", new String[] {"ROT", "POD"});
-            Condition fvd = Condition.in("VRDOK", new String[] {"RAC", "PRD", "TER", "ODB"});
             sqlpitanje = sqlpitanje + "(" + svd.and(Condition.in("CSKL", Util.getSkladFromCorg())).or(
               fvd.and(Condition.in("CSKL", OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "CORG"))).qualified("doki") + ")";
           /*sqlpitanje = sqlpitanje + "doki.vrdok in ('ROT','POD','RAC','TER','ODB', 'PRD')";*/ 
            
 		} else if (!jrfCSKL.getText().equalsIgnoreCase("")
 				&& jrfCORG.getText().equalsIgnoreCase("")) {
-			sqlpitanje = sqlpitanje
-					+ "doki.vrdok in ('ROT','POD') and doki.cskl='"
-					+ jrfCSKL.getText() + "'";
+			sqlpitanje = sqlpitanje + "(" + svd.and(jrfCSKL.getCondition()).qualified("doki") + ")";
+/*					+ "doki.vrdok in ('ROT','POD') and doki.cskl='"
+					+ jrfCSKL.getText() + "'";*/
 		} else if (jrfCSKL.getText().equalsIgnoreCase("")
 				&& !jrfCORG.getText().equalsIgnoreCase("")) {
-			sqlpitanje = sqlpitanje
+		  sqlpitanje = sqlpitanje + "(" + fvd.and(jrfCORG.getCondition()).qualified("doki") + ")";
+/*			sqlpitanje = sqlpitanje
 					+ "doki.vrdok in ('RAC','TER','ODB', 'PRD') and doki.cskl='"
-					+ jrfCORG.getText() + "'";
+					+ jrfCORG.getText() + "'";*/
 		} else if (!jrfCSKL.getText().equalsIgnoreCase("")
 				&& !jrfCORG.getText().equalsIgnoreCase("")) {
-			sqlpitanje = sqlpitanje
+		  sqlpitanje = sqlpitanje + "(" + svd.and(jrfCSKL.getCondition()).
+		      or(fvd.and(jrfCORG.getCondition())).qualified("doki") + ")";
+/*			sqlpitanje = sqlpitanje
 					+ "((doki.vrdok in ('ROT','POD') and doki.cskl='"
 					+ jrfCSKL.getText() + "') or ("
 					+ "doki.vrdok in ('RAC','TER','ODB','PRD') and doki.cskl='"
-					+ jrfCORG.getText() + "'))";
+					+ jrfCORG.getText() + "'))";*/
 		}
 
 		if (status.equalsIgnoreCase("DA")) {
@@ -1338,6 +1354,11 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			return;
 
 		if (tds.getString("PK").equals("K")) {
+		  if ("PON".equals(qdsPojedIzlaz.getString("VRDOK"))) {
+            JOptionPane.showMessageDialog(this.getWindow(), "Ponude se ne mogu ažurirati.\n" +
+                  "Potrebno ih je prebaciti u raèune ili poništiti.", "Upozorenje", JOptionPane.WARNING_MESSAGE);
+            return;
+          }
 			if (qdsPojedIzlaz.getBigDecimal("PLATITI").doubleValue() == 0) {
 				JOptionPane.showMessageDialog(this,
 						"Za uvaj raèun nije izvršena uplata !!!!", "Poruka",
@@ -1471,6 +1492,11 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		if (tds.getString("PK").equals("K")) {
 			if (jrfCPAR.getText().equalsIgnoreCase("")) {
 				return;
+			}
+			if ("PON".equals(qdsPojedIzlaz.getString("VRDOK"))) {
+			  JOptionPane.showMessageDialog(this.getWindow(), "Ponude se ne mogu ažurirati.\n" +
+			  		"Potrebno ih je prebaciti u raèune ili poništiti.", "Upozorenje", JOptionPane.WARNING_MESSAGE);
+			  return;
 			}
 			racun.setDataSet(qdsPojedIzlaz);
 			racun.setColumnName("UIRAC");
