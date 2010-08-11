@@ -187,8 +187,8 @@ public class RaLogicStanjePromet {
       }
     }
     
-    if (kol0){
-      dm.getStanje().open();
+    if (!kol0){
+/*      dm.getStanje().open();
       povratImovine.first();
       do {
         if (!ld.raLocate(dm.getStanje(),new String[]{"CSKL","CART"}, new String[] {povratImovine.getString("CSKL"),povratImovine.getInt("CART")+""})){
@@ -212,7 +212,7 @@ public class RaLogicStanjePromet {
         }
       } while (povratImovine.next());
     } else {
-      povratImovine.first();
+*/      povratImovine.first();
       do {
         if (povratImovine.getBigDecimal("KOL").compareTo(Aus.zero3) == 0){
          povratImovine.deleteRow();
