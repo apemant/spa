@@ -697,6 +697,12 @@ public class Aus {
     for (int i = 0; i < n; i++) chars[i] = ch;
     return new String(chars);
   }
+  
+  public static String leadzero(int num, int len) {
+    String ns = Integer.toString(num);
+    if (ns.length() >= len) return ns;
+    return string(len - ns.length(), '0') + ns;
+  }
 
   /**
    * Vraæa gramatièki ispravnu varijantu množine nekog izraza u ovisnosti od broja.
