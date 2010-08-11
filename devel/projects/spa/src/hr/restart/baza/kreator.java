@@ -42,6 +42,7 @@ import hr.restart.util.startFrame;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -462,7 +463,10 @@ public class kreator extends JraFrame {
   }
 
   private void selectPath() {
-    new SelectPathDialog(this).show();
+    SelectPathDialog spd = new SelectPathDialog(this);
+    spd.loadsave = loadsave;
+    spd.show();
+    loadsave = spd.loadsave;
   }
 
   private void showTableView() {
@@ -1048,7 +1052,7 @@ public class kreator extends JraFrame {
     }
   }
 
-  class SelectPathDialog extends JraDialog {
+  public static class SelectPathDialog extends JraDialog {
     JraTextField path = new JraTextField(48) {
       public void focusGained(java.awt.event.FocusEvent e) {}
       public boolean maskCheck() { return true; }
@@ -1064,10 +1068,21 @@ public class kreator extends JraFrame {
     };
 
     JDirectoryChooser dc = new JDirectoryChooser();
+    public File loadsave;
     File oldls;
+    public boolean oksel;
 
     public SelectPathDialog(Frame owner) {
       super(owner, "Putanja za spremanje i dohvat podataka", true);
+      try {
+        init();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    
+    public SelectPathDialog(Dialog owner, String title) {
+      super(owner, title, true);
       try {
         init();
       } catch (Exception e) {
@@ -1083,7 +1098,7 @@ public class kreator extends JraFrame {
       this.getContentPane().add(up, BorderLayout.NORTH);
       this.getContentPane().add(okp, BorderLayout.SOUTH);
       this.pack();
-      this.setLocationRelativeTo(kreator.this);
+      this.setLocationRelativeTo(this.getOwner());
       this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
       this.addWindowListener(new WindowAdapter() {
         public void windowClosing(WindowEvent e) {
@@ -1124,6 +1139,7 @@ public class kreator extends JraFrame {
     }
 
     private void CancelPress() {
+      oksel = false;
       loadsave = oldls;
       if (loadsave!= null && loadsave.equals(Aus.getCurrentDirectory()))
           loadsave = null;
@@ -1131,13 +1147,13 @@ public class kreator extends JraFrame {
     }
 
     private void OKPress() {
-      boolean ok = false;
+      oksel = false;
       try {
         loadsave = new File(path.getText());
         if (loadsave.exists() && loadsave.isDirectory())
-          ok = true;
+          oksel = true;
       } catch (Exception e) {}
-      if (!ok) {
+      if (!oksel) {
         JOptionPane.showMessageDialog(this, "Pogrešna putanja!", "Greška",
                                       JOptionPane.ERROR_MESSAGE);
       } else {
@@ -1149,7 +1165,7 @@ public class kreator extends JraFrame {
 
     public void show() {
       oldls = loadsave;
-      if (kreator.this.loadsave == null)
+      if (loadsave == null)
         loadsave = Aus.getCurrentDirectory();
       dc.setCurrentDirectory(loadsave);
       path.setText(loadsave.getAbsolutePath());
