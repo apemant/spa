@@ -64,8 +64,8 @@ public class ReportMailDialog extends JraDialog {
   protected ReportMailDialog() {
     setModal(true);
     retValue = new StorageDataSet();
-    retValue.addColumn(dM.createStringColumn("EMADR","e-Mail adresa", 50));
-    retValue.addColumn(dM.createStringColumn("NASLOV","Naslov", 50));
+    retValue.addColumn(dM.createStringColumn("EMADR","e-Mail adresa", 60));
+    retValue.addColumn(dM.createStringColumn("NASLOV","Naslov", 100));
     retValue.addColumn(dM.createStringColumn("TXT","Tekst poruke", 500));
     retValue.open();
     retValue.insertRow(false);
