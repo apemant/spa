@@ -582,7 +582,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		panel_za_upit.add(jbcorg, new XYConstraints(610, 40, 21, 21));
 		
 		panel_za_upit.add(jcbPON, new XYConstraints(365, 90, 240, -1));
-		panel_za_upit.add(jcbUPL, new XYConstraints(365, 115, 240, -1));
+		//panel_za_upit.add(jcbUPL, new XYConstraints(365, 115, 240, -1));
 
 		panel_za_upit.add(/* jlCPAR */rcbPartnerKupac, new XYConstraints(15, 65,
 				130, -1));
