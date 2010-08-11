@@ -24,6 +24,7 @@ import hr.restart.baza.Refresher;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.Stpos;
 import hr.restart.baza.dM;
+import hr.restart.baza.stdoki;
 import hr.restart.robno.Aut;
 import hr.restart.robno.Rbr;
 import hr.restart.robno.Util;
@@ -33,6 +34,7 @@ import hr.restart.robno.dlgKupac;
 import hr.restart.robno.frmPlacanje;
 import hr.restart.robno.raVart;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raUser;
 import hr.restart.sk.dlgSplitAmount;
 import hr.restart.swing.JraTextField;
@@ -40,17 +42,7 @@ import hr.restart.swing.raColors;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raStatusColorModifier;
 import hr.restart.swing.raTextMask;
-import hr.restart.util.Aus;
-import hr.restart.util.Valid;
-import hr.restart.util.VarStr;
-import hr.restart.util.lookupData;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raImages;
-import hr.restart.util.raKeyAction;
-import hr.restart.util.raMasterDetail;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raNavBar;
-import hr.restart.util.raTransaction;
+import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
@@ -192,6 +184,8 @@ public class frmMasterBlagajna extends raMasterDetail {
   public static final String[] key = {"cskl","vrdok","god","brdok","cprodmj"};
 
   static frmMasterBlagajna frm;
+  
+  frmTableDataView viewReq = new frmTableDataView(false, false, true);
 
   JPanel jpSelect = new JPanel();
   Column IZNOS = new Column();
@@ -884,9 +878,21 @@ public class frmMasterBlagajna extends raMasterDetail {
       dlgStol.getOkPanel().setEnterEnabled(true);
       raMaster.addOption(navZatvori, 4);
       raMaster.addOption(navPonisti, 5);
+      this.raMaster.addOption(new raNavAction("Pregled materijala", raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
+        public void actionPerformed(java.awt.event.ActionEvent ev) {
+          showRequirementsMaster();
+        }
+      },6,false);
       
       raMaster.getJpTableView().addTableModifier(msc);
-    } else raMaster.addOption(navPonisti, 4);
+    } else {
+      raMaster.addOption(navPonisti, 4);
+      this.raMaster.addOption(new raNavAction("Pregled materijala", raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
+        public void actionPerformed(java.awt.event.ActionEvent ev) {
+          showRequirementsMaster();
+        }
+      },5,false);
+    }
     
     raDetail.getNavBar().removeStandardOption(raNavBar.ACTION_TOGGLE_TABLE);
 
@@ -1794,7 +1800,85 @@ public class frmMasterBlagajna extends raMasterDetail {
   
   public void ZatvoriOstaloMaster() {
   }
+  
+  String[] reqc = {"CART", "CART1", "BC", "NAZART", "JM", "KOL"};
+  void showRequirementsMaster() {
+    if (getMasterSet().getRowCount() == 0) return;
+    
+    final StorageDataSet reqs = stdoki.getDataModule().getScopedSet(
+    "CSKL CART CART1 BC NAZART JM KOL NC INAB");
+    reqs.open();
+    
+    raProcess.runChild(raMaster.getWindow(), new Runnable() {
+      public void run() {
+          int row = getMasterSet().getRow();
+          raMaster.getJpTableView().enableEvents(false);
 
+          for (getMasterSet().first(); getMasterSet().inBounds(); getMasterSet().next())
+            if ("arh".equals(getMasterSet().getString("RDOK"))) {
+              DataSet ds = Stpos.getDataModule().getTempSet(
+                  Condition.whereAllEqual(key, getMasterSet()));
+              raProcess.openScratchDataSet(ds);
+              fillRequirements(reqs, ds);
+              ds.close();
+            }
+          getMasterSet().goToRow(row);
+          raMaster.getJpTableView().enableEvents(true);
+        
+        String[] cols = {"GOD", "CART"};
+        String god = vl.getKnjigYear("robno");
+        System.out.println(god);
+        for (reqs.first(); reqs.inBounds(); reqs.next()) {
+          raProcess.checkClosing();
+          int cart = reqs.getInt("CART");
+          DataSet st = Stanje.getDataModule().getTempSet(Condition.whereAllEqual(cols, 
+              new Object[] {god, new Integer(cart)}));
+          st.open();
+          if (st.rowCount() > 0) {
+            if (!ld.raLocate(st, "CSKL", reqs.getString("CSKL"))) st.first();
+            reqs.setBigDecimal("NC", st.getBigDecimal("NC"));
+          } else {
+            DataSet art = Artikli.getDataModule().getTempSet(Condition.equal("CART", cart));
+            art.open();
+            reqs.setBigDecimal("NC", art.getBigDecimal("NC"));
+          }
+          reqs.setBigDecimal("INAB", util.multiValue(reqs.getBigDecimal("KOL"), 
+              reqs.getBigDecimal("NC")));
+        }
+      }
+    });
+    
+    if (!raProcess.isCompleted()) return;
+    
+    viewReq.setDataSet(reqs);
+    viewReq.setSums(new String[] {"INAB"});
+    viewReq.setSaveName("Pregled-arh");
+    viewReq.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+    viewReq.setTitle("Prikaz arhivirane potrošnje materijala  za odabrano razdoblje");
+    viewReq.setVisibleCols(new int[] {0, Aut.getAut().getCARTdependable(1, 2, 3), 4, 5, 6, 7, 8});
+    viewReq.show();
+  }
+  
+  void fillRequirements(StorageDataSet store, DataSet ds) {
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      DataSet exp = Aut.getAut().expandArt(ds, true);
+      if (exp == null) addToExpanded(store, ds, ds.getString("CSKL"));
+      else 
+        for (exp.first(); exp.inBounds(); exp.next())
+          addToExpanded(store, exp, ds.getString("CSKL"));
+    }
+  }
+  
+  void addToExpanded(StorageDataSet expanded, DataSet art, String cskl) {
+    if (!ld.raLocate(expanded, "CART", Integer.toString(art.getInt("CART")))) {
+      expanded.last();
+      expanded.insertRow(false);
+      dM.copyColumns(art, expanded, reqc);
+    } else expanded.setBigDecimal("KOL", 
+        expanded.getBigDecimal("KOL").add(art.getBigDecimal("KOL")));
+    expanded.setString("CSKL", cskl);
+    expanded.post();
+  }
   
   public static DataSet getAlterMaster() {
     return alterMaster;
