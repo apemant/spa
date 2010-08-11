@@ -20,6 +20,7 @@ package hr.restart.util.reports;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Logodat;
 import hr.restart.baza.dM;
+import hr.restart.baza.kreator;
 import hr.restart.robno.TypeDoc;
 import hr.restart.robno.repIzlazni;
 import hr.restart.robno.repUtil;
@@ -1192,7 +1193,7 @@ public class dlgRunReport {
       }
       startFrame.getStartFrame().centerFrame(this,0,"Snimi u file");
       this.show();
-      if (selectedOption == JFileChooser.APPROVE_OPTION) {
+      if (selectedOption == JFileChooser.APPROVE_OPTION && fc.getSelectedFile() != null) {
         fname = ((exportFileFilter) fc.getFileFilter()).normalize(fc.getSelectedFile().getPath());
       } else fname = null;
       return selectedOption;
@@ -1204,6 +1205,10 @@ public class dlgRunReport {
     
     java.io.File getSelectedFile() {
       return fc.getSelectedFile();
+    }
+    
+    java.io.File getSelectedPath() {
+      return fc.getCurrentDirectory();
     }
     
     String getFileType() {
@@ -1596,8 +1601,48 @@ public class dlgRunReport {
 } //endif alterPreview
       } else if (mode == 2) {
         JasperPrint jpr = null;
+        raReportDescriptor rd = getCurrentDescriptor();
+        reportsQuerysCollector rqc = reportsQuerysCollector.getRQCModule();
+        boolean spec = rd.isCustomIzlaz() && rqc.caller != null &&
+            rqc.caller.raMaster.getSelectionTracker().countSelected() > 1;
+        
       if (!expAP.equals("JAS") || !alterExport(expAP,"ispis",jpr = getJasperPrint(dlg))) {
-        if (pre.showSaveDialog(true) != JFileChooser.CANCEL_OPTION) {
+        if (spec) {
+          if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(dlg, "Spremiti svaki dokument posebno?", "Višestruki dokumenti", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)) spec = false;
+          else {
+            kreator.SelectPathDialog spd = new kreator.SelectPathDialog(
+                dlg, "Putanja za spremanje raèuna");
+            String dir = IntParam.getTag("export.file.dir");
+            spd.loadsave = (dir == null || dir.length() == 0) ? null : new File(dir);
+            spd.show();
+            if (spd.oksel) {
+              IntParam.setTag("export.file.dir", spd.loadsave.getAbsolutePath());
+              raSelectTableModifier sel = rqc.caller.raMaster.getSelectionTracker();
+              DataSet ds = sel.getSelectedView(rqc.caller.getMasterSet());
+              try {
+                String[] cc = {"CSKL", "GOD", "BRDOK"};
+                for (ds.first(); ds.inBounds(); ds.next()) {
+                  rqc.ReSql(" AND " + Condition.whereAllEqual(cc, ds).qualified("doki"), ds.getString("VRDOK"));
+                  if (ds.isNull("CPAR") || ds.getInt("CPAR") <= 0) continue;
+                  try {
+                    if (!rd.isJasper()) raElixirDatasource.build(rd);
+                    jpr = getJasperPrint(dlg);
+                    File dfile = new File(spd.loadsave, ds.getInt("CPAR") + "_" + 
+                        ds.getString("VRDOK") + "-" + ds.getString("CSKL") + "-" +
+                        ds.getString("GOD") + "-" + Aus.leadzero(ds.getInt("BRDOK"), 6));
+                    if (jpr != null) JasperExportManager.exportReportToPdfFile(jpr, dfile.getAbsolutePath());
+                  } catch (Exception e) {
+                    e.printStackTrace();
+                  }
+                }
+              } finally {
+                sel.destroySelectedView();
+              }
+            }
+          }
+          
+        }
+        if (!spec && pre.showSaveDialog(true) != JFileChooser.CANCEL_OPTION) {
           try {
             String ext = pre.getFileType();
             System.out.println(getCurrentDescriptor().getName());
@@ -1666,6 +1711,7 @@ public class dlgRunReport {
                   Timestamp now = new Timestamp(System.currentTimeMillis());
                   SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
                   String time_suffix = sdf.format(now);
+                  if (!rd.isJasper()) raElixirDatasource.build(rd);
                   JasperPrint jpr = getJasperPrint(dlg);
                   String fn = "SPA-ERP_ispis"+time_suffix+".pdf";
                   if (jpr == null) rt.saveAsPDF(fn); 
