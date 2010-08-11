@@ -123,6 +123,7 @@ public abstract class Condition {
 
   protected static final String[] ops = new String[] {"=", "!=", "<", ">", "<=", ">="};
 
+  protected static final int SIMPLE = -1;
   protected static final int NOT = 0;
   protected static final int AND = 1;
   protected static final int OR = 2;
@@ -410,6 +411,8 @@ public abstract class Condition {
   
   public abstract Condition orNull();
   
+  abstract int getType();
+  
   public Condition and(Condition other) {
     if (other == none) return this;
     else if (this == none) return other;
@@ -505,6 +508,10 @@ class SimpleCondition extends Condition {
   public Condition orNull() {
     return new CompoundCondition(this, OR, isNull(column)).forceBrackets();
   }
+  
+  int getType() {
+    return SIMPLE;
+  }
 
   private String createList(VarStr st) {
     st.append(" IN (");
@@ -576,6 +583,10 @@ class CompoundCondition extends Condition {
     throw new UnsupportedOperationException("CompoundCondition doesn't support implicit isNull");    
   }
   
+  int getType() {
+    return type;
+  }
+  
   Condition forceBrackets() {
     brackets = true;
     return this;
@@ -584,12 +595,12 @@ class CompoundCondition extends Condition {
   public String toString() {
     VarStr ret = new VarStr();
     if (type == NOT) return ret.append(opc[NOT]).append(first).toString();
-    if (second instanceof CompoundCondition) {
-      if (!(first instanceof CompoundCondition)) ret.append(first);
-      else ret.append('(').append(first).append(')');
-      return ret.append(opc[type]).append('(').append(second).append(')').toString();
-    }
-    if (!brackets) return ret.append(first).append(opc[type]).append(second).toString();
-    return ret.append('(').append(first).append(opc[type]).append(second).append(')').toString();
+    if (first.getType() <= type) ret.append(first);
+    else ret.append('(').append(first).append(')');
+    ret.append(opc[type]);
+    if (second.getType() <= type) ret.append(second);
+    else ret.append('(').append(second).append(')');
+    if (brackets) ret.insert(0, '(').append(')');
+    return ret.toString();
   }
 }
