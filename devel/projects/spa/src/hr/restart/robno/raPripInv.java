@@ -17,10 +17,14 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Inventura;
+import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraRadioButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raButtonGroup;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raTransaction;
@@ -28,6 +32,7 @@ import hr.restart.util.raUpitLite;
 
 import java.awt.Color;
 import java.sql.Timestamp;
+import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -38,6 +43,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -381,8 +387,32 @@ public class raPripInv extends raUpitLite {
 
   private void transactionsForSave(){
     if (actionPerformed.equals("PRIN")){
-      raTransaction.getLocalTransaction(new String[] {qInsertToInventura}).execTransaction();
-      raTransaction.getLocalTransaction(new String[] {qUpdateRest}).execTransaction();
+/*      raTransaction.getLocalTransaction(new String[] {qInsertToInventura}).execTransaction();
+      raTransaction.getLocalTransaction(new String[] {qUpdateRest}).execTransaction();*/
+      
+      DataSet promet = new RaLogicStanjePromet().datasetZaEkran(
+          fieldSet.getString("CSKL"), "", "", "",  true, 
+          fieldSet.getTimestamp("DATUM"), true, "", "");
+      QueryDataSet inv = Inventura.getDataModule().getTempSet(Condition.nil);
+      inv.open();
+      String[] cc = {"CSKL", "CART", "CART1", "BC", "NAZART", "JM", "ZC"};
+      HashSet css = new HashSet();
+      for (promet.first(); promet.inBounds(); promet.next()) {
+        inv.insertRow(false);
+        if (!css.add(new Integer(promet.getInt("CART")))) {
+          System.out.println(promet);
+        }
+        dM.copyColumns(promet, inv, cc);
+        Aus.set(inv, "KOLKNJ", promet, "KOL");
+        Aus.set(inv, "VRIKNJ", promet, "VRI");
+        Aus.set(inv, "KOLINV", "KOLKNJ");
+        Aus.set(inv, "VRIINV", "VRIKNJ");
+        inv.setBigDecimal("KOLVIS", Aus.zero3);
+        inv.setBigDecimal("VRIVIS", Aus.zero2);
+        inv.setBigDecimal("KOLMANJ", Aus.zero3);
+        inv.setBigDecimal("VRIMANJ", Aus.zero2);
+      }
+      inv.saveChanges();
     } else {
       raTransaction.getLocalTransaction(new String[] {qDeleteInventura}).execTransaction();
     }
