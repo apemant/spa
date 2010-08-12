@@ -1616,6 +1616,10 @@ public class dlgRunReport {
             spd.loadsave = (dir == null || dir.length() == 0) ? null : new File(dir);
             spd.show();
             if (spd.oksel) {
+              Timestamp now = new Timestamp(System.currentTimeMillis());
+              SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+              String pref = sdf.format(now);
+              
               IntParam.setTag("export.file.dir", spd.loadsave.getAbsolutePath());
               raSelectTableModifier sel = rqc.caller.raMaster.getSelectionTracker();
               DataSet ds = sel.getSelectedView(rqc.caller.getMasterSet());
@@ -1627,9 +1631,10 @@ public class dlgRunReport {
                   try {
                     if (!rd.isJasper()) raElixirDatasource.build(rd);
                     jpr = getJasperPrint(dlg);
-                    File dfile = new File(spd.loadsave, ds.getInt("CPAR") + "_" + 
-                        ds.getString("VRDOK") + "-" + ds.getString("CSKL") + "-" +
-                        ds.getString("GOD") + "-" + Aus.leadzero(ds.getInt("BRDOK"), 6));
+                    File dfile = new File(spd.loadsave, pref + "_" + 
+                        ds.getInt("CPAR") + "_" + ds.getString("VRDOK") + "-" + 
+                        ds.getString("CSKL") + "-" + ds.getString("GOD") + "-" + 
+                        Aus.leadzero(ds.getInt("BRDOK"), 6));
                     if (jpr != null) JasperExportManager.exportReportToPdfFile(jpr, dfile.getAbsolutePath());
                   } catch (Exception e) {
                     e.printStackTrace();
