@@ -413,20 +413,22 @@ public class raIspisUraIra extends raFrame {
     BigDecimal x10 = new BigDecimal("0.1");
     BigDecimal x22 = new BigDecimal("0.22");
     BigDecimal x23 = new BigDecimal("0.23");
+    boolean nem = "D".equalsIgnoreCase(frmParam.getParam("sk", 
+        "checkNemoze", "N", "Uraèunati kolonu ne može se odbiti u provjeru (D,N)"));
     for (uraira.first(); uraira.inBounds(); uraira.next()) {
       if (ulaz) {
         uraira.setBigDecimal("OCHECK10", uraira.getBigDecimal("KOLONA7").
               multiply(x10).setScale(2, BigDecimal.ROUND_HALF_UP).
               subtract(uraira.getBigDecimal("KOLONA12")).
-              subtract(uraira.getBigDecimal("KOLONA13")));
+              subtract(nem ? uraira.getBigDecimal("KOLONA13") : Aus.zero2));
         uraira.setBigDecimal("OCHECK22", uraira.getBigDecimal("KOLONA8").
             multiply(x22).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA14")).
-            subtract(uraira.getBigDecimal("KOLONA15")));
+            subtract(nem ? uraira.getBigDecimal("KOLONA15") : Aus.zero2));
         uraira.setBigDecimal("OCHECK23", uraira.getBigDecimal("KOLONA9").
             multiply(x23).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA16")).
-            subtract(uraira.getBigDecimal("KOLONA17")));
+            subtract(nem ? uraira.getBigDecimal("KOLONA17") : Aus.zero2));
         uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA10").
             subtract(uraira.getBigDecimal("KOLONA6")).
             subtract(uraira.getBigDecimal("KOLONA7")).
