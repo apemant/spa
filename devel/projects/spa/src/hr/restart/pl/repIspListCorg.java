@@ -317,7 +317,7 @@ public class repIspListCorg implements raReportData {//implements sg.com.elixir.
   }
   public String getFirstLine(){
 //    return rpm.getFirstLine();
-    return fil.shouldPrintLogo()?"":rpm.getOneLine()+" OIB:"+rpm.getLogoOIB()+" RN:"+rpm.getLogoZiro();
+    return fil.shouldPrintLogo()?"":rpm.getOneLine()+"\néiro: "+rpm.getLogoZiro()+"  OIB: "+rpm.getLogoOIB();
   }
   public String getSecondLine(){
     return rpm.getSecondLine();
