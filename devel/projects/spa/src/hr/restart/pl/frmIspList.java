@@ -28,6 +28,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.MathEvaluator;
 import hr.restart.util.Util;
 import hr.restart.util.lookupData;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.repNaljepnice;
 
 import java.awt.BorderLayout;
@@ -485,7 +486,7 @@ public class frmIspList extends frmIzvjestajiPL {
   String nazivPrim, sati, koef, neto, bruto, nazivDop, osnovicaDop, stopa, iznos;
   String nazivNak, satiNaknada, iznosNak, nazivKred, iznosKred;
   String cradmj, nazradmj;
-  String brojtek, nazbanke, tipIsplate, nazvro, copcine, oib, adresa;
+  String brojtek, nazbanke, tipIsplate, nazvro, copcine, oib, adresa, fondsati;
   short cisplmj;
   int cbanke;
   public void findStrings(String crad, short rbrObr, short mjObr, short godObr) {
@@ -631,6 +632,9 @@ public class frmIspList extends frmIzvjestajiPL {
     ld.raLocate(dM.getDataModule().getVrodn(), "CVRO", radpl.getString("CVRO"));
     nazvro = dM.getDataModule().getVrodn().getString("NAZIVRO");
 
+    dM.getDataModule().getFondSati().open();
+    ld.raLocate(dM.getDataModule().getFondSati(), new String[] {"KNJIG","GODINA","MJESEC"}, new String[] {OrgStr.getKNJCORG(), godObr+"", mjObr+""});
+    fondsati = justFormat(dM.getDataModule().getFondSati().getBigDecimal("SATIUK"));
 //    this.killAllReports();
 //    this.addReports();
 
@@ -653,7 +657,7 @@ System.out.println("KreditInfo za "+ds);
     return nazvro;
   }
   public String getInformLine() {
-    String infolispl = frmParam.getParam("pl", "infolispl", "MRJ", "(AOMRJBU) Na infou ispod imena na ispl.list. treba biti M=RM, R=Rad.odn, J=JMBG, A,O,B,U");
+    String infolispl = frmParam.getParam("pl", "infolispl", "ABFX", "(AOMRJBUFX) Na infou ispod imena na ispl.list. treba biti M=RM, R=Rad.odn, J=JMBG, A,O,B,U");
     String il = "";
     if (infolispl.indexOf("A")!=-1) {
       il+= "\nAdresa: "+adresa;
@@ -675,6 +679,14 @@ System.out.println("KreditInfo za "+ds);
     }
     if (infolispl.indexOf("U")!=-1) {
       il+= "\nUgovoreni bruto: "+format(getRadnicipl(), "BRUTOSN");
+    }
+    if (infolispl.indexOf("F")!=-1) {
+      il+= "\nFond sati "+fondsati;
+    }
+    if (infolispl.indexOf("X")!=-1) {
+      String defValue = "Napomena: Podaci iz èl. 3. st. 1. Pravilnika o sadržaju obraèuna plaæe, nadoknade plaæe ili otpremnine " +
+      		"\n(Nar.nov., br. 81/10.) nisu navedeni, s obzirom na to da nisu ostvareni";
+      il+= "\n"+frmParam.getParam("pl", "infolisplX", defValue, "Dodatna napomena pod X u infolispl");
     }
     return il;
     
@@ -1105,19 +1117,20 @@ System.out.println("KreditInfo za "+ds);
   }
   
   public String getPor1txt(DataSet radnici) {
-    return isDetPorezi()?getPorText(radnici,1):"Porez 1";
+    return isDetPorezi()?getPorText(radnici,1):frmParam.getParam("pl", "por1txt", "Porez 12%", "Text 1. poreza ako se ne izracunava (vidi ildetpor)");
   }
   public String getPor2txt(DataSet radnici) {
-    return isDetPorezi()?getPorText(radnici,2):"Porez 2";
+//    return isDetPorezi()?getPorText(radnici,2):"Porez 2";
+    return isDetPorezi()?getPorText(radnici,2):frmParam.getParam("pl", "por2txt", "Porez 25%", "Text 2. poreza ako se ne izracunava (vidi ildetpor)");
   }
   public String getPor3txt(DataSet radnici) {
-    return isDetPorezi()?getPorText(radnici,3):"Porez 3";
+    return isDetPorezi()?getPorText(radnici,3):frmParam.getParam("pl", "por3txt", "Porez 40%", "Text 3. poreza ako se ne izracunava (vidi ildetpor)");
   }
   public String getPor4txt(DataSet radnici) {
-    return isDetPorezi()?getPorText(radnici,4):"Porez 4";
+    return isDetPorezi()?getPorText(radnici,4):frmParam.getParam("pl", "por4txt", "", "Text 4. poreza ako se ne izracunava (vidi ildetpor)");
   }
   public String getPrirtxt(DataSet radnici) {
-    return isDetPorezi()?getPorText(radnici,-1):"Prirez";
+    return isDetPorezi()?getPorText(radnici,-1):frmParam.getParam("pl", "prirtxt", "Prirez", "Text prireza ako se ne izracunava (vidi ildetpor)");
   }
 
   private String cachept_cradnik = "#$@!";

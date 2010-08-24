@@ -300,9 +300,24 @@ public class repIspListCorg implements raReportData {//implements sg.com.elixir.
     else
       return "";
   }
-
+  public String getPor1txt() {
+    return fil.getPor1txt(radnici);
+  }
+  public String getPor2txt() {
+    return fil.getPor2txt(radnici);
+  }
+  public String getPor3txt() {
+    return fil.getPor3txt(radnici);
+  }
+  public String getPor4txt() {
+    return fil.getPor4txt(radnici);
+  }
+  public String getPrirtxt() {
+    return fil.getPrirtxt(radnici);
+  }
   public String getFirstLine(){
-    return rpm.getFirstLine();
+//    return rpm.getFirstLine();
+    return fil.shouldPrintLogo()?"":rpm.getOneLine()+" OIB:"+rpm.getLogoOIB()+" RN:"+rpm.getLogoZiro();
   }
   public String getSecondLine(){
     return rpm.getSecondLine();

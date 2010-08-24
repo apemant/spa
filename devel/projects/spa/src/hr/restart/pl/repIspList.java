@@ -324,7 +324,7 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
   }
   
   public String getFirstLine(){
-    return fil.shouldPrintLogo()?"":rpm.getFirstLine();
+    return fil.shouldPrintLogo()?"":rpm.getOneLine()+"\nŽiro raèun: "+rpm.getLogoZiro()+"  OIB: "+rpm.getLogoOIB();
   }
   public String getSecondLine(){
     return rpm.getSecondLine();
