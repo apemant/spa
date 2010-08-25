@@ -30,7 +30,7 @@ public class Stmeskla extends KreirDrop implements DataModule {
   QueryDataSet StmesklaMEU = new QueryDataSet();
   QueryDataSet StmesklaMEI = new QueryDataSet();
 
-  Column stmesklaLOKK = new Column();
+/*  Column stmesklaLOKK = new Column();
   Column stmesklaAKTIV = new Column();
   Column stmesklaCSKLIZ = new Column();
   Column stmesklaCSKLUL = new Column();
@@ -73,7 +73,7 @@ public class Stmeskla extends KreirDrop implements DataModule {
   Column stmesklaRBSID = new Column();
   Column stmesklaKOL1 = new Column();
   Column stmesklaKOL2 = new Column();
-
+*/
   public static Stmeskla getDataModule() {
     if (Stmesklaclass == null) {
       Stmesklaclass = new Stmeskla();
@@ -103,7 +103,9 @@ public class Stmeskla extends KreirDrop implements DataModule {
     }
   }
   private void jbInit() throws Exception {
-    stmesklaZCUL.setCaption("Ulazna cijena");
+    initModule();
+    
+/*    stmesklaZCUL.setCaption("Ulazna cijena");
     stmesklaZCUL.setColumnName("ZCUL");
     stmesklaZCUL.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
     stmesklaZCUL.setDisplayMask("###,###,##0.00");
@@ -515,119 +517,9 @@ public class Stmeskla extends KreirDrop implements DataModule {
         stmesklaZCUL, stmesklaSKOL, stmesklaSNC, stmesklaSVC, stmesklaSMC, stmesklaINABIZ, stmesklaINABUL, stmesklaIMARIZ, stmesklaIMARUL, stmesklaPMAR,
         stmesklaIPORIZ, stmesklaIPORUL, stmesklaPORAV, stmesklaDIOPORMAR, stmesklaDIOPORPOR, stmesklaZADRAZIZ, stmesklaZADRAZUL, stmesklaKOLFLH,
         stmesklaSKAL, stmesklaITKAL, stmesklaSITKAL, stmesklaSBSIZ, stmesklaRBSID, stmesklaKOL1, stmesklaKOL2});
-
+*/
     createFilteredDataSet(StmesklaMES, "1=0");
     createFilteredDataSet(StmesklaMEU, "1=0");
     createFilteredDataSet(StmesklaMEI, "1=0");
   }
-   public void setall(){
-
-   /* SqlDefTabela = "create table Stmeskla " +
-      "(lokk char(1) CHARACTER SET WIN1250 default 'N', " + //Status zauzetosti
-      "aktiv char(1) CHARACTER SET WIN1250 default 'D', " + // Aktivan-neaktivan
-      "cskliz char(6) CHARACTER SET WIN1250 not null,"+ //Šifra skladišta
-      "csklul char(6) CHARACTER SET WIN1250 not null,"+ //Šifra skladišta
-      "vrdok char(3) CHARACTER SET WIN1250 not null," +   //Vrsta dokumenta (OTP,PRI,..)
-      "god char(4) CHARACTER SET WIN1250 not null," + // Godina zalihe
-      "brdok numeric(6,0) not null , " + // Broj dokumenta
-      "rbr numeric(4,0) not null, " + // Redni broj stavke
-      "cart numeric(6,0) , "+   // Šifra artikl broj\u010Danik
-      "cart1 char(20) character set win1250 ," +  // Šifra artikl - alpha dodatna
-      "bc char(20) character set win1250 ,"+ // Barcode
-      "nazart char(50) CHARACTER SET WIN1250 , " + // Naziv artikla
-      "jm char(3) CHARACTER SET WIN1250 , " + // Jedinica mjere
-      "kol  numeric(17,3) ," + // Koli\u010Dina
-      "nc   numeric(12,4) ," + // Nabavna cijena
-      "vc   numeric(12,2) ," + // Prodajna
-      "mc   numeric(12,2) , " + // Prodajna cijena s porezom
-      "zc   numeric(12,4),"  + // Cijena zalihe
-      "zcul numeric(12,4),"  + // Cijena zalihe na ulaznom sklad
-      "skol numeric(17,3) ," + // Koli\u010Dina stara prije nivelacije
-      "snc numeric (12,2) ," + // Stara prod. cijena bez nivelacije
-      "svc numeric (12,2) ," + // Stara prod. cijena bez nivelacije
-      "smc numeric (12,2) , " + // Stara prodajna cijena s porezom
-      "inabiz numeric(17,2), " +  // Iznos nabavni
-      "inabul numeric(17,2), " +  // Iznos nabavni
-      "imariz numeric(17,2), " + // Iznos marže
-      "imarul numeric(17,2), " + // Iznos marže
-      "iporiz numeric(17,2),"  + // Iznos poreza
-      "iporul numeric(17,2),"  + // Iznos poreza
-      "porav numeric(17,2),"+ // Poravnanje
-      "diopormar numeric(17,2)," + // Dio poravnanja marže
-      "dioporpor numeric(17,2)," + // Dio poravnanja poreza
-      "zadraziz numeric(17,2),"  + // Iznos zalihe
-      "zadrazul numeric(17,2),"  + // Iznos zalihe
-      "kolflh numeric(17,3)," + //Koli\u010Dina za FIFO LIFO HIFO
-      "Primary Key (cskliz,csklul,vrdok,god,brdok,rbr))" ; */
-
-    ddl.create("stmeskla")
-       .addChar("lokk", 1, "N")
-       .addChar("aktiv", 1, "D")
-       .addChar("cskliz", 12, true)
-       .addChar("csklul", 12, true)
-       .addChar("vrdok", 3, true)
-       .addChar("god", 4, true)
-       .addInteger("brdok", 6, true)
-       .addShort("rbr", 4, true)
-       .addInteger("cart", 6)
-       .addChar("cart1", 20)
-       .addChar("bc", 20)
-       .addChar("nazart", 50)
-       .addChar("jm", 3)
-       .addFloat("kol", 17, 3)
-       .addFloat("nc", 12, 2)
-       .addFloat("vc", 12, 2)
-       .addFloat("mc", 12, 2)
-       .addFloat("zc", 12, 2)
-       .addFloat("zcul", 12, 2)
-       .addFloat("skol", 17, 3)
-       .addFloat("snc", 12, 2)
-       .addFloat("svc", 12, 2)
-       .addFloat("smc", 12, 2)
-       .addFloat("inabiz", 17, 2)
-       .addFloat("inabul", 17, 2)
-       .addFloat("imariz", 17, 2)
-       .addFloat("imarul", 17, 2)
-       .addFloat("pmar", 6, 2)
-       .addFloat("iporiz", 17, 2)
-       .addFloat("iporul", 17, 2)
-       .addFloat("porav", 17, 2)
-       .addFloat("diopormar", 17, 2)
-       .addFloat("dioporpor", 17, 2)
-       .addFloat("zadraziz", 17, 2)
-       .addFloat("zadrazul", 17, 2)
-       .addFloat("kolflh", 17, 3)
-       .addChar("skal", 52)
-       .addChar("itkal", 52)
-       .addChar("sitkal", 52)
-       .addShort("sbsiz", 4)
-       .addInteger("rbsid", 6)
-       .addFloat("kol1", 17, 3)
-       .addFloat("kol2", 17, 3)
-       .addPrimaryKey("cskliz,csklul,vrdok,god,brdok,rbr");
-
-    Naziv="Stmeskla";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {"cskliz,csklul,vrdok,god,brdok",/*"brdok", "rbr",*/ "cart"};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
-
-/*
-    NaziviIdx=new String[]{"ilokkStmeskla","iaktivStmeskla","icsklizStmeskla","icsklulStmeskla",
-                           "ivrdokStmeskla","ibrdokStmeskla","irbrStmeskla","ipkStmeskla ","icartStmeskla"} ;
-
-
-    DefIndex= new String[] {CommonTable.SqlDefIndex+NaziviIdx[0] +" on Stmeskla (lokk)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[1] + " on Stmeskla (aktiv)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[2] + " on Stmeskla (cskliz)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[3] + " on Stmeskla (csklul)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[4] + " on Stmeskla (vrdok)",
-                            CommonTable.SqlDefIndex+NaziviIdx[5] + " on Stmeskla (brdok)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[6] + " on Stmeskla (rbr)" ,
-                            CommonTable.SqlDefUniqueIndex+NaziviIdx[7] +" on Stmeskla (cskliz,csklul,vrdok,god,brdok,rbr)" ,
-                            CommonTable.SqlDefIndex+NaziviIdx[8] + " on Stmeskla (cart)" };
-  */}
 }

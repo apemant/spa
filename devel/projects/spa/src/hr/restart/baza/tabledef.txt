@@ -1170,6 +1170,54 @@ BROJTEK;char;30;;;Broj raèuna
 PARAMETRI;char;20;;;Parametri;*
 OIB;char;20;;;OIB
 
+$Stmeskla
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSKLIZ;char;12;pkey;;Izlazno skladište
+CSKLUL;char;12;pkey;;Ulazno skladište
+VRDOK;char;3;pkey;;Vrsta
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj;7
+RBR;short;2;pkey;;Rbr;4
+CART;int;6;;;Šifra;4
+CART1;char;20;;;Oznaka;13
+BC;char;20;;;Barcode;12
+NAZART;char;50;;;Naziv;25
+JM;char;3;;;Jm;4
+KOL;numeric;15,3;;0;Kolièina
+NC;numeric;15,2;;0;Nabavna cijena
+VC;numeric;15,2;;0;Cijena bez poreza
+MC;numeric;15,2;;0;Cijena s porezom
+ZC;numeric;15,2;;0;Cijena
+ZCUL;numeric;15,2;;0;Ulazna cijena
+SKOL;numeric;15,3;;0;Stara kolièina
+SNC;numeric;15,2;;0;Stara nabavna cijena
+SVC;numeric;15,2;;0;Stara cijena bez poreza
+SMC;numeric;15,2;;0;Stara cijena s porezom
+INABIZ;numeric;15,2;;0;Nabavni iznos izlaza
+INABUL;numeric;15,2;;0;Nabavni iznos ulaza
+IMARIZ;numeric;15,2;;0;Marža izlaza
+IMARUL;numeric;15,2;;0;Marža ulaza
+PMAR;numeric;10,2;;0;Posto marže;8
+IPORIZ;numeric;15,2;;0;Porez izlaza
+IPORUL;numeric;15,2;;0;Iznos poreza ulaza
+PORAV;numeric;15,2;;0;Poravnanje
+DIOPORMAR;numeric;15,2;;0;Dio poravnanja marže
+DIOPORPOR;numeric;15,2;;0;Dio poravnanja poreza
+ZADRAZIZ;numeric;15,2;;0;Razduženje izlaza
+ZADRAZUL;numeric;15,2;;0;Zaduženje ulaza
+KOLFLH;numeric;15,3;;0;KOLFLH;*
+SKAL;char;52;;;Prethodni broj kalkulacije;*
+ITKAL;char;52;;;Broj kalkulacije zadnjeg izlaza;*
+SITKAL;char;52;;;Broj prethodne kalkulacije izlaza;*
+SBSIZ;short;2;;;Br stavki izlaza po zadnjem izl.;*
+RBSID;int;6;;;ID stavke;*
+KOL1;numeric;15,3;;0;Pakiranja
+KOL2;numeric;15,3;;0;Poleta
+PPOP;numeric;10,2;;0;Posto popusta
+FC;numeric;17,2;;0;Fakturna cijena
+IDX=cart
+
 $Logotipovi
 LOKK;char;1;;N;LOKK;*
 AKTIV;char;1;;D;AKTIV;*
