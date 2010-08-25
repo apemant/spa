@@ -144,10 +144,12 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
     this.setVisibleColsDetail(new int[] {5,Aut.getAut().getCARTdependable(6,7,8),9,10,11});
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repMeskla","hr.restart.robno.repMeskla","Meskla","Me\u0111uskladišnice-koli\u010Dinske");
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repMeskla","hr.restart.robno.repMeskla","Meskla","Me\u0111uskladišnice-koli\u010Dinske");
+    this.raMaster.getRepRunner().addReport("hr.restart.robno.repMesklaSpec","hr.restart.robno.repMeskla","MesklaSpec","Me\u0111uskladišnica s cijenom i popustom");
+    this.raDetail.getRepRunner().addReport("hr.restart.robno.repMesklaSpec","hr.restart.robno.repMeskla","MesklaSpec","Me\u0111uskladišnica s cijenom i popustom");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repMesklaExtendedVersion","hr.restart.robno.repMeskla","MesklaExtendedVersion","Me\u0111uskladišnice-vrijednosne");
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repMesklaExtendedVersion","hr.restart.robno.repMeskla","MesklaExtendedVersion","Me\u0111uskladišnice-vrijednosne");
-    this.raMaster.getRepRunner().addReport("hr.restart.robno.repMesklaPnP","hr.restart.robno.repMesklaPnP","ROTSifKup","Me\u0111uskladišnica-raèun");
-    this.raDetail.getRepRunner().addReport("hr.restart.robno.repMesklaPnP","hr.restart.robno.repMesklaPnP","ROTSifKup","Me\u0111uskladišnica-raèun");
+/*    this.raMaster.getRepRunner().addReport("hr.restart.robno.repMesklaPnP","hr.restart.robno.repMesklaPnP","ROTSifKup","Me\u0111uskladišnica-raèun");
+    this.raDetail.getRepRunner().addReport("hr.restart.robno.repMesklaPnP","hr.restart.robno.repMesklaPnP","ROTSifKup","Me\u0111uskladišnica-raèun");*/
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repMesklaNiv","hr.restart.robno.repMesNivel","Nivel","Poravnanje - nivelacija");
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repMesklaNiv","hr.restart.robno.repMesNivel","Nivel","Poravnanje - nivelacija");
     EntryModeinDM();
@@ -560,6 +562,7 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
       rKM.setupPrice();
         getDetailSet().setBigDecimal("ZC",rKM.stavka.zc);
         getDetailSet().setBigDecimal("ZCUL",rKM.stavka.zcul);
+        getDetailSet().setBigDecimal("FC", StanjeIzlaz.getBigDecimal("VC"));
     } else {
     	izlazCijena();
     	ulazCijena();

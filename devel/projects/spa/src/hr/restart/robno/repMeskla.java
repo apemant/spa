@@ -115,6 +115,10 @@ public class repMeskla implements raReportData {
   public String getCART() {
     return Aut.getAut().getCARTdependable(ds);
   }
+  
+  public String getBC() {
+    return ds.getString("BC");
+  }
 
   public String getNAZART() {
     return ds.getString("NAZART");
@@ -162,6 +166,14 @@ public class repMeskla implements raReportData {
 
   public BigDecimal getZCUL(){
     return ds.getBigDecimal("ZCUL");
+  }
+  
+  public BigDecimal getFC(){
+    return ds.getBigDecimal("FC");
+  }
+  
+  public BigDecimal getPPOP(){
+    return ds.getBigDecimal("PPOP");
   }
 
   public double getZADRAZUL(){
