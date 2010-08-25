@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.JraTextMultyKolField;
 import hr.restart.util.raCommonClass;
@@ -118,6 +119,11 @@ public class rajpDetailMeskla extends JPanel {
   JLabel jlZCUL = new JLabel();
   JLabel jlVRIUL = new JLabel();
 
+  JLabel jPop = new JLabel();
+  JLabel jCijena = new JLabel();
+  JraTextField jraVC = new JraTextField();
+  JraTextField jraPPOP = new JraTextField();
+  
   public rajpDetailMeskla(raMeskla rAM) {
     this.rAM = rAM;
     try {
@@ -130,6 +136,8 @@ public class rajpDetailMeskla extends JPanel {
   public void BindMeskla(){
     jtfKOL.setDataSet(rAM.getDetailSet());
     jraFC.setDataSet(rAM.getDetailSet());
+    jraVC.setDataSet(rAM.getDetailSet());
+    jraPPOP.setDataSet(rAM.getDetailSet());
     jraZADRAZIZ.setDataSet(rAM.getDetailSet());
     jraZCUL.setDataSet(rAM.getDetailSet());
     jraZADRAZUL.setDataSet(rAM.getDetailSet());
@@ -141,11 +149,14 @@ public class rajpDetailMeskla extends JPanel {
         jtfKOL.requestFocus();
       }
     });
+   
+   boolean dodm = frmParam.getParam("robno", "mesklaHack", "N",
+       "Popust i izlazna cijena na meðuskladišnicama").equals("D");
 
     tdsSet = TDS.getMesklaTempSet();
     this.setLayout(borderLayout1);
 //    rpcart.setPreferredSize(new Dimension(567, 100));
-    this.setPreferredSize(new Dimension(645, 300));
+    this.setPreferredSize(new Dimension(645, dodm ? 325 : 300));
     jLabel1.setText("Koli\u010Dina");
     jPanelCenter.setLayout(xYLayout1);
     jPanelStanje.setBorder(BorderFactory.createEtchedBorder());
@@ -168,6 +179,10 @@ public class rajpDetailMeskla extends JPanel {
       }
     });*/
 
+    jCijena.setText("Izlazna cijena");
+    jPop.setText("Popust na izlazu");
+    jraVC.setColumnName("FC");
+    jraPPOP.setColumnName("PPOP");
     jLabel8.setText("Cijena");
     jLabel9.setText("Iznos");
     jraFC.setColumnName("ZC");
@@ -220,6 +235,12 @@ public class rajpDetailMeskla extends JPanel {
     jPanelCenter.add(jraZCUL, new XYConstraints(150, 60, 130, -1));
     jPanelCenter.add(jraZADRAZUL, new XYConstraints(480, 60, 130, -1));
     jPanelCenter.add(focusField, new XYConstraints(360, 501, 1, -1));
+    if (dodm) {
+      jPanelCenter.add(jCijena, new XYConstraints(15, 85, -1, -1));
+      jPanelCenter.add(jPop, new XYConstraints(320, 85, -1, -1));
+      jPanelCenter.add(jraVC, new XYConstraints(150, 85, 130, -1));
+      jPanelCenter.add(jraPPOP, new XYConstraints(480, 85, 130, -1));
+    }
     this.add(jPanelStanje, BorderLayout.SOUTH);
     jPanelStanje.add(jLabel2, new XYConstraints(60, 10, 255, -1));
     jPanelStanje.add(jLabel3, new XYConstraints(367, 10, 255, -1));
@@ -266,5 +287,7 @@ public class rajpDetailMeskla extends JPanel {
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(this.jraZADRAZUL,false);
     hr.restart.util.raCommonClass.getraCommonClass().EnabDisabAll(this.jPanelStanje,false);
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jtfKOL,istina);
+    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraVC,istina);
+    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraPPOP,istina);
   }
 }
