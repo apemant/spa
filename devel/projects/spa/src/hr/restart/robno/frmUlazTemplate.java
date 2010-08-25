@@ -235,7 +235,9 @@ public class frmUlazTemplate extends raMasterDetail {
           lD.raLocate(dm.getSklad(), "CSKL", cskl) &&
           dm.getSklad().getString("VRSKL").equals("Z");
     
-		setNaslovMaster(masterTitle + additional);
+		raMaster.setkum_tak(true);
+		raMaster.setstozbrojiti(new String[] {"UINAB", "UIZT", "UIPRPOR", "UIKAL", "UIRAC", "PLATITI"});
+      setNaslovMaster(masterTitle + additional);
 		
 	  isNar = frmParam.getParam("robno", "prkFromNar", "N",
 	      "Omoguæiti prebacivanje narudžbe u primku").equalsIgnoreCase("D");

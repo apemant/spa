@@ -545,6 +545,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	  
 		setNaslovMaster(master_titel + additional);
 		setNaslovDetail(detail_titel_mno);
+		raMaster.setkum_tak(true);
+		raMaster.setstozbrojiti(new String[] {"UIRAC", "PLATITI", "UIPOPUST", "PROVISP"});
 	}
 
 	public void RestPanelSetup() {
