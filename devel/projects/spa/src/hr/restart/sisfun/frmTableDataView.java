@@ -115,7 +115,7 @@ public class frmTableDataView extends JraFrame {
   JFileChooser jf = new JFileChooser();
   private JLabel countLabel = new JLabel();
 
-  OKpanel okp = new OKpanel() {
+  public OKpanel okp = new OKpanel() {
     public void jBOK_actionPerformed() {
       OKPress();
     }
@@ -841,11 +841,13 @@ public class frmTableDataView extends JraFrame {
           }
         }
         tc = ((JraTable2) jp.getMpTable()).getDataSetColumn(selc);
+        jp.fireTableDataChanged();
         return false;
       }
       int curr = jp.getStorageDataSet().getRow();
       if (jp.getStorageDataSet().next()) return true;
       jp.getStorageDataSet().goToClosestRow(curr);
+      jp.fireTableDataChanged();
       return false;
 /*      int curr = jp.getDataSet().getRow();
       while (jp.getMpTable().getSelectedRow() < jp.getMpTable().getRowCount() - 1) {
