@@ -221,7 +221,7 @@ public class repIzlazni implements raReportData {
   }
   
   public String getNAZPARL() {
-    return "\n" + getNAZPAR();
+    return "\n" + prefn + getNAZPAR();
   }
 
   public String getNAZPAR() {    
@@ -1754,6 +1754,7 @@ public BigDecimal getIPRODSP() {
   String conVl = "N";
   String metroDob = "";
   String oib = "";
+  String prefn = "";
   boolean hideKup = false;
   boolean specChars = false;
   boolean iznosPop = false;
@@ -1774,6 +1775,9 @@ public BigDecimal getIPRODSP() {
         "Omoguæiti skrivanje kupca na gotovinskim raèunima (D,N)").equals("D");
     showPop = frmParam.getParam("robno", "showPopust", "N",
     	"Prikazati rekapitulaciju popusta na izlaznim raèunima (D,N)").equals("D");
+    prefn = frmParam.getParam("robno", "prefixPar", "",
+        "Prefiks ispred imena partnera");
+    if (prefn.length() > 0) prefn = prefn + "\n";
   }
 
   private void modParams() {
