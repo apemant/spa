@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="design" pageWidth="164" pageHeight="841" columnWidth="110" leftMargin="27" rightMargin="27" topMargin="17" bottomMargin="19">
+	<field name="ThirdLine" class="java.lang.String">
+		<fieldDescription><![CDATA[ThirdLine]]></fieldDescription>
+	</field>
+	<field name="FirstLine" class="java.lang.String">
+		<fieldDescription><![CDATA[FirstLine]]></fieldDescription>
+	</field>
+	<field name="SecondLine" class="java.lang.String">
+		<fieldDescription><![CDATA[SecondLine]]></fieldDescription>
+	</field>
+	<field name="NAZART" class="java.lang.String"/>
+	<field name="KOL" class="java.math.BigDecimal"/>
+	<group name="Section0">
+		<groupExpression><![CDATA[$F{FirstLine}]]></groupExpression>
+		<groupHeader>
+			<band height="20" splitType="Prevent"/>
+		</groupHeader>
+		<groupFooter>
+			<band splitType="Prevent"/>
+		</groupFooter>
+	</group>
+	<group name="Section1" isReprintHeaderOnEachPage="true">
+		<groupExpression><![CDATA[$F{FirstLine}]]></groupExpression>
+		<groupHeader>
+			<band height="10" splitType="Prevent">
+				<line>
+					<reportElement positionType="Float" x="1" y="4" width="107" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="12" splitType="Prevent">
+				<line>
+					<reportElement positionType="Float" x="0" y="1" width="107" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band splitType="Prevent"/>
+	</title>
+	<pageHeader>
+		<band height="46" splitType="Prevent">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="3" y="0" width="98" height="11" forecolor="#000000"/>
+				<box topPadding="1" leftPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{FirstLine}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="3" y="12" width="98" height="11" forecolor="#000000"/>
+				<box topPadding="1" leftPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{SecondLine}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="3" y="24" width="98" height="11" forecolor="#000000"/>
+				<box topPadding="1" leftPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ThirdLine}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band/>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Prevent">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="0" width="66" height="12" forecolor="#000000"/>
+				<box topPadding="1" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{NAZART}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="82" y="0" width="26" height="12" forecolor="#000000"/>
+				<box topPadding="1" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{KOL}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="6" splitType="Prevent"/>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="8" splitType="Prevent"/>
+	</lastPageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
