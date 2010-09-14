@@ -920,6 +920,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     
     raMaster.getTab().remove(1);
     raMaster.getRepRunner().addReport("hr.restart.robno.repRacunPOS", "Raèun");
+    raMaster.getRepRunner().addJasper("hr.restart.robno.repRacunPOSj", "hr.restart.robno.repPosJas", "pos.jrxml", "Raèun jasper");
     raDetail.getRepRunner().addReport("hr.restart.robno.repRacunPOS", "Raèun");
     if (np.length() > 0) {
       raDetail.getRepRunner().addReport("hr.restart.robno.repNarPOS", "Narudžba");
