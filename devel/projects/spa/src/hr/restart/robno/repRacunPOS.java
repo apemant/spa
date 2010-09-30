@@ -100,7 +100,7 @@ public class repRacunPOS extends mxReport {
     god =master.getString("GOD");
 //    hr.restart.util.sysoutTEST st = new hr.restart.util.sysoutTEST(false);
 //    st.prn(master);
-    this.setDataSet(hr.restart.baza.Stpos.getDataModule().getFilteredDataSet("cskl='"+master.getString("CSKL")+"' and vrdok = 'GRC' and god =  '"+master.getString("GOD")+"' and brdok =  "+master.getInt("BRDOK")));
+    this.setDataSet(hr.restart.baza.Stpos.getDataModule().getTempSet("cskl='"+master.getString("CSKL")+"' and vrdok = 'GRC' and god =  '"+master.getString("GOD")+"' and brdok =  "+master.getInt("BRDOK")));
     this.getDataSet().open();
     
     String vc = fmb.getRacDestination();
