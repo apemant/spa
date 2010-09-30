@@ -452,6 +452,7 @@ CTEL;int;6;;;Telemarketer;15
 CKUPAC;int;6;;;Kupac;5
 OBRT;char;1;;N;Obrtnik R2
 OIB;char;20;;;Oib
+GLN;char;20;;;Gln
 IDX=mb
 IDX=zr
 IDX=ckupac
