@@ -40,9 +40,9 @@ public class repPovratnicaOdobrenjeTemplate extends repIzlazOrigTemplate {
 
     sh.LabelRACUNOTPREMNICA.setDefault(ep.CAPTION, "\nPOVRATNICA-ODOBRENJE");
     sh.defaultAltererSect().getView(sh.LabelMjestoDatum, sh.TextNAZFRA).
-    deleteElementsPushDown(sh, new raReportElement[] {sh.LabelDospijeceDatum, sh.LabelDospijeceDatum,
+    deleteElementsPushDown(sh, new raReportElement[] {
     sh.LabelNacin_otpreme, sh.LabelNacin_placanja, sh.LabelNarudzba,
-    sh.LabelParitet, sh.TextSgetDATDOSP, sh.TextSgetDDOSP, sh.TextBRNARIZ,
+    sh.LabelParitet, sh.TextBRNARIZ,
     sh.TextSgetDATNARIZ, sh.TextNAZNAC, sh.TextNAZNACPL, sh.TextNAZFRA});
 //    sh.LabelR1.setDefault(ep.VISIBLE, raElixirPropertyValues.NO);
     sh.TextLogoMjestoZarez.defaultAlterer().setTop(
