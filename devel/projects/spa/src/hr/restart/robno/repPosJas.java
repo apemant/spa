@@ -26,7 +26,7 @@ public class repPosJas implements raReportData {
   
   BigDecimal pov;
   
-  String ph, kh, god, boper;
+  String oib, ph, kh, god, boper, hvala, title, kuplab, kupac;
   
   public repPosJas() {
     frmMasterBlagajna fmb = frmMasterBlagajna.getInstance();
@@ -67,12 +67,48 @@ public class repPosJas implements raReportData {
     pov = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
       "Iznos povratne naknade"));
     
+    hvala = frmParam.getParam("pos", "hvalaText", "HVALA NA POVJERENJU",
+        "Tekst na dnu POS raèuna");
+    
+    oib = frmParam.getParam("robno", "oibMode", "MB", 
+          "Staviti matièni broj (MB) ili OIB?");
+    
     getNacinPlacanja();
     calculatePorez(getRekapitulacija(ds));
     
     String prodMjesto = prm.getString("NAZPRODMJ");
     String user = master.getString("CUSER");
     boper = getBlagajnaOperater(prodMjesto, user);
+    kuplab = kupac = "";
+    title = "RAÈUN br. " + master.getInt("BRDOK");
+    
+    if(master.getInt("CKUPAC") != 0){
+        DataRow dr = lD.raLookup(hr.restart.baza.dM.getDataModule().getKupci(),"CKUPAC", master.getInt("CKUPAC")+"");
+        if (dr != null) {
+          title = "RAÈUN R-1 br. " + master.getInt("BRDOK");
+          kuplab = "Kupac:";
+          kupac =  dr.getString("IME")+" "+dr.getString("PREZIME")+"\n"+
+              ((!dr.getString("ADR").equals(""))?dr.getString("ADR")+"\n":"")+
+              ((dr.getInt("PBR")!=0)?dr.getInt("PBR")+" ":"")+
+              ((!dr.getString("MJ").equals(""))?((dr.getInt("PBR")==0)? dr.getString("MJ"):dr.getString("MJ")):"")+
+              getJMBG(dr);
+        } System.out.println("Kupac je (ako ga ima) null!!!");
+      }    
+  }
+
+  private String getJMBG(DataRow dr) {
+    String result = "";
+    if (!oib.equalsIgnoreCase("MB")) {
+      String br = dr.getString("OIB");
+      if (br.length() == 0) result = "";
+      else result = "\nOIB: " + br;
+    } 
+    if (oib.equalsIgnoreCase("MB") || result.length() == 0) {
+      String mb = dr.getString("JMBG");
+      if (mb.length() == 0) result = "";
+      else result = "\nMB: " + mb; 
+    }   
+    return result;
   }
 
   public raReportData getRow(int i) {
@@ -97,7 +133,15 @@ public class repPosJas implements raReportData {
   }
   
   public String getTitle() {
-    return "RAÈUN br. " + master.getInt("BRDOK");
+    return title;
+  }
+  
+  public String getKUPLAB() {
+    return kuplab;
+  }
+  
+  public String getKUPAC() {
+    return kupac;
   }
   
   public String getNAZIV() {
@@ -148,6 +192,10 @@ public class repPosJas implements raReportData {
     return boper;
   }
   
+  public String getHVALA() {
+    return hvala;
+  }
+  
   public String getNADNEVAK() {
     return "Nadnevak: " + Aus.formatTimestamp(master.getTimestamp("DATDOK"));
   }
@@ -174,14 +222,14 @@ public class repPosJas implements raReportData {
       DataRow usr = lD.raLookup(hr.restart.baza.dM.getDataModule().getUseri(),"CUSER", user);
       String operater = usr.getString("NAZIV");
       if (blop.equalsIgnoreCase("1")){
-        return "BLAGAJNA: "+blag+"<$newline$>"+
-               "OPERATER: "+operater+"<$newline$>";
+        return "BLAGAJNA: "+blag+"\n"+
+               "OPERATER: "+operater;
       } else if (blop.equalsIgnoreCase("2")) {
-        return blag+", "+operater+"<$newline$>";
+        return blag+", "+operater;
       } else {
         //return "Poslužio: "+operater+"<$newline$>"+
         //"Broj stola: " + getStol() + "<$newline$>";
-        return "Stol: " + getStol() + "   Poslužio: " + operater + "<$newline$>";
+        return "Stol: " + getStol() + "   Poslužio: " + operater;
       }
     }
     return "";
@@ -205,8 +253,12 @@ public class repPosJas implements raReportData {
   //TODO obrati paznju na sgQuerys.getSgQuerys().format(BD,int) ;)
 
     do {
-      placnaziv += npos.getString("NAZNACPL").toUpperCase() + "\n";
-      placiznos += Aus.formatBigDecimal(npos.getBigDecimal("IRATA")) + "\n";
+      if (placnaziv.length() > 0) {
+        placnaziv += "\n";
+        placiznos += "\n";
+      }
+      placnaziv += npos.getString("NAZNACPL").toUpperCase();
+      placiznos += Aus.formatBigDecimal(npos.getBigDecimal("IRATA"));
     } while (npos.next());
   }
 
@@ -218,10 +270,16 @@ public class repPosJas implements raReportData {
     dset.first();
 
     do {
-      porname += dset.getString("NAZPOR") + "\n";
-      porstopa += Aus.formatBigDecimal(dset.getBigDecimal("UKUPOR")) + "%\n";
-      porosn += Aus.formatBigDecimal(dset.getBigDecimal("NETO").subtract(dset.getBigDecimal("POV").add(dset.getBigDecimal("POR1")).add(dset.getBigDecimal("POR2").add(dset.getBigDecimal("POR3"))))) + "\n";
-      poriznos = Aus.formatBigDecimal(dset.getBigDecimal("POREZ")) + "\n";
+      if (porname.length() > 0) {
+        porname += "\n";
+        porstopa += "\n";
+        porosn += "\n";
+        poriznos += "\n";
+      }
+      porname += dset.getString("NAZPOR");
+      porstopa += Aus.formatBigDecimal(dset.getBigDecimal("UKUPOR")) + "%";
+      porosn += Aus.formatBigDecimal(dset.getBigDecimal("NETO").subtract(dset.getBigDecimal("POV").add(dset.getBigDecimal("POR1")).add(dset.getBigDecimal("POR2").add(dset.getBigDecimal("POR3")))));
+      poriznos += Aus.formatBigDecimal(dset.getBigDecimal("POREZ"));
     } while (dset.next());
   }
   
