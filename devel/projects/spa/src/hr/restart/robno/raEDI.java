@@ -208,6 +208,7 @@ public class raEDI {
   
   private static void importPanteonImpl(File dir) {
   	lookupData ld = lookupData.getlookupData();
+  	DataSet part = dM.getDataModule().getPartneri();
   	
   	File fiz = new File(dir, "Izme_nar.sdf");
   	File fzag = new File(dir, "Osnova_n.sdf");
@@ -257,7 +258,9 @@ public class raEDI {
   		zag.insertRow(false);
       zag.setString("CSKL", oj);
       zag.setString("VRDOK", "NKU");
-      zag.setInt("CPAR", Aus.getAnyNumber(line.substring(171, 206)));
+      if (ld.raLocate(part, "GLN", line.substring(171, 206).trim())) {
+        zag.setInt("CPAR", part.getInt("CPAR"));
+      }
       zag.setTimestamp("DATDOK", getDate(line.substring(101, 136)));
       zag.setTimestamp("DATDOSP", getDate(line.substring(136, 171)));
       
@@ -277,7 +280,7 @@ public class raEDI {
         st.setInt("RBSID", rbr);
         
         String cart = line.substring(166, 201).trim();
-        if (cart != null && ld.raLocate(dM.getDataModule().getArtikli(), "CART", cart)) {
+        if (cart != null && ld.raLocate(dM.getDataModule().getArtikli(), "BC", cart)) {
         	dM.copyColumns(dM.getDataModule().getArtikli(), st, acc);
           st.post();
         } else
