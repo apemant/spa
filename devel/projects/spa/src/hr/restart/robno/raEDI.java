@@ -193,7 +193,7 @@ public class raEDI {
   	try {
 			sw.createNewFile();
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije (sw)!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
 		}
   	try {
   		if (pg.exists()) {
@@ -204,6 +204,8 @@ public class raEDI {
   	} finally {
   		sw.delete();
   	}
+  	Util.getUtil().showDocs(last.getString("CSKL"), 
+        "", "NKU", last.getInt("BRDOK"), last.getString("GOD"));
   }
   
   private static void importPanteonImpl(File dir) {
@@ -211,15 +213,15 @@ public class raEDI {
   	DataSet part = dM.getDataModule().getPartneri();
   	
   	File fiz = new File(dir, "Izme_nar.sdf");
-  	File fzag = new File(dir, "Osnova_n.sdf");
-  	File fst = new File(dir, "Postavke.sdf");
+  	File fzag = new File(dir, "osnova_n.sdf");
+  	File fst = new File(dir, "postavke.sdf");
   	
   	if (!fiz.canRead()) {
   		JOptionPane.showMessageDialog(null, "Nema novih narudžbi za import.", "Sinkronizacija", JOptionPane.WARNING_MESSAGE);
   		return;
   	}
   	if (!fzag.canRead() || !fst.canRead()) {
-  		JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
+  		JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije (zag,st)!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
   		return;
   	}
   	String line;
@@ -228,14 +230,14 @@ public class raEDI {
   	
   	TextFile tzag = TextFile.read(fzag);
   	if (tzag == null) {
-  		JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
+  		JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije (zag)!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
   		return;
   	}
   	while (null != (line = tzag.in())) lzag.add(line);
   	tzag.close();
   	TextFile tst = TextFile.read(fst);
   	if (tst == null) {
-  		JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
+  		JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije (st)!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
   		return;
   	}
   	while (null != (line = tst.in())) lst.add(line);
@@ -246,8 +248,8 @@ public class raEDI {
     
     zag.open();
     st.open();
-    String oj = frmParam.getParam("robno", "ojPanteon", 
-        "01", "Org. jed. za narudžbe iz Panteona");
+    String cskl = frmParam.getParam("robno", "ediCskl", "",
+      "Šifra OJ ili skladišta za EDI narudžbe");
     
     String[] acc = {"CART", "CART1", "BC", "NAZART", "JM"};
   	
@@ -256,13 +258,19 @@ public class raEDI {
   		line = (String) lzag.get(zi);
   		
   		zag.insertRow(false);
-      zag.setString("CSKL", oj);
+      zag.setString("CSKL", cskl);
       zag.setString("VRDOK", "NKU");
       if (ld.raLocate(part, "GLN", line.substring(171, 206).trim())) {
         zag.setInt("CPAR", part.getInt("CPAR"));
+        DataSet pj = Pjpar.getDataModule().getTempSet(
+            Condition.equal("CPAR", part));
+        pj.open();
+        if (ld.raLocate(pj, "GLN", line.substring(241, 276).trim())) {
+          zag.setInt("PJ", pj.getInt("PJ"));
+        }
       }
-      zag.setTimestamp("DATDOK", getDate(line.substring(101, 136)));
-      zag.setTimestamp("DATDOSP", getDate(line.substring(136, 171)));
+      zag.setTimestamp("DATDOK", getDate(line.substring(101, 136).trim()));
+      zag.setTimestamp("DATDOSP", getDate(line.substring(136, 171).trim()));
       
       zag.setString("GOD", hr.restart.util.Util.getUtil().
           getYear(zag.getTimestamp("DATDOK")));
@@ -286,16 +294,19 @@ public class raEDI {
         } else
           throw new RuntimeException("Nepoznata šifra artikla!");
         
-        st.setBigDecimal("KOL", Aus.getDecNumber(line.substring(271, 286)));
-        st.setBigDecimal("FC", Aus.getDecNumber(line.substring(324, 339)));
+        st.setBigDecimal("KOL", Aus.getDecNumber(line.substring(271, 286).trim()));
+        st.setBigDecimal("FC", Aus.getDecNumber(line.substring(324, 339).trim()));
         
   			++si;
   		}
-      
+        System.out.println(zag);
   		saveOrder(zag, st);
   			
       ++zi;
   	}
+  	fiz.delete();
+  	fzag.delete();
+  	fst.delete();
   }
   
   private static Timestamp getDate(String sd) {
