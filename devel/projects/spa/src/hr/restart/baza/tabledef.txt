@@ -973,7 +973,8 @@ TELFAXPJ;char;20;;;Fax;15
 KOPJ;char;50;;;Kontakt;15
 REGIJA;short;2;;;Regija;15
 CAGENT;int;6;;;Agent;15
-CKO;int;6;;;Kontakt
+CKO;int;6;;;Kontakt osoba
+GLN;char;20;;;Gln
 IDX=cpar
 
 $Artrans
