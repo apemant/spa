@@ -77,6 +77,9 @@ public class frmPjpar extends raMatPodaci {
   JraButton jbKO = new JraButton();
   JlrNavField jrfKO = new JlrNavField();
   JlrNavField jrfNAZKO = new JlrNavField();
+  
+  JLabel jlGLN = new JLabel();
+  JraTextField jtGLN = new JraTextField();
 
   public frmPjpar(frmPartneri f, QueryDataSet tempParamQDS, int cpar) {
     try {
@@ -142,7 +145,7 @@ public class frmPjpar extends raMatPodaci {
     jtPBRPJ.setColumnName("PBRPJ");
     jtPBRPJ.setDataSet(getRaQueryDataSet());
     xYLayout1.setWidth(515);
-    xYLayout1.setHeight(215);
+    xYLayout1.setHeight(240);
     jlTELPJ.setText("Telefoni");
     jtTELPJ.setDataSet(getRaQueryDataSet());
     jtTELPJ.setColumnName("TELPJ");
@@ -152,6 +155,11 @@ public class frmPjpar extends raMatPodaci {
     jlKOPJ.setText("Kontakt osobe");
     jtKOPJ.setColumnName("KOPJ");
     jtKOPJ.setDataSet(getRaQueryDataSet());
+    
+    jlGLN.setText("GLN jedinice");
+    jtGLN.setColumnName("GLN");
+    jtGLN.setDataSet(getRaQueryDataSet());
+    
     jlREGIJA.setText("Regija");
     jtREGIJA.setDataSet(getRaQueryDataSet());
     jtREGIJA.setColumnName("REGIJA");
@@ -190,6 +198,8 @@ public class frmPjpar extends raMatPodaci {
     /*jp.add(jlREGIJA, new XYConstraints(15, 180, -1, -1));
     jp.add(jtREGIJA, new XYConstraints(150, 180, 100, -1));*/
     jp.add(jcbAktiv, new XYConstraints(415, 7, 70, -1));
+    jp.add(jlGLN, new XYConstraints(15, 205, -1, -1));
+    jp.add(jtGLN, new XYConstraints(150, 205, 120, -1));
     this.setRaDetailPanel(jp);
   }
 

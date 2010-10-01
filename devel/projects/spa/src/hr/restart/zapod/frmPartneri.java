@@ -175,6 +175,7 @@ public class frmPartneri extends raMatPodaci {
   
   JLabel jlOIB = new JLabel();
   JraTextField jtfOIB = new JraTextField();
+  JraTextField jtfGLN = new JraTextField();
   JraCheckBox jcbR2 = new JraCheckBox();
   
   JlrNavField jlrTELIME = new JlrNavField();
@@ -403,7 +404,9 @@ public class frmPartneri extends raMatPodaci {
     
     jtfOIB.setColumnName("OIB");
     jtfOIB.setDataSet(getRaQueryDataSet());
-    jlOIB.setText("OIB");
+    jtfGLN.setColumnName("GLN");
+    jtfGLN.setDataSet(getRaQueryDataSet());
+    jlOIB.setText("OIB / GLN");
     
     jpOsnovniPodaci.add(jtfCPAR,   new XYConstraints(150, 30, 100, -1));
     jpOsnovniPodaci.add(jlCPAR,  new XYConstraints(150, 12, -1, -1));
@@ -472,7 +475,8 @@ public class frmPartneri extends raMatPodaci {
     
     jpOsnovniPodaci.add(jlOIB,  new XYConstraints(15, 385, -1, -1));
     jpOsnovniPodaci.add(jtfOIB,  new XYConstraints(150, 385, 100, -1));
-    jpOsnovniPodaci.add(jcbR2,  new XYConstraints(365, 385, 200, 20));
+    jpOsnovniPodaci.add(jtfGLN,  new XYConstraints(255, 385, 120, -1));
+    jpOsnovniPodaci.add(jcbR2,  new XYConstraints(390, 385, 175, 20));
 
     this.addOption(rnvPJ,3);
     this.addOption(rnvZiro,4);
