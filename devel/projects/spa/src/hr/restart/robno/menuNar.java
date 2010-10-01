@@ -138,7 +138,10 @@ public class menuNar extends JMenu {
   }
   
   void jmNKUedi2_actionPerformed(ActionEvent e) {
-    SF.showFrame("hr.restart.robno.frmEDI", jmNKUedi2.getText());
+    //SF.showFrame("hr.restart.robno.frmEDI", jmNKUedi2.getText());
+    String path = frmParam.getParam("robno", "panteonPath", "/home/abf/tmp/hr/test",
+        "Putanja mape za EDI preko Panteona");
+    raEDI.importPanteon(new File(path));
   }
   void jmNKUedi_actionPerformed(ActionEvent e) {
     if (fc.showOpenDialog(null) == fc.APPROVE_OPTION) {
