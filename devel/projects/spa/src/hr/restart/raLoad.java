@@ -76,8 +76,10 @@ public class raLoad implements Runnable {
 
 
   private void loadModule() {
-    if (!hr.restart.start.checkInstaled(raModule)) return;
     if (!hr.restart.sisfun.raUser.getInstance().canAccessApp(raModule, "P")) return;
+    int inst = hr.restart.start.checkInstaled(raModule);
+    System.out.println("inst " + raModule + ": " + inst);
+    if (inst < 0) return;
     raSplashAWT.splashMSG("U\u010Ditavam modul "+raRes.getString("jB"+raModule+"_text")+"...");
     javax.swing.ImageIcon iicon = null;
 
@@ -87,7 +89,7 @@ public class raLoad implements Runnable {
       raSplashAWT.splashMSG("ERR raLoad: slika za button nije prona\u0111ena, kreiram button bez slike");
     }
     try {
-      final raAction raAc = new raAction();
+      final raAction raAc = new raAction(inst == 1);
       jmi = new javax.swing.JMenuItem(raRes.getString("jB"+raModule+"_text"));
       jmi.addActionListener(raAc);
       raShortcutItem sItem = new raShortcutItem() {
@@ -96,6 +98,11 @@ public class raLoad implements Runnable {
         }
       };
       sItem.setText(jmi.getText());
+      if (inst != 1) {
+        jmi.setEnabled(false);
+        sItem.setEnabled(false);
+      }
+      
 //      sItem.setIndex(jmi.getText());
       sItem.setIndex(raModule);
       if (iicon!=null) sItem.setIcon(iicon);
@@ -123,9 +130,14 @@ public class raLoad implements Runnable {
   }
 
   class raAction implements java.awt.event.ActionListener {
+    boolean active = true;
     public raAction() {
     }
+    public raAction(boolean act) {
+      active = act;
+    }
     public void actionPerformed(java.awt.event.ActionEvent e) {
+      if (!active) return;
       if (start.isMainFrame())
         modFrame.ShowMeP(raRes.getString("jB"+raModule+"_text"));
       else

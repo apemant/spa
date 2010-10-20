@@ -1260,7 +1260,7 @@ System.out.println("Nije modal dialog...Vracam false");
       hr.restart.start.getFrmPassword();
       hr.restart.raSplashAWT.splashMSG("Autorizacija ...");
       if (!hr.restart.start.checkLogin()) System.exit(0);
-      if (!hr.restart.start.checkInstaled(runArg)) {
+      if (hr.restart.start.checkInstaled(runArg) < 1) {
         JOptionPane.showMessageDialog(null,"Aplikacija nije instalirana!","SPA",JOptionPane.ERROR_MESSAGE);
         hr.restart.sisfun.raUser.getInstance().unlockUser();
         System.exit(0);

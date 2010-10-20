@@ -352,7 +352,7 @@ System.out.println("no port starting shell");
     return (String[][])hr.restart.raRes.contents; ///!!!!!!!!!!!!
   }
 
-  public static boolean checkInstaled(String raModule) {
+  public static int checkInstaled(String raModule) {
     hr.restart.util.lookupData ld = hr.restart.util.lookupData.getlookupData();
     com.borland.dx.dataset.DataSet aplikacije = hr.restart.baza.dM.getDataModule().getAplikacija();
     String user = hr.restart.sisfun.raUser.getInstance().getUser();
@@ -360,12 +360,14 @@ System.out.println("no port starting shell");
     aplikacije.open();
     if (!ld.raLocate(aplikacije,"APP",raModule)) {
       if (user.equals("test")||user.equals("root")) {
-        return true;
+        return 1;
       } else {
-        return false;
+        return -1;
       }
     }
-    return aplikacije.getString("INSTALIRANA").equals("D");
+    if (aplikacije.getString("INSTALIRANA").equals("D")) return 1;
+    if (aplikacije.getString("INSTALIRANA").equals("N")) return 0;
+    return -1;
   }
 
   public static void setFRAME_MODE() {

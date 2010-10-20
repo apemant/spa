@@ -21,6 +21,7 @@ import hr.restart.util.Aus;
 import hr.restart.util.FileHandler;
 import hr.restart.util.MenuTree;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -246,7 +247,7 @@ System.out.println("raAbstractShortcutContainer.removeAllItems: true (instanceof
         boolean cellHasFocus) {
       raShortcutItem item = (raShortcutItem) listelements.get(index);
       int bordthick = 1;
-      if (isSelected) {
+      if (isSelected && item.isEnabled()) {
         //item.setBorder(lowBorder);
         setBorder(BorderFactory.createLineBorder(listSelectionBorder,bordthick));
         setBackground(listSelectionBackground);
@@ -256,7 +257,9 @@ System.out.println("raAbstractShortcutContainer.removeAllItems: true (instanceof
         //item.setBorder(raiseBroder);
         setBorder(BorderFactory.createEmptyBorder(bordthick,bordthick,bordthick,bordthick));
         setBackground(list.getBackground());
-        setForeground(list.getForeground());
+        if (item.isEnabled())
+          setForeground(list.getForeground());
+        else setForeground(Color.GRAY.brighter());
       }
       setOpaque(true);
       setIcon(item.getIcon());
