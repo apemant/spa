@@ -98,6 +98,7 @@ public class ElixirToJasperConverter {
   }
   
   private void createDesign() throws JRException {
+    jas.setName("design");
     createFields();
     createLayout();
     createGroups();
