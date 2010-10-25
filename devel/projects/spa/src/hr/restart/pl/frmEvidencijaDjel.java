@@ -22,9 +22,16 @@
  */
 
 package hr.restart.pl;
+import hr.restart.baza.Condition;
+import hr.restart.baza.PlZnacRad;
+import hr.restart.baza.PlZnacRadData;
+import hr.restart.baza.Radnici;
+import hr.restart.baza.Radnicipl;
 import hr.restart.baza.dM;
 import hr.restart.swing.raExtendedTable;
+import hr.restart.util.Aus;
 import hr.restart.util.OKpanel;
+import hr.restart.util.lookupData;
 import hr.restart.util.raFrame;
 import hr.restart.util.raImages;
 import hr.restart.util.raJPTableView;
@@ -33,8 +40,11 @@ import hr.restart.util.raProcess;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
+import java.sql.Timestamp;
 
+import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 /**
  *
  * @author  andrej
@@ -113,5 +123,71 @@ public class frmEvidencijaDjel extends raFrame {
     TPRun.setColB(jptv.getColumnsBean());
     TPRun.setRTitle(this.getTitle());
     return TPRun;
+  }
+  public static StorageDataSet getZR4Set(String cradnik) {
+    String cznacs = "15,20,30,52,54,60,70,74,120,122,123,124,125,126,127,128,129,190,250,210,270,280";
+    
+    QueryDataSet znac = PlZnacRad.getDataModule().getFilteredDataSet("CZNAC in ("+cznacs+")");
+    znac.open();
+    QueryDataSet znacdat = PlZnacRadData.getDataModule().getFilteredDataSet(Condition.equal("CRADNIK", cradnik));
+    znacdat.open();
+    QueryDataSet radnik = Radnici.getDataModule().getFilteredDataSet(Condition.equal("CRADNIK", cradnik));
+    radnik.open();
+    radnik.first();
+    QueryDataSet radnikpl = Radnicipl.getDataModule().getFilteredDataSet(Condition.equal("CRADNIK", cradnik));
+    radnikpl.open();
+    radnikpl.first();
+    
+    StorageDataSet zr4set = new StorageDataSet();
+    Column[] cols = new Column[] {znac.getColumn("CZNAC").cloneColumn(), znac.getColumn("ZNACOPIS").cloneColumn(), dM.createStringColumn("VRI","Vrijednost", 300)};
+    zr4set.setColumns(cols);
+    zr4set.open();
+    
+    addZR4(zr4set, 1, "Matièni broj radnika u poduzeæu", radnik.getString("CRADNIK"));
+    addZR4(zr4set, 2, "Ime", radnik.getString("IME"));
+    addZR4(zr4set, 3, "Ime oca", radnik.getString("IMEOCA"));
+    addZR4(zr4set, 4, "Prezime", radnik.getString("PREZIME"));
+    addZR4(zr4set, 21, "OIB", radnikpl.getString("OIB"));
+    addZR4(zr4set, 22, "JMBG", radnikpl.getString("JMBG"));
+    addZR4(zr4set, 71, "Steèena školska ili struèna sprema", radnikpl.getString("CSS"));
+    addZR4(zr4set, 75, "Dan poèetka rada", formatTS(radnikpl.getTimestamp("DATDOL")));
+    addZR4(zr4set, 209, "Dan prestanka radnog odnosa", formatTS(radnikpl.getTimestamp("DATODL")));
+    
+    
+    for (znac.first(); znac.inBounds(); znac.next()) {
+      addZR4(zr4set, znac, znacdat);
+    }
+    return zr4set;
+  }
+  public static String formatTS(Timestamp ts) {
+    try {
+      String ret = new java.text.SimpleDateFormat("dd.MM.yyyy.").format(ts);
+      if (ret.equals("01.01.1970.")) return "";
+      return ret;
+    } catch (Exception e) {
+      return "";
+    }
+  }
+  public static void addZR4(StorageDataSet set, QueryDataSet zn, QueryDataSet znd) {
+    String vri;
+    if (lookupData.getlookupData().raLocate(znd, "CZNAC", zn.getShort("CZNAC")+"")) {
+      if (zn.getString("ZNACTIP").equals("D")) {
+        try {
+          vri = formatTS(Timestamp.valueOf(znd.getString("VRI")));
+        } catch (Exception e) {
+          vri = "";
+        }
+      } else {
+        vri = znd.getString("VRI");
+      }
+    } else vri = "";
+    addZR4(set, zn.getShort("CZNAC"), zn.getString("ZNACOPIS"), vri);
+  }
+  public static void addZR4(StorageDataSet set, int cznac, String opis, String vri) {
+    set.insertRow(false);
+    set.setShort("CZNAC",(short)cznac);
+    set.setString("ZNACOPIS", opis);
+    set.setString("VRI", vri);
+    set.post();
   }
 }
