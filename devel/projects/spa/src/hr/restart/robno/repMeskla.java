@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.reports.raReportData;
 
@@ -174,6 +175,11 @@ public class repMeskla implements raReportData {
   
   public BigDecimal getPPOP(){
     return ds.getBigDecimal("PPOP");
+  }
+  
+  public BigDecimal getFCP(){
+    return getFC().multiply(Aus.one0.subtract(
+        getPPOP().movePointLeft(2))).setScale(2, BigDecimal.ROUND_HALF_UP);
   }
 
   public double getZADRAZUL(){
