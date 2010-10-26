@@ -18,12 +18,17 @@
 package hr.restart.help;
 
 import hr.restart.start;
+import hr.restart.swing.JraButton;
 import hr.restart.swing.JraFrame;
+import hr.restart.util.Aus;
 import hr.restart.util.IntParam;
+import hr.restart.util.Util;
 import hr.restart.util.raImages;
 import hr.restart.util.raScreenHandler;
 
 import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -35,6 +40,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class raUserDialog extends JraFrame {
@@ -106,6 +113,33 @@ public class raUserDialog extends JraFrame {
     		getUserPanel().getTaskTree().initFromTree(getUserPanel().getMenuTree());
     	}
     });*/
+    jMes.setBackground(Aus.halfTone(jMes.getBackground(), Color.red, 0.25f));
+    jMes.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        
+      }
+    });
+  }
+  
+  JraButton jMes = new JraButton();
+  public void updateMessageButton() {
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        int num = MsgDispatcher.getUnread();
+        boolean memb = getContentPane().isAncestorOf(jMes);
+        if (memb && num == 0) {
+          getContentPane().remove(jMes);
+          ((JPanel) getContentPane()).revalidate();
+        }
+        if (num > 0) jMes.setText(Aus.getNum(num, 
+               "nova poruka", "nove poruke", "novih poruka"));
+        if (!memb && num > 0) {
+          getContentPane().add(jMes, BorderLayout.NORTH);      
+          ((JPanel) getContentPane()).revalidate();
+        }
+        getContentPane().repaint();
+      }
+    });
   }
 
   private boolean smoothHidden = false;
