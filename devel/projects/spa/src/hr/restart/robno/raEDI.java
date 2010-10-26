@@ -8,6 +8,7 @@ import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
@@ -183,9 +184,11 @@ public class raEDI {
     return new Timestamp(cal.getTime().getTime());
   }
   
-  public static void importPanteon(File dir) {
+  public static void importPanteon(File dir, boolean report) {
+    int doc = 0;
   	File pg = new File(dir, "PG.lck");
   	if (pg.exists()) {
+  	    if (!report) return;
   		JOptionPane.showMessageDialog(null, "Mapa je zauzeta. Probajte malo kasnije.", "Sinkronizacija", JOptionPane.WARNING_MESSAGE);
   		return;
   	}
@@ -193,22 +196,30 @@ public class raEDI {
   	try {
 			sw.createNewFile();
 		} catch (IOException e) {
+		  if (!report) return;
 			JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije (sw)!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
   	try {
   		if (pg.exists()) {
+  		  if (!report) return;
     		JOptionPane.showMessageDialog(null, "Mapa je zauzeta. Probajte malo kasnije.", "Sinkronizacija", JOptionPane.WARNING_MESSAGE);
     		return;
     	}
-  		importPanteonImpl(dir);
+  		doc = importPanteonImpl(dir, report);
+  	} catch (RuntimeException re) {
+  	  JOptionPane.showMessageDialog(null, re.getMessage(), "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
   	} finally {
   		sw.delete();
   	}
-  	Util.getUtil().showDocs(last.getString("CSKL"), 
+  	if (report)
+  	  Util.getUtil().showDocs(last.getString("CSKL"), 
         "", "NKU", last.getInt("BRDOK"), last.getString("GOD"));
+  	else if (doc > 0) 
+  	  JOptionPane.showMessageDialog(null, "Dohvaæeno " + doc + " narudžbi putem EDI.", "Sinkronizacija", JOptionPane.INFORMATION_MESSAGE);
   }
   
-  private static void importPanteonImpl(File dir) {
+  private static int importPanteonImpl(File dir, boolean report) {
   	lookupData ld = lookupData.getlookupData();
   	DataSet part = dM.getDataModule().getPartneri();
   	
@@ -217,12 +228,14 @@ public class raEDI {
   	File fst = new File(dir, "postavke.sdf");
   	
   	if (!fiz.canRead()) {
+  	  if (!report) return -1;
   		JOptionPane.showMessageDialog(null, "Nema novih narudžbi za import.", "Sinkronizacija", JOptionPane.WARNING_MESSAGE);
-  		return;
+  		return -1;
   	}
   	if (!fzag.canRead() || !fst.canRead()) {
+  	  if (!report) return -2;
   		JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije (zag,st)!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
-  		return;
+  		return -2;
   	}
   	String line;
   	List lzag = new ArrayList();
@@ -230,24 +243,26 @@ public class raEDI {
   	
   	TextFile tzag = TextFile.read(fzag);
   	if (tzag == null) {
+  	  if (!report) return -3;
   		JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije (zag)!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
-  		return;
+  		return -3;
   	}
   	while (null != (line = tzag.in())) lzag.add(line);
   	tzag.close();
   	TextFile tst = TextFile.read(fst);
   	if (tst == null) {
+  	  if (!report) return -4;
   		JOptionPane.showMessageDialog(null, "Greška kod sinkronizacije (st)!", "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
-  		return;
+  		return -4;
   	}
   	while (null != (line = tst.in())) lst.add(line);
-  	tzag.close();
+  	tst.close();
   	
-  	QueryDataSet zag = doki.getDataModule().getTempSet(Condition.nil);
+  	/*QueryDataSet zag = doki.getDataModule().getTempSet(Condition.nil);
     QueryDataSet st = stdoki.getDataModule().getTempSet(Condition.nil);
     
     zag.open();
-    st.open();
+    st.open();*/
     String cskl = frmParam.getParam("robno", "ediCskl", "",
       "Šifra OJ ili skladišta za EDI narudžbe");
     
@@ -256,20 +271,40 @@ public class raEDI {
   	int zi = 0, si = 0;
   	while (zi < lzag.size()) {
   		line = (String) lzag.get(zi);
+  		if (line.length() <= 1) continue;
+  		
+  		QueryDataSet zag = doki.getDataModule().getTempSet(Condition.nil);
+  	    QueryDataSet st = stdoki.getDataModule().getTempSet(Condition.nil);
+  	    
+  	    zag.open();
+  	    st.open();
   		
   		zag.insertRow(false);
+  	
+  		zag.setString("CUSER", raUser.getInstance().getUser());
       zag.setString("CSKL", cskl);
       zag.setString("VRDOK", "NKU");
+      DataSet cpart = null;
       if (ld.raLocate(part, "GLN", line.substring(171, 206).trim())) {
         zag.setInt("CPAR", part.getInt("CPAR"));
+        System.out.println("Partner: " + part.getInt("CPAR"));
         DataSet pj = Pjpar.getDataModule().getTempSet(
             Condition.equal("CPAR", part));
         pj.open();
-        if (ld.raLocate(pj, "GLN", line.substring(241, 276).trim())) {
+        String md = line.substring(241, 276).trim();
+        if (ld.raLocate(pj, "GLN", md)) {
           zag.setInt("PJ", pj.getInt("PJ"));
+          System.out.println("PJ: " + pj.getInt("PJ"));
         }
+        String bnar = line.substring(49, 84).trim();
+        if (bnar.startsWith(md)) bnar = bnar.substring(md.length() + 1);
+        zag.setString("BRNARIZ", bnar);
+        cpart = VTCartPart.getDataModule().getTempSet(
+            Condition.equal("CPAR", part));
+        cpart.open();
       }
       zag.setTimestamp("DATDOK", getDate(line.substring(101, 136).trim()));
+      zag.setTimestamp("DATNARIZ", getDate(line.substring(101, 136).trim()));
       zag.setTimestamp("DATDOSP", getDate(line.substring(136, 171).trim()));
       
       zag.setString("GOD", hr.restart.util.Util.getUtil().
@@ -280,6 +315,7 @@ public class raEDI {
       short rbr = 0;
   		while (si < lst.size()) {
   			line = (String) lst.get(si);
+  			if (line.length() <= 1) break;
   			if (!line.substring(49, 84).equals(nbr)) break;
   			
   			st.insertRow(false);
@@ -287,12 +323,14 @@ public class raEDI {
         st.setShort("RBR", ++rbr);
         st.setInt("RBSID", rbr);
         
-        String cart = line.substring(166, 201).trim();
+        String cart = line.substring(90, 125).trim();
+        if (cart != null && cpart != null && ld.raLocate(cpart, "BCPAR", cart))
+          cart = cpart.getString("BC");
         if (cart != null && ld.raLocate(dM.getDataModule().getArtikli(), "BC", cart)) {
         	dM.copyColumns(dM.getDataModule().getArtikli(), st, acc);
           st.post();
         } else
-          throw new RuntimeException("Nepoznata šifra artikla!");
+          throw new RuntimeException("Nepoznata šifra artikla! " + cart);
         
         st.setBigDecimal("KOL", Aus.getDecNumber(line.substring(271, 286).trim()));
         st.setBigDecimal("FC", Aus.getDecNumber(line.substring(324, 339).trim()));
@@ -304,9 +342,12 @@ public class raEDI {
   			
       ++zi;
   	}
+  	
   	fiz.delete();
   	fzag.delete();
   	fst.delete();
+  	
+  	return zi;
   }
   
   private static Timestamp getDate(String sd) {
@@ -324,5 +365,5 @@ public class raEDI {
   	cal.set(cal.SECOND, 0);
   	cal.set(cal.MILLISECOND, 0);
   	return new Timestamp(cal.getTime().getTime());
-  }
+  }  
 }
