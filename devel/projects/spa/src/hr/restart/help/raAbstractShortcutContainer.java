@@ -259,7 +259,7 @@ System.out.println("raAbstractShortcutContainer.removeAllItems: true (instanceof
         setBackground(list.getBackground());
         if (item.isEnabled())
           setForeground(list.getForeground());
-        else setForeground(Color.GRAY.brighter());
+        else setForeground(Color.gray.brighter());
       }
       setOpaque(true);
       setIcon(item.getIcon());
