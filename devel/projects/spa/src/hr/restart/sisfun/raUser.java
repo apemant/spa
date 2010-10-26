@@ -22,6 +22,7 @@ import hr.restart.baza.KreirDrop;
 import hr.restart.baza.Pravagrus;
 import hr.restart.baza.Pravauser;
 import hr.restart.baza.dM;
+import hr.restart.help.MsgDispatcher;
 import hr.restart.util.IntParam;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
@@ -188,6 +189,7 @@ public class raUser {
 
     dm.getKljucevi().refresh();
     preparePrava();
+    MsgDispatcher.install();
   }
 
   private String add(String p1, String p2) {
