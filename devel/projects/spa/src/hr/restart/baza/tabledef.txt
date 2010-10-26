@@ -1277,3 +1277,17 @@ NAP;text;50;;;Napomena;20
 $PNBKonto
 PNB;char;150;pkey;;Poziv na broj
 BROJKONTA;text;8;pkey;;Konto
+
+$Kredkar
+BROJ;char;25;pkey;;Broj
+IME;char;50;;;Ime vlasnika
+ADR;char;50;;;Adresa
+CKUPAC;int;6;;;Kupac
+
+$Mesg
+ID;char;30;pkey;;Id;*
+NOVA;char;1;;D;Nova
+SRC;char;15;;;From
+DEST;char;15;idx;;To
+DATUM;date;;;;Poslano
+MTEXT;char;2000;;;Poruka
