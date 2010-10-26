@@ -38,7 +38,8 @@ public class repDOSTemplate extends repOTPOrigTemplate {
     sh.LabelRACUNOTPREMNICA.setDefault(ep.CAPTION, caption);
     sh.defaultAltererSect().getView(sh.LabelMjesto, sh.TextNAZFRA).
         deleteElementsPushDown(sh, new raReportElement[] {sh.LabelNacinplacanja,
-        sh.LabelDospijece, sh.TextSgetDATDOSP, sh.TextSgetDDOSP, sh.TextNAZNACPL});
+        sh.LabelDospijece, sh.TextSgetDATDOSP, sh.TextSgetDDOSP, sh.TextNAZNACPL, 
+        sh.LabelParitet, sh.TextNAZFRA});
     sh.LabelR1.setDefault(ep.VISIBLE, raElixirPropertyValues.NO);
     sh.LabelObrazac.setDefault(ep.VISIBLE, raElixirPropertyValues.NO);
     sh.LabelNacinotpreme.setDefault(ep.CAPTION, "Prijem robe");
