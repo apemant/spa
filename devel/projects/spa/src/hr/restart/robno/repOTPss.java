@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import java.math.BigDecimal;
+
 import hr.restart.util.lookupData;
 
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -32,6 +34,14 @@ public class repOTPss extends repOTP {
     if (lookupData.getlookupData().raLocate(setSifri, "CART", getSHIFRA()))
       return setSifri.getString("CCPAR");
     return "";
+  }
+  
+  public BigDecimal getCJC() {
+    QueryDataSet tmpCjenik = allStanje.getallStanje().getCijenik(
+        ds.getString("VRDOK"), ds.getString("CSKL"), ds.getInt("CPAR"), ds.getInt("CART"));
+    if (tmpCjenik != null && tmpCjenik.rowCount() > 0)
+      return tmpCjenik.getBigDecimal("VC");
+    return null;
   }
   
   protected void nacPl() {
