@@ -22,6 +22,7 @@ import hr.restart.baza.Sklad;
 import hr.restart.baza.dM;
 import hr.restart.pos.presBlag;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraRadioButton;
@@ -104,7 +105,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   JraRadioButton jrbDatum = new JraRadioButton();
   JraRadioButton jrbRacun = new JraRadioButton();
   raButtonGroup ispisChoozer = new raButtonGroup();
-
+  
   public ispRekapitulacijaRacunaPOS() {
     try {
       jbInit();
@@ -132,8 +133,20 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     jrfCBlagajnik.setText("");
     jrfNazivBlagajnika.setText("");
     jcbPoArtiklima.setSelected(false);
+    if (presBlag.isUserOriented() && !raUser.getInstance().isSuper()) {
+      jrfCBlagajnik.setText(raUser.getInstance().getUser());
+      jrfCBlagajnik.forceFocLost();
+      rcc.setLabelLaF(jrfCBlagajnik,false);
+      rcc.setLabelLaF(jrfNazivBlagajnika,false);
+      rcc.setLabelLaF(jbSelBlagajnik,false);
+    } else {
+      rcc.setLabelLaF(jrfCBlagajnik,true);
+      rcc.setLabelLaF(jrfNazivBlagajnika,true);
+      rcc.setLabelLaF(jbSelBlagajnik,true);
+    }
     tds.setString("IspisRek","N");
     //findMpSkl();
+    findSklad();
     jrfCBLAG.requestFocus();
   }
 
@@ -147,7 +160,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 
   public boolean Validacija(){
     if (vl.isEmpty(jrfCSKL)) return false;
-    if (vl.isEmpty(jrfCBLAG)) return false;
+    //if (vl.isEmpty(jrfCBLAG)) return false;
     if (jrbRacun.isSelected() && (tds.getInt("POCBROJ") == tds.getInt("ZAVBROJ") && tds.getInt("ZAVBROJ") == 0) ||
         tds.getInt("POCBROJ") > tds.getInt("ZAVBROJ")) {
       jtfPocBroj.requestFocus();
@@ -197,8 +210,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
       "AND pos.god = stpos.god "+
       "AND pos.brdok = stpos.brdok "+
       "AND pos.cprodmj = stpos.cprodmj "+
-      "and pos.vrdok = 'GRC' "+
-      "and pos.cprodmj = '"+tds.getString("CPRODMJ")+"' "+
+      "and pos.vrdok = 'GRC' "+ kondishnBlag() +
       "and pos.cskl = '"+tds.getString("CSKL")+"' "+
       "and "+kondishnDatumOrBroj()+kondishnOperater();
       
@@ -248,8 +260,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
                         "AND pos.god = rate.god "+
                         "AND pos.brdok = rate.brdok "+
                         "AND pos.cprodmj = rate.cprodmj "+
-                        "and pos.vrdok = 'GRC' "+
-                        "and pos.cprodmj = '"+tds.getString("CPRODMJ")+"' "+
+                        "and pos.vrdok = 'GRC' "+kondishnBlag()+
                         "and pos.cskl = '"+tds.getString("CSKL")+"' "+
                         "and "+kondishnDatumOrBroj()+ kondishnOperater()/*+*/ // kondishnOperator diprektid...
                         /*" group by cnacpl"*/;
@@ -271,8 +282,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
                          "AND pos.god = rate.god "+
                          "AND pos.brdok = rate.brdok "+
                          "AND pos.cprodmj = rate.cprodmj "+
-                         "and pos.vrdok = 'GRC' "+
-                         "and pos.cprodmj = '"+tds.getString("CPRODMJ")+"' "+
+                         "and pos.vrdok = 'GRC' "+ kondishnBlag() +
                          "and pos.cskl = '"+tds.getString("CSKL")+"' "+
                          "and "+kondishnDatumOrBroj()+ kondishnOperater();
 
@@ -294,8 +304,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
                            "AND pos.god = stpos.god "+
                            "AND pos.brdok = stpos.brdok "+
                            "AND pos.cprodmj = stpos.cprodmj "+
-                           "and pos.vrdok = 'GRC' "+
-                           "and pos.cprodmj = '"+tds.getString("CPRODMJ")+"' "+
+                           "and pos.vrdok = 'GRC' "+kondishnBlag()+
                            "and pos.cskl = '"+tds.getString("CSKL")+"' "+
                            "and "+kondishnDatumOrBroj()+kondishnOperater()+ // kondishnOperator diprektid...
                            "group by cart, nazart";
@@ -466,8 +475,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
         "AND pos.god = stpos.god "+
         "AND pos.brdok = stpos.brdok "+
         "AND pos.cprodmj = stpos.cprodmj "+
-        "and pos.vrdok = 'GRC' "+
-        "and pos.cprodmj = '"+tds.getString("CPRODMJ")+"' "+
+        "and pos.vrdok = 'GRC' "+kondishnBlag()+
         "and pos.cskl = '"+tds.getString("CSKL")+"' "+
         "and "+kondishnDatumOrBroj()+kondishnOperater();
       
@@ -531,8 +539,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
             "AND pos.god = stpos.god "+
             "AND pos.brdok = stpos.brdok "+
             "AND pos.cprodmj = stpos.cprodmj "+
-            "and pos.vrdok = 'GRC' "+
-            "and pos.cprodmj = '"+tds.getString("CPRODMJ")+"' "+
+            "and pos.vrdok = 'GRC' "+kondishnBlag()+
             "and pos.cskl = '"+tds.getString("CSKL")+"' "+
             "and "+kondishnDatumOrBroj()+kondishnOperater();
       
@@ -625,26 +632,36 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   }
 
   private String kondishnDatumOrBroj(){
-    Condition akt = presBlag.stolovi ? Condition.equal("AKTIV", "N") : Condition.none;
+    Condition akt = presBlag.stolovi && !presBlag.isUserOriented() ? 
+        Condition.equal("AKTIV", "N") : Condition.none;
     if (jrbDatum.isSelected()) 
       return Condition.between("DATDOK",tds, "POCDATUM", "ZAVDATUM").
                 and(akt).qualified("pos").toString();
     return Condition.between("BRDOK",tds, "POCBROJ", "ZAVBROJ").
                 and(akt).qualified("pos").toString();
   }
+  
+  private String kondishnBlag(){
+    if (tds.getString("CPRODMJ").length() == 0) return "";
+    return "and pos.cprodmj = '"+tds.getString("CPRODMJ")+"' ";
+  }
 
   private String kondishnOperater(){
     /** @todo razmisliti o root-u i operaterima */
-    if (tds.getString("CBLAGAJNIK").equals("")) return "";
+    if (jrfCBlagajnik.getText().trim().equals("")) return "";
+    else if (presBlag.isUserOriented())
+      return "and pos.cuser='" + tds.getString("CUSER") + "' ";
     else return "and pos.cblagajnik='" + tds.getString("CBLAGAJNIK") + "' ";
   }
 
   public void firstESC() {
     
     if (isOk) {
-      rcc.setLabelLaF(jrfCBlagajnik,true);
-      rcc.setLabelLaF(jrfNazivBlagajnika,true);
-      rcc.setLabelLaF(jbSelBlagajnik,true);
+      if (!presBlag.isUserOriented() || raUser.getInstance().isSuper()) {
+        rcc.setLabelLaF(jrfCBlagajnik,true);
+        rcc.setLabelLaF(jrfNazivBlagajnika,true);
+        rcc.setLabelLaF(jbSelBlagajnik,true);
+      }
       rcc.setLabelLaF(jrfCBLAG,true);
       rcc.setLabelLaF(jrfNAZBLAG,true);
       rcc.setLabelLaF(jbCBLAG,true);
@@ -678,14 +695,16 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     ispisChoozer.setSelected(jrbDatum);
     }
     if (!tds.getString("CPRODMJ").equals("")) {
-      rcc.setLabelLaF(jrfCBlagajnik,true);
-      rcc.setLabelLaF(jrfNazivBlagajnika,true);
-      rcc.setLabelLaF(jbSelBlagajnik,true);
+      if (!presBlag.isUserOriented() || raUser.getInstance().isSuper()) {
+        rcc.setLabelLaF(jrfCBlagajnik,true);
+        rcc.setLabelLaF(jrfNazivBlagajnika,true);
+        rcc.setLabelLaF(jbSelBlagajnik,true);
+        jrfCBlagajnik.setText("");
+        jrfCBlagajnik.emptyTextFields();
+      }
       rcc.setLabelLaF(jrfCBLAG,true);
       rcc.setLabelLaF(jrfNAZBLAG,true);
       rcc.setLabelLaF(jbCBLAG,true);
-      jrfCBlagajnik.setText("");
-      jrfCBlagajnik.emptyTextFields();
       jrfCBLAG.setText("");
       jrfCBLAG.emptyTextFields();
       jrfCBLAG.requestFocus();
@@ -750,6 +769,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     tds.setColumns(new Column[] {dm.createStringColumn("CSKL","Skladište",10),
                                  dm.createStringColumn("CPRODMJ","Prodajno mjesto",10),
                                  dm.createStringColumn("CBLAGAJNIK","Blagajnik",10),
+                                 dm.createStringColumn("CUSER","Korisnik",15),
                                  dm.createTimestampColumn("pocDatum", "Poèetni datum"),
                                  dm.createTimestampColumn("zavDatum", "Krajnji datum"),
                                  dm.createIntColumn("pocBroj", "Poèetni broj"),
@@ -813,15 +833,21 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     jrfNAZBLAG.setSearchMode(1);
     jrfNAZBLAG.setNavProperties(jrfCBLAG);
 
-    jrfCBlagajnik.setRaDataSet(dm.getBlagajnici());
+    jrfCBlagajnik.setRaDataSet(presBlag.isUserOriented() ?
+        dm.getUseri() : dm.getBlagajnici());
     jrfCBlagajnik.setDataSet(tds);
     jrfCBlagajnik.setTextFields(new javax.swing.text.JTextComponent[] {jrfNazivBlagajnika});
     jrfCBlagajnik.setVisCols(new int[]{0,1});
-    jrfCBlagajnik.setColNames(new String[] {"NAZBLAG"});
-    jrfCBlagajnik.setColumnName("CBLAGAJNIK");
+    if (presBlag.isUserOriented()) {
+      jrfCBlagajnik.setColNames(new String[] {"NAZIV"});
+      jrfCBlagajnik.setColumnName("CUSER");
+    } else {
+      jrfCBlagajnik.setColNames(new String[] {"NAZBLAG"});
+      jrfCBlagajnik.setColumnName("CBLAGAJNIK");
+    }
     jrfCBlagajnik.setNavButton(jbSelBlagajnik);
 
-    jrfNazivBlagajnika.setColumnName("NAZBLAG");
+    jrfNazivBlagajnika.setColumnName(presBlag.isUserOriented() ? "NAZBLAG" : "NAZIV");
     jrfNazivBlagajnika.setSearchMode(1);
     jrfNazivBlagajnika.setNavProperties(jrfCBlagajnik);
 
@@ -895,6 +921,17 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
       rcc.setLabelLaF(jbCSKL,false);
       jrfCBLAG.requestFocus();
     }
+  }
+  
+  void findSklad() {
+    jrfCSKL.setText(raUser.getInstance().getDefSklad());
+    jrfCSKL.forceFocLost();
+    if (jrfCSKL.getText().length() > 0) {
+      rcc.setLabelLaF(jrfCSKL,false);
+      rcc.setLabelLaF(jrfNAZSKL,false);
+      rcc.setLabelLaF(jbCSKL,false);
+      jrfCBLAG.requestFocusLater();
+    } else jrfCSKL.requestFocusLater();
   }
 
   void radio_actionPerformed() {
