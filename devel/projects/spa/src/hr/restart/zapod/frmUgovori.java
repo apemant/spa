@@ -19,6 +19,7 @@ package hr.restart.zapod;
 
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
+import hr.restart.baza.Partneri;
 import hr.restart.baza.Porezi;
 import hr.restart.baza.Ugovori;
 import hr.restart.baza.zirorn;
@@ -495,7 +496,13 @@ System.out.println("Konaèmi "+vs);
 	public boolean DeleteCheckMaster() {
 		return true;
 	}
-
+	private QueryDataSet ppar;
+	private QueryDataSet getPp() {
+	  if (ppar == null) ppar = Partneri.getDataModule().getTempSet();
+	  ppar.open();
+	  return ppar;
+	}
+	
 	public boolean ValidacijaMaster(char mode) {
 		if (mode == 'N') {
 			if (vl.notUnique(ump.jtCUGOVOR))
@@ -509,6 +516,10 @@ System.out.println("Konaèmi "+vs);
 		if (vl.isEmpty(ump.jlrCPAR))
 			return false;
         
+		QueryDataSet pp = getPp();
+		if (lookupData.getlookupData().raLocate(pp, "CPAR", getMasterSet().getInt("CPAR")+"")) {
+		  getMasterSet().setString("NAZPAR", pp.getString("NAZPAR"));
+		}
 		return true;
 	}
 
@@ -1143,10 +1154,10 @@ System.out.println("Oðe bi trebao biti");
 			raDetail.addOption(rnvRbr,4);
 			raMaster.addOption(rnvRekalkul,5);
 			raDetail.setSort(new String[]{"RBR"});
-			raMaster.getJpTableView().addTableModifier(
-					new hr.restart.swing.raTableColumnModifier("CPAR",
-							new String[] { "CPAR", "NAZPAR" },
-							new String[] { "CPAR" }, dm.getPartneri()));
+//			raMaster.getJpTableView().addTableModifier(
+//					new hr.restart.swing.raTableColumnModifier("CPAR",
+//							new String[] { "CPAR", "NAZPAR" },
+//							new String[] { "CPAR" }, dm.getPartneri()));
 			ump.bindComponents(getMasterSet());
 			udp.BindComponents(getDetailSet());
 			setUserCheck(false);
@@ -2087,5 +2098,17 @@ System.out.println("unišo ...");
 		repQDS.open();
 		super.Funkcija_ispisa_master();
 	}
-
+	public static void fillNazPar() {
+	  QueryDataSet ug = Ugovori.getDataModule().getTempSet();
+	  QueryDataSet pp = Partneri.getDataModule().getTempSet();
+	  ug.open();
+	  pp.open();
+	  for (ug.first(); ug.inBounds(); ug.next()) {
+      if (lookupData.getlookupData().raLocate(pp, "CPAR", ug.getInt("CPAR")+"")) {
+        ug.setString("NAZPAR", pp.getString("NAZPAR"));
+        ug.post();
+      }
+    }
+	  ug.saveChanges();
+	}
 }

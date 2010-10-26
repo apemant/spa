@@ -567,6 +567,7 @@ LOKK;char;1;;N;LOKK;*
 AKTIV;char;1;;D;Aktivan;6
 CUGOVOR;char;13;pkey;;Oznaka;6
 CPAR;int;6;;;Partner;5
+NAZPAR;char;200;;;Naziv partnera;30
 PJ;int;6;;;Poslovna jedinica;4
 ULOGA;char;1;;;ULOGA;3
 DATUGOVOR;date;;;;Datum ugovora;10
