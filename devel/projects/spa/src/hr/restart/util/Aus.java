@@ -33,15 +33,7 @@ import hr.restart.swing.raFieldMask;
 import hr.restart.swing.raInhumanNumberMask;
 import hr.restart.zapod.OrgStr;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-import java.awt.RenderingHints;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.lang.reflect.Array;
@@ -1240,6 +1232,12 @@ public class Aus {
         fontSize(size, (JPanel) cont.getComponent(i));
       else cont.getComponent(i).setFont(
           cont.getComponent(i).getFont().deriveFont((float) size));
+  }
+  
+  public static Color halfTone(Color cFrom, Color cTo, float factor) {
+    return new Color((int) (cFrom.getRed() * (1 - factor) + cTo.getRed() * factor),
+                     (int) (cFrom.getGreen() * (1 - factor) + cTo.getGreen() * factor),
+                     (int) (cFrom.getBlue() * (1 - factor) + cTo.getBlue() * factor));
   }
     
   public static String leg(int cond, String less, String eq, String greater) {
