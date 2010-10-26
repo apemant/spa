@@ -522,6 +522,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repDOS5", "DOS", "D", ""},
       {"hr.restart.robno.repDOS6", "DOS", "D", ""},
       {"hr.restart.robno.repDOS7", "DOS", "D", ""},
+      {"hr.restart.robno.repDOS8", "DOS", "D", ""},
       {"hr.restart.robno.repDOSGetro", "DOS", "D", ""},
       {"hr.restart.robno.repNarDob", "NDO", "D", ""},
       {"hr.restart.robno.repNarPop", "NDO", "D", ""},
