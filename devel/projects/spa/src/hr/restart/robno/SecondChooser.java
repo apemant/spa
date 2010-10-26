@@ -310,6 +310,13 @@ public class SecondChooser extends JraDialog {
 			rIT.getMasterSet().setInt("PJ", ZaglavljeSet.getInt("PJ"));
 		}
         
+		if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("NKU") &&
+		    rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("DOS")) {
+		  rIT.getMasterSet().setString("BRNARIZ", ZaglavljeSet.getString("BRNARIZ"));
+          if (!ZaglavljeSet.isNull("DATNARIZ"))
+            rIT.getMasterSet().setTimestamp("DATNARIZ", ZaglavljeSet.getTimestamp("DATNARIZ"));
+		}
+		
         if ((ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS")
         		|| ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("OTP"))
             && (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC") 
@@ -1291,6 +1298,20 @@ System.out.println(StavkeSet.getInt("CARt"));
 			rIT.getDetailSet().setString("STATUS", "P");
 		}
 		// HARDKOD zasad
+		
+		if (rIT.what_kind_of_dokument.equalsIgnoreCase("DOS") &&
+		    StavkeSet.getString("VRDOK").equalsIgnoreCase("NKU")) {
+		  rIT.getDetailSet().setBigDecimal("KOL2",
+              StavkeSet.getBigDecimal("KOL"));
+		  if (rIT.getDetailSet().getBigDecimal("KOL1").signum() == 0) {
+	          // dod kol = 0
+	          lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", 
+	              Integer.toString(rIT.getDetailSet().getInt("CART")));
+	          if (dm.getArtikli().getBigDecimal("BRJED").signum() > 0)
+	            rIT.getDetailSet().setBigDecimal("KOL1", rIT.getDetailSet().getBigDecimal("KOL")
+	                .divide(dm.getArtikli().getBigDecimal("BRJED"), 3, BigDecimal.ROUND_HALF_UP));
+	        }
+		}
 
 		if ((rIT.what_kind_of_dokument.equalsIgnoreCase("RAC") 
             || rIT.what_kind_of_dokument.equalsIgnoreCase("GRN"))
