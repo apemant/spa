@@ -1,6 +1,5 @@
 package hr.restart.help;
 
-import hr.restart.raToolBar;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
@@ -70,7 +69,6 @@ public class MsgDispatcher implements ActionListener {
   public void actionPerformed(ActionEvent a) {
     createStatements();
     if (con == null) return;
-    System.out.println("checking " + raUser.getInstance().getUser());
     try {
       check.setString(1, raUser.getInstance().getUser());
       ResultSet rs = check.executeQuery();
