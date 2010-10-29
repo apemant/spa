@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.text.JTextComponent;
 
+import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 /**
  *
@@ -72,6 +73,16 @@ public abstract class raTableModifier {
   
   public abstract boolean doModify();
   public abstract void modify();
+  
+  protected boolean isColumn(String col) {
+    if (table instanceof JraTable2) {
+      JraTable2 tab = (JraTable2) getTable();
+      Column c = tab.getDataSetColumn(column);
+      return (c != null && c.getColumnName().equalsIgnoreCase(col));
+    }
+    return false;
+  }
+  
   protected void setValues(JTable v_table,Object v_value,boolean v_selected,boolean v_focus,
         int v_row,int v_column, Component v_rendcom) {
     table = v_table;
