@@ -5,14 +5,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 
 import com.borland.dx.dataset.NavigationEvent;
+import com.borland.dx.dataset.Variant;
 import com.borland.jbcl.layout.XYLayout;
 
 import hr.restart.baza.Mesg;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraScrollPane;
+import hr.restart.swing.JraTable2;
+import hr.restart.swing.raTableModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.raImages;
@@ -116,8 +120,10 @@ public class frmMessages extends raMatPodaci {
     msg.setEditable(false);
 
     setRaQueryDataSet(Mesg.getDataModule().getFilteredDataSet("1=0"));
-    getRaQueryDataSet().getColumn("DATUM").setDisplayMask("dd-MM-yyyy  'u' hh:mm:ss");
-    getRaQueryDataSet().getColumn("DATUM").setWidth(20);
+    getRaQueryDataSet().getColumn("DATUM").setDisplayMask("dd-MM-yyyy  'u' HH:mm:ss");
+    getRaQueryDataSet().getColumn("DATUM").setWidth(24);
+    getRaQueryDataSet().getColumn("SRC").setWidth(10);
+    getRaQueryDataSet().getColumn("DEST").setWidth(10);
     
     removeRnvCopyCurr();
     getNavBar().removeStandardOptions(new int[] {raNavBar.ACTION_ADD, raNavBar.ACTION_DELETE, 
@@ -126,9 +132,23 @@ public class frmMessages extends raMatPodaci {
     addOption(rnvRead, 0, true);
     addOption(rnvReadAll, 1, true);
 
-    setVisibleCols(new int[] {0,1,2,3,4});
-    vp.setPreferredSize(new Dimension(600, 250));
+    setVisibleCols(new int[] {1,3,4});
+    getJpTableView().getMpTable().setPreferredScrollableViewportSize(new Dimension(500, 150));
+    vp.setPreferredSize(new Dimension(500, 200));
     vp.setViewportView(msg);
     jpDetailView.add(vp);
+    
+    getJpTableView().addTableModifier(new raTableModifier() {
+      Variant v = new Variant();
+      public boolean doModify() {
+        return isColumn("MTEXT");
+      }
+      public void modify() {
+        ((JraTable2) getTable()).getDataSet().getVariant("MTEXT", getRow(), v);
+        String text = v.getString().trim();
+        int nl = text.indexOf('\n');
+        if (nl > 0) setComponentText(text.substring(0, nl));
+      }
+    });
   }
 }
