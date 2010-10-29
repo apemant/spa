@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.help;
 
+import hr.restart.raToolBar;
 import hr.restart.start;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraFrame;
@@ -24,7 +25,9 @@ import hr.restart.util.Aus;
 import hr.restart.util.IntParam;
 import hr.restart.util.Util;
 import hr.restart.util.raImages;
+import hr.restart.util.raLoader;
 import hr.restart.util.raScreenHandler;
+import hr.restart.util.startFrame;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
@@ -116,13 +119,14 @@ public class raUserDialog extends JraFrame {
     jMes.setBackground(Aus.halfTone(jMes.getBackground(), Color.red, 0.25f));
     jMes.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        
+        startFrame.getStartFrame().showFrame("hr.restart.help.frmMessages", "Poruke");
       }
     });
   }
   
   JraButton jMes = new JraButton();
-  public void updateMessageButton() {
+  
+  public void updateMessageButton(final boolean refresh) {
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         int num = MsgDispatcher.getUnread();
@@ -138,6 +142,13 @@ public class raUserDialog extends JraFrame {
           ((JPanel) getContentPane()).revalidate();
         }
         getContentPane().repaint();
+        frmMessages mes = frmMessages.getInstance();
+        if (refresh && mes != null && mes.isShowing()) {
+        	mes.getRaQueryDataSet().refresh();
+        	mes.getRaQueryDataSet().last();
+        	mes.jeprazno();
+        	mes.getJpTableView().fireTableDataChanged();
+        }
       }
     });
   }
