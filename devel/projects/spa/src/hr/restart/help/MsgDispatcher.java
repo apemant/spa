@@ -4,6 +4,8 @@ import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
+import hr.restart.util.Util;
+import hr.restart.util.Valid;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,9 +24,6 @@ public class MsgDispatcher implements ActionListener {
   
   Connection con;
   PreparedStatement check;
-  PreparedStatement update;
-  PreparedStatement insert;
-  PreparedStatement count;
   
   int unread = 0;
   
@@ -57,9 +56,6 @@ public class MsgDispatcher implements ActionListener {
       if (con != null && !con.isClosed()) return;
       con = dM.getTempConnection();
       check = con.prepareStatement("SELECT param FROM useri WHERE cuser = ? and param = 'NEW'");
-      update = con.prepareStatement("UPDATE useri SET param = ? WHERE cuser = ?");
-      insert = con.prepareStatement("INSERT INTO mesg(id, src, dest, datum, mtext) VALUES (?, ?, ?, ?, ?)");
-      count = con.prepareStatement("SELECT count(*) FROM mesg WHERE nova='D' AND dest = ?");
     } catch (SQLException e) {
       con = null;
       e.printStackTrace();
@@ -81,30 +77,35 @@ public class MsgDispatcher implements ActionListener {
   
   public static boolean send(String to, String msg) {
     if (inst == null) return false;   
-    return inst.send(raUser.getInstance().getUser(), to, msg);
+    return inst.sendImpl(raUser.getInstance().getUser(), to, msg);
   }
   
-  public static boolean sendSys(String to, String msg) {
+  public static boolean send(String from, String to, String msg) {
     if (inst == null) return false;
-    return inst.send("SYSTEM", to, msg);
+    return inst.sendImpl(from, to, msg);
+  }
+  
+  public static void refresh() {
+  	Valid.getValid().execSQL("SELECT COUNT(*) FROM mesg WHERE dest='" +raUser.getInstance().getUser()+"' AND nova='D'");
+  	inst.unread = Valid.getValid().getSetCount(Valid.getValid().RezSet, 0);
+     
+    raUserDialog.getInstance().updateMessageButton(false);
+  	
   }
   
   int serial = 0;
-  private boolean send(String from, String to, String msg) {
-    createStatements();
-    if (con == null) return false;
+  private boolean sendImpl(String from, String to, String msg) {
     if (++serial >= 1000) serial = 0;
-    try {  
+    try {
+    	PreparedStatement insert = dM.getDatabaseConnection().prepareStatement(
+    			"INSERT INTO mesg(id, src, dest, datum, mtext) VALUES (?, ?, ?, ?, ?)");
       insert.setString(1, from+serial+":"+Aus.timeToString());
       insert.setString(2, from);
       insert.setString(3, to);
       insert.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
       insert.setString(5, msg);
       boolean ret = insert.executeUpdate() > 0;
-      
-      update.setString(1, "NEW");
-      update.setString(2, raUser.getInstance().getUser());
-      update.executeUpdate();
+     	Valid.getValid().runSQL("UPDATE useri SET param='NEW' WHERE cuser='" +to+"'");
       return ret;
     } catch (SQLException e) {
       e.printStackTrace();
@@ -113,24 +114,12 @@ public class MsgDispatcher implements ActionListener {
   }
     
   void checkMsg() {
-    createStatements();
-    if (con == null) return;
     System.out.println("Updating");
-    try {
-      update.setString(1, "");
-      update.setString(2, raUser.getInstance().getUser());
-      System.out.println("Updated " + update.executeUpdate());
-      
-      unread = 0;
-      count.setString(1, raUser.getInstance().getUser());
-      ResultSet rs = count.executeQuery();
-      if (rs.next()) 
-        unread = rs.getInt(1);
-      rs.close();
-      
-      raUserDialog.getInstance().updateMessageButton();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+   	Valid.getValid().runSQL("UPDATE useri SET param='' WHERE cuser='" +raUser.getInstance().getUser()+"'");
+
+   	Valid.getValid().execSQL("SELECT COUNT(*) FROM mesg WHERE dest='" +raUser.getInstance().getUser()+"' AND nova='D'");
+  	inst.unread = Valid.getValid().getSetCount(Valid.getValid().RezSet, 0);
+     
+    raUserDialog.getInstance().updateMessageButton(true);
   }
 }
