@@ -52,6 +52,7 @@ import org.w3c.tools.codec.Base64FormatException;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.MetaDataUpdate;
+import com.borland.dx.dataset.RowFilterListener;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.Load;
@@ -534,6 +535,8 @@ public abstract class KreirDrop {
 //    hr.restart.util.
 //    if (orig.toLowerCase().indexOf("where"))
     filtered.close();
+    RowFilterListener filt = filtered.getRowFilterListener();
+    if (filt != null) filtered.removeRowFilterListener(filt);
     if (filtered.getLocale() == null) filtered.setLocale(Aus.hr);
     filtered.setQuery(new QueryDescriptor(getQueryDataSet().getDatabase(), qs, null, true, Load.ALL));
 //    filtered.setQuery(new QueryDescriptor(dM.getDataModule().getDatabase1(), getQueryDataSet().getOriginalQueryString()+wh, null, true, Load.ALL));
