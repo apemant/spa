@@ -1287,7 +1287,7 @@ CKUPAC;int;6;;;Kupac
 $Mesg
 ID;char;30;pkey;;Id;*
 NOVA;char;1;;D;Nova
-SRC;char;15;;;From
-DEST;char;15;idx;;To
+SRC;char;15;;;Šalje
+DEST;char;15;idx;;Prima
 DATUM;date;;;;Poslano
 MTEXT;char;2000;;;Poruka
