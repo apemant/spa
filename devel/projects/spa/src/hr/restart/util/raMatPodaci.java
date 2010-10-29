@@ -186,7 +186,7 @@ sysoutTEST ST = new sysoutTEST(false);
     }
   };
 
-  JraPanel jpDetailView = new JraPanel();
+  public JraPanel jpDetailView = new JraPanel();
 
   JraSplitPane jSplitPaneMP = new JraSplitPane(JSplitPane.VERTICAL_SPLIT);
 
