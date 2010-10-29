@@ -213,6 +213,7 @@ public class raEDI {
     	}
   		doc = importPanteonImpl(dir, report);
   	} catch (RuntimeException re) {
+  	  if (!report) return;
   	  JOptionPane.showMessageDialog(null, re.getMessage(), "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
   	} finally {
   		sw.delete();
@@ -380,7 +381,6 @@ public class raEDI {
   
   public static void main(String[] args) {
   	
-  	
   	new Timer(15*60*1000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String path = frmParam.getParam("robno", "panteonPath", "/home/abf/tmp/hr/test",
@@ -388,6 +388,13 @@ public class raEDI {
 				raEDI.importPanteon(new File(path), false);
 			}
 		}).start();
+  	
+  	try {
+      Thread.currentThread().join();
+    } catch (InterruptedException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
   	
 	}
 }
