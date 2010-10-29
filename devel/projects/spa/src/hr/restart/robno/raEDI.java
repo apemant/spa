@@ -6,14 +6,18 @@ import hr.restart.baza.VTCartPart;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
+import hr.restart.help.MsgDispatcher;
 import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raTransaction;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -23,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -215,8 +220,14 @@ public class raEDI {
   	if (report)
   	  Util.getUtil().showDocs(last.getString("CSKL"), 
         "", "NKU", last.getInt("BRDOK"), last.getString("GOD"));
-  	else if (doc > 0) 
-  	  JOptionPane.showMessageDialog(null, "Dohvaæeno " + doc + " narudžbi putem EDI.", "Sinkronizacija", JOptionPane.INFORMATION_MESSAGE);
+  	else if (doc > 0) {
+  		String users = frmParam.getParam("robno", "ediNotify", "", "Popis korisnika za notifikaciju EDI");
+  		String[] us = new VarStr(users).split();
+  		for (int i = 0; i < us.length; i++) {
+  			MsgDispatcher.send("EDI", us[i], "Dohvaæeno " + doc + " narudžbi putem EDI.");
+  		}
+  	}
+  	  
   }
   
   private static int importPanteonImpl(File dir, boolean report) {
@@ -366,4 +377,17 @@ public class raEDI {
   	cal.set(cal.MILLISECOND, 0);
   	return new Timestamp(cal.getTime().getTime());
   }  
+  
+  public static void main(String[] args) {
+  	
+  	
+  	new Timer(15*60*1000, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String path = frmParam.getParam("robno", "panteonPath", "/home/abf/tmp/hr/test",
+		    	"Putanja mape za EDI preko Panteona");
+				raEDI.importPanteon(new File(path), false);
+			}
+		}).start();
+  	
+	}
 }
