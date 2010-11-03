@@ -19,10 +19,21 @@ package hr.restart.robno;
 
 import hr.restart.util.reports.raDOSvvDetail;
 import hr.restart.util.reports.raDOSvvSH;
+import hr.restart.util.reports.raElixirPropertyValues;
+import hr.restart.util.reports.raReportElement;
 import hr.restart.util.reports.raReportSection;
 
 public class repDOS8Template extends repDOSTemplate {
 
+  public raReportElement TextKOLs;
+  private String[] TextKOLsProps = new String[] {"=(dsum \"KOL\")", "", "", 
+     "Number|false|1|309|3|3|true|3|false", "", "", "", "", "8660", "80", "1080", "220", "", "", "", 
+     "", "", "", "Lucida Bright", "8", "", "", "", "Right", "No"};
+  public raReportElement TextKOL1s;
+  private String[] TextKOL1sProps = new String[] {"=(dsum \"KOL1\")", "", "", 
+     "Number|false|1|309|3|3|true|3|false", "", "", "", "", "7760", "80", "880", "220", "", "", "", 
+     "", "", "", "Lucida Bright", "8", "", "", "", "Right", "No"};
+  
   public raReportSection createSectionHeader1() {
     return new raDOSvvSH(this);
   }
@@ -32,6 +43,15 @@ public class repDOS8Template extends repDOSTemplate {
 
   }
   
-  public void modifyThis() {}
+  public raReportSection createSectionFooter0() {
+    raReportSection sect = super.createSectionFooter0();
 
+    TextKOLs = sect.addModel(ep.TEXT, TextKOLsProps);
+    TextKOL1s = sect.addModel(ep.TEXT, TextKOL1sProps);
+    TextNAPOMENAOPIS.defaultAlterer().setTop(500);
+
+    return sect;
+  }
+    
+  public void modifyThis() {}
 }
