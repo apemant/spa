@@ -17,15 +17,12 @@
 ****************************************************************************/
 package hr.restart.help;
 
-import hr.restart.raToolBar;
 import hr.restart.start;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraFrame;
 import hr.restart.util.Aus;
 import hr.restart.util.IntParam;
-import hr.restart.util.Util;
 import hr.restart.util.raImages;
-import hr.restart.util.raLoader;
 import hr.restart.util.raScreenHandler;
 import hr.restart.util.startFrame;
 
