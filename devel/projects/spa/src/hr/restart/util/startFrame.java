@@ -19,6 +19,7 @@ package hr.restart.util;
 
 import hr.restart.start;
 import hr.restart.help.raLiteBrowser;
+import hr.restart.help.raSendMessage;
 import hr.restart.swing.JraFrame;
 import hr.restart.swing.raCalculator;
 import hr.restart.util.mail.LogMailer;
@@ -389,6 +390,18 @@ public class startFrame extends JraFrame implements Cloneable {
         new LogMailer().sendMailUI(null);
       }
     });
+    JMenuItem jmiQuickMsg = new JMenuItem("Pošalji poruku");
+    jmiQuickMsg.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        raSendMessage.show(null);
+      }
+    });
+    JMenuItem jmiShowMsg = new JMenuItem("Primljene poruke");
+    jmiShowMsg.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        startFrame.getStartFrame().showFrame("hr.restart.help.frmMessages", "Poruke");
+      }
+    });
     JMenuItem jmiStartFrCalc = new JMenuItem("Kalkulator");
     jmiStartFrCalc.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -525,6 +538,9 @@ public class startFrame extends JraFrame implements Cloneable {
     jmStartFrHelp.add(jmiStartFrHprHelp);
     jmStartFrHelp.add(jmiStartFrHlpHelp);
     jmStartFrHelp.add(jmiStartFrHlpMailLog);
+    jmStartFrHelp.addSeparator();
+    jmStartFrHelp.add(jmiQuickMsg);
+    jmStartFrHelp.add(jmiShowMsg);
     jmStartFrHelp.addSeparator();
     jmStartFrHelp.add(jmiStartFrCalc);
     jmStartFrHelp.addSeparator();
