@@ -4,7 +4,6 @@ import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
-import hr.restart.util.Util;
 import hr.restart.util.Valid;
 
 import java.awt.event.ActionEvent;
@@ -38,7 +37,7 @@ public class MsgDispatcher implements ActionListener {
   
   protected MsgDispatcher() {
     try {
-      String mt = frmParam.getParam("sisfun", "msgTimer", "10000",
+      String mt = frmParam.getParam("sisfun", "msgTimer", "2000",
           "Interval provjera poruka u milisekundama", true);
       int it = Aus.getNumber(mt);
       if (it <= 0) return;
