@@ -41,6 +41,8 @@ public class repOTPss extends repOTP {
         ds.getString("VRDOK"), ds.getString("CSKL"), ds.getInt("CPAR"), ds.getInt("CART"));
     if (tmpCjenik != null && tmpCjenik.rowCount() > 0)
       return tmpCjenik.getBigDecimal("VC");
+    if (lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", getSHIFRA()))
+      return dm.getArtikli().getBigDecimal("VC");
     return null;
   }
   
