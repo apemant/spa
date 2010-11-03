@@ -5,14 +5,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JEditorPane;
-import javax.swing.JLabel;
 
 import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.Variant;
 import com.borland.jbcl.layout.XYLayout;
 
 import hr.restart.baza.Mesg;
-import hr.restart.baza.dM;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTable2;
@@ -39,6 +37,11 @@ public class frmMessages extends raMatPodaci {
     }
  };
  
+   raNavAction rnvSend = new raNavAction("Pošalji", raImages.IMGCOMPOSEMAIL, KeyEvent.VK_F2) {
+     public void actionPerformed(ActionEvent e) {
+       send();
+     }
+   };
  	raNavAction rnvRead = new raNavAction("Oznaèi", raImages.IMGDELETE, KeyEvent.VK_F3) {
  	  public void actionPerformed(ActionEvent e) {
  	    mark();
@@ -83,6 +86,10 @@ public class frmMessages extends raMatPodaci {
   	return false;
   }
   
+  void send() {
+    raSendMessage.show(this);
+  }
+  
   void mark() {
   	if (getRaQueryDataSet().rowCount() == 0) return;
   	if (!getRaQueryDataSet().getString("NOVA").equals("D")) return;
@@ -93,6 +100,7 @@ public class frmMessages extends raMatPodaci {
   	getJpTableView().fireTableDataChanged();
   	MsgDispatcher.refresh();
   	jeprazno();
+  	if (getRaQueryDataSet().rowCount() == 0) msg.setText("");
   }
   
   void markAll() {
@@ -129,8 +137,9 @@ public class frmMessages extends raMatPodaci {
     getNavBar().removeStandardOptions(new int[] {raNavBar.ACTION_ADD, raNavBar.ACTION_DELETE, 
     		raNavBar.ACTION_UPDATE, raNavBar.ACTION_PRINT, raNavBar.ACTION_TOGGLE_TABLE});
     
-    addOption(rnvRead, 0, true);
-    addOption(rnvReadAll, 1, true);
+    addOption(rnvSend, 0, false);
+    addOption(rnvRead, 1, true);
+    addOption(rnvReadAll, 2, true);
 
     setVisibleCols(new int[] {1,3,4});
     getJpTableView().getMpTable().setPreferredScrollableViewportSize(new Dimension(500, 150));
