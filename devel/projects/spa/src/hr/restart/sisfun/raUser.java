@@ -169,7 +169,7 @@ public class raUser {
       unlockRow("Useri", new String[] {"CUSER"}, new String[] {user});
   }
 
-  void setUser(String user) {
+  public void setUser(String user) {
     m_user = user;
     if (user.equals("")) return;
     if (user.equals("root")) {
