@@ -862,8 +862,8 @@ ST.prn(radninal);
 						}
 					}
 				}
-				qdsprij.deleteRow();
 			}
+			qdsprij.deleteAllRows();
 			raTransaction.saveChanges(qdsprij);
 		}
 	}
