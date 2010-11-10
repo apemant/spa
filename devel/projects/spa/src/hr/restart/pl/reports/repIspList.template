@@ -1821,6 +1821,29 @@
                <Property Name="Lock">No</Property>
                <Property Name="Auto Wrap">Yes</Property>
           </Model>
+          <Model Name="LabelOBrazacOP">
+               <Property Name="Model Name">Label</Property>
+               <Property Name="Name">LabelObrazacOP</Property>
+               <Property Name="Caption">Obrazac OP</Property>
+               <Property Name="Visible">Yes</Property>
+               <Property Name="Left">9300</Property>
+               <Property Name="Top">0</Property>
+               <Property Name="Width">1400</Property>
+               <Property Name="Height">260</Property>
+               <Property Name="Back Style">Transparent</Property>
+               <Property Name="Back Color">White</Property>
+               <Property Name="Border Style">Transparent</Property>
+               <Property Name="Border Color">Black</Property>
+               <Property Name="Border Width">1 pt</Property>
+               <Property Name="Font Color">Black</Property>
+               <Property Name="Font Name">Lucida Bright</Property>
+               <Property Name="Font Size">10</Property>
+               <Property Name="Font Weight">Plain</Property>
+               <Property Name="Font Italic">No</Property>
+               <Property Name="Font Underline">No</Property>
+               <Property Name="Text Align">Right</Property>
+               <Property Name="Lock">No</Property>
+          </Model>
           <Model Name="Text272">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text272</Property>
@@ -2807,7 +2830,7 @@ ISPLATNI LISTIĆ</Property>
           <Model Name="Label277">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label277</Property>
-               <Property Name="Caption">SATI</Property>
+               <Property Name="Caption">OSTVARENI SATI</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">3920</Property>
                <Property Name="Top">2020</Property>
@@ -2820,7 +2843,7 @@ ISPLATNI LISTIĆ</Property>
                <Property Name="Border Width">1 pt</Property>
                <Property Name="Font Color">Black</Property>
                <Property Name="Font Name">Lucida Bright</Property>
-               <Property Name="Font Size">10</Property>
+               <Property Name="Font Size">7</Property>
                <Property Name="Font Weight">Plain</Property>
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
@@ -2860,7 +2883,7 @@ ISPLATNI LISTIĆ</Property>
           <Model Name="Label278">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label278</Property>
-               <Property Name="Caption">Datum</Property>
+               <Property Name="Caption">Datum isplate</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">7640</Property>
                <Property Name="Top">980</Property>

@@ -19,6 +19,7 @@ package hr.restart.pl;
 
 import hr.restart.baza.Radnici;
 import hr.restart.baza.dM;
+import hr.restart.robno.raDateUtil;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
@@ -33,6 +34,8 @@ import hr.restart.zapod.repNaljepnice;
 
 import java.awt.BorderLayout;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import javax.swing.JLabel;
@@ -681,7 +684,7 @@ System.out.println("KreditInfo za "+ds);
       il+= "\nUgovoreni bruto: "+format(getRadnicipl(), "BRUTOSN");
     }
     if (infolispl.indexOf("F")!=-1) {
-      il+= "\nFond sati "+fondsati;
+      il+= "\nPlanirani redovni fond sati rada danju: "+fondsati;
     }
     if (infolispl.indexOf("X")!=-1) {
       String defValue = "Napomena: Podaci iz èl. 3. st. 1. Pravilnika o sadržaju obraèuna plaæe, nadoknade plaæe ili otpremnine " +
@@ -773,17 +776,26 @@ System.out.println("KreditInfo za "+ds);
   }
 
   public String getObracun(){
-    String mjOd;
-    if (fieldSet.getShort("MJESECOD") < 10) mjOd = "0"+fieldSet.getShort("MJESECOD");
-    else mjOd = ""+fieldSet.getShort("MJESECOD");
-    return  "Obra\u010Dun pla\u0107e za ".concat(mjOd).concat(". mjesec ").concat(""+fieldSet.getShort("GODINAOD")+".").concat(" (rbr. "+fieldSet.getShort("RBROD")+")");
+//    String mjOd;
+//    if (fieldSet.getShort("MJESECOD") < 10) mjOd = "0"+fieldSet.getShort("MJESECOD");
+//    else mjOd = ""+fieldSet.getShort("MJESECOD");
+//    return  "Obra\u010Dun pla\u0107e za ".concat(mjOd).concat(". mjesec ").concat(""+fieldSet.getShort("GODINAOD")+".").concat(" (rbr. "+fieldSet.getShort("RBROD")+")");
+    return periodPlace(fieldSet.getShort("GODINAOD"), fieldSet.getShort("MJESECOD"));
   }
 
   public String getObracun(short g, short m, short r){
-    String mjOd;
-    if (m < (short)10) mjOd = "0"+m;
-    else mjOd = ""+m;
-    return  "Obra\u010Dun pla\u0107e za ".concat(mjOd).concat(". mjesec ").concat(""+g+".").concat(" (rbr. "+r+")");
+//    String mjOd;
+//    if (m < (short)10) mjOd = "0"+m;
+//    else mjOd = ""+m;
+//    return  "Obra\u010Dun pla\u0107e za ".concat(mjOd).concat(". mjesec ").concat(""+g+".").concat(" (rbr. "+r+")");
+    return periodPlace(g, m);
+  }
+  private String periodPlace(short g, short m) {
+    String ret = "Obra\u010Dun pla\u0107e za ";
+    Calendar c = Calendar.getInstance();
+    c.set(g, m-1, 1);
+    return ret + raDateUtil.getraDateUtil().dataFormatter(Util.getUtil().getFirstDayOfMonth(new Timestamp(c.getTimeInMillis())))+" - "+
+    raDateUtil.getraDateUtil().dataFormatter(Util.getUtil().getLastDayOfMonth(new Timestamp(c.getTimeInMillis())));
   }
 
   QueryDataSet obracunskaLista;
