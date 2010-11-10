@@ -381,13 +381,15 @@ public class raEDI {
   
   public static void main(String[] args) {
   	
-  	new Timer(15*60*1000, new ActionListener() {
+  	Timer t = new Timer(15*1000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String path = frmParam.getParam("robno", "panteonPath", "/home/abf/tmp/hr/test",
 		    	"Putanja mape za EDI preko Panteona");
 				raEDI.importPanteon(new File(path), false);
 			}
-		}).start();
+		});
+  	t.setDelay(15*60*1000);
+  	t.start();
   	
   	try {
       Thread.currentThread().join();
