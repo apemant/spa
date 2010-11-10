@@ -42,6 +42,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 
 public class raUserDialog extends JraFrame {
@@ -113,15 +114,38 @@ public class raUserDialog extends JraFrame {
     		getUserPanel().getTaskTree().initFromTree(getUserPanel().getMenuTree());
     	}
     });*/
-    jMes.setBackground(Aus.halfTone(jMes.getBackground(), Color.red, 0.25f));
+    mesNorm = jMes.getBackground();
+    mesRed = Aus.halfTone(mesNorm, Color.red, 0.3f); 
+    jMes.setBackground(Aus.halfTone(jMes.getBackground(), Color.red, 0.3f));
     jMes.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        stopMessageFlash();
         startFrame.getStartFrame().showFrame("hr.restart.help.frmMessages", "Poruke");
       }
     });
   }
   
   JraButton jMes = new JraButton();
+  Color mesRed, mesNorm; 
+  Timer flasher = new Timer(1500, new ActionListener() {
+    boolean on;
+    public void actionPerformed(ActionEvent e) {
+      jMes.setBackground(on ? mesRed : mesNorm);
+      on = !on;
+      flasher.setDelay(on ? 1500 : 300);
+    }
+  });
+  
+  public void stopMessageFlash() {
+    flasher.stop();
+    jMes.setBackground(mesNorm);
+  }
+  
+  public void startMessageFlash() {
+    jMes.setBackground(mesRed);
+    flasher.setDelay(1500);
+    flasher.start();
+  }
   
   public void updateMessageButton(final boolean refresh) {
     SwingUtilities.invokeLater(new Runnable() {
@@ -129,13 +153,15 @@ public class raUserDialog extends JraFrame {
         int num = MsgDispatcher.getUnread();
         boolean memb = getContentPane().isAncestorOf(jMes);
         if (memb && num == 0) {
+          stopMessageFlash();
           getContentPane().remove(jMes);
           ((JPanel) getContentPane()).revalidate();
         }
         if (num > 0) jMes.setText(Aus.getNum(num, 
                "nova poruka", "nove poruke", "novih poruka"));
         if (!memb && num > 0) {
-          getContentPane().add(jMes, BorderLayout.NORTH);      
+          startMessageFlash();
+          getContentPane().add(jMes, BorderLayout.NORTH);
           ((JPanel) getContentPane()).revalidate();
         }
         getContentPane().repaint();
@@ -145,7 +171,7 @@ public class raUserDialog extends JraFrame {
         	mes.getRaQueryDataSet().last();
         	mes.jeprazno();
         	mes.getJpTableView().fireTableDataChanged();
-        }
+        } else if (num > 0) startMessageFlash();
       }
     });
   }
