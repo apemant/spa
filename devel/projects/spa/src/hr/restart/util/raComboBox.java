@@ -133,6 +133,10 @@ System.out.println("actionPerformed");
     return raItems[getSelectedIndex()][1];
   }
   
+  public String getDataValue(int row) {
+    return raItems[row][1];
+  }
+  
   public void setDataValue(String val) {
     for (int i = 0; i < getItemCount(); i++)
       if (raItems[i][1].equalsIgnoreCase(val))
