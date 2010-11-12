@@ -26,16 +26,17 @@ public class MsgDispatcher implements ActionListener {
   
   int unread = 0;
   
-  public static void install() {
-    if (inst == null) inst = new MsgDispatcher();
-    if (inst != null) inst.checkMsg();
+  public static void install(boolean receive) {
+    if (inst == null) inst = new MsgDispatcher(receive);
+    if (receive && inst != null) inst.checkMsg();
   }
   
   public static int getUnread() {
     return inst.unread;
   }
   
-  protected MsgDispatcher() {
+  protected MsgDispatcher(boolean receive) {
+    if (!receive) return;
     try {
       String mt = frmParam.getParam("sisfun", "msgTimer", "2000",
           "Interval provjera poruka u milisekundama", true);
