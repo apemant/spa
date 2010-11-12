@@ -72,7 +72,7 @@ public class raUpdateCRM {
       ds = new StorageDataSet();
       ds.setColumns(new Column[] {
         dM.createStringColumn("UUID", 100),
-        dM.createStringColumn("MB", "Matièni broj", 40),
+        dM.createStringColumn("MB", "OIB", 40),
         dM.createStringColumn("NAME", "Ime klijenta", 150),
         dM.createStringColumn("CITY", "Grad", 40),
         dM.createStringColumn("STATUS", "Status", 1)
@@ -148,7 +148,7 @@ public class raUpdateCRM {
     if (!allowedSklad(cskl)) return;
     
     if (lookupData.getlookupData().raLocate(dM.getDataModule().getPartneri(), "CPAR", Integer.toString(cpar))) {
-      String mb = dM.getDataModule().getPartneri().getString("MB");
+      String mb = dM.getDataModule().getPartneri().getString("OIB");
       
       Connection crc = dM.getDataModule().getCRMConnection();
       if (crc == null) {
@@ -169,7 +169,7 @@ public class raUpdateCRM {
         ds.first();
         if (ds.rowCount() > 1) {
           if (JOptionPane.showConfirmDialog(null, new raMultiLineMessage("Postoji više " +
-                "klijenata s istim matiènim brojem! Želite li ruèno izabrati klijenta " +
+                "klijenata s istim OIB-om! Želite li ruèno izabrati klijenta " +
                 "kojem se status treba prebaciti na A-kupac?"), "CRM", 
                 JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
           String[] result = lookupData.getlookupData().lookUp(new JFrame(), ds,
@@ -181,7 +181,7 @@ public class raUpdateCRM {
 
         String auto = frmParam.getParam("sisfun", "crmRacAuto", "D", 
             "Automatsko prebacivanja flaga kupaca u CRM (D,N)");
-        if ((!auto.equalsIgnoreCase("D") || Partneri.getDataModule().getRowCount(Condition.equal("MB", mb)) > 1) 
+        if ((!auto.equalsIgnoreCase("D") || Partneri.getDataModule().getRowCount(Condition.equal("OIB", mb)) > 1) 
                 && JOptionPane.showConfirmDialog(null, 
             new raMultiLineMessage("Prebaciti klijenta " + mb + " - " + 
                 ds.getString("NAME").trim() + " u CRM-u na status A-kupac?"), "CRM", 
@@ -199,7 +199,7 @@ public class raUpdateCRM {
     if (!allowedSklad(cskl)) return;
     
     if (lookupData.getlookupData().raLocate(dM.getDataModule().getPartneri(), "CPAR", Integer.toString(cpar))) {
-      String mb = dM.getDataModule().getPartneri().getString("MB");
+      String mb = dM.getDataModule().getPartneri().getString("OIB");
       
       Connection crc = dM.getDataModule().getCRMConnection();
       if (crc == null) {
@@ -219,11 +219,11 @@ public class raUpdateCRM {
 
         if (allOk) return;
         
-        int pn = Partneri.getDataModule().getRowCount(Condition.equal("MB", mb));
+        int pn = Partneri.getDataModule().getRowCount(Condition.equal("OIB", mb));
         ds.first();
         if (ds.rowCount() > 1) {
           if (JOptionPane.showConfirmDialog(null, new raMultiLineMessage("Postoji više " +
-                "klijenata s istim matiènim brojem! Želite li ruèno izabrati klijenta " +
+                "klijenata s istim OIB-om! Želite li ruèno izabrati klijenta " +
                 "kojem se status treba prebaciti na E-ponuda?"), "CRM", 
                 JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
           String[] result = lookupData.getlookupData().lookUp(new JFrame(), ds,
@@ -274,7 +274,7 @@ public class raUpdateCRM {
       
       ret = new StorageDataSet();
       ret.setColumns(new Column[] {
-          dM.createStringColumn("MB", "Matièni broj", 40),
+          dM.createStringColumn("MB", "OIB", 40),
           dM.createStringColumn("NAME", "Naziv kupca", 150),
           dM.createStringColumn("CITY", "Grad", 40),
           dM.createStringColumn("OPIS", "Akcija", 100),
@@ -294,7 +294,7 @@ public class raUpdateCRM {
       
       for (src.first(); src.inBounds(); src.next()) {
         int cpar = src.getInt("CPAR");
-        String mb = pc.getData(cpar).getMB();
+        String mb = pc.getData(cpar).getOIB();
         Client c = (Client) mbs.get(mb);
         ret.insertRow(false);
         ret.setString("MB", mb);
@@ -311,10 +311,10 @@ public class raUpdateCRM {
             ret.setString("OLDS", c.seg[c.olds]);
         } else if (c == null) {
           ret.setString("NAME", pc.getNameNotNull(cpar));
-          ret.setString("OPIS", "Greška - nepostojeæi matièni broj");
+          ret.setString("OPIS", "Greška - nepostojeæi OIB");
         } else if (c.same > 1) {
           ret.setString("NAME", pc.getNameNotNull(cpar));
-          ret.setString("OPIS", "Greška - " + c.same + " istih matiènih brojeva");
+          ret.setString("OPIS", "Greška - " + c.same + " istih OIB-a");
         } else {
           ret.setString("NAME", c.name);
           ret.setString("CITY", c.city);
