@@ -243,10 +243,11 @@ public class raTwoTableChooser extends JPanel {
     rightJPTW.setDataSet(rightDataSet);
     leftJPTW.getColumnsBean().rnvRefresh.setEnabled(false);
     leftJPTW.getColumnsBean().setSaveName(getClass().getName()+"-left");
-    leftJPTW.getColumnsBean().eventInit();
+    leftJPTW.getColumnsBean().initialize();
     rightJPTW.getColumnsBean().rnvRefresh.setEnabled(false);
+    rightJPTW.getColumnsBean().setSaveName(getClass().getName()+"-left");
+    rightJPTW.getColumnsBean().initialize();
     rightJPTW.getColumnsBean().setSaveName(getClass().getName()+"-right");
-    rightJPTW.getColumnsBean().eventInit();
     if (keyParent == null) keyParent = getTopLevelAncestor();
     initDefaultKeys();
   }
