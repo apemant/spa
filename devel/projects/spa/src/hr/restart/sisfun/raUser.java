@@ -189,7 +189,7 @@ public class raUser {
 
     dm.getKljucevi().refresh();
     preparePrava();
-    MsgDispatcher.install();
+    MsgDispatcher.install(true);
   }
 
   private String add(String p1, String p2) {
