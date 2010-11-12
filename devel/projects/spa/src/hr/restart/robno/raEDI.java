@@ -213,22 +213,25 @@ public class raEDI {
     	}
   		doc = importPanteonImpl(dir, report);
   	} catch (RuntimeException re) {
+  	  re.printStackTrace();
   	  if (!report) return;
   	  JOptionPane.showMessageDialog(null, re.getMessage(), "Sinkronizacija", JOptionPane.ERROR_MESSAGE);
   	} finally {
   		sw.delete();
   	}
+  	System.out.println("docs: " + doc);
   	if (report)
   	  Util.getUtil().showDocs(last.getString("CSKL"), 
         "", "NKU", last.getInt("BRDOK"), last.getString("GOD"));
   	else if (doc > 0) {
   		String users = frmParam.getParam("robno", "ediNotify", "", "Popis korisnika za notifikaciju EDI");
+  		System.out.println("Users: " + users);
   		String[] us = new VarStr(users).split();
   		for (int i = 0; i < us.length; i++) {
+  		  System.out.println("Sending to " + us[i]);
   			MsgDispatcher.send("EDI", us[i], "Dohvaæeno " + doc + " narudžbi putem EDI.");
   		}
   	}
-  	  
   }
   
   private static int importPanteonImpl(File dir, boolean report) {
@@ -381,6 +384,7 @@ public class raEDI {
   
   public static void main(String[] args) {
   	
+    MsgDispatcher.install(false);
   	Timer t = new Timer(15*1000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String path = frmParam.getParam("robno", "panteonPath", "/home/abf/tmp/hr/test",
@@ -397,6 +401,5 @@ public class raEDI {
       // TODO Auto-generated catch block
       e1.printStackTrace();
     }
-  	
-	}
+  }
 }
