@@ -24,6 +24,7 @@ import hr.restart.util.reports.raIzlazSectionHeaderLines;
 import hr.restart.util.reports.raRPSectionHeader;
 import hr.restart.util.reports.raReportElement;
 import hr.restart.util.reports.raReportSection;
+import hr.restart.util.reports.raSectionHeader0TF;
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -36,10 +37,10 @@ import hr.restart.util.reports.raReportSection;
 public class repNarudzbaTemplate extends repIzlazOrigTemplate {
 
   public raReportSection createSectionHeader0() {
-    raRPSectionHeader sh = new raRPSectionHeader(this);
-    sh.LabelRACUNOTPREMNICA.setDefault(ep.CAPTION, "\nNARUDŽBENICA");
+    raSectionHeader0TF sh = new raSectionHeader0TF(this);
+    sh.LabelR_A_C_U_N.setDefault(ep.CAPTION, "\nNARUDŽBENICA");
 
-    sh.defaultAltererSect().getView(sh.LabelMjesto, sh.TextNAZFRA).
+    sh.defaultAltererSect().getView(sh.LabelMjestoDatum, sh.TextISPORUKA).
         deleteElementsPushDown(sh, new raReportElement[]
         {sh.LabelNarudzba, sh.TextBRNARIZ, sh.TextSgetDATNARIZ});
     sh.LabelObrazac.setDefault(ep.VISIBLE, raElixirPropertyValues.NO);
