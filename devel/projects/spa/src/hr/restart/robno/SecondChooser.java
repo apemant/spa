@@ -1126,7 +1126,7 @@ System.out.println(StavkeSet.getInt("CARt"));
 		this.getContentPane().setLayout(new BorderLayout());
 		this.getContentPane().add(rTTC, BorderLayout.CENTER);
 		this.getContentPane().add(okpanel, BorderLayout.SOUTH);
-		okpanel.registerOKPanelKeys(this);
+		okpanel.registerOKPanelKeys(rTTC);
 	}
 
 	public void initialise() {
