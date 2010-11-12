@@ -34,6 +34,8 @@ import com.borland.jbcl.layout.XYLayout;
 
 public class raOdabirDok extends JraDialog {
 
+  static String lastv = null;
+  static String lasto = null;
   String odabrano = "";
   JPanel panel1 = new JPanel();
   JPanel panel2 = new JPanel();
@@ -50,14 +52,15 @@ public class raOdabirDok extends JraDialog {
   };
   JraComboBox jco ;
   public void jPrekid_action() {
-  	Valid.getValid().execSQL("");
-    setVisible(false);
+  	Valid.getValid().getDataAndClear();
+  	dispose();
   }
 
   public void jBOK_action(){
-    setVisible(false);
+    dispose();
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
+        lasto = odabrano;
 		afterOKPress(odabrano);
 	  }
 	});
@@ -86,6 +89,7 @@ public class raOdabirDok extends JraDialog {
                  getWidth()) / 2,
                  (Toolkit.getDefaultToolkit().getScreenSize().height -
                  getHeight()) / 2);
+        okp.registerOKPanelKeys(this);
       }
       catch(Exception ex) {
         ex.printStackTrace();
@@ -93,37 +97,45 @@ public class raOdabirDok extends JraDialog {
       super.show();
     }
   }
+  
+  String findVrdok(Object opis) {
+    if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("PON"))){
+      return "PON";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("PRD"))){
+      return "PRD";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("NKU"))){
+      return "NKU";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("OTP"))){
+      return "OTP";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("RAC"))){
+      return "RAC";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("RN"))){
+      return "RN";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("IZD"))){
+      return "IZD";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("POS"))){
+      return "POS";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("ROT"))){
+      return "ROT";
+    }else if (opis.equals("Razduženje blagajne")){
+      return "POS";
+    }else if (opis.equals("Raèun")){
+      return "RAC";
+    }else if (opis.equals("Gotovinski raèun")){
+      return "GRN";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("REV"))){
+      return "REV";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("DOS"))){
+      return "DOS";
+    }
+    return null;
+  }
 
   void jbInit() throws Exception {
 
     jco.addItemListener(new java.awt.event.ItemListener(){
       public void itemStateChanged (java.awt.event.ItemEvent i){
-        if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("PON"))){
-          odabrano="PON";
-        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("PRD"))){
-          odabrano="PRD";
-        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("NKU"))){
-          odabrano="NKU";
-        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("OTP"))){
-          odabrano="OTP";
-        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("RAC"))){
-          odabrano="RAC";
-        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("RN"))){
-          odabrano="RN";
-        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("IZD"))){
-          odabrano="IZD";
-        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("POS"))){
-            odabrano="POS";
-        }else if (i.getItem().equals("Razduženje blagajne")){
-          odabrano="POS";
-        }else if (i.getItem().equals("Raèun")){
-          odabrano="RAC";
-        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("REV"))){
-        odabrano="REV";
-        }else if (i.getItem().equals(TypeDoc.getTypeDoc().nazivDokumenta("DOS"))){
-            odabrano="DOS";
-        }
-
+        odabrano = findVrdok(i.getItem());
       }
     });
     panel2.setLayout(xyl);
@@ -147,11 +159,11 @@ public class raOdabirDok extends JraDialog {
        odabrano = "NKU";
     }
     else if (vrsta_dok.equals("OTP")) {
-       zaodabrati = new String[] {"Ra\u010Dun","Narudžba kupca","Pos"};
+       zaodabrati = new String[] {"Ra\u010Dun","Narudžba kupca","Pos", "Raèun - otpremnica"};
        odabrano = "RAC";
     }
     else if (vrsta_dok.equals("IZD")) {
-        zaodabrati = new String[] {"Razduženje blagajne","Raèun"};
+        zaodabrati = new String[] {"Razduženje blagajne","Raèun", "Gotovinski raèun"};
         odabrano = "POS";
      }
     else if (vrsta_dok.equals("PRD")) {
@@ -195,6 +207,13 @@ public class raOdabirDok extends JraDialog {
     } else {
        zaodabrati=new String[] {"ne postoji odabir"};
     }
+     if (vrsta_dok.equals(lastv) && lasto != null)
+       odabrano = lasto;
+     lasto = odabrano;
+     lastv = vrsta_dok;
     jco = new JraComboBox(zaodabrati);
+    for (int i = 0; i < zaodabrati.length; i++)
+      if (odabrano.equals(findVrdok(zaodabrati[i])))
+        jco.setSelectedIndex(i);
   }
 }
