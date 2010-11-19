@@ -79,12 +79,14 @@ public class PartnerCache {
   public static class Data {
     private String naziv;
     private String mb;
+    private String oib;
     private short zup;
     private int pbr;
     private int agent;
     public Data(DataSet ds) {
       naziv = ds.getString("NAZPAR");
       mb = ds.getString("MB");
+      oib = ds.getString("OIB");
       zup = ds.getShort("CZUP");
       pbr = ds.getInt("PBR");
       agent = ds.getInt("CAGENT");
@@ -107,6 +109,10 @@ public class PartnerCache {
     }
     
     public String getMB() {
+      return mb;
+    }
+    
+    public String getOIB() {
       return mb;
     }
   }
