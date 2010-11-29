@@ -1458,7 +1458,7 @@ public class dlgRunReport {
       public void run() {
         try {
           raProcess.setMessage("Priprema ispisa...", false);
-          raReportDescriptor rd = getCurrentDescriptor(); 
+          raReportDescriptor rd = getCurrentDescriptor();          
           if (rd.isJasper()) {
             JasperElixirData data = new JasperElixirData(rd.getDataSource());
             JasperDesign jdes = JRXmlLoader.load(
@@ -1466,6 +1466,7 @@ public class dlgRunReport {
             jdes.setName(getCurrentDescriptor().getName());
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
             ElixirToJasperConverter.adjustReport(jdes);
+            fixMargins(rd.getName(), jdes);
             raProcess.setMessage("Prevoðenje izraza...", false);
             JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
             JasperReport jcomp = new JRJdk13Compiler().compileReport(jdes);
@@ -1488,6 +1489,7 @@ public class dlgRunReport {
             JRXmlWriter.writeReport(jdes, "design.jrxml", "UTF-8");
             jdes.setName(getCurrentDescriptor().getName());
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
+            fixMargins(rd.getName(), jdes);
             raProcess.setMessage("Prevoðenje izraza...", false);
             JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
             JasperReport jcomp = new JRJdk13Compiler().compileReport(jdes);
@@ -1512,6 +1514,26 @@ public class dlgRunReport {
     });
     if (!raProcess.isCompleted()) return null; 
     return (JasperPrint) raProcess.getReturnValue();
+  }
+  
+  void fixMargins(String name, JasperDesign jdes) {
+    Properties margins = new Properties();
+    FileHandler.loadProperties("margins.properties", margins);
+    String margs = margins.getProperty(name);
+    if (margs == null) {
+      margs = jdes.getTopMargin() + "|" + jdes.getLeftMargin() + "|"
+            + jdes.getBottomMargin() + "|" + jdes.getRightMargin();
+      margins.setProperty(name, margs);
+      FileHandler.storeProperties("margins.properties", margins);
+    } else {
+      String[] ma = new VarStr(margs).split('|');
+      if (ma.length == 4) {
+        jdes.setTopMargin(Aus.getNumber(ma[0]));
+        jdes.setLeftMargin(Aus.getNumber(ma[1]));
+        jdes.setBottomMargin(Aus.getNumber(ma[2]));
+        jdes.setRightMargin(Aus.getNumber(ma[3]));
+      }
+    }
   }
 
   ISession previewTemplate(JPanel panel, JasperPrint jprint) {
