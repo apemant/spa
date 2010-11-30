@@ -1291,3 +1291,14 @@ SRC;char;15;;;Šalje
 DEST;char;15;idx;;Prima
 DATUM;date;;;;Poslano
 MTEXT;char;2000;;;Poruka
+
+$PlZnacRad
+CZNAC;short;2;pkey;;Šifra
+ZNACOPIS;char;50;;;Opis;30
+ZNACTIP;char;1;;;Tip
+ZNACREQ;char;1;;N;Obavezan unos
+ZNACDOH;char;1;;N;Dohvat
+DOHATTR;char;200;;;Parametri dohvata;*
+DOHCOLS;char;100;;;Kolone dohvata;*
+SRT;int;6;;;Slijed
+AKTIV;char;1;;D;Aktivan

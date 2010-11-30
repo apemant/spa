@@ -15,6 +15,51 @@
 **   limitations under the License.
 **
 ****************************************************************************/
+
+package hr.restart.baza;
+import com.borland.dx.dataset.DataModule;
+import com.borland.dx.sql.dataset.QueryDataSet;
+
+public class PlZnacRad extends KreirDrop implements DataModule {
+
+  private static PlZnacRad PlZnacRadclass;
+
+  QueryDataSet plZnacRad = new QueryDataSet();
+  
+  
+  public static PlZnacRad getDataModule() {
+    if (PlZnacRadclass == null) {
+      PlZnacRadclass = new PlZnacRad();
+    }
+    return PlZnacRadclass;
+  }
+
+  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
+    return plZnacRad;
+  }
+
+  public PlZnacRad() {
+    try {
+      modules.put(this.getClass().getName(), this);
+      jbInit();
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+  }
+  private void jbInit() throws Exception {
+    initModule();
+  }
+  
+  //hack za jpCustomAttrib
+  public QueryDataSet getTempSet(String filter) {
+    String filter2 = filter + " AND AKTIV!='N' ORDER BY SRT";
+    return super.getTempSet(filter2);
+  }
+}
+
+
+/* old
 package hr.restart.baza;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
@@ -147,3 +192,4 @@ public class PlZnacRad extends KreirDrop implements DataModule {
     NaziviIdx = ddl.getIndexNames(idx, uidx);
   }
 }
+*/

@@ -54,8 +54,10 @@ public class jpZnacRad extends JPanel {
   raComboBox jcbTip = new raComboBox();
   JraCheckBox jcbObavez = new JraCheckBox();
   JraCheckBox jcbParam = new JraCheckBox();
+  JraCheckBox jcbAktiv = new JraCheckBox();
   JraTextField jraDohattr = new JraTextField();
   JraTextField jraDohcols = new JraTextField();
+  JraTextField jraSrt = new JraTextField();
 
   public jpZnacRad(frmZnacRad f) {
     try {
@@ -72,7 +74,9 @@ public class jpZnacRad extends JPanel {
     jcbTip.setRaDataSet(ds);
     jraDohattr.setDataSet(ds);
     jraDohcols.setDataSet(ds);
+    jraSrt.setDataSet(ds);
     jcbParam.setDataSet(ds);
+    jcbAktiv.setDataSet(ds);
     jraNaznac.setDataSet(ds);
     jcbObavez.setDataSet(ds);
   }
@@ -80,7 +84,7 @@ public class jpZnacRad extends JPanel {
   private void jbInit() throws Exception {
     jpDetail.setLayout(lay);
     lay.setWidth(555);
-    lay.setHeight(135);
+    lay.setHeight(155);
 
     jlZnac.setText("Podatak");
     jlDohattr.setText("Atributi dohvata");
@@ -93,9 +97,13 @@ public class jpZnacRad extends JPanel {
     jraZnac.setColumnName("CZNAC");
     jraDohattr.setColumnName("DOHATTR");
     jraDohcols.setColumnName("DOHCOLS");
+    jraSrt.setColumnName("SRT");
     jcbParam.setColumnName("ZNACDOH");
     jcbParam.setSelectedDataValue("D");
     jcbParam.setUnselectedDataValue("N");
+    jcbAktiv.setColumnName("AKTIV");
+    jcbAktiv.setSelectedDataValue("D");
+    jcbAktiv.setUnselectedDataValue("N");
     jraNaznac.setColumnName("ZNACOPIS");
     jcbObavez.setColumnName("ZNACREQ");
     jcbObavez.setSelectedDataValue("D");
@@ -107,6 +115,9 @@ public class jpZnacRad extends JPanel {
     jcbParam.setHorizontalAlignment(SwingConstants.TRAILING);
     jcbParam.setHorizontalTextPosition(SwingConstants.LEADING);
     jcbParam.setText("Unos iz popisa  ");
+    jcbAktiv.setHorizontalAlignment(SwingConstants.TRAILING);
+    jcbAktiv.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbAktiv.setText("Aktivan ");
 
     jpDetail.add(jlZnac, new XYConstraints(15, 20, -1, -1));
     jpDetail.add(jraZnac, new XYConstraints(150, 20, 75, -1));
@@ -118,8 +129,11 @@ public class jpZnacRad extends JPanel {
     
     jpDetail.add(jlDohattr, new XYConstraints(15, 70, -1, -1));
     jpDetail.add(jlDohcols, new XYConstraints(15, 95, -1, -1));
+    jpDetail.add(new JLabel("Slijed"), new XYConstraints(15, 120, -1, -1));
     jpDetail.add(jraDohattr, new XYConstraints(150, 70, 390, -1));
     jpDetail.add(jraDohcols, new XYConstraints(150, 95, 390, -1));
+    jpDetail.add(jraSrt, new XYConstraints(150, 120, 140, -1));
+    jpDetail.add(jcbAktiv, new XYConstraints(300, 120, 240, -1));
 
     /**@todo: Odkomentirati sljede?u liniju :) */
     this.add(jpDetail, BorderLayout.CENTER);

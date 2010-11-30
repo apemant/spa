@@ -44,6 +44,7 @@ public class frmZnacRad extends raMatPodaci {
     if (mode == 'N') {
       jpDetail.jraZnac.requestFocus();
       getRaQueryDataSet().setString("ZNACTIP", "S");
+      getRaQueryDataSet().setString("AKTIV", "D");
     } else if (mode == 'I') {
       rcc.setLabelLaF(jpDetail.jraZnac, false);
       jpDetail.jraNaznac.requestFocusLater();

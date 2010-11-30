@@ -125,9 +125,9 @@ public class frmEvidencijaDjel extends raFrame {
     return TPRun;
   }
   public static StorageDataSet getZR4Set(String cradnik) {
-    String cznacs = "15,20,30,52,54,60,70,74,120,122,123,124,125,126,127,128,129,190,250,210,270,280";
-    
-    QueryDataSet znac = PlZnacRad.getDataModule().getFilteredDataSet("CZNAC in ("+cznacs+")");
+//    String cznacs = "15,20,30,52,54,60,70,74,120,122,123,124,125,126,127,128,129,190,250,210,270,280";
+    String cznacs = "126,280,74,380,135,410,285,127,330,72,134,320,300,390,120,310,133,70,20,271,125,400,136,54,340,131,210,122,129,52,370,123,250,128,30,124,360,270,132,350,190,121,60,15";
+    QueryDataSet znac = PlZnacRad.getDataModule().getFilteredDataSet("CZNAC in ("+cznacs+") ORDER by SRT");
     znac.open();
     QueryDataSet znacdat = PlZnacRadData.getDataModule().getFilteredDataSet(Condition.equal("CRADNIK", cradnik));
     znacdat.open();
@@ -139,7 +139,7 @@ public class frmEvidencijaDjel extends raFrame {
     radnikpl.first();
     
     StorageDataSet zr4set = new StorageDataSet();
-    Column[] cols = new Column[] {znac.getColumn("CZNAC").cloneColumn(), znac.getColumn("ZNACOPIS").cloneColumn(), dM.createStringColumn("VRI","Vrijednost", 300)};
+    Column[] cols = new Column[] {znac.getColumn("CZNAC").cloneColumn(), znac.getColumn("ZNACOPIS").cloneColumn(), dM.createStringColumn("VRI","Vrijednost", 300), znac.getColumn("SRT").cloneColumn()};
     zr4set.setColumns(cols);
     zr4set.open();
     
@@ -177,17 +177,26 @@ public class frmEvidencijaDjel extends raFrame {
         } catch (Exception e) {
           vri = "";
         }
+      } else if (zn.getString("DOHATTR").endsWith("getMjesta")) {
+        dM.getDataModule().getAllMjesta().open();
+        if (lookupData.getlookupData().raLocate(dM.getDataModule().getAllMjesta(), "PBR", znd.getString("VRI").trim())) {
+          vri = dM.getDataModule().getAllMjesta().getString("NAZMJESTA");
+        } else vri = "";
       } else {
         vri = znd.getString("VRI");
       }
     } else vri = "";
-    addZR4(set, zn.getShort("CZNAC"), zn.getString("ZNACOPIS"), vri);
+    addZR4(set, zn.getShort("CZNAC"), zn.getString("ZNACOPIS"), vri, zn.getInt("SRT"));
   }
   public static void addZR4(StorageDataSet set, int cznac, String opis, String vri) {
+    addZR4(set, cznac, opis, vri, cznac*10);
+  }
+  public static void addZR4(StorageDataSet set, int cznac, String opis, String vri, int srt) {
     set.insertRow(false);
     set.setShort("CZNAC",(short)cznac);
     set.setString("ZNACOPIS", opis);
     set.setString("VRI", vri);
+    set.setInt("SRT", srt);
     set.post();
   }
 }
