@@ -670,7 +670,7 @@ public class frmPL extends startFrame {
   }
   
   void jmiZnacRad_actionPerformed(ActionEvent e) {
-    showFrame("hr.restart.pl.frmZnacRad",jmiIzvjDef.getText());
+    showFrame("hr.restart.pl.frmZnacRad",jmiZnacRad.getText());
   }
 
   void jmiOrgpl_actionPerformed(ActionEvent e) {
