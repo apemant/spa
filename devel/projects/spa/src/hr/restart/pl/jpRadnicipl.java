@@ -500,7 +500,7 @@ public class jpRadnicipl extends JPanel {
         jraGodstaz_focusLost(e);
       }
     });*/
-    jTabbedPane1.setPreferredSize(new Dimension(610, 500));
+    jTabbedPane1.setPreferredSize(new Dimension(640, 500));
     jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         jTabbedPane1_stateChanged(e);
