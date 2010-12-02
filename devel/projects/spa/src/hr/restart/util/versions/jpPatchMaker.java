@@ -249,7 +249,7 @@ public class jpPatchMaker extends JPanel implements okFrame, loadFrame {
     if (vl.isEmpty(jraSource)) return;
     if (vl.isEmpty(jraJavac)) return;
     if (vl.isEmpty(jraJar)) return;
-    createPatchMaker();
+    //createPatchMaker();
     patchMaker.setJar(pmset.getString("JAR"));
     patchMaker.setJavac(pmset.getString("JAVAC"));
     patchMaker.setOutputComp(jlOutput);
