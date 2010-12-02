@@ -68,6 +68,7 @@ public class repIzlazni implements raReportData {
   
   private String specGroup;
   private String specText, matText, radText;
+  private String specForm;
   
   protected raStringCache cache = new raStringCache();
   
@@ -916,7 +917,21 @@ public BigDecimal getIPRODSP() {
     return ru.getSomething(colname,dm.getFranka(),"NAZFRA").getString();
   }
   public String getFormatBroj(){
-    return ru.getFormatBroj();
+    if (specForm == null || specForm.length() == 0)
+      return ru.getFormatBroj();
+    
+    Variant v = new Variant();
+    VarStr br = new VarStr(specForm);
+    int b, e;
+    while ((b = br.indexOf('[')) >= 0 && (e = br.indexOf(']')) > b+1) {
+      String rep = "";
+      if (ds.hasColumn(br.mid(b + 1, e)) != null) {
+        ds.getVariant(br.mid(b + 1, e), v);
+        rep = v.toString();
+      }
+      br.replace(b, e + 1, rep);
+    }
+    return br.toString(); 
   }
   
   public String getFormatBrojTri(){
@@ -1777,6 +1792,8 @@ public BigDecimal getIPRODSP() {
     	"Prikazati rekapitulaciju popusta na izlaznim raèunima (D,N)").equals("D");
     prefn = frmParam.getParam("robno", "prefixPar", "",
         "Prefiks ispred imena partnera");
+    specForm = frmParam.getParam("robno", "specForm", "",
+        "Custom format broja izlaznog dokumenta na ispisu");
     if (prefn.length() > 0) prefn = prefn + "\n";
   }
 
