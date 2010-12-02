@@ -571,7 +571,7 @@ final public class raRAC extends raIzlazTemplate {
       boolean ch = false;
       String gu = g.toUpperCase();
       String gl = g.toLowerCase();
-      String v = tds.getBigDecimal(ck).toPlainString();
+      String v = tds.getBigDecimal(ck).toString();
       
       if (gp.containsKey(gu) && !g.equals(gu)) {
         ch = true;
@@ -623,16 +623,16 @@ final public class raRAC extends raIzlazTemplate {
           FileHandler.storeProperties("transport.properties", gp);
         
         IntParam.setTag("transport.valuta", tds.getString("OZNVAL"));
-        IntParam.setTag("transport.tecaj", tds.getBigDecimal("TECAJ").toPlainString());
+        IntParam.setTag("transport.tecaj", tds.getBigDecimal("TECAJ").toString());
         IntParam.setTag("transport.granica", tds.getString("GRANICA"));
         IntParam.setTag("transport.d1", jlrCARTi.getText());
         IntParam.setTag("transport.n1", tds.getString("NAZARTi"));
         IntParam.setTag("transport.d2", jlrCARTd.getText());
         IntParam.setTag("transport.n2", tds.getString("NAZARTd"));
         IntParam.setTag("transport.g1", tds.getString("GRADi"));
-        IntParam.setTag("transport.k1", tds.getBigDecimal("KMi").toPlainString());
+        IntParam.setTag("transport.k1", tds.getBigDecimal("KMi").toString());
         IntParam.setTag("transport.g2", tds.getString("GRADd"));
-        IntParam.setTag("transport.k2", tds.getBigDecimal("KMd").toPlainString());
+        IntParam.setTag("transport.k2", tds.getBigDecimal("KMd").toString());
         
         unesiStavke();
       }
@@ -698,7 +698,7 @@ final public class raRAC extends raIzlazTemplate {
       unesiStavku((short) 1, tds.getInt("CARTi"), 
           tds.getString("NAZARTi") + " " + tds.getString("GRADi") +
           " - " + tds.getString("GRANICA") + "  (" + 
-          tds.getBigDecimal("KMi").stripTrailingZeros().toPlainString() +
+          tds.getBigDecimal("KMi").intValue() +
           " km)", dio);
       
       uirac = getDetailSet().getBigDecimal("IPRODSP");
@@ -706,7 +706,7 @@ final public class raRAC extends raIzlazTemplate {
       unesiStavku((short) 2, tds.getInt("CARTd"), 
           tds.getString("NAZARTd") + " " + tds.getString("GRANICA") +
           " - " + tds.getString("GRADd") + "  (" + 
-          tds.getBigDecimal("KMd").stripTrailingZeros().toPlainString() +
+          tds.getBigDecimal("KMd").intValue() +
           " km)", total.subtract(dio));
       
       uirac = uirac.add(getDetailSet().getBigDecimal("IPRODSP"));
