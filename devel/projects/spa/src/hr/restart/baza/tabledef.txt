@@ -679,6 +679,7 @@ CKUPAC;int;6;;;Kupac;5
 CBLAGAJNIK;char;15;;;Blagajnik
 STOL;char;20;;;Stol
 RDOK;char;60;;;Dokument razduženja
+CSMJENA;int;6;;;Smjena
 IDX=brdok
 
 $Stpos
@@ -1242,6 +1243,29 @@ IDIH;int;6;;;Zaglavlje logotipa izlaznih dokumenata;15
 IDIF;int;6;;;Podnožje logotipa izlaznih dokumenata;15
 OIB;char;20;;;OIB
 
+$Useri
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CUSER;char;15;pkey;;Šifra
+NAZIV;char;30;;;Naziv;15
+ZAPORKA;char;15;;;Zaporka;*
+CGRUPEUSERA;char;5;;;Grupa
+PARAM;char;10;;;Parametri
+SUPER;char;1;;N;SUPER
+OGRANICEN;char;1;;G;OGRANICEN
+CSMJENA;int;6;;;Smjena
+
+$Blagajnici
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CBLAGAJNIK;char;3;pkey;;Blagajnik
+NAZBLAG;char;40;;;Naziv;30
+TIP;char;1;;;Tip
+SUPER;char;1;;;Super
+BRISANJE;char;1;;;Brisanje
+LOZINKA;char;16;;;Lozinka;*
+CSMJENA;int;6;;;Smjena
+
 $Artnap
 CAN;char;6;pkey;;Šifra
 NAZAN;char;50;;;Naziv
@@ -1281,7 +1305,6 @@ BROJKONTA;text;8;pkey;;Konto
 $Kredkar
 BROJ;char;25;pkey;;Broj
 IME;char;50;;;Ime vlasnika
-ADR;char;50;;;Adresa
 CKUPAC;int;6;;;Kupac
 
 $Mesg
@@ -1291,6 +1314,12 @@ SRC;char;15;;;Šalje
 DEST;char;15;idx;;Prima
 DATUM;date;;;;Poslano
 MTEXT;char;2000;;;Poruka
+
+$Smjene
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CSMJENA;int;6;pkey;;Šifra
+NAZIV;char;50;;;Naziv
 
 $PlZnacRad
 CZNAC;short;2;pkey;;Šifra
