@@ -845,6 +845,7 @@ public class ConsoleCreator {
             "hr.restart.baza.Verinfo", "hr.restart.baza.Artnap",
             "hr.restart.baza.Akcije", "hr.restart.baza.Stakcije",
             "hr.restart.baza.UplRobno","hr.restart.baza.PNBKonto",
-            "hr.restart.baza.Kredkar","hr.restart.baza.Mesg"
+            "hr.restart.baza.Kredkar","hr.restart.baza.Mesg",
+            "hr.restart.baza.Smjene"
       };
 }

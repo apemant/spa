@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.mp;
 
+import hr.restart.pos.frmSmjene;
 import hr.restart.robno.frmAkcije;
 import hr.restart.robno.frmArtNap;
 import hr.restart.robno.frmNorme;
@@ -48,6 +49,7 @@ public class menuOpMp extends JMenu {
   public JMenuItem jmArtikli = new JMenuItem();
   public JMenuItem jmNormativi = new JMenuItem();
   public JMenuItem jmArtnap = new JMenuItem();
+  public JMenuItem jmSmjene = new JMenuItem();
   public JMenuItem jmAkcije = new JMenuItem();
   public JMenuItem jmShemeKonta = new JMenuItem();
   public JMenuItem jmShemeKontaOJ = new JMenuItem();
@@ -114,6 +116,12 @@ public class menuOpMp extends JMenu {
         jmArtnap_actionPerformed(e);
       }
     });
+    jmSmjene.setText("Smjene na POS-u");
+    jmSmjene.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmSmjene_actionPerformed(e);
+      }
+    });
     jmAkcije.setText("Akcije / happy hour");
     jmAkcije.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -159,6 +167,7 @@ public class menuOpMp extends JMenu {
     this.add(jmNormativi);
     this.add(jmAkcije);
     this.add(jmArtnap);
+    this.add(jmSmjene);
     this.addSeparator();
     this.add(jmShemeKonta);
     this.add(jmShemeKontaOJ);
@@ -196,6 +205,10 @@ public class menuOpMp extends JMenu {
   public void jmAkcije_actionPerformed(ActionEvent e) {
     frmAkcije fa = (frmAkcije) raLoader.load("hr.restart.robno.frmAkcije");
     fa.go();
+  }
+  
+  public void jmSmjene_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.pos.frmSmjene", "Smjene");
   }
   
   public void jmShemeKonta_actionPerformed(ActionEvent e) {
