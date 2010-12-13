@@ -74,6 +74,8 @@ public class repIzlazni implements raReportData {
   
   protected String lastDok = null;
   
+  protected String naps = "";
+  
   public repIzlazni() {
     this(true);
 //    System.out.println("repIzlazni <- triba li ovaj ispis na stdio kome??");
@@ -91,6 +93,7 @@ public class repIzlazni implements raReportData {
       setZnacajkeSubjekta();
       checkSpecGroup();
       lastDok = getFormatBroj();
+      naps = "";
     }
   	setParams();
     cache.clear();
@@ -111,12 +114,14 @@ public class repIzlazni implements raReportData {
     String nowDok = getFormatBroj();
     if (lastDok != null && !nowDok.equals(lastDok)) {
       lastDok = nowDok;
+      naps = "";
       modParams();
       rekapPorez();
       nacPl();
       setZnacajkeSubjekta();
       dokChanged();
     }
+    checkNap();
     return this;
   }
   
@@ -1590,6 +1595,10 @@ public BigDecimal getIPRODSP() {
   public String getIZNOSRATE(){
     return irata.toString();
   }
+  
+  public String getARTNAP() {
+    return naps;
+  }
 
   // radni nalozi handlers
 
@@ -1627,6 +1636,19 @@ public BigDecimal getIPRODSP() {
         "Tekst za opis usluga na raèunu iz radnog naloga");
   }
 
+  private void checkNap() {
+    if (lD.raLocate(dm.getArtikli(), "CART", 
+        Integer.toString(ds.getInt("CART")))) {
+      if (dm.getArtikli().getString("CNAP").length() > 0 &&
+          lD.raLocate(dm.getNapomene(), "CNAP",
+              dm.getArtikli().getString("CNAP"))) {
+        if (naps != null && naps.length() > 0)
+          naps = naps + "\n";
+        naps = naps + dm.getNapomene().getString("NAZNAP");
+      }
+    }
+  }
+  
   public int getMatUslGrouping() {
     int grrr;
     String cartik = ds.getInt("CART")+"";
