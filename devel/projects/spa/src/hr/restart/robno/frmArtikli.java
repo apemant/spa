@@ -273,6 +273,11 @@ public class frmArtikli extends raMatPodaci {
   JlrNavField jlrNazSub = new JlrNavField();
   JraButton jbPreSub = new JraButton();
   
+  JLabel jlNapo = new JLabel("Napomena");
+  JlrNavField jlrCNAP = new JlrNavField();
+  JlrNavField jlrNAZNAP = new JlrNavField();
+  JraButton jbNapo = new JraButton();
+  
   JLabel JlNap = new JLabel("Grupa napomena");
   JlrNavField jlrCAN = new JlrNavField();
   JlrNavField jlrNAZAN = new JlrNavField();
@@ -941,6 +946,19 @@ public class frmArtikli extends raMatPodaci {
     frmArtNap.createMain(artnap);
     artnap.setTableName("artnap");
     
+    jlrCNAP.setColumnName("CNAP");
+    jlrCNAP.setColNames(new String[] {"NAZNAP"});
+    jlrCNAP.setTextFields(new javax.swing.text.JTextComponent[] {jlrNAZNAP});
+    jlrCNAP.setVisCols(new int[] {0,1});
+    jlrCNAP.setSearchMode(0);
+    jlrCNAP.setRaDataSet(dm.getNapomene());
+    jlrCNAP.setDataSet(getRaQueryDataSet());
+    jlrCNAP.setNavButton(jbNapo);
+    
+    jlrNAZNAP.setColumnName("NAZNAP");
+    jlrNAZNAP.setSearchMode(1);
+    jlrNAZNAP.setNavProperties(jlrCNAP);
+    
     jlrCAN.setColumnName("CAN");
     jlrCAN.setColNames(new String[] {"NAZAN"});
     jlrCAN.setTextFields(new javax.swing.text.JTextComponent[] {jlrNAZAN});
@@ -980,12 +998,16 @@ public class frmArtikli extends raMatPodaci {
     jpSubjekt.add(jbPreSub, new XYConstraints(510, 45, 21, 21));
     jpSubjekt.add(new JLabel("Subjekt"), new XYConstraints(15, 45, -1, -1));
     
-    jpSubjekt.add(JlNap, new XYConstraints(15, 80, -1, -1));
-    jpSubjekt.add(jlrCAN, new XYConstraints(150, 80, 100, -1));
-    jpSubjekt.add(jlrNAZAN, new XYConstraints(255, 80, 250, -1));
-    jpSubjekt.add(jbNap, new XYConstraints(510, 80, 21, 21));
-    jpSubjekt.add(jbKasa, new XYConstraints(255, 105, 250, -1));
-    jpSubjekt.add(jbPov, new XYConstraints(255, 130, 250, -1));
+    jpSubjekt.add(jlNapo, new XYConstraints(15, 80, -1, -1));
+    jpSubjekt.add(jlrCNAP, new XYConstraints(150, 80, 100, -1));
+    jpSubjekt.add(jlrNAZNAP, new XYConstraints(255, 80, 250, -1));
+    jpSubjekt.add(jbNapo, new XYConstraints(510, 80, 21, 21));
+    jpSubjekt.add(JlNap, new XYConstraints(15, 105, -1, -1));
+    jpSubjekt.add(jlrCAN, new XYConstraints(150, 105, 100, -1));
+    jpSubjekt.add(jlrNAZAN, new XYConstraints(255, 105, 250, -1));
+    jpSubjekt.add(jbNap, new XYConstraints(510, 105, 21, 21));
+    jpSubjekt.add(jbKasa, new XYConstraints(255, 130, 250, -1));
+    jpSubjekt.add(jbPov, new XYConstraints(255, 155, 250, -1));
 
     
     jpNarucivanje.add(jtfNAZPROIZ, new XYConstraints(150, 70, 390, -1));

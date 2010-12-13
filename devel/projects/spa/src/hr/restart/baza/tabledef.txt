@@ -835,7 +835,7 @@ RBR;short;2;pkey;;Rbr;4
 CART;int;6;;;Šifra;7
 CART1;char;20;;;Oznaka;12
 BC;char;20;;;Barcode;21
-NAZART;char;60;;;Naziv;25
+NAZART;char;75;;;Naziv;25
 JM;char;3;;;JM;4
 CRADNAL;char;30;;;Radni nalog;15
 KOL;numeric;15,3;;0;Kolièina;10
@@ -949,6 +949,7 @@ NAZPRI;char;50;;;Naziv za prikaz;20
 CAN;char;6;;;Dodatni opis
 KASA;char;1;;D;Artikl za kasu
 POV;char;1;;N;Povratna naknada
+CNAP;char;3;;;Napomena
 UIDX=cart1
 UIDX=bc
 
