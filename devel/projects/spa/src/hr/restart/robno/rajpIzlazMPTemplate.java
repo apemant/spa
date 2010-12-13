@@ -651,6 +651,7 @@ SwingUtilities.invokeLater(new Runnable(){
 			xYLayout.setWidth(647 + 5);
 			setLayout(xYLayout);
 			jpgetval.setTecajVisible(true);
+			jpgetval.setTecajEditable(true);
 			jlDDOSP.setText("Dani dospije\u0107a");
 			jlDVO.setText("DVO");
 			jlDATDOSP.setText("Datum dospije\u0107a");
