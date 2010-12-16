@@ -567,8 +567,10 @@ sysoutTEST ST = new sysoutTEST(false);
 
     jpTableView.addComponentListener(new java.awt.event.ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
-        tableViewShown(mode);
-        setMode('B');
+        if (getRaMasterDetail() == null) {
+          tableViewShown(mode);
+          setMode('B');
+        }
         //jTabPane.requestFocus();
       }
     });
