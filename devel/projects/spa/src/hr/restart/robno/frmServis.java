@@ -1128,7 +1128,7 @@ public class frmServis extends frmRadniNalog {
     dm.getRN_tekstovi().open();
     dm.getRN_vrsub().open();
     dm.getArtikli().open();
-    
+    dm.getStRnlSer().open();
 
     raMaster.removeRnvCopyCurr();
     raDetail.removeRnvCopyCurr();
