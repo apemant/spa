@@ -238,6 +238,8 @@ public class raIZD extends raIzlazTemplate  {
 //    tmp_realStavkeGreska.open();
     for (s_realStavke.first();s_realStavke.inBounds();s_realStavke.next()){
 
+      if (raVart.isUsluga(s_realStavke.getInt("CART"))) continue;
+      
       s_AST.findStanjeUnconditional(god/*getMasterSet().getString("GOD")*/,
       cskl /*getMasterSet().getString("CSKL")*/,
       s_realStavke.getInt("CART"));
@@ -415,7 +417,8 @@ public class raIZD extends raIzlazTemplate  {
 
       for (realStavke.first();realStavke.inBounds();realStavke.next()) {
 
-        if (realStavke.getString("STATUS").equalsIgnoreCase("Z")){
+        if (realStavke.getString("STATUS").equalsIgnoreCase("Z") || 
+            raVart.isUsluga(realStavke.getInt("CART"))) {
           if (lookupData.getlookupData().raLocate(vti, new String[] {"RBSRNL", "BRANCH"},
               new String[] {String.valueOf(realStavke.getInt("RBSID")), realStavke.getString("BRANCH")}))
             vti.setInt("RBSIZD", 0);
