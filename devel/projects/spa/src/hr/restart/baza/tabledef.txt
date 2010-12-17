@@ -1332,3 +1332,18 @@ DOHATTR;char;200;;;Parametri dohvata;*
 DOHCOLS;char;100;;;Kolone dohvata;*
 SRT;int;6;;;Slijed
 AKTIV;char;1;;D;Aktivan
+
+$Repxhead
+CREP;int;6;pkey;;Šifra
+NAZREP;char;80;;;Opis
+TIP;char;1;;G;Tip
+APP;char;12;;;Aplikacija
+
+$Repxdata
+CREP;int;6;pkey;;Šifra
+RBR;int;6;pkey;;Rbr
+OPIS;char;50;;;Opis stavke
+RED;int;6;;;Redak
+KOL;int;6;;;Kolona
+TIP;char;1;;S;Tip podatka
+DATA;char;500;;;Izraz
