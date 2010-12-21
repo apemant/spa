@@ -117,12 +117,12 @@ public class frmArhiviranje extends frmObradaPL {
             dm.getParametripl().open();
             dm.getParametripl().first(); //pos parametripl
             //kumulorgArh
-
             addKUMULORGARH.setValues(kumulorg);
             setValuesObrada(addKUMULORGARH);
             setValues(addKUMULORGARH, orgsplCols, dm.getOrgpl());
             setValues(addKUMULORGARH, parametriplCols, dm.getParametripl());
-            
+            //datum isplate
+            addKUMULORGARH.setTimestamp("DATUMISPL", tds.getTimestamp("DATUM"), false);
             addKUMULORGARH.execute();
             
             //kumulradarh
