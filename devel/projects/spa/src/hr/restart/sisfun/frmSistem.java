@@ -66,6 +66,7 @@ public class frmSistem extends hr.restart.util.startFrame {
   JMenuItem jSisMnuTab = new JMenuItem();
   JMenuItem jSisMnuVrdok = new JMenuItem();
   JMenuItem jSisMnuRep = new JMenuItem();
+  JMenuItem jSisMnuRepx = new JMenuItem();
   JMenuItem jSisMnuRepList = new JMenuItem();
   JMenuItem jSisMnuVrshemek = new JMenuItem();
   JMenuItem jSisMnuDefsh = new JMenuItem();
@@ -231,6 +232,12 @@ public class frmSistem extends hr.restart.util.startFrame {
     jSisMnuRep.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jSisMnuRep_actionPerformed(e);
+      }
+    });
+    jSisMnuRepx.setText("Excel izvještaji");
+    jSisMnuRepx.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jSisMnuRepx_actionPerformed(e);
       }
     });
     jSisMnuRepList.setText("Izvještaji");
@@ -403,6 +410,7 @@ public class frmSistem extends hr.restart.util.startFrame {
     jSisMnu.add(jSisMnuPar);
     jSisMnu.add(jSisMnuRep);
     jSisMnu.add(jSisMnuRepList);
+    jSisMnu.add(jSisMnuRepx);
     jSisMnu.add(jSisMnuSect);
     if (raUser.getInstance().getUser().equals("test"))
       jSisMnu.add(jScript);
@@ -602,6 +610,10 @@ public class frmSistem extends hr.restart.util.startFrame {
   void jSisMnuRep_actionPerformed(ActionEvent e) {
     if (busy()) return;
     showFrame("hr.restart.sisfun.frmExternalReports",jSisMnuRep.getText());
+  }
+  void jSisMnuRepx_actionPerformed(ActionEvent e) {
+    if (busy()) return;
+    showFrame("hr.restart.sisfun.frmReportx",jSisMnuRepx.getText());
   }
   void jSisMnuRepList_actionPerformed(ActionEvent e) {
     if (busy()) return;
