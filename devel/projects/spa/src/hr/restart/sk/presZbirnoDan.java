@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.sk;
 
+import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
 import hr.restart.util.raComboBox;
@@ -47,6 +48,7 @@ public class presZbirnoDan extends presZbirno {
   //JLabel jlDan = new JLabel();
   JLabel jlIznos = new JLabel();
   JraTextField jraIznos = new JraTextField();
+  JraCheckBox jcbPS = new JraCheckBox();
 
   public presZbirnoDan(frmDugPot fdp) {
     try {
@@ -61,6 +63,7 @@ public class presZbirnoDan extends presZbirno {
   public void resetDefaults() {
     super.resetDefaults();
     rcbDat.setSelectedIndex(0);
+    jcbPS.setSelected(true);
     gmsz.setBigDecimal("MINIZNOS", Aus.one0.movePointLeft(2));
     getSelRow().setTimestamp("DATUMKNJ-to", vl.getToday());
   }
@@ -78,9 +81,13 @@ public class presZbirnoDan extends presZbirno {
     if (!Aus.checkSanityRange(jraDatumto)) return false;
     return jpc.Validacija();
   }
+  
+  public boolean isPS() {
+    return jcbPS.isSelected();
+  }
 
   private void jbInit() throws Exception {
-    lay.setHeight(135 + dkAdd);
+    lay.setHeight(155 + dkAdd);
 
     //jlDan.setText("Na dan");
     rcbDat.setRaItems(new String[][] {
@@ -96,11 +103,16 @@ public class presZbirnoDan extends presZbirno {
     jraDatumto.setHorizontalAlignment(SwingConstants.CENTER);
     jraDatumfrom.setVisible(false);
     jraDatumfrom.setEnabled(false);
+    
+    jcbPS.setText(" Uraèunati stavke iz poèetnog stanja ");
+    jcbPS.setHorizontalTextPosition(jcbPS.LEADING);
+    jcbPS.setHorizontalAlignment(jcbPS.TRAILING);
 
     jpDetail.add(rcbDat, new XYConstraints(15, 95 + dkAdd, 130, -1));
     jpDetail.add(jraDatumto, new XYConstraints(150, 95 + dkAdd, 100, -1));
     jpDetail.add(jlIznos, new XYConstraints(320, 97 + dkAdd, -1, -1));
     jpDetail.add(jraIznos, new XYConstraints(445, 95 + dkAdd, 100, -1));
+    jpDetail.add(jcbPS, new XYConstraints(260, 120 + dkAdd, 285, -1));
 
     this.addSelRange(jraDatumfrom, jraDatumto);
     this.setSelPanel(jpDetail);

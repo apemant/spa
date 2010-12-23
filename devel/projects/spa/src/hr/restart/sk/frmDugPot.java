@@ -272,9 +272,12 @@ public class frmDugPot extends raFrame {
   	Map after = new HashMap();
   	Map oupl = new HashMap();
   	
+  	String ps = "-00-00";
+  	boolean isps = pres.isPS();
+  	
   	if (inProc) raProcess.setMessage("Dohvat otvorenih dokumenata ...", true);
   	QueryDataSet docs = ut.getNewQueryDataSet(
-        "SELECT vrdok,cpar,cskstavke,tecaj,oznval,datdosp,id,ip,saldo FROM skstavke WHERE "+
+        "SELECT vrdok,cpar,cskstavke,tecaj,oznval,cgkstavke,datdosp,id,ip,saldo FROM skstavke WHERE "+
         presq + " AND "+Aus.getVrdokCond(kupci).and(par)+" AND pokriveno!='X' AND "+
         Aus.getCurrGKDatumCond(datumCol, dto), false);
   	System.out.println(docs.getQuery().getQueryString());
@@ -291,6 +294,7 @@ public class frmDugPot extends raFrame {
     if (inProc) raProcess.setMessage("Zbrajanje i priprema kumulativa...", false);
     // zbroji racune po partnerima, u ovisnosti od dospjeca.
     for (docs.first(); docs.inBounds(); docs.next()) {
+      if (!isps && docs.getString("CGKSTAVKE").indexOf(ps) >= 0) continue;
       Map which = raVrdokMatcher.isUplataTip(docs) ? oupl :
         docs.getTimestamp("DATDOSP").after(dto) ? after : before;
       Integer ip = new Integer(docs.getInt("CPAR"));
