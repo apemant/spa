@@ -153,6 +153,7 @@ public class raIspisUraIra extends raFrame {
   StorageDataSet fset = new StorageDataSet();
   QueryDataSet uraira;
   boolean busy;
+  boolean oib;
 
   int lastui = 0;
   Timestamp dmfrom, dmto;
@@ -185,6 +186,8 @@ public class raIspisUraIra extends raFrame {
   }
 
   public void SetFokus() {
+    oib = !"MB".equals(frmParam.getParam("robno", "oibMode", "MB", 
+      "Staviti matièni broj (MB) ili OIB?"));
     if (jrbUraira1.isSelected()) uraSelected();
     else iraSelected();
   }
@@ -348,7 +351,7 @@ public class raIspisUraIra extends raFrame {
     cols.add(dm.getPartneri().getColumn("CPAR").clone());
     cols.add(dM.createStringColumn("OPISPAR", "Naziv partnera", 180));
     //cols.add(dm.getPartneri().getColumn("MB").clone());
-    cols.add(dM.createStringColumn("MB","OIB", 30));
+    cols.add(dM.createStringColumn("MB", oib ? "OIB": "MB", 30));
     cols.add(dM.createStringColumn("SORTER", 16));
     tkol.open();
     for (tkol.first(); tkol.inBounds(); tkol.next()) {
@@ -654,7 +657,7 @@ public class raIspisUraIra extends raFrame {
         String mj = dm.getPartneri().getString("MJ");
         uraira.setString("OPISPAR", dm.getPartneri().getString("NAZPAR") +
           (mj.trim().length() == 0 ? "" : ", " + mj));
-        uraira.setString("MB", dm.getPartneri().getString("OIB"));
+        uraira.setString("MB", dm.getPartneri().getString(oib ? "OIB" : "MB"));
       }
 //      System.out.println(lastpri);
       short ckol = ds.getShort("CKOLONE");      
