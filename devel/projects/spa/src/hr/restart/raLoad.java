@@ -90,7 +90,10 @@ public class raLoad implements Runnable {
     }
     try {
       final raAction raAc = new raAction(inst == 1);
-      jmi = new javax.swing.JMenuItem(raRes.getString("jB"+raModule+"_text"));
+      String name = hr.restart.start.getName(raModule);
+      if (name == null || name.length() == 0)
+        name = raRes.getString("jB"+raModule+"_text");
+      jmi = new javax.swing.JMenuItem(name);
       jmi.addActionListener(raAc);
       raShortcutItem sItem = new raShortcutItem() {
         public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -109,10 +112,10 @@ public class raLoad implements Runnable {
       raTBar.getAplShortcuts().addItem(sItem);
 
       Class modStart = Class.forName(raRes.getString(resModule));
-      String modTitle = raRes.getString("jB"+raModule+"_text");
+      //String modTitle = raRes.getString("jB"+raModule+"_text");
       modFrame = (hr.restart.util.startFrame)modStart.newInstance();
-      modFrame.getJMenuBar().setToolTipText(modTitle);
-      modFrame.setTitle(modTitle);
+      modFrame.getJMenuBar().setToolTipText(name);
+      modFrame.setTitle(name);
       //hr.restart.mainFrame.getMainFrame().menuTree.addMenuBar(modFrame.getJMenuBar(),modFrame);
       start.getUserDialog().getUserPanel().getMenuTree().addMenuBar(modFrame.getJMenuBar(),modFrame);
     } catch (Exception ex) {

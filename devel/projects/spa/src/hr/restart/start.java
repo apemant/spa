@@ -369,6 +369,16 @@ System.out.println("no port starting shell");
     if (aplikacije.getString("INSTALIRANA").equals("N")) return 0;
     return -1;
   }
+  
+  public static String getName(String raModule) {
+    hr.restart.util.lookupData ld = hr.restart.util.lookupData.getlookupData();
+    com.borland.dx.dataset.DataSet aplikacije = hr.restart.baza.dM.getDataModule().getAplikacija();
+    aplikacije.open();
+    if (ld.raLocate(aplikacije,"APP",raModule)) {
+      return aplikacije.getString("OPIS");
+    }
+    return null;
+  }
 
   public static void setFRAME_MODE() {
     try {
