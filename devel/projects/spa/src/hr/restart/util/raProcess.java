@@ -589,7 +589,6 @@ System.out.println("openScratchDataSet:ds.open");
         }
         try {
           Util.fillReadonlyData(localData, queryString);
-          data.open();
         } catch (Exception e) {
           e.printStackTrace();
         }
