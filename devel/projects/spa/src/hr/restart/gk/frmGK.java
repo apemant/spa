@@ -51,6 +51,7 @@ public class frmGK extends startFrame {
   JMenuItem jmiFinDnev = new JMenuItem();
   JMenuItem jmiBrBilancaPerVal = new JMenuItem();
   JMenuItem jmiGenericGK = new JMenuItem();
+  JMenuItem jmiExcelGK = new JMenuItem();
   JMenuItem jmiRepGKUpit = new JMenuItem();
   JMenuItem jmiIspKartica = new JMenuItem();
   JMenuItem jmiZakKlasa = new JMenuItem();
@@ -165,6 +166,12 @@ public class frmGK extends startFrame {
     jmiGenericGK.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiGenericGK_actionPerformed(e);
+      }
+    });
+    jmiExcelGK.setText("Excel izvjestaji");
+    jmiExcelGK.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiExcelGK_actionPerformed(e);
       }
     });
     jmiIspKartica.setText("Ispis svih kartica");
@@ -374,6 +381,7 @@ public class frmGK extends startFrame {
     jmIzvj.addSeparator();
     jmIzvj.add(jmiRepGKUpit);
     jmIzvj.add(jmiGenericGK);
+    jmIzvj.add(jmiExcelGK);
     jmGodObrade.add(jmiIspKartica);
     jmGodObrade.add(jmiZakKlasa);
     jmGodObrade.add(jmiGodObr);
@@ -453,6 +461,10 @@ public class frmGK extends startFrame {
   
   void jmiGenericGK_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.gk.frmGenericGK",jmiGenericGK.getText());
+  }
+  
+  void jmiExcelGK_actionPerformed(ActionEvent e) {
+    showFrame("hr.restart.gk.frmExcelGK",jmiExcelGK.getText());
   }
   
   void jmiRepGKUpit_actionPerformed(ActionEvent e) {
