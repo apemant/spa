@@ -962,7 +962,7 @@ System.out.println("QS : " + queryString);
                          "where doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok "+
                          "and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok AND stdoki.cart = artikli.cart "+
 //                         " AND doki.vrdok != 'PON' AND doki.vrdok != 'NDO' AND doki.vrdok != 'NKU' AND stdoki.vrdok != 'RNL' AND stdoki.vrdok != 'REV' AND stdoki.vrdok != 'PRV' "+
-                         " AND doki.vrdok not in ('PON','NDO','NKU','RNL','REV','PRV','OTR','INM','INV','IZD','GOT','GRN','OTP','TRE','ZAH') "+
+                         " AND doki.vrdok not in ('PON','NDO','NKU','RNL','REV','PRV','OTR','INM','INV','IZD','GOT','GRN','OTP','TRE','ZAH','DOS') "+
                          exInClude+
                          ckupca+
                          pjKupca+
