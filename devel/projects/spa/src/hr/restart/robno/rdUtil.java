@@ -1175,9 +1175,11 @@ public class rdUtil {
   //- - - -- - - - K A R T I C A A R T I K L A - -- --- ---- -- -- - -//
   //-- -- - --- - --- --- - -- -- - ------ - - - - - - - -- - - - - - - -----//
   //********************************************************************************//
-  
-  private String dokiF(){
-    String upit = "SELECT vrdok FROM Vrdokum where app in ('rac','mp','robno','sklad') and tipdok in ('F','O','SK') and vrsdok = 'I'";
+    
+  private String dokiF(boolean naru, boolean nari){
+    String dod = naru ? nari ? " and vrdok not in ('NKU','NDO')" : 
+      "and vrdok!='NDO'" : nari ? "and vrdok!='NKU'" : ""; 
+    String upit = "SELECT vrdok FROM Vrdokum where app in ('rac','mp','robno','sklad') and tipdok in ('F','O','SK') and vrsdok = 'I'" + dod; 
     QueryDataSet vrdoksi = ut.getNewQueryDataSet(upit);
     vrdoksi.first();
     String dokiF = "(";
@@ -1212,6 +1214,10 @@ public class rdUtil {
   }
 
   public String getKarticaArtikla(String cart, String vrzal, String cSkl, String docu, String doci, String newDateZ) {
+    return getKarticaArtikla(cart, vrzal, cSkl, docu, doci, newDateZ, false, false);
+  }
+  
+  public String getKarticaArtikla(String cart, String vrzal, String cSkl, String docu, String doci, String newDateZ, boolean naru, boolean nari) {
     String god = newDateZ.substring(1, 5);
     String ugod = " AND DOKU.GOD='" + god + "' ";
     String igod = " AND DOKI.GOD='" + god + "' ";
@@ -1226,7 +1232,7 @@ public class rdUtil {
     // Samo poravnanja na ulazu
         "SELECT 'A' as ui, 'B' as SRT,  DOKU.VRDOK, DOKU.BRDOK, STDOKU.RBR, DOKU.DATDOK, (STDOKU.KOL-STDOKU.KOL) AS KOLUL, (STDOKU.KOL-STDOKU.KOL) AS KOLIZ, " + this.getZCPor("STDOKU", vrzal) + " STDOKU.PORAV AS KOLZAD, (STDOKU.PORAV-STDOKU.PORAV) AS KOLRAZ, '            ' as sklul, '            ' as skliz " + "from STDOKU,DOKU " + "where STDOKU.CART=" + cart + " AND STDOKU.CSKL='" + cSkl + "' AND " + docu + "  AND DOKU.VRDOK='POR' AND STDOKU.SKOL>0 " + "AND DOKU.DATDOK <= " + newDateZ + ugod + "UNION ALL " +
         // Izlazi
-        "SELECT 'B' as ui, 'B' as SRT, DOKI.VRDOK, DOKI.BRDOK, STDOKI.RBR, DOKI.DATDOK, (STDOKI.KOL-STDOKI.KOL) AS KOLUL, STDOKI.KOL AS KOLIZ, " + "STDOKI.ZC, (STDOKI.IRAZ-STDOKI.IRAZ) AS KOLZAD, STDOKI.IRAZ AS KOLRAZ, '            ' as sklul, doki.cskl as skliz " + "from STDOKI,DOKI " + "where STDOKI.CART=" + cart + " AND STDOKI.CSKL='" + cSkl + "' AND " + doci + igod + "AND DOKI.DATDOK <= " + newDateZ + " AND DOKI.VRDOK NOT IN " +dokiF()+ " UNION ALL " +
+        "SELECT 'B' as ui, 'B' as SRT, DOKI.VRDOK, DOKI.BRDOK, STDOKI.RBR, DOKI.DATDOK, (STDOKI.KOL-STDOKI.KOL) AS KOLUL, STDOKI.KOL AS KOLIZ, " + "STDOKI.ZC, (STDOKI.IRAZ-STDOKI.IRAZ) AS KOLZAD, STDOKI.IRAZ AS KOLRAZ, '            ' as sklul, doki.cskl as skliz " + "from STDOKI,DOKI " + "where STDOKI.CART=" + cart + " AND STDOKI.CSKL='" + cSkl + "' AND " + doci + igod + "AND DOKI.DATDOK <= " + newDateZ + " AND DOKI.VRDOK NOT IN " +dokiF(naru, nari)+ " UNION ALL " +
         // Poravnanje
         "SELECT 'A' as ui, 'A' as SRT, 'POR', DOKU.BRDOK, STDOKU.RBR, DOKU.DATDOK, (STDOKU.KOL-STDOKU.KOL) AS KOLUL, (STDOKU.KOL-STDOKU.KOL) AS KOLIZ, " + this.getZCPor("STDOKU", vrzal) + " STDOKU.PORAV AS KOLZAD, (STDOKU.PORAV-STDOKU.PORAV) AS KOLRAZ, '            ' as sklul, '            ' as skliz " + "from STDOKU,DOKU " + "where STDOKU.CART=" + cart + " AND STDOKU.CSKL='" + cSkl + "' AND " + docu + " AND STDOKU.PORAV<>0 " + ugod + "AND DOKU.DATDOK <= " + newDateZ + " AND STDOKU.VRDOK NOT IN ('POR') " + "UNION ALL " +
         // Medjuskladisnice - ulaz // srt je bilo 'B'
@@ -1536,13 +1542,14 @@ public class rdUtil {
 
   public String getIzArt(String cskl, String cart, String pocDat, String zavDat, String vrDok, String vrArt, String uvjet, String modul, String csklart) {
     String addVrDok = "";
-    
-    if (modul.equalsIgnoreCase("VELE")) {
-      addVrDok = " and (stdoki.vrdok='ROT' or (stdoki.vrdok='POD' and (param='' or param is null or param like 'P%'))) ";
+    if (modul.equalsIgnoreCase("ALL")) {
+      addVrDok = " and (doki.vrdok in ('ROT','GOT','POD')) ";
+    } else if (modul.equalsIgnoreCase("VELE")) {
+      addVrDok = " and (doki.vrdok='ROT' or (doki.vrdok='POD' and (doki.param='' or doki.param is null or doki.param like 'P%'))) ";
     } else if (modul.equalsIgnoreCase("MALO")) {
-      addVrDok = " and (stdoki.vrdok='GOT' or (stdoki.vrdok='POD' and doki.param like 'K%')) ";
+      addVrDok = " and (doki.vrdok='GOT' or (doki.vrdok='POD' and doki.param like 'K%')) ";
     } else if (modul.equalsIgnoreCase("OBRAC")) {
-      addVrDok = " and (stdoki.vrdok in ('RAC','GRN','TER','ODB')) ";
+      addVrDok = " and (doki.vrdok in ('RAC','GRN','TER','ODB')) ";
       if (!csklart.equalsIgnoreCase("")) {
         addVrDok += "and stdoki.csklart = '" + csklart + "' ";
       }
@@ -1551,11 +1558,11 @@ public class rdUtil {
     if (!vrDok.equals("") && !vrDok.equals("X")) {
       if (vrDok.equals("POD")) {
         if (modul.equals("VELE"))
-          addVrDok = " and stdoki.vrdok='" + vrDok + "' and (param='' or param is null or param like 'P%') ";
+          addVrDok = " and doki.vrdok='" + vrDok + "' and (doki.param='' or doki.param is null or doki.param like 'P%') ";
         else if (modul.equals("MALO"))
-          addVrDok = " and stdoki.vrdok='" + vrDok + "' and doki.param like 'K%' ";
+          addVrDok = " and doki.vrdok='" + vrDok + "' and doki.param like 'K%' ";
       } else {
-        addVrDok = " and stdoki.vrdok='" + vrDok + "' ";
+        addVrDok = " and doki.vrdok='" + vrDok + "' ";
         if (modul.equals("OBRAC")){
           addVrDok += "and stdoki.csklart = '" + csklart + "' ";
         } 
@@ -1583,10 +1590,10 @@ public class rdUtil {
   
   private String getsklad(String cskl, String vrdok){
     String knj = hr.restart.zapod.OrgStr.getKNJCORG();
-    if (vrdok.equals("POS"))  return  "and stdoki.cskl='" + knj + "' ";
+    if (vrdok.equals("POS"))  return  "and doki.cskl='" + knj + "' ";
     String cskling = "";
     if (cskl.equalsIgnoreCase("")){
-      cskling = "and stdoki.cskl in (";
+      cskling = "and doki.cskl in (";
       QueryDataSet sset = ut.getNewQueryDataSet("select cskl from sklad where knjig = '"+knj+"'");
       sset.first();
       do {
@@ -1600,7 +1607,7 @@ public class rdUtil {
       } while (true);
       
     } else {
-      cskling = "and stdoki.cskl='" + cskl + "' ";
+      cskling = "and doki.cskl='" + cskl + "' ";
     }
     return cskling;
   }
@@ -1650,12 +1657,14 @@ public class rdUtil {
   public String getIzArt3(String cskl, String cart, String pocDat, String zavDat, String vrDok, String vrArt, String uvjet, String modul, String csklart) {
     String addVrDok = "";
 
-    if (modul.equalsIgnoreCase("VELE")) {
-      addVrDok = " and (stdoki.vrdok='ROT' or (stdoki.vrdok='POD' and (param='' or param is null or param like 'P%'))) ";
+    if (modul.equalsIgnoreCase("ALL")) {
+      addVrDok = " and (doki.vrdok in ('ROT','GOT','POD')) ";
+    } else if (modul.equalsIgnoreCase("VELE")) {
+      addVrDok = " and (doki.vrdok='ROT' or (doki.vrdok='POD' and (doki.param='' or doki.param is null or doki.param like 'P%'))) ";
     } else if (modul.equalsIgnoreCase("MALO")) {
-      addVrDok = " and (stdoki.vrdok='GOT' or (stdoki.vrdok='POD' and doki.param like 'K%')) ";
+      addVrDok = " and (doki.vrdok='GOT' or (doki.vrdok='POD' and doki.param like 'K%')) ";
     } else if (modul.equalsIgnoreCase("OBRAC")) {
-      addVrDok = " and (stdoki.vrdok in ('RAC','GRN','TER','ODB')) ";
+      addVrDok = " and (doki.vrdok in ('RAC','GRN','TER','ODB')) ";
       if (!csklart.equalsIgnoreCase("")) {
         addVrDok += "and stdoki.csklart = '" + csklart + "' ";
       }
@@ -1673,11 +1682,11 @@ public class rdUtil {
     if (!vrDok.equals("") && !vrDok.equals("X")) {
       if (vrDok.equals("POD")) {
         if (modul.equals("VELE"))
-          addVrDok = " and stdoki.vrdok='" + vrDok + "' and (param='' or param is null or param like 'P%') ";
+          addVrDok = " and doki.vrdok='" + vrDok + "' and (doki.param='' or doki.param is null or doki.param like 'P%') ";
         else if (modul.equals("MALO"))
-          addVrDok = " and stdoki.vrdok='" + vrDok + "' and doki.param like 'K%' ";
+          addVrDok = " and doki.vrdok='" + vrDok + "' and doki.param like 'K%' ";
       } else {
-        addVrDok = " and stdoki.vrdok='" + vrDok + "' ";
+        addVrDok = " and doki.vrdok='" + vrDok + "' ";
         if (modul.equals("OBRAC")) {
           addVrDok += "and stdoki.csklart = '" + csklart + "' ";
         }
