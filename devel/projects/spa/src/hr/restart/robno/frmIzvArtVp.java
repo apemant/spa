@@ -59,7 +59,8 @@ public class frmIzvArtVp extends frmIzvArt {
   private void jbInit() throws Exception {
 
     rcbVrDok.setRaItems(new String[][] {
-      {"Svi dokumenti",""},
+      {"Svi veleprodajni dokumenti",""},
+      {"Veleprodaja i maloprodaja","ALL"},
       {"ROT - Raèuni otpremnice","ROT"},
       {"POD - Povratnica odobrenje","POD"}
     });
@@ -94,6 +95,12 @@ public class frmIzvArtVp extends frmIzvArt {
   protected int preparePrint() {
     System.out.println("VELEPRODAJA"); //XDEBUG delete when no more needed
     vrdoks = "veleprodajni";
+    String typ = "VELE";
+    if (vrstaDok.equals("ALL")) {
+      vrstaDok = "";
+      vrdoks = "Veleprodaja i maloprodaja";
+      typ = "ALL";
+    }
     qds.close();
 //    qds2.close();
     qds3.close();
@@ -109,7 +116,7 @@ public class frmIzvArtVp extends frmIzvArt {
     /*"AND "+rpcart.findCART(podgrupe);*/
 
     String qStr = rdUtil.getUtil().getIzArt(rpcskl.jrfCSKL.getText(), rpcart.jrfCART.getText(), utRobno.getTimestampValue(datOd, utRobno.NUM_FIRST),
-        utRobno.getTimestampValue(datDo, utRobno.NUM_LAST), vrstaDok, vrstaArt, uvjet,"VELE","");
+        utRobno.getTimestampValue(datDo, utRobno.NUM_LAST), vrstaDok, vrstaArt, uvjet,typ,"");
     //---------------------------------------------------------------------------------
     qds.setQuery(new QueryDescriptor(dm.getDatabase1(),qStr));
 
