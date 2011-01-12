@@ -26,6 +26,7 @@ import hr.restart.baza.dM;
 import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raMultiLineMessage;
@@ -158,6 +159,9 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	boolean isTranzit = false;
 	
 	boolean isMinusAllowed = false;
+	
+	boolean autoval = false;
+	boolean autovali = false; 
 
 	int lastCparNavigated = -1;
 
@@ -541,7 +545,11 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	    isMinusAllowed = frmParam.getParam("robno", "allowMinus", "N",
 	        "Dopustiti odlazak u minus na izlazima (D,N)?").equals("D");
 	        
-	        
+	    String av = frmParam.getParam("robno", "autoValuta", "N",
+	          "Preraèunati iznos iz valute u kune na izlazima (N,D,A)");
+	    
+	    autoval = !av.equalsIgnoreCase("N");
+	    autovali = av.equalsIgnoreCase("A");
 	  
 		setNaslovMaster(master_titel + additional);
 		setNaslovDetail(detail_titel_mno);
@@ -656,7 +664,21 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		}
 		if (mode != 'B') 
 			SanityCheck.basicStdoki(getDetailSet());
+		if (mode == 'N' && autoval || mode == 'I' && autovali) {
+		  if (!raSaldaKonti.isDomVal(getMasterSet()))
+		    recalcVal();
+		}
 		return true;
+	}
+	
+	void recalcVal() {
+	  BigDecimal jv = raSaldaKonti.getJedVal(getMasterSet().getString("OZNVAL"));
+	  Aus.mul(getDetailSet(), "FC", getMasterSet(), "TECAJ");
+	  Aus.div(getDetailSet(), "FC", jv);
+	  
+      lc.setBDField("FC", getDetailSet().getBigDecimal("FC"), rKD.stavka);
+      Kalkulacija("FC");
+      lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
 	}
 
 	public void oneRabat() {
@@ -3429,6 +3451,8 @@ System.out.println("findCjenik::else :: "+sql);
 				|| descriptor.equals("hr.restart.robno.repNarDobV")
 				|| descriptor.equals("hr.restart.robno.repOdobrenjaV")
 				|| descriptor.equals("hr.restart.robno.repOdobrenjaPV")
+				|| descriptor.equals("hr.restart.robno.repInvoice")
+				|| descriptor.equals("hr.restart.robno.repProformaInvoice")
 				);
 
 	}
