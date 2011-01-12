@@ -1349,3 +1349,16 @@ RED;int;6;;;Redak
 KOL;int;6;;;Kolona
 TIP;char;1;;S;Tip podatka
 DATA;char;500;;;Izraz
+
+$Valute
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+OZNVAL;char;3;;;Oznaka
+CVAL;short;2;pkey;;Šifra
+JEDVAL;int;6;;;Jedinica;15
+NAZVAL;char;30;;;Naziv;15
+STRVAL;char;1;;D;Strana valuta
+NIZJED;char;30;;;Niža jedinica;15
+REFVAL;char;1;;N;Referentna valuta
+CHV;char;10;;;Prefiks
+
