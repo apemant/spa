@@ -23,6 +23,7 @@ import hr.restart.baza.RN_subjekt;
 import hr.restart.baza.dM;
 import hr.restart.baza.stdoki;
 import hr.restart.baza.vtrabat;
+import hr.restart.baza.zirorn;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
@@ -1292,6 +1293,24 @@ public BigDecimal getIPRODSP() {
   }
   public String getZIRO(){
     return ds.getString("ZIRO");
+  }
+  
+  public String getIBAN() {
+    if (!lD.raLocate(dm.getZirorn(), "ZIRO", getZIRO())) return "";
+    
+    return dm.getZirorn().getString("IBAN");
+  }
+  
+  public String getSWIFT() {
+    if (!lD.raLocate(dm.getZirorn(), "ZIRO", getZIRO())) return "";
+    
+    return dm.getZirorn().getString("SWIFT");
+  }
+  
+  public String getBANKA() {
+    if (!lD.raLocate(dm.getZirorn(), "ZIRO", getZIRO())) return "";
+    
+    return dm.getZirorn().getString("BANKA");
   }
 
   boolean isHide() {
