@@ -25,6 +25,7 @@ import hr.restart.baza.stdoki;
 import hr.restart.baza.vtrabat;
 import hr.restart.baza.zirorn;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sk.raSaldaKonti;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
@@ -71,6 +72,8 @@ public class repIzlazni implements raReportData {
   private String specText, matText, radText;
   private String specForm;
   
+  protected BigDecimal dineto, diprodbp, diprodsp;
+  
   protected raStringCache cache = new raStringCache();
   
   protected String lastDok = null;
@@ -95,6 +98,7 @@ public class repIzlazni implements raReportData {
       checkSpecGroup();
       lastDok = getFormatBroj();
       naps = "";
+      dineto = diprodbp = diprodsp = Aus.zero2;
     }
   	setParams();
     cache.clear();
@@ -121,7 +125,11 @@ public class repIzlazni implements raReportData {
       nacPl();
       setZnacajkeSubjekta();
       dokChanged();
+      dineto = diprodbp = diprodsp = Aus.zero2;
     }
+    dineto = dineto.add(ds.getBigDecimal("INETO"));
+    diprodbp = diprodbp.add(ds.getBigDecimal("IPRODBP"));
+    diprodsp = diprodsp.add(ds.getBigDecimal("IPRODSP"));
     checkNap();
     return this;
   }
@@ -1312,6 +1320,65 @@ public BigDecimal getIPRODSP() {
     
     return dm.getZirorn().getString("BANKA");
   }
+  
+  public BigDecimal getDINETO() {
+    return dineto;
+  }
+  
+  public BigDecimal getDIBP() {
+    return diprodbp;
+  }
+  
+  public BigDecimal getDISP() {
+    return diprodsp;
+  }
+  
+  public String getDVINETO() {
+    if (raSaldaKonti.isDomVal(ds)) return "";
+    
+    String pref = "(" + getOZNVAL() + ")";
+    if (lD.raLocate(dm.getValute(), "OZNVAL", getOZNVAL()))
+      if (dm.getValute().getString("CHV").length() > 0)
+        pref = dm.getValute().getString("CHV");
+    
+    return pref + " " + Aus.formatBigDecimal(dineto.
+        multiply(raSaldaKonti.getJedVal(getOZNVAL())).
+        divide(getTECAJ(), 2, BigDecimal.ROUND_HALF_UP)) +
+        (ispTecaj ? "\n" + Aus.formatBigDecimal(getTECAJ()) : "");
+  }
+  
+  public String getDVIBP() {
+    if (raSaldaKonti.isDomVal(ds)) return "";
+    
+    String pref = "(" + getOZNVAL() + ")";
+    if (lD.raLocate(dm.getValute(), "OZNVAL", getOZNVAL()))
+      if (dm.getValute().getString("CHV").length() > 0)
+        pref = dm.getValute().getString("CHV");
+    
+    return pref + " " + Aus.formatBigDecimal(dineto.
+        multiply(raSaldaKonti.getJedVal(getOZNVAL())).
+        divide(getTECAJ(), 2, BigDecimal.ROUND_HALF_UP)) +
+        (ispTecaj ? "\n" + Aus.formatBigDecimal(getTECAJ()) : "");
+  }
+  
+  public String getDVISP() {
+    if (raSaldaKonti.isDomVal(ds)) return "";
+    
+    String pref = "(" + getOZNVAL() + ")";
+    if (lD.raLocate(dm.getValute(), "OZNVAL", getOZNVAL()))
+      if (dm.getValute().getString("CHV").length() > 0)
+        pref = dm.getValute().getString("CHV");
+    
+    return pref + " " + Aus.formatBigDecimal(dineto.
+        multiply(raSaldaKonti.getJedVal(getOZNVAL())).
+        divide(getTECAJ(), 2, BigDecimal.ROUND_HALF_UP)) +
+        (ispTecaj ? "\n" + Aus.formatBigDecimal(getTECAJ()) : "");
+  }
+  
+  public String getDVIZNOS() {
+    if (raSaldaKonti.isDomVal(ds)) return "";
+    return "Iznos u valuti:" + (ispTecaj ? "\nTeèaj:" : "");
+  }
 
   boolean isHide() {
     return hideKup && (ds.getString("VRDOK").equals("GOT") ||
@@ -1815,6 +1882,7 @@ public BigDecimal getIPRODSP() {
   boolean specChars = false;
   boolean iznosPop = false;
   boolean showPop = false;
+  boolean ispTecaj = false;
   private void setParams() {
     modParams();
     conVl = frmParam.getParam("robno","ConVl","N",
@@ -1835,6 +1903,9 @@ public BigDecimal getIPRODSP() {
         "Prefiks ispred imena partnera");
     specForm = frmParam.getParam("robno", "specForm", "",
         "Custom format broja izlaznog dokumenta na ispisu");
+    ispTecaj = frmParam.getParam("robno", "ispTecaj", "N",
+      "Ispis teèaja zajedno s iznosom u valuti (D,N)").equalsIgnoreCase("D");
+    
     if (prefn.length() > 0) prefn = prefn + "\n";
   }
 
