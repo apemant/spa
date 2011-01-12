@@ -528,6 +528,8 @@ public class JlrNavField extends JraTextField {
 	    int sm;
 	    if (newSearchMode == 1) {//da ne gnoji po parametrima samo jedinicu upisi default text i ostalo
 	      sm = Integer.parseInt(frmParam.getParam("sisfun","srchmodrplc"+1,"1","Koji search mode u JlrNavFieldu podmetnuti umjesto 1?"));
+	      if (sm == 3) sm = 4;
+	      if (sm == 33) sm = 3;
 	    } else {
 	      String param = frmParam.getParam("sisfun","srchmodrplc"+newSearchMode);
 	      if (param!=null) {
@@ -562,6 +564,10 @@ public class JlrNavField extends JraTextField {
         break;
       case 3:
         luModeENTER = lD.EXACTIC;
+        luModeF9 = lD.TEXT | lD.F9;
+        break;
+      case 4:
+        luModeENTER = NULL;
         luModeF9 = lD.TEXT | lD.F9;
         break;
     }
