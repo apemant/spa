@@ -245,7 +245,7 @@ public class frmPartneri extends raMatPodaci {
     jlrPBR.setNavButton(jbGetMj);
     jlrPBR.setFocusLostOnShow(false);
     jlrPBR.setAfterLookUpOnClear(false);
-    jlrPBR.setSearchMode(3);
+    jlrPBR.setSearchMode(1);
 
     jlrMJ.setSearchMode(-1);
     jlrMJ.setColumnName("MJ");
