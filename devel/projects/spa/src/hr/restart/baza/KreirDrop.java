@@ -173,15 +173,13 @@ public abstract class KreirDrop {
   }
   
   public static void loadData(StorageDataSet dest, File file) {
-  	String sep = dM.isMinimal() ? null : frmParam.getParam("sisfun", "dumpSeparator");
-  	if (sep == null || sep.length() != 1 || sep.equals(",")) sep = "#";
+  	String sep = Aus.getDumpSeparator();
   	
   	loadData(dest, null, file, sep);
   }
   
   public static void loadData(StorageDataSet dest, String cols, File file) {
-  	String sep = dM.isMinimal() ? null : frmParam.getParam("sisfun", "dumpSeparator");
-  	if (sep == null || sep.length() != 1 || sep.equals(",")) sep = "#";
+    String sep = Aus.getDumpSeparator();
   	
   	loadData(dest, cols, file, sep);
   }
@@ -604,9 +602,7 @@ public abstract class KreirDrop {
     String fieldLine = getFieldNames(dir, name).toUpperCase();
     try {
       HashMap rowData = track == null ? null : new HashMap();
-      String sep = dM.isMinimal() ? null : 
-        frmParam.getParam("sisfun", "dumpSeparator");
-      if (sep == null || sep.length() != 1 || sep.equals(",")) sep = "#";
+      String sep = Aus.getDumpSeparator();
 
 /*      String typesLine = getFieldTypes(fieldLine);
       fieldLine = getExistingFields(fieldLine);
@@ -768,9 +764,7 @@ public abstract class KreirDrop {
     String enc = TextFile.getEncoding();
     String fields = (defcontent==null)?getFieldNames(dir, name):defcontent;
     try {
-      String sep = dM.isMinimal() ? null : 
-          frmParam.getParam("sisfun", "dumpSeparator");
-      if (sep == null || sep.length() != 1 || sep.equals(",")) sep = "#";
+      String sep = Aus.getDumpSeparator();
 
       TextFile dat = TextFile.read(new File(dir, name + ".dat"));
       if (dat == null)
@@ -899,8 +893,7 @@ public abstract class KreirDrop {
   }
   
   public int dumpSegments(File dir, Condition[] segs) {
-    String sep = frmParam.getParam("sisfun", "dumpSeparator");
-    if (sep == null || sep.length() != 1 || sep.equals(",")) sep = "#";
+    String sep = Aus.getDumpSeparator();
     
     String name = origColumns[0].getTableName().toLowerCase();
     dir = resolveFile(dir);
@@ -968,8 +961,7 @@ public abstract class KreirDrop {
     }
     int row = 0;
     try {
-      String sep = frmParam.getParam("sisfun", "dumpSeparator");
-      if (sep == null || sep.length() != 1 || sep.equals(",")) sep = "#";
+      String sep = Aus.getDumpSeparator();
 
       for (ds.first(); ds.inBounds(); ds.next()) {
         dat.out(getFieldsLine(ds, sep));
