@@ -229,7 +229,7 @@ final public class raRAC extends raIzlazTemplate {
                 "Matri\u010Dni ispis ra\u010Duna");
         
         //test
-        raMaster.getRepRunner().addReport("hr.restart.robno.repRac",
+        raMaster.getRepRunner().addReport("hr.restart.robno.repInvoice",
                 "hr.restart.robno.repIzlazni","ProformaInvoice","Invoice");
         //test
 
@@ -287,7 +287,7 @@ final public class raRAC extends raIzlazTemplate {
                 "Matri\u010Dni ispis ra\u010Duna");
         
         //test
-        raDetail.getRepRunner().addReport("hr.restart.robno.repRac",
+        raDetail.getRepRunner().addReport("hr.restart.robno.repInvoice",
                 "hr.restart.robno.repIzlazni","ProformaInvoice","Invoice");
         //test
     }
@@ -308,7 +308,7 @@ final public class raRAC extends raIzlazTemplate {
         MP.BindComp();
         DP.BindComp();
         if (frmParam.getParam("robno", "racSklad", "D", 
-            "Dodati skladište na RAC (D,N)").equals("D")) {
+            "Dodati skladište na RAC/PON (D,N)").equals("D")) {
           DP.rpcart.addSkladField(hr.restart.robno.Util.getSkladFromCorg());
         }
         DP.resizeDP();
