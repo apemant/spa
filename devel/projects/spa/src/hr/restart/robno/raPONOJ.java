@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import javax.swing.JOptionPane;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.raTransaction;
 
 public class raPONOJ extends raIzlazTemplate {
@@ -42,7 +43,7 @@ public class raPONOJ extends raIzlazTemplate {
 				"Ponuda 2 red u valuti");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaNop",
             "hr.restart.robno.repIzlazni", "PonudaNop", "Ponuda bez cijena stavki");
-		raMaster.getRepRunner().addReport("hr.restart.robno.repRac",
+		raMaster.getRepRunner().addReport("hr.restart.robno.repProformaInvoice",
             "hr.restart.robno.repIzlazni","ProformaInvoice2","Proforma Invoice");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repMxPON",
 				"Matri\u010Dni ispis ponude");
@@ -62,7 +63,7 @@ public class raPONOJ extends raIzlazTemplate {
 				"Ponuda 2 red u valuti");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaNop",
             "hr.restart.robno.repIzlazni", "PonudaNop", "Ponuda bez cijena stavki");
-		raDetail.getRepRunner().addReport("hr.restart.robno.repRac",
+		raDetail.getRepRunner().addReport("hr.restart.robno.repProformaInvoice",
             "hr.restart.robno.repIzlazni","ProformaInvoice2","Proforma Invoice");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repMxPON",
 				"Matri\u010Dni ispis ponude");
@@ -97,7 +98,10 @@ public class raPONOJ extends raIzlazTemplate {
 		rCD.setisNeeded(false);
 		MP.BindComp();
 		DP.BindComp();
-		DP.rpcart.addSkladField(hr.restart.robno.Util.getSkladFromCorg());
+		if (frmParam.getParam("robno", "racSklad", "D", 
+          "Dodati skladište na RAC/PON (D,N)").equals("D")) {
+          DP.rpcart.addSkladField(hr.restart.robno.Util.getSkladFromCorg());
+        }
 		DP.resizeDP();
 
 		this.setVisibleColsMaster(new int[] { 4, 5, 9 });
