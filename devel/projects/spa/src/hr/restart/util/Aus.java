@@ -248,6 +248,11 @@ public class Aus {
         setScale(ds.getBigDecimal(dest).scale(), BigDecimal.ROUND_HALF_UP));
   }
   
+  public static void div(ReadWriteRow ds, String dest, BigDecimal num) {
+    ds.setBigDecimal(dest, ds.getBigDecimal(dest).divide(num, 
+        ds.getBigDecimal(dest).scale(), BigDecimal.ROUND_HALF_UP));
+  }
+  
   public static void mul(ReadWriteRow ds, String dest, ReadRow row, String src) {
     mul(ds, dest, row.getBigDecimal(src));
   }
@@ -1259,6 +1264,18 @@ public class Aus {
     for (long tim = System.currentTimeMillis() + off++; tim > 0; tim >>>= 6)
       ret.insert(0, sixBitChars[(int) tim & 63]);
     return ret.toString();
+  }
+
+  public static String getDumpSeparator() {
+    String sep = null;
+    try {
+      if (!dM.isMinimal())
+        sep = frmParam.getParam("sisfun", "dumpSeparator");
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+    }
+    if (sep == null || sep.length() != 1 || sep.equals(",")) sep = "#";
+    return sep;
   }
   
   public static String convertToURLFriendly(String orig) {
