@@ -508,8 +508,7 @@ public class frmTableDataView extends JraFrame {
     JraTableInterface t = jp.getMpTable();
     String sep = ";";
     Object elem;
-    if (dump) sep = hr.restart.sisfun.frmParam.getParam("sisfun", "dumpSeparator");
-    if (sep == null || sep.trim().equals("") || sep.trim().equals(",")) sep = "#";
+    if (dump) sep = Aus.getDumpSeparator();
 
     try {
       for (int i = 0; i < t.getRowCount(); i++) {
