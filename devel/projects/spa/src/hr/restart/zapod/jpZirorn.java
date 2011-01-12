@@ -62,6 +62,8 @@ public class jpZirorn extends JPanel {
   JraCheckBox jcbPromet = new JraCheckBox();
   JraTextField jraZiro = new JraTextField();
   JraTextField jraBanka = new JraTextField();
+  JraTextField jraIBAN = new JraTextField();
+  JraTextField jraSWIFT = new JraTextField();
   JraCheckBox jcbAktiv = new JraCheckBox();
   JlrNavField jlrBrojkonta = new JlrNavField();
   JlrNavField jlrNazivkonta = new JlrNavField();
@@ -100,7 +102,7 @@ public class jpZirorn extends JPanel {
 
     jpDetail.setLayout(lay);
     lay.setWidth(591);
-    lay.setHeight(325);
+    lay.setHeight(350);
 
     jcbAktiv.setColumnName("AKTIV");
     jcbAktiv.setDataSet(fZirorn.getRaQueryDataSet());
@@ -135,6 +137,10 @@ public class jpZirorn extends JPanel {
     jraZiro.setDataSet(fZirorn.getRaQueryDataSet());
     jraBanka.setColumnName("BANKA");
     jraBanka.setDataSet(fZirorn.getRaQueryDataSet());
+    jraSWIFT.setColumnName("SWIFT");
+    jraSWIFT.setDataSet(fZirorn.getRaQueryDataSet());
+    jraIBAN.setColumnName("IBAN");
+    jraIBAN.setDataSet(fZirorn.getRaQueryDataSet());
 
     jlrBrojkonta.setColumnName("BROJKONTA");
     jlrBrojkonta.setDataSet(fZirorn.getRaQueryDataSet());
@@ -210,41 +216,44 @@ public class jpZirorn extends JPanel {
     jlKnjOzn.setText("Oznaka");
     jlKnjNaziv.setText("Naziv");
     this.add(jpDetail, BorderLayout.CENTER);
-    jpDetail.add(jlKontoNaziv,  new XYConstraints(255, 242, -1, -1));
-    jpDetail.add(jlVrNalOzn,  new XYConstraints(150, 107, -1, -1));
-    jpDetail.add(jlVrNalNaziv,  new XYConstraints(255, 107, -1, -1));
-    jpDetail.add(jbSelBrojkonta,  new XYConstraints(555, 260, 21, 21));
+    jpDetail.add(jlKontoNaziv,  new XYConstraints(255, 267, -1, -1));
+    jpDetail.add(jlVrNalOzn,  new XYConstraints(150, 132, -1, -1));
+    jpDetail.add(jlVrNalNaziv,  new XYConstraints(255, 132, -1, -1));
+    jpDetail.add(jbSelBrojkonta,  new XYConstraints(555, 285, 21, 21));
     jpDetail.add(jbSelCorg, new XYConstraints(555, 30, 21, 21));
-    jpDetail.add(jbSelCvrnal,  new XYConstraints(555, 125, 21, 21));
-    jpDetail.add(jbSelOznval,  new XYConstraints(555, 185, 21, 21));
-    jpDetail.add(jcbDev,   new XYConstraints(150, 150, -1, -1));
-    jpDetail.add(jcbPromet,    new XYConstraints(150, 210, -1, -1));
-    jpDetail.add(jlBrojkonta,  new XYConstraints(15, 260, -1, -1));
+    jpDetail.add(jbSelCvrnal,  new XYConstraints(555, 150, 21, 21));
+    jpDetail.add(jbSelOznval,  new XYConstraints(555, 210, 21, 21));
+    jpDetail.add(jcbDev,   new XYConstraints(150, 175, -1, -1));
+    jpDetail.add(jcbPromet,    new XYConstraints(150, 235, -1, -1));
+    jpDetail.add(jlBrojkonta,  new XYConstraints(15, 285, -1, -1));
     jpDetail.add(jlCorg, new XYConstraints(15, 30, -1, -1));
-    jpDetail.add(jlCvrnal,  new XYConstraints(15, 125, -1, -1));
-    jpDetail.add(jlOznval,  new XYConstraints(15, 185, -1, -1));
+    jpDetail.add(jlCvrnal,  new XYConstraints(15, 160, -1, -1));
+    jpDetail.add(jlOznval,  new XYConstraints(15, 210, -1, -1));
     jpDetail.add(jlZiro, new XYConstraints(15, 55, -1, -1));
     jpDetail.add(jlBankaNaziv, new XYConstraints(15, 80, -1, -1));
-    jpDetail.add(jlrBrojkonta, new XYConstraints(150, 260, 100, -1));
+    jpDetail.add(jlrBrojkonta, new XYConstraints(150, 285, 100, -1));
     jpDetail.add(jlrCorg, new XYConstraints(150, 30, 100, -1));
-    jpDetail.add(jlrCval,  new XYConstraints(200, 185, 50, -1));
-    jpDetail.add(jlrCvrnal,   new XYConstraints(150, 125, 100, -1));
+    jpDetail.add(jlrCval,  new XYConstraints(200, 210, 50, -1));
+    jpDetail.add(jlrCvrnal,   new XYConstraints(150, 150, 100, -1));
     jpDetail.add(jlrNaziv, new XYConstraints(255, 30, 295, -1));
-    jpDetail.add(jlrNazivkonta,  new XYConstraints(255, 260, 295, -1));
-    jpDetail.add(jlrNazval,  new XYConstraints(255, 185, 295, -1));
-    jpDetail.add(jlrOpisvrnal,   new XYConstraints(255, 125, 295, -1));
-    jpDetail.add(jlrOznval,  new XYConstraints(150, 185, 45, -1));
+    jpDetail.add(jlrNazivkonta,  new XYConstraints(255, 285, 295, -1));
+    jpDetail.add(jlrNazval,  new XYConstraints(255, 210, 295, -1));
+    jpDetail.add(jlrOpisvrnal,   new XYConstraints(255, 150, 295, -1));
+    jpDetail.add(jlrOznval,  new XYConstraints(150, 210, 45, -1));
     jpDetail.add(jraZiro, new XYConstraints(150, 55, 400, -1));
     jpDetail.add(jraBanka, new XYConstraints(150, 80, 400, -1));
+    jpDetail.add(new JLabel("IBAN/SWIFT"), new XYConstraints(15, 105, -1, -1));
+    jpDetail.add(jraIBAN, new XYConstraints(150, 105, 275, -1));
+    jpDetail.add(jraSWIFT, new XYConstraints(430, 105, 120, -1));
     jpDetail.add(jcbAktiv, new XYConstraints(479, 7, 70, -1));
     jpDetail.add(jlKnjOzn, new XYConstraints(150, 12, -1, -1));
     jpDetail.add(jlKnjNaziv, new XYConstraints(255, 12, -1, -1));
-    jpDetail.add(jlKontoOzn,  new XYConstraints(150, 242, -1, -1));
+    jpDetail.add(jlKontoOzn,  new XYConstraints(150, 267, -1, -1));
     
-    jpDetail.add(jlKkonta,  new XYConstraints(15, 285, -1, -1));
-    jpDetail.add(jlrKkonta, new XYConstraints(150, 285, 100, -1));
-    jpDetail.add(jlrNazkkonta,  new XYConstraints(255, 285, 295, -1));
-    jpDetail.add(jbSelKkonta,  new XYConstraints(555, 285, 21, 21));
+    jpDetail.add(jlKkonta,  new XYConstraints(15, 310, -1, -1));
+    jpDetail.add(jlrKkonta, new XYConstraints(150, 310, 100, -1));
+    jpDetail.add(jlrNazkkonta,  new XYConstraints(255, 310, 295, -1));
+    jpDetail.add(jbSelKkonta,  new XYConstraints(555, 310, 21, 21));
     
     jcbDev.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
