@@ -332,6 +332,8 @@ BROJKONTA;text;8;;;Konto prometa
 PROMET;text;1;;N;Stavka prometa
 KONTOKOMP;text;8;;;Konto kompenzacija
 BANKA;text;50;;;Banka
+IBAN;text;40;;;IBAN
+SWIFT;text;30;;;Swift
 
 $Kumulradarh
 LOKK;char;1;;N;Status zauzetosti;*
@@ -905,7 +907,7 @@ AKTIV;char;1;;D;AKTIV;*
 CART;int;6;pkey;;Šifra;4
 CART1;char;20;;;Oznaka;11
 BC;char;20;;;Barcode;10
-NAZART;char;50;;;Naziv;20
+NAZART;char;75;;;Naziv;20
 JM;char;3;;;Jm
 CPOR;char;5;;;Porez
 CGRART;char;10;;;Grupa
@@ -945,7 +947,7 @@ POSTOINV;numeric;15,3;;0;Postotak otpisa
 TIPINV;char;1;;I;Naèin kalk. dopuš. manjka
 CVRSUBJ;short;2;;;Vrsta subjekta
 CSUBRN;char;20;;;Subjekt;15
-NAZPRI;char;50;;;Naziv za prikaz;20
+NAZPRI;char;75;;;Naziv za prikaz;20
 CAN;char;6;;;Dodatni opis
 KASA;char;1;;D;Artikl za kasu
 POV;char;1;;N;Povratna naknada
@@ -1061,7 +1063,7 @@ RBR;short;2;pkey;;Rbr;4
 CART;int;6;;;Šifra;7
 CART1;char;20;;;Oznaka;12
 BC;char;20;;;Barcode;21
-NAZART;char;50;;;Naziv;25
+NAZART;char;75;;;Naziv;25
 JM;char;3;;;JM;4
 CRADNAL;char;30;;;Radni nalog;15
 KOL;numeric;15,3;;0;Kolièina;10
