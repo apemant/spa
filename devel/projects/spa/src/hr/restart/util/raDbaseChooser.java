@@ -274,7 +274,7 @@ public class raDbaseChooser extends JDialog {
       int mcdb = Integer.parseInt(IntParam.getTag("maxchoosedb"));
       if (mcdb > 0) return mcdb;
     } catch (Exception e) {
-      e.printStackTrace();
+      //e.printStackTrace();
     }
     return 32;
   }
