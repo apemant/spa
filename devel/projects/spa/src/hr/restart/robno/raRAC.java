@@ -196,6 +196,10 @@ final public class raRAC extends raIzlazTemplate {
         raMaster.getRepRunner().addReport("hr.restart.robno.repRacUsluga",
                 "hr.restart.robno.repUslIzlazni", "RacUsluga",
                 ReportValuteTester.titleRAC1USL);
+        raMaster.getRepRunner().addReport("hr.restart.robno.repRacValSingle",
+            "hr.restart.robno.repIzlazni", "RacValSingle", 
+            "Raèun s valutom bez kolièina");
+
         /*
          * flipflop = getMasterSet().getString("PARAM").equalsIgnoreCase("_A_");
          * if (flipflop) { raAutomatRac.getraAutomatRac().prepareQuery();
@@ -216,8 +220,8 @@ final public class raRAC extends raIzlazTemplate {
                 "hr.restart.robno.repIzlazni", "Rac2",
                 ReportValuteTester.titleRAC2RV);
         raMaster.getRepRunner().addReport("hr.restart.robno.repRacRnal",
-                "hr.restart.robno.repIzlazni", "RacRnal", // "RacRnal",
-                ReportValuteTester.titleRACFROMRNAL);
+            "hr.restart.robno.repIzlazni", "RacRnal", // "RacRnal",
+            ReportValuteTester.titleRACFROMRNAL);
         raMaster.getRepRunner().addReport("hr.restart.robno.repPonuda",
                 "hr.restart.robno.repIzlazni", "Ponuda", "Ponuda iz raèuna");
         
@@ -262,6 +266,9 @@ final public class raRAC extends raIzlazTemplate {
         raDetail.getRepRunner().addReport("hr.restart.robno.repRacUsluga",
             "hr.restart.robno.repUslIzlazni", "RacUsluga",
             ReportValuteTester.titleRAC1USL);
+        raDetail.getRepRunner().addReport("hr.restart.robno.repRacValSingle",
+            "hr.restart.robno.repIzlazni", "RacValSingle", 
+            "Raèun s valutom bez kolièina");
 
         raDetail.getRepRunner().addReport("hr.restart.robno.repRac2",
             "hr.restart.robno.repIzlazni", "Rac2",
