@@ -476,7 +476,8 @@ public class ElixirToJasperConverter {
     setBounds(tf, m);
     setFont(tf, m);
     setBox(tf, m);
-    if (tf.getHeight() > tf.getFontSize() * 2) {
+    if (tf.getHeight() > tf.getFontSize() * 2 && 
+        tf.getHorizontalAlignment() != JRAlignment.HORIZONTAL_ALIGN_CENTER) {
       tf.setVerticalAlignment(JRAlignment.VERTICAL_ALIGN_TOP);
     }
     if (tf.getHeight() > tf.getFontSize() * 2 &&
