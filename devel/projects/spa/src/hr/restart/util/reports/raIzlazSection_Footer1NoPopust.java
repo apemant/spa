@@ -94,10 +94,6 @@ public class raIzlazSection_Footer1NoPopust extends raReportSection {
   public raReportElement LabelSlovima_;
   private String[] LabelSlovima_Props = new String[] {"Slovima :", "", "", "1240", "840", "220", "", 
      "", "", "", "", "", "Lucida Bright", "8", "", "", "", ""};
-  public raReportElement TextNAPOMENAOPIS;
-  private String[] TextNAPOMENAOPISProps = new String[] {"NAPOMENAOPIS", "", "", "", "", "", "Yes", 
-     "Yes", "", "1660", "10580", "680", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", 
-     "", ""};
 
   public raIzlazSection_Footer1NoPopust(raReportTemplate owner) {
     super(owner.template.getModel(raElixirProperties.SECTION_FOOTER + 1));
@@ -135,7 +131,6 @@ public class raIzlazSection_Footer1NoPopust extends raReportSection {
     Line3 = addModel(ep.LINE, Line3Props);
     TextSLOVIMA = addModel(ep.TEXT, TextSLOVIMAProps);
     LabelSlovima_ = addModel(ep.LABEL, LabelSlovima_Props);
-    TextNAPOMENAOPIS = addModel(ep.TEXT, TextNAPOMENAOPISProps);
   }
 
   private void modifyThis() {
