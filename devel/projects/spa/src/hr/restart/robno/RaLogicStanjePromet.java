@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
@@ -26,6 +27,7 @@ import hr.restart.util.raGlob;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import com.borland.dx.dataset.Column;
@@ -147,7 +149,16 @@ public class RaLogicStanjePromet {
     povratTmp.setSort(new SortDescriptor(new String[] {"DATDOK"}));
     povratTmp.first();
     
+    DataSet art = Aus.q("SELECT cart,vrart FROM artikli");
+    HashSet nost = new HashSet();
+    for (art.first(); art.inBounds(); art.next())
+      if (!raVart.isStanje(art)) 
+        nost.add(Integer.valueOf(art.getInt("CART")));
+    
+    System.out.println(nost);
+    
     do {
+      if (nost.contains(Integer.valueOf(povratTmp.getInt("CART")))) continue;
       if (ld.raLocate(povratImovine,
           new String[] {"CART","CSKL"},
           new String[] {povratTmp.getInt("CART")+"",povratTmp.getString("CSKL")})){
