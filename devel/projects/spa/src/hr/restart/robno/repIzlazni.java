@@ -573,6 +573,11 @@ public class repIzlazni implements raReportData {
   public BigDecimal getTECAJ() {
     return ds.getBigDecimal("TECAJ");
   }
+  
+  public String getTECTRI() {
+    return Aus.formatBigDecimal(ds.getBigDecimal("TECAJ")
+        .setScale(3, BigDecimal.ROUND_HALF_UP));
+  }
 
   public String getBRNAL() {
     return ds.getString("BRNAL");
@@ -772,6 +777,14 @@ public class repIzlazni implements raReportData {
 
   public double getINETO() {
     return ds.getBigDecimal("INETO").doubleValue();
+  }
+  
+  public BigDecimal getIPRODBPV() {
+    if (getTECAJ().signum() == 0) 
+      return ds.getBigDecimal("IPRODBP");
+    return ds.getBigDecimal("IPRODBP").
+      multiply(raSaldaKonti.getJedVal(getOZNVAL())).
+      divide(getTECAJ(), 2, BigDecimal.ROUND_HALF_UP);
   }
   
   public double getINETOP() {
@@ -1321,27 +1334,28 @@ public BigDecimal getIPRODSP() {
     return dm.getZirorn().getString("BANKA");
   }
   
-  public BigDecimal getDINETO() {
-    return dineto;
+  public String getDINETO() {
+    return Aus.formatBigDecimal(dineto);
   }
   
-  public BigDecimal getDIBP() {
-    return diprodbp;
+  public String getDIBP() {
+    return Aus.formatBigDecimal(diprodbp);
   }
   
-  public BigDecimal getDISP() {
-    return diprodsp;
+  public String getDISP() {
+    return Aus.formatBigDecimal(diprodsp);
   }
   
   public String getDVINETO() {
     if (raSaldaKonti.isDomVal(ds)) return "";
     
-    String pref = "(" + getOZNVAL() + ")";
+    String pref = "(" + getOZNVAL() + ") ";
     if (lD.raLocate(dm.getValute(), "OZNVAL", getOZNVAL()))
       if (dm.getValute().getString("CHV").length() > 0)
-        pref = dm.getValute().getString("CHV");
+        pref = dm.getValute().getString("CHV") + " ";
+    if (!prefv) pref = "";
     
-    return pref + " " + Aus.formatBigDecimal(dineto.
+    return pref + Aus.formatBigDecimal(dineto.
         multiply(raSaldaKonti.getJedVal(getOZNVAL())).
         divide(getTECAJ(), 2, BigDecimal.ROUND_HALF_UP)) +
         (ispTecaj ? "\n" + Aus.formatBigDecimal(getTECAJ()) : "");
@@ -1350,12 +1364,13 @@ public BigDecimal getIPRODSP() {
   public String getDVIBP() {
     if (raSaldaKonti.isDomVal(ds)) return "";
     
-    String pref = "(" + getOZNVAL() + ")";
+    String pref = "(" + getOZNVAL() + ") ";
     if (lD.raLocate(dm.getValute(), "OZNVAL", getOZNVAL()))
       if (dm.getValute().getString("CHV").length() > 0)
-        pref = dm.getValute().getString("CHV");
+        pref = dm.getValute().getString("CHV") + " ";
+    if (!prefv) pref = "";
     
-    return pref + " " + Aus.formatBigDecimal(dineto.
+    return pref + Aus.formatBigDecimal(dineto.
         multiply(raSaldaKonti.getJedVal(getOZNVAL())).
         divide(getTECAJ(), 2, BigDecimal.ROUND_HALF_UP)) +
         (ispTecaj ? "\n" + Aus.formatBigDecimal(getTECAJ()) : "");
@@ -1364,12 +1379,13 @@ public BigDecimal getIPRODSP() {
   public String getDVISP() {
     if (raSaldaKonti.isDomVal(ds)) return "";
     
-    String pref = "(" + getOZNVAL() + ")";
+    String pref = "(" + getOZNVAL() + ") ";
     if (lD.raLocate(dm.getValute(), "OZNVAL", getOZNVAL()))
       if (dm.getValute().getString("CHV").length() > 0)
-        pref = dm.getValute().getString("CHV");
+        pref = dm.getValute().getString("CHV") + " ";
+    if (!prefv) pref = "";
     
-    return pref + " " + Aus.formatBigDecimal(dineto.
+    return pref + Aus.formatBigDecimal(dineto.
         multiply(raSaldaKonti.getJedVal(getOZNVAL())).
         divide(getTECAJ(), 2, BigDecimal.ROUND_HALF_UP)) +
         (ispTecaj ? "\n" + Aus.formatBigDecimal(getTECAJ()) : "");
@@ -1883,6 +1899,8 @@ public BigDecimal getIPRODSP() {
   boolean iznosPop = false;
   boolean showPop = false;
   boolean ispTecaj = false;
+  boolean prefv = false;
+  
   private void setParams() {
     modParams();
     conVl = frmParam.getParam("robno","ConVl","N",
@@ -1905,6 +1923,8 @@ public BigDecimal getIPRODSP() {
         "Custom format broja izlaznog dokumenta na ispisu");
     ispTecaj = frmParam.getParam("robno", "ispTecaj", "N",
       "Ispis teèaja zajedno s iznosom u valuti (D,N)").equalsIgnoreCase("D");
+    prefv = frmParam.getParam("robno", "prefVal", "N",
+      "Ispis prefiksa ispred iznosa u valuti (D,N)").equalsIgnoreCase("D");
     
     if (prefn.length() > 0) prefn = prefn + "\n";
   }
