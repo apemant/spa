@@ -158,6 +158,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	
 	boolean isTranzit = false;
 	
+	boolean isSingleKOL = false;
+	
 	boolean isMinusAllowed = false;
 	
 	boolean autoval = false;
@@ -541,6 +543,9 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	        TD.isCsklSklad(what_kind_of_dokument) && 
 	        lD.raLocate(dm.getSklad(), "CSKL", cskl) &&
 	        dm.getSklad().getString("VRSKL").equals("Z");
+	    
+	    isSingleKOL = frmParam.getParam("robno", "singleKOL", "N",
+            "Defaultna kolièina od 1 kom (D,N)?").equals("D");
 	    
 	    isMinusAllowed = frmParam.getParam("robno", "allowMinus", "N",
 	        "Dopustiti odlazak u minus na izlazima (D,N)?").equals("D");
@@ -1288,7 +1293,9 @@ ST.prn(radninal);
 			EntryDetail(mode);
 			tmpIPRODSP = getDetailSet().getBigDecimal("IPRODSP");
 			tmpIRAZ = getDetailSet().getBigDecimal("IRAZ");
-			DP.jtfKOL.requestFocus();
+			if (isSingleKOL && DP.jraFC.isShowing())
+			  DP.jraFC.requestFocus();
+			else DP.jtfKOL.requestFocus();
 			vttext = null;
 		} else if (mode == 'N') {
 			vttext = null;

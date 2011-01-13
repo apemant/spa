@@ -22,6 +22,7 @@ import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.JraTextMultyKolField;
 import hr.restart.swing.JraToggleButton;
+import hr.restart.util.Aus;
 import hr.restart.util.raCommonClass;
 
 import java.awt.BorderLayout;
@@ -80,7 +81,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 
 	raCommonClass rcc = raCommonClass.getraCommonClass();
 
-	String tmpText;
+	String tmpText = "";
 
 	String what_kind_of_dokument;
 
@@ -152,11 +153,16 @@ public class rajpIzlazDPTemplate extends JPanel {
 				if ( fDI instanceof raDOS) {
 					jtfKOL2.requestFocus();
 					jtfKOL2.selectAll();
-				}
-				else {
+				} else if (jraFC.isShowing() && fDI.isSingleKOL) {
+				  fDI.getDetailSet().setBigDecimal("KOL", Aus.one0);
+				  fDI.Kalkulacija(jtfKOL, "KOL");
+				  jraFC.requestFocus();
+				  jraFC.selectAll();
+				} else {
 					jtfKOL.requestFocus();
 					jtfKOL.selectAll();
 				}
+				System.out.println("afterlook2");
 			}
 		});
 
