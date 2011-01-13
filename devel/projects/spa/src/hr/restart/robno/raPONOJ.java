@@ -36,6 +36,9 @@ public class raPONOJ extends raIzlazTemplate {
 		raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaV",
 				"hr.restart.robno.repIzlazni", "Ponuda",
 				"Ponuda 1 red u valuti");
+		raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaValSingle",
+            "hr.restart.robno.repIzlazni", "PonudaValSingle", 
+            "Ponuda s valutom bez kolièina");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repPonuda2",
 				"hr.restart.robno.repIzlazni", "Ponuda2", "Ponuda 2 red");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repPonuda2V",
@@ -56,6 +59,9 @@ public class raPONOJ extends raIzlazTemplate {
 		raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaV",
 				"hr.restart.robno.repIzlazni", "Ponuda",
 				"Ponuda 1 red u valuti");
+		raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaValSingle",
+            "hr.restart.robno.repIzlazni", "PonudaValSingle", 
+            "Ponuda s valutom bez kolièina");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repPonuda2",
 				"hr.restart.robno.repIzlazni", "Ponuda2", "Ponuda 2 red");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repPonuda2V",
