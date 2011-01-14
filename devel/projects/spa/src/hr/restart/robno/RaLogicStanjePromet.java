@@ -153,12 +153,12 @@ public class RaLogicStanjePromet {
     HashSet nost = new HashSet();
     for (art.first(); art.inBounds(); art.next())
       if (!raVart.isStanje(art)) 
-        nost.add(Integer.valueOf(art.getInt("CART")));
+        nost.add(new Integer(art.getInt("CART")));
     
     System.out.println(nost);
     
     do {
-      if (nost.contains(Integer.valueOf(povratTmp.getInt("CART")))) continue;
+      if (nost.contains(new Integer(povratTmp.getInt("CART")))) continue;
       if (ld.raLocate(povratImovine,
           new String[] {"CART","CSKL"},
           new String[] {povratTmp.getInt("CART")+"",povratTmp.getString("CSKL")})){
