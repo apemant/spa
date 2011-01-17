@@ -597,8 +597,13 @@ public class dlgRunReport {
       // modificiraj report header i footer ako treba
       if (rd.isCustomIzlaz()) {
         if (rd.isPrintLogo()) {
-          modifySectionIfNeeded(corg, "H", "I", "PH", null);
-          modifySectionIfNeeded(corg, "F", "I", "PF", null);
+          if (rd.isForeignIzlaz()) {
+            modifySectionIfNeeded(corg, "H", "I", "PH2", null);
+            modifySectionIfNeeded(corg, "F", "I", "PF2", null);
+          } else {
+            modifySectionIfNeeded(corg, "H", "I", "PH", null);
+            modifySectionIfNeeded(corg, "F", "I", "PF", null);
+          }
         }
         if (frmParam.getParam("robno", "singleSF", "N", "Podnožje izlaznih dokumenata " +
         		"kao jedna cjelina (D/N)").equalsIgnoreCase("D")) {

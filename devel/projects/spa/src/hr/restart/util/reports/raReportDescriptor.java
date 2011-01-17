@@ -326,8 +326,14 @@ public class raReportDescriptor {
 
   public boolean isCustomIzlaz() {
     QueryDataSet rd = dM.getDataModule().getReportdef();
+    return (lookupData.getlookupData().raLocate(rd, "ID", providerName) &&
+       "D".equalsIgnoreCase(rd.getString("IZLAZNI"))) || isForeignIzlaz();
+  }
+  
+  public boolean isForeignIzlaz() {
+    QueryDataSet rd = dM.getDataModule().getReportdef();
     return lookupData.getlookupData().raLocate(rd, "ID", providerName) &&
-       "D".equalsIgnoreCase(rd.getString("IZLAZNI"));
+       "F".equalsIgnoreCase(rd.getString("IZLAZNI"));
   }
   
   public boolean shouldPrintLogo() {
@@ -488,7 +494,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repRac2V", "RAC", "D", ""},
       {"hr.restart.robno.repRacPnP", "ROT", "D", ""},
       {"hr.restart.robno.repRacRnal", "RAC", "D", ""},
-      {"hr.restart.robno.repInvoice", "IVO", "D", ""},
+      {"hr.restart.robno.repInvoice", "IVO", "F", ""},
       {"hr.restart.robno.repNarudzba", "NAR", "D", ""},
       {"hr.restart.robno.repNarudzba2", "NAR", "D", ""},
       {"hr.restart.robno.repNarudzbaV", "NAR", "D", ""},
@@ -503,7 +509,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repPonuda2Kup", "PON", "D", ""},
       {"hr.restart.robno.repPonudaVKup", "PON", "D", ""},
       {"hr.restart.robno.repPonuda2VKup", "PON", "D", ""},
-      {"hr.restart.robno.repProformaInvoice", "PIV", "D", ""},
+      {"hr.restart.robno.repProformaInvoice", "PIV", "F", ""},
       {"hr.restart.robno.repUpitPonuda", "UZP", "D", ""},
       {"hr.restart.robno.repPredracuni", "PRD", "D", ""},
       {"hr.restart.robno.repPredracuni2", "PRD", "D", ""},
