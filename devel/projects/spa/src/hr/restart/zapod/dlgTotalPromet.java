@@ -141,7 +141,7 @@ public class dlgTotalPromet {
     if (g < 20) g = 2000 + g;
     else if (g < 100) g = 1900 + g;
 
-    if (g < 1950 || g > 2010) {
+    if (g < 1950 || g > 2100) {
       JOptionPane.showMessageDialog(owner, "Pogrešna godina!", "Greška",
                                     JOptionPane.ERROR_MESSAGE);
       return false;
