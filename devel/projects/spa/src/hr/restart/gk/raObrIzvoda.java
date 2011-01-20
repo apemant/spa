@@ -142,7 +142,23 @@ public class raObrIzvoda {
 //System.out.println("jedval = "+jedval);
 ////////////////////////
     for (gk.first(); gk.inBounds(); gk.next()) {
-      if (gk.getString("OZNVAL").equals("")) {
+      if (!raSaldaKonti.isDomVal(fiz_oznval)) {
+        
+        if (!raKnjizenjeSK.getRaKnjizenjeSK().copyGKstavka(gk, pokriv, fiz_ziro, fiz_oznval)) {
+          System.out.println("raKnjizenjeSK.copyGKstavka FAILED !!!");
+          System.out.println("row = "+gk);
+          return false;
+        }
+        BigDecimal pvID = gk.getBigDecimal("ID");
+        BigDecimal devID = gk.getBigDecimal("DEVID");
+        BigDecimal pvIP = gk.getBigDecimal("IP");
+        BigDecimal devIP = gk.getBigDecimal("DEVIP");
+        gk.setBigDecimal("DEVID", pvID);
+        gk.setBigDecimal("DEVIP", pvIP);
+        gk.setBigDecimal("ID", devID);
+        gk.setBigDecimal("IP", devIP);
+        gk.setString("OZNVAL", fiz_oznval);
+      } else if (gk.getString("OZNVAL").equals("")) {
 ////////////////////////
 //System.out.println("KNJIZENJE PO VALUTI: "+fiz_oznval);
 //System.out.println("ID = "+gk.getBigDecimal("ID"));
@@ -282,11 +298,20 @@ System.out.println("Nema valute FAILED !!!");
     // ab.f iskljuci kompenzacije iz proracuna
     BigDecimal kID = Aus.sum("ID", fIzvodi.getDetailSet(), "POKRIVENO", "K");
     BigDecimal kIP = Aus.sum("IP", fIzvodi.getDetailSet(), "POKRIVENO", "K");
+
+    BigDecimal devID = Aus.sum("DEVID", fIzvodi.getDetailSet());
+    BigDecimal devIP = Aus.sum("DEVIP", fIzvodi.getDetailSet());
     
     if (brojkomp.length() > 0) {
       addStavkaPrometa(brojkonta, izIP.subtract(kIP), izID.subtract(kID), getOpisPrometaIzvoda());
       addStavkaPrometa(brojkomp, kIP, kID, getOpisKompIzvoda());
     } else addStavkaPrometa(brojkonta, izIP, izID, getOpisPrometaIzvoda());
+    
+    if (fIzvodi.devizni) {
+      fIzvodi.getDetailSet().setBigDecimal("DEVID", devIP);
+      fIzvodi.getDetailSet().setBigDecimal("DEVIP", devID);
+      fIzvodi.getDetailSet().setString("OZNVAL", fIzvodi.oznval);
+    }
     
     // ab.f end
     //    fIzvodi.knjizenje.getFNalozi().getMasterSet().saveChanges();

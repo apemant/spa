@@ -159,6 +159,7 @@ public class frmIzvodi extends raMasterDetail {
     jpDetail.jraTecaj.setVisible(devizni);
     jpDetail.jraTecaj.setEnabled(devizni);
     jpDetail.jlaTecaj.setVisible(devizni);
+    jpDetail.jpDev.setVisible(devizni);
   }
   public void Funkcija_ispisa_detail() {
     raDetail.getJpTableView().enableEvents(false);
@@ -582,6 +583,8 @@ public class frmIzvodi extends raMasterDetail {
       if (!isLastIzvod()) {
         rcc.setLabelLaF(jpDetail.jraId,false);
         rcc.setLabelLaF(jpDetail.jraIp,false);
+        rcc.setLabelLaF(jpDetail.jraPvid,false);
+        rcc.setLabelLaF(jpDetail.jraPvip,false);
       }
     } else {
       findComboVrdok();
@@ -978,7 +981,7 @@ public class frmIzvodi extends raMasterDetail {
   private void setDevIznosVisible() {
     boolean devivisible = !devizni && devind;
     jpDetail.jpDevI.setVisible(devivisible);
-    jpDetail.lay.setHeight(devivisible ? 310 : 280);
+    jpDetail.lay.setHeight(devind ? 310 : 280);
   }
   
   /*private void setDevButtonVisible() {
@@ -1048,6 +1051,8 @@ public class frmIzvodi extends raMasterDetail {
   void setIdIp(boolean enid, boolean enip) {
     rcc.setLabelLaF(jpDetail.jraId, enid);
     rcc.setLabelLaF(jpDetail.jraIp, enip);
+    rcc.setLabelLaF(jpDetail.jraPvid, enid);
+    rcc.setLabelLaF(jpDetail.jraPvip, enip);
     if (enip)
       jpDetail.kcGroup.setNextComponent(jpDetail.jraIp);
     if (enid)
@@ -1119,10 +1124,22 @@ public class frmIzvodi extends raMasterDetail {
       setIdIp(false, false);
       getDetailSet().setBigDecimal("ID", nula);
       getDetailSet().setBigDecimal("IP", nula);
+      getDetailSet().setBigDecimal("PVID", nula);
+      getDetailSet().setBigDecimal("PVIP", nula);
       jpDetail.kcGroup.getJlrBROJKONTA().requestFocus();
       checkCopyEnabled();
     } else {
       raDetail.getOKpanel().jPrekid_actionPerformed();
+    }
+  }
+  
+  void calcTecaj(String dev, String kn) {
+    if (getDetailSet().getBigDecimal(dev).signum() != 0 &&
+        getDetailSet().getBigDecimal(kn).signum() != 0) {
+      BigDecimal jedval = raSaldaKonti.getJedVal(oznval);
+      getDetailSet().setBigDecimal("TECAJ", 
+          getDetailSet().getBigDecimal(kn).multiply(jedval).divide(
+              getDetailSet().getBigDecimal(dev), 6, BigDecimal.ROUND_HALF_UP));
     }
   }
 

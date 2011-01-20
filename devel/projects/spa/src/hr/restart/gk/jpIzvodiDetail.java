@@ -113,6 +113,8 @@ public class jpIzvodiDetail extends JPanel {
       if (jraId.getDataSet().getBigDecimal(jraId.getColumnName()).signum() != 0)
         jpDevI
             .setPVval(jraId.getDataSet().getBigDecimal(jraId.getColumnName()));
+      if (fIzvodi.devizni)
+        fIzvodi.calcTecaj("ID", "DEVID");
     }
     /*public void focusLost(FocusEvent e) {
       super.focusLost(e);
@@ -127,6 +129,8 @@ public class jpIzvodiDetail extends JPanel {
       if (jraIp.getDataSet().getBigDecimal(jraIp.getColumnName()).signum() != 0)
         jpDevI
             .setPVval(jraIp.getDataSet().getBigDecimal(jraIp.getColumnName()));
+      if (fIzvodi.devizni)
+        fIzvodi.calcTecaj("IP", "DEVIP");
     }
     /*public void focusLost(FocusEvent e) {
       super.focusLost(e);
@@ -135,6 +139,22 @@ public class jpIzvodiDetail extends JPanel {
             .setPVval(jraIp.getDataSet().getBigDecimal(jraIp.getColumnName()));
     }*/
   };
+  
+  JraTextField jraPvid = new JraTextField() {
+    public void valueChanged() {
+      if (fIzvodi.devizni)
+        fIzvodi.calcTecaj("ID", "DEVID");
+    }
+  };
+  
+  JraTextField jraPvip = new JraTextField() {
+    public void valueChanged() {
+      if (fIzvodi.devizni)
+        fIzvodi.calcTecaj("IP", "DEVIP");
+    }
+  };
+  
+  JPanel jpDev = new JPanel(new XYLayout(580, 25));
 
   JraTextField jraOpis = new JraTextField();
 
@@ -232,6 +252,10 @@ public class jpIzvodiDetail extends JPanel {
     jraId.setDataSet(fIzvodi.getDetailSet());
     jraIp.setColumnName("IP");
     jraIp.setDataSet(fIzvodi.getDetailSet());
+    jraPvid.setColumnName("DEVID");
+    jraPvid.setDataSet(fIzvodi.getDetailSet());
+    jraPvip.setColumnName("DEVIP");
+    jraPvip.setDataSet(fIzvodi.getDetailSet());
     jraOpis.setColumnName("OPIS");
     jraOpis.setDataSet(fIzvodi.getDetailSet());
     jraTecaj.setColumnName("TECAJ");
@@ -335,6 +359,13 @@ public class jpIzvodiDetail extends JPanel {
     jpDetail.add(kcGroup.getJlrNAZIVKONTA(), new XYConstraints(255, 160, 345,
         -1));
     jpDetail.add(jpDevI, new XYConstraints(0, 270, -1, -1));
+    
+    jpDev.add(new JLabel("Iznos u kunama"), new XYConstraints(15, 0, -1, -1));
+    jpDev.add(jraPvid, new XYConstraints(190, 0, 140, -1));
+    jpDev.add(jraPvip, new XYConstraints(420, 0, 140, -1));
+    
+    jpDetail.add(jpDev, new XYConstraints(0, 270, -1, -1));
+    
     this.add(jpDetail, BorderLayout.CENTER);
   }
 
