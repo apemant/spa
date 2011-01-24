@@ -2081,7 +2081,7 @@ INVOICE</Property>
           <Property Name="Visible">Yes</Property>
           <Property Name="Can Grow">Yes</Property>
           <Property Name="Can Shrink">Yes</Property>
-          <Property Name="Height">2440</Property>
+          <Property Name="Height">1640</Property>
           <Model Name="Text50">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text50</Property>
@@ -2096,7 +2096,7 @@ INVOICE</Property>
                <Property Name="Left">0</Property>
                <Property Name="Top">1620</Property>
                <Property Name="Width">10580</Property>
-               <Property Name="Height">680</Property>
+               <Property Name="Height">0</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
                <Property Name="Border Style">Transparent</Property>
