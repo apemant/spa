@@ -16,7 +16,10 @@
 **
 ****************************************************************************/
 package hr.restart.gk;
+import hr.restart.baza.Condition;
+import hr.restart.baza.Sifrarnici;
 import hr.restart.util.Aus;
+import hr.restart.util.lookupData;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -464,12 +467,7 @@ public class prepare2Zim {
     //      xstatz    alpha    1
           fhdeik9107.write(prepareString("",1,false));
     //      xnac      alpha    2
-          int razlika = (int) Math.round((forKnjizenje.getTimestamp("DATDOSP").getTime() -
-                        forKnjizenje.getTimestamp("DATDOK").getTime()) /
-                        (1000 * 60 * 60 * 24.));
-
-          if (razlika >99) razlika = 99; // namjerna greska zbog dva alpha znaka ako je vece od 99 !!!!
-          fhdeik9107.write(prepareString(String.valueOf(razlika) ,2,false));
+           fhdeik9107.write(prepareString(getXNAC(forKnjizenje) ,2,false));
     //      xsistdat  numeric  8
           fhdeik9107.write(prepareString("",8,false));
     //      ufa       alpha    8
@@ -489,6 +487,22 @@ public class prepare2Zim {
 
 //        if (!forKnjizenje.getString("URAIRA").equalsIgnoreCase("")) {
 
+  }
+
+  private QueryDataSet nacini = null;
+  private String getXNAC(DataSet fknji) {
+    int razlika = (int) Math.round((fknji.getTimestamp("DATDOSP").getTime() -
+        fknji.getTimestamp("DATDOK").getTime()) /
+        (1000 * 60 * 60 * 24.));
+    if (nacini == null) nacini = Sifrarnici.getDataModule().getTempSet(Condition.equal("VRSTASIF", "xnac"));
+    nacini.open();
+    if (lookupData.getlookupData().raLocate(nacini, "NAZIV", razlika+"")) {
+      return nacini.getString("CSIF").trim();
+    } else {
+      System.err.println("NIJE NADJEN sifrarniciXNAC za "+razlika);
+      return "0";
+    }
+//    if (razlika >99) razlika = 99; // namjerna greska zbog dva alpha znaka ako je vece od 99 !!!!
   }
 
   public void makeTransferFiles(boolean  saldak) {
