@@ -44,6 +44,7 @@ import hr.restart.zapod.dlgGetKnjig;
 import java.awt.Frame;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -160,13 +161,14 @@ public class CalcRazPor {
         dM.createBigDecimalColumn("OSNPOR1"),dM.createBigDecimalColumn("OSNPOR2"),dM.createBigDecimalColumn("OSNPOR3"),dM.createBigDecimalColumn("OSNPOR4"),dM.createBigDecimalColumn("OSNPOR5")});
     Util.fillReadonlyData(orgosn,"SELECT godobr, mjobr, max(osnpor1) as osnpor1, max(osnpor2) as osnpor2, max(osnpor3) as osnpor3, max(osnpor4) as osnpor4, max(osnpor5)  as osnpor5 " +
     		"from kumulorgarh where "+Condition.equal("CORG",corg)+" AND "+inqrange+" group by godobr, mjobr");
-    BigDecimal[] osn = getOsnovice(poros, orgosn);
-    BigDecimal[] stpo = raObracunPL.getInstance().getStopePoreza(cradnik);
+    BigDecimal[] osn = (_godina==2010)?getOsnovice2010(poros, orgosn):getOsnovice(poros, orgosn);
+    BigDecimal[] stpo = (_godina==2010)?getStopePo2010():raObracunPL.getInstance().getStopePoreza(cradnik);
     BigDecimal por1 = osn[0].multiply(stpo[0]);
     BigDecimal por2 = osn[1].multiply(stpo[1]);
     BigDecimal por3 = osn[2].multiply(stpo[2]);
     BigDecimal por4 = osn[3].multiply(stpo[3]);
-    BigDecimal poruk = por1.add(por2).add(por3).add(por4);
+    BigDecimal por5 = osn[4].multiply(stpo[4]);
+    BigDecimal poruk = por1.add(por2).add(por3).add(por4).add(por5);
     BigDecimal stpr = getPrirez(cradnik);
     BigDecimal prirez = poruk.multiply(stpr);
     BigDecimal porgod = getSum(raddata,"PORUK").add(kumrad.getBigDecimal("PORUK"));
@@ -181,10 +183,16 @@ public class CalcRazPor {
     addDetail(cradnik,52,"OSN2", "Osnovica za primjenu stope "+stpo[1], osn[1]);
     addDetail(cradnik,53,"OSN3", "Osnovica za primjenu stope "+stpo[2], osn[2]);
     addDetail(cradnik,54,"OSN4", "Osnovica za primjenu stope "+stpo[3], osn[3]);
+    //2010
+    addDetail(cradnik,55,"OSN5", "Osnovica za primjenu stope "+stpo[4], osn[4]);
+    
     addDetail(cradnik,61,"POR1", "Godišnji porez po stopi "+stpo[0], por1);
     addDetail(cradnik,62,"POR2", "Godišnji porez po stopi "+stpo[1], por2);
     addDetail(cradnik,63,"POR3", "Godišnji porez po stopi "+stpo[2], por3);
     addDetail(cradnik,64,"POR4", "Godišnji porez po stopi "+stpo[3], por4);
+    //2010
+    addDetail(cradnik,65,"POR5", "Godišnji porez po stopi "+stpo[4], por5);
+
     addDetail(cradnik,70,"PORUK", "Ukupni godišnji porez ", poruk);
     addDetail(cradnik,80,"PRIREZ", "Ukupni godišnji prirez ", prirez);
     addDetail(cradnik,90,"PORIPRIR", "Ukupna godišnja obveza poreza i prireza ", poruk.add(prirez));
@@ -221,14 +229,14 @@ public class CalcRazPor {
 //      BigDecimal parporos2 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR2").multiply(new BigDecimal(12))
 //      .add(parporos1.negate());
       BigDecimal parporos2 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR2").add(getSum(orgosn, "OSNPOR2"))
-          	  .add(parporos1.negate());
+      .add(parporos1.negate());
       if (poros.add(parporos1.negate()).compareTo(parporos2) >= 0) {
         ret[1] = parporos2;
         //osnpor3 
 //        BigDecimal parporos3 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR3").multiply(new BigDecimal(12))
 //    	  .add(parporos1.negate()).add(parporos2.negate());
         BigDecimal parporos3 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR3").add(getSum(orgosn, "OSNPOR3"))
-    	      .add(parporos1.negate()).add(parporos2.negate());
+        .add(parporos1.negate()).add(parporos2.negate());
         if (poros.add(parporos1.negate()).add(parporos2.negate()).compareTo(parporos3) >= 0) {
           ret[2] = parporos3;
           ret[3] = poros.add(parporos1.negate()).add(parporos2.negate()).add(parporos3.negate());
@@ -246,6 +254,69 @@ public class CalcRazPor {
       ret[1] = Aus.zero2;
       ret[2] = Aus.zero2;
       ret[3] = Aus.zero2;
+    }
+    return ret;
+  }
+  private BigDecimal[] getStopePo2010() {
+    return new BigDecimal[] {
+        new BigDecimal("0.135"),
+        new BigDecimal("0.250"),
+        new BigDecimal("0.300"),
+        new BigDecimal("0.375"),
+        new BigDecimal("0.425")
+    };
+  }
+  /*
+          0 - 43.200,00   13,50%
+  43.200,01 - 108.000,00  25,00%
+ 108.000,01 - 129.600,00  30,00%
+ 129.600,01 - 302.400,00  37,50%
+ 302.400,01 - ...         42,50% 
+ bravo jaca! bravo shuki!
+   */
+  private BigDecimal[] getOsnovice2010(BigDecimal poros, StorageDataSet orgosn) {
+    
+    BigDecimal[] ret = new BigDecimal[5];
+    Arrays.fill(ret, Aus.zero2);
+    Parametripl.getDataModule().getQueryDataSet().open();
+    
+    // osnpor1
+//    BigDecimal parporos1 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR1").multiply(new BigDecimal(12));
+//    BigDecimal parporos1 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR1").add(getSum(orgosn, "OSNPOR1"));
+    BigDecimal parporos1 = new BigDecimal("43200.00");
+    if (poros.compareTo(parporos1)>=0) {
+      ret[0] = parporos1;
+      BigDecimal parporos2 = new BigDecimal("64800.00");//108000-43200
+      if (poros.add(parporos1.negate()).compareTo(parporos2) >= 0) {
+        ret[1] = parporos2;
+        BigDecimal parporos3 = new BigDecimal("21600.00");//129600-108000        
+        if (poros.add(parporos1.negate()).add(parporos2.negate()).compareTo(parporos3) >= 0) {
+          ret[2] = parporos3;
+          BigDecimal parporos4 = new BigDecimal("172800.00");//302400-129600        
+          if (poros.add(parporos1.negate()).add(parporos2.negate()).add(parporos3.negate()).compareTo(parporos4) >= 0) {
+            ret[3] = parporos4;
+            ret[4] = poros.add(parporos1.negate()).add(parporos2.negate()).add(parporos3.negate()).add(parporos4.negate());
+          } else {
+            ret[3] = poros.add(parporos1.negate()).add(parporos2.negate()).add(parporos3.negate());
+            ret[4] = Aus.zero2;
+          }
+        } else {
+          ret[2] = poros.add(parporos1.negate()).add(parporos2.negate());
+          ret[3] = Aus.zero2;
+          ret[4] = Aus.zero2;
+        }
+      } else {
+        ret[1] = poros.add(parporos1.negate());
+        ret[2] = Aus.zero2;
+        ret[3] = Aus.zero2;
+        ret[4] = Aus.zero2;
+      }
+    } else {
+      ret[0] = poros;
+      ret[1] = Aus.zero2;
+      ret[2] = Aus.zero2;
+      ret[3] = Aus.zero2;
+      ret[4] = Aus.zero2;
     }
     return ret;
   }
