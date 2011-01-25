@@ -1030,10 +1030,10 @@ public class rdOSUtil {
       if(!clokacije.equals(""))
         qStr += " and os_sredstvo.clokacije='"+clokacije+"' ";
       if (selected == false)
-        qStr = qStr + " and corg2 ='"+corg+"' order by corg";
+        qStr = qStr + " and corg2 ='"+corg+"' order by corg, invbroj";
       else
 //        qStr += " and " + getLikviPripCorg(corg)+ "order by corg";
-        qStr += " and " + getPripOrg(corg, "OS_SREDSTVO")+ "order by corg";
+        qStr += " and " + getPripOrg(corg, "OS_SREDSTVO")+ "order by corg, invbroj";
 
       System.out.println("qStr\n"+qStr);
 
