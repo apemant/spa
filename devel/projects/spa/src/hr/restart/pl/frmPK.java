@@ -18,12 +18,15 @@
 package hr.restart.pl;
 import hr.restart.baza.dM;
 import hr.restart.util.Aus;
+import hr.restart.util.ProcessInterruptException;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.sysoutTEST;
 
 import java.math.BigDecimal;
+
+import javax.swing.JOptionPane;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -169,6 +172,23 @@ public class frmPK extends frmDNR{
 //System.out.println("Engaging getRepQdsString()....");
     nextStep("Dohvat sumarnih podataka o djelatnicima..");
     repSet = Util.getNewQueryDataSet(getRepQdsString());
+    if (repSet.getRowCount() == 0 && !jlrCradnikOd.getText().equals("")) {
+      String qstr = "select CAST (0 as numeric(4)) as godobr, CAST (0 as numeric(4)) as mjobr, CAST (0 as numeric(4)) as rbrobr,"+
+      " CAST (null as TIMESTAMP) as datumispl, CAST (0 as numeric(17,2)) as bruto, CAST (0 as numeric(17,2)) as doprinosi,"+
+      " CAST (0 as numeric(17,2)) as iskneop, CAST (0 as numeric(17,2)) as porosn,"+
+      " CAST (0 as numeric(17,2)) as por1, CAST (0 as numeric(17,2)) as por2, CAST (0 as numeric(17,2)) as por3,"+
+      " CAST (0 as numeric(17,2)) as por4, CAST (0 as numeric(17,2)) as por5, CAST (0 as numeric(17,2)) as poruk,"+
+      " CAST (0 as numeric(17,2)) as prir, CAST (0 as numeric(17,2)) as poriprir,"+
+      " radnici.ime, radnici.prezime, radnici.cradnik, radnicipl.jmbg, radnicipl.oib,"+
+      " radnicipl.adresa," +
+      " '' as copcine, CAST (0 as numeric(17,2)) as netopk"+//ip
+      " from radnici,radnicipl where radnici.cradnik = radnicipl.cradnik and radnici.cradnik between '"+ fieldSet.getInt("CRADNIKOD") + "' and '" + fieldSet.getInt("CRADNIKDO") + "'";
+      System.out.println("goli k: "+qstr);
+      repSet = Util.getNewQueryDataSet(qstr);
+    } else if (repSet.getRowCount() == 0) {
+      JOptionPane.showMessageDialog(null, "Nema isplata za zadani period. Prazni obrasci se mogu ispisati pojedinacno.");
+      throw new ProcessInterruptException();
+    }
 //System.out.println("done gRQS!");
 
     repSetPK = new QueryDataSet();
