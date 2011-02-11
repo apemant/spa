@@ -279,7 +279,7 @@ public class raIspisUraIra extends raFrame {
     getRepRunner().clearAllReports();
     if (jrbUraira1.isSelected()) {
       getRepRunner().addJasper("hr.restart.sk.repURA09", "hr.restart.sk.repURANew",
-          "ura09.jrxml", "Ispis knjige URA 2009");
+          "ura09.jrxml", "Ispis knjige URA 23%");
       getRepRunner().addReport("hr.restart.sk.repURA06", "hr.restart.sk.repURANew",
           "URA06", "Ispis knjige URA");
       getRepRunner().addReport("hr.restart.sk.repURA", "hr.restart.sk.repURA",
