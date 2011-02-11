@@ -617,8 +617,8 @@ public class frmID extends raUpitLite {
 
     
     //this.addReport("hr.restart.pl.repID2003", "Obrazac ID", 2);
-    
-    this.addReport("hr.restart.pl.repID2005", "hr.restart.pl.repID2003", "ID2005", "Obrazac ID");
+    this.addJasper("hr.restart.pl.repID2005", "hr.restart.pl.repID2003", "id.jrxml", "Obrazac ID");
+    this.addReport("hr.restart.pl.repID2005", "hr.restart.pl.repID2003", "ID2005", "Obrazac ID do 31.12.2010.");
     this.addReport("hr.restart.pl.repID_B", "hr.restart.pl.repID_B", "ID_B", "Obrazac ID - B strana");
     this.addReport("hr.restart.pl.repIDD", "hr.restart.pl.repIDD", "IDDiot", "Obrazac IDD");
   }
