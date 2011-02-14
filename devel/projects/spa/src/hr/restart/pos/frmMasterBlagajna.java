@@ -319,7 +319,10 @@ public class frmMasterBlagajna extends raMasterDetail {
       Artikli.getDataModule().setFilter(
           (QueryDataSet) jpBl.jrfCART.getRaDataSet(),
           Condition.equal("VRART", va));
-    }
+    } else
+      Artikli.getDataModule().setFilter(
+          (QueryDataSet) jpBl.jrfCART.getRaDataSet(),
+          Condition.equal("KASA", "D"));
   }
   
   public boolean ValDPEscapeDetail(char mode) {
