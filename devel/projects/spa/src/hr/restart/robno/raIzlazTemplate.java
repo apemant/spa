@@ -3459,6 +3459,7 @@ System.out.println("findCjenik::else :: "+sql);
 				|| descriptor.equals("hr.restart.robno.repOdobrenjaV")
 				|| descriptor.equals("hr.restart.robno.repOdobrenjaPV")
 				|| descriptor.equals("hr.restart.robno.repInvoice")
+				|| descriptor.equals("hr.restart.robno.repOffer")
 				|| descriptor.equals("hr.restart.robno.repProformaInvoice")
 				);
 
