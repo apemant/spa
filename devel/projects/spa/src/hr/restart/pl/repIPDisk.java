@@ -20,6 +20,7 @@ package hr.restart.pl;
 import hr.porezna_uprava.e_porezna.obrasci.ip.v2_0.Generator;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.raUser;
+import hr.restart.util.Aus;
 import hr.restart.util.FileHandler;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
@@ -47,7 +48,7 @@ public class repIPDisk extends repDisk {
   String separator = null;
   public repIPDisk() {
       try {
-        separator = hr.restart.sisfun.frmParam.getParam("sisfun", "dumpSeparator");
+        separator = Aus.getDumpSeparator();
         if (separator == null) separator = "#";
         separator = " "+separator;
         this.setPrinter(mxPrinter.getDefaultMxPrinter());
