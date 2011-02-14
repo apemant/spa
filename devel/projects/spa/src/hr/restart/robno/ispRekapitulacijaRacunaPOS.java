@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Sklad;
+import hr.restart.baza.Smjene;
 import hr.restart.baza.dM;
 import hr.restart.pos.presBlag;
 import hr.restart.sisfun.frmParam;
@@ -86,12 +87,19 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   JLabel jlSkladiste = new JLabel();
   JLabel jlBlagajna = new JLabel();
   JLabel jllagajnik = new JLabel();
+  JLabel jlSmjena = new JLabel();
   JraCheckBox jcbPoArtiklima = new JraCheckBox();
+  JraCheckBox jcbPoSmjenama = new JraCheckBox();
+  JraCheckBox jcbPoKonobarima = new JraCheckBox();
   JraTextField jtfPocDatum = new JraTextField();
   JraTextField jtfZavDatum = new JraTextField();
   JraTextField jtfPocBroj = new JraTextField();
   JraTextField jtfZavBroj = new JraTextField();
 
+  JlrNavField jrfNAZ = new JlrNavField();
+  JraButton jbSM = new JraButton();
+  JlrNavField jrfSM = new JlrNavField();
+  
   JlrNavField jrfNAZSKL = new JlrNavField();
   JraButton jbCSKL = new JraButton();
   JlrNavField jrfCSKL = new JlrNavField();
@@ -133,6 +141,8 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     jrfCBlagajnik.setText("");
     jrfNazivBlagajnika.setText("");
     jcbPoArtiklima.setSelected(false);
+    jcbPoSmjenama.setSelected(false);
+    jcbPoKonobarima.setSelected(false);
     if (presBlag.isUserOriented() && !raUser.getInstance().isSuper()) {
       jrfCBlagajnik.setText(raUser.getInstance().getUser());
       jrfCBlagajnik.forceFocLost();
@@ -145,6 +155,8 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
       rcc.setLabelLaF(jbSelBlagajnik,true);
     }
     tds.setString("IspisRek","N");
+    tds.setString("IspisSmje","N");
+    tds.setString("IspisKon","N");
     //findMpSkl();
     findSklad();
     jrfCBLAG.requestFocus();
@@ -304,6 +316,18 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
                            "AND pos.god = stpos.god "+
                            "AND pos.brdok = stpos.brdok "+
                            "AND pos.cprodmj = stpos.cprodmj "+
+                           "and stpos.kol >= 0 "+
+                           "and pos.vrdok = 'GRC' "+kondishnBlag()+
+                           "and pos.cskl = '"+tds.getString("CSKL")+"' "+
+                           "and "+kondishnDatumOrBroj()+kondishnOperater()+ // kondishnOperator diprektid...
+                           "group by cart, nazart UNION ALL " + 
+                           "SELECT Stpos.cart, max(Stpos.cart1) as cart1, max(Stpos.bc) as bc, Stpos.nazart, sum(Stpos.kol) as kol FROM pos, Stpos "+
+                           "WHERE pos.cskl = stpos.cskl "+
+                           "AND pos.vrdok = stpos.vrdok "+
+                           "AND pos.god = stpos.god "+
+                           "AND pos.brdok = stpos.brdok "+
+                           "AND pos.cprodmj = stpos.cprodmj "+
+                           "and stpos.kol < 0 "+
                            "and pos.vrdok = 'GRC' "+kondishnBlag()+
                            "and pos.cskl = '"+tds.getString("CSKL")+"' "+
                            "and "+kondishnDatumOrBroj()+kondishnOperater()+ // kondishnOperator diprektid...
@@ -666,6 +690,8 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
       rcc.setLabelLaF(jrfNAZBLAG,true);
       rcc.setLabelLaF(jbCBLAG,true);
       rcc.setLabelLaF(jcbPoArtiklima, true);
+      rcc.setLabelLaF(jcbPoKonobarima, true);
+      rcc.setLabelLaF(jcbPoSmjenama, true);
       rcc.setLabelLaF(jtfPocDatum, jrbDatum.isSelected());
       rcc.setLabelLaF(jtfZavDatum, jrbDatum.isSelected());
       rcc.setLabelLaF(jtfPocBroj, jrbRacun.isSelected());
@@ -725,7 +751,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 
   private void jbInit() throws Exception {
     mainXYLayout.setWidth(590);
-    mainXYLayout.setHeight(185);
+    mainXYLayout.setHeight(260);
     this.setJPan(mainPanel);
     mainPanel.setLayout(mainXYLayout);
 
@@ -774,7 +800,10 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
                                  dm.createTimestampColumn("zavDatum", "Krajnji datum"),
                                  dm.createIntColumn("pocBroj", "Poèetni broj"),
                                  dm.createIntColumn("zavBroj", "Krajnji Broj"),
-                                 dm.createStringColumn("IspisRek","Ispis rekapitulacije",1)});
+                                 dm.createStringColumn("IspisRek","Ispis rekapitulacije",1),
+                                 dm.createStringColumn("IspisSmje","Ispis po smjenama",1),
+                                 dm.createStringColumn("IspisKon","Ispis po konobarima",1),
+                                 });
 
     jlSkladiste.setText("Skladište");
     jlBlagajna.setText("Blagajna");
@@ -788,6 +817,22 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     jcbPoArtiklima.setDataSet(tds);
     jcbPoArtiklima.setColumnName("IspisRek");
 
+    jcbPoSmjenama.setText("Ispis rekapitulacije po smjenama");
+    jcbPoSmjenama.setSelectedDataValue("D");
+    jcbPoSmjenama.setUnselectedDataValue("N");
+    jcbPoSmjenama.setHorizontalTextPosition(SwingConstants.LEFT);
+    jcbPoSmjenama.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbPoSmjenama.setDataSet(tds);
+    jcbPoSmjenama.setColumnName("IspisSmje");
+
+    jcbPoKonobarima.setText("Ispis rekapitulacije po konobarima");
+    jcbPoKonobarima.setSelectedDataValue("D");
+    jcbPoKonobarima.setUnselectedDataValue("N");
+    jcbPoKonobarima.setHorizontalTextPosition(SwingConstants.LEFT);
+    jcbPoKonobarima.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbPoKonobarima.setDataSet(tds);
+    jcbPoKonobarima.setColumnName("IspisKon");
+    
     jtfPocDatum.setHorizontalAlignment(SwingConstants.CENTER);
     jtfPocDatum.setColumnName("pocDatum");
     jtfPocDatum.setDataSet(tds);
@@ -820,6 +865,25 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     jrfNAZSKL.setColumnName("NAZSKL");
     jrfNAZSKL.setNavProperties(jrfCSKL);
     jrfNAZSKL.setSearchMode(1);
+    
+    jrfSM.setColumnName("CSMJENA");
+    jrfSM.setColNames(new String[] {"NAZIV"});
+    jrfSM.setVisCols(new int[]{0,1});
+    jrfSM.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZ});
+    jrfSM.setRaDataSet(Smjene.getDataModule().getFilteredDataSet(""));
+    jrfSM.setDataSet(tds);
+    jrfSM.setSearchMode(0);
+    jrfSM.setNavButton(jbSM);
+    jrfSM.setNavProperties(null);
+    /*jrfSM.addFocusListener(new java.awt.event.FocusAdapter() {
+      public void focusLost(FocusEvent e) {
+        jrfCSKL_focusLost(e);
+      }
+    });*/
+
+    jrfNAZ.setColumnName("NAZIV");
+    jrfNAZ.setNavProperties(jrfSM);
+    jrfNAZ.setSearchMode(1);
 
     jrfCBLAG.setRaDataSet(getProdMjZaSklad());
     jrfCBLAG.setDataSet(tds);
@@ -847,7 +911,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     }
     jrfCBlagajnik.setNavButton(jbSelBlagajnik);
 
-    jrfNazivBlagajnika.setColumnName(presBlag.isUserOriented() ? "NAZBLAG" : "NAZIV");
+    jrfNazivBlagajnika.setColumnName(presBlag.isUserOriented() ? "NAZIV" : "NAZBLAG");
     jrfNazivBlagajnika.setSearchMode(1);
     jrfNazivBlagajnika.setNavProperties(jrfCBlagajnik);
 
@@ -866,7 +930,8 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     });
     mainPanel.add(jlSkladiste, new XYConstraints(15, 20, -1, -1));
     mainPanel.add(jlBlagajna, new XYConstraints(15, 45, -1, -1));
-    mainPanel.add(jllagajnik, new XYConstraints(15, 70, -1, -1));
+    mainPanel.add(jlSmjena, new XYConstraints(15, 70, -1, -1));
+    mainPanel.add(jllagajnik, new XYConstraints(15, 95, -1, -1));
 
     mainPanel.add(jrfCSKL, new XYConstraints(150, 15, 100, -1));
     mainPanel.add(jrfNAZSKL,  new XYConstraints(255, 15, 295, -1));
@@ -876,20 +941,26 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     mainPanel.add(jrfNAZBLAG, new XYConstraints(255, 45, 295, -1));
     mainPanel.add(jbCBLAG, new XYConstraints(555, 45, 21, 21));
 
-    mainPanel.add(jrfCBlagajnik, new XYConstraints(150, 70, 100, -1));
-    mainPanel.add(jrfNazivBlagajnika, new XYConstraints(255, 70, 295, -1));
-    mainPanel.add(jbSelBlagajnik, new XYConstraints(555, 70, 21, 21));
+    mainPanel.add(jrfSM, new XYConstraints(150, 70, 100, -1));
+    mainPanel.add(jrfNAZ, new XYConstraints(255, 70, 295, -1));
+    mainPanel.add(jbSM, new XYConstraints(555, 70, 21, 21));
+    
+    mainPanel.add(jrfCBlagajnik, new XYConstraints(150, 95, 100, -1));
+    mainPanel.add(jrfNazivBlagajnika, new XYConstraints(255, 95, 295, -1));
+    mainPanel.add(jbSelBlagajnik, new XYConstraints(555, 95, 21, 21));
 
-    mainPanel.add(jtfPocDatum, new XYConstraints(150, 95/*70*/, 100, -1));
-    mainPanel.add(jtfZavDatum, new XYConstraints(255, 95/*70*/, 100, -1));
+    mainPanel.add(jtfPocDatum, new XYConstraints(150, 120/*70*/, 100, -1));
+    mainPanel.add(jtfZavDatum, new XYConstraints(255, 120/*70*/, 100, -1));
 
-    mainPanel.add(jtfPocBroj, new XYConstraints(150, 120/*95*/, 100, -1));
-    mainPanel.add(jtfZavBroj, new XYConstraints(255, 120/*95*/, 100, -1));
+    mainPanel.add(jtfPocBroj, new XYConstraints(150, 145/*95*/, 100, -1));
+    mainPanel.add(jtfZavBroj, new XYConstraints(255, 145/*95*/, 100, -1));
 
-    mainPanel.add(jrbDatum,   new XYConstraints(15, 95/*70*/, -1, -1));
-    mainPanel.add(jrbRacun,   new XYConstraints(15, 120/*95*/, -1, -1));
+    mainPanel.add(jrbDatum,   new XYConstraints(15, 120/*70*/, -1, -1));
+    mainPanel.add(jrbRacun,   new XYConstraints(15, 145/*95*/, -1, -1));
 
-    mainPanel.add(jcbPoArtiklima, new XYConstraints(250, 145/*120*/, 300, -1));
+    mainPanel.add(jcbPoArtiklima, new XYConstraints(250, 170/*120*/, 300, -1));
+    mainPanel.add(jcbPoSmjenama, new XYConstraints(250, 195/*120*/, 300, -1));
+    mainPanel.add(jcbPoKonobarima, new XYConstraints(250, 220/*120*/, 300, -1));
 
     rcc.setLabelLaF(jtfPocBroj,false);
     rcc.setLabelLaF(jtfZavBroj,false);
