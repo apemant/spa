@@ -1362,3 +1362,8 @@ NIZJED;char;30;;;Niža jedinica;15
 REFVAL;char;1;;N;Referentna valuta
 CHV;char;10;;;Prefiks
 
+$dokidod
+BRRAC;char;32;pkey;;Dokument
+RBS;int;6;pkey;;Rbs
+VALUE;char;50;;;Vrijednost
+
