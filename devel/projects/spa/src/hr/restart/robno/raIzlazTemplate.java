@@ -24,12 +24,14 @@ import hr.restart.baza.RN;
 import hr.restart.baza.VTprijenos;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
+import hr.restart.baza.dokidod;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raMultiLineMessage;
+import hr.restart.swing.raOptionDialog;
 import hr.restart.util.Aus;
 import hr.restart.util.LinkClass;
 import hr.restart.util.VarStr;
@@ -40,6 +42,7 @@ import hr.restart.util.raNavAction;
 import hr.restart.util.raTransaction;
 import hr.restart.zapod.OrgStr;
 
+import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -50,12 +53,15 @@ import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 
@@ -102,7 +108,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	rajpIzlazDPTemplate DP;
 
 	String srcString;
-	String keyforRN = null;
+	String keyforRN = null, keyfordod;
 
 	Integer Broj;
 
@@ -560,6 +566,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		setNaslovDetail(detail_titel_mno);
 		raMaster.setkum_tak(true);
 		raMaster.setstozbrojiti(new String[] {"UIRAC", "PLATITI", "UIPOPUST", "PROVISP"});
+		
+		setupDod();
 	}
 
 	public void RestPanelSetup() {
@@ -823,7 +831,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	}
 
 	public boolean doBeforeSaveMaster(char mode) {
-
+	    
 		if (mode == 'N') {
 			util.getBrojDokumenta(getMasterSet());
 			getMasterSet().setString("PNBZ2",
@@ -834,6 +842,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		}
 		if (mode != 'B') 
 			SanityCheck.basicDoki(getMasterSet());
+		saveDod(mode);
 		return true;
 	}
 
@@ -1029,10 +1038,11 @@ ST.prn(radninal);
 		// MP.panelDodatni.jrfKO.setRaDataSet(
 		// Kosobe.getDataModule().getTempSet("1=0"));
 		// }
+		setupDod();
 
 		if (mode == 'N') {
 			pressel.copySelValues();
-        }
+        } else fillDod();
         if (mode == 'I') changeCpar = getMasterSet().getInt("CPAR");  // ab.f
 
 		if (MP.panelBasic != null) {
@@ -1197,6 +1207,7 @@ ST.prn(radninal);
                    getMasterSet().getString("VRDOK") + "-" +
                    getMasterSet().getString("GOD")   + "-" + 
                    String.valueOf(getMasterSet().getInt("BRDOK"));
+		keyfordod = repUtil.getFormatBroj(getMasterSet());
 	}
 
 	public void prepareOldDetailValues() {
@@ -3139,6 +3150,77 @@ System.out.println("findCjenik::else :: "+sql);
             }
           });
         }
+	}
+	
+	StorageDataSet dodfield = new StorageDataSet();
+	StorageDataSet oldfield = new StorageDataSet();
+	JPanel dodpanel;
+	public void setupDod() {
+	  DataSet dsd = dokidod.getDataModule().getTempSet(
+	      Condition.equal("BRRAC", "LABEL"));
+	  dsd.open();
+	  if (dsd.rowCount() == 0) return;
+	  
+	  dodpanel = new JPanel(new XYLayout(520, 40 + 25*dsd.rowCount()));
+	  dodfield = new StorageDataSet();
+	  for (int i = 0; dsd.inBounds(); dsd.next(), i++) {
+	    dodfield.addColumn(dM.createStringColumn(
+	        "KOL"+dsd.getInt("RBS"), dsd.getString("VAL"), 50));
+	    dodpanel.add(new JLabel(dsd.getString("VAL")), 
+	        new XYConstraints(15, 20 + 25*i, -1, -1));
+	    JraTextField txt = new JraTextField();
+	    txt.setDataSet(dodfield);
+	    txt.setColumnName("KOL"+dsd.getInt("RBS"));
+	    dodpanel.add(txt, new XYConstraints(150, 20 + 25*i, 300, -1));
+	  }
+	  oldfield = new StorageDataSet();
+	  oldfield.setColumns(dodfield.cloneColumns());
+	  dodfield.open();
+	  oldfield.open();
+	}
+	
+	raOptionDialog dlg = new raOptionDialog();
+	public void showDod() {
+	  if (dodfield.getColumnCount() == 0) return;
+	  
+	  JPanel all = new JPanel(new BorderLayout());
+	  all.add(dodpanel);
+	  all.add(dlg.getOkPanel(), BorderLayout.SOUTH);
+	  oldfield.copyTo(dodfield);
+	  if (dlg.show(raMaster.getWindow(), all, "Dodatni podaci"))
+	    dodfield.copyTo(oldfield);
+	}
+	
+	void fillDod() {
+	  if (dodfield.getColumnCount() == 0) return;
+	  
+	  DataSet dsd = dokidod.getDataModule().getTempSet(
+          Condition.equal("BRRAC", repUtil.getFormatBroj(getMasterSet())));
+	  dsd.open();
+	  for (dsd.first(); dsd.inBounds(); dsd.next())
+	    oldfield.setString("KOL" + dsd.getInt("RBS"), dsd.getString("VAL"));
+	}
+	
+	void saveDod(char mode) {
+	  if (dodfield.getColumnCount() == 0) return;
+	  
+	  String brrac = mode == 'B' ? keyfordod : 
+	      repUtil.getFormatBroj(getMasterSet());
+	  QueryDataSet dsd = dokidod.getDataModule().getTempSet(
+	    mode == 'N' ? Condition.nil : Condition.equal("BRRAC", brrac));
+	  dsd.open();
+	  dsd.deleteAllRows();
+	  raTransaction.saveChanges(dsd);
+	  if (mode == 'B') return;
+	  
+	  for (int i = 0; i < oldfield.getColumnCount(); i++) {
+	    dsd.insertRow(false);
+	    dsd.setString("BRRAC", brrac);
+	    dsd.setInt("RBS", Aus.getNumber(oldfield.getColumn(i).
+	        getColumnName().substring(3)));
+	    dsd.setString("VAL", oldfield.getString(i));
+	  }
+	  raTransaction.saveChanges(dsd);
 	}
 
 	public String dodatak(String odabrano) {
