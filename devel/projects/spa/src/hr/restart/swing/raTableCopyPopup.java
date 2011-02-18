@@ -736,7 +736,11 @@ public class raTableCopyPopup extends JPopupMenu {
     }
     
     protected void beforeShow() {
-      orig.setText(jt.getValueAt(selRow, selCol).toString());
+      try {
+        orig.setText(jt.getValueAt(selRow, selCol).toString());
+      } catch (NullPointerException e) {
+        // nevermind
+      }
       if (repl.isEmpty()) repl.setText(orig.getText());
     }
     
