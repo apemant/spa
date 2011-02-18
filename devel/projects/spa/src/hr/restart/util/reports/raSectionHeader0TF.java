@@ -138,7 +138,16 @@ public class raSectionHeader0TF extends raReportSection {
   private String[] TextISPORUKAProps = new String[] {"ISPORUKA", "", "", "", "", "", "Yes", "Yes", 
      "7280", "2360", "3020", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", 
      ""};
-
+  
+  public raReportElement TextLABDOD;
+  private String[] TextLABDODProps = new String[] {"LABDOD", "", "", "", "", "", "Yes", "Yes", 
+      "320", "2720", "1600", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right", 
+     ""};
+  public raReportElement TextTEXTDOD;
+  private String[] TextTEXTDODProps = new String[] {"TEXTDOD", "", "", "", "", "", "Yes", "Yes", 
+      "2000", "2720", "3200", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", 
+     ""};
+  
   
   public raReportElement TextMB;
   private String[] TextMBProps = new String[] {"MB", "", "", "", "", "", "", "", "640", p_getYzaKoloneUKucici(2140), 
@@ -339,6 +348,9 @@ public class raSectionHeader0TF extends raReportSection {
     TextISPORUKA = addModel(ep.TEXT, TextISPORUKAProps);
     LabelObrazac = addModel(ep.LABEL, LabelObrazacProps);
     LabelR1 = addModel(ep.LABEL, LabelR1Props);
+    
+    TextLABDOD = addModel(ep.TEXT, TextLABDODProps);
+    TextTEXTDOD = addModel(ep.TEXT, TextTEXTDODProps);
   }
 
   String last = "L";
