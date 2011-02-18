@@ -61,9 +61,24 @@ public class raCVSEntries {
     File rootDir = new File(rootcvsdir);
     if (!rootDir.exists()) throw new IllegalArgumentException("Zadani direktorij ne postoji: "+rootcvsdir);
     if (!rootDir.isDirectory()) throw new IllegalArgumentException(rootcvsdir+" nije direktorij!");
-    fillEntriesFiles(rootDir);
-    fillEntriesMap();
+    if (localTime) fillFiles(rootDir);
+    else {
+      fillEntriesFiles(rootDir);
+      fillEntriesMap();
+    }
   }
+  
+  private void fillFiles(File dir) {
+    File[] subfiles = dir.listFiles(new filesFilter());
+    for (int i = 0; i < subfiles.length; i++)
+      entriesMap.put(subfiles[i], new Timestamp(
+          subfiles[i].lastModified()));
+    
+    File[] subdirs = dir.listFiles(new directoryFilter());
+    for (int i = 0; i < subdirs.length; i++)      
+      fillFiles(subdirs[i]);
+  }
+  
   private void fillEntriesFiles(File dir) {
     File[] subdirs = dir.listFiles(new directoryFilter());
     for (int i=0; i<subdirs.length; i++) {
@@ -177,6 +192,15 @@ public class raCVSEntries {
     public boolean accept(File pathname) {
       if (pathname.isDirectory()) return false;
       return pathname.getName().equalsIgnoreCase("entries");
+    }
+  }
+  class filesFilter implements FileFilter {
+    public boolean accept(File pathname) {
+      if (pathname.isDirectory()) return false;
+      String name = pathname.getName().toLowerCase();
+      return (name.endsWith(".java") ||
+          name.endsWith(".template") || name.endsWith(".sav") ||
+          name.endsWith("tabledef.txt") || name.endsWith(".jrxml"));
     }
   }
   //-----
