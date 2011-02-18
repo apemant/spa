@@ -21,6 +21,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.RN;
 import hr.restart.baza.RN_subjekt;
 import hr.restart.baza.dM;
+import hr.restart.baza.dokidod;
 import hr.restart.baza.stdoki;
 import hr.restart.baza.vtrabat;
 import hr.restart.baza.zirorn;
@@ -679,6 +680,27 @@ public class repIzlazni implements raReportData {
     String nazOpis = getNAZNAP() + "\n" + getOPIS();
     return nazOpis;
   }
+  
+  public String getLABDOD() {
+    if (getTEXTDOD().length() == 0) return "";
+    return labdod;
+  }
+  
+  public String getTEXTDOD() {
+    String cached = cache.getValue("TEXTDOD", getFormatBroj());
+    if (cached != null) return cached;
+    
+    DataSet ds = dokidod.getDataModule().getTempSet(
+        Condition.equal("BRRAC", getFormatBroj()));
+    ds.open();
+    if (ds.rowCount() == 0) return cache.returnValue("");
+    
+    ds.setSort(new SortDescriptor(new String[] {"RBS"}));
+    VarStr buf = new VarStr();
+    for (ds.first(); ds.inBounds(); ds.next())
+      buf.append(ds.getString("VAL")).append('\n');
+    return cache.returnValue(buf.chop().trim().toString());
+  }
 
   public short getRBR() {
     return ds.getShort("RBR");
@@ -947,18 +969,7 @@ public BigDecimal getIPRODSP() {
     if (specForm == null || specForm.length() == 0)
       return ru.getFormatBroj();
     
-    Variant v = new Variant();
-    VarStr br = new VarStr(specForm);
-    int b, e;
-    while ((b = br.indexOf('[')) >= 0 && (e = br.indexOf(']')) > b+1) {
-      String rep = "";
-      if (ds.hasColumn(br.mid(b + 1, e)) != null) {
-        ds.getVariant(br.mid(b + 1, e), v);
-        rep = v.toString();
-      }
-      br.replace(b, e + 1, rep);
-    }
-    return br.toString(); 
+    return Aus.formatBroj(ds, specForm);
   }
   
   public String getFormatBrojTri(){
@@ -1894,6 +1905,7 @@ public BigDecimal getIPRODSP() {
   String metroDob = "";
   String oib = "";
   String prefn = "";
+  String labdod = "";
   boolean hideKup = false;
   boolean specChars = false;
   boolean iznosPop = false;
@@ -1927,6 +1939,19 @@ public BigDecimal getIPRODSP() {
       "Ispis prefiksa ispred iznosa u valuti (D,N)").equalsIgnoreCase("D");
     
     if (prefn.length() > 0) prefn = prefn + "\n";
+    
+    
+    DataSet ds = dokidod.getDataModule().getTempSet(
+        Condition.equal("BRRAC", "LABEL"));
+    ds.open();
+    if (ds.rowCount() == 0) labdod = "";
+    else {
+      ds.setSort(new SortDescriptor(new String[] {"RBS"}));
+      VarStr buf = new VarStr();
+      for (ds.first(); ds.inBounds(); ds.next())
+        buf.append(ds.getString("VAL")).append('\n');
+      labdod = buf.toString();
+    }
   }
 
   private void modParams() {

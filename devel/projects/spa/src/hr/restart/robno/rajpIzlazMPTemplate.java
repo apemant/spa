@@ -31,6 +31,7 @@ import hr.restart.zapod.raKnjigChangeListener;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
@@ -1492,6 +1493,8 @@ SwingUtilities.invokeLater(new Runnable(){
 		JraTextField jraDATUG = new JraTextField();
 
 		JraTextField jraDATPRD = new JraTextField();
+		
+		JraButton jbDod = new JraButton();
 
 		panOstatak() {
 
@@ -1521,6 +1524,12 @@ SwingUtilities.invokeLater(new Runnable(){
 			jlIZDOK2.setText("Datum narudžbe");
 			jlIZDOK3.setText("Datum ugovora");
 			jlIZDOK4.setText("Datum predra\u010Duna");
+			jbDod.setText("...");
+			jbDod.addActionListener(new ActionListener() {
+              public void actionPerformed(ActionEvent e) {
+                fDI.showDod();
+              }            
+            });
 			jraDATDOKIZ.setColumnName("DATDOKIZ");
 			jraDATDOKIZ.setHorizontalAlignment(SwingConstants.CENTER);
 			jraDATNARIZ.setColumnName("DATNARIZ");
@@ -1532,6 +1541,7 @@ SwingUtilities.invokeLater(new Runnable(){
 
 			add(jlIZDOK, new XYConstraints(15, 15, -1, -1));
 			add(jraBRDOKIZ, new XYConstraints(130, 15, 110, -1));
+			add(jbDod, new XYConstraints(245, 15, 42, 21));
 			add(jlIZDOK1, new XYConstraints(365, 15, -1, -1));
 			add(jraDATDOKIZ, new XYConstraints(522, 15, 110, -1));
 
