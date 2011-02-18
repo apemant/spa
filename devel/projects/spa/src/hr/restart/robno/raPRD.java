@@ -29,6 +29,9 @@ public class raPRD extends raIzlazTemplate  {
     raMaster.getRepRunner().addReport("hr.restart.robno.repPredracuniV","hr.restart.robno.repIzlazni","Predracuni","Raèun za predujam 1 red u valuti");
     raMaster.getRepRunner().addReport("hr.restart.robno.repPredracuni2","hr.restart.robno.repIzlazni","Predracuni2","Ra\u010Dun za predujam 2 red");
     raMaster.getRepRunner().addReport("hr.restart.robno.repPredracuni2V","hr.restart.robno.repIzlazni","Predracuni2","Ra\u010Dun za predujam 2 red u valuti");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repPredracuniValSingle",
+        "hr.restart.robno.repIzlazni", "PredracuniValSingle", 
+        "Raèun za predujam s valutom bez kolièina");
     raMaster.getRepRunner().addReport("hr.restart.robno.repProformaInvoice",
         "hr.restart.robno.repIzlazni","ProformaInvoice2","Proforma Invoice");
   }
@@ -37,6 +40,9 @@ public class raPRD extends raIzlazTemplate  {
     raDetail.getRepRunner().addReport("hr.restart.robno.repPredracuniV","hr.restart.robno.repIzlazni","Predracuni","Raèun za predujam 1 red u valuti");
     raDetail.getRepRunner().addReport("hr.restart.robno.repPredracuni2","hr.restart.robno.repIzlazni","Predracuni2","Raèun za predujam 2 red");
     raDetail.getRepRunner().addReport("hr.restart.robno.repPredracuni2V","hr.restart.robno.repIzlazni","Predracuni2","Raèun za predujam 2 red u valuti");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repPredracuniValSingle",
+        "hr.restart.robno.repIzlazni", "PredracuniValSingle", 
+        "Raèun za predujam s valutom bez kolièina");
     raDetail.getRepRunner().addReport("hr.restart.robno.repProformaInvoice",
         "hr.restart.robno.repIzlazni","ProformaInvoice2","Proforma Invoice");
   }
