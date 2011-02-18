@@ -72,7 +72,7 @@ System.out.println("chooser is canceled");
       //napravi dat
       String datcontent = getTagValue(doc, "dat",0);
       //separator
-      String sep = getDumpSeparator();
+      String sep = Aus.getDumpSeparator();
       String linesep = System.getProperty("line.separator");
       datcontent = new VarStr(datcontent).trim()
 									.replaceAll("</sep>",sep) //replace separatora
@@ -182,7 +182,7 @@ System.out.println("chooser is canceled");
       String content = "<?xml version=\"1.0\" encoding=\""+encxml+"\"?>\n<reportext>\n";
       String datcont = FileHandler.readFile(datPath,enc);
       //separator
-      String sep = getDumpSeparator();
+      String sep = Aus.getDumpSeparator();
       datcont = new VarStr(datcont).replaceAll(sep,"</sep>").toString();
       content = content + "  <dat><![CDATA[\n"+datcont+"\n  ]]></dat>\n";
       for (int i = 0; i < sqlPaths.length; i++) {
@@ -217,12 +217,6 @@ System.out.println("chooser is canceled");
   private String getEnc() {
     String enc = System.getProperty("file.encoding");
     return enc;
-  }
-
-  private String getDumpSeparator() {
-    String sep = hr.restart.sisfun.frmParam.getParam("sisfun", "dumpSeparator");
-    if (sep == null || sep.length() != 1 || sep.equals(",")) sep = "#";
-    return sep;
   }
 
   public void browseNodes(NodeList nodes) {
