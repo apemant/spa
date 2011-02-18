@@ -402,6 +402,10 @@ public class raReportDescriptor {
         raElixirProperties.PAGE_HEADER));
     sectDescr.put("PF", new SectionDescriptor("Footer", "Podnožje logotipa",
         raElixirProperties.PAGE_FOOTER));
+    sectDescr.put("PH2", new SectionDescriptor("Header", "Zaglavlje logotipa",
+        raElixirProperties.PAGE_HEADER));
+    sectDescr.put("PF2", new SectionDescriptor("Footer", "Podnožje logotipa",
+        raElixirProperties.PAGE_FOOTER));
   }
 
  /* private static void fillIzlazReports() {
@@ -509,12 +513,14 @@ public class raReportDescriptor {
       {"hr.restart.robno.repPonuda2Kup", "PON", "D", ""},
       {"hr.restart.robno.repPonudaVKup", "PON", "D", ""},
       {"hr.restart.robno.repPonuda2VKup", "PON", "D", ""},
-      {"hr.restart.robno.repProformaInvoice", "PIV", "F", ""},
+      {"hr.restart.robno.repOffer", "OFF", "F", ""},
       {"hr.restart.robno.repUpitPonuda", "UZP", "D", ""},
       {"hr.restart.robno.repPredracuni", "PRD", "D", ""},
       {"hr.restart.robno.repPredracuni2", "PRD", "D", ""},
       {"hr.restart.robno.repPredracuniV", "PRD", "D", ""},
       {"hr.restart.robno.repPredracuni2V", "PRD", "D", ""},
+      {"hr.restart.robno.repPredracuniValSingle", "PRD", "D", ""},
+      {"hr.restart.robno.repProformaInvoice", "PIV", "F", ""},
       {"hr.restart.robno.repPovratnicaTerecenje", "PTE", "D", ""},
       {"hr.restart.robno.repMeskla", "MES", "", ""},
       {"hr.restart.robno.repMesklaExtendedVersion", "MES", "", ""},
