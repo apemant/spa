@@ -57,7 +57,7 @@ public class repRacunPOS extends mxReport {
   String porezString;
   int width = 40;
   int dbWidth = width/2;
-  String doubleLineSep, uk, oib;
+  String doubleLineSep, uk, oib, specForm;
   boolean ispSif, oneRow, pop, cash, isnac;
   
   BigDecimal pov;
@@ -85,6 +85,9 @@ public class repRacunPOS extends mxReport {
         "D", "Ispis naèina plaæanja na POS raèunu (D,N)"));
     pov = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
     "Iznos povratne naknade"));
+    specForm = frmParam.getParam("pos", "formatBroj", "",
+        "Format broja raèuna na POS-u");
+
     width = Integer.parseInt(wdt);
     System.out.println("WIDTH - "+ width);
     dbWidth = width/2;
@@ -141,7 +144,7 @@ public class repRacunPOS extends mxReport {
 
      ru.setDataSet(master);
      
-/*     String prep = frmParam.getParam("pos", "addHeader", "",
+     String prep = frmParam.getParam("pos", "addHeader", "",
          "Dodatni header ispred POS raèuna", true);
      
      if (prep.length() > 0) {
@@ -151,11 +154,11 @@ public class repRacunPOS extends mxReport {
          buf.append("<#").append(parts[i]).append('|').
            append(width).append("|center#><$newline$>");
        prep = buf.toString();
-     }*/
+     }
      
      String th = frmParam.getParam("pos", "posHeader", "",
          "POS header (1 - poslovnica, knjigovodstvo  2 - obrnuto, ostalo - samo knjigovodstvo)");
-     String header = kh;
+     String header = prep + kh;
      if (th.equals("1") && !kh.equals(ph))
        header = ph + kh;
      if (th.equals("2") && !kh.equals(ph))
@@ -425,15 +428,22 @@ public class repRacunPOS extends mxReport {
             ((!dr.getString("MJ").equals(""))?((dr.getInt("PBR")==0)? "       "+dr.getString("MJ"):dr.getString("MJ")):"")+
             getJMBG(dr);
 
-        kupac += "<$newline$><$newline$>\u000E<#RAÈUN R-1 br. " + getDataSet().getInt("BRDOK") + "|"+((width-2)/2)+"|center#>\u0014<$newline$>";
+        kupac += "<$newline$><$newline$><#RAÈUN R-1 br. " + getBRDOK() + "|"+((width-2)/2)+"|left#><$newline$>";
             //"\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
         return kupac;
       } System.out.println("Kupac je (ako ga ima) null!!!");
     }
 //    porezString = "";
-    return "<$newline$>\u000E<#RAÈUN br. " + getDataSet().getInt("BRDOK") + "|"+((width-2)/2)+"|center#>\u0014<$newline$>";
+    return "<$newline$><#RAÈUN br. " + getBRDOK() + "|"+((width-2)/2)+"|left#><$newline$>";
 //        "\u001B\u0045<#"+ru.getFormatBroj()+"|20|center#>\u001B\u0046<$newline$>";
         //"\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
+  }
+  
+  public String getBRDOK() {
+    if (specForm == null || specForm.length() == 0) 
+      return Integer.toString(getDataSet().getInt("BRDOK"));
+    
+    return Aus.formatBroj(getDataSet(), specForm);
   }
   
   public String getJMBG(DataRow dr) {
