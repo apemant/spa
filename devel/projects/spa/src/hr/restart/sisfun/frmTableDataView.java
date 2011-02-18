@@ -72,7 +72,7 @@ import com.borland.dx.dataset.Variant;
 import com.borland.jb.util.ExceptionChain;
 
 public class frmTableDataView extends JraFrame {
-  JraTable2 mpt = new raExtendedTable() {
+  raExtendedTable mpt = new raExtendedTable() {
     public void killFocus(java.util.EventObject e) {
       okp.jPrekid.requestFocus();
     }
@@ -384,6 +384,12 @@ public class frmTableDataView extends JraFrame {
   }
 
   private void saveAllChanges() {
+    if (!jp.getStorageDataSet().saveChangesSupported()) {
+      JOptionPane.showMessageDialog(this, 
+          "Tablica se ne može mijenjati!", "Upozorenje",
+          JOptionPane.WARNING_MESSAGE);
+      return;
+    }
     try {
       jp.getStorageDataSet().saveChanges();
       afterSaveChanges(jp.getStorageDataSet().getTableName());
@@ -613,7 +619,8 @@ public class frmTableDataView extends JraFrame {
   }
 
   private void cancelPress() {
-  	if (editable && changed && JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(this,
+  	if (editable && changed && jp.getStorageDataSet().saveChangesSupported() 
+  	    && JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(this,
   			"Promjene æe biti izgubljene. Zatvoriti ipak?", "Tablica promijenjena",
   			JOptionPane.OK_CANCEL_OPTION)) return;
     hide();
@@ -670,7 +677,12 @@ public class frmTableDataView extends JraFrame {
       printer.getReportRunner().clearAllCustomReports();
       printer.getReportRunner().addReport(custom);
     }
-    printer.runIt();
+    jp.enableEvents(false);
+    try {
+      printer.runIt();
+    } finally {
+      jp.enableEvents(true);
+    }
   }
 
   public void setCount() {
@@ -897,14 +909,17 @@ public class frmTableDataView extends JraFrame {
                                         "Greška", JOptionPane.ERROR_MESSAGE);
         return false;
       }
-      if (tc.getTableName() == null || tc.getTableName().equals("")) {
+      if (jp.getStorageDataSet().saveChangesSupported() &&
+          (tc.getTableName() == null || tc.getTableName().equals(""))) {
         if (showErr)
           JOptionPane.showMessageDialog(frmTableDataView.this, "Kalkulacije se ne mogu mijenjati!",
                                         "Greška", JOptionPane.ERROR_MESSAGE);
         return false;
       }
-      if (jp.getStorageDataSet().getStatus() == RowStatus.INSERTED)
+      if (jp.getStorageDataSet().getStatus() == RowStatus.INSERTED) {
         jp.getStorageDataSet().setSort(null);
+        mpt.resetSortColumns();
+      }
 
       prepareEditorColumn();
       if (!open) {
