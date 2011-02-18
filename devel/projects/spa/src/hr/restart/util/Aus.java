@@ -311,6 +311,21 @@ public class Aus {
     nf.setMaximumFractionDigits(2);
     return nf.format(num);
   }
+  
+  public static String formatBroj(ReadRow ds, String format) {
+    Variant v = new Variant();
+    VarStr br = new VarStr(format);
+    int b, e;
+    while ((b = br.indexOf('[')) >= 0 && (e = br.indexOf(']')) > b+1) {
+      String rep = "";
+      if (ds.hasColumn(br.mid(b + 1, e)) != null) {
+        ds.getVariant(br.mid(b + 1, e), v);
+        rep = v.toString();
+      }
+      br.replace(b, e + 1, rep);
+    }
+    return br.toString(); 
+  }
 
   /**
    * pretvara string u bigdecimal. Pokusava i varijantu s decimalnom tockom i sa decimalnim zarezom.
