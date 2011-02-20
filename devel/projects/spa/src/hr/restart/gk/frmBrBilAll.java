@@ -18,6 +18,7 @@
 package hr.restart.gk;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Konta;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
@@ -46,6 +47,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -1617,11 +1619,18 @@ public class frmBrBilAll extends raUpitFat {
   }
   
   public List loadQuery(String query) {
+  	DataSet nokds = Konta.getDataModule().getTempSet("BROJKONTA", Condition.equal("ISPISBB", "0"));
+  	nokds.open();
+  	HashSet nokon = new HashSet();
+  	for (nokds.first(); nokds.inBounds(); nokds.next())
+  		nokon.add(nokds.getString("BROJKONTA"));
+  	
     List ret = new ArrayList();
     ResultSet rs = Util.openQuickSet(query);
     try {
       while (rs.next()) 
-        ret.add(new MainQueryData(rs));
+      	if (!nokon.contains(rs.getString("BROJKONTA").trim()))
+      		ret.add(new MainQueryData(rs));
     } catch (SQLException e) {
       e.printStackTrace();
     }
