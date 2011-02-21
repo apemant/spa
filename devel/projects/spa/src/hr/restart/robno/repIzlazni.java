@@ -687,11 +687,11 @@ public class repIzlazni implements raReportData {
   }
   
   public String getTEXTDOD() {
-    String cached = cache.getValue("TEXTDOD", getFormatBroj());
+    String cached = cache.getValue("TEXTDOD", ru.getFormatBroj());
     if (cached != null) return cached;
     
     DataSet ds = dokidod.getDataModule().getTempSet(
-        Condition.equal("BRRAC", getFormatBroj()));
+        Condition.equal("BRRAC", ru.getFormatBroj()));
     ds.open();
     if (ds.rowCount() == 0) return cache.returnValue("");
     
