@@ -97,7 +97,7 @@ public class repID_B implements raReportData { //sg.com.elixir.reportwriter.data
     ds = null;
   }
 
-  private String getCOPCINE(){
+  String getCOPCINE(){
     VarStr invert= new VarStr();
 //    System.out.println("inicijaliziran invert");
     VarStr original = new VarStr(raIzvjestaji.convertCopcineToRS(ds.getString("COPCINE")));
