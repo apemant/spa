@@ -91,6 +91,7 @@ public class jpOrgpl extends JPanel {
   JraTextField jraRedbrzo = new JraTextField();
   JraTextField jraSatimj = new JraTextField();
   JraTextField jraStopak = new JraTextField();
+  JraTextField jraDatumIspl = new JraTextField();
 
   JlrNavField jlrCorg = new JlrNavField()
   {
@@ -129,9 +130,9 @@ public class jpOrgpl extends JPanel {
     public void after_lookUp() {
     }
   };
-  raComboBox jcbNacObS = new raComboBox();
+//  raComboBox jcbNacObS = new raComboBox();
   raComboBox jcbNacObB = new raComboBox();
-  JLabel jlNacObrS = new JLabel();
+//  JLabel jlNacObrS = new JLabel();
   JLabel jlNacObB = new JLabel();
   JLabel jlOznaka = new JLabel();
   JLabel jlOpis = new JLabel();
@@ -194,6 +195,8 @@ public class jpOrgpl extends JPanel {
     jraSatimj.setDataSet(fOrgpl.getRaQueryDataSet());
     jraStopak.setColumnName("STOPAK");
     jraStopak.setDataSet(fOrgpl.getRaQueryDataSet());
+    jraDatumIspl.setColumnName("DATUMISPL");
+    jraDatumIspl.setDataSet(fOrgpl.getRaQueryDataSet());
 
     jlrCorg.setColumnName("CORG");
     jlrCorg.setDataSet(fOrgpl.getRaQueryDataSet());
@@ -250,27 +253,27 @@ public class jpOrgpl extends JPanel {
     jlrNaziv.setSearchMode(1);
 
 
-    jcbNacObS.setRaColumn("NACOBRS");
-    jcbNacObS.setRaDataSet(fOrgpl.getRaQueryDataSet());
-    jcbNacObS.setRaItems(new String[][] {
-      {"Fiksna pla\u0107a", "1"},
-      {"Fiksna satnica","2"}
-    });
+//    jcbNacObS.setRaColumn("NACOBRS");
+//    jcbNacObS.setRaDataSet(fOrgpl.getRaQueryDataSet());
+//    jcbNacObS.setRaItems(new String[][] {
+//      {"Fiksna pla\u0107a", "1"},
+//      {"Fiksna satnica","2"}
+//    });
 
     jcbNacObB.setRaColumn("NACOBRB");
     jcbNacObB.setRaDataSet(fOrgpl.getRaQueryDataSet());
     jcbNacObB.setRaItems(new String[][] {
-      {"Bruto radnika", "1"},
-      {"Koeficijent rm","2"},
-      {"Koeficijent radnika", "3"},
-      {"Akontacija poreza","4"},
-      {"Fiksni bruto", "5"},
-      {"Neto na bruto","6"},
-      {"Fiksni neto na bruto", "7"}
+      {"Bruto na neto", "1"},
+//      {"Koeficijent rm","2"},
+//      {"Koeficijent radnika", "3"},
+//      {"Akontacija poreza","4"},
+//      {"Fiksni bruto", "5"},
+      {"Neto na bruto","6"}
+//      {"Fiksni neto na bruto", "7"}
     });
 
 
-    jlNacObrS.setText("Na\u010Din obra\u010Duna satnice");
+//    jlNacObrS.setText("Na\u010Din obra\u010Duna satnice");
     jlNacObB.setText("Na\u010Din obra\u010Duna bruta");
     jbSelCorg.setText("...");
     jlOznaka.setText("Oznaka");
@@ -307,17 +310,20 @@ public class jpOrgpl extends JPanel {
     jpDetail.add(jlPodmatbr,     new XYConstraints(15, 190, -1, -1));
     jpDetail.add(jraStopak,      new XYConstraints(435, 190, 120, -1));
     jpDetail.add(jlrCsif1,     new XYConstraints(150, 240, 120, -1));
-    jpDetail.add(jcbNacObS,        new XYConstraints(150, 90, 120, -1));
-    jpDetail.add(jlNacObrS,   new XYConstraints(15, 90, -1, -1));
+//    jpDetail.add(jcbNacObS,        new XYConstraints(150, 90, 120, -1));
+    jpDetail.add(jlNacObB,   new XYConstraints(15, 90, -1, -1));
     jpDetail.add(new JLabel("Status obrade"), new XYConstraints(15,265,-1,-1));
     jpDetail.add(rcbStatus, new XYConstraints(150, 265, 120, -1));
 
-    this.add(jpDetail, BorderLayout.CENTER);
-    jpDetail.add(jlNacObB,   new XYConstraints(300, 90, -1, -1));
-    jpDetail.add(jcbNacObB,    new XYConstraints(435, 90, 120, -1));
+//    jpDetail.add(jlNacObB,   new XYConstraints(300, 90, -1, -1));
+    jpDetail.add(jcbNacObB,    new XYConstraints(150, 90, 200, -1));
     jpDetail.add(jraOsnkoef,   new XYConstraints(435, 115, 120, -1));
     jpDetail.add(jlOznaka,  new XYConstraints(150, 18, -1, -1));
     jpDetail.add(jlOpis,  new XYConstraints(255, 18, -1, -1));
+
+    jpDetail.add(new JLabel("Datum isplate tek. obr."),    new XYConstraints(275, 265, -1, -1));
+    jpDetail.add(jraDatumIspl, new XYConstraints(435, 265, 120, -1));
+    this.add(jpDetail, BorderLayout.CENTER);
   }
 
 }

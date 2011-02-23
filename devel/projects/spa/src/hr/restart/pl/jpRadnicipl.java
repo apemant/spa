@@ -592,13 +592,13 @@ public class jpRadnicipl extends JPanel {
     jcbNacObr.setRaDataSet(fRadnicipl.getRaQueryDataSet());
     jcbNacObr.setRaItems(new String[][] {
       {"Definirano po oj", "0"},
-      {"Bruto radnika", "1"},
-      {"Koeficijent rm","2"},
-      {"Koeficijent radnika", "3"},
-      {"Akontacija poreza","4"},
-      {"Fiksni bruto", "5"},
-      {"Neto na bruto","6"},
-      {"Fiksni neto na bruto", "7"}
+      {"Bruto na neto", "1"},
+//      {"Koeficijent rm","2"},
+//      {"Koeficijent radnika", "3"},
+//      {"Akontacija poreza","4"},
+//      {"Fiksni bruto", "5"},
+      {"Neto na bruto","6"}
+//      {"Fiksni neto na bruto", "7"}
     });
 
     jcbClanomf.setColumnName("CLANOMF");
