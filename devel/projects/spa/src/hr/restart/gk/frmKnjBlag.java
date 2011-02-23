@@ -87,7 +87,7 @@ System.out.println("Usao u nenormalno");
                 stavka.setString("VRDOK",frmNalozi.determineVrdok(uis, false));
                 stavka.setInt("CPAR", stavbl.getInt("CPAR"));
               } 
-
+              stavka.setInt("BROJIZV",izvjestaji.getShort("GODINA")*1000+izvjestaji.getInt("BRIZV"));
               if (!getKnjizenje().saveStavka()) return false;
             }
           } else {
@@ -127,6 +127,7 @@ System.out.println("Usao u nenormalno");
               stavka.setString("VRDOK",frmNalozi.determineVrdok(stavka, false));
               stavka.setInt("CPAR", stavbl.getInt("CPAR"));
             } //else System.out.println(stavbl.getString("BROJKONTA")+" NIPOŠTO NIJE sk stavka");
+            stavka.setInt("BROJIZV",izvjestaji.getShort("GODINA")*1000+izvjestaji.getInt("BRIZV"));
             if (!getKnjizenje().saveStavka()) return false;
           } //if SKstavke
         } while (stavbl.next());
@@ -146,6 +147,7 @@ System.out.println("Usao u nenormalno");
         getKnjizenje().setIP(ukip);
         promet.setString("OPIS","Promet ".concat(opisIzvj).concat(empty50).substring(0,50));
         promet.setTimestamp("DATDOK",izvjestaji.getTimestamp("DATDO"));
+        promet.setInt("BROJIZV",izvjestaji.getShort("GODINA")*1000+izvjestaji.getInt("BRIZV"));
         if (!getKnjizenje().saveStavka()) return false;
         //
       }

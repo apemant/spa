@@ -495,7 +495,7 @@ public class raKnjizenje {
     return isEmpty(colName, getStavkaSK());
   }
 
-  private String[] copyColsSK = new String[] { "DATDOK", "BROJDOK", "DATDOSP", "OPIS", "CPAR" };
+  private String[] copyColsSK = new String[] { "DATDOK", "BROJDOK", "DATDOSP", "OPIS", "CPAR"};
   private String[] allColsSK;
 
   private String toStringStavka() {
@@ -896,7 +896,8 @@ public class raKnjizenje {
             skstavke.setString("VRDOK", ulazni ? "OKD" : "OKK");
             skstavke.setString("BROJDOK", brojdok + "-" + rbsk);
           }
-          skstavke.setInt("BROJIZV", godob ? getStavkaSK().getInt("BROJIZV") : 0);
+//          skstavke.setInt("BROJIZV", godob ? getStavkaSK().getInt("BROJIZV") : 0);
+          skstavke.setInt("BROJIZV", getStavkaSK().getInt("BROJIZV"));
           skstavke.setString("CORG", getStavkaSK().getString("CORG"));
           skstavke.setTimestamp("DATUMKNJ", getStavkaSK().getTimestamp(
               "DATUMKNJ"));
