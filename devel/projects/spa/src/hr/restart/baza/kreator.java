@@ -1072,13 +1072,18 @@ public class kreator extends JraFrame {
     File oldls;
     public boolean oksel;
 
-    public SelectPathDialog(Frame owner) {
-      super(owner, "Putanja za spremanje i dohvat podataka", true);
+    
+    public SelectPathDialog(Frame owner, String title) {
+      super(owner, title, true);
       try {
         init();
       } catch (Exception e) {
         e.printStackTrace();
       }
+    }
+    
+    public SelectPathDialog(Frame owner) {
+      this(owner, "Putanja za spremanje i dohvat podataka");
     }
     
     public SelectPathDialog(Dialog owner, String title) {
