@@ -19,6 +19,7 @@ package hr.restart.sk;
 
 
 import hr.restart.gk.frmNalozi;
+import hr.restart.util.IntParam;
 import hr.restart.util.PreSelect;
 import hr.restart.util.startFrame;
 
@@ -76,6 +77,7 @@ public class frmSK extends startFrame {
   JMenuItem jmiBG = new JMenuItem();
   JMenuItem jmiValute = new JMenuItem();
   JMenuItem jmiNadzornaKnjiga = new JMenuItem();
+  JMenuItem jmiImport = new JMenuItem();
 
   public frmSK() {
     try {
@@ -95,6 +97,7 @@ public class frmSK extends startFrame {
     jmiKD.setText("Potvr\u0111ivanje dokumenata");
     jmiPregled.setText("Pregled arhive");
     jmiNadzornaKnjiga.setText("Nadzorna knjiga uvoza");
+    jmiImport.setText("Import SK raèuna");
 //    jmiKumulCheck.setText("Provjera kumulativa");
     jmiSkCheck.setText("Provjera VD stavaka");
     jmiPokCheck.setText("Provjera konzistentnosti pokrivanja");
@@ -146,6 +149,11 @@ public class frmSK extends startFrame {
     jmObrade.add(jmiAutoPok);
     jmObrade.addSeparator();
     jmObrade.add(jmiNadzornaKnjiga);
+    String ix = IntParam.getTag("importxml.dir");
+    if (ix !=null && ix.length() > 0) {
+      jmObrade.addSeparator();
+      jmObrade.add(jmiImport);
+    }
 //    jSisAla.add(jmiKumulCheck);
     jSisAla.add(jmiSkCheck);
     jSisAla.add(jmiPokCheck);
@@ -286,6 +294,11 @@ public class frmSK extends startFrame {
     jmiNadzornaKnjiga.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiNadzornaKnjiga_actionPerformed();
+      }
+    });
+    jmiImport.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiImport_actionPerformed();
       }
     });
     jmiUraIra.addActionListener(new ActionListener() {
@@ -449,6 +462,11 @@ public class frmSK extends startFrame {
   public void jmiNadzornaKnjiga_actionPerformed() {
     PreSelect.showPreselect("hr.restart.sk.presNadzornaKnjiga","hr.restart.sk.frmNadzornaKnjiga","Nadzorna knjiga uvoza");
   }
+  
+  public void jmiImport_actionPerformed() {
+    raImportRac.show();
+  }
+  
   public void jmiUraIra_actionPerformed() {
     showFrame("hr.restart.sk.raIspisUraIra", "Ispis knjiga URA/IRA");
   }
