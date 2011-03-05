@@ -18,6 +18,7 @@
 package hr.restart.swing;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.dM;
 import hr.restart.help.raLiteBrowser;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raPilot;
@@ -32,9 +33,8 @@ import hr.restart.util.columnsbean.ColumnsBean;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -42,19 +42,29 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
+import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.RowFilterListener;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
@@ -78,9 +88,11 @@ public class raTableCopyPopup extends JPopupMenu {
   private Action add, addAll, set, setAll, sub, subAll, reset,
       selClear, selAll, selectCol, fastAdd, filtShow, filtEq, filtNeq, 
       filtRemove, search, searchAll, tabCond, keyCond, inCond, 
-      inColCond, copyAll, clearAll, replaceAll;
+      inColCond, copyAll, clearAll, replaceAll, memorize, compare;
   private JMenu calcMenu;
   private JMenu adminMenu;
+  
+  private Map memo = new HashMap();
   
   
   raCalculator calc = raCalculator.getInstance();
@@ -191,6 +203,8 @@ public class raTableCopyPopup extends JPopupMenu {
       replaceAll.putValue(Action.NAME, selMulti ?
           "Zamijeni uzorak teksta u svim oznaèenim redovima" :
           "Zamijeni uzorak teksta u svim redovima");
+      memorize.setEnabled(jt.getRowCount() > 0);
+      compare.setEnabled(memo.size() > 0);
 
       reset.setEnabled(calc.data.getBigDecimal("RESULT").signum() != 0);
       filtShow.setEnabled(extend && dataset);
@@ -243,6 +257,17 @@ public class raTableCopyPopup extends JPopupMenu {
     add(filtRemove = new AbstractAction("Iskljuèi postojeæi filter") {
       public void actionPerformed(ActionEvent e) {
         removeFilter();
+      }
+    });
+    addSeparator();
+    add(memorize = new AbstractAction("Zapamti sve vrijednosti u koloni") {
+      public void actionPerformed(ActionEvent e) {
+        memorize();
+      }
+    });
+    add(compare = new AbstractAction("Usporedi kolonu sa zapamæenom") {
+      public void actionPerformed(ActionEvent e) {
+        compare();
       }
     });
     addSeparator();
@@ -358,7 +383,6 @@ public class raTableCopyPopup extends JPopupMenu {
         try {
           replaceAll();
         } catch (RuntimeException e1) {
-          // TODO Auto-generated catch block
           e1.printStackTrace();
         }
       }
@@ -410,6 +434,157 @@ public class raTableCopyPopup extends JPopupMenu {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+  
+  Object getKey(int row) {
+  	Object o = jt.getValueAt(row, selCol);
+  	if (o == null) return null;
+  	
+  	if (o instanceof Number && ((Number) o).doubleValue() == 0) return null;
+  	if (o instanceof String && ((String) o).length() == 0) return null;
+  	
+  	return o;
+  }
+  
+  void memorize() {
+  	memo.clear();
+  	Integer one = new Integer(1);
+  	
+  	for (int i = 0; i < jt.getRowCount(); i++) {
+  		Object key = getKey(i);
+  		if (key == null) continue;
+  		
+  		Integer old = (Integer) memo.get(key);
+  		memo.put(key, old == null ? one : new Integer(old.intValue() + 1));
+  	}
+  }
+  
+  void compare() {
+  	Map over = new HashMap();
+  	Integer one = new Integer(1);
+  	int max = 0;
+  	
+  	for (int i = 0; i < jt.getRowCount(); i++) {
+  		Object key = getKey(i);
+  		if (key == null) continue;
+  		
+  		if (max == 0) {
+  			if (key instanceof String) max = 10;
+  			else if (key instanceof Date) max = 20;
+  			else max = 50;
+  		}
+  		
+  		Integer old = (Integer) memo.get(key);
+  		if (old == null) {
+  			old = (Integer) over.get(key);
+    		over.put(key, old == null ? one : new Integer(old.intValue() + 1));
+  		}	else if (old.intValue() == 1) memo.remove(key);
+  		else memo.put(key, new Integer(old.intValue() - 1));
+  	}
+  	int total = 0;
+  	for (Iterator i = memo.values().iterator(); i.hasNext(); )
+  		total += ((Integer) i.next()).intValue();
+  	int totalnew = 0;
+  	for (Iterator i = over.values().iterator(); i.hasNext(); )
+  		totalnew += ((Integer) i.next()).intValue();
+  	
+  	if (total + totalnew == 0) { 
+  		JOptionPane.showMessageDialog(null, "Kolone su identiène", "Razlike", JOptionPane.INFORMATION_MESSAGE);
+  		return;
+  	}
+  	
+  	String report = "";
+  	if (total > max) report = "Preostalih vrijednosti: " + total;
+  	else if (total > 0) report = "Preostale vrijednosti: " + countMap(memo);
+  	
+  	if (totalnew > 0 && report.length() > 0) report = report + "\n\n";
+  	
+  	if (totalnew > max) report += "Novih vrijednosti: " + totalnew;
+  	else if (totalnew > 0) report += "Nove vrijednosti: " + countMap(over);
+  	
+		String[] opt = {"OK", "Detalji"};
+ 		int ret = JOptionPane.showOptionDialog(null, 
+ 								new raMultiLineMessage(report, SwingConstants.LEADING, 120),
+ 								"Razlike", 0, JOptionPane.PLAIN_MESSAGE, null, opt, opt[0]);
+ 		if (ret != 1) return;
+
+ 		if (total > 0) {
+ 			frmTableDataView old = showMap(memo);
+ 			old.setTitle("Preostale vrijednosti");
+ 			old.pack();
+ 			old.show();
+ 			old.setLocation(old.getX() - 160, old.getY());
+ 		}
+ 		if (totalnew > 0) {
+ 			frmTableDataView ex = showMap(over);
+ 			ex.setTitle("Nove vrijednosti");
+ 			ex.pack();
+ 			ex.setLocation(ex.getX() + 240, ex.getY());
+ 			ex.show();
+ 		}
+  }
+  
+  frmTableDataView showMap(Map values) {
+  	Column col = null;
+  	Object key = values.keySet().iterator().next();
+  	if (key instanceof BigDecimal) 
+  		col = dM.createBigDecimalColumn("VRI", "Vrijednost", ((BigDecimal) key).scale());
+  	else if (key instanceof Integer)
+  		col = dM.createIntColumn("VRI", "Vrijednost");
+  	else if (key instanceof Short)
+      col = dM.createShortColumn("VRI", "Vrijednost");
+  	else if (key instanceof Number)
+  		col = dM.createBigDecimalColumn("VRI", "Vrijednost", 2);
+  	else if (key instanceof Date)
+  		col = dM.createTimestampColumn("VRI", "Vrijednost");
+  	else if (key instanceof String) {
+  		col = dM.createStringColumn("VRI", "Vrijednost", 30);
+  		col.setPrecision(-1);
+  	}	else return null;
+  	
+  	StorageDataSet ds = new StorageDataSet();
+  	ds.setColumns(new Column[] {col});
+  	ds.open();
+  	
+  	try {
+	  	Variant v = new Variant();
+	  	for (Iterator i = values.keySet().iterator(); i.hasNext(); ) {
+	  		key = i.next();
+	  		Integer cnt = (Integer) values.get(key);
+	  		for (int c = 0; c < cnt.intValue(); c++) {
+	  			ds.insertRow(false);
+	  			v.setFromString(col.getDataType(), key.toString());
+	  			ds.setVariant("VRI", v);
+	  		}
+	  	}
+  	} catch (Exception e) {
+  		e.printStackTrace();
+  		return null;
+  	}
+  	
+  	frmTableDataView view = new frmTableDataView();
+    view.setDataSet(ds);
+    view.jp.setPreferredSize(new Dimension(360, 500));
+    view.jp.getMpTable().setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+    return view;
+  }
+  
+  String countMap(Map nums) {
+  	VarStr ret = new VarStr();
+  	for (Iterator i = nums.keySet().iterator(); i.hasNext(); ) {
+  		Object key = i.next();
+  		Integer cnt = (Integer) nums.get(key);
+  		for (int c = 0; c < cnt.intValue(); c++)
+  			ret.append(formatKey(key)).append(", ");
+  	}
+  	
+  	return ret.chop(2).toString();
+  }
+  
+  String formatKey(Object key) {
+  	if (key instanceof BigDecimal) return Aus.formatBigDecimal((BigDecimal) key);
+  	if (key instanceof Timestamp) return Aus.formatTimestamp((Timestamp) key);
+  	return key.toString();
   }
   
   void setupTabCond() {
