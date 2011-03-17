@@ -81,12 +81,16 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
+import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRDesignTextElement;
+import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JRJdk13Compiler;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
@@ -1522,21 +1526,44 @@ public class dlgRunReport {
   }
   
   void fixMargins(String name, JasperDesign jdes) {
+    boolean vir = name.startsWith("hr.restart.zapod.repVirman");
     Properties margins = new Properties();
     FileHandler.loadProperties("margins.properties", margins);
     String margs = margins.getProperty(name);
     if (margs == null) {
-      margs = jdes.getTopMargin() + "|" + jdes.getLeftMargin() + "|"
+      margs = (vir?18:jdes.getTopMargin()) + "|" + jdes.getLeftMargin() + "|"
             + jdes.getBottomMargin() + "|" + jdes.getRightMargin();
       margins.setProperty(name, margs);
       FileHandler.storeProperties("margins.properties", margins);
     } else {
       String[] ma = new VarStr(margs).split('|');
       if (ma.length == 4) {
-        jdes.setTopMargin(Aus.getNumber(ma[0]));
-        jdes.setLeftMargin(Aus.getNumber(ma[1]));
-        jdes.setBottomMargin(Aus.getNumber(ma[2]));
-        jdes.setRightMargin(Aus.getNumber(ma[3]));
+        if (!vir) {
+          jdes.setTopMargin(Aus.getNumber(ma[0]));
+          jdes.setLeftMargin(Aus.getNumber(ma[1]));
+          jdes.setBottomMargin(Aus.getNumber(ma[2]));
+          jdes.setRightMargin(Aus.getNumber(ma[3]));
+        }
+      }
+    }
+    if (vir) {//za virmane se ne postavljaju margine nego se sve komponente pomicu prema dolje za topMargin i desno za leftMargin, ostale margine ne igraju ulogu.
+      int tm, lm;
+      try {
+        tm = (margs==null)?18:Aus.getNumber(new VarStr(margs).split('|')[0]);
+        tm = (tm==0)?18:tm;//default
+        lm = (margs==null)?0:Aus.getNumber(new VarStr(margs).split('|')[1]);
+      } catch (Exception e) {
+        tm = 18;
+        lm = 0;
+        e.printStackTrace();
+      }
+      JRElement[] flds = jdes.getDetail().getElements();
+      for (int i = 0; i < flds.length; i++) {
+        if (flds[i] instanceof JRDesignTextField) {
+          JRDesignTextField tf = (JRDesignTextField)flds[i];
+          tf.setY(tf.getY()+tm);
+          tf.setX(tf.getX()+lm);
+        }
       }
     }
   }
