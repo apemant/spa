@@ -1845,7 +1845,7 @@ sysoutTEST ST = new sysoutTEST(false);
 
 
 
-  void prepareDetails() {
+  public void prepareDetails() {
     
     unFixJlrNavFieldDataSetStatus();
 
@@ -2814,7 +2814,7 @@ ST.prnc(raQueryDataSet);
 
 */
 
-  private boolean copyToNew = false;
+  public boolean copyToNew = false;
 
   public void Insertiraj() {
   	
