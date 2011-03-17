@@ -22,12 +22,14 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Partneri;
 import hr.restart.baza.Porezi;
 import hr.restart.baza.Ugovori;
+import hr.restart.baza.stugovor;
 import hr.restart.baza.zirorn;
 import hr.restart.robno.Aut;
 import hr.restart.robno.frmDodatniTxt;
 import hr.restart.robno.raControlDocs;
 import hr.restart.robno.raVart;
 import hr.restart.robno.rapancart;
+import hr.restart.swing.AktivColorModifier;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
@@ -49,6 +51,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -63,6 +66,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
 import com.borland.jbcl.layout.XYConstraints;
@@ -1149,7 +1153,12 @@ System.out.println("Oðe bi trebao biti");
 					30 });
 			setJPanelMaster(ump);
 			setJPanelDetail(udp);
-			raMaster.removeRnvCopyCurr();
+			raMaster.getJpTableView().addTableModifier(new AktivColorModifier());
+			raMaster.addOption(new raNavAction("Kopiraj tekuæi zapis",raImages.IMGCOPYCURR,KeyEvent.VK_F2,KeyEvent.SHIFT_MASK) {
+      public void actionPerformed(ActionEvent e) {
+        rnvCopyCurr_action();
+      }
+			}, 4);
 			raDetail.removeRnvCopyCurr();
 			raDetail.addOption(rnvRbr,4);
 			raMaster.addOption(rnvRekalkul,5);
@@ -1211,7 +1220,48 @@ System.out.println("Oðe bi trebao biti");
 	 * ump.jtOPIS.requestFocus(); } inSetFocus = false; }
 	 */
 
-	class UgovoriMasterPanel extends JPanel {
+	boolean copyCurrEngaged = false;
+	StorageDataSet detailTMP = null;
+	protected void rnvCopyCurr_action() {
+	  refilterDetailSet();
+	  detailTMP = getDetailSet().cloneDataSetStructure();
+	  detailTMP.open();
+	  for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next()) {
+      detailTMP.insertRow(false);
+      getDetailSet().copyTo(detailTMP);
+      detailTMP.post();
+    }
+    raMaster.setMode('N');
+    raMaster.copyToNew = true;
+    copyCurrEngaged = true;
+    raMaster.prepareDetails();
+  }
+	public void AfterAfterSaveMaster(char mode) {
+	    if (copyCurrEngaged && mode == 'N') {
+	      QueryDataSet detaljy = stugovor.getDataModule().getTempSet(Condition.nil);
+	      detaljy.open();
+	      for (detailTMP.first(); detailTMP.inBounds(); detailTMP.next()) {
+//	        System.out.println(detailTMP);
+//	        System.out.println("->");
+	        detaljy.insertRow(false);
+          detailTMP.copyTo(detaljy);
+          detaljy.setString("CUGOVOR", getMasterSet().getString("CUGOVOR"));
+          detaljy.post();
+//          System.err.println(detaljy);
+        }
+	      detaljy.saveChanges();
+	      refilterDetailSet();
+	      copyCurrEngaged = false;
+	      detailTMP = null;
+	      raMaster.setMode('I');
+	      raMaster.AfterAfterSave('I');
+//	      raMaster.af
+	    } else {
+	      super.AfterAfterSaveMaster(mode);
+	    }
+	}
+
+  class UgovoriMasterPanel extends JPanel {
 
 		JLabel jlFRANK = new JLabel();
 
