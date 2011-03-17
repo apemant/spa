@@ -640,9 +640,9 @@ public class ispStatPar extends raPanStats {
         dpaSet.setInt("CPAR", cpar = tmpSet.getInt("CPAR"));
         dpaSet.setString("NAZPAR", pca.getNameNotNull(cpar));
         dpaSet.setInt("CART", cart = tmpSet.getInt("CART"));
-        dpaSet.setString("NAZART", tmpSet.getString("NAZART"));
-        dpaSet.setString("CGRART", tmpSet.getString("CGRART"));
-        dpaSet.setString("JM", tmpSet.getString("JM"));
+        dpaSet.setString("NAZART", getString("NAZART", dpaSet, tmpSet));
+        dpaSet.setString("CGRART", getString("CGRART", dpaSet, tmpSet));
+        dpaSet.setString("JM", getString("JM", dpaSet, tmpSet));
         dpaSet.setBigDecimal("KOL", tmpSet.getBigDecimal("KOL"));
         dpaSet.setBigDecimal("INAB", tmpSet.getBigDecimal("INAB"));
         dpaSet.setBigDecimal("RUC", tmpSet.getBigDecimal("IPRODBP").subtract(tmpSet.getBigDecimal("INAB")));
@@ -671,6 +671,19 @@ public class ispStatPar extends raPanStats {
       ex.printStackTrace(); 
     }
     return dpaSet;
+  }
+
+  private String getString(String cn, QueryDataSet destSet,
+      QueryDataSet srcSet) {
+    try {
+      String s = srcSet.getString(cn);
+      int l = destSet.hasColumn(cn).getPrecision();
+      int sl = s.length();
+      if (sl > l) return s.substring(0, l);
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+    return srcSet.getString(cn);
   }
 
   protected void racunica(QueryDataSet tmpSet, PartnerCache pca) {
