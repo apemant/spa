@@ -888,9 +888,10 @@ public class raKnjizenje {
           else skstavke.setString("CSKL", getStavkaSK().getString("CSKL"));
           
           skstavke.setString("VRDOK", vrdok);
-          if (godob || glavna || ++rbsk == 1)
+          if (godob || glavna || ++rbsk == 1) {
             skstavke.setString("BROJDOK", brojdok);
-          else {
+            if (godob) skstavke.setString("EXTBRDOK", getStavkaSK().getString("EXTBRDOK"));
+          } else {
             System.out.println("sranje kod "+brojdok);
             // ovo drugo su obavezno okajci jer mogu bit na svakakvim stranama konta
             skstavke.setString("VRDOK", ulazni ? "OKD" : "OKK");
