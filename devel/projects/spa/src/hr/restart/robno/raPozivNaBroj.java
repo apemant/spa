@@ -87,6 +87,11 @@ public class raPozivNaBroj {
    */
 
   public String getPozivNaBroj(DataSet ds) {
+    String specForm = frmParam.getParam("robno", "specForm", "",
+      "Custom format broja izlaznog dokumenta na ispisu");
+    
+    if (specForm != null && specForm.length() > 0)
+      return Aus.formatBroj(ds, specForm);
 
     if (hr.restart.sisfun.frmParam.getParam
         ("robno","pnbRestArt","N","Poziv na broj RestArt formata").equalsIgnoreCase("D")){
