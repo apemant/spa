@@ -470,8 +470,10 @@ public class upOpenRac extends raUpitLite {
     repQDS.getColumn("PER4").setVisible(p3 == 0 ? 0 : 1);
     repQDS.getColumn("PER3").setVisible(p2 == 0 ? 0 : 1);
     repQDS.getColumn("PER2").setVisible(p1 == 0 ? 0 : 1);
-
+    view.setSums(new String[] {"TOTALR", "TSAL", "TOTALU", 
+        "TOTAL", "NDOSP", "PER1", "PER2", "PER3", "PER4", "PER5"});
     view.setDataSet(repQDS);
+    view.setSaveName("sk.openrac");
     view.show();
   }
 
