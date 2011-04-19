@@ -361,7 +361,15 @@ public class frmPDV extends raUpitLite {
         suma_VII(tmpSet.getBigDecimal(i));
         continue;
       } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"VII.3.")){
-        reportSet.setBigDecimal("POC_I_PREST", tmpSet.getBigDecimal(i));
+        reportSet.setBigDecimal("VII3", tmpSet.getBigDecimal(i));
+        suma_VII(tmpSet.getBigDecimal(i));
+        continue;
+      } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"VII.4.")){
+        reportSet.setBigDecimal("VII4", tmpSet.getBigDecimal(i));
+        suma_VII(tmpSet.getBigDecimal(i));
+        continue;
+      } else if (tmpSet.getColumn(i).getCaption().equals(pfx+"VII.5.")){
+        reportSet.setBigDecimal("VII5", tmpSet.getBigDecimal(i));
         suma_VII(tmpSet.getBigDecimal(i));
         continue;
       }
@@ -378,7 +386,7 @@ public class frmPDV extends raUpitLite {
   }
 
   void suma_VII(BigDecimal iznos){
-    reportSet.setBigDecimal("UKUPNO_VII",reportSet.getBigDecimal("UKUPNO_VII").add(iznos));
+//    reportSet.setBigDecimal("UKUPNO_VII",reportSet.getBigDecimal("UKUPNO_VII").add(iznos));
   }
 
   void suma_VII1(BigDecimal iznos){
@@ -431,8 +439,9 @@ public class frmPDV extends raUpitLite {
         reportSet.getBigDecimal("NAB_OSOB_VOZIL").add(reportSet.getBigDecimal("PRO_OSOB_VOZIL").add(
         reportSet.getBigDecimal("NAB_RAB_VOZIL").add(reportSet.getBigDecimal("NAB_OSTALO").add(
         reportSet.getBigDecimal("PRO_OSTALO"))))))));
-    reportSet.setBigDecimal("UKUPNO_VII", reportSet.getBigDecimal("UKUPNO_VII1").add(reportSet.getBigDecimal("OTUDJ_STJEC").add(
-        reportSet.getBigDecimal("POC_I_PREST"))));
+//    reportSet.setBigDecimal("UKUPNO_VII", reportSet.getBigDecimal("UKUPNO_VII1")
+//        .add(reportSet.getBigDecimal("OTUDJ_STJEC"))
+//        );
   }
   
   public void focusLostV(){
@@ -603,8 +612,13 @@ public class frmPDV extends raUpitLite {
       dm.createBigDecimalColumn("NAB_RAB_VOZIL",2),
       dm.createBigDecimalColumn("PRO_OSTALO",2),
       dm.createBigDecimalColumn("NAB_OSTALO",2),
+
+      dm.createBigDecimalColumn("VII3",2),
+      dm.createBigDecimalColumn("VII4",2),
+      dm.createBigDecimalColumn("VII5",2),
+      
       dm.createBigDecimalColumn("OTUDJ_STJEC",2),
-      dm.createBigDecimalColumn("POC_I_PREST",2),
+      dm.createTimestampColumn("POC_I_PREST"),
       
       dm.createBigDecimalColumn("POV",2),
       dm.createBigDecimalColumn("PRED",2),

@@ -85,6 +85,7 @@ public class raJpanelPdv_K extends JPanel {
     }
   };
   JLabel jlVII15 = new JLabel("  1.5. Nabava rablj. osobnih vozila");
+  
   JraTextField VII16 = new JraTextField(){
     public void focusLost(FocusEvent e) {
       super.focusLost(e);
@@ -92,7 +93,7 @@ public class raJpanelPdv_K extends JPanel {
         frpdv.focusLostEvK();
     }
   };
-  JLabel jlVII16 = new JLabel("  1.6 Nabava ostale dugotrajne imovine");
+  JLabel jlVII16 = new JLabel("  1.5 Nabava ostale dugotrajne imovine");
   JraTextField VII17 = new JraTextField(){
     public void focusLost(FocusEvent e) {
       super.focusLost(e);
@@ -100,7 +101,7 @@ public class raJpanelPdv_K extends JPanel {
         frpdv.focusLostEvK();
     }
   };
-  JLabel jlVII17 = new JLabel("  1.7. Prodaja ostale dugotrajne imovine");
+  JLabel jlVII17 = new JLabel("  1.6. Prodaja ostale dugotrajne imovine");
   JraTextField VII2 = new JraTextField(){
     public void focusLost(FocusEvent e) {
       super.focusLost(e);
@@ -116,7 +117,36 @@ public class raJpanelPdv_K extends JPanel {
         frpdv.focusLostEvK();
     }
   };
-  JLabel jlVII3 = new JLabel(" 3. Po\u010Detak i prestanak obavljanja djelatnosti");
+  JLabel jlVII3 = new JLabel(" 3. Nabava dobara i usluga za reprezentaciju");//" 3. Po\u010Detak i prestanak obavljanja djelatnosti");
+  
+  JraTextField VII4 = new JraTextField(){
+    public void focusLost(FocusEvent e) {
+      super.focusLost(e);
+      if (VII4.isValueChanged())
+        frpdv.focusLostEvK();
+    }
+  };
+  JLabel jlVII4 = new JLabel(" 4. Nabava osobnih vozila i dr. te povezanih dobara i usluga");
+  
+  JraTextField VII5 = new JraTextField(){
+    public void focusLost(FocusEvent e) {
+      super.focusLost(e);
+      if (VII5.isValueChanged())
+        frpdv.focusLostEvK();
+    }
+  };
+  JLabel jlVII5 = new JLabel(" 5. Osn. za obr. vlast.potr.za os.vozila nabavljena do 31.12.2009.");
+  
+  JraTextField VIIPP = new JraTextField(){
+    public void focusLost(FocusEvent e) {
+      super.focusLost(e);
+      if (VIIPP.isValueChanged())
+        frpdv.focusLostEvK();
+    }
+  };
+  JLabel jlVIIPP = new JLabel("   Poèetak ili prestanak obavljanja djelatnosti");
+  
+  
   JTextArea jtNapomena = new JTextArea();
 
   frmPDV frpdv;
@@ -157,6 +187,7 @@ public class raJpanelPdv_K extends JPanel {
     jpVII.add(VII14, new XYConstraints(340, 140, 100 , -1));
     jpVII.add(jlVII14, new XYConstraints(15, 140 ,-1,-1));
     jpVII.add(VII15, new XYConstraints(340, 165, 100 , -1));
+    jlVII15.setFont(jlVII15.getFont().deriveFont(java.awt.Font.ITALIC));
     jpVII.add(jlVII15, new XYConstraints(15, 165 ,-1,-1));
     jpVII.add(VII16, new XYConstraints(340, 190, 100 , -1));
     jpVII.add(jlVII16, new XYConstraints(15, 190 ,-1,-1));
@@ -166,7 +197,17 @@ public class raJpanelPdv_K extends JPanel {
     jpVII.add(jlVII2, new XYConstraints(15, 245 ,-1,-1));
     jpVII.add(VII3, new XYConstraints(340, 275, 100 , -1));
     jpVII.add(jlVII3, new XYConstraints(15, 275 ,-1,-1));
-    jpVII.add(jtNapomena, new XYConstraints(15,305,520,300));
+    
+    jpVII.add(VII4, new XYConstraints(340, 305, 100 , -1));
+    jpVII.add(jlVII4, new XYConstraints(15, 305 ,-1,-1));
+    
+    jpVII.add(VII5, new XYConstraints(340, 335, 100 , -1));
+    jpVII.add(jlVII5, new XYConstraints(15, 335 ,-1,-1));
+    
+    jpVII.add(VIIPP, new XYConstraints(340, 365, 100 , -1));
+    jpVII.add(jlVIIPP, new XYConstraints(15, 365 ,-1,-1));
+    
+    jpVII.add(jtNapomena, new XYConstraints(15,395,520,200));
 
     this.add(jpVII, BorderLayout.CENTER);
   }
@@ -192,8 +233,18 @@ public class raJpanelPdv_K extends JPanel {
     VII17.setColumnName("PRO_OSTALO");
     VII2.setDataSet(frpdv.reportSet);
     VII2.setColumnName("OTUDJ_STJEC");
+    
     VII3.setDataSet(frpdv.reportSet);
-    VII3.setColumnName("POC_I_PREST");
+    VII3.setColumnName("VII3");
+    
+    VII4.setDataSet(frpdv.reportSet);
+    VII4.setColumnName("VII4");
+    
+    VII5.setDataSet(frpdv.reportSet);
+    VII5.setColumnName("VII5");
+        
+    VIIPP.setDataSet(frpdv.reportSet);
+    VIIPP.setColumnName("POC_I_PREST");
   }
 
   void disableDownwards(boolean enable){

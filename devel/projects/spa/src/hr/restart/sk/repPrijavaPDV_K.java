@@ -337,49 +337,66 @@ public class repPrijavaPDV_K implements raReportData { // implements sg.com.elix
      return ds.getBigDecimal("RAZLIKA");
   }
 
+  public BigDecimal ifNul(BigDecimal bd) {
+    if (bd!=null && bd.signum()==0) return null;
+    return bd;
+  }
   public BigDecimal getVII(){
-     return ds.getBigDecimal("UKUPNO_VII");
+     return ifNul(ds.getBigDecimal("UKUPNO_VII"));
   }
 
   public BigDecimal getVII1(){
-     return ds.getBigDecimal("UKUPNO_VII1");
+     return ifNul(ds.getBigDecimal("UKUPNO_VII1"));
   }
 
   public BigDecimal getVII11(){
-     return ds.getBigDecimal("NAB_NEK_ISPOR");
+     return ifNul(ds.getBigDecimal("NAB_NEK_ISPOR"));
   }
 
   public BigDecimal getVII12(){
-     return ds.getBigDecimal("PRO_NEK_PRIM");
+     return ifNul(ds.getBigDecimal("PRO_NEK_PRIM"));
   }
 
   public BigDecimal getVII13(){
-     return ds.getBigDecimal("NAB_OSOB_VOZIL");
+     return ifNul(ds.getBigDecimal("NAB_OSOB_VOZIL"));
   }
 
   public BigDecimal getVII14(){
-     return ds.getBigDecimal("PRO_OSOB_VOZIL");
+     return ifNul(ds.getBigDecimal("PRO_OSOB_VOZIL"));
   }
 
   public BigDecimal getVII15(){
-     return ds.getBigDecimal("NAB_RAB_VOZIL");
+     return ifNul(ds.getBigDecimal("NAB_OSTALO")/*ds.getBigDecimal("NAB_RAB_VOZIL")*/);
   }
 
   public BigDecimal getVII16(){
-     return ds.getBigDecimal("PRO_OSTALO");
+     return ifNul(ds.getBigDecimal("PRO_OSTALO"));
   }
 
   public BigDecimal getVII17(){
-     return ds.getBigDecimal("NAB_OSTALO");
+     return ifNul(ds.getBigDecimal("NAB_OSTALO"));
   }
 
   public BigDecimal getVII2(){
-     return ds.getBigDecimal("OTUDJ_STJEC");
+     return ifNul(ds.getBigDecimal("OTUDJ_STJEC"));
   }
 
   public BigDecimal getVII3(){
-     return ds.getBigDecimal("POC_I_PREST");
+    return ifNul(ds.getBigDecimal("VII3"));
   }
+  public BigDecimal getVII4(){
+    return ifNul(ds.getBigDecimal("VII4"));
+  }
+  public BigDecimal getVII5(){
+    return ifNul(ds.getBigDecimal("VII5"));
+  }
+  public BigDecimal getVII_KONTR(){
+    return ifNul(getVII1().add(getVII2()).add(getVII3()).add(getVII4()).add(getVII5()));
+  }
+  public String getVII_PREST() {
+    return rdu.dataFormatter(ds.getTimestamp("POC_I_PREST"));
+  }
+//     return ifNul(ds.getBigDecimal("POC_I_PREST"));
   
   public BigDecimal getPOV(){
     return ds.getBigDecimal("POV");
