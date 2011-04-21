@@ -391,7 +391,7 @@ public class repPrijavaPDV_K implements raReportData { // implements sg.com.elix
     return ifNul(ds.getBigDecimal("VII5"));
   }
   public BigDecimal getVII_KONTR(){
-    return ifNul(getVII1().add(getVII2()).add(getVII3()).add(getVII4()).add(getVII5()));
+    return ifNul(ds.getBigDecimal("UKUPNO_VII1").add(ds.getBigDecimal("OTUDJ_STJEC")).add(ds.getBigDecimal("VII3")).add(ds.getBigDecimal("VII4")).add(ds.getBigDecimal("VII5")));
   }
   public String getVII_PREST() {
     return rdu.dataFormatter(ds.getTimestamp("POC_I_PREST"));
