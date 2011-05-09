@@ -175,6 +175,7 @@ public class upUlazIzlaz extends raUpitFat {
     izdok.setColumns(new Column[] {
         dm.getPartneri().getColumn("CPAR").cloneColumn(),
         dm.getPartneri().getColumn("NAZPAR").cloneColumn(),
+        dm.getPartneri().getColumn("OIB").cloneColumn(),
         (Column) dm.getDoki().getColumn("CSKL").clone(),
         (Column) dm.getDoki().getColumn("DATDOK").clone(),
       (Column) dm.getDoki().getColumn("VRDOK").clone(),
@@ -194,6 +195,7 @@ public class upUlazIzlaz extends raUpitFat {
     uldok.setColumns(new Column[] {
         dm.getPartneri().getColumn("CPAR").cloneColumn(),
         dm.getPartneri().getColumn("NAZPAR").cloneColumn(),
+        dm.getPartneri().getColumn("OIB").cloneColumn(),
         (Column) dm.getDoku().getColumn("CSKL").clone(),
         (Column) dm.getDoku().getColumn("DATDOK").clone(),
       (Column) dm.getDoku().getColumn("VRDOK").clone(),
@@ -221,8 +223,10 @@ public class upUlazIzlaz extends raUpitFat {
     PartnerCache pc = showPar ? new PartnerCache() : null;
     izdok.getColumn("CPAR").setVisible(showPar ? 1 : 0);
     izdok.getColumn("NAZPAR").setVisible(showPar ? 1 : 0);
+    izdok.getColumn("OIB").setVisible(showPar ? 1 : 0);
     uldok.getColumn("CPAR").setVisible(showPar ? 1 : 0);
     uldok.getColumn("NAZPAR").setVisible(showPar ? 1 : 0);
+    uldok.getColumn("OIB").setVisible(showPar ? 1 : 0);
     /*if (csklEnab) lookupData.getlookupData().raLocate(dm.getSklad(), "CSKL", getDokuCskl());
     String vrzal = csklEnab ? dm.getSklad().getString("VRZAL") : "";*/
     if (tds.getString("ULIZ").trim().equals("I")) {
@@ -296,6 +300,7 @@ public class upUlazIzlaz extends raUpitFat {
           if (showPar && cpar > 0) {
             izdok.setInt("CPAR", cpar);
             izdok.setString("NAZPAR", pc.getNameNotNull(cpar));
+            izdok.setString("OIB", pc.getData(cpar).getOIB());
           }
           izdok.setTimestamp("DATDOK",hr.restart.util.Util.getUtil().clearTime(vl.RezSet.getTimestamp("DATDOK")));
           
@@ -327,6 +332,7 @@ public class upUlazIzlaz extends raUpitFat {
           if (showPar && cpar > 0) {
             uldok.setInt("CPAR", cpar);
             uldok.setString("NAZPAR", pc.getNameNotNull(cpar));
+            uldok.setString("OIB", pc.getData(cpar).getOIB());
           }
           dM.copyColumns(vl.RezSet, uldok, cc);
         }
