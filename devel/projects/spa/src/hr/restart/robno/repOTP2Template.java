@@ -21,6 +21,7 @@ import hr.restart.util.reports.raDosDetail;
 import hr.restart.util.reports.raDosSH1;
 import hr.restart.util.reports.raElixirPropertyValues;
 import hr.restart.util.reports.raRPSectionHeader;
+import hr.restart.util.reports.raRPSectionHeaderROT;
 import hr.restart.util.reports.raReportElement;
 import hr.restart.util.reports.raReportSection;
 
@@ -34,14 +35,19 @@ import hr.restart.util.reports.raReportSection;
 public class repOTP2Template extends repDOSTemplate {
 
   public raReportSection createSectionHeader0() {
-    raRPSectionHeader sh = new raRPSectionHeader(this);
+    raRPSectionHeaderROT sh = new raRPSectionHeaderROT(this);
+    sh.LabelRACUNOTPREMNICA.setDefault(ep.CAPTION, "\nO T P R E M N I C A");
+    sh.LabelR1.defaultAlterer().setVisible(false);
+    sh.LabelObrazac.defaultAlterer().setVisible(false);
+    return sh;
+    /*raRPSectionHeader sh = new raRPSectionHeader(this);
     sh.LabelRACUNOTPREMNICA.setDefault(ep.CAPTION, "\nO T P R E M N I C A");
     sh.defaultAltererSect().getView(sh.LabelMjesto, sh.TextNAZFRA).
         deleteElementsPushDown(sh, new raReportElement[] {sh.LabelNacinplacanja,
         sh.LabelDospijece, sh.TextSgetDATDOSP, sh.TextSgetDDOSP, sh.TextNAZNACPL});
     sh.LabelR1.setDefault(ep.VISIBLE, raElixirPropertyValues.NO);
     sh.LabelObrazac.setDefault(ep.VISIBLE, raElixirPropertyValues.NO);
-    return sh;
+    return sh;*/
   }
 
   public raReportSection createSectionHeader1() {
