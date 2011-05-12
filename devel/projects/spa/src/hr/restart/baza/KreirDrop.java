@@ -701,6 +701,7 @@ public abstract class KreirDrop {
               }
             }
             ps.executeUpdate();
+            Refresher.postpone();
             ok = true;
             ++rows;
           } catch (Exception e) {
