@@ -26,7 +26,7 @@ public class raDosSH1 extends raReportSection {
   public raReportElement Line1;
   private String[] Line1Props = new String[] {"", "", "20", "40", "10800", "0", "", "", ""};
   public raReportElement LabelKol;
-  private String[] LabelKolProps = new String[] {"Kol.", "", "9560", "100", "1260", "220", "Normal", 
+  private String[] LabelKolProps = new String[] {"Kolièina", "", "9560", "100", "1260", "220", "Normal", 
      "Gray", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Center"};
   public raReportElement LabelRbr;
   private String[] LabelRbrProps = new String[] {"Rbr", "", "20", "100", "440", "220", "Normal", 
