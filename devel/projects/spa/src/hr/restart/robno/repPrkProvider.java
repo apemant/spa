@@ -17,12 +17,16 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.VTZtr;
+import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
 
 import java.math.BigDecimal;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 
 public class repPrkProvider implements raReportData { //implements sg.com.elixir.reportwriter.datasource.IDataProvider {
 
@@ -35,6 +39,9 @@ public class repPrkProvider implements raReportData { //implements sg.com.elixir
   repUtil ru = repUtil.getrepUtil();
   hr.restart.util.Valid val = hr.restart.util.Valid.getValid();
   hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(false);
+  protected hr.restart.util.lookupData lD =  hr.restart.util.lookupData.getlookupData();
+  
+  String lastDok = "";
   
   private static boolean isMC;
 
@@ -43,10 +50,17 @@ public class repPrkProvider implements raReportData { //implements sg.com.elixir
     lookupData.getlookupData().raLocate(dm.getSklad(), "CSKL", ds.getString("CSKL"));
     if (dm.getSklad().getString("VRZAL").equals("M")) isMC = true;
     else isMC = false;
+    rekapZav();
+    lastDok = getFormatBroj();
   }
   
   public raReportData getRow(int i) {
-    ds.goToRow(i);    
+    ds.goToRow(i);
+    String nowDok = getFormatBroj();
+    if (lastDok != null && !nowDok.equals(lastDok)) {
+      lastDok = nowDok;
+      rekapZav();
+    }
     return this;
   }
 
@@ -278,5 +292,113 @@ public class repPrkProvider implements raReportData { //implements sg.com.elixir
   public double getPORAV(){
 //    return ((getSTARACIJENA().subtract(getNOVACIJENA())).multiply(getKOL())).doubleValue();
      return ds.getBigDecimal("PORAV").doubleValue();
+  }
+  
+  public String getZavLab() {
+    return ZavLab;
+  }
+  
+  public String getZavNazivLab() {
+    return ZavNazivLab;
+  }
+  
+  public String getZavIznosLab() {
+    return ZavIznosLab;
+  }
+  
+  public String getZavPorezLab() {
+    return ZavPorezLab;
+  }
+  
+  public String getZavOsnovicaLab() {
+    return ZavOsnovicaLab;
+  }
+  
+  public String getZavBrojLab() {
+    return ZavBrojLab;
+  }
+  
+  public String getZavDatumLab() {
+    return ZavDatumLab;
+  }
+  
+  public String getZavPartnerLab() {
+    return ZavPartnerLab;
+  }
+  
+  public String getZavNaziv() {
+    return ZavNaziv;
+  }
+  
+  public String getZavIznos() {
+    return ZavIznos;
+  }
+  
+  public String getZavPorez() {
+    return ZavPorez;
+  }
+  
+  public String getZavOsnovica() {
+    return ZavOsnovica;
+  }
+  
+  public String getZavBroj() {
+    return ZavBroj;
+  }
+  
+  public String getZavDatum() {
+    return ZavDatum;
+  }
+  
+  public String getZavPartner() {
+    return ZavPartner;
+  }
+  
+  String ZavLab, ZavNazivLab, ZavNaziv, ZavIznosLab, ZavIznos; 
+  String ZavPorezLab, ZavPorez, ZavOsnovicaLab, ZavOsnovica;
+  String ZavBrojLab, ZavDatumLab, ZavPartnerLab;
+  String ZavBroj, ZavDatum, ZavPartner;
+  
+  protected void rekapZav(){
+    ZavLab = ZavNazivLab = ZavNaziv = ZavIznosLab = ZavIznos = "";
+    ZavPorezLab = ZavPorez = ZavOsnovicaLab = ZavOsnovica = "";
+    ZavBrojLab = ZavDatumLab = ZavPartnerLab = "";
+    ZavBroj = ZavDatum = ZavPartner = "";
+    
+    if (!ds.getString("CSHZT").equals("YES")) return;
+    
+    DataSet vt = VTZtr.getDataModule().getTempSet(
+        Condition.whereAllEqual(Util.mkey, ds).and(
+            Condition.equal("RBR", 0)));
+    vt.open();
+    if (vt.rowCount() == 0) return;
+    
+    ZavLab = "Rekapitulacija zavisnih troškova";
+    ZavNazivLab = "Zavisni trošak";
+    ZavIznosLab = "Iznos";
+    ZavPorezLab = "Pretporez";
+    ZavOsnovicaLab = "Osnovica";
+    ZavBrojLab = "Broj raèuna";
+    ZavDatumLab = "Datum";
+    ZavPartnerLab = "Partner";
+    
+    vt.setSort(new SortDescriptor(new String[] {"LRBR"}));
+    for (vt.first(); vt.inBounds(); vt.next()) {
+      lD.raLocate(dm.getZtr(), "CZT", ""+ vt.getShort("CZT"));
+      ZavNaziv = ZavNaziv + dm.getZtr().getString("NZT") + "\n";
+      ZavIznos = ZavIznos + Aus.formatBigDecimal(
+          vt.getBigDecimal("IZT").add(vt.getBigDecimal("PRPOR"))) + "\n";
+      ZavPorez = ZavPorez + Aus.formatBigDecimal(vt.getBigDecimal("PRPOR")) + "\n";
+      ZavOsnovica = ZavOsnovica + Aus.formatBigDecimal(vt.getBigDecimal("IZT")) + "\n";
+      if (vt.getString("BRRAC").length() == 0) {
+        ZavBroj = ZavBroj + "\n";
+        ZavDatum = ZavDatum + "\n";
+        ZavPartner = ZavPartner + "\n";
+      } else {
+        ZavBroj = ZavBroj + vt.getString("BRRAC") + "\n";
+        ZavDatum = ZavDatum + Aus.formatTimestamp(vt.getTimestamp("DATRAC")) + "\n";
+        ZavPartner = ZavPartner + vt.getInt("CPAR") + "\n";
+      }
+    }
   }
 }
