@@ -608,7 +608,13 @@ public abstract class raUpitLite extends raFrame implements ResetEnabled {
         getRepRunner().addJasper(provider[i], source[i], design[i], rTitle[i]);
       }
     }
+    addHooks();
   }
+  
+  public void addHooks() {
+    // for overriding
+  }
+  
   public void changeIcon(int mod) {
     if (mod==1) {
       okp.jBOK.setText("Ispis");
