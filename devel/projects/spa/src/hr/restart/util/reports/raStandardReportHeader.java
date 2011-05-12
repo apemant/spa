@@ -20,18 +20,18 @@ package hr.restart.util.reports;
 public class raStandardReportHeader extends raReportSection {
 
   private String[] thisProps = new String[] {"", "", "", "", "Yes", "", "", "0"};
-  public raReportElement Text1;
-  private String[] Text1Props = new String[] {"=(create-var-cache)", "", "", "", "", "", "", "",
-     "9240", "", "1540", "320", "", "", "", "", "", "Red", "", "", "Bold", "", "", "", ""};
+  //public raReportElement Text1;
+  //private String[] Text1Props = new String[] {"=(create-var-cache)", "", "", "", "", "", "", "",
+  //   "9240", "", "1540", "320", "", "", "", "", "", "Red", "", "", "Bold", "", "", "", ""};
 
   public raStandardReportHeader(raReportTemplate owner) {
     super(owner.template.getModel(raElixirProperties.REPORT_HEADER));
     this.setDefaults(thisProps);
 
-    addElements();
+    //addElements();
   }
 
-  private void addElements() {
+  /*private void addElements() {
     Text1 = addModel(ep.TEXT, Text1Props);
-  }
+  }*/
 }
