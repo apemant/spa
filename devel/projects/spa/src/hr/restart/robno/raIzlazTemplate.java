@@ -35,6 +35,7 @@ import hr.restart.swing.raOptionDialog;
 import hr.restart.util.Aus;
 import hr.restart.util.LinkClass;
 import hr.restart.util.VarStr;
+import hr.restart.util.lookupData;
 import hr.restart.util.raImages;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raMatPodaci;
@@ -50,6 +51,8 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -428,11 +431,19 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	hr.restart.swing.raTableColumnModifier TCMORGS;
 
 	hr.restart.swing.raTableColumnModifier TCMOVrtr;
+	
+	raNavAction rnvFixPor = new raNavAction("Popravi ukupni porez",
+        raImages.IMGPREFERENCES, java.awt.event.KeyEvent.VK_F8) {
+      public void actionPerformed(ActionEvent e) {
+        fixRac();
+      }
+	};
 
 	public void addButtons(boolean copy, boolean norma) {
 		// if (copy) raMaster.addOption(rnvCopyDoce,4);
 		if (norma)
 			raDetail.addOption(rnvNormaArt, 4);
+		raMaster.addOption(rnvFixPor, 5);
 	}
 
 	abstract public void initialiser();
@@ -3924,6 +3935,140 @@ System.out.println("findCjenik::else :: "+sql);
 
   public boolean isDosIzd() {
     return false;
+  }
+  
+  public void fixRac() {
+    if (getMasterSet().getRowCount() == 0) return;
+    
+    if (!checkAccess()) {
+      if (!showUserCheckMsg()) return;
+    }
+    
+    refilterDetailSet();
+    
+    if (getDetailSet().getRowCount() == 0) return;
+    
+    if (!TypeDoc.getTypeDoc().isDocFinanc(what_kind_of_dokument)) return;
+    
+    DataSet ds = getDetailSet();
+    DataSet art = dm.getArtikli();
+    DataSet por = dm.getPorezi();
+    
+    HashMap totals = new HashMap();
+    
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      if (!lD.raLocate(art, "CART", Integer.toString(ds.getInt("CART"))))
+        return;
+      PorData pd = (PorData) totals.get(art.getString("CPOR"));
+      if (pd == null) 
+        totals.put(art.getString("CPOR"), pd = new PorData());
+      pd.add(ds);
+      pd.calc(art.getString("CPOR"));
+    }
+    BigDecimal err = Aus.zero2;
+    for (Iterator i = totals.values().iterator(); i.hasNext(); ) {
+      PorData pd = (PorData) i.next();
+      err = err.add(pd.por1.subtract(pd.rpor1).abs());
+      err = err.add(pd.por2.subtract(pd.rpor2).abs());
+      err = err.add(pd.por3.subtract(pd.rpor3).abs());
+    }
+    if (err.signum() == 0) {
+      JOptionPane.showMessageDialog(raMaster.getWindow(), 
+          "Nema greške ukupnog poreza na ukupnoj osnovici.", "Poruka",
+          JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
+    if (JOptionPane.showConfirmDialog(raMaster.getWindow(),
+        "Želite li ažurirati razliku od " + err.toString() + 
+        " poreza na stavkama raèuna?", "Razlika", 
+        JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
+      return;
+    BigDecimal uirac = Aus.zero2;
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      lD.raLocate(art, "CART", Integer.toString(ds.getInt("CART")));
+      PorData pd = (PorData) totals.get(art.getString("CPOR"));
+      pd.check(ds);
+      uirac = uirac.add(ds.getBigDecimal("IPRODSP"));
+    }
+    getMasterSet().setBigDecimal("UIRAC", uirac);
+    if (raTransaction.saveChangesInTransaction(
+        new QueryDataSet[] {getMasterSet(), getDetailSet()})) 
+      JOptionPane.showMessageDialog(raMaster.getWindow(), 
+          "Raèun ažuriran.", "Poruka",
+          JOptionPane.INFORMATION_MESSAGE);
+    else JOptionPane.showMessageDialog(raMaster.getWindow(), 
+        "Greška kod snimanja podataka!", "Greška",
+        JOptionPane.ERROR_MESSAGE);
+  }
+  
+  class PorData {
+    public BigDecimal lipa = Aus.one0.movePointLeft(2);
+    public BigDecimal osn, por1, por2, por3, tot;
+    public BigDecimal rpor1, rpor2, rpor3;
+    public BigDecimal ppor1, ppor2, ppor3;
+    public PorData() {
+      osn = por1 = por2 = por3 = tot = Aus.zero2;
+    }
+    
+    public void add(DataSet ds) {
+      osn = osn.add(ds.getBigDecimal("IPRODBP"));
+      por1 = por1.add(ds.getBigDecimal("POR1"));
+      por2 = por2.add(ds.getBigDecimal("POR2"));
+      por3 = por3.add(ds.getBigDecimal("POR3"));
+      tot = tot.add(ds.getBigDecimal("IPRODSP"));
+    }
+    
+    public void calc(String cpor) {
+      DataSet por = dm.getPorezi();
+      lD.raLocate(por, "CPOR", cpor);
+      ppor1 = por.getBigDecimal("POR1");
+      rpor1 = osn.multiply(ppor1).movePointLeft(2).
+                  setScale(2, BigDecimal.ROUND_HALF_UP);
+      ppor2 = por.getBigDecimal("POR2");
+      rpor2 = osn.multiply(ppor2).movePointLeft(2).
+                  setScale(2, BigDecimal.ROUND_HALF_UP);
+      ppor3 = por.getBigDecimal("POR3");
+      rpor3 = osn.multiply(ppor3).movePointLeft(2).
+                  setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+    
+    public void check(DataSet ds) {
+      int inc = comp(ds, "POR1", ppor1);
+      if (por1.compareTo(rpor1) > 0 && inc < 0) {
+        Aus.sub(ds, "POR1", lipa);
+        Aus.sub(ds, "IPRODSP", lipa);
+        por1 = por1.subtract(lipa);
+      } else if (por1.compareTo(rpor1) < 0 && inc > 0) {
+        Aus.add(ds, "POR1", lipa);
+        Aus.add(ds, "IPRODSP", lipa);
+        por1 = por1.add(lipa);
+      }
+      inc = comp(ds, "POR2", ppor2);
+      if (por2.compareTo(rpor2) > 0 && inc < 0) {
+        Aus.sub(ds, "POR2", lipa);
+        Aus.sub(ds, "IPRODSP", lipa);
+        por2 = por2.subtract(lipa);
+      } else if (por2.compareTo(rpor2) < 0 && inc > 0) {
+        Aus.add(ds, "POR2", lipa);
+        Aus.add(ds, "IPRODSP", lipa);
+        por2 = por2.add(lipa);
+      }
+      inc = comp(ds, "POR3", ppor3);
+      if (por3.compareTo(rpor3) > 0 && inc < 0) {
+        Aus.sub(ds, "POR3", lipa);
+        Aus.sub(ds, "IPRODSP", lipa);
+        por3 = por3.subtract(lipa);
+      } else if (por3.compareTo(rpor3) < 0 && inc > 0) {
+        Aus.add(ds, "POR3", lipa);
+        Aus.add(ds, "IPRODSP", lipa);
+        por3 = por3.add(lipa);
+      }
+    }
+    
+    int comp(DataSet ds, String por, BigDecimal ppor) {
+      return ds.getBigDecimal("IPRODBP").multiply(ppor).
+         movePointLeft(2).subtract(ds.getBigDecimal(por)).signum();
+    }
   }
 
   public static boolean allowPriceChange() {
