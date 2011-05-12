@@ -241,6 +241,8 @@ public class rajpIzlazDPTemplate extends JPanel {
 		}
 	};
 	JraTextField jraLOT = new JraTextField();
+	
+	JraTextField jraPAK = new JraTextField();
 
 	JraTextField jraIPRODSP = new JraTextField() {
 		public boolean isFocusTraversable() {
@@ -773,8 +775,11 @@ public class rajpIzlazDPTemplate extends JPanel {
 		}
 		xYLayoutDC.setHeight(70);
 		jraLOT.setColumnName("LOT");
-		jpDetailCenter.add(new JLabel("Šarža"), new XYConstraints(18, 41, -1, -1));
-		jpDetailCenter.add(jraLOT, new XYConstraints(153, 41, 150, -1));
+		jraPAK.setColumnName("KOL1");
+		jpDetailCenter.add(new JLabel("Šarža"), new XYConstraints(380, 41, -1, -1));
+		jpDetailCenter.add(jraLOT, new XYConstraints(460, 41, 150, -1));
+		jpDetailCenter.add(new JLabel("Pakiranja"), new XYConstraints(18, 41, -1, -1));
+		jpDetailCenter.add(jraPAK, new XYConstraints(153, 41, 150, -1));
 	}
 
 	void setEnabledAll(boolean trut) {
