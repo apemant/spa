@@ -18,14 +18,18 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.raTextMask;
+import hr.restart.util.Aus;
 import hr.restart.util.OKpanel;
 import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raKeyAction;
 import hr.restart.util.raUpitLite;
+import hr.restart.util.reports.JasperHook;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -40,6 +44,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataRow;
@@ -106,13 +113,15 @@ public class frmCijenePolDva extends raUpitLite {
     public void nextTofocus(){
       SwingUtilities.invokeLater(new Runnable() {
         public void run() {
-          addRemove.requestFocus();
+          add.requestFocus();
         }
       });
     }
   };
 
-  JraButton addRemove = new JraButton();
+  JraButton add = new JraButton();
+  JraButton remove = new JraButton();
+  JraButton copy = new JraButton();
 
   hr.restart.util.raJPTableView jptv = new hr.restart.util.raJPTableView(false) {
     public void mpTable_killFocus(java.util.EventObject e) {
@@ -140,6 +149,7 @@ public class frmCijenePolDva extends raUpitLite {
   JLabel editVrdokLabel = new JLabel("Vrsta ul. dokumenta");
   JLabel editBrdokLabel = new JLabel("Broj ul. dokumenta");
   JLabel editTkalLabel = new JLabel("TKAL");
+  JraTextField jraCopyNum = new JraTextField();
 
   rapancart rpc2 = new rapancart();
 
@@ -307,8 +317,12 @@ public class frmCijenePolDva extends raUpitLite {
           okpressed = !okpressed;
         }
         rcc.EnabDisabAll(rpcart,true);
-        rcc.setLabelLaF(addRemove,true);
+        rcc.setLabelLaF(add,true);
+        rcc.setLabelLaF(remove,true);
+        rcc.setLabelLaF(copy,true);
+        rcc.setLabelLaF(jraCopyNum,true);
         rcc.setLabelLaF(jptv,true);
+        
           jptv.enableEvents(true);
         rpcart.setCART();
         SwingUtilities.invokeLater(new Runnable() {
@@ -318,7 +332,10 @@ public class frmCijenePolDva extends raUpitLite {
         });
       } else if (!rpcart.getCART().equals("") || !rpcart.getCART1().equals("") || !rpcart.getBC().equals("")){
         rcc.EnabDisabAll(rpcart,true);
-        rcc.setLabelLaF(addRemove,true);
+        rcc.setLabelLaF(add,true);
+        rcc.setLabelLaF(remove,true);
+        rcc.setLabelLaF(copy,true);
+        rcc.setLabelLaF(jraCopyNum,true);
         rpcart.setCART();
         SwingUtilities.invokeLater(new Runnable() {
           public void run() {
@@ -476,14 +493,26 @@ public class frmCijenePolDva extends raUpitLite {
       }
     });
 
-    addRemove.addActionListener(new java.awt.event.ActionListener() {
+    add.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        addRemove_actionPerformed(e);
+        addArt();
+      }
+    });
+    remove.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        removeArt();
+      }
+    });
+    copy.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        copyArt();
       }
     });
 
-    addRemove.setActionCommand("");
-    addRemove.setText("Dodaj / Obriši");
+    add.setActionCommand("");
+    add.setText("Dodaj");
+    remove.setText("Obriši");
+    copy.setText("Kopiraj");
     dokumentiPanel.add(jlVrDok,  new XYConstraints(15, 20, -1, -1));
     dokumentiPanel.add(rcbVrDok,    new XYConstraints(150, 20, 169, -1));
     dokumentiPanel.add(jraBrDok,   new XYConstraints(523, 20, 81, -1));
@@ -493,7 +522,13 @@ public class frmCijenePolDva extends raUpitLite {
 
     soloArtiklPanel.add(rpcart,  new XYConstraints(0, 0, -1, 80));
     soloArtiklPanel.add(jptv, new XYConstraints(0,120,650,180));
-    soloArtiklPanel.add(addRemove,               new XYConstraints(150, 80, 169, -1));
+    soloArtiklPanel.add(add, new XYConstraints(150, 80, 100, -1));
+    soloArtiklPanel.add(remove, new XYConstraints(255, 80, 100, -1));
+    soloArtiklPanel.add(copy, new XYConstraints(360, 80, 100, -1));
+    soloArtiklPanel.add(jraCopyNum, new XYConstraints(480, 80, 50, -1));
+    
+    new raTextMask(jraCopyNum, 4, false, raTextMask.NUMERIC);
+    jraCopyNum.setText("1");
 
     setJPTV(); /** @todo punjenje JPTV-a */
 
@@ -509,7 +544,9 @@ public class frmCijenePolDva extends raUpitLite {
 
     this.addReport("hr.restart.robno.repCijenePol","hr.restart.robno.repCijenePol","CijenePol","Ispis cjena za police 6 kom/str");
     this.addReport("hr.restart.robno.repCijenePolSmall","hr.restart.robno.repCijenePol","CijenePolSmall","Ispis cjena za police 24 kom/str");
+    this.addReport("hr.restart.robno.repCijenePolTiny","hr.restart.robno.repCijenePol","CijenePolTiny","Ispis cjena za police 48 kom/str");
 
+    
 //    jptv.addTableModifier(dablclickTableColorModifier);
 //    jptv.fireTableDataChanged();
 
@@ -529,7 +566,7 @@ public class frmCijenePolDva extends raUpitLite {
       }
     });
   }
-
+  
   void setJPTV(){
     artikliTable.close();
     artikliTable.setColumns(new Column[] { /** @todo broj iz KPR */
@@ -538,6 +575,7 @@ public class frmCijenePolDva extends raUpitLite {
       (Column) dm.getArtikli().getColumn("CART1").clone(),
       (Column) dm.getArtikli().getColumn("BC").clone(),
       (Column) dm.getArtikli().getColumn("NAZART").clone(),
+      (Column) dm.getArtikli().getColumn("JM").clone(),
       (Column) dm.getStanje().getColumn("ZC").clone(),
       (Column) dm.getStanje().getColumn("GOD").clone(),
       (Column) dm.getStanje().getColumn("CSKL").clone(),
@@ -574,6 +612,27 @@ public class frmCijenePolDva extends raUpitLite {
       rcc.EnabDisabAll(rpcsklIzl, false);
     }
 //    this.jraBrDok.requestFocus();
+  }
+  
+  public void addHooks() {
+    getRepRunner().addJasperHook("hr.restart.robno.repCijenePolTiny",
+    new JasperHook() {
+      public void adjustDesign(String reportName, JasperDesign design) {
+        adjustReport(reportName, design);        
+      }
+    });
+  }
+  
+  void adjustReport(String reportName, JasperDesign design) {
+    if (reportName.equals("hr.restart.robno.repCijenePolTiny")) {
+      String hor = frmParam.getParam("robno", "hor40", "0", 
+          "Razmak (u pointima) izmeðu dva reda na nalijepnicama 40");
+      String ver = frmParam.getParam("robno", "ver40", "0", 
+          "Razmak (u pointima) izmeðu dva stupca na nalijepnicama 40");
+      ((JRDesignBand) design.getDetail()).setHeight(
+          design.getDetail().getHeight() + Aus.getNumber(ver));
+      design.setColumnSpacing(Aus.getNumber(hor));
+    }
   }
 
   java.util.Hashtable htbl = new java.util.Hashtable();
@@ -626,6 +685,7 @@ public class frmCijenePolDva extends raUpitLite {
       artikliTable.setString("CART1",rpcart.getCART1());
       artikliTable.setString("BC",rpcart.getBC());
       artikliTable.setString("NAZART",rpcart.getNAZART());
+      artikliTable.setString("JM",rpcart.jrfJM.getText());
 
       //dm.getStanje().refresh();
 
@@ -709,31 +769,48 @@ public class frmCijenePolDva extends raUpitLite {
 //    System.out.println("pritisnija si me!!!");
     copyArticlesTo();
   }
-
-  void addRemove_actionPerformed(ActionEvent e) {
+  
+  void addArt() {
     if (!rpcart.getCART().equals("") || !rpcart.getCART1().equals("") || !rpcart.getBC().equals("")){
       addArtikl(rpcart.getCART());
-    } 
-    else if (!rpcart.getNAZART().equals("")) {
-    	String sqlsw="SELECT cart FROM artikli, stanje WHERE artikli.cart=stanje.cart and "
+    } else if (!rpcart.getNAZART().equals("")) {
+        String sqlsw="SELECT cart FROM artikli, stanje WHERE artikli.cart=stanje.cart and "
         +" artikli.nazart like ('%"+rpcart.getNAZART().trim()+"%') and god='"+getGodina()+"'";
-    	System.out.println("Query: "+sqlsw);
-    	QueryDataSet ds = ut.getNewQueryDataSet(sqlsw);
+        System.out.println("Query: "+sqlsw);
+        QueryDataSet ds = ut.getNewQueryDataSet(sqlsw);
             for (ds.first(); ds.inBounds(); ds.next()) {
-            	rpcart.setCART(ds.getInt("cart"));
-            	rpcart.jrfCART.forceFocLost();
-            	addArtikl(new Integer(ds.getInt("cart")).toString());
+                rpcart.setCART(ds.getInt("cart"));
+                rpcart.jrfCART.forceFocLost();
+                addArtikl(new Integer(ds.getInt("cart")).toString());
           }
-    }
-    else {
-      if (artikliTable.getRowCount() != 0)
-        removeArtikl();
     }
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         rpcart.SetDefFocus();
       }
     });
+  }
+  
+  void removeArt() {
+    if (artikliTable.getRowCount() != 0)
+      removeArtikl();
+  }
+
+  void copyArt() {
+    if (artikliTable.getRowCount() == 0) return;
+    
+    int num = Aus.getNumber(jraCopyNum.getText());
+    if (num < 1 || num > 200) num = 1;
+    
+    DataRow row = new DataRow(artikliTable);
+    artikliTable.copyTo(row);
+    
+    for (int i = 0; i < num; i++) {
+      artikliTable.insertRow(false);
+      row.copyTo(artikliTable);
+      artikliTable.post();
+    }
+    jptv.fireTableDataChanged();
   }
 
   void copyArticlesTo(){
@@ -779,6 +856,7 @@ public class frmCijenePolDva extends raUpitLite {
         artikliTable.setString("CART1",qds.getString("CART1"));
         artikliTable.setString("BC",qds.getString("BC"));
         artikliTable.setString("NAZART",qds.getString("NAZART"));
+        artikliTable.setString("JM",qds.getString("JM"));
         artikliTable.setBigDecimal("ZC",qds.getBigDecimal("ZC"));
         artikliTable.setString("GOD",qds.getString("GOD"));
         if (qds.getString("VRDOK").equals("MEU") || qds.getString("VRDOK").equals("MES")){
