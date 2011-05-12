@@ -1750,14 +1750,14 @@ public class rdUtil {
     }
     
     if (cartDS.getRowCount() > 1000 && vrDok.equals("PST")) {
-      String qStr = "select cart, cart1, bc, nazart, zc, god, cskl, vrdok, brdok " + 
+      String qStr = "select cart, cart1, bc, nazart, jm, zc, god, cskl, vrdok, brdok " + 
       "from stdoku where cskl='" + cskl + "' and god='" + godina +
       "' and vrdok='PST' and brdok="+brDok+" and kol!=0 order by cart";
       System.out.println(qStr);
       return qStr;
     }
 
-    String qStr = "select artikli.cart as cart, artikli.cart1 as cart1, artikli.bc as bc, artikli.nazart as nazart, " + "stanje.zc as ZC, stanje.god as god, '" + cskl + "' as " + skl + ", " + cskliz + " '" + vrDok + "' as vrdok, " + brDok + " as brdok from artikli, stanje where artikli.cart = stanje.cart and stanje.cskl='" + cskl + "' and stanje.god='" + godina + "' and stanje.kol!=0 and " + cartIn + " order by artikli.cart";
+    String qStr = "select artikli.cart as cart, artikli.cart1 as cart1, artikli.bc as bc, artikli.nazart as nazart, artikli.jm as jm, " + "stanje.zc as ZC, stanje.god as god, '" + cskl + "' as " + skl + ", " + cskliz + " '" + vrDok + "' as vrdok, " + brDok + " as brdok from artikli, stanje where artikli.cart = stanje.cart and stanje.cskl='" + cskl + "' and stanje.god='" + godina + "' and stanje.kol!=0 and " + cartIn + " order by artikli.cart";
 
     //    System.out.println("qstr\n\n"+qStr);
 
