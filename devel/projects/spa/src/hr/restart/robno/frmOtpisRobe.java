@@ -608,7 +608,8 @@ System.out.println("Ulazim u DeleteCheckDetail");
   private void initNewMaster() {
     this.getPreSelect().copySelValues();
     this.getMasterSet().setString("VRDOK", "OTR");
-    this.getMasterSet().setTimestamp("DATDOK", vl.getToday());
+    this.getMasterSet().setTimestamp("DATDOK",
+        vl.getPresToday(getPreSelect().getSelRow()));
     this.getMasterSet().setString("GOD",vl.findYear(getMasterSet().getTimestamp("DATDOK")));
   }
 
