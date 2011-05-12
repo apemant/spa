@@ -1475,6 +1475,7 @@ public class dlgRunReport {
             jdes.setName(getCurrentDescriptor().getName());
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
             ElixirToJasperConverter.adjustReport(jdes);
+            rd.adjustJasperDesign(jdes);
             fixMargins(rd.getName(), jdes);
             raProcess.setMessage("Prevoðenje izraza...", false);
             JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
@@ -1495,9 +1496,10 @@ public class dlgRunReport {
             
             JasperElixirData data = new JasperElixirData(dsn, provider);
             JasperDesign jdes = JasperBuilder.buildFromElixir(rt.getReportTemplate(), data);
-            JRXmlWriter.writeReport(jdes, "design.jrxml", "UTF-8");
             jdes.setName(getCurrentDescriptor().getName());
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
+            JRXmlWriter.writeReport(jdes, "design.jrxml", "UTF-8");
+            rd.adjustJasperDesign(jdes);
             fixMargins(rd.getName(), jdes);
             raProcess.setMessage("Prevoðenje izraza...", false);
             JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);

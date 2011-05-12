@@ -213,6 +213,11 @@ public class raRunReport {
       reports.add(rd);
     }
   }
+  
+  public void addJasperHook(String reportName, JasperHook jhook) {
+    rd = getReport(reportName);
+    if (rd != null) rd.setJasperHook(jhook);
+  }
 
   public void addReport(String id, String source, String design, String title) {
     rd = raReportDescriptor.create(id, source, design, title);

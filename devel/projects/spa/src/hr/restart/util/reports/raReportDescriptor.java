@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.design.JasperDesign;
+
 import sg.com.elixir.reportwriter.datasource.IDataProvider;
 
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -59,6 +61,7 @@ public class raReportDescriptor {
   private String template;
   private raReportTemplate templateObject;
   private boolean extended, noSignature, isLogoPrinted;
+  private JasperHook hook;
   
   private int reportType = TYPE_INVALID;
 //  private boolean isCustomIzlaz, isCustomInter;
@@ -523,6 +526,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repProformaInvoice", "PIV", "F", ""},
       {"hr.restart.robno.repPovratnicaTerecenje", "PTE", "D", ""},
       {"hr.restart.robno.repMeskla", "MES", "", ""},
+      {"hr.restart.robno.repMesklaSpec", "MES", "", ""},
       {"hr.restart.robno.repMesklaExtendedVersion", "MES", "", ""},
       {"hr.restart.robno.repMei", "MEI", "", ""},
       {"hr.restart.robno.repMeiExtendedVersion", "MEI", "", ""},
@@ -587,6 +591,14 @@ public class raReportDescriptor {
       }
     }
     ds.saveChanges();
+  }
+  
+  public void setJasperHook(JasperHook jhook) {
+    hook = jhook;
+  }
+  
+  public void adjustJasperDesign(JasperDesign design) {
+    if (hook != null) hook.adjustDesign(providerName, design);
   }
 }
 
