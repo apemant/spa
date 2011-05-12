@@ -69,7 +69,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
   private JlrNavField jnfCORG = new JlrNavField();
   private JlrNavField jnfNAZORG = new JlrNavField();
   
-  private HashMap generalije;
+  private HashMap generalije, zcs;
   
   private TableDataSet fieldSet = new TableDataSet();
   
@@ -296,7 +296,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
     if (!frmParam.getParam("robno", "otpisINM", "D",
         "Zbraja li se INM u otpis na izvještaju (D,N)").equalsIgnoreCase("D"))
       otr2 = Condition.equal("VRDOK", "OTR");
-
+    
     QueryDataSet sds = new QueryDataSet();
     initOtpisSds(sds);
     hr.restart.robno.Util rut = hr.restart.robno.Util.getUtil();
@@ -306,11 +306,17 @@ public class raOtpisIzvjestaj extends raUpitFat {
         and(Condition.equal("VRSDOK", "I")).and(otr.not()));
     sdokiz.open();
     
+    DataSet stanj = Aus.q("SELECT cart,zc FROM stanje WHERE "+
+        "god='" + vl.findYear(tds.getTimestamp("zavDatum")) + 
+        "' and " + dodatak.substring(5));
+    zcs = new HashMap();
+    for (stanj.first(); stanj.inBounds(); stanj.next())
+      zcs.put(new Integer(stanj.getInt("CART")), stanj.getBigDecimal("ZC"));
+    
     String sql = 
-      "select max(stdoki.cart) as cart, sum(stdoki.KOL) as KOL_IZLAZ, " +
-      "sum(stdoki.IRAZ) as VRI_IZLAZ, max(stanje.zc) as zc " +
-      "from doki,stdoki,stanje WHERE stanje.cart=stdoki.cart and " +
-      "stanje.god=stdoki.god and stanje.cskl = stdoki.cskl and " + 
+      "select stdoki.cart, sum(stdoki.KOL) as KOL_IZLAZ, " +
+      "sum(stdoki.IRAZ) as VRI_IZLAZ " +
+      "from doki,stdoki WHERE " +  
       rut.getDoc("doki", "stdoki") + " and " + dodatak + " and " + 
       Condition.between("DATDOK", tds, "pocDatum", "zavDatum").
       and(Condition.in("VRDOK", sdokiz)).qualified("doki") + 
@@ -322,10 +328,9 @@ public class raOtpisIzvjestaj extends raUpitFat {
     QueryDataSet ukupanizlaz = hr.restart.util.Util.getNewQueryDataSet(sql);
     
     sql = 
-      "select max(stmeskla.cart) as cart, sum(stmeskla.KOL) as KOL_IZLAZ, " +
-      "sum(stmeskla.ZADRAZIZ) as VRI_IZLAZ, max(stanje.zc) as zc " +
-      "from meskla,stmeskla,stanje WHERE stanje.cart=stmeskla.cart and " +
-      "stanje.god=stmeskla.god and stanje.cskl = stmeskla.cskliz and " + 
+      "select stmeskla.cart, sum(stmeskla.KOL) as KOL_IZLAZ, " +
+      "sum(stmeskla.ZADRAZIZ) as VRI_IZLAZ " +
+      "from meskla,stmeskla WHERE " + 
       rut.getDocMes("meskla", "stmeskla") + " and " + dodm + " and " + 
       Condition.between("DATDOK", tds, "pocDatum", "zavDatum").
       and(Condition.in("VRDOK", "MES MEI")).qualified("meskla") + 
@@ -336,10 +341,9 @@ public class raOtpisIzvjestaj extends raUpitFat {
 
     QueryDataSet ukupanmiz = hr.restart.util.Util.getNewQueryDataSet(sql);
     
-    sql = "select max(stdoki.cart) as cart, sum(stdoki.KOL) as KOL_OTPIS, " +
-          "sum(stdoki.IRAZ) as VRI_OTPIS, max(stanje.zc) as zc " +
-          "from doki,stdoki,stanje WHERE stanje.cart=stdoki.cart and " +
-          "stanje.god=stdoki.god and stanje.cskl = stdoki.cskl and " + 
+    sql = "select stdoki.cart, sum(stdoki.KOL) as KOL_OTPIS, " +
+          "sum(stdoki.IRAZ) as VRI_OTPIS " +
+          "from doki,stdoki WHERE " + 
           rut.getDoc("doki", "stdoki") + " and " + dodatak + " and " + 
           Condition.between("DATDOK", tds, "pocDatum", "zavDatum").
           and(otr2).qualified("doki") + " group by stdoki.cart order by 1";
@@ -426,7 +430,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
     return sds;
   }
   
-  String[] ccols = {"CART", "ZC"};
+  String[] ccols = {"CART"};
   String[] acols = {"CART1", "BC", "NAZART", "JM"};
   void updateList(DataSet dest, DataSet izlaz, DataSet mes, DataSet otpis) {
     if (!jcbNula.isSelected() && (otpis == null || otpis.getBigDecimal("KOL_OTPIS").signum() == 0)) return;
@@ -434,6 +438,8 @@ public class raOtpisIzvjestaj extends raUpitFat {
     if (izlaz != null)
       dM.copyColumns(izlaz, dest, ccols);
     else dM.copyColumns(otpis, dest, ccols);
+    BigDecimal zc = (BigDecimal) zcs.get(new Integer(dest.getInt("CART"))); 
+    dest.setBigDecimal("ZC", zc);
     int znacdec = 3;
     if (lD.raLocate(dm.getArtikli(), "CART", 
         Integer.toString(dest.getInt("CART")))) {
@@ -460,16 +466,19 @@ public class raOtpisIzvjestaj extends raUpitFat {
       
       BigDecimal doz = dest.getBigDecimal("POSTO").multiply(kol).
               divide(STO, znacdec, BigDecimal.ROUND_DOWN);
+      if (kol.signum() < 0) doz = Aus.zero3;
       dest.setBigDecimal("KOL_IZLAZ", kol);
       dest.setBigDecimal("VRI_IZLAZ", vri.add(izlaz.getBigDecimal("VRI_IZLAZ")));
       dest.setBigDecimal("KOL_OTPIS_DOZ", doz);
-      dest.setBigDecimal("VRI_OTPIS_DOZ", izlaz.getBigDecimal("ZC").
+      dest.setBigDecimal("VRI_OTPIS_DOZ", zc.
           multiply(doz).setScale(2, BigDecimal.ROUND_HALF_UP));
       izlaz.next();
     }
-    if (otpis != null) {
+    if (otpis != null && otpis.getBigDecimal("KOL_OTPIS").signum() != 0) {
       dest.setBigDecimal("KOL_OTPIS", otpis.getBigDecimal("KOL_OTPIS"));
       dest.setBigDecimal("VRI_OTPIS", otpis.getBigDecimal("VRI_OTPIS"));
+      Aus.div(dest, "ZC", "VRI_OTPIS", "KOL_OTPIS");
+      Aus.mul(dest, "VRI_OTPIS_DOZ", "ZC", "KOL_OTPIS_DOZ");
       dest.setBigDecimal("KOL_RAZ", otpis.getBigDecimal("KOL_OTPIS").
           subtract(dest.getBigDecimal("KOL_OTPIS_DOZ")));
       dest.setBigDecimal("VRI_RAZ", otpis.getBigDecimal("VRI_OTPIS").
