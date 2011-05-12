@@ -341,7 +341,7 @@ public class frmUlazTemplate extends raMasterDetail {
 		
 		BigDecimal dk = getDetailSet().getBigDecimal("KOL");
 		if (mode == 'I') dk = dk.subtract(oldKOL);
-		if (isFind && !isTranzit && (mode == 'I' || dk.signum() < 0) && 
+		if (isFind && !isTranzit && prSTAT!='K' && (mode == 'I' || dk.signum() < 0) && 
 		    stanjeSet.getBigDecimal("KOL").compareTo(dk.negate()) < 0) {
           JOptionPane.showConfirmDialog(raDetail.getWindow(),
                 "Nedovoljna kolièina na zalihi za smanjivanje ovom stavkom!",
@@ -439,7 +439,7 @@ public class frmUlazTemplate extends raMasterDetail {
 	public boolean DeleteCheckDetail() {
 		rCD.prepareFields(getDetailSet());
 		isFind = findSTANJE();
-		if (isFind && !isTranzit && stanjeSet.getBigDecimal("KOL").
+		if (isFind && !isTranzit && prSTAT!='K' && stanjeSet.getBigDecimal("KOL").
 				compareTo(getDetailSet().getBigDecimal("KOL")) < 0) {
 			JOptionPane.showConfirmDialog(raDetail.getWindow(),
 					"Brisanje nije moguæe. Kolièina na stanju je manja od kolièine na ovoj stavci!",
