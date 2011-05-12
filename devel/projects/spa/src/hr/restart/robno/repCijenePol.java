@@ -96,7 +96,7 @@ public class repCijenePol implements raReportData { //sg.com.elixir.reportwriter
 
   public String getNaziv()
   {
-    return "\n"+ds.getString("NAZART");
+    return "\n"+ds.getString("NAZART") + " (" + ds.getString("JM") + ")";
   }
 
   public BigDecimal getCijena()
