@@ -28,6 +28,7 @@ import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraLabel;
+import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Util;
@@ -41,10 +42,12 @@ import hr.restart.util.raNavAction;
 import hr.restart.util.raTransaction;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.Timestamp;
 
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -52,6 +55,7 @@ import javax.swing.SwingConstants;
 
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -137,6 +141,14 @@ public class frmPartneri extends raMatPodaci {
       rnvSifArt_actionPerformed(e);
     }
     
+  };
+  
+  JraScrollPane vp = new JraScrollPane();
+  
+  JEditorPane msg = new JEditorPane() {
+    public boolean getScrollableTracksViewportWidth() {
+      return true;
+    }
   };
 
 //* MAKNUTO ZBOG GRESKE U PROJEKTU BAZE partneri.agent int(4,0) == agenti.Cagent int(6,0) ????
@@ -368,7 +380,7 @@ public class frmPartneri extends raMatPodaci {
 //    jpDodatniPodaci.add(jdblNAZPAR2, new XYConstraints(150, 20, 200, -1));
 //  MAKNUTO ZBOG GRESKE U PROJEKTU BAZE partneri.agent int(4,0) == agenti.Cagent int(6,0) ????
     xYLayout1.setWidth(600);
-    xYLayout1.setHeight(430);
+    xYLayout1.setHeight(535);
     raCSTATUS.setRaColumn("STATUS");
     raCSTATUS.setRaDataSet(getRaQueryDataSet());
     raCSTATUS.setRaItems(new String[][] {
@@ -477,6 +489,12 @@ public class frmPartneri extends raMatPodaci {
     jpOsnovniPodaci.add(jtfOIB,  new XYConstraints(150, 385, 100, -1));
     jpOsnovniPodaci.add(jtfGLN,  new XYConstraints(255, 385, 120, -1));
     jpOsnovniPodaci.add(jcbR2,  new XYConstraints(390, 385, 175, 20));
+    jpOsnovniPodaci.add(new JLabel("Napomene"), new XYConstraints(15, 415, -1, -1));
+    jpOsnovniPodaci.add(vp,  new XYConstraints(150, 415, 415, 100));    
+    
+    //vp.setPreferredSize(new Dimension(500, 200));
+    vp.setViewportView(msg);
+    
 
     this.addOption(rnvPJ,3);
     this.addOption(rnvZiro,4);
@@ -493,6 +511,9 @@ public class frmPartneri extends raMatPodaci {
   
   public boolean doBeforeSave(char mode) {    
     try {
+      if (mode != 'B')
+        getRaQueryDataSet().setString("NAPS", msg.getText());
+        
       checkTelemark(mode, mode == 'B' ? delCpar :
         getRaQueryDataSet().getInt("CPAR"));
       /*String mb = getRaQueryDataSet().getString("MB");
@@ -730,6 +751,8 @@ public class frmPartneri extends raMatPodaci {
   public void EntryPoint(char mode) {
 //    jcbAKTIV.setEnabled(false);
 //    raCUloga.findCombo();
+    if (mode == 'N') msg.setText("");
+    else msg.setText(getRaQueryDataSet().getString("NAPS"));
   }
 
   private boolean pjValidacija() {
@@ -765,7 +788,10 @@ public class frmPartneri extends raMatPodaci {
   }
 
 
-
+  public void raQueryDataSet_navigated(NavigationEvent e) {
+    if (getRaQueryDataSet().rowCount() == 0) msg.setText("");
+    else msg.setText(getRaQueryDataSet().getString("NAPS"));
+  }
 
 
   public void AfterDelete() {
