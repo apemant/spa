@@ -489,7 +489,7 @@ public class raTableCopyPopup extends JPopupMenu {
   		totalnew += ((Integer) i.next()).intValue();
   	
   	if (total + totalnew == 0) { 
-  		JOptionPane.showMessageDialog(null, "Kolone su identiène", "Razlike", JOptionPane.INFORMATION_MESSAGE);
+  		JOptionPane.showMessageDialog(null, "Kolone su identiène.", "Razlike", JOptionPane.INFORMATION_MESSAGE);
   		return;
   	}
   	
