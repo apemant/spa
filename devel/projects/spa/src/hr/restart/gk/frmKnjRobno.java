@@ -536,17 +536,18 @@ System.out.println("**** DEVIZNI ANLAGE");
                         + "prazno = ne koristi se!").trim());
 
         if (!getStatusCheck()) {
-        	vs.replaceAll("'K' ", "'QW' AND DATDOK>'"
+        	vs.replaceAll("'K'", "'QW' AND DATDOK>'"
                     + new java.sql.Date(Util.getUtil().addDays(
                             dataSet.getTimestamp("DATUMKNJ"), 1).getTime())
                             .toString() + "' ");
         }
         if (kAP != null && kAP.getBrnal().length() > 0) {
-          vs.replaceAll("'K' ", "'QW' AND brnal='"+kAP.getBrnal()+"' ");
+          vs.replaceAll("'K'", "'QW' AND brnal='"+kAP.getBrnal()+"' ");
           if (sheme.getString("VRDOK").equals("MEU") ||
               (sheme.getString("VRDOK").equals("MES") &&
                   sheme.getShort("CKOLONE") == 1))
             vs.replaceAll("brnal=", "brnalu=");
+          System.out.println(vs);
         }
         return vs.toString();
 
