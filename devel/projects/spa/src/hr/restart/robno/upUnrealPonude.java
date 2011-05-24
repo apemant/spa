@@ -36,6 +36,7 @@ import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.jpCpar;
 import hr.restart.swing.raTableColumnModifier;
 import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
@@ -61,8 +62,9 @@ public class upUnrealPonude extends raUpitFat {
   JlrNavField jlrCorg = new JlrNavField();
   JlrNavField jlrNaziv = new JlrNavField();
   JraButton jbSelCorg = new JraButton();
+  jpCpar par = new jpCpar(350);
   
-  XYLayout lay = new XYLayout(655, 110);
+  XYLayout lay = new XYLayout(655, 135);
   JPanel pan = new JPanel(lay);
   
   StorageDataSet pons = new StorageDataSet();
@@ -90,6 +92,7 @@ public class upUnrealPonude extends raUpitFat {
     tds.setColumns(new Column[] {
         dM.createStringColumn("CSKL", "Skladište", 12),
         dM.createStringColumn("CORG", "Org. jedinica", 12),
+        dM.createIntColumn("CPAR", "Partner"),
         dM.createTimestampColumn("DATUM", "Na dan"),
         dM.createIntColumn("TOL", "Tolerancija")
     });
@@ -152,6 +155,8 @@ public class upUnrealPonude extends raUpitFat {
     jlrNaziv.setColumnName("NAZIV");
     jlrNaziv.setNavProperties(jlrCorg);
     jlrNaziv.setSearchMode(1);
+    
+    par.bind(tds);
 
     pan.add(jlCorg, new XYConstraints(15, 20, -1, -1));
     pan.add(jlrCorg, new XYConstraints(150, 20, 100, -1));
@@ -163,10 +168,12 @@ public class upUnrealPonude extends raUpitFat {
     pan.add(jlrNazskl, new XYConstraints(255, 45, 350, -1));
     pan.add(jbSelCskl, new XYConstraints(610, 45, 21, 21));
     
-    pan.add(jlDatum, new XYConstraints(15, 70, -1, -1));
-    pan.add(jraDatum, new XYConstraints(150, 70, 100, -1));
-    pan.add(jlTol, new XYConstraints(350, 70, -1, -1));
-    pan.add(jraTol, new XYConstraints(555, 70, 50, -1));
+    pan.add(par, new XYConstraints(0, 70, -1, -1));
+        
+    pan.add(jlDatum, new XYConstraints(15, 95, -1, -1));
+    pan.add(jraDatum, new XYConstraints(150, 95, 100, -1));
+    pan.add(jlTol, new XYConstraints(350, 95, -1, -1));
+    pan.add(jraTol, new XYConstraints(555, 95, 50, -1));
     
     getJPTV().addTableModifier(new raTableColumnModifier("CPAR",
         new String[] {"CPAR", "NAZPAR"}, dM.getDataModule().getPartneri()));
@@ -230,6 +237,7 @@ public class upUnrealPonude extends raUpitFat {
     if (tds.getString("CSKL").length() > 0)
       mc = mc.and(Condition.equal("CSKL", tds)).
           and(Condition.where("PARAM", Condition.NOT_EQUAL, "OJ"));
+    mc = mc.and(par.getCondition());
     
     //Condition dc = Condition.equal("REZKOL", "D");
     
