@@ -40,6 +40,7 @@ public class menuIzvRac extends JMenu {
 	  JMenuItem jmUnFuckDoc = new JMenuItem();
 	  JMenuItem jmRezKol = new JMenuItem();
 	  JMenuItem jmMiniSaldak = new JMenuItem();
+	  JMenuItem jmRmRezKol = new JMenuItem();
 	  JMenuItem jmPreglProdArt = new JMenuItem();
 	  JMenuItem jmNezaracunatiDoksi = new JMenuItem();
 	  JMenuItem jmPregledKPRGRN = new JMenuItem();
@@ -102,12 +103,19 @@ public class menuIzvRac extends JMenu {
 	      	jmPregledZaduzenjeKPR_actionPerformed(e);
 	      }
 	    });
+	    jmRmRezKol.setText("Poništavanje nevažeæih ponuda");
+	    jmRmRezKol.addActionListener(new java.awt.event.ActionListener() {
+	      public void actionPerformed(ActionEvent e) {
+	        jmRmRezKol_actionPerformed(e);
+	      }
+	    });
 	    
 	    this.add(jmUnFuckDoc);
 	    this.add(jmPreglProdArt);
 	    this.add(jmNezaracunatiDoksi);
 	    this.add(jmRezKol);
 	    this.addSeparator();
+	    this.add(jmRmRezKol);
 	    this.add(jmMiniSaldak);
 //	    this.addSeparator();
 //	    this.add(jmPregledKPRGRN);
@@ -134,6 +142,10 @@ public class menuIzvRac extends JMenu {
 	  }
 	  void jmPregledZaduzenjeKPR_actionPerformed(ActionEvent e) {
 	    SF.showFrame("hr.restart.robno.UpPregledZaduzenjeKPR", jmPregledZaduzenjeKPR.getText());	  	
+	  }
+	  
+	  void jmRmRezKol_actionPerformed(ActionEvent e) {
+	    SF.showFrame("hr.restart.robno.upUnrealPonude", jmRmRezKol.getText()); // waas frmDelPon...
 	  }
 
 }
