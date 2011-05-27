@@ -8,12 +8,16 @@ import hr.restart.sisfun.TextFile;
 
 import java.awt.Frame;
 import java.io.File;
+import java.text.SimpleDateFormat;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.dataset.Variant;
+import com.sun.org.apache.bcel.internal.generic.SIPUSH;
 
 
 public class raExportData {
+  static SimpleDateFormat sd = new SimpleDateFormat("dd.MM.yyyy.");
   public static void export() {
     kreator.SelectPathDialog spd = new kreator.SelectPathDialog(
         (Frame) null, "Putanja za spremanje podataka");
@@ -32,7 +36,7 @@ public class raExportData {
     for (eh.first(); eh.inBounds(); eh.next()) {
       DataSet ds = Aus.q(eh.getString("UPIT"));
       String fname = eh.getString("IMEDAT");
-      if ("T".equals(eh.getString("TIPDAT")))
+      if ("C".equals(eh.getString("TIPDAT")))
         exportFile(new File(dir, fname), ds, eh.getInt("CREP"));
     }
   }
@@ -57,9 +61,27 @@ public class raExportData {
     for (ds.first(); ds.inBounds(); ds.next()) {
       line.clear();
       for (int i = 0; i < cols.length; i++) {
-        
+        int type = ds.getColumn(cols[i].name).getDataType();
+        if (type == Variant.STRING)
+          line.append('"').append(ds.getString(cols[i].name)).
+              append("\",");
+        else if (type == Variant.BIGDECIMAL)
+          line.append('"').append(ds.getBigDecimal(cols[i].name)).
+              append("\",");
+        else if (type == Variant.TIMESTAMP)
+          line.append('"').append(sd.format(
+              ds.getTimestamp(cols[i].name))).append("\",");
+        else if (type == Variant.INT)
+          line.append(ds.getInt(cols[i].name)).append(',');
+        else if (type == Variant.SHORT)
+          line.append(ds.getShort(cols[i].name)).append(',');
+        else if (type == Variant.LONG)
+          line.append(ds.getLong(cols[i].name)).append(',');
       }
+      line.chop();
+      out.out(line.toString());
     }
+    out.close();
   }
   
   static class OutColumn {
