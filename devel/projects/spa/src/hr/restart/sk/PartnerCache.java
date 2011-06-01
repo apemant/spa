@@ -113,7 +113,7 @@ public class PartnerCache {
     }
     
     public String getOIB() {
-      return mb;
+      return oib;
     }
   }
 }
