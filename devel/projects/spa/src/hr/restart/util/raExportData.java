@@ -10,23 +10,34 @@ import java.awt.Frame;
 import java.io.File;
 import java.text.SimpleDateFormat;
 
+import javax.swing.JOptionPane;
+
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.Variant;
-import com.sun.org.apache.bcel.internal.generic.SIPUSH;
 
 
 public class raExportData {
   static SimpleDateFormat sd = new SimpleDateFormat("dd.MM.yyyy.");
   public static void export() {
+    if (Exphead.getDataModule().getRowCount() == 0) {
+      JOptionPane.showMessageDialog(null, 
+          "Nema datoteka za izvoz!", 
+          "Greška", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+      
     kreator.SelectPathDialog spd = new kreator.SelectPathDialog(
         (Frame) null, "Putanja za spremanje podataka");
     String dir = IntParam.getTag("export.data.dir");
     spd.loadsave = (dir == null || dir.length() == 0) ? null : new File(dir);
     spd.show();
     if (spd.oksel) {
-      IntParam.setTag("export.data.dir", spd.loadsave.getAbsolutePath());
-      export(spd.loadsave);
+      File outdir = spd.loadsave;
+      if (outdir != null)
+        IntParam.setTag("export.data.dir", spd.loadsave.getAbsolutePath());
+      else outdir = Aus.getCurrentDirectory();
+      export(outdir);
     }
   }
   
@@ -39,6 +50,9 @@ public class raExportData {
       if ("C".equals(eh.getString("TIPDAT")))
         exportFile(new File(dir, fname), ds, eh.getInt("CREP"));
     }
+    JOptionPane.showMessageDialog(null, 
+        "Izvoz podataka završen.", 
+        "Izvoz podataka", JOptionPane.INFORMATION_MESSAGE);
   }
   
   public static void exportFile(File f, DataSet ds, int crep) {
