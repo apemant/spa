@@ -23,7 +23,7 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 public class Exphead extends KreirDrop implements DataModule {
 
   private static Exphead expheadclass;
-  QueryDataSet exphead = new raDataSet();
+  QueryDataSet exphead = new QueryDataSet();
 
   public static Exphead getDataModule() {
     if (expheadclass == null) {

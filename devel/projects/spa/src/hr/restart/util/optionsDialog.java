@@ -125,6 +125,12 @@ public class optionsDialog extends raTabDialog {
     this.addFrameTab("Postavke servera", new ServerDialog(), raImages.getModuleIcom("pos"));
     this.addFrameTab("Memorija", new MemDialog(), raImages.getModuleIcom("os"));
     
+    this.addAction(new ActionTask("Izvoz podataka", raImages.getImageIcon(raImages.IMGTOPEN),null) {
+      public void doAction() {
+        raExportData.export();
+      }
+    });
+    
     this.addAction(new ActionTask("Spremanje baze", raImages.getModuleIcom("gk"),null) {
       public void doAction() {
         raDbaseCreator.displayDumpDialog(optionsDialog.this);

@@ -848,6 +848,6 @@ public class ConsoleCreator {
             "hr.restart.baza.Kredkar","hr.restart.baza.Mesg",
             "hr.restart.baza.Smjene", "hr.restart.baza.Repxhead",
             "hr.restart.baza.Repxdata", "hr.restart.baza.dokidod",
-            "hr.restart.baza.Epxhead", "hr.restart.baza.Epxdata"
+            "hr.restart.baza.Exphead", "hr.restart.baza.Expdata"
       };
 }

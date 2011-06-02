@@ -1372,8 +1372,8 @@ $Exphead
 CREP;int;6;pkey;;Šifra
 NAZREP;char;80;;;Opis
 IMEDAT;char;80;;;Ime datoteke
-UPIT;char;200;;;SQL Upit
-TIPDAT:char;1;;T;Tip eksporta
+UPIT;char;512;;;SQL Upit
+TIPDAT;char;1;;T;Tip eksporta
 
 $Expdata
 CREP;int;6;pkey;;Šifra
