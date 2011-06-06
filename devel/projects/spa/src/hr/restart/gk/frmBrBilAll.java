@@ -20,6 +20,8 @@ package hr.restart.gk;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Konta;
 import hr.restart.baza.dM;
+import hr.restart.robno.raDateUtil;
+import hr.restart.robno.rdUtil;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraButton;
@@ -360,6 +362,7 @@ public class frmBrBilAll extends raUpitFat {
         updateSelectTreeButton();
         removeNav();
         isShifted = false;
+        resetTitle();
       } else if (kontoPanel.jlrKontoBroj.getText().length() > 0) {
         kontoPanel.jlrKontoBroj.setText("");
         kontoPanel.jlrKontoBroj.emptyTextFields();
@@ -368,6 +371,15 @@ public class frmBrBilAll extends raUpitFat {
     } else {
       llHandler();
     }
+  }
+
+  private void resetTitle() {
+    setTitle("Bruto bilanca");
+  }
+  private void setTitlePer() {
+    setTitle("Bruto bilanca za period "
+        +raDateUtil.getraDateUtil().dataFormatter(stds.getTimestamp("POCDAT"))+" - "
+        +raDateUtil.getraDateUtil().dataFormatter(stds.getTimestamp("ZAVDAT")));
   }
 
   public void cancelPress() {
@@ -399,6 +411,7 @@ public class frmBrBilAll extends raUpitFat {
 
     if (data.size() == 0)
       setNoDataAndReturnImmediately();
+      
     
     checkClosing();
 
@@ -426,6 +439,7 @@ public class frmBrBilAll extends raUpitFat {
       positionDataSet(prik);
       setDataSetAndSums(prik, new String[] {"POCID","POCIP","SALPS","ID","IP","SALPROM","DUG","POT","SALDO"});
     }
+    setTitlePer();
     sok.report("over");
   }
   
