@@ -132,12 +132,12 @@ public class frmBlagIzv extends raMasterDetail {
   }
 
   public QueryDataSet getrepQDS() {
-    repQDS.setSort(new SortDescriptor(new String[]{"RBS"}));
+    repQDS.setSort(new SortDescriptor(new String[]{ss.getOrderBlagIzvField()}));
     return repQDS;
   }
 
   public QueryDataSet getrepQDS2() {
-    repQDS2.setSort(new SortDescriptor(new String[]{"RBS"}));
+    repQDS2.setSort(new SortDescriptor(new String[]{ss.getOrderBlagIzvField()}));
     return repQDS2;
   }
 
