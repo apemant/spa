@@ -44,18 +44,18 @@ public class raExportData {
   public static void export(File dir) {
     DataSet eh = Exphead.getDataModule().getTempSet();
     eh.open();
-    for (eh.first(); eh.inBounds(); eh.next()) {
-      DataSet ds = Aus.q(eh.getString("UPIT"));
+    for (eh.first(); eh.inBounds(); eh.next()) { 
       String fname = eh.getString("IMEDAT");
       if ("C".equals(eh.getString("TIPDAT")))
-        exportFile(new File(dir, fname), ds, eh.getInt("CREP"));
+        exportFile(new File(dir, fname), 
+            eh.getString("UPIT"), eh.getInt("CREP"));
     }
     JOptionPane.showMessageDialog(null, 
         "Izvoz podataka završen.", 
         "Izvoz podataka", JOptionPane.INFORMATION_MESSAGE);
   }
   
-  public static void exportFile(File f, DataSet ds, int crep) {
+  public static void exportFile(File f, String upit, int crep) {
     if (f.exists() && !f.canWrite()) return;
     DataSet ed = Expdata.getDataModule().getTempSet(
         Condition.equal("CREP", crep));
@@ -72,28 +72,33 @@ public class raExportData {
     if (out == null) return;
     
     VarStr line = new VarStr();
-    for (ds.first(); ds.inBounds(); ds.next()) {
-      line.clear();
-      for (int i = 0; i < cols.length; i++) {
-        int type = ds.getColumn(cols[i].name).getDataType();
-        if (type == Variant.STRING)
-          line.append('"').append(ds.getString(cols[i].name)).
-              append("\",");
-        else if (type == Variant.BIGDECIMAL)
-          line.append('"').append(ds.getBigDecimal(cols[i].name)).
-              append("\",");
-        else if (type == Variant.TIMESTAMP)
-          line.append('"').append(sd.format(
-              ds.getTimestamp(cols[i].name))).append("\",");
-        else if (type == Variant.INT)
-          line.append(ds.getInt(cols[i].name)).append(',');
-        else if (type == Variant.SHORT)
-          line.append(ds.getShort(cols[i].name)).append(',');
-        else if (type == Variant.LONG)
-          line.append(ds.getLong(cols[i].name)).append(',');
+    String[] qs = new VarStr(upit).split(';');
+    
+    for (int q = 0; q < qs.length; q++) {
+      DataSet ds = Aus.q(qs[q]);
+      for (ds.first(); ds.inBounds(); ds.next()) {
+        line.clear();
+        for (int i = 0; i < cols.length; i++) {
+          int type = ds.getColumn(cols[i].name).getDataType();
+          if (type == Variant.STRING)
+            line.append('"').append(ds.getString(cols[i].name).trim()).
+                append("\",");
+          else if (type == Variant.BIGDECIMAL)
+            line.append('"').append(ds.getBigDecimal(cols[i].name)).
+                append("\",");
+          else if (type == Variant.TIMESTAMP)
+            line.append('"').append(sd.format(
+                ds.getTimestamp(cols[i].name))).append("\",");
+          else if (type == Variant.INT)
+            line.append(ds.getInt(cols[i].name)).append(',');
+          else if (type == Variant.SHORT)
+            line.append(ds.getShort(cols[i].name)).append(',');
+          else if (type == Variant.LONG)
+            line.append(ds.getLong(cols[i].name)).append(',');
+        }
+        line.chop();
+        out.out(line.toString());
       }
-      line.chop();
-      out.out(line.toString());
     }
     out.close();
   }
