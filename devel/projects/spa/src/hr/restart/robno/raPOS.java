@@ -60,6 +60,7 @@ public class raPOS extends raIzlazTemplate  {
     raDetail.getRepRunner().addReport("hr.restart.robno.repPOS","Razduženje maloprodaje",2);
   }
   public raPOS() {
+    isMaloprodajnaKalkulacija = true;
     setPreSel((jpPreselectDoc) presPOS.getPres());
     addButtons(true,false);
     master_titel = "Razduženja maloprodaje";
@@ -93,6 +94,10 @@ public class raPOS extends raIzlazTemplate  {
   
   public void cskl2csklart() {
     // empty
+  }
+  
+  public void RestPanelSetup(){
+    DP.addRestGRNGOT();
   }
   
   public void keyActionMaster() {
