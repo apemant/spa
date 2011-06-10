@@ -9,6 +9,8 @@ import hr.restart.baza.kreator;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.IntParam;
+import hr.restart.util.Util;
+import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.zapod.OrgStr;
 
@@ -39,12 +41,17 @@ public class raImportRac {
   
   DateFormat df = new SimpleDateFormat("d.M.yyyy. H:m:s");
   lookupData ld = lookupData.getlookupData();
+  Util ut = Util.getUtil();
   dM dm = dM.getDataModule();
-  String cskl, cknjige;
+  String cskl, cknjige, seqKey;
   DataSet shema;
   Map kols;
   String[] uicol = {"KNJIG", "CPAR", "VRDOK", "BROJDOK", 
                    "CORG", "CKNJIGE", "CSKSTAVKE"};
+  
+  boolean bookDependant, autoinc;
+  int extSize;
+
   
   public static void show() {
     kreator.SelectPathDialog spd = new kreator.SelectPathDialog(
@@ -95,6 +102,15 @@ public class raImportRac {
     kols = new HashMap();
     for (int i = 0; i < data.length; i++)
       kols.put(data[i][0], data[i][1]);
+    
+    autoinc = frmParam.getParam("sk", "autoIncExt", "D", 
+    "Automatsko poveæavanje dodatnog broja URA/IRA (D/N)").equalsIgnoreCase("D");
+    bookDependant = frmParam.getParam("sk", "extKnjiga", "D", 
+      "Ima li svaka knjiga zaseban brojaè (D/N)").equalsIgnoreCase("D");
+    extSize = Aus.getNumber(frmParam.getParam("sk", "extSize", "0",
+      "Minimalna velicina broja URA/IRA (popunjavanje vedeæim nulama)"));
+    if (extSize > 8) extSize = 8;
+    
   }
   
   void importSingle(File f) {
@@ -137,6 +153,17 @@ public class raImportRac {
     setDate(sk, "DATUMKNJ", head, "BookedOn");
     setDate(sk, "DATPRI", head, "BookedOn");
     
+    int next = Valid.getValid().findSeqInt(seqKey = 
+      OrgStr.getKNJCORG(false) + "IRA-" +
+      ut.getYear(sk.getTimestamp("DATDOK")) +
+      (bookDependant ? "-" + sk.getString("CKNJIGE") : ""), 
+      false, false);
+
+    String result = Integer.toString(next);
+    if (result.length() < extSize) 
+      result = Aus.string(extSize - result.length(), '0') + result;
+    sk.setString("EXTBRDOK", result);
+
     sk.setString("BROJDOK", head.getChildText("DocumentIdentifier"));
     
     Element partn = head.getChild("Buyer");
