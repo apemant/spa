@@ -1199,7 +1199,7 @@ public class Util {
     }
     
     String qStr = "select ARTIKLI.CART AS CART, ARTIKLI.CART1 AS CARTX, ARTIKLI.BC AS BC, ARTIKLI.CGRART AS CGRART, ARTIKLI.NAZART AS NAZART,"+
-                  " STANJE.KOL AS KOL,STANJE.KOLSKLAD AS KOLSKLAD, ARTIKLI.JM AS JM, STANJE.KOLREZ AS KOLREZ, STANJE.VC as VC, STANJE.MC as MC,ARTIKLI.BRJED AS BRJED, "+
+                  " STANJE.KOL AS KOL,STANJE.KOLSKLAD AS KOLSKLAD, ARTIKLI.JM AS JM, STANJE.KOLREZ AS KOLREZ, STANJE.NC as NC, STANJE.VC as VC, STANJE.MC as MC,ARTIKLI.BRJED AS BRJED, "+
                   "ARTIKLI.JMPAK AS JMPAK  from ARTIKLI, STANJE WHERE ARTIKLI.CART = STANJE.CART "+
                   "AND ARTIKLI.AKTIV='D' AND STANJE.GOD='"+god+"' AND STANJE.CSKL = '"+cskl+"' "+nula ;
     if (!value.equalsIgnoreCase("")) {
@@ -1253,6 +1253,7 @@ public class Util {
             (Column) dm.getStanje().getColumn("KOLREZ").clone(),
             dm.getArtikli().getColumn("JM").cloneColumn() ,
             kolpak,jmpak,brjed,
+            (Column) dm.getArtikli().getColumn("NC").clone() ,
             (Column) dm.getStanje().getColumn("VC").clone() ,
             (Column) dm.getStanje().getColumn("MC").clone()
         });
@@ -1277,6 +1278,7 @@ public class Util {
             stanjef8.setString("JM",qdsstanjef8.getString("JM"));
             stanjef8.setString("JMPAK",qdsstanjef8.getString("JMPAK"));
             stanjef8.setBigDecimal("BRJED",qdsstanjef8.getBigDecimal("BRJED"));
+            stanjef8.setBigDecimal("NC",qdsstanjef8.getBigDecimal("NC"));
             stanjef8.setBigDecimal("VC",qdsstanjef8.getBigDecimal("VC"));
             stanjef8.setBigDecimal("MC",qdsstanjef8.getBigDecimal("MC"));
             if (stanjef8.getBigDecimal("BRJED").doubleValue()!=0){
