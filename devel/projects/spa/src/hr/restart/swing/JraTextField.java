@@ -159,6 +159,8 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
     
   public Condition getCondition() {
     if (getText().length() == 0) return Condition.none;
+    if (getDataSet() == null)
+      return Condition.equal(getColumnName(), getText());
     return Condition.equal(getColumnName(), getDataSet());
   }
     
