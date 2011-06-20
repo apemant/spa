@@ -6,15 +6,27 @@ import hr.restart.baza.Skstavke;
 import hr.restart.baza.UIstavke;
 import hr.restart.baza.dM;
 import hr.restart.baza.kreator;
+import hr.restart.sisfun.dlgUraIra;
 import hr.restart.sisfun.frmParam;
+import hr.restart.swing.JraButton;
+import hr.restart.swing.JraDialog;
 import hr.restart.util.Aus;
 import hr.restart.util.IntParam;
+import hr.restart.util.JlrNavField;
+import hr.restart.util.OKpanel;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
+import hr.restart.util.raCommonClass;
+import hr.restart.util.raMatPodaci;
 import hr.restart.zapod.OrgStr;
 
+import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.Window;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -26,15 +38,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 
 public class raImportRac {
@@ -44,13 +64,14 @@ public class raImportRac {
   Util ut = Util.getUtil();
   dM dm = dM.getDataModule();
   String cskl, cknjige, seqKey;
-  DataSet shema;
+  QueryDataSet shema;
   Map kols;
   String[] uicol = {"KNJIG", "CPAR", "VRDOK", "BROJDOK", 
                    "CORG", "CKNJIGE", "CSKSTAVKE"};
   
   boolean bookDependant, autoinc;
   int extSize;
+  dlgUraIra dlg = new dlgUraIra();
 
   
   public static void show() {
@@ -182,7 +203,25 @@ public class raImportRac {
     for (Iterator i = stav.iterator(); i.hasNext(); ) {
       Element e = (Element) i.next();
       String tip = e.getChildText("TypeCode");
-      if (!kols.containsKey(tip)) continue;
+      if (tip.equals("TotalBrutto")) {
+      	BigDecimal amount = Aus.getDecNumber(e.getChildText("Amount"));
+      	ui.insertRow(false);
+        ui.setString("URAIRA", "I");
+        dM.copyColumns(sk, ui, uicol);
+        String kol = (String) kols.get(tip);
+        ui.setShort("CKOLONE", Short.parseShort(kol));
+        ui.setString("BROJKONTA", getKonto(kol));
+        ui.setInt("RBS", 1);
+        ui.setString("DUGPOT", "D");
+        ui.setBigDecimal("ID", amount);
+        sk.setBigDecimal("ID", amount);
+        sk.setBigDecimal("SSALDO", amount);
+        sk.setBigDecimal("SALDO", amount);
+        sk.setBigDecimal("PVID", amount);
+        sk.setBigDecimal("PVSSALDO", amount);
+        sk.setBigDecimal("PVSALDO", amount);
+      }
+      /*if (!kols.containsKey(tip)) continue;
       BigDecimal amount = Aus.getDecNumber(e.getChildText("Amount"));
       if (amount.signum() != 0) {
         ui.insertRow(false);
@@ -206,7 +245,16 @@ public class raImportRac {
           ui.setString("DUGPOT", "P");
           ui.setBigDecimal("IP", amount);
         }
-      }
+      }*/
+    }
+    List itm = head.getChildren("InvoiceOut_Items");
+    for (Iterator i = itm.iterator(); i.hasNext(); ) {
+      Element e = (Element) i.next();
+      String biz = e.getChildText("BizCode");
+      String desc = e.getChildText("Description");
+      String por = e.getChildText("VATRate");
+      
+      
     }
     
     return false;
@@ -225,5 +273,168 @@ public class raImportRac {
     if (!ld.raLocate(shema, "CKOLONE", kol))
       throw new RuntimeException("Nedefinirana kolona " + kol);
     return shema.getString("BROJKONTA");
+  }
+  
+  public class dlgUraIra {
+    public static final int IRA = 1;
+    public static final int URA = 2;
+
+    //dlgUraIra dlg = new dlgUraIra();
+    JDialog jd;
+
+    JPanel main = new JPanel();
+    JPanel center = new JPanel();
+    XYLayout xy = new XYLayout();
+
+    JLabel jlknj = new JLabel();
+    JlrNavField konto = new JlrNavField();
+    JlrNavField nazkonta = new JlrNavField();
+    JraButton jbselknj = new JraButton();
+    JLabel jlkol = new JLabel();
+    JLabel jltex = new JLabel();
+    JlrNavField ckolone = new JlrNavField();
+    JlrNavField nazkolone = new JlrNavField();
+    JraButton jbselkol = new JraButton();
+
+    OKpanel okp = new OKpanel() {
+      public void jBOK_actionPerformed() {
+        OKPress();
+      }
+      public void jPrekid_actionPerformed() {
+        cancelPress();
+      }
+    };
+
+    StorageDataSet fields = new StorageDataSet();
+    boolean ok;
+
+    private dlgUraIra() {
+      try {
+        jbInit();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+    public void open(Window owner) {
+      show(owner);
+    }
+
+    private void show(Window owner) {
+      //String[] cols = new String[] {"CKNJIGE", "CKOLONE"};
+      if (owner instanceof Dialog)
+        jd = new JraDialog((Dialog) owner, "Konto i kolona", true);
+      else jd = new JraDialog((Frame) owner, "Konto i kolona", true);
+      jd.getContentPane().add(main);
+      okp.registerOKPanelKeys(jd);
+      jd.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+      jd.addWindowListener(new WindowAdapter() {
+        public void windowClosed(WindowEvent e) {
+          jd.dispose();
+        }
+      });
+//      fields.setString("CKNJIGE", owner.getRaQueryDataSet().getString("CKNJIGE"));
+//      fields.setShort("CKOLONE", owner.getRaQueryDataSet().getShort("CKOLONE"));
+//      if (!owner.getRaQueryDataSet().isUnassignedNull("CKOLONE"))
+//        fields.setShort("CKOLONE", owner.getRaQueryDataSet().getShort("CKOLONE"));
+//      else fields.setUnassignedNull("CKOLONE");
+//      DataSet.copyTo(cols, owner.getRaQueryDataSet(), cols, fields);
+      //dM.copyColumns(owner.getRaQueryDataSet(), fields, cols);
+      if (fields.getString("CKNJIGE") == null ||
+          fields.getString("CKNJIGE").length() == 0)
+        fields.setAssignedNull("CKOLONE");
+
+      //cknjige.forceFocLost();
+      //ckolone.forceFocLost();
+      ok = false;
+      jd.pack();
+      jd.setLocationRelativeTo(jd.getOwner());
+      jd.setVisible(true);
+      if (ok) {
+//        DataSet.copyTo(cols, fields, cols, owner.getRaQueryDataSet());
+//        owner.getRaQueryDataSet().setString("CKNJIGE", fields.getString("CKNJIGE"));
+//        if (fields.isuna
+//        owner.getRaQueryDataSet().setShort("CKOLONE", fields.getShort("CKOLONE"));
+        //dM.copyColumns(fields, owner.getRaQueryDataSet(), cols);
+      }
+    }
+
+    public void setEnabled(boolean yesno) {
+      raCommonClass.getraCommonClass().EnabDisabAll(main, yesno);
+      raCommonClass.getraCommonClass().setLabelLaF(okp.jPrekid, true);
+    }
+
+    public void setUI() {
+      konto.setRaDataSet(dM.getDataModule().getKonta());
+      ckolone.setRaDataSet(dM.getDataModule().getIzlazneKolone());
+    }
+
+    private void OKPress() {
+      ok = true;
+      jd.dispose();
+    }
+
+    private void cancelPress() {
+      jd.dispose();
+    }
+
+    private void jbInit() throws Exception {
+      center.setLayout(xy);
+      xy.setWidth(525);
+      xy.setHeight(110);
+
+      fields.setColumns(new Column[] {
+        dM.createStringColumn("BROJKONTA", "Konto", 5),
+        dM.createStringColumn("NAZIVKONTA", "Naziv konta", 50),
+        dM.createShortColumn("CKOLONE", "Broj kolone"),
+        dM.createStringColumn("NAZIVKOLONE", "Naziv kolone", 50)
+      });
+      fields.open();
+
+      jlknj.setText("Konto");
+      konto.setColumnName("KONTO");
+      konto.setDataSet(fields);
+      konto.setColNames(new String[] {"NAZKONTA"});
+      konto.setTextFields(new javax.swing.text.JTextComponent[] {nazkonta});
+      konto.setVisCols(new int[] {0,4});
+      konto.setSearchMode(0);
+      konto.setRaDataSet(dM.getDataModule().getKnjigeUI());
+      konto.setNavButton(jbselknj);
+
+      jlkol.setText("Kolona knjige");
+      nazkonta.setNavProperties(konto);
+      nazkonta.setDataSet(fields);
+      nazkonta.setColumnName("NAZKONTO");
+      nazkonta.setSearchMode(1);
+
+      ckolone.setColumnName("CKOLONE");
+      ckolone.setDataSet(fields);
+      ckolone.setColNames(new String[] {"NAZIVKOLONE"});
+      ckolone.setTextFields(new javax.swing.text.JTextComponent[] {nazkolone});
+      ckolone.setVisCols(new int[] {0,1,2});
+      ckolone.setSearchMode(0);
+      ckolone.setRaDataSet(dM.getDataModule().getKoloneknjUI());
+      ckolone.setNavButton(jbselkol);
+
+      nazkolone.setNavProperties(ckolone);
+      nazkolone.setDataSet(fields);
+      nazkolone.setColumnName("NAZIVKOLONE");
+      nazkolone.setSearchMode(1);
+
+      center.add(jltex, new XYConstraints(150, 20, -1, -1));
+      center.add(jlknj, new XYConstraints(15, 45, -1, -1));
+      center.add(konto, new XYConstraints(150, 45, 50, -1));
+      center.add(nazkonta, new XYConstraints(205, 45, 275, -1));
+      center.add(jbselknj, new XYConstraints(485, 45, 21, 21));
+
+      center.add(jlkol, new XYConstraints(15, 70, -1, -1));
+      center.add(ckolone, new XYConstraints(150, 70, 50, -1));
+      center.add(nazkolone, new XYConstraints(205, 70, 275, -1));
+      center.add(jbselkol, new XYConstraints(485, 70, 21, 21));
+
+      main.setLayout(new BorderLayout());
+      main.add(center, BorderLayout.CENTER);
+      main.add(okp, BorderLayout.SOUTH);
+    }
   }
 }
