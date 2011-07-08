@@ -6,19 +6,12 @@ import hr.restart.baza.Skstavke;
 import hr.restart.baza.UIstavke;
 import hr.restart.baza.dM;
 import hr.restart.baza.kreator;
+import hr.restart.sisfun.Asql;
 import hr.restart.sisfun.dlgUraIra;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraDialog;
-import hr.restart.util.Aus;
-import hr.restart.util.IntParam;
-import hr.restart.util.JlrNavField;
-import hr.restart.util.OKpanel;
-import hr.restart.util.Util;
-import hr.restart.util.Valid;
-import hr.restart.util.lookupData;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raMatPodaci;
+import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
@@ -61,6 +54,7 @@ public class raImportRac {
   
   DateFormat df = new SimpleDateFormat("d.M.yyyy. H:m:s");
   lookupData ld = lookupData.getlookupData();
+  Valid vl = Valid.getValid();
   Util ut = Util.getUtil();
   dM dm = dM.getDataModule();
   String cskl, cknjige, seqKey;
@@ -155,9 +149,16 @@ public class raImportRac {
     Element root = doc.getRootElement();
     if (!"NS_InvoiceOut".equals(root.getName())) return false;
     
+    Element msg = root.getChild("NS_MessageHeader");
+    if (msg == null) return false;
+    
+    String msgType = msg.getChildText("DocumentType");
+    if (!"TDOC_InvoiceOut".equals(msgType)) return false;
+    
     Element head = root.getChild("InvoiceOut_Header");
     if (head == null) return false;
     
+    System.out.println("Otvorio root");
     QueryDataSet sk = Skstavke.getDataModule().getTempSet("1=0");
     sk.open();
     QueryDataSet ui = UIstavke.getDataModule().getTempSet("1=0");
@@ -174,24 +175,17 @@ public class raImportRac {
     setDate(sk, "DATUMKNJ", head, "BookedOn");
     setDate(sk, "DATPRI", head, "BookedOn");
     
-    int next = Valid.getValid().findSeqInt(seqKey = 
-      OrgStr.getKNJCORG(false) + "IRA-" +
-      ut.getYear(sk.getTimestamp("DATDOK")) +
-      (bookDependant ? "-" + sk.getString("CKNJIGE") : ""), 
-      false, false);
-
-    String result = Integer.toString(next);
-    if (result.length() < extSize) 
-      result = Aus.string(extSize - result.length(), '0') + result;
-    sk.setString("EXTBRDOK", result);
+    
 
     sk.setString("BROJDOK", head.getChildText("DocumentIdentifier"));
+    System.out.println("Dokument: " + sk.getString("BROJDOK"));
     
     Element partn = head.getChild("Buyer");
     String oib = partn.getChildText("OIB");
     if (ld.raLocate(dm.getPartneri(), "OIB", oib))
       sk.setInt("CPAR", dm.getPartneri().getInt("CPAR"));
-    else throw new RuntimeException("Nepoznat OIB: "+ oib); 
+    else throw new RuntimeException("Nepoznat OIB: "+ oib + 
+        " dokument " + sk.getString("BROJDOK")); 
     
     sk.setString("BROJKONTA", getKonto("6"));
     sk.setString("CSKSTAVKE", raSaldaKonti.findCSK(sk));
@@ -199,6 +193,7 @@ public class raImportRac {
     sk.setString("CKNJIGE", cknjige);
     
     List stav = head.getChildren("NS_Amount");
+    System.out.println("broj kategorija: " + stav.size());
     int rbs = 1;
     for (Iterator i = stav.iterator(); i.hasNext(); ) {
       Element e = (Element) i.next();
@@ -214,10 +209,12 @@ public class raImportRac {
         ui.setInt("RBS", 1);
         ui.setString("DUGPOT", "D");
         ui.setBigDecimal("ID", amount);
+        ui.setBigDecimal("IP", Aus.zero2);
         sk.setBigDecimal("ID", amount);
         sk.setBigDecimal("SSALDO", amount);
         sk.setBigDecimal("SALDO", amount);
         sk.setBigDecimal("PVID", amount);
+        ui.setBigDecimal("PVIP", Aus.zero2);
         sk.setBigDecimal("PVSSALDO", amount);
         sk.setBigDecimal("PVSALDO", amount);
       }
@@ -247,17 +244,123 @@ public class raImportRac {
         }
       }*/
     }
-    List itm = head.getChildren("InvoiceOut_Items");
+    BigDecimal total = Aus.zero2;
+    List itm = root.getChildren("InvoiceOut_Items");
+    System.out.println("broj stavaka: " + itm.size());
     for (Iterator i = itm.iterator(); i.hasNext(); ) {
       Element e = (Element) i.next();
+      
+      Element camt = e.getChild("NS_Amount");
+      if (camt == null) continue;
+      String amt = camt.getChildText("Amount");
+      if (amt == null) continue;
+      BigDecimal iznos = Aus.getDecNumber(amt);
+      if (iznos.signum() == 0) continue;
+      
       String biz = e.getChildText("BizCode");
       String desc = e.getChildText("Description");
       String por = e.getChildText("VATRate");
+      if (por == null || por.length() == 0) por = "0";
+
+      System.out.println("bizcode " + biz);
+      System.out.println("opis " + desc);
+      String konto = null;
+      if (biz != null && biz.length() > 0)
+        konto = getKontoAll("#" + biz, por + "%");
+      else if (desc != null && desc.length() > 0)
+        konto = getKontoAll(desc, por + "%");
+      else
+        throw new RuntimeException("Nepoznata stavka dokumenta!");
+      short kolona = shema.getShort("CKOLONE"); 
       
+      if (konto == null) {
+        String txt = "";
+        if (biz != null && biz.length() > 0)
+          txt = "(" + biz + ") ";
+        if (desc != null && desc.length() > 0) 
+          txt = txt + " " + desc;
+        txt = txt + " - " + por + "%";
+        dlg.jlText.setText(txt);
+        dlg.open(null);
+        if (!dlg.ok) return false;
+        
+        shema.insertRow(false);
+        shema.setString("APP", "sk");
+        shema.setString("VRDOK", "IRN");
+        shema.setString("CSKL", cskl);
+        shema.setString("CSKLUL", cskl);
+        if (txt.length() > 40) txt = txt.substring(0, 40);
+        shema.setString("OPIS", txt);
+        shema.setShort("STAVKA", (short) Asql.getNextRbs("SHKONTA", "STAVKA",
+            Condition.equal("VRDOK", "IRN"). and(Condition.equal("CSKL", cskl))));
+        shema.setString("POLJE", Short.toString(shema.getShort("STAVKA"))); 
+        shema.setShort("CKOLONE", dlg.fields.getShort("CKOLONE"));
+        shema.setString("BROJKONTA", dlg.fields.getString("BROJKONTA"));
+        shema.setString("KARAKTERISTIKA", "P");
+        String tags = "|" + por + "%|";
+        if (biz != null && biz.length() > 0)
+          tags = tags + " |#" + biz + "|";
+        if (desc != null && desc.length() > 0)
+          tags = tags + " |" + desc + "|";
+        shema.setString("SQLCONDITION", tags);
+        kolona = shema.getShort("CKOLONE");
+        shema.saveChanges();
+      }
+      total = total.add(iznos);
+      addUi(sk, ui, konto, kolona, iznos);
       
+      if (!"0".equals(por)) {
+        BigDecimal porez = iznos.multiply(new BigDecimal(por)).
+            movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP);
+        total = total.add(porez);
+        addUi(sk, ui, getKonto("17"), (short) 17, porez);
+      }
     }
     
-    return false;
+    if (sk.getBigDecimal("SALDO").compareTo(total) != 0)
+      throw new RuntimeException("Kriva suma stavaka dokumenta " + 
+          sk.getString("BROJDOK")); 
+    
+    int next = Valid.getValid().findSeqInt(seqKey = 
+      OrgStr.getKNJCORG(false) + "IRA-" +
+      ut.getYear(sk.getTimestamp("DATDOK")) +
+      (bookDependant ? "-" + sk.getString("CKNJIGE") : ""), 
+      false, false);
+
+    String result = Integer.toString(next);
+    if (result.length() < extSize) 
+      result = Aus.string(extSize - result.length(), '0') + result;
+    sk.setString("EXTBRDOK", result);
+    
+    return raTransaction.saveChangesInTransaction(
+        new QueryDataSet[] {sk, ui, dm.getSeq()});
+  }
+  
+  void addUi(DataSet sk, DataSet ui, 
+      String konto, short kolona, BigDecimal iznos) {
+    
+    int rbs = 1;
+    boolean exist = false;
+    for (ui.first(); ui.inBounds(); ui.next()) {
+      if (!exist && ui.getString("BROJKONTA").equals(konto) &&
+          ui.getShort("CKOLONE") == kolona) {
+        Aus.add(ui, "IP", iznos);
+        exist = true;
+      }
+      if (ui.getInt("RBS") > rbs) rbs = ui.getInt("RBS");
+    }
+    if (!exist) {
+      ui.insertRow(false);
+      ui.setString("URAIRA", "I");
+      dM.copyColumns(sk, ui, uicol);
+      ui.setShort("CKOLONE", kolona);
+      ui.setString("BROJKONTA", konto);
+      ui.setInt("RBS", rbs + 1);
+      ui.setString("DUGPOT", "P");
+      ui.setBigDecimal("IP", iznos);
+      ui.setBigDecimal("ID", Aus.zero2);
+      ui.post();
+    }
   }
   
   void setDate(DataSet ds, String col, Element el, String child) {
@@ -275,12 +378,23 @@ public class raImportRac {
     return shema.getString("BROJKONTA");
   }
   
+  String getKontoAll(String txt, String por) {
+    txt = "|" + txt.toLowerCase() + "|";
+    por = "|" + por.toLowerCase() + "|";
+    for (shema.first(); shema.inBounds(); shema.next()) {
+      String desc = shema.getString("SQLCONDITION").toLowerCase();
+      if (desc.indexOf(txt) >= 0 && desc.indexOf(por) >= 0)
+        return shema.getString("BROJKONTA");
+    }
+    return null;
+  }
+  
   public class dlgUraIra {
-    public static final int IRA = 1;
-    public static final int URA = 2;
+    /*public static final int IRA = 1;
+    public static final int URA = 2;*/
 
     //dlgUraIra dlg = new dlgUraIra();
-    JDialog jd;
+    JraDialog jd;
 
     JPanel main = new JPanel();
     JPanel center = new JPanel();
@@ -295,6 +409,9 @@ public class raImportRac {
     JlrNavField ckolone = new JlrNavField();
     JlrNavField nazkolone = new JlrNavField();
     JraButton jbselkol = new JraButton();
+    
+    JLabel jlOpis = new JLabel();
+    JLabel jlText = new JLabel();
 
     OKpanel okp = new OKpanel() {
       public void jBOK_actionPerformed() {
@@ -327,9 +444,10 @@ public class raImportRac {
       else jd = new JraDialog((Frame) owner, "Konto i kolona", true);
       jd.getContentPane().add(main);
       okp.registerOKPanelKeys(jd);
-      jd.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+      jd.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
       jd.addWindowListener(new WindowAdapter() {
-        public void windowClosed(WindowEvent e) {
+        public void windowClosing(WindowEvent e) {
+          jd.getContentPane().remove(main);
           jd.dispose();
         }
       });
@@ -340,16 +458,16 @@ public class raImportRac {
 //      else fields.setUnassignedNull("CKOLONE");
 //      DataSet.copyTo(cols, owner.getRaQueryDataSet(), cols, fields);
       //dM.copyColumns(owner.getRaQueryDataSet(), fields, cols);
-      if (fields.getString("CKNJIGE") == null ||
-          fields.getString("CKNJIGE").length() == 0)
+      if (fields.getShort("CKOLONE") == 0)
         fields.setAssignedNull("CKOLONE");
 
       //cknjige.forceFocLost();
       //ckolone.forceFocLost();
       ok = false;
+      System.out.println("otvorio novi ekran");
       jd.pack();
       jd.setLocationRelativeTo(jd.getOwner());
-      jd.setVisible(true);
+      jd.show();
       if (ok) {
 //        DataSet.copyTo(cols, fields, cols, owner.getRaQueryDataSet());
 //        owner.getRaQueryDataSet().setString("CKNJIGE", fields.getString("CKNJIGE"));
@@ -359,10 +477,6 @@ public class raImportRac {
       }
     }
 
-    public void setEnabled(boolean yesno) {
-      raCommonClass.getraCommonClass().EnabDisabAll(main, yesno);
-      raCommonClass.getraCommonClass().setLabelLaF(okp.jPrekid, true);
-    }
 
     public void setUI() {
       konto.setRaDataSet(dM.getDataModule().getKonta());
@@ -370,41 +484,47 @@ public class raImportRac {
     }
 
     private void OKPress() {
+      if (vl.isEmpty(konto) || vl.isEmpty(ckolone)) return;
+      
       ok = true;
+      jd.getContentPane().remove(main);
       jd.dispose();
     }
 
     private void cancelPress() {
+      jd.getContentPane().remove(main);
       jd.dispose();
     }
 
     private void jbInit() throws Exception {
       center.setLayout(xy);
       xy.setWidth(525);
-      xy.setHeight(110);
+      xy.setHeight(115);
 
       fields.setColumns(new Column[] {
-        dM.createStringColumn("BROJKONTA", "Konto", 5),
+        dM.createStringColumn("BROJKONTA", "Konto", 12),
         dM.createStringColumn("NAZIVKONTA", "Naziv konta", 50),
         dM.createShortColumn("CKOLONE", "Broj kolone"),
         dM.createStringColumn("NAZIVKOLONE", "Naziv kolone", 50)
       });
       fields.open();
+      
+      jlOpis.setText("Stavka raèuna");
 
       jlknj.setText("Konto");
-      konto.setColumnName("KONTO");
+      konto.setColumnName("BROJKONTA");
       konto.setDataSet(fields);
-      konto.setColNames(new String[] {"NAZKONTA"});
+      konto.setColNames(new String[] {"NAZIVKONTA"});
       konto.setTextFields(new javax.swing.text.JTextComponent[] {nazkonta});
       konto.setVisCols(new int[] {0,4});
-      konto.setSearchMode(0);
+      konto.setSearchMode(3);
       konto.setRaDataSet(dM.getDataModule().getKnjigeUI());
       konto.setNavButton(jbselknj);
 
       jlkol.setText("Kolona knjige");
       nazkonta.setNavProperties(konto);
       nazkonta.setDataSet(fields);
-      nazkonta.setColumnName("NAZKONTO");
+      nazkonta.setColumnName("NAZIVKONTA");
       nazkonta.setSearchMode(1);
 
       ckolone.setColumnName("CKOLONE");
@@ -421,20 +541,25 @@ public class raImportRac {
       nazkolone.setColumnName("NAZIVKOLONE");
       nazkolone.setSearchMode(1);
 
+      center.add(jlOpis, new XYConstraints(15, 20, -1, -1));
+      center.add(jlText, new XYConstraints(150, 20, -1, -1));
+      
       center.add(jltex, new XYConstraints(150, 20, -1, -1));
-      center.add(jlknj, new XYConstraints(15, 45, -1, -1));
-      center.add(konto, new XYConstraints(150, 45, 50, -1));
-      center.add(nazkonta, new XYConstraints(205, 45, 275, -1));
-      center.add(jbselknj, new XYConstraints(485, 45, 21, 21));
+      center.add(jlknj, new XYConstraints(15, 50, -1, -1));
+      center.add(konto, new XYConstraints(150, 50, 75, -1));
+      center.add(nazkonta, new XYConstraints(230, 50, 250, -1));
+      center.add(jbselknj, new XYConstraints(485, 50, 21, 21));
 
-      center.add(jlkol, new XYConstraints(15, 70, -1, -1));
-      center.add(ckolone, new XYConstraints(150, 70, 50, -1));
-      center.add(nazkolone, new XYConstraints(205, 70, 275, -1));
-      center.add(jbselkol, new XYConstraints(485, 70, 21, 21));
+      center.add(jlkol, new XYConstraints(15, 75, -1, -1));
+      center.add(ckolone, new XYConstraints(150, 75, 75, -1));
+      center.add(nazkolone, new XYConstraints(230, 75, 250, -1));
+      center.add(jbselkol, new XYConstraints(485, 75, 21, 21));
 
       main.setLayout(new BorderLayout());
       main.add(center, BorderLayout.CENTER);
       main.add(okp, BorderLayout.SOUTH);
+      
+      setUI();
     }
   }
 }
