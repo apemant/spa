@@ -211,10 +211,11 @@ public class raImportRac {
         ui.setBigDecimal("ID", amount);
         ui.setBigDecimal("IP", Aus.zero2);
         sk.setBigDecimal("ID", amount);
+        sk.setBigDecimal("IP", amount);
         sk.setBigDecimal("SSALDO", amount);
         sk.setBigDecimal("SALDO", amount);
         sk.setBigDecimal("PVID", amount);
-        ui.setBigDecimal("PVIP", Aus.zero2);
+        sk.setBigDecimal("PVIP", Aus.zero2);
         sk.setBigDecimal("PVSSALDO", amount);
         sk.setBigDecimal("PVSALDO", amount);
       }
@@ -332,8 +333,12 @@ public class raImportRac {
       result = Aus.string(extSize - result.length(), '0') + result;
     sk.setString("EXTBRDOK", result);
     
-    return raTransaction.saveChangesInTransaction(
-        new QueryDataSet[] {sk, ui, dm.getSeq()});
+    if (!raTransaction.saveChangesInTransaction(
+        new QueryDataSet[] {sk, ui, dm.getSeq()}))
+      throw new RuntimeException("Raèun veæ ranije prebaèen: " + 
+          sk.getString("BROJDOK"));
+    
+    return true;
   }
   
   void addUi(DataSet sk, DataSet ui, 
