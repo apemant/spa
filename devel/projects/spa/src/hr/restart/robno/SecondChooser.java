@@ -22,6 +22,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Partneri;
 import hr.restart.baza.VTprijenos;
 import hr.restart.baza.dM;
+import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
@@ -1165,6 +1166,12 @@ System.out.println(StavkeSet.getInt("CARt"));
     
     public void simTrans() {
       rTTC.actionLtoR();
+      isMultipleDocs = false;
+      directRNL = false;
+      fixDOS = false;
+      bprennormativ = false;
+      ZaglavljeSetTmp = doki.getDataModule().getTempSet("1=0");
+      ZaglavljeSetTmp.open();
     }
 
 	public void initStavke() {
