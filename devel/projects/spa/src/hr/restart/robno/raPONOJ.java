@@ -109,6 +109,7 @@ public class raPONOJ extends raIzlazTemplate {
           DP.rpcart.addSkladField(hr.restart.robno.Util.getSkladFromCorg());
         }
 		DP.resizeDP();
+		raDetail.addOption(rnvCopyPon, 6, false);
 
 		this.setVisibleColsMaster(new int[] { 4, 5, 9 });
 	}

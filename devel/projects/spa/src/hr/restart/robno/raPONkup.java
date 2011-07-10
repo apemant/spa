@@ -81,6 +81,7 @@ public class raPONkup extends raIzlazTemplate  {
       DP.BindComp();
       this.setVisibleColsMaster(new int[] {4,5,9});
       DP.resizeDP();
+      raDetail.addOption(rnvCopyPon, 6, false);
     }
 
     boolean gotovin = true;

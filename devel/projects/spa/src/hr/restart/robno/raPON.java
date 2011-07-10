@@ -80,6 +80,7 @@ public class raPON extends raIzlazTemplate {
 		DP.BindComp();
 		rCD.setisNeeded(false);
 		DP.resizeDP();
+		raDetail.addOption(rnvCopyPon, 6, false);
 	}
 
 	public void RestPanelSetup() {

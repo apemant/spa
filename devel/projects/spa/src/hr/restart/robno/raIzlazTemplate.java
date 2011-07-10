@@ -21,6 +21,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Kosobe;
 import hr.restart.baza.Partneri;
 import hr.restart.baza.RN;
+import hr.restart.baza.Urdok;
 import hr.restart.baza.VTprijenos;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
@@ -32,6 +33,7 @@ import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raOptionDialog;
+import hr.restart.swing.raTableColumnModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.LinkClass;
 import hr.restart.util.VarStr;
@@ -47,12 +49,14 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -60,6 +64,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -350,6 +355,13 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       public void actionPerformed(ActionEvent e) {
         akcijaToggle();
       }
+    };
+    
+    raNavAction rnvCopyPon = new raNavAction("Prebacivanje stavaka s ponude", 
+    		raImages.IMGSENDMAIL, KeyEvent.VK_UNDEFINED) {
+    	public void actionPerformed(ActionEvent e) {
+        selectDoc();
+    	}
     };
     
     String akcijaPrefix = null;
@@ -2412,6 +2424,68 @@ System.out.println("findCjenik::else :: "+sql);
 		super.refilterDetailSet();
 		getDetailSet().last();
 		return getDetailSet().isEmpty();
+	}
+	
+	public void selectDoc() {
+    
+    DataSet pon = doki.getDataModule().getTempSet(
+    		"vrdok='PON' and god>='" + (Aus.getNumber(val.findYear()) - 1) +
+    		"' and ((param='OJ' and " + Condition.in("CSKL", OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "CORG") +
+    		") or (param!='OJ' and " + Condition.in("CSKL", util.getSkladFromCorg()) + "))");
+    pon.open();
+
+    try {
+      lD.saveName = "dohvat-pon-for-copy";
+      List modif = new ArrayList();
+      modif.add(new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, dm.getPartneri()));
+      lD.modifiers = modif;
+      lD.setLookMode(lookupData.INDIRECT);
+      String[] ret = lD.lookUp(raDetail.getWindow(), pon,
+          util.mkey, new String[] {"", "", "", ""}, new int[] {1,4,5,6,44});
+
+      if (ret != null && ret[0] != null && ret[0].length() > 0 && lD.raLocate(pon, util.mkey, ret))
+        copyStavke(pon);
+
+    } finally {
+      lD.saveName = null;
+      lD.modifiers = null;
+    }
+  }
+	
+	void copyStavke(DataSet pon) {
+		
+		DataSet single = doki.getDataModule().getTempSet(Condition.whereAllEqual(util.mkey, pon));
+		single.open();
+		
+		final SecondChooser sc = new SecondChooser("");
+		sc.setSelected("PON");		
+		sc.setUpClass(this);
+		
+		sc.setDataSet(single);
+    String[] dods = {"DATDOK"};
+    sc.setUpClass(this);
+    sc.setDataSetKey(new String[] { "CSKL", "GOD", "VRDOK", "BRDOK" }, dods);
+    sc.initialise();
+    sc.simTrans();
+    
+    sc.findStavke();
+		if (sc.checkStavke()) {
+			raLocalTransaction rLT = new raLocalTransaction() {
+				public boolean transaction() {
+					sc.addStavke();
+					//cancelSelect();
+					return sc.saveChangeInSecondChooser();
+			}};				
+			if (!rLT.execTransaction()){
+				JOptionPane.showMessageDialog(this, "Prijenos nije uspio !",
+						"Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
+			} else {
+				dm.getSynchronizer().markAsDirty("vttext");
+				raMaster.getJpTableView().fireTableDataChanged();
+				/*raDetail.refreshTable();
+				getDetailSet().last();*/
+			}
+		}
 	}
 
 	public void findRabat() {
