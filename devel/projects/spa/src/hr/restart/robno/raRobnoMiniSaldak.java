@@ -30,6 +30,7 @@ import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.OKpanel;
 import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
@@ -70,6 +71,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 	private String dospjelo = "SVI";
 
 	private hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
+	private lookupData ld = lookupData.getlookupData();
 
 	//private raSelectTableModifier rSTM;
 
@@ -1677,9 +1679,31 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		}
         if (tds != null) {
     		if (tds.getString("PK").equals("K")) {
+    		  if (qdsAllIzlaz.getInt("CPAR") == qdsPojedIzlaz.getInt("CPAR") ||
+    		      ld.raLocate(qdsAllIzlaz, "CPAR", 
+    		          Integer.toString(qdsPojedIzlaz.getInt("CPAR")))) {
+    		  
+    		    BigDecimal uirac = Aus.sum("UIRAC", qdsPojedIzlaz);
+    		    BigDecimal platiti = Aus.sum("PLATITI", qdsPojedIzlaz);
+    		    qdsAllIzlaz.setBigDecimal("UIRAC", Aus.sum("UIRAC", qdsPojedIzlaz));
+    		    qdsAllIzlaz.setBigDecimal("PLATITI", Aus.sum("PLATITI", qdsPojedIzlaz));
+    		    Aus.sub(qdsAllIzlaz, "SALDO", "UIRAC", "PLATITI");
+    		  }
+    		    
     			this.setDataSetAndSums(qdsAllIzlaz,
     					new String[] { "UIRAC", "PLATITI", "SALDO" });
     		} else {
+    		  if (qdsAllUlaz.getInt("CPAR") == qdsPojedUlaz.getInt("CPAR") ||
+                  ld.raLocate(qdsAllUlaz, "CPAR", 
+                      Integer.toString(qdsPojedUlaz.getInt("CPAR")))) {
+              
+                BigDecimal uirac = Aus.sum("UIRAC", qdsPojedUlaz);
+                BigDecimal platiti = Aus.sum("PLATITI", qdsPojedUlaz);
+                qdsAllUlaz.setBigDecimal("UIRAC", Aus.sum("UIRAC", qdsPojedUlaz));
+                qdsAllUlaz.setBigDecimal("PLATITI", Aus.sum("PLATITI", qdsPojedUlaz));
+                Aus.sub(qdsAllUlaz, "SALDO", "UIRAC", "PLATITI");
+              }
+    		  
                 this.setDataSetAndSums(qdsAllUlaz,
                     new String[] { "UIRAC", "PLATITI", "SALDO" });
     			/*this.setDataSet(null);
