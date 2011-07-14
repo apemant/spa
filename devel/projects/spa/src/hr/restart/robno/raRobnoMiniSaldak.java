@@ -1683,8 +1683,6 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
     		      ld.raLocate(qdsAllIzlaz, "CPAR", 
     		          Integer.toString(qdsPojedIzlaz.getInt("CPAR")))) {
     		  
-    		    BigDecimal uirac = Aus.sum("UIRAC", qdsPojedIzlaz);
-    		    BigDecimal platiti = Aus.sum("PLATITI", qdsPojedIzlaz);
     		    qdsAllIzlaz.setBigDecimal("UIRAC", Aus.sum("UIRAC", qdsPojedIzlaz));
     		    qdsAllIzlaz.setBigDecimal("PLATITI", Aus.sum("PLATITI", qdsPojedIzlaz));
     		    Aus.sub(qdsAllIzlaz, "SALDO", "UIRAC", "PLATITI");
@@ -1697,8 +1695,6 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
                   ld.raLocate(qdsAllUlaz, "CPAR", 
                       Integer.toString(qdsPojedUlaz.getInt("CPAR")))) {
               
-                BigDecimal uirac = Aus.sum("UIRAC", qdsPojedUlaz);
-                BigDecimal platiti = Aus.sum("PLATITI", qdsPojedUlaz);
                 qdsAllUlaz.setBigDecimal("UIRAC", Aus.sum("UIRAC", qdsPojedUlaz));
                 qdsAllUlaz.setBigDecimal("PLATITI", Aus.sum("PLATITI", qdsPojedUlaz));
                 Aus.sub(qdsAllUlaz, "SALDO", "UIRAC", "PLATITI");
