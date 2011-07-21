@@ -102,7 +102,7 @@ public class raImportRac {
     shema.open();
     
     String[][] data = {
-        {"TotalBrutto", "6"},
+        {"TotalAmount", "6"},
         {"TotalExemption", "7"},
         {"TotalTaxFreeExp", "8"},
         {"TotalTaxFreeTransit", "9"},
@@ -211,7 +211,7 @@ public class raImportRac {
         ui.setBigDecimal("ID", amount);
         ui.setBigDecimal("IP", Aus.zero2);
         sk.setBigDecimal("ID", amount);
-        sk.setBigDecimal("IP", amount);
+        sk.setBigDecimal("IP", Aus.zero2);
         sk.setBigDecimal("SSALDO", amount);
         sk.setBigDecimal("SALDO", amount);
         sk.setBigDecimal("PVID", amount);
