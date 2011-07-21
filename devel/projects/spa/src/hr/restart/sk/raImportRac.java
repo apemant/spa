@@ -198,7 +198,7 @@ public class raImportRac {
     for (Iterator i = stav.iterator(); i.hasNext(); ) {
       Element e = (Element) i.next();
       String tip = e.getChildText("TypeCode");
-      if (tip.equals("TotalBrutto")) {
+      if (tip.equals("TotalAmount")) {
       	BigDecimal amount = Aus.getDecNumber(e.getChildText("Amount"));
       	ui.insertRow(false);
         ui.setString("URAIRA", "I");
@@ -296,7 +296,7 @@ public class raImportRac {
             Condition.equal("VRDOK", "IRN"). and(Condition.equal("CSKL", cskl))));
         shema.setString("POLJE", Short.toString(shema.getShort("STAVKA"))); 
         shema.setShort("CKOLONE", dlg.fields.getShort("CKOLONE"));
-        shema.setString("BROJKONTA", dlg.fields.getString("BROJKONTA"));
+        shema.setString("BROJKONTA", konto = dlg.fields.getString("BROJKONTA"));
         shema.setString("KARAKTERISTIKA", "P");
         String tags = "|" + por + "%|";
         if (biz != null && biz.length() > 0)
