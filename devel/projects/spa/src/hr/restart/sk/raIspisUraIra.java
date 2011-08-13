@@ -49,6 +49,7 @@ import hr.restart.util.sysoutTEST;
 import hr.restart.util.reports.TemplateModifier;
 import hr.restart.util.reports.raElixirProperties;
 import hr.restart.util.reports.raElixirPropertyValues;
+import hr.restart.util.reports.raReportDescriptor;
 import hr.restart.util.reports.raReportElement;
 import hr.restart.util.reports.raReportSection;
 import hr.restart.util.reports.raRunReport;
@@ -298,6 +299,8 @@ public class raIspisUraIra extends raFrame {
       });
 //      getRepRunner().addReport("hr.restart.sk.repURADod", "Ispis knjige URA sa dodatnim kolonama", 5);
     } else {
+      getRepRunner().addJasper("hr.restart.sk.repIRA10", "hr.restart.sk.repIRA",
+          "ira10.jrxml", "Ispis knjige IRA s 18 kolona");
       getRepRunner().addJasper("hr.restart.sk.repIRA09", "hr.restart.sk.repIRA",
           "ira09.jrxml", "Ispis knjige IRA 2009");
       getRepRunner().addReport("hr.restart.sk.repIRA06", "hr.restart.sk.repIRA",
@@ -336,6 +339,14 @@ public class raIspisUraIra extends raFrame {
     uraira = new QueryDataSet() {
       public boolean refreshSupported() {
         return false;
+      }
+      public boolean saveChangesSupported() {
+        return false;
+      }
+      public void saveChanges() {
+        this.post();
+      }
+      public void refresh() {
       }
     };
     QueryDataSet tkol = KoloneknjUI.getDataModule().getTempSet(
@@ -478,8 +489,15 @@ public class raIspisUraIra extends raFrame {
       }
     });
     if (raProcess.isCompleted()) {
-      frmTableDataView view = new frmTableDataView();
+      frmTableDataView view = new frmTableDataView(true, false, false);
       view.setDataSet(uraira);
+      view.setCustomReport(jrbUraira1.isSelected() ? 
+          raReportDescriptor.create("hr.restart.sk.repURA09", 
+              "hr.restart.sk.repURANew", "ura09.jrxml", 
+              "Ispis knjige URA 2009", true) :
+          raReportDescriptor.create("hr.restart.sk.repIRA09", 
+              "hr.restart.sk.repIRA", "ira09.jrxml", 
+              "Ispis knjige IRA 2009", true));
       List sumc = new ArrayList();
       for (int i = 10; i < uraira.getColumnCount(); i++)
         sumc.add(uraira.getColumn(i).getColumnName());
