@@ -162,6 +162,7 @@ public class jpUlazMaster extends JPanel {
 //  ButtonGroup buttonGroup1 = new ButtonGroup();
 //  private JraButton jbULDOK = new JraButton();
   private int ver= 0;
+  int oldcpar = -1;
 
   public jpUlazMaster(frmUlazTemplate fut,int ver) {
     frm=fut;
@@ -548,6 +549,8 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
     }
   }*/
   public void initPanel(char mode) {
+    if (mode == 'N') oldcpar = -1;
+    else oldcpar = jrfCPAR.getDataSet().getInt("CPAR");
     if (frm.enableZT) {
       jcbZT.setSelected(false);
       ZTchanged();
@@ -650,6 +653,8 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
   
   private void findDD() {
     if (jrfCPAR.getText().equals("")) return;
+    if (oldcpar == jrfCPAR.getDataSet().getInt("CPAR")) return;
+    oldcpar = jrfCPAR.getDataSet().getInt("CPAR");
     
     frm.getMasterSet().setTimestamp("DATDOSP", frm.getMasterSet().getTimestamp("DVO"));
     short dosp = (short) Aus.getNumber(jrfDOSP.getText());
