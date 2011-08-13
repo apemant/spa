@@ -148,11 +148,11 @@ public class dlgUraIra {
 
   private void OKPress() {
     ok = true;
-    jd.hide();
+    jd.dispose();
   }
 
   private void cancelPress() {
-    jd.hide();
+    jd.dispose();
   }
 
   private void jbInit() throws Exception {
