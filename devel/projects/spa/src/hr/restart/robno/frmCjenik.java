@@ -477,17 +477,17 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
   private void updateOnUpis(){
    try {
     if (whatNow.equalsIgnoreCase("CORG")){
-       porezMul = this.getDetailSet().getBigDecimal("VCKALDOM").add(this.getDetailSet().getBigDecimal("VCKALDOM").multiply(new BigDecimal("0.22"))).divide(this.getDetailSet().getBigDecimal("VCKALDOM"), 2, BigDecimal.ROUND_HALF_UP);
+       porezMul = this.getDetailSet().getBigDecimal("VCKALDOM").add(this.getDetailSet().getBigDecimal("VCKALDOM").multiply(new BigDecimal("0.23"))).divide(this.getDetailSet().getBigDecimal("VCKALDOM"), 2, BigDecimal.ROUND_HALF_UP);
        vcDom = this.getDetailSet().getBigDecimal("VCKALDOM");
-       mcDom = this.getDetailSet().getBigDecimal("VCKALDOM").add(this.getDetailSet().getBigDecimal("VCKALDOM").multiply(new BigDecimal("0.22")));
+       mcDom = this.getDetailSet().getBigDecimal("VCKALDOM").add(this.getDetailSet().getBigDecimal("VCKALDOM").multiply(new BigDecimal("0.23")));
        if (!val.jtOZNVAL.getText().equals("")){
         valutaChange();
         return;
        }
        this.getDetailSet().setBigDecimal("VCKALVAL",this.getDetailSet().getBigDecimal("VCKALDOM"));
        this.getDetailSet().setBigDecimal("VC",this.getDetailSet().getBigDecimal("VCKALDOM"));
-       this.getDetailSet().setBigDecimal("MC",this.getDetailSet().getBigDecimal("VCKALDOM").add(this.getDetailSet().getBigDecimal("VCKALDOM").multiply(new BigDecimal("0.22"))));
-       /*if (porezMul == null) porezMul = new BigDecimal("0.22");
+       this.getDetailSet().setBigDecimal("MC",this.getDetailSet().getBigDecimal("VCKALDOM").add(this.getDetailSet().getBigDecimal("VCKALDOM").multiply(new BigDecimal("0.23"))));
+       /*if (porezMul == null) porezMul = new BigDecimal("0.23");
        promjenaUpdated();*/
      }
   } catch (Exception e) {
