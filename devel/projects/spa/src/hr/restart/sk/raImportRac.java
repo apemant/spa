@@ -246,6 +246,8 @@ public class raImportRac {
       }*/
     }
     BigDecimal total = Aus.zero2;
+    BigDecimal totalosn = Aus.zero2;
+    BigDecimal totalpor = Aus.zero2;
     List itm = root.getChildren("InvoiceOut_Items");
     System.out.println("broj stavaka: " + itm.size());
     for (Iterator i = itm.iterator(); i.hasNext(); ) {
@@ -311,11 +313,17 @@ public class raImportRac {
       addUi(sk, ui, konto, kolona, iznos);
       
       if (!"0".equals(por)) {
-        BigDecimal porez = iznos.multiply(new BigDecimal(por)).
-            movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP);
-        total = total.add(porez);
-        addUi(sk, ui, getKonto("17"), (short) 17, porez);
+        totalosn = totalosn.add(iznos);
+        totalpor = totalosn.multiply(new BigDecimal(por)).
+          movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP);
+        
+        //total = total.add(porez);
+        //addUi(sk, ui, getKonto("17"), (short) 17, porez);
       }
+    }
+    if (totalpor.signum() != 0) {
+      total = total.add(totalpor);
+      addUi(sk, ui, getKonto("17"), (short) 17, totalpor);
     }
     
     if (sk.getBigDecimal("SALDO").compareTo(total) != 0)
