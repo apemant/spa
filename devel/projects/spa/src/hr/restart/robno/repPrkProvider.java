@@ -138,6 +138,9 @@ public class repPrkProvider implements raReportData { //implements sg.com.elixir
   public String getDATDOK() {
     return rdu.dataFormatter(ds.getTimestamp("DATDOK"));
   }
+  public String getDATDOSP() {
+    return rdu.dataFormatter(ds.getTimestamp("DATDOSP"));
+  }
   public short getRBR() {
     return ds.getShort("RBR");
   }
