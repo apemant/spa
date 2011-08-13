@@ -57,7 +57,7 @@ public class repRacunPOS extends mxReport {
   String porezString;
   int width = 40;
   int dbWidth = width/2;
-  String doubleLineSep, uk, oib, specForm;
+  String doubleLineSep, uk, oib, specForm, pcorg;
   boolean ispSif, oneRow, pop, cash, isnac;
   
   BigDecimal pov;
@@ -87,6 +87,10 @@ public class repRacunPOS extends mxReport {
     "Iznos povratne naknade"));
     specForm = frmParam.getParam("pos", "formatBroj", "",
         "Format broja raèuna na POS-u");
+    pcorg = frmParam.getParam("pos", "posCorg", "",
+      "OJ za logotip na POS-u");
+    if (pcorg == null || pcorg.length() == 0)
+      pcorg = OrgStr.getKNJCORG(false);
 
     width = Integer.parseInt(wdt);
     System.out.println("WIDTH - "+ width);
@@ -120,7 +124,7 @@ public class repRacunPOS extends mxReport {
   private void makeIspis(){
      dm.getLogotipovi().open();
      
-     lD.raLocate(dm.getLogotipovi(), "CORG", OrgStr.getKNJCORG(false));
+     lD.raLocate(dm.getLogotipovi(), "CORG", pcorg);
      
      String kh = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
      "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+
