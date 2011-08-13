@@ -1396,6 +1396,7 @@ class TableModelZaKreiranje extends javax.swing.table.AbstractTableModel {
     vct.addElement(new TabeleZaKreiranje(kd.Naziv,imena_klasa[i].toString(),"Nemam pojma","Ne diraj","Ne diraj",new java.lang.Boolean("false")));
 
       } catch (Exception e) {
+        e.printStackTrace();
         System.out.println("Greška u " + e.getMessage()+imena_klasa[i].toString());
       }
 
