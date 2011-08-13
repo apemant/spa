@@ -11,6 +11,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.OKpanel;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
 import hr.restart.util.propsDialog;
 import hr.restart.util.startFrame;
 import hr.restart.util.mail.Mailer;
@@ -236,6 +237,15 @@ public class ReportMailDialog extends JraDialog {
   }
 
   public static boolean sendMail(final File attachment, final StorageDataSet values) {
+    VarStr title = new VarStr(values.getString("NASLOV"));
+    String hr = "ÈÆŠŽèæšž";
+    String eng = "CCSZccsz";
+    for (int i = 0; i < hr.length(); i++)
+      title.replaceAll(hr.charAt(i), eng.charAt(i));
+    title.replaceAll("Ð", "DJ");
+    title.replaceAll("ð", "dj");
+    values.setString("NASLOV", title.toString());
+    
       Mailer m = new Mailer() {
 
         public File getAttachment() {
