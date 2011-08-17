@@ -753,7 +753,7 @@ public class frmArtikli extends raMatPodaci {
     jPanel1.setBorder(titledBorder1);
     jPanel1.setDebugGraphicsOptions(0);
     jPanel1.setLayout(xYLayout5);
-    jtfTEZPAK.setColumnName("TEZPAK");
+    jtfTEZPAK.setColumnName("BCPAK");
     jtfTEZPAK.setDataSet(getRaQueryDataSet());
     jtfBRJED.setColumnName("BRJED");
     jtfBRJED.setDataSet(getRaQueryDataSet());
@@ -770,11 +770,11 @@ public class frmArtikli extends raMatPodaci {
     jrfNAZJMPAK.setNavProperties(jrfJMPAK);
     jrfNAZJMPAK.setSearchMode(1);
     jlJMPAK.setText(res.getString("jlJM_text"));
-    jlTEZPAK.setText("Težina pakiranja");
+    jlTEZPAK.setText("Barcode");
     jPanel2.setBorder(titledBorder2);
     jPanel2.setLayout(xYLayout6);
     jtfTEZKOL.setDataSet(getRaQueryDataSet());
-    jtfTEZKOL.setColumnName("TEZKOL");
+    jtfTEZKOL.setColumnName("BCKOL");
     jrfNAZJMKOL.setSearchMode(1);
     jrfNAZJMKOL.setNavProperties(jrfJMKOL);
     jrfNAZJMKOL.setColumnName("NAZJM");
@@ -788,7 +788,7 @@ public class frmArtikli extends raMatPodaci {
     jrfJMKOL.setNavColumnName("JM");
     jrfJMKOL.setColumnName("JMKOL");
     jlBRJEDKOL.setText(res.getString("jlBRJED_text"));
-    jlTEZKOL.setText("Težina kolete");
+    jlTEZKOL.setText("Barcode");
     jtfBRJEDKOL.setDataSet(getRaQueryDataSet());
     jtfBRJEDKOL.setColumnName("BRJEDKOL");
     
@@ -1027,10 +1027,10 @@ public class frmArtikli extends raMatPodaci {
     jPanel1.add(jtfBRJED, new XYConstraints(130, 30, -1, -1));
     jPanel1.add(jrfNAZJMPAK, new XYConstraints(190, 5, 290, -1));
     jPanel1.add(jlTEZPAK, new XYConstraints(275, 30, 78, -1));
-    jPanel1.add(jtfTEZPAK,  new XYConstraints(380, 30, 100, -1));
+    jPanel1.add(jtfTEZPAK,  new XYConstraints(360, 30, 120, -1));
     jPanel1.add(jbJMPAK,   new XYConstraints(485, 5, 21, 21));
     jpPakiranje.add(jPanel2,     new XYConstraints(15, 135, 525, 85));
-    jPanel2.add(jtfTEZKOL,   new XYConstraints(380, 30, 100, -1));
+    jPanel2.add(jtfTEZKOL,   new XYConstraints(360, 30, 120, -1));
     jPanel2.add(jrfNAZJMKOL,   new XYConstraints(190, 5, 290, -1));
     jPanel2.add(jlJMPAK1,  new XYConstraints(5, 5, -1, -1));
     jPanel2.add(jrfJMKOL,   new XYConstraints(135, 5, 50, -1));
