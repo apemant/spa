@@ -953,6 +953,8 @@ CAN;char;6;;;Dodatni opis
 KASA;char;1;;D;Artikl za kasu
 POV;char;1;;N;Povratna naknada
 CNAP;char;3;;;Napomena
+BCPAK;char;20;;;Barcode pakiranja;10
+BCKOL;char;20;;;Barcode kolete;10
 UIDX=cart1
 UIDX=bc
 
