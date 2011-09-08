@@ -456,6 +456,7 @@ OBRT;char;1;;N;Obrtnik R2
 OIB;char;20;;;Oib
 GLN;char;20;;;Gln
 NAPS;char;2000;;;Napomene
+CPARPAR;char;20;;;Partnerova šifra
 IDX=mb
 IDX=zr
 IDX=ckupac
@@ -676,7 +677,7 @@ UPOREZ;numeric;15,2;;0;Ukupni porez
 UIRAC;numeric;15,2;;0;Platiti
 BRRATA;short;2;;1;Broj rata;15
 STATUS;char;1;;N;STATUS;*
-CNACPL;char;3;;;Na\u10din plaæanja
+CNACPL;char;3;;;Naèin plaæanja
 CUSER;char;15;;;Operater
 CKUPAC;int;6;;;Kupac;5
 CBLAGAJNIK;char;15;;;Blagajnik
@@ -1248,6 +1249,7 @@ URL;char;30;;;URL;15
 IDIH;int;6;;;Zaglavlje logotipa izlaznih dokumenata;15
 IDIF;int;6;;;Podnožje logotipa izlaznih dokumenata;15
 OIB;char;20;;;OIB
+GLN;char;20;;;GLN
 
 $Useri
 LOKK;char;1;;N;LOKK;*
@@ -1376,6 +1378,8 @@ NAZREP;char;80;;;Opis
 IMEDAT;char;80;;;Ime datoteke
 UPIT;char;2048;;;SQL Upit
 TIPDAT;char;1;;T;Tip eksporta
+SORTCOL;char;50;;;Kolone sorta
+SORTLOC;char;1;;D;Vrsta sorta
 
 $Expdata
 CREP;int;6;pkey;;Šifra
