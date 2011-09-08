@@ -75,7 +75,8 @@ public class presBlag extends PreSelect {
   JlrNavField jrfCSKL = new JlrNavField() {
 
     public void after_lookUp() {
-      setProd_mjLookup();
+      if (!isSkladOriented())
+        setProd_mjLookup();
     }
   };
   JLabel jLabel4 = new JLabel();
@@ -134,7 +135,8 @@ public class presBlag extends PreSelect {
     jcbAktiv.setSelected(true);
     getSelRow().setTimestamp("DATDOK-from", vl.getToday());
     getSelRow().setTimestamp("DATDOK-to", vl.getToday());
-    getSelRow().setString("CSKL", raUser.getInstance().getDefSklad());
+    if (!isSkladOriented())
+      getSelRow().setString("CSKL", raUser.getInstance().getDefSklad());
   }
 
   boolean firstTime = true;
@@ -166,7 +168,7 @@ public class presBlag extends PreSelect {
       rcc.setLabelLaF(jrfNAZSKL, false);
       rcc.setLabelLaF(jbCSKL, false);
     }
-    if (jrfCSKL.getText().length() == 0) {
+    if (jrfCSKL.getText().length() == 0 || isSkladOriented()) {
       jrfCSKL.requestFocusLater();
     } else if (stolovi && jrfCPRODMJ.getText().length() > 0) {
       jraStol.requestFocusLater();
@@ -262,7 +264,7 @@ public class presBlag extends PreSelect {
     jLabel4.setText("Smjena");
     jLabel3.setText("Zaporka");
     jLabel2.setText("Blagajna");
-    jLabel1.setText("Prodajno mjesto");
+    jLabel1.setText(isSkladOriented() ? "Skladište" : "Prodajno mjesto");
     jrfCPRODMJ.setRaDataSet(dm.getProd_mj());
     jrfCPRODMJ.setTextFields(new javax.swing.text.JTextComponent[] {
       jrfNAZPRODMJ
@@ -326,17 +328,24 @@ public class presBlag extends PreSelect {
       jp.add(jraStol, new XYConstraints(415, 70, 100, 21));
       jp.add(jcbAktiv, new XYConstraints(350, 120, 165, -1));
     }
+    
+    int yc = 20;
+    int yp = 45;
+    
+    if (isSkladOriented()) {
+      yc = 45;
+      yp = 20;
+    }
 
-    jp.add(jrfNAZSKL, new XYConstraints(260, 20, 255, -1));
-    jp.add(jrfCSKL, new XYConstraints(150, 20, 100, -1));
-    jp.add(jLabel4, new XYConstraints(15, 120, -1, -1));
-    jp.add(jLabel2, new XYConstraints(15, 45, -1, -1));
     jp.add(jPanel1, new XYConstraints(0, 0, -1, -1));
-    jp.add(jbCSKL, new XYConstraints(519, 20, 21, 21));
-    jp.add(jLabel1, new XYConstraints(15, 20, -1, -1));
-    jp.add(jrfCPRODMJ, new XYConstraints(150, 45, 100, -1));
-    jp.add(jrfNAZPRODMJ, new XYConstraints(260, 45, 255, -1));
-    jp.add(jbCPRODMJ, new XYConstraints(519, 45, 21, 21));
+    jp.add(jrfNAZSKL, new XYConstraints(260, yc, 255, -1));
+    jp.add(jrfCSKL, new XYConstraints(150, yc, 100, -1));
+    jp.add(jbCSKL, new XYConstraints(519, yc, 21, 21));
+    jp.add(jLabel1, new XYConstraints(15, yc, -1, -1));
+    jp.add(jLabel2, new XYConstraints(15, yp, -1, -1));
+    jp.add(jrfCPRODMJ, new XYConstraints(150, yp, 100, -1));
+    jp.add(jrfNAZPRODMJ, new XYConstraints(260, yp, 255, -1));
+    jp.add(jbCPRODMJ, new XYConstraints(519, yp, 21, 21));
 
     jp.add(jraVRDOK, new XYConstraints(0, 0, 0, 0));
     jraVRDOK.setVisible(false);
@@ -347,7 +356,10 @@ public class presBlag extends PreSelect {
     jp.add(jlDatum, new XYConstraints(15, 95, -1, -1));
     jp.add(jraDatumfrom, new XYConstraints(150, 95, 100, -1));
     jp.add(jraDatumto, new XYConstraints(260, 95, 100, -1));
-    jp.add(rcbSmjena, new XYConstraints(150, 120, 100, 21));
+    if (isSmjena()) {
+      jp.add(rcbSmjena, new XYConstraints(150, 120, 100, 21));
+      jp.add(jLabel4, new XYConstraints(15, 120, -1, -1));
+    }
 
     this.setSelDataSet(dm.getPos());
     this.addSelRange(jraDatumfrom, jraDatumto);
@@ -363,6 +375,17 @@ public class presBlag extends PreSelect {
     if (!stolovi || !jcbAktiv.isSelected()) return orig;
     return orig + " AND pos.aktiv='D'";
   }
+  
+  private static int skladOriented = -1;
+
+  public static boolean isSkladOriented() {
+    if (skladOriented < 0) {
+      skladOriented = frmParam.getParam("pos", "skladPos", "N",
+          "Da li se POS vodi na nivou skladišta (D) ili prodajnog mjesta")
+          .equalsIgnoreCase("D") ? 1 : 0;
+    }
+    return skladOriented == 1;
+  }
 
   private static int userOriented = -1;
 
@@ -373,6 +396,17 @@ public class presBlag extends PreSelect {
           .equalsIgnoreCase("D") ? 1 : 0;
     }
     return userOriented == 1;
+  }
+  
+  private static int smjena = -1;
+  
+  public static boolean isSmjena() {
+    if (smjena < 0) {
+      smjena = frmParam.getParam("pos", "posSmjena", "N",
+          "Postoji li smjena na blagajni (D,N)")
+          .equalsIgnoreCase("D") ? 1 : 0;
+    }
+    return smjena == 1;
   }
 
   public static String prodmj = null;
