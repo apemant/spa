@@ -1181,6 +1181,12 @@ public class Util {
         "Prikaz nul-stanja kod dohvata stanja F8").
         equalsIgnoreCase("D")) nula="";
     
+    String kolskl = "STANJE.KOLSKLAD";
+    if (frmParam.getParam("robno", "kolsklF8", "N",
+      "Prikaz stanja minus rezervirano kod dohvata stanja F8").
+      equalsIgnoreCase("D"))
+      kolskl = "STANJE.KOL - STANJE.KOLREZ";
+    
     if (LD.raLocate(dm.getSklad(), "CSKL", cskl) &&
         dm.getSklad().getString("VRSKL").equals("Z"))
       nula = "";
@@ -1199,7 +1205,7 @@ public class Util {
     }
     
     String qStr = "select ARTIKLI.CART AS CART, ARTIKLI.CART1 AS CARTX, ARTIKLI.BC AS BC, ARTIKLI.CGRART AS CGRART, ARTIKLI.NAZART AS NAZART,"+
-                  " STANJE.KOL AS KOL,STANJE.KOLSKLAD AS KOLSKLAD, ARTIKLI.JM AS JM, STANJE.KOLREZ AS KOLREZ, STANJE.NC as NC, STANJE.VC as VC, STANJE.MC as MC,ARTIKLI.BRJED AS BRJED, "+
+                  " STANJE.KOL AS KOL," + kolskl + " AS KOLSKLAD, ARTIKLI.JM AS JM, STANJE.KOLREZ AS KOLREZ, STANJE.NC as NC, STANJE.VC as VC, STANJE.MC as MC,ARTIKLI.BRJED AS BRJED, "+
                   "ARTIKLI.JMPAK AS JMPAK  from ARTIKLI, STANJE WHERE ARTIKLI.CART = STANJE.CART "+
                   "AND ARTIKLI.AKTIV='D' AND STANJE.GOD='"+god+"' AND STANJE.CSKL = '"+cskl+"' "+nula ;
     if (!value.equalsIgnoreCase("")) {
