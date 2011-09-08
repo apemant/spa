@@ -42,9 +42,9 @@ import com.borland.jbcl.layout.XYLayout;
 public class jpZupGrad extends JPanel {
   private XYLayout lay = new XYLayout();
   private raComboBox rcb = new raComboBox() {
-    public boolean isFocusTraversable() {
+    /*public boolean isFocusTraversable() {
       return !skipme;
-    }
+    }*/
     public void this_itemStateChanged() {
       if (getSelectedIndex() == 0) agentSelected();
       else if (getSelectedIndex() == 1) zupSelected();
@@ -53,19 +53,19 @@ public class jpZupGrad extends JPanel {
   };
 
   public JlrNavField zup = new JlrNavField() {
-    public boolean isFocusTraversable() {
+    /*public boolean isFocusTraversable() {
       return !skipme;
-    }
+    }*/
     public void after_lookUp() {
       afterLookUp(isLastLookSuccessfull());
     }
   };
 
   public JlrNavField zupn = new JlrNavField() {
-    public boolean isFocusTraversable() {
+    /*public boolean isFocusTraversable() {
       if (skipme) return (skipme = false);
       return true;
-    }
+    }*/
     public void after_lookUp() {
       afterLookUp(isLastLookSuccessfull());
     }
@@ -73,19 +73,19 @@ public class jpZupGrad extends JPanel {
   JraButton zbut = new JraButton();
   
   public JlrNavField agent = new JlrNavField() {
-    public boolean isFocusTraversable() {
+    /*public boolean isFocusTraversable() {
       return !skipme;
-    }
+    }*/
     public void after_lookUp() {
       afterLookUp(isLastLookSuccessfull());
     }
   };
 
   public JlrNavField nagent = new JlrNavField() {
-    public boolean isFocusTraversable() {
+    /*public boolean isFocusTraversable() {
       if (skipme) return (skipme = false);
       return true;
-    }
+    }*/
     public void after_lookUp() {
       afterLookUp(isLastLookSuccessfull());
     }
@@ -93,19 +93,19 @@ public class jpZupGrad extends JPanel {
   JraButton abut = new JraButton();
 
   public JlrNavField pbr = new JlrNavField() {
-    public boolean isFocusTraversable() {
+    /*public boolean isFocusTraversable() {
       return !skipme;
-    }
+    }*/
     public void after_lookUp() {
       afterLookUp(isLastLookSuccessfull());
     }
   };
 
   public JlrNavField mj = new JlrNavField() {
-    public boolean isFocusTraversable() {
+    /*public boolean isFocusTraversable() {
       if (skipme) return (skipme = false);
       return true;
-    }
+    }*/
     public void after_lookUp() {
       afterLookUp(isLastLookSuccessfull());
     }
@@ -113,7 +113,7 @@ public class jpZupGrad extends JPanel {
   JraButton mbut = new JraButton();
 
   private int zupmj;
-  private boolean skipme = false;
+  //protected boolean skipme = false;
 
   public jpZupGrad() {
     this(100, 350);
@@ -192,10 +192,10 @@ public class jpZupGrad extends JPanel {
     this.add(mbut, new XYConstraints(160 + wz + wnaz, 0, 21, 21));
   }
 
-  public void setSkip() {
+/*  public void setSkip() {
     skipme = true;
   }
-
+*/
   public void bind(DataSet ds) {
     zup.setDataSet(ds);
     pbr.setDataSet(ds);
