@@ -290,6 +290,7 @@ public class frmMasterBlagajna extends raMasterDetail {
 
   String cskl, god, rm, cblag, stol;
   int cpar;
+  boolean autonext;
 
   public void beforeShowMaster() {
   	cskl = getPreSelect().getSelRow().getString("CSKL");
@@ -301,6 +302,9 @@ public class frmMasterBlagajna extends raMasterDetail {
     String cps = frmParam.getParam("zapod", "knjigCpar"+knjig, "",
         "Šifra partnera koji predstavlja knjigovodstvo "+knjig);
     cpar = Aus.getNumber(cps);
+    
+    autonext = frmParam.getParam("pos", "autonext", "D",
+        "Kreirati novi pos raèun automatski (D,N)").equals("D");
     
     pov = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
         "Iznos povratne naknade"));
@@ -1745,7 +1749,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   }
   public void ZatvoriOstaloDetail() {
   	allReadyRun=false;
-    if (makeNext && newRacun) {
+    if (autonext && makeNext && newRacun) {
       newRacun = false;
       SwingUtilities.invokeLater(new Runnable() {
         public void run() {
