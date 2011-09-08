@@ -87,8 +87,9 @@ public class frmLogos extends raMatPodaci {
   JraTextField jtSIFDJEL = new JraTextField();
   JLabel jlPORISP = new JLabel();
   JraTextField jtPORISP = new JraTextField();
-  JLabel jlOIB = new JLabel("OIB");
+  JLabel jlOIB = new JLabel("OIB/GLN");
   JraTextField jtOIB = new JraTextField();
+  JraTextField jtGLN = new JraTextField();
   JLabel jlTELEFONI = new JLabel();
   JraTextField jtTEL1 = new JraTextField();
   JraTextField jtTEL2 = new JraTextField();
@@ -195,6 +196,8 @@ public class frmLogos extends raMatPodaci {
     jtPORISP.setDataSet(getRaQueryDataSet());
     jtOIB.setColumnName("OIB");
     jtOIB.setDataSet(getRaQueryDataSet());
+    jtGLN.setColumnName("GLN");
+    jtGLN.setDataSet(getRaQueryDataSet());
     jlTELEFONI.setText("Telefoni / fax");
     jtTEL1.setDataSet(getRaQueryDataSet());
     jtTEL1.setColumnName("TEL1");
@@ -286,7 +289,8 @@ public class frmLogos extends raMatPodaci {
     jp.add(jtEMAIL, new XYConstraints(250, 145, 200, -1));
     jp.add(jtURL, new XYConstraints(250, 170, 200, -1));
     jp.add(jlOIB, new XYConstraints(15, 245, -1, -1));
-    jp.add(jtOIB, new XYConstraints(150, 245, 300, -1));
+    jp.add(jtOIB, new XYConstraints(150, 245, 145, -1));
+    jp.add(jtGLN, new XYConstraints(300, 245, 150, -1));
     jp.add(jlIzdok, new XYConstraints(15, 275, -1, -1));
     jp.add(jbHeader, new XYConstraints(150, 275, 150, 21));
     jp.add(jbFooter, new XYConstraints(305, 275, 145, 21));
