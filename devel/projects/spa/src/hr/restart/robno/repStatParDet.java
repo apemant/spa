@@ -17,6 +17,9 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import java.math.BigDecimal;
+
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
@@ -42,7 +45,7 @@ public class repStatParDet implements raReportData { //sg.com.elixir.reportwrite
   public static double sumIzGrupe;
   private static java.math.BigDecimal ruc;
   private static java.math.BigDecimal inab;
-  private static double ukuPRUC;
+  private static double ukuPRUC = 0;
   private static int art;
 
   public repStatParDet() {
@@ -171,6 +174,17 @@ public class repStatParDet implements raReportData { //sg.com.elixir.reportwrite
   public String getNAZKUPAC() {
     return ds.getString("NAZPAR");
   }
+  
+  public String getCPJ() {
+  	return ds.getInt("CPAR") + "-" + ds.getInt("PJ");
+  }
+  
+  public int getPJ() {
+    return ds.getInt("PJ");
+  }
+  public String getNAZPJ() {
+    return ds.getString("NAZPJ");
+  }
 
   /**
    * Ovdje je primjer kako prikazati cisti broj dokumenta za razliku od <b>formatBroj</b> metode koja vraca
@@ -282,20 +296,29 @@ public class repStatParDet implements raReportData { //sg.com.elixir.reportwrite
   public double getUKUPNO() {
     return ds.getBigDecimal("IPRODSP").doubleValue();
   }
-
-  public double getUkuPRUC(){
-    ukuPRUC = ruc.doubleValue()*100.00/inab.doubleValue();
-//    System.out.println("ukuPRUC = " + ukuPRUC);
-    return ukuPRUC;
+  
+  public double getITOT() {
+    return ds.getBigDecimal("ITOT").doubleValue();
   }
 
+  public double getUkuPRUC(){
+  	if (ukuPRUC != 0) return ukuPRUC;
+  	return ukuPRUC = Aus.sum("RUC", ds).movePointRight(2).divide(Aus.sum("INAB", ds), 2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+    //ukuPRUC = ruc.doubleValue()*100.00/inab.doubleValue();
+//    System.out.println("ukuPRUC = " + ukuPRUC);
+    //return ukuPRUC;
+  }
+
+  int lastcpar = -1;
   public double getPrucCpar(){
-    lookupData.getlookupData().raLocate(pds,"CPAR",ds.getInt("CPAR")+"");
+  	if (ds.getInt("CPAR") != lastcpar)
+  		lookupData.getlookupData().raLocate(pds,"CPAR",(lastcpar = ds.getInt("CPAR"))+"");
     return pds.getBigDecimal("PRUC").doubleValue();
   }
 
   public double getSortSum(){
-    lookupData.getlookupData().raLocate(pds,"CPAR",ds.getInt("CPAR")+"");
+  	if (ds.getInt("CPAR") != lastcpar)
+  		lookupData.getlookupData().raLocate(pds,"CPAR",(lastcpar = ds.getInt("CPAR"))+"");
     return pds.getBigDecimal("IPRODSP").doubleValue();
   }
 
