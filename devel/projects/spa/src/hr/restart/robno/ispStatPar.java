@@ -18,16 +18,27 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sk.PartnerCache;
 import hr.restart.util.Aus;
+import hr.restart.util.VarStr;
 import hr.restart.util.Stopwatch;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
+import hr.restart.util.reports.JasperHook;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.Locale;
+
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignStaticText;
+import net.sf.jasperreports.engine.design.JRDesignTextField;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataRow;
@@ -115,6 +126,59 @@ public class ispStatPar extends raPanStats {
     } catch (Exception ex) {
       ds.setBigDecimal("PRUC", Aus.zero2);
     }
+  }
+  
+  boolean ispRab;
+  
+  public boolean isIspRab() {
+    return ispRab;
+  }
+  
+  public void addHooks() {
+    if (ispRab = frmParam.getParam("robno", "ispRab", "N",
+        "U ispStatPar staviti kolonu iznos bez popusta (D,N)").
+        equalsIgnoreCase("D")) {
+      JasperHook jh = new JasperHook() {
+        public void adjustDesign(String reportName, JasperDesign design) {
+          adjustJasper(design);
+        }
+      };
+      getRepRunner().addJasperHook("hr.restart.robno.repStatPar", jh);
+      getRepRunner().addJasperHook("hr.restart.robno.repStatParOne", jh);
+      getRepRunner().addJasperHook("hr.restart.robno.repStatParDet", jh);
+      getRepRunner().addJasperHook("hr.restart.robno.repStatParDetPJ", jh);
+      getRepRunner().addJasperHook("hr.restart.robno.repStatParGroups", jh);
+      getRepRunner().addJasperHook("hr.restart.robno.repStatParGroups2", jh);
+      getRepRunner().addJasperHook("hr.restart.robno.repStatParGroups3", jh);
+      getRepRunner().addJasperHook("hr.restart.robno.repStatParDetGroups", jh);
+      getRepRunner().addJasperHook("hr.restart.robno.repStatsMonths", jh);
+    }
+  }
+  
+  void adjustJasper(JasperDesign jas) {
+    adjustBand(jas.getColumnHeader());
+    adjustBand(jas.getDetail());
+    adjustBand(jas.getColumnFooter());
+    JRGroup[] grs = jas.getGroups();
+    for (int i = 0; i < grs.length; i++) {
+      adjustBand(grs[i].getGroupHeader());
+      adjustBand(grs[i].getGroupFooter());
+    }
+  }
+  
+  private void adjustBand(JRBand band) {
+    if (band == null) return;
+    JRElement[] els = band.getElements();
+    for (int i = 0; i < els.length; i++)
+      if (els[i] instanceof JRDesignStaticText)
+        adjustStatic((JRDesignStaticText) els[i]);
+  }
+  
+  private void adjustStatic(JRDesignStaticText tf) {
+    if (tf.getText().equals("Porez"))
+      tf.setText("S porezom");
+    else if (tf.getText().equals("S porezom"))
+      tf.setText("Bez popusta");
   }
   
   public void okPress() {
@@ -215,12 +279,14 @@ public class ispStatPar extends raPanStats {
           reportSet.setBigDecimal("IPRODBP", temporarySet.getBigDecimal("IPRODBP"));
           reportSet.setBigDecimal("POR", temporarySet.getBigDecimal("POR"));
           reportSet.setBigDecimal("IPRODSP", temporarySet.getBigDecimal("IPRODSP"));
+          reportSet.setBigDecimal("ITOT", temporarySet.getBigDecimal("ITOT"));
         } else {
           reportSet.setBigDecimal("INAB", reportSet.getBigDecimal("INAB").add(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("RUC", reportSet.getBigDecimal("RUC").add(temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB"))));
           reportSet.setBigDecimal("IPRODBP", reportSet.getBigDecimal("IPRODBP").add(temporarySet.getBigDecimal("IPRODBP")));
           reportSet.setBigDecimal("POR", reportSet.getBigDecimal("POR").add(temporarySet.getBigDecimal("POR")));
           reportSet.setBigDecimal("IPRODSP", reportSet.getBigDecimal("IPRODSP").add(temporarySet.getBigDecimal("IPRODSP")));
+          reportSet.setBigDecimal("ITOT", reportSet.getBigDecimal("ITOT").add(temporarySet.getBigDecimal("ITOT")));
         }
         
       } while (temporarySet.next());
@@ -259,7 +325,8 @@ public class ispStatPar extends raPanStats {
       reportSet.setTableName("IR");
       setDataSetAndSums(/*jptvSet*/reportSet, new String[]{"INAB", "RUC", "IPRODBP", "POR", "IPRODSP"});
 
-    } else if (fieldSet.getString("PRIKAZ").equalsIgnoreCase("UI")) { // prikaz
+    } else if (fieldSet.getString("PRIKAZ").equalsIgnoreCase("UI") ||
+        fieldSet.getString("PRIKAZ").equalsIgnoreCase("UP")) { // prikaz
                                                                       // po
                                                                       // kupcima
       this.killAllReports();
@@ -277,41 +344,58 @@ public class ispStatPar extends raPanStats {
       reportSet.setColumns(new Column[] {
           dm.createIntColumn("CPAR", "Oznaka kupca"), 
           dm.createStringColumn("NAZPAR", "Naziv kupca", 150), 
+          dm.createIntColumn("PJ", "Oznaka PJ"), 
+          dm.createStringColumn("NAZPJ", "Naziv jedinice", 150),
           dm.createBigDecimalColumn("INAB", "Nabavni iznos", 2), 
           dm.createBigDecimalColumn("RUC", "Razlika u cijeni", 2), 
           dm.createBigDecimalColumn("PRUC", "% RUC", 2), 
           dm.createBigDecimalColumn("IPRODBP", "Prodajni iznos bez poreza", 2), 
           dm.createBigDecimalColumn("POR", "Porez", 2), 
-          dm.createBigDecimalColumn("IPRODSP", "Prodajni iznos s porezom", 2)
+          dm.createBigDecimalColumn("IPRODSP", "Prodajni iznos s porezom", 2),
+          dm.createBigDecimalColumn("ITOT", "Prodajni iznos bez popusta", 2)
        });
 
       reportSet.setRowId("CPAR", true);
 
       reportSet.open();
-      temporarySet.setSort(new SortDescriptor(new String[] {"CPAR"}));
+      boolean ispj = fieldSet.getString("PRIKAZ").equalsIgnoreCase("UP");
+      if (ispj)
+        temporarySet.setSort(new SortDescriptor(new String[] {"CPAR","PJ"}));
+      else temporarySet.setSort(new SortDescriptor(new String[] {"CPAR"}));
       temporarySet.first();
       sw.report("sorted");
+      
 //      String brdok;
-      int cpar = -1027;
+      int cpar = -1027, pj = -1027;
       do {
         checkClosing();
         //if (!ld.raLocate(reportSet, new String[]{"CPAR"}, new String[] {temporarySet.getInt("CPAR") + ""})) {
-        if (temporarySet.getInt("CPAR") != cpar) {
+        if (temporarySet.getInt("CPAR") != cpar || 
+            (ispj && temporarySet.getInt("PJ") != pj)) {
           if (cpar != -1027) calcPRUC(reportSet);
           reportSet.insertRow(false);
           reportSet.setInt("CPAR", cpar = temporarySet.getInt("CPAR"));
           reportSet.setString("NAZPAR", pca.getNameNotNull(cpar));
+          if (ispj) {
+            DataRow djp = ld.raLookup(dm.getPjpar(), 
+                new String[] {"CPAR", "PJ"}, temporarySet);
+            reportSet.setInt("PJ", pj = temporarySet.getInt("PJ"));
+            if (djp != null)
+              reportSet.setString("NAZPJ", djp.getString("NAZPJ"));
+          }
           reportSet.setBigDecimal("INAB", temporarySet.getBigDecimal("INAB"));
           reportSet.setBigDecimal("RUC", temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("IPRODBP", temporarySet.getBigDecimal("IPRODBP"));
           reportSet.setBigDecimal("POR", temporarySet.getBigDecimal("POR"));
           reportSet.setBigDecimal("IPRODSP", temporarySet.getBigDecimal("IPRODSP"));
+          reportSet.setBigDecimal("ITOT", temporarySet.getBigDecimal("ITOT"));
         } else {
           reportSet.setBigDecimal("INAB", reportSet.getBigDecimal("INAB").add(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("RUC", reportSet.getBigDecimal("RUC").add(temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB"))));
           reportSet.setBigDecimal("IPRODBP", reportSet.getBigDecimal("IPRODBP").add(temporarySet.getBigDecimal("IPRODBP")));
           reportSet.setBigDecimal("POR", reportSet.getBigDecimal("POR").add(temporarySet.getBigDecimal("POR")));
           reportSet.setBigDecimal("IPRODSP", reportSet.getBigDecimal("IPRODSP").add(temporarySet.getBigDecimal("IPRODSP")));
+          reportSet.setBigDecimal("ITOT", reportSet.getBigDecimal("ITOT").add(temporarySet.getBigDecimal("ITOT")));
         }
       } while (temporarySet.next());
       if (cpar != -1027) calcPRUC(reportSet);
@@ -364,7 +448,8 @@ public class ispStatPar extends raPanStats {
           dm.createBigDecimalColumn("PRUC", "% RUC", 2), 
           dm.createBigDecimalColumn("IPRODBP", "Prodajni iznos bez poreza", 2), 
           dm.createBigDecimalColumn("POR", "Porez", 2), 
-          dm.createBigDecimalColumn("IPRODSP", "Prodajni iznos s porezom", 2)
+          dm.createBigDecimalColumn("IPRODSP", "Prodajni iznos s porezom", 2),
+          dm.createBigDecimalColumn("ITOT", "Prodajni iznos bez popusta", 2)
       });
       
       reportSet.setRowId("CSKL", true);
@@ -407,12 +492,14 @@ public class ispStatPar extends raPanStats {
           reportSet.setBigDecimal("IPRODBP", temporarySet.getBigDecimal("IPRODBP"));
           reportSet.setBigDecimal("POR", temporarySet.getBigDecimal("POR"));
           reportSet.setBigDecimal("IPRODSP", temporarySet.getBigDecimal("IPRODSP"));
+          reportSet.setBigDecimal("ITOT", temporarySet.getBigDecimal("ITOT"));
         } else {
           reportSet.setBigDecimal("INAB", reportSet.getBigDecimal("INAB").add(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("RUC", reportSet.getBigDecimal("RUC").add(temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB"))));
           reportSet.setBigDecimal("IPRODBP", reportSet.getBigDecimal("IPRODBP").add(temporarySet.getBigDecimal("IPRODBP")));
           reportSet.setBigDecimal("POR", reportSet.getBigDecimal("POR").add(temporarySet.getBigDecimal("POR")));
           reportSet.setBigDecimal("IPRODSP", reportSet.getBigDecimal("IPRODSP").add(temporarySet.getBigDecimal("IPRODSP")));
+          reportSet.setBigDecimal("ITOT", reportSet.getBigDecimal("ITOT").add(temporarySet.getBigDecimal("ITOT")));
         }
 /*        try {
           reportSet.setBigDecimal("PRUC", reportSet.getBigDecimal("RUC").divide(reportSet.getBigDecimal("INAB"), 4, java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
@@ -458,12 +545,14 @@ public class ispStatPar extends raPanStats {
           reportSetGroups.setBigDecimal("IPRODBP", temporarySet.getBigDecimal("IPRODBP"));
           reportSetGroups.setBigDecimal("POR", temporarySet.getBigDecimal("POR"));
           reportSetGroups.setBigDecimal("IPRODSP", temporarySet.getBigDecimal("IPRODSP"));
+          reportSetGroups.setBigDecimal("ITOT", temporarySet.getBigDecimal("ITOT"));
         } else {
           reportSetGroups.setBigDecimal("INAB", reportSetGroups.getBigDecimal("INAB").add(temporarySet.getBigDecimal("INAB")));
           reportSetGroups.setBigDecimal("RUC", reportSetGroups.getBigDecimal("RUC").add(temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB"))));
           reportSetGroups.setBigDecimal("IPRODBP", reportSetGroups.getBigDecimal("IPRODBP").add(temporarySet.getBigDecimal("IPRODBP")));
           reportSetGroups.setBigDecimal("POR", reportSetGroups.getBigDecimal("POR").add(temporarySet.getBigDecimal("POR")));
           reportSetGroups.setBigDecimal("IPRODSP", reportSetGroups.getBigDecimal("IPRODSP").add(temporarySet.getBigDecimal("IPRODSP")));
+          reportSetGroups.setBigDecimal("ITOT", reportSetGroups.getBigDecimal("ITOT").add(temporarySet.getBigDecimal("ITOT")));
         }
       } while (temporarySet.next());
       if (cpar != -1027 || !cgr.equals("xnat1027")) calcPRUC(reportSetGroups);
@@ -679,7 +768,7 @@ public class ispStatPar extends raPanStats {
         dpaSet.setBigDecimal("IPRODBP", dpaSet.getBigDecimal("IPRODBP").add(tmpSet.getBigDecimal("IPRODBP")));
         dpaSet.setBigDecimal("POR", dpaSet.getBigDecimal("POR").add(tmpSet.getBigDecimal("POR")));
         dpaSet.setBigDecimal("IPRODSP", dpaSet.getBigDecimal("IPRODSP").add(tmpSet.getBigDecimal("IPRODSP")));
-        dpaSet.setBigDecimal("ITOT", tmpSet.getBigDecimal("ITOT"));
+        dpaSet.setBigDecimal("ITOT", dpaSet.getBigDecimal("ITOT").add(tmpSet.getBigDecimal("ITOT")));
       }
     } while (tmpSet.next());
     if (cpar != -1027 || cart != -1027) {
@@ -806,7 +895,7 @@ public class ispStatPar extends raPanStats {
   }
 
   private void jbInit() throws Exception {
-    rcmbPrikaz.setRaItems(new String[][]{{"Po raèunima", "IR"}, {"Po raèunima i PJ", "PJ"}, {"Ukupni iznos", "UI"}, {"Po grupama artikala", "GR"}, {"Mjeseèno", "MJ"}});
+    rcmbPrikaz.setRaItems(new String[][]{{"Po raèunima", "IR"}, {"Po raèunima i PJ", "PJ"}, {"Ukupni iznos", "UI"}, {"Ukupni iznos po PJ", "UP"}, {"Po grupama artikala", "GR"}, {"Mjeseèno", "MJ"}});
 
     rcmbPoCemu.setRaItems(new String[][]{{"Nabavni iznos", "INAB"}, {"Razlika u cijeni", "RUC"}, {"Iznos bez poreza", "IPRODBP"}, {"Porez", "POR"}, {"Iznos s porezom", "IPRODSP"}});
 
@@ -859,6 +948,9 @@ public class ispStatPar extends raPanStats {
       fieldSet.setString("SLJED", "CPAR");
     } else if (fieldSet.getString("PRIKAZ").equalsIgnoreCase("UI")) {
       rcmbSljed.setRaItems(new String[][]{{"Kupac", "CPAR"}, {"Ukupan iznos", "IPRODSP"}});
+      fieldSet.setString("SLJED", "CPAR");
+    } else if (fieldSet.getString("PRIKAZ").equalsIgnoreCase("UP")) {
+      rcmbSljed.setRaItems(new String[][]{{"Kupac", "CPAR"}});
       fieldSet.setString("SLJED", "CPAR");
     } else {
       rcmbSljed.setRaItems(new String[][]{{"Kupac", "CPAR"}, {"Ukupno " + rcmbPoCemu.getItemAt(rcmbPoCemu.getSelectedIndex()).toString().toLowerCase(), "BRDOK"}});

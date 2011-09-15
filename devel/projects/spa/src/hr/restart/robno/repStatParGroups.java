@@ -43,6 +43,8 @@ public class repStatParGroups implements raReportData { //sg.com.elixir.reportwr
   private static java.math.BigDecimal ruc;
   private static java.math.BigDecimal inab;
   private static double ukuPRUC;
+  
+  boolean isprab = isp.isIspRab();
 
   public repStatParGroups() {
     String name = dlgRunReport.getCurrentDlgRunReport().getCurrentDescriptor().getName();
@@ -206,19 +208,19 @@ public class repStatParGroups implements raReportData { //sg.com.elixir.reportwr
   public double getPOR3() {
     return ds.getBigDecimal("POR3").doubleValue();
   }*/
-
+  
   public double getPOREZ() {
-    return ds.getBigDecimal("POR").doubleValue();
+    return ds.getBigDecimal(isprab ? "IPRODSP" : "POR").doubleValue();
+  }
+
+  public double getUKUPNO() {
+    return ds.getBigDecimal(isprab ? "ITOT" : "IPRODSP").doubleValue();
   }
 
   /*public double getSORTER(){
     if (isp.getSorter().equals("BRDOK")) return Double.parseDouble(ds.getInt("BRDOK")+".00");
     return ds.getBigDecimal("UKUPNO").doubleValue();
   }*/
-
-  public double getUKUPNO() {
-    return ds.getBigDecimal("IPRODSP").doubleValue();
-  }
 
   public double getUkuPRUC(){
     ukuPRUC = ruc.doubleValue()*100.00/inab.doubleValue();

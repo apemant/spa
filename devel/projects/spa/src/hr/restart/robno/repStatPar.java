@@ -42,6 +42,8 @@ public class repStatPar implements raReportData { //sg.com.elixir.reportwriter.d
   private static java.math.BigDecimal ruc;
   private static java.math.BigDecimal inab;
   private static int art;
+  
+  boolean isprab = isp.isIspRab();
 
   public repStatPar() {
       sumIzGrupe = 0;
@@ -238,11 +240,11 @@ public class repStatPar implements raReportData { //sg.com.elixir.reportwriter.d
   }*/
 
   public double getPOREZ() {
-    return ds.getBigDecimal("POR").doubleValue();
+    return ds.getBigDecimal(isprab ? "IPRODSP" : "POR").doubleValue();
   }
 
   public double getUKUPNO() {
-    return ds.getBigDecimal("IPRODSP").doubleValue();
+    return ds.getBigDecimal(isprab ? "ITOT" : "IPRODSP").doubleValue();
   }
 
   public double getUkuPRUC(){

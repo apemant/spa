@@ -47,6 +47,8 @@ public class repStatParDet implements raReportData { //sg.com.elixir.reportwrite
   private static java.math.BigDecimal inab;
   private static double ukuPRUC = 0;
   private static int art;
+  
+  boolean isprab = isp.isIspRab();
 
   public repStatParDet() {
       sumIzGrupe = 0;
@@ -284,17 +286,17 @@ public class repStatParDet implements raReportData { //sg.com.elixir.reportwrite
     return ds.getBigDecimal("POR3").doubleValue();
   }*/
 
-  public double getPOREZ() {
-    return ds.getBigDecimal("POR").doubleValue();
-  }
-
 /*  public double getSORTER(){
     if (isp.getSorter().equals("BRDOK")) return Double.parseDouble(ds.getInt("BRDOK")+".00");
     return ds.getBigDecimal("UKUPNO").doubleValue();
   }*/
 
+  public double getPOREZ() {
+    return ds.getBigDecimal(isprab ? "IPRODSP" : "POR").doubleValue();
+  }
+
   public double getUKUPNO() {
-    return ds.getBigDecimal("IPRODSP").doubleValue();
+    return ds.getBigDecimal(isprab ? "ITOT" : "IPRODSP").doubleValue();
   }
   
   public double getITOT() {
