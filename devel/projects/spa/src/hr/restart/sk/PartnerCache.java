@@ -83,6 +83,12 @@ public class PartnerCache {
     private short zup;
     private int pbr;
     private int agent;
+    public Data() {
+      naziv = "Nepoznat partner";
+      mb = oib = "";
+      pbr = agent = -1;
+      zup = -1;
+    }
     public Data(DataSet ds) {
       naziv = ds.getString("NAZPAR");
       mb = ds.getString("MB");
