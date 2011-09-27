@@ -1361,6 +1361,7 @@ class Mnemonik extends raFrame {
   public void defaultValues(Timestamp ts){
     Calendar cal = Calendar.getInstance();
     cal.setTime(ts);
+    
     if (!lD.raLocate(sdsmnemonik,"KEY","<mje>")) {
       sdsmnemonik.insertRow(false);
       sdsmnemonik.setString("KEY","<mje>");
@@ -1374,6 +1375,26 @@ class Mnemonik extends raFrame {
     if (!lD.raLocate(sdsmnemonik,"KEY","<god>")) {
       sdsmnemonik.insertRow(false);
       sdsmnemonik.setString("KEY","<god>");
+      sdsmnemonik.setString("VALUE",String.valueOf(cal.get(Calendar.YEAR)));
+      sdsmnemonik.post();
+    } else {
+      sdsmnemonik.setString("VALUE",String.valueOf(cal.get(Calendar.YEAR)));
+      sdsmnemonik.post();
+    }
+    cal.add(Calendar.MONTH, -1);
+    if (!lD.raLocate(sdsmnemonik,"KEY","<mje-1>")) {
+      sdsmnemonik.insertRow(false);
+      sdsmnemonik.setString("KEY","<mje-1>");
+      sdsmnemonik.setString("VALUE",String.valueOf(cal.get(Calendar.MONTH) + 1));
+      sdsmnemonik.post();
+    } else {
+      sdsmnemonik.setString("VALUE",String.valueOf(cal.get(Calendar.MONTH) + 1));
+      sdsmnemonik.post();
+    } 
+    
+    if (!lD.raLocate(sdsmnemonik,"KEY","<god-1>")) {
+      sdsmnemonik.insertRow(false);
+      sdsmnemonik.setString("KEY","<god-1>");
       sdsmnemonik.setString("VALUE",String.valueOf(cal.get(Calendar.YEAR)));
       sdsmnemonik.post();
     } else {
