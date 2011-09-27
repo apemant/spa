@@ -49,7 +49,7 @@ public class frmCorgChanger extends osTemplate {
     setJPanelMaster(jpMasterOS);
     setJPanelDetail(jpDetailOS);
     raMaster.setEditEnabled(false);
-    raMaster.setEnabledNavAction(raMaster.getNavBar().getNavContainer().getNavActions()[3],true);
+    raMaster.setEnabledNavAction(raMaster.getNavBar().getNavContainer().getNavActions()[4],true);
     raDetail.setEnabledNavAction(raDetail.getNavBar().getNavContainer().getNavActions()[1],false);
     this.setNaslovMaster("Promjena organizacijske jedinice");
   }
