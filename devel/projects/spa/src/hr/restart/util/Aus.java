@@ -1306,4 +1306,15 @@ public class Aus {
     }
     return v.replaceAll(' ','+').toString();
   }
+  
+  public static String convertToAscii(String orig) {
+    String[] our = {"È", "Æ", "Ð", "Š", "Ž", "è", "æ", "ð", "š", "ž"};
+    String[] asc = {"C", "C", "DJ", "S", "Z", "c", "c", "dj", "s", "z"};
+    
+    VarStr buf = new VarStr(orig);
+    for (int i = 0; i < our.length; i++)
+      buf.replaceAll(our[i], asc[i]);
+    
+    return buf.toString();
+  }
 }
