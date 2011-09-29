@@ -255,7 +255,7 @@ public class raSalepodTrans {
     Statement load = crc.createStatement();
     ResultSet zag = load.executeQuery("SELECT * FROM Export_DokumentZag WHERE StatusPrijenosa=1");
     while (zag.next()) {
-      ids.add(Integer.valueOf(zag.getInt("IDDokumentZag")));
+      ids.add(new Integer(zag.getInt("IDDokumentZag")));
       System.out.print(zag.getInt("IDDokumentZag"));
       System.out.print("#");
       System.out.print(zag.getString("TvrtkaSifra"));
