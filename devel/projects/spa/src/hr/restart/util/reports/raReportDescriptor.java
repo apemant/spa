@@ -575,22 +575,28 @@ public class raReportDescriptor {
       {"hr.restart.robno.repPRVkol", "PRV", "D", ""},
       {"hr.restart.robno.repPRV", "PRV", "D", ""}
     };
-    QueryDataSet ds = dM.getDataModule().getReportdef();
-    ds.open();
-    for (int i = 0; i < repvrdok.length; i++) {
-      if (!lookupData.getlookupData().raLocate(ds, "ID", repvrdok[i][0])) {
-        ds.insertRow(false);
-        ds.setString("ID", repvrdok[i][0]);
-        if (repvrdok[i][1].length() > 0)
-          ds.setString("VRDOK", repvrdok[i][1]);
-        if (repvrdok[i][2].length() > 0)
-          ds.setString("IZLAZNI", repvrdok[i][2]);
-        if (repvrdok[i][3].length() > 0)
-          ds.setString("ORIENT", repvrdok[i][3]);
-        ds.post();
+    
+    try {
+      QueryDataSet ds = dM.getDataModule().getReportdef();
+      ds.open();
+      for (int i = 0; i < repvrdok.length; i++) {
+        if (!lookupData.getlookupData().raLocate(ds, "ID", repvrdok[i][0])) {
+          ds.insertRow(false);
+          ds.setString("ID", repvrdok[i][0]);
+          if (repvrdok[i][1].length() > 0)
+            ds.setString("VRDOK", repvrdok[i][1]);
+          if (repvrdok[i][2].length() > 0)
+            ds.setString("IZLAZNI", repvrdok[i][2]);
+          if (repvrdok[i][3].length() > 0)
+            ds.setString("ORIENT", repvrdok[i][3]);
+          ds.post();
+        }
       }
+      ds.saveChanges();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
-    ds.saveChanges();
   }
   
   public void setJasperHook(JasperHook jhook) {
