@@ -314,7 +314,7 @@ public class frmParam extends raMatPodaci {
       return param.getString("VRIJEDNOST");
     } catch (Exception e) {
       e.printStackTrace();
-      return null;
+      return defValue;
     }
   }
 }
