@@ -2980,23 +2980,29 @@ ST.prnc(raQueryDataSet);
     }
   }
 
-  public void offon(boolean kako){
-
-    getNavBar().rnvUpdate.setEnabled(kako);
-
-    getNavBar().rnvDelete.setEnabled(kako);
-
-    getNavBar().rnvPrint.setEnabled(kako);
-    
-    if (editNavActions != null)
-      for (int i = 0; i < editNavActions.length; i++)
-        if (editNavActions[i] != getNavBar().rnvAdd &&
+  public void offon(final boolean kako){
+    SwingUtilities.invokeLater(new Runnable() {
+      
+      public void run() {
+        
+        getNavBar().rnvUpdate.setEnabled(kako);
+        
+        getNavBar().rnvDelete.setEnabled(kako);
+        
+        getNavBar().rnvPrint.setEnabled(kako);
+        
+        if (editNavActions != null)
+          for (int i = 0; i < editNavActions.length; i++)
+            if (editNavActions[i] != getNavBar().rnvAdd &&
             editNavActions[i] != getNavBar().rnvDelete &&
             editNavActions[i] != getNavBar().rnvUpdate)
-          editNavActions[i].setEnabled(kako);
+              editNavActions[i].setEnabled(kako);
+        
+        if (version==1 && jTabPane.getComponentCount() > 1)
+          jTabPane.setEnabledAt(1,kako);
+      }
+    });
 
-    if (version==1 && jTabPane.getComponentCount() > 1)
-      jTabPane.setEnabledAt(1,kako);
 
   }
 
