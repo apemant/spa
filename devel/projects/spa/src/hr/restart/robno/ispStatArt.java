@@ -324,8 +324,13 @@ public class ispStatArt extends raPanStats {
       prikazSet.setBigDecimal("IRAZ",dkSet.getBigDecimal("IRAZ"));
       prikazSet.setBigDecimal("INAB",dkSet.getBigDecimal("INAB"));
       prikazSet.setBigDecimal("IPRODBP",dkSet.getBigDecimal("IPRODBP"));
-      prikazSet.setBigDecimal("POR",new java.math.BigDecimal(dkSet.getDouble("POR")));
-      prikazSet.setBigDecimal("RUC",new java.math.BigDecimal(dkSet.getDouble("RUC")));
+      try {
+        prikazSet.setBigDecimal("POR",dkSet.getBigDecimal("POR"));
+        prikazSet.setBigDecimal("RUC",dkSet.getBigDecimal("RUC"));
+      } catch (RuntimeException e) {
+        prikazSet.setBigDecimal("POR",new java.math.BigDecimal(dkSet.getDouble("POR")));
+        prikazSet.setBigDecimal("RUC",new java.math.BigDecimal(dkSet.getDouble("RUC")));
+      }
       prikazSet.setBigDecimal("IPRODSP",dkSet.getBigDecimal("IPRODSP"));
     } while (dkSet.next());
 
