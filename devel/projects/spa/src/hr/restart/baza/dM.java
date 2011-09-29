@@ -157,6 +157,35 @@ public class dM implements DataModule {
       crmURL = null;
     }
   }
+  
+  private boolean podInstalled = false;
+  public void installPodConnection() {
+    if (podInstalled) return;
+    podInstalled = true;
+    
+    String podDriver = frmParam.getParam("sisfun", "podDriver", "", "Driver za Salepod");
+    podURL = frmParam.getParam("sisfun", "podURL", "", "Url za Salepod bazu");
+    podUser = frmParam.getParam("sisfun", "podUser", "root", "User za Salepod bazu");
+    podPass = frmParam.getParam("sisfun", "podPass", "masterkey", "Password za Salepod bazu");
+    
+    if (podURL == null || podURL.trim().length() == 0) {
+      podURL = null;
+        return; 
+    }
+
+    try {
+      System.out.println("Pod driver="+podDriver);
+      Class.forName(podDriver);
+      System.out.println(podURL);
+      System.out.println(podUser);
+      System.out.println(podPass);
+      Connection c = DriverManager.getConnection(podURL, podUser, podPass);
+      c.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      podURL = null;
+    }
+  }
 
   public dM() {
     try {
@@ -253,6 +282,23 @@ public class dM implements DataModule {
   public Connection getCRMConnection() {
     try {
       return crmURL == null ? null : DriverManager.getConnection(crmURL, crmUser, crmPass);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+  
+  String podURL = null;
+  String podUser = null;
+  String podPass = null;
+  
+  public boolean isPod() {
+    return podURL != null;
+  }
+  
+  public Connection getPodConnection() {
+    try {
+      return podURL == null ? null : DriverManager.getConnection(podURL, podUser, podPass);
     } catch (SQLException e) {
       e.printStackTrace();
       return null;
