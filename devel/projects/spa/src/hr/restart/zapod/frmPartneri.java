@@ -614,13 +614,15 @@ public class frmPartneri extends raMatPodaci {
         return false;
       if (forceUniqueMb && vl.notUnique(jtfMB))
         return false;
+      if (vl.notUnique(jtfOIB)) return false;
     } else if (mode == 'I') {
       if (forceUniqueZr && vl.notUniqueUPD(jtfZR,key))
         return false;
       if (forceUniqueMb && vl.notUniqueUPD(jtfMB,key))
         return false;
+      if (vl.notUniqueUPD(jtfOIB,key)) return false;
     }
-    if (vl.isEmpty(jtfNAZPAR)) {
+    if (vl.isEmpty(jtfNAZPAR) || vl.isEmpty(jtfOIB)) {
       return false;
     }
 
