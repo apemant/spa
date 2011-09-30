@@ -17,16 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import hr.restart.baza.Condition;
-import hr.restart.baza.Kosobe;
-import hr.restart.baza.Partneri;
-import hr.restart.baza.RN;
-import hr.restart.baza.Urdok;
-import hr.restart.baza.VTprijenos;
-import hr.restart.baza.dM;
-import hr.restart.baza.doki;
-import hr.restart.baza.dokidod;
-import hr.restart.baza.stdoki;
+import hr.restart.baza.*;
+import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraTable2;
@@ -53,6 +45,8 @@ import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -364,6 +358,13 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
     	}
     };
     
+    raNavAction rnvEDI = new raNavAction("Prebacivanje dokumenta", 
+        raImages.IMGEXPORT, KeyEvent.VK_UNDEFINED) {
+      public void actionPerformed(ActionEvent e) {
+        sendDoc();
+      }
+    };
+    
     String akcijaPrefix = null;
     void checkAkcijaPrefix() {
       akcijaPrefix = frmParam.getParam("robno", "akcijaPrefiks", "",
@@ -529,6 +530,16 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         checkAkcijaPrefix();
         if (akcijaPrefix != null && akcijaPrefix.length() > 0)
           raDetail.addOption(rnvAkcija, 4);
+        
+        if (frmParam.getParam("robno", "megaEdi", "N",
+            "Dodati opciju za export u megatrend (D,N)").
+            equalsIgnoreCase("D"))
+          if (what_kind_of_dokument.equals("RAC") ||
+              what_kind_of_dokument.equals("ROT") ||
+              what_kind_of_dokument.equals("POD") ||
+              what_kind_of_dokument.equals("ODB") ||
+              what_kind_of_dokument.equals("TER"))
+            raMaster.addOption(rnvEDI, 5, false);
         
 		setUpfrmDokIzlaz();
 		rCD.setisNeeded(hr.restart.sisfun.frmParam.getParam("robno",
@@ -2426,6 +2437,203 @@ System.out.println("findCjenik::else :: "+sql);
 		return getDetailSet().isEmpty();
 	}
 	
+	private SimpleDateFormat edif = new SimpleDateFormat("ddMMyyyy");
+	
+	void err(String txt) {
+	  throw new RuntimeException("Greška! " + txt);
+	}
+	
+	void sendDocImpl() {
+	  DataSet ms = getMasterSet();
+	  
+	  DataSet ds = stdoki.getDataModule().getTempSet(
+          Condition.whereAllEqual(Util.mkey, ms));
+      ds.open();
+      BigDecimal iznos = Aus.sum("IPRODSP", ds);
+      
+      String vr = ms.getString("VRDOK");
+      
+      if (vr.equals("RAC") || vr.equals("ROT") ||
+          vr.equals("POD") || vr.equals("ODB") ||
+          vr.equals("TER")) {
+        
+        VarStr buf = new VarStr();
+        buf.append("HD");
+        if (vr.equals("RAC") || vr.equals("ROT"))
+          buf.append(iznos.signum() >= 0 ? "01" : "03");
+        else if (vr.equals("POD") || vr.equals("ODB"))
+          buf.append("02");
+        else if (vr.equals("TER"))
+          buf.append("04");
+        else err("Kriva vrsta dokumenta.");
+        buf.append("R-1");
+        
+        DataSet logo = dm.getLogotipovi();
+        if (!lD.raLocate(logo, "CORG", OrgStr.getKNJCORG(false)))
+          err("Neispravni logotip.");
+        DataSet zr = dm.getZirorn();
+        if (!lD.raLocate(zr, "ZIRO", logo.getString("ZIRO")))
+          err("Neispravni ziro u logotipu.");
+        
+        buf.append(getPadded(logo.getString("GLN"), 13));
+        buf.append(getPadded(logo.getString("NAZIVLOG"), 35));
+        buf.append(getPadded(logo.getString("MATBROJ"), 13));
+        buf.append(getPadded(logo.getString("ADRESA"), 35));
+        buf.append(getPadded(logo.getString("MJESTO"), 15));
+        buf.append(getPadded("HR", 8));
+        buf.append(getPadded(logo.getInt("PBR")+"", 5));
+        
+        DataSet par = dm.getPartneri();
+        if (!lD.raLocate(par, "CPAR", Integer.toString(ms.getInt("CPAR"))))
+          err("Neispravni partner na dokumentu.");
+        
+        buf.append(getPadded("3859888798007", 13));
+        buf.append(getPadded(par.getString("NAZPAR"), 35));
+        buf.append(getPadded(par.getString("MB"), 13));
+        
+        DataSet pj = par;
+        
+        if (ms.getInt("PJ") > 0) {
+          pj = Pjpar.getDataModule().getTempSet(
+              Condition.equal("CPAR", ms).and(
+                  Condition.equal("PJ", ms)));
+          pj.open();
+          if (pj.rowCount() == 0)
+            err("Neispravna poslovna jedinica dokumenta.");
+        }
+        buf.append(getPadded(pj.getString("GLN"), 13));
+        buf.append(getPadded(logo.getString("GLN"), 13));
+        buf.append(getPadded("3855002103856", 13));
+        buf.append(getPadded(par.getString("ADR"), 35));
+        buf.append(getPadded(par.getString("MJ"), 15));
+        buf.append(getPadded("HR", 8));
+        buf.append(getPadded(par.getInt("PBR")+"", 5));
+        buf.append(edif.format(ms.getTimestamp("DVO")));
+        buf.append(getPadded("", 96));
+        buf.append(getPadded("", 16));
+        buf.append(getPadded(logo.getString("OIB"), 11));
+        buf.append(getPadded(par.getString("OIB"), 11));
+        buf.append(getPadded("", 78));
+        buf.append("\n");
+        
+        buf.append("DA");
+        buf.append(getPadded(ms.getInt("BRDOK")+"", 16));
+        buf.append("1");
+        buf.append(edif.format(ms.getTimestamp("DVO")));
+        buf.append(getPadded(ms.getString("BRNARIZ"), 20));
+        buf.append(getPadded(ms.getString("CUG"), 20));
+        buf.append(getPadded("", 60));
+        
+        buf.append(getNum(Aus.sum("IPRODBP", ds), 13));
+        buf.append(getPadded("23", 4));
+        buf.append(getNum(Aus.sum("POR1", ds), 13));
+        buf.append(getNum(Aus.zero2, 13));
+        buf.append("HRK");
+        buf.append(getNum(Aus.sum("IPRODSP", ds), 13));
+        buf.append(getPadded("VIRMAN", 10));
+        buf.append(edif.format(ms.getTimestamp("DATDOSP")));
+        buf.append(getPadded("00 "+ms.getString("PNBZ2"), 30));
+        buf.append(getPadded(zr.getString("BANKA"), 30));
+        buf.append(getPadded(logo.getString("ZIRO"), 18));
+        buf.append(getNum(Aus.sum("POR1", ds), 13));
+        buf.append(getPadded("", 100));
+        buf.append("\n");
+        
+        for (ds.first(); ds.inBounds(); ds.next()) {
+          buf.append("IT");
+          buf.append(getNum(ds.getShort("RBR"), 2));
+          buf.append(getPadded(ds.getString("BC"), 13));
+          buf.append(getPadded(ds.getString("CART1"), 20));
+          buf.append(getPadded(ds.getString("NAZART"), 35));
+          if (ds.getString("JM").equalsIgnoreCase("kg"))
+            buf.append("KG");
+          else if (ds.getString("JM").equalsIgnoreCase("kom"))
+            buf.append("KO");
+          else if (ds.getString("JM").equalsIgnoreCase("l"))
+            buf.append("LI");
+          else err("Neispravna jedinica mjere.");
+          BigDecimal kol = ds.getBigDecimal("KOL");
+          while (kol.scale() > 0)
+            try {
+              kol = kol.setScale(kol.scale() - 1);
+            } catch (RuntimeException e) {
+              break;
+            }
+          buf.append(getPadded(Aus.formatBigDecimal(kol.abs()), 8));
+          buf.append(getNum(ds.getBigDecimal("FC"), 13));
+          buf.append(getNum(ds.getBigDecimal("POR1"), 13));
+          buf.append(getPadded("23", 4));
+          buf.append(getNum(ds.getBigDecimal("IPRODBP"), 13));
+          buf.append(getPadded("", 100));
+          buf.append("\n");
+        }
+
+        TextFile.setEncoding("UTF-8");
+        TextFile tf = TextFile.write("mz-"+ms.getInt("BRDOK")+"-"
+            +(System.currentTimeMillis()/1000) + ".txt");
+        tf.out(buf.chop().split('\n'));
+        tf.close();
+        
+        DataSet save = doki.getDataModule().getTempSet(
+            Condition.whereAllEqual(Util.mkey, ms));
+        save.open();
+        save.setString("STATUS", "P");
+        save.saveChanges();
+        
+        ms.refetchRow(ms);
+        
+        JOptionPane.showMessageDialog(this, "Dokument poslan.",
+            "Export", JOptionPane.INFORMATION_MESSAGE);
+      }
+	}
+	
+	public void sendDoc() {
+	  DataSet ms = getMasterSet();
+	  if (ms.getRowCount() == 0) return;
+	    
+	  if (ms.getString("STATUS").equals("P"))
+	    if (JOptionPane.showConfirmDialog(this, 
+	        "Dokument je veæ prenesen! Ponoviti?", "Prijenos",
+	        JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
+	      return;
+	  
+	  try {
+	    sendDocImpl();
+	  } catch (RuntimeException e) {
+	    e.printStackTrace();
+	    JOptionPane.showMessageDialog(this,
+	        e.getMessage(), "Greška", JOptionPane.ERROR_MESSAGE);
+	  }
+	}
+	
+	private String getPadded(String orig, int chars) {
+	  if (orig.length() > chars)
+	    return orig.substring(0, chars);
+	  if (orig.length() < chars)
+	    return orig.concat(Aus.string(chars - orig.length(), ' '));
+	  return orig;
+	}
+	
+	private String getNum(int num, int chars) {
+      String txt = Integer.toString(num);
+      if (txt.length() > chars) 
+        return txt.substring(0, chars);
+      if  (txt.length() < chars)
+        return Aus.string(chars - txt.length(), '0').concat(txt);
+      return txt;
+    }
+	
+	private String getNum(BigDecimal num, int chars) {
+	  String txt = num.abs().unscaledValue().toString();
+	  if (txt.length() > chars) 
+	    return txt.substring(0, chars);
+	  if  (txt.length() < chars)
+	    return Aus.string(chars - txt.length(), '0').concat(txt);
+	  return txt;
+	}
+	
+	
+		
 	public void selectDoc() {
     
     DataSet pon = doki.getDataModule().getTempSet(
@@ -3628,6 +3836,7 @@ System.out.println("findCjenik::else :: "+sql);
 				|| descriptor.equals("hr.restart.robno.repInvoice")
 				|| descriptor.equals("hr.restart.robno.repOffer")
 				|| descriptor.equals("hr.restart.robno.repProformaInvoice")
+				|| descriptor.equals("hr.restart.robno.repPovratnicaOdobrenjeV")
 				);
 
 	}
