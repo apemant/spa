@@ -1199,6 +1199,10 @@ public class Util {
         "Ignorirati mala/velika slova u šiframa kod dohvata s F8 (D, N)")
         .equalsIgnoreCase("D");
     
+    boolean tmb = frmParam.getParam("robno", "tmbF8", "N",
+      "F8 za TMB, dodaje crticu naprijed (D, N)")
+        .equalsIgnoreCase("D");
+    
     if (begNazart && value.startsWith("*")) {
       begNazart = false;
       value = value.substring(1);
@@ -1210,14 +1214,15 @@ public class Util {
                   "AND ARTIKLI.AKTIV='D' AND STANJE.GOD='"+god+"' AND STANJE.CSKL = '"+cskl+"' "+nula ;
     if (!value.equalsIgnoreCase("")) {
       if (polje.equalsIgnoreCase("CART")) {
-        qStr = qStr+" and "+polje + "="+value;
+        qStr = qStr+" and artikli."+polje + "="+value;
       } else if (polje.equalsIgnoreCase("CART1") || polje.equalsIgnoreCase("BC")) {
-        if (!ignore) qStr = qStr+" and "+ polje+ " like '"+value+"%'";
+        if (tmb) qStr = qStr+" and artikli."+ polje+ " like '%-"+value+"%'";
+        else if (!ignore) qStr = qStr+" and artikli."+ polje+ " like '"+value+"%'";
         else {
           String vLo = value.toLowerCase();
           String vUp = value.toUpperCase();
-          qStr = qStr+" and ("+ polje+ " like '"+vLo+"%' or "+
-                 polje+ " like '"+vUp+"%' or "+polje+" like '"+value+"%') ";
+          qStr = qStr+" and (artikli."+ polje+ " like '"+vLo+"%' or artikli."+
+                 polje+ " like '"+vUp+"%' or artikli."+polje+" like '"+value+"%') ";
         }
       } else if (polje.equalsIgnoreCase("NAZART")) {
         String ch = begNazart ? "" : "%";
