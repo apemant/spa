@@ -46,9 +46,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -88,7 +90,7 @@ public class raTableCopyPopup extends JPopupMenu {
   private Action add, addAll, set, setAll, sub, subAll, reset,
       selClear, selAll, selectCol, fastAdd, filtShow, filtEq, filtNeq, 
       filtRemove, search, searchAll, tabCond, keyCond, inCond, 
-      inColCond, copyAll, clearAll, replaceAll, memorize, compare;
+      inColCond, copyAll, clearAll, replaceAll, memorize, compare, dups;
   private JMenu calcMenu;
   private JMenu adminMenu;
   
@@ -205,6 +207,7 @@ public class raTableCopyPopup extends JPopupMenu {
           "Zamijeni uzorak teksta u svim redovima");
       memorize.setEnabled(jt.getRowCount() > 0);
       compare.setEnabled(memo.size() > 0);
+      dups.setEnabled(jt.getRowCount() > 0);
 
       reset.setEnabled(calc.data.getBigDecimal("RESULT").signum() != 0);
       filtShow.setEnabled(extend && dataset);
@@ -268,6 +271,11 @@ public class raTableCopyPopup extends JPopupMenu {
     add(compare = new AbstractAction("Usporedi kolonu sa zapamæenom") {
       public void actionPerformed(ActionEvent e) {
         compare();
+      }
+    });
+    add(dups = new AbstractAction("Pronaði duplikate u koloni") {
+      public void actionPerformed(ActionEvent e) {
+        finddups();
       }
     });
     addSeparator();
@@ -459,6 +467,28 @@ public class raTableCopyPopup extends JPopupMenu {
   	}
   }
   
+  void finddups() {
+    Set all = new HashSet();
+    Set dups = new HashSet();
+    for (int i = 0; i < jt.getRowCount(); i++) {
+      Object key = getKey(i);
+      if (key == null) continue;
+      
+      if (all.contains(key)) dups.add(key);
+      all.add(key);
+    }
+    
+    if (dups.size() == 0) {
+      JOptionPane.showMessageDialog(null, 
+          "Nema duplikata.", "Duplikati", JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
+    frmTableDataView old = showSet(dups);
+    old.setTitle("Duplikati");
+    old.pack();
+    old.show();
+  }
+  
   void compare() {
   	Map over = new HashMap();
   	Integer one = new Integer(1);
@@ -489,7 +519,7 @@ public class raTableCopyPopup extends JPopupMenu {
   		totalnew += ((Integer) i.next()).intValue();
   	
   	if (total + totalnew == 0) { 
-  		JOptionPane.showMessageDialog(null, "Kolone su identiène.", "Razlike", JOptionPane.INFORMATION_MESSAGE);
+  	    JOptionPane.showMessageDialog(null, "Kolone su identiène.", "Razlike", JOptionPane.INFORMATION_MESSAGE);
   		return;
   	}
   	
@@ -524,27 +554,60 @@ public class raTableCopyPopup extends JPopupMenu {
  		}
   }
   
-  frmTableDataView showMap(Map values) {
-  	Column col = null;
-  	Object key = values.keySet().iterator().next();
-  	if (key instanceof BigDecimal) 
-  		col = dM.createBigDecimalColumn("VRI", "Vrijednost", ((BigDecimal) key).scale());
-  	else if (key instanceof Integer)
-  		col = dM.createIntColumn("VRI", "Vrijednost");
-  	else if (key instanceof Short)
+  StorageDataSet createDataSet(Set values) {
+    Column col = null;
+    Object key = values.iterator().next();
+    if (key instanceof BigDecimal) 
+        col = dM.createBigDecimalColumn("VRI", "Vrijednost", ((BigDecimal) key).scale());
+    else if (key instanceof Integer)
+        col = dM.createIntColumn("VRI", "Vrijednost");
+    else if (key instanceof Short)
       col = dM.createShortColumn("VRI", "Vrijednost");
-  	else if (key instanceof Number)
-  		col = dM.createBigDecimalColumn("VRI", "Vrijednost", 2);
-  	else if (key instanceof Date)
-  		col = dM.createTimestampColumn("VRI", "Vrijednost");
-  	else if (key instanceof String) {
-  		col = dM.createStringColumn("VRI", "Vrijednost", 30);
-  		col.setPrecision(-1);
-  	}	else return null;
-  	
-  	StorageDataSet ds = new StorageDataSet();
-  	ds.setColumns(new Column[] {col});
-  	ds.open();
+    else if (key instanceof Number)
+        col = dM.createBigDecimalColumn("VRI", "Vrijednost", 2);
+    else if (key instanceof Date)
+        col = dM.createTimestampColumn("VRI", "Vrijednost");
+    else if (key instanceof String) {
+        col = dM.createStringColumn("VRI", "Vrijednost", 30);
+        col.setPrecision(-1);
+    }   else return null;
+    
+    StorageDataSet ds = new StorageDataSet();
+    ds.setColumns(new Column[] {col});
+    ds.open();
+    return ds;
+  }
+  
+  frmTableDataView showSet(Set values) {
+    StorageDataSet ds = createDataSet(values);
+    Column col = ds.getColumn("VRI");
+    Object key = null;
+    
+    try {
+      Variant v = new Variant();
+      for (Iterator i = values.iterator(); i.hasNext(); ) {
+          key = i.next();
+          ds.insertRow(false);
+          v.setFromString(col.getDataType(), key.toString());
+          ds.setVariant("VRI", v);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+    
+    frmTableDataView view = new frmTableDataView();
+    view.setDataSet(ds);
+    view.jp.setPreferredSize(new Dimension(360, 500));
+    view.jp.getMpTable().setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+    return view;
+  }
+  
+  frmTableDataView showMap(Map values) {
+    
+  	StorageDataSet ds = createDataSet(values.keySet());
+  	Column col = ds.getColumn("VRI");
+    Object key = null;
   	
   	try {
 	  	Variant v = new Variant();
