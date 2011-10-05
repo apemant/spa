@@ -106,7 +106,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   StorageDataSet olds;
   BigDecimal pov;
   String cporez;
-  int brojchek;
+  int brojchek, brdoknew;
   short delStavka;      // redni broj stavke koja se briše
   Rbr rbr = Rbr.getRbr();
   hr.restart.robno.Util util = hr.restart.robno.Util.getUtil();
@@ -315,18 +315,20 @@ public class frmMasterBlagajna extends raMasterDetail {
         setNaslovMaster("Blagajna - svi raèuni");
       else setNaslovMaster("Blagajna - raèuni stola " + presBlag.stol);
       setNaslovDetail("Stavke raèuna (stol " + presBlag.stol + ")");
-    }
     
-    String va = frmParam.getParam("pos", "csklVrart"+cskl, "",
-        "Vrsta artikla na POS-u za skladište "+cskl);
-    if (va.length() > 0) {
-      Artikli.getDataModule().setFilter(
-          (QueryDataSet) jpBl.jrfCART.getRaDataSet(),
-          Condition.equal("VRART", va));
-    } else
-      Artikli.getDataModule().setFilter(
-          (QueryDataSet) jpBl.jrfCART.getRaDataSet(),
-          Condition.equal("KASA", "D"));
+    
+      String va = frmParam.getParam("pos", "csklVrart"+cskl, "",
+          "Vrsta artikla na POS-u za skladište "+cskl);
+      if (va.length() > 0) {
+        Artikli.getDataModule().setFilter(
+            (QueryDataSet) jpBl.jrfCART.getRaDataSet(),
+            Condition.equal("VRART", va));
+      } else
+        Artikli.getDataModule().setFilter(
+            (QueryDataSet) jpBl.jrfCART.getRaDataSet(),
+            Condition.equal("KASA", "D"));
+    }
+    dm.getArtikli().open();
   }
   
   public boolean ValDPEscapeDetail(char mode) {
@@ -430,6 +432,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     if (onetimeSetNew) {
       onetimeSetNew = false;
       newRacun = true;
+      brdoknew = getMasterSet().getInt("BRDOK");
     } else newRacun = false;
     System.out.println("stavke performed");
     super.jBStavke_actionPerformed(e);
@@ -884,7 +887,9 @@ public class frmMasterBlagajna extends raMasterDetail {
       jpStol.add(dlgStol.getOkPanel(), BorderLayout.SOUTH);
       dlgStol.getOkPanel().setEnterEnabled(true);
       raMaster.addOption(navZatvori, 4);
-      raMaster.addOption(navPonisti, 5);
+      if (raUser.getInstance().isSuper()) {
+        raMaster.addOption(navPonisti, 5);
+      }
       this.raMaster.addOption(new raNavAction("Pregled materijala", raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
         public void actionPerformed(java.awt.event.ActionEvent ev) {
           showRequirementsMaster();
@@ -893,7 +898,9 @@ public class frmMasterBlagajna extends raMasterDetail {
       
       raMaster.getJpTableView().addTableModifier(msc);
     } else {
-      raMaster.addOption(navPonisti, 4);
+      if (raUser.getInstance().isSuper()) {
+        raMaster.addOption(navPonisti, 4);
+      }
       this.raMaster.addOption(new raNavAction("Pregled materijala", raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
         public void actionPerformed(java.awt.event.ActionEvent ev) {
           showRequirementsMaster();
@@ -1070,8 +1077,9 @@ public class frmMasterBlagajna extends raMasterDetail {
 
 
   public void calcIZNOS(int mod) {
+    DataSet art = dm.getArtikli();
 	  lookupData.getlookupData().raLocate(dm.getPorezi(), "CPOR", cporez);
-	  lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", getDetailSet().getInt("CART")+"");
+	  lookupData.getlookupData().raLocate(art, "CART", getDetailSet().getInt("CART")+"");
 
     getDetailSet().setBigDecimal("UKUPNO", util.multiValue(getDetailSet().getBigDecimal("MC"), getDetailSet().getBigDecimal("KOL")));
     getDetailSet().setBigDecimal("IPOPUST1", util.multiValue(getDetailSet().getBigDecimal("UKUPNO"), getDetailSet().getBigDecimal("PPOPUST1").divide(util.sto,BigDecimal.ROUND_HALF_UP)));
@@ -1083,7 +1091,7 @@ public class frmMasterBlagajna extends raMasterDetail {
       getDetailSet().setBigDecimal("NETO", util.negateValue(getDetailSet().getBigDecimal("IZNOS"), getDetailSet().getBigDecimal("IPOPUST2")));
     }
     BigDecimal sub = Aus.zero0;
-    if ("D".equals(dm.getArtikli().getString("POV")))
+    if ("D".equals(art.getString("POV")))
       sub = pov.multiply(getDetailSet().getBigDecimal("KOL")).setScale(2, BigDecimal.ROUND_HALF_UP);
     BigDecimal osnovica = new BigDecimal(getDetailSet().getBigDecimal("IZNOS").subtract(sub).doubleValue()/((100+dm.getPorezi().getBigDecimal("UKUPOR").doubleValue())/100));
 //    getDetailSet().setBigDecimal("POR1", util.findIznos(getDetailSet().getBigDecimal("IZNOS"), dm.getPorezi().getBigDecimal("UNPOR1")));
@@ -1385,7 +1393,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     brojchek=getMasterSet().getInt("BRDOK");
     System.out.println("Exit question: "+brojchek+"  novi-"+newRacun);
     if (getDetailSet().rowCount()>0)  {
-      if (!newRacun) return false; // ako smo gledali stari raèun
+      if (!newRacun || getMasterSet().getInt("BRDOK") != brdoknew) return false; // ako smo gledali stari raèun
       if (JOptionPane.showConfirmDialog(null, "Želite li poništiti unos ?", "Izlaz", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
         getDetailSet().deleteAllRows();
         try {
@@ -1403,7 +1411,7 @@ public class frmMasterBlagajna extends raMasterDetail {
       return true;
     }
     else {
-      if (newRacun) delOtherTables();
+      if (newRacun && getMasterSet().getInt("BRDOK") == brdoknew) delOtherTables();
     }
     return false;
   }
@@ -1736,10 +1744,10 @@ public class frmMasterBlagajna extends raMasterDetail {
   }
   void showLabel() {
     String nazskl = " - ";
-    QueryDataSet mpskl = hr.restart.robno.Util.getMPSklDataset();
-    if (mpskl.getRowCount() > 0) {
+    //QueryDataSet mpskl = hr.restart.robno.Util.getMPSklDataset();
+    /*if (mpskl.getRowCount() > 0) {
       nazskl += mpskl.getString("NAZSKL");
-    } else if (lookupData.getlookupData().raLocate(dm.getSklad(), "CSKL", cskl)) {
+    } else*/ if (lookupData.getlookupData().raLocate(dm.getSklad(), "CSKL", cskl)) {
       nazskl += dm.getSklad().getString("NAZSKL");
     } else {
       nazskl = "";
