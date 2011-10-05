@@ -26,15 +26,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raTableColumnModifier;
-import hr.restart.util.Aus;
-import hr.restart.util.LinkClass;
-import hr.restart.util.VarStr;
-import hr.restart.util.lookupData;
-import hr.restart.util.raImages;
-import hr.restart.util.raLocalTransaction;
-import hr.restart.util.raMatPodaci;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raTransaction;
+import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
@@ -51,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -64,6 +57,12 @@ import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 
@@ -2522,7 +2521,8 @@ System.out.println("findCjenik::else :: "+sql);
         buf.append(edif.format(ms.getTimestamp("DVO")));
         buf.append(getPadded(ms.getString("BRNARIZ"), 20));
         buf.append(getPadded(ms.getString("CUG"), 20));
-        buf.append(getPadded("", 60));
+        buf.append(getPadded(ms.getString("BRDOKIZ"), 20));
+        buf.append(getPadded("", 40));
         
         buf.append(getNum(Aus.sum("IPRODBP", ds), 13));
         buf.append(getPadded("23", 4));
@@ -2542,7 +2542,9 @@ System.out.println("findCjenik::else :: "+sql);
         for (ds.first(); ds.inBounds(); ds.next()) {
           buf.append("IT");
           buf.append(getNum(ds.getShort("RBR"), 2));
-          buf.append(getPadded(ds.getString("BC"), 13));
+          if (ds.getString("BC").length() == 13)
+            buf.append(getPadded(ds.getString("BC"), 13));
+          else buf.append(getPadded("", 13));
           buf.append(getPadded(ds.getString("CART1"), 20));
           buf.append(getPadded(ds.getString("NAZART"), 35));
           if (ds.getString("JM").equalsIgnoreCase("kg"))
@@ -2560,7 +2562,7 @@ System.out.println("findCjenik::else :: "+sql);
               break;
             }
           buf.append(getPadded(Aus.formatBigDecimal(kol.abs()), 8));
-          buf.append(getNum(ds.getBigDecimal("FC"), 13));
+          buf.append(getNum(ds.getBigDecimal("FVC"), 13));
           buf.append(getNum(ds.getBigDecimal("POR1"), 13));
           buf.append(getPadded("23", 4));
           buf.append(getNum(ds.getBigDecimal("IPRODBP"), 13));
@@ -2569,10 +2571,46 @@ System.out.println("findCjenik::else :: "+sql);
         }
 
         TextFile.setEncoding("UTF-8");
-        TextFile tf = TextFile.write("mz-"+ms.getInt("BRDOK")+"-"
-            +(System.currentTimeMillis()/1000) + ".txt");
+        String fname = "mz-"+ms.getInt("BRDOK")+"-"
+            +(System.currentTimeMillis()/1000) + ".txt";
+        TextFile tf = TextFile.write(fname);
         tf.out(buf.chop().split('\n'));
         tf.close();
+        
+        try {
+          System.out.println("slanje ftp");
+          JSch j = new JSch();
+          j.setKnownHosts(IntParam.getTag("sftp.hosts"));
+          Session sess = j.getSession(
+              IntParam.getTag("sftp.user"), 
+              IntParam.getTag("sftp.addr"));
+          sess.setPassword(IntParam.getTag("sftp.pass"));
+          sess.connect();
+          System.out.println("spojeno");
+
+          Channel channel = sess.openChannel("sftp");
+          channel.connect();
+
+          ChannelSftp sch = (ChannelSftp) channel;
+          
+          System.out.println("chg dir");
+          sch.cd("out");
+          System.out.println("remote dir " + sch.pwd());
+          System.out.println("saving "+fname);
+          sch.put(fname, fname);
+          sch.exit();
+          
+          sess.disconnect();
+          
+          System.out.println("disconnected");
+        } catch (JSchException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+          throw new RuntimeException("Greška kod slanja ftp-om!");
+        } catch (SftpException e) {
+          e.printStackTrace();
+          throw new RuntimeException("Greška kod slanja ftp-om!");
+        }
         
         DataSet save = doki.getDataModule().getTempSet(
             Condition.whereAllEqual(Util.mkey, ms));
