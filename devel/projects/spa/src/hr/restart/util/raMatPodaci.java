@@ -2981,9 +2981,6 @@ ST.prnc(raQueryDataSet);
   }
 
   public void offon(final boolean kako){
-    SwingUtilities.invokeLater(new Runnable() {
-      
-      public void run() {
         
         getNavBar().rnvUpdate.setEnabled(kako);
         
@@ -3000,8 +2997,6 @@ ST.prnc(raQueryDataSet);
         
         if (version==1 && jTabPane.getComponentCount() > 1)
           jTabPane.setEnabledAt(1,kako);
-      }
-    });
 
 
   }
