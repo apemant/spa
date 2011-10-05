@@ -45,6 +45,7 @@ public class jposMenu extends JMenu {
   public JMenuItem jmGRN = new JMenuItem();
   public JMenuItem jmRekapitulacijaPOS = new JMenuItem();
   public JMenuItem jmPregledArtikliRacuni = new JMenuItem();
+  public JMenuItem jmZbroj = new JMenuItem();
 
   public jposMenu(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -104,6 +105,12 @@ public class jposMenu extends JMenu {
         jmPregledArtikliRacuni_actionPerformed(e);
       }
     });
+    jmZbroj.setText("Zbroj raèuna");
+    jmZbroj.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        frmSumaPos.show();
+      }
+    });
     this.add(jmBlagajna);
 //    this.add(jmGOT);
 //    this.add(jmRazduzenjePOSa);
@@ -112,6 +119,8 @@ public class jposMenu extends JMenu {
     this.addSeparator();
     this.add(jmRekapitulacijaPOS);
     this.add(jmPregledArtikliRacuni);
+    if (presBlag.isSkladOriented())
+      this.add(jmZbroj);
   }
 
   public void jmBlagajna_actionPerformed(ActionEvent e) {
