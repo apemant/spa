@@ -346,8 +346,8 @@ public class jpDetBlagajna extends JPanel {
     jPanel3.add(jrfNAZART,    new XYConstraints(210, 20, 250, -1));
     jPanel3.add(jtfKOL,   new XYConstraints(100, 65, 100, -1));
     this.add(jPanel1,                 new XYConstraints(5, 5, 535, 75));
-    jPanel1.add(jLabel11,            new XYConstraints(50, 35, 430, -1));
-    jPanel1.add(jLabel10,    new XYConstraints(50, 10, 430, -1));
+    jPanel1.add(jLabel11,            new XYConstraints(20, 35, 460, -1));
+    jPanel1.add(jLabel10,    new XYConstraints(20, 10, 460, -1));
     this.add(jPanel4,    new XYConstraints(540, 5, 200, 75));
     jPanel4.add(jLabel1,     new XYConstraints(10, 23, -1, -1));
     jPanel4.add(jLabel2,      new XYConstraints(80, 0, 110, 75));
@@ -385,7 +385,7 @@ public class jpDetBlagajna extends JPanel {
   }
   private Font getOrgSkladBlagUserFont() {
 //    return new java.awt.Font("Dialog", 1, 13);
-    return new java.awt.Font("Dialog", 1, 20);
+    return new java.awt.Font("Dialog", 1, 16);
   }
   private Font getBrojRacFont() {
     return new java.awt.Font("Dialog", 1, 40);
