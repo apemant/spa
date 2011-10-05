@@ -499,6 +499,10 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
     removeFieldMask();
     this.mask = mask;
   }
+  
+  public void setProtected(boolean prot) {
+    if (mask != null) mask.setProtected(prot);
+  }
 
   private void setFieldMask() {
     if (getDataSet() == null || getColumnName() == null) return;

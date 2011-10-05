@@ -43,7 +43,7 @@ public abstract class raFieldMask implements FocusListener, KeyListener {
   protected static VarStr sharedBuf = new VarStr();
   
   protected int sBeg, sEnd, cPos, tLen, sLen;
-  protected boolean sel;
+  protected boolean sel, prot;
 
 //  public abstract void updateText();
 //  public abstract void resolveText();
@@ -79,6 +79,15 @@ public abstract class raFieldMask implements FocusListener, KeyListener {
     tf.removeFocusListener(this);
     tf.removeKeyListener(this);
   }
+  
+  public void setProtected(boolean prot) {
+    System.out.println("protected "+prot);
+    this.prot = prot;
+  }
+  
+  public boolean isProtected() {
+    return prot;
+  }
 
   public void setOverwriteMode(boolean over) {
     insert = !over;
@@ -106,11 +115,12 @@ public abstract class raFieldMask implements FocusListener, KeyListener {
 
     char ch = e.getKeyChar();
     cacheDynamicVariables();
-    if (ch == '\b' && keypressBackspace()) e.consume();
-    if (ch < ' ' && keypressControl(ch)) e.consume();
-    if (!e.isControlDown() && !e.isAltDown() && !e.isAltGraphDown()) {
+    if (!prot && ch == '\b' && keypressBackspace()) e.consume();
+    if (!prot && ch < ' ' && keypressControl(ch)) e.consume();
+    if (!prot && !e.isControlDown() && !e.isAltDown() && !e.isAltGraphDown()) {
       if (ch >= ' ' && keypressCharacter(ch)) e.consume();
     }
+    if (prot && !e.isConsumed()) e.consume();
     if (e.isConsumed()) foc = false;
   }
 
@@ -123,13 +133,20 @@ public abstract class raFieldMask implements FocusListener, KeyListener {
 //        tf.getDocument().getLength() == 0)
 //      focusGained(null);
     cacheDynamicVariables();
-    if (code == e.VK_INSERT) insert = !insert;
-    if (code == e.VK_X && ctrl && keypressCut()) e.consume();
+    if (!prot && code == e.VK_INSERT) insert = !insert;
+    if (!prot && code == e.VK_X && ctrl && keypressCut()) e.consume();
     if (code == e.VK_C && ctrl && keypressCopy()) e.consume();
-    if (code == e.VK_V && ctrl && keypressPaste()) e.consume();
-    if (code == e.VK_DELETE && keypressDelete()) e.consume();
-    if (code == e.VK_BACK_SPACE) e.consume();
-    if (!e.isConsumed() && keypressCode(code)) e.consume();
+    if (!prot && code == e.VK_V && ctrl && keypressPaste()) e.consume();
+    if (!prot && code == e.VK_DELETE && keypressDelete()) e.consume();
+    if (!prot && code == e.VK_BACK_SPACE) e.consume();
+    if (!prot && !e.isConsumed() && keypressCode(code)) e.consume();
+    if (prot && !e.isConsumed()) {
+      if (code != e.VK_LEFT && code != e.VK_RIGHT &&
+          code != e.VK_UP && code != e.VK_DOWN &&
+          code != e.VK_PAGE_UP && code != e.VK_PAGE_DOWN &&
+          code != e.VK_HOME && code != e.VK_END)
+        e.consume();
+    }
     if (e.isConsumed()) foc = false;
   }
 
