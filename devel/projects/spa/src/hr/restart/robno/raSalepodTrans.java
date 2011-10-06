@@ -28,6 +28,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
+import hr.restart.help.MsgDispatcher;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
@@ -85,6 +86,11 @@ public class raSalepodTrans {
     if (isBusy()) return;
     
     try {
+      if (comm.length() > 0) {
+        callSync();
+        System.out.println("Proces završio.");
+      }
+      
       
     String god = Valid.getValid().findYear();
     god = Integer.toString(Aus.getNumber(god) - 1);
@@ -505,6 +511,14 @@ public class raSalepodTrans {
         }
       }
       saveOrder(dzg, dst);
+    }
+    
+    String users = frmParam.getParam("robno", "salepodNotify", "", "Popis korisnika za notifikaciju salepod");
+    System.out.println("Users: " + users);
+    String[] us = new VarStr(users).split();
+    for (int i = 0; i < us.length; i++) {
+      System.out.println("Sending to " + us[i]);
+        MsgDispatcher.send("salespod", us[i], "Dohvaæeno " + zags.size() + " narudžbi sa salespod servera.");
     }
   }
   
