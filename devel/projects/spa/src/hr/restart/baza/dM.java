@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.baza;
 
+import hr.restart.robno.raSalepodTrans;
 import hr.restart.robno.raVart;
 import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
@@ -125,6 +126,11 @@ public class dM implements DataModule {
         System.out.println("Refresher nije instaliran");
       }
       myDM.installCRMConnection();
+      
+      int spod = Aus.getNumber(hr.restart.util.IntParam.getTag("salepod.delay"));
+      if (spod > 0)
+        raSalepodTrans.install(spod);
+      
     } else if (!safeMode) myDM.installCRMConnection();
     return myDM;
   }
