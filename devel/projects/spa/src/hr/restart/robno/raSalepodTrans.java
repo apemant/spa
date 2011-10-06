@@ -513,12 +513,14 @@ public class raSalepodTrans {
       saveOrder(dzg, dst);
     }
     
-    String users = frmParam.getParam("robno", "salepodNotify", "", "Popis korisnika za notifikaciju salepod");
-    System.out.println("Users: " + users);
-    String[] us = new VarStr(users).split();
-    for (int i = 0; i < us.length; i++) {
-      System.out.println("Sending to " + us[i]);
-        MsgDispatcher.send("salespod", us[i], "Dohvaæeno " + zags.size() + " narudžbi sa salespod servera.");
+    if (zags.size() > 0) {
+      String users = frmParam.getParam("robno", "salepodNotify", "", "Popis korisnika za notifikaciju salepod");
+      System.out.println("Users: " + users);
+      String[] us = new VarStr(users).split();
+      for (int i = 0; i < us.length; i++) {
+        System.out.println("Sending to " + us[i]);
+          MsgDispatcher.send("salespod", us[i], "Dohvaæeno " + zags.size() + " narudžbi sa salespod servera.");
+      }
     }
   }
   
