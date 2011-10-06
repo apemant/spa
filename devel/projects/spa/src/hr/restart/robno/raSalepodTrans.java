@@ -296,13 +296,7 @@ public class raSalepodTrans {
       importDoc();
       
       if (comm.length() > 0)
-        new Thread(new Runnable() {
-          public void run() {
-            callSync();          
-          }
-        }).start();
-      
-      
+        callSync();          
       
     } catch (SQLException e) {
       e.printStackTrace();
