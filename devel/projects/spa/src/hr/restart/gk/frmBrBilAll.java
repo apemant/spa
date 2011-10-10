@@ -252,6 +252,7 @@ public class frmBrBilAll extends raUpitFat {
   
   
   boolean showzero = true;
+  public int sind = 3;
   public void componentShow() {
     //kontaSet = dm.getKonta();
     //kontaSet.open();
@@ -261,6 +262,11 @@ public class frmBrBilAll extends raUpitFat {
     }
     showzero = "D".equalsIgnoreCase(frmParam.getParam("gk", "showZeroBB", "D",
         "Prikazati na bruto bilanci i ona konta koja imaju ID=IP=0 (D,N)"));
+    String digs = frmParam.getParam("gk", "sinDigits", "3",
+        "Broj znamenki sintetièkih konta");
+    sind = Aus.getNumber(digs);
+    if (sind < 3 || sind > 4) sind = 3;
+      
     firstTime = false;
     updateSelectTreeButton();
   }
@@ -471,7 +477,7 @@ public class frmBrBilAll extends raUpitFat {
       MainQueryData mr = (MainQueryData) data.get(i);
       FormData fr = new FormData();
       fr.corg = mr.corg;
-      if (digits > 3 || mr.brojkonta.length() < digits)
+      if (digits > sind || mr.brojkonta.length() < digits)
         fr.brojkonta = mr.brojkonta;
       else fr.brojkonta = mr.brojkonta.substring(0, digits);
       fr.nk = raKonta.getNazivKonta(fr.brojkonta);
@@ -547,7 +553,7 @@ public class frmBrBilAll extends raUpitFat {
         sok.report("after po nalozima bilanca");
       }
       
-      if (kontoPanel.jlrKontoBroj.getText().length() < 3) { // rekapitulacija
+      if (kontoPanel.jlrKontoBroj.getText().length() < sind) { // rekapitulacija
         repRekapitulacijaSet = valutaConvertedSet(makeRekapitulacija(data));
         repRekapitulacijaSet.setSort(new SortDescriptor(new String[] {"CORG", "BROJKONTA"}));
         sok.report("after rekap bilanca");
@@ -1643,7 +1649,7 @@ public class frmBrBilAll extends raUpitFat {
     ResultSet rs = Util.openQuickSet(query);
     try {
       while (rs.next()) 
-      	if (!nokon.contains(rs.getString("BROJKONTA").trim()))
+      	if (!nokon.contains(rs.getString(2).trim()))
       		ret.add(new MainQueryData(rs));
     } catch (SQLException e) {
       e.printStackTrace();
