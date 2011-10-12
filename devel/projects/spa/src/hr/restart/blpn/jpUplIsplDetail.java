@@ -242,9 +242,12 @@ public class jpUplIsplDetail extends JPanel {
     jlrNaziv.setSearchMode(1);
     this.add(jpDetail, BorderLayout.CENTER);
   }
-
+  boolean advdetail=false, advdetnokonto=false;
   private void jbInit() throws Exception {
 //    fuj = (frmUplIspl)mainClass;
+    advdetail = frmParam.getParam("blpn","konparbl", "N", "Unos konta i partnera kroz stavku blagajne (D/N/M)").equals("D");
+    advdetnokonto = frmParam.getParam("blpn","konparbl", "N", "Unos konta i partnera kroz stavku blagajne (D/N/M)").equals("M");
+
     jpDetail.setLayout(lay);
     lay.setWidth(640);
     lay.setHeight(350);
@@ -438,10 +441,24 @@ public class jpUplIsplDetail extends JPanel {
 //        if(jlrOpisStavke.getText().concat(" ").concat(((frmUplIspl)mainClass).ss.getIme(jlrCradnik.getText())).length() <= 50)
 //          ((frmUplIspl)mainClass).getDetailSet().setString("OPIS", jlrOpisStavke.getText().concat(" ").concat(((frmUplIspl)mainClass).ss.getIme(jlrCradnik.getText())));
 //        else
+      if (advdetnokonto) {
+        if (((frmUplIspl)mainClass).getSkStavkerad().getRowCount() > 0) {
+          jlrStavka.setText("");
+          jlrOpisStavke.setText("");
+        } else {
+          advui.kcg.getJlrBROJKONTA().getDataSet().setString("BROJKONTA", jlrStavka.getRaDataSet().getString("BROJKONTA"));
+  //        advui.kcg.getJlrBROJKONTA().setText(jlrStavka.getRaDataSet().getString("BROJKONTA"));
+          System.err.println("jpUplIsplDetail.lookUpStavke() :: jlrStavka.getRaDataSet() = "+jlrStavka.getRaDataSet());
+          System.err.println("jpUplIsplDetail.lookUpStavke() :: advui.kcg.getJlrBROJKONTA().getDataSet() = "+advui.kcg.getJlrBROJKONTA().getDataSet());
+          advui.kcg.aft_lookUpKonto(true);
+          advui.kcg.afterAfterLookupKonto();
+        }
+      }
       if (((frmUplIspl)mainClass).getDetailSet().getString("OPIS").equals("")){
         ((frmUplIspl)mainClass).getDetailSet().setString("OPIS", jlrOpisStavke.getText());
-        if (!jlrStavka.getText().equals(""))
+        if (!jlrStavka.getText().equals("")) {
           ((frmUplIspl)mainClass).handleCORG();
+        }
       }
 //      }
     }
@@ -452,17 +469,23 @@ public class jpUplIsplDetail extends JPanel {
   }
 
   private void setUplIsplAdvancedDetail() {
-    if (frmParam.getParam("blpn","konparbl", "N", "Unos konta i partnera kroz stavku blagajne (D/N)")
-        .equals("D")) {
+    if (advdetail||advdetnokonto) {
       advui = new UplIsplAdvancedDetail(mainClass.raDetail);
       jpDetail.remove(jbSelCorg);
       jpDetail.remove(jlCorg);
       jpDetail.remove(jlrCorg);
       jpDetail.remove(jlrNaziv);
-      jpDetail.remove(jlStavka);
-      jpDetail.remove(jlrStavka);
-      jpDetail.remove(jbSelStavka);
-      jpDetail.remove(jlrOpisStavke);
+      if (!advdetnokonto) {
+        jpDetail.remove(jlStavka);
+        jpDetail.remove(jlrStavka);
+        jpDetail.remove(jbSelStavka);
+        jpDetail.remove(jlrOpisStavke);
+      } else {
+        advui.kcg.getJlrBROJKONTA().setVisible(false);
+        advui.kcg.getJbGetKonto().setVisible(false);
+        advui.kcg.getJlrNAZIVKONTA().setVisible(false);
+        advui.kontoLabel.setVisible(false);
+      }
       jpDetail.add(advui, new XYConstraints(0,195,-1,-1));
     }
   }

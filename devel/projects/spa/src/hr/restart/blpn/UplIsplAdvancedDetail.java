@@ -65,10 +65,10 @@ System.out.println("creatin' new UplIsplAdvancedDetail");
     
     arrangeComponents();
   }
-
+  JLabel kontoLabel;
   private void arrangeComponents() {
     setLayout(new XYLayout());
-    add(new JLabel("Konto"),        new XYConstraints(15, 0, -1, -1));
+    add(kontoLabel = new JLabel("Konto"),        new XYConstraints(15, 0, -1, -1));
     add(kcg.getJlrBROJKONTA(),         new XYConstraints(150, 0, 100, -1));
     add(kcg.getJlrNAZIVKONTA(),        new XYConstraints(255, 0, 345, -1));
     add(kcg.getJbGetKonto(),   new XYConstraints(605, 0, 21, 21));
