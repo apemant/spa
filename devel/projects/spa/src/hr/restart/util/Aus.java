@@ -303,6 +303,17 @@ public class Aus {
     return nf.format(num.doubleValue());
   }
   
+  public static String formatBigDecimal2(BigDecimal num) {
+    try {
+      nf.setMinimumFractionDigits(num.scale());
+      nf.setMaximumFractionDigits(num.scale());
+      nf.setGroupingUsed(false);
+      return nf.format(num.doubleValue());
+    } finally {
+      nf.setGroupingUsed(true);
+    }
+  }
+  
   /**
    * pretvara float u lijepo formatirani string sa dvije decimale.
    */  
