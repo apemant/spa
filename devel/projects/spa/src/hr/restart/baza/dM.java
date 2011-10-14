@@ -127,10 +127,6 @@ public class dM implements DataModule {
       }
       myDM.installCRMConnection();
       
-      int spod = Aus.getNumber(hr.restart.util.IntParam.getTag("salepod.delay"));
-      if (spod > 0)
-        raSalepodTrans.install(spod);
-      
     } else if (!safeMode) myDM.installCRMConnection();
     return myDM;
   }
