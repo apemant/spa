@@ -890,6 +890,8 @@ KOL2;numeric;15,3;;0;Naruèeno;10
 CVOZ;char;24;;;Vozaè
 LOT;char;12;;;Lot
 ROKTRAJ;date;;;;Rok trajanja
+RNC;numeric;15,2;;0;Prava nabavna cijena;12
+RINAB;numeric;15,2;;0;Pravi nabavni iznos;14
 IDX=cskl,vrdok,god,brdok
 IDX=cart
 IDX=cradnal
@@ -1262,6 +1264,7 @@ PARAM;char;10;;;Parametri
 SUPER;char;1;;N;SUPER
 OGRANICEN;char;1;;G;OGRANICEN
 CSMJENA;int;6;;;Smjena
+ROLE;char;20;;;Pos role
 
 $Blagajnici
 LOKK;char;1;;N;Status zauzetosti;*
