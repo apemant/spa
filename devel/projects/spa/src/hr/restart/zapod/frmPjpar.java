@@ -78,6 +78,11 @@ public class frmPjpar extends raMatPodaci {
   JlrNavField jrfKO = new JlrNavField();
   JlrNavField jrfNAZKO = new JlrNavField();
   
+  JLabel jlAgent = new JLabel("Agent");
+  JraButton jbAGENT = new JraButton();
+  JlrNavField jrfCAGENT = new JlrNavField();
+  JlrNavField jrfNAZAGENT = new JlrNavField();
+  
   JLabel jlGLN = new JLabel();
   JraTextField jtGLN = new JraTextField();
 
@@ -145,7 +150,7 @@ public class frmPjpar extends raMatPodaci {
     jtPBRPJ.setColumnName("PBRPJ");
     jtPBRPJ.setDataSet(getRaQueryDataSet());
     xYLayout1.setWidth(515);
-    xYLayout1.setHeight(240);
+    xYLayout1.setHeight(265);
     jlTELPJ.setText("Telefoni");
     jtTELPJ.setDataSet(getRaQueryDataSet());
     jtTELPJ.setColumnName("TELPJ");
@@ -176,6 +181,19 @@ public class frmPjpar extends raMatPodaci {
     jrfNAZKO.setSearchMode(1);
     jrfNAZKO.setColumnName("IME");
     jrfNAZKO.setNavProperties(jrfKO);
+    
+    jrfCAGENT.setColumnName("CAGENT");
+    jrfCAGENT.setDataSet(getRaQueryDataSet());
+    jrfCAGENT.setTextFields(new javax.swing.text.JTextComponent[] { jrfNAZAGENT });
+    jrfCAGENT.setColNames(new String[] { "NAZAGENT" });
+    jrfCAGENT.setRaDataSet(dm.getAgenti());
+    jrfCAGENT.setVisCols(new int[] { 0, 1 });
+    jrfCAGENT.setNavButton(jbAGENT);
+
+    jrfNAZAGENT.setSearchMode(1);
+    jrfNAZAGENT.setColumnName("NAZAGENT");
+    jrfNAZAGENT.setNavProperties(jrfCAGENT);
+    
 
     jp.add(jlPJ,   new XYConstraints(15, 30, -1, -1));
     jp.add(jtPJ,   new XYConstraints(150, 30, 30, -1));
@@ -189,17 +207,23 @@ public class frmPjpar extends raMatPodaci {
     jp.add(jlTELPJ,   new XYConstraints(15, 105, -1, -1));
     jp.add(jlTELFAXPJ,   new XYConstraints(15, 130, -1, -1));
     jp.add(jtTELFAXPJ,   new XYConstraints(150, 130, 100, -1));
-    jp.add(jlKontaktOsoba, new XYConstraints(15, 155, -1, -1));
-    jp.add(jrfKO, new XYConstraints(150, 155, 100, -1));
-    jp.add(jrfNAZKO, new XYConstraints(255, 155, 230, -1));
-    jp.add(jbKO, new XYConstraints(490, 155, 21, 21));
-    jp.add(jlKOPJ, new XYConstraints(15, 180, -1, -1));
-    jp.add(jtKOPJ, new XYConstraints(150, 180, 335, -1));
+    jp.add(jlKontaktOsoba, new XYConstraints(15, 180, -1, -1));
+    jp.add(jrfKO, new XYConstraints(150, 180, 100, -1));
+    jp.add(jrfNAZKO, new XYConstraints(255, 180, 230, -1));
+    jp.add(jbKO, new XYConstraints(490, 180, 21, 21));
+    jp.add(jlKOPJ, new XYConstraints(15, 205, -1, -1));
+    jp.add(jtKOPJ, new XYConstraints(150, 205, 335, -1));
     /*jp.add(jlREGIJA, new XYConstraints(15, 180, -1, -1));
     jp.add(jtREGIJA, new XYConstraints(150, 180, 100, -1));*/
     jp.add(jcbAktiv, new XYConstraints(415, 7, 70, -1));
-    jp.add(jlGLN, new XYConstraints(15, 205, -1, -1));
-    jp.add(jtGLN, new XYConstraints(150, 205, 120, -1));
+    
+    jp.add(jlAgent, new XYConstraints(15, 155, -1, -1));
+    jp.add(jrfCAGENT, new XYConstraints(150, 155, 100, -1));
+    jp.add(jrfNAZAGENT, new XYConstraints(255, 155, 230, -1));
+    jp.add(jbAGENT, new XYConstraints(490, 155, 21, 21));
+    
+    jp.add(jlGLN, new XYConstraints(15, 230, -1, -1));
+    jp.add(jtGLN, new XYConstraints(150, 230, 120, -1));
     this.setRaDetailPanel(jp);
   }
 
