@@ -561,9 +561,9 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 
 	public void beforeShowMaster() {
 	  
-	  isPopustMC = frmParam.getParam("robno", "popustuFMC", "N",
+	    isPopustMC = frmParam.getParam("robno", "popustuFMC", "N",
 	      "Popust s artikla uraèunati u FMC (D,N)").equalsIgnoreCase("D");
-	  
+
 	    String cskl = pressel.getSelRow().getString("CSKL");
 	    String additional = "";
 	    if (cskl.length() > 0) {
@@ -577,7 +577,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	               dm.getOrgstruktura().getString("NAZIV");
 	       }
 	    }
-	    
+
 	    isTranzit = !isOJ && cskl.length() > 0 && 
 	        TD.isCsklSklad(what_kind_of_dokument) && 
 	        lD.raLocate(dm.getSklad(), "CSKL", cskl) &&
@@ -2515,8 +2515,8 @@ System.out.println("findCjenik::else :: "+sql);
         buf.append(getPadded("", 78));
         buf.append("\n");
         
-        buf.append("DA");
-        buf.append(getPadded(ms.getInt("BRDOK")+"", 16));
+        buf.append("DA");        
+        buf.append(getPadded(new VarStr(repUtil.getFormatBroj(ms)).removeChars("/-").toString(), 16));
         buf.append("1");
         buf.append(edif.format(ms.getTimestamp("DVO")));
         buf.append(getPadded(ms.getString("BRNARIZ"), 20));
@@ -2561,7 +2561,7 @@ System.out.println("findCjenik::else :: "+sql);
             } catch (RuntimeException e) {
               break;
             }
-          buf.append(getPadded(Aus.formatBigDecimal(kol.abs()), 8));
+          buf.append(getPadded(Aus.formatBigDecimal2(kol.abs()), 8));
           buf.append(getNum(ds.getBigDecimal("FVC"), 13));
           buf.append(getNum(ds.getBigDecimal("POR1"), 13));
           buf.append(getPadded("23", 4));
