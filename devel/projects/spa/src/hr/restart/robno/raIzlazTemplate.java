@@ -459,6 +459,16 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	}
 
 	abstract public void initialiser();
+	
+	static boolean nabDirect;
+	static {
+		nabDirect = frmParam.getParam("robno" ,"nabDirect", "N",
+				"Moguænost unosa nabavnog iznosa na raèunima (D,N)").equalsIgnoreCase("D");
+	}
+	
+	public static boolean isNabDirect() {
+		return nabDirect;
+	}
 
 	public raIzlazTemplate() {
 
@@ -695,6 +705,14 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	}
 
 	public boolean doBeforeSaveDetail(char mode) {
+		
+		if (nabDirect && (mode == 'N' || mode == 'I') &&
+		    (what_kind_of_dokument.equals("ROT") ||
+		     what_kind_of_dokument.equals("GOT") ||
+		     what_kind_of_dokument.equals("POD"))) {
+		    Aus.set(getDetailSet(), "RNC", "NC");
+		    Aus.set(getDetailSet(), "RINAB", "INAB");
+		 }
 
 		if (mode == 'N') {
 			cskl2csklart();
@@ -3137,8 +3155,19 @@ System.out.println("findCjenik::else :: "+sql);
 				getMasterSet().getString("CSKL"), isMaloprodajnaKalkulacija);
 		rKD.KalkulacijaStanje(what_kind_of_dokument);
 		lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
+		if (how.equals("KOL") && nabDirect)
+			Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
 	}
-    
+  
+	public void nabKal(String kako) {
+		if (raDetail.getMode() == 'B' || !nabDirect) return;
+		
+		if (kako.equals("RNC"))
+			Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
+		else if (getDetailSet().getBigDecimal("KOL").signum() != 0) 
+			Aus.div(getDetailSet(), "RNC", "RINAB", "KOL");
+	}
+	
     public void Kalkulacija(JraTextField tmpF, String kako) {
       if (raDetail.getMode() == 'B') return;
       if (!DP.tmpText.equals(tmpF.getText())) {

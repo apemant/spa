@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.baza.SEQ;
 import hr.restart.baza.VTprijenos;
 import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raTransaction;
@@ -185,6 +186,10 @@ public class raAutoOtpfromRac {
       }
       stav.setString("STATUS", "P");
       stav.setString("VEZA", stavke_otp.getString("ID_STAVKA"));
+      if (raIzlazTemplate.isNabDirect()) {
+      	Aus.set(stav, "RNC", stavke_otp, "NC");
+      	Aus.set(stav, "RINAB", stavke_otp, "INAB");
+      }
       return 0;
 	}
 	

@@ -243,6 +243,17 @@ public class rajpIzlazDPTemplate extends JPanel {
 	JraTextField jraLOT = new JraTextField();
 	
 	JraTextField jraPAK = new JraTextField();
+	
+	JraTextField jraRNC = new JraTextField() {
+    public void valueChanged() {
+      fDI.nabKal("RNC");
+    }
+  };
+	JraTextField jraRINAB = new JraTextField() {
+    public void valueChanged() {
+      fDI.nabKal("RINAB");
+    }
+  };
 
 	JraTextField jraIPRODSP = new JraTextField() {
 		public boolean isFocusTraversable() {
@@ -268,6 +279,8 @@ public class rajpIzlazDPTemplate extends JPanel {
 	JLabel jlFC = new JLabel();
 
 	JLabel jlZAKOL = new JLabel();
+	
+	JLabel jlNABTR = new JLabel();
 
 	JLabel jlKOL = new JLabel();
 	JLabel jlKOL1 = new JLabel();
@@ -467,7 +480,17 @@ public class rajpIzlazDPTemplate extends JPanel {
 		jlZAKOL.setHorizontalAlignment(SwingConstants.RIGHT);
 		jlFC.setText("Prodajna cijena");
 		jlFC.setHorizontalAlignment(SwingConstants.RIGHT);
+		
+		jlNABTR.setText("Nabavna cijena i iznos (za tranzit)");
+		jlNABTR.setHorizontalAlignment(SwingConstants.RIGHT);
 		//    jraIPRODSP.setEditable(false);
+		
+		jraRNC.setColumnName("RNC");
+		jraRNC.setDataSet(fDI.getDetailSet());
+
+		jraRINAB.setColumnName("RINAB");
+		jraRINAB.setDataSet(fDI.getDetailSet());
+		
 		jraIPRODSP.setColumnName("IPRODSP");
 		jraIPRODSP.setDataSet(fDI.getDetailSet());
 		/*jraIPRODSP.addFocusListener(new FocusAdapter() {
@@ -538,6 +561,9 @@ public class rajpIzlazDPTemplate extends JPanel {
 		xYLayoutDC.setHeight(50);
 		if (fDI.what_kind_of_dokument.equalsIgnoreCase("PON"))
 		  xYLayoutDC.setHeight(70);
+		if ((fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") ||
+				fDI.what_kind_of_dokument.equalsIgnoreCase("ODB")) && raIzlazTemplate.isNabDirect())
+			xYLayoutDC.setHeight(80);
 		xYLayoutDC.setWidth(660);
 		/*jpDetailCenter.setBorder(BorderFactory.createEtchedBorder());
 		if (rpcart.isbPrikazKolicina()) {
@@ -643,21 +669,27 @@ public class rajpIzlazDPTemplate extends JPanel {
 		jpDetailCenter.add(jtfKOL, new XYConstraints(15, 17, 100, -1));//15,15
 		jpDetailCenter.add(jlFC, new XYConstraints(120, 0, 110, -1)); //120
 		jpDetailCenter.add(jraFC, new XYConstraints(120, 17, 110, -1));//120
-		jpDetailCenter.add(jlPostotak, new XYConstraints(235, 0, 65, -1));
+		jpDetailCenter.add(jlPostotak, new XYConstraints(235, 0, 75, -1));
 		// Request by Mladen (Siniša)
 		//    jpDetailCenter.add(jraUPRAB, new XYConstraints(312, 15, 40, -1));
 		//    jpDetailCenter.add(jbRabat, new XYConstraints(357, 15, 21, 21));
-		jpDetailCenter.add(jraUPRAB, new XYConstraints(235, 17, 65, -1));
-		jpDetailCenter.add(jbRabat, new XYConstraints(613, 17, 21, 21));
-		jpDetailCenter.add(jlRABATI, new XYConstraints(305, 0, 110, -1));
-		jpDetailCenter.add(jraIPROBDP, new XYConstraints(305, 17, 110, -1));
-		jpDetailCenter.add(jLabel1, new XYConstraints(420, 0, 75, -1));
-		jpDetailCenter.add(jraPORER, new XYConstraints(420, 17, 75, -1));
-		jpDetailCenter.add(jlZAKOL, new XYConstraints(498, 0, 110, -1));
-		jpDetailCenter.add(jraIPRODSP, new XYConstraints(500, 17, 108, -1));
+		jpDetailCenter.add(jraUPRAB, new XYConstraints(235, 17, 75, -1));
+		jpDetailCenter.add(jbRabat, new XYConstraints(635, 17, 21, 21));
+		jpDetailCenter.add(jlRABATI, new XYConstraints(315, 0, 110, -1));
+		jpDetailCenter.add(jraIPROBDP, new XYConstraints(315, 17, 110, -1));
+		jpDetailCenter.add(jLabel1, new XYConstraints(430, 0, 75, -1));
+		jpDetailCenter.add(jraPORER, new XYConstraints(430, 17, 75, -1));
+		jpDetailCenter.add(jlZAKOL, new XYConstraints(510, 0, 110, -1));
+		jpDetailCenter.add(jraIPRODSP, new XYConstraints(510, 17, 110, -1));
         jpDetailCenter.add(focusField, new XYConstraints(560, 501, 1, -1));
-
-	}
+        
+    if ((fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") ||
+    	fDI.what_kind_of_dokument.equalsIgnoreCase("ODB")) && raIzlazTemplate.isNabDirect()) {
+    	jpDetailCenter.add(jlNABTR, new XYConstraints(15, 50, 360, -1));
+    	jpDetailCenter.add(jraRNC, new XYConstraints(395, 50, 110, -1));
+    	jpDetailCenter.add(jraRINAB, new XYConstraints(510, 50, 110, -1));
+    }	
+  }
 
 	public void addRestGRNGOT() {
 		//this.setPreferredSize(new Dimension(650, 140));
@@ -826,6 +858,8 @@ public class rajpIzlazDPTemplate extends JPanel {
 		jraZC.setDataSet(fDI.getDetailSet());
 		jraIRAZ.setDataSet(fDI.getDetailSet());
 		jraPORER.setDataSet(fDI.getDetailSet());
+		jraRNC.setDataSet(fDI.getDetailSet());
+		jraRINAB.setDataSet(fDI.getDetailSet());
 		rpcart.setTabela(fDI.getDetailSet());
 		rpcart.setParam(hr.restart.sisfun.frmParam
 				.getParam("robno", "indiCart"));

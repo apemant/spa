@@ -860,6 +860,23 @@ System.out.println(StavkeSet.getInt("CARt"));
 					String.valueOf(StavkeSet.getInt("RBSID")) })) {
 				findStavkeSet.setString("VEZA", keykey);
 				findStavkeSet.setString("STATUS", "P");
+				if (raIzlazTemplate.isNabDirect() &&
+						(StavkeSet.getString("VRDOK").equalsIgnoreCase("RAC") ||
+						 StavkeSet.getString("VRDOK").equalsIgnoreCase("GRN") ||
+						 StavkeSet.getString("VRDOK").equalsIgnoreCase("POS"))
+						&& TD.isDocSklad(rIT.what_kind_of_dokument)) {
+					Aus.add(findStavkeSet, "RINAB", rIT.getDetailSet(), "INAB");
+					if (findStavkeSet.getBigDecimal("KOL").signum() != 0)
+						Aus.div(findStavkeSet, "RNC", "RINAB", "KOL");
+				}
+			}
+			
+			if (raIzlazTemplate.isNabDirect() &&
+					(rIT.getDetailSet().getString("VRDOK").equalsIgnoreCase("RAC") ||
+					 rIT.getDetailSet().getString("VRDOK").equalsIgnoreCase("GRN")) &&
+					 TD.isDocSklad(StavkeSet.getString("VRDOK"))) {
+				Aus.set(rIT.getDetailSet(), "RNC", StavkeSet, "NC");
+				Aus.set(rIT.getDetailSet(), "RINAB", StavkeSet, "INAB");
 			}
 
 			addVTtext(StavkeSet, keykey);

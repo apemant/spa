@@ -230,13 +230,14 @@ public class upUlazIzlaz extends raUpitFat {
     uldok.getColumn("OIB").setVisible(showPar ? 1 : 0);
     /*if (csklEnab) lookupData.getlookupData().raLocate(dm.getSklad(), "CSKL", getDokuCskl());
     String vrzal = csklEnab ? dm.getSklad().getString("VRZAL") : "";*/
+    String rinab = raIzlazTemplate.isNabDirect() ? "RINAB" : "INAB";
     if (tds.getString("ULIZ").trim().equals("I")) {
       qStr="SELECT max(DOKI.CPAR) as CPAR, max(DOKI.DATDOK) as DATDOK, max(DOKI.DATDOSP) as DATDOSP, max(DOKI.VRDOK) as VRDOK, " +
       		"max(DOKI.CSKL) as CSKL, max(DOKI.BRDOK) as BRDOK, max(DOKI.CVRTR) as CVRTR, "+
       	   "sum(STDOKI.INAB) as INAB, "+findIRAZ("M")+", sum(STDOKI.UIRAB) as UIRAB, "+
            "sum(STDOKI.IPRODBP) as IPRODBP,  (sum(STDOKI.POR1)+sum(STDOKI.POR2)+sum(STDOKI.POR3)) as POREZ, "+
            "sum(STDOKI.IPRODSP) as IPRODSP, "+
-           "(sum(STDOKI.IPRODBP)-sum(STDOKI.INAB)) as ZARADA "+
+           "(sum(STDOKI.IPRODBP)-sum(STDOKI."+rinab+")) as ZARADA "+
            "from STDOKI,DOKI "+
            "where DOKI.CSKL=STDOKI.CSKL AND DOKI.VRDOK=STDOKI.VRDOK AND DOKI.GOD=STDOKI.GOD AND DOKI.BRDOK=STDOKI.BRDOK "+getKI()+
            getCsklOrCorg()+" AND DOKI.DATDOK >= "+rut.getTimestampValue(tds.getTimestamp("pocDatum"), rut.NUM_FIRST)+
