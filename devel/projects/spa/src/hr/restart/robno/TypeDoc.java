@@ -294,7 +294,7 @@ public class TypeDoc {
     else if ("ODB".equalsIgnoreCase(what_kind_of_document) ||
              "POD".equalsIgnoreCase(what_kind_of_document) ||
              "TER".equalsIgnoreCase(what_kind_of_document)) {
-      forReturn = 3;
+      forReturn = 0;
     }
     else if ("REV".equalsIgnoreCase(what_kind_of_document) ||
              "PRV".equalsIgnoreCase(what_kind_of_document)) {
