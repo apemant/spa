@@ -30,6 +30,10 @@ public class frmPovratKupca extends raIzlazTemplate {
                                       "hr.restart.robno.repIzlazni",
                                       "PovratnicaOdobrenje",
                                       "Ispis povratnice - odobrenja");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repOdobrenjaV",
+        "hr.restart.robno.repIzlazni",
+        "PovratnicaOdobrenje",
+        "Ispis povratnice - odobrenja u valuti");
     raMaster.getRepRunner().addReport("hr.restart.robno.repPODSifKup",
         "hr.restart.robno.repRacuniPnP",
         "PODSifKup",
@@ -54,6 +58,10 @@ public class frmPovratKupca extends raIzlazTemplate {
                                       "hr.restart.robno.repIzlazni",
                                       "PovratnicaOdobrenje",
                                       "Ispis povratnice - odobrenja");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repOdobrenjaV",
+        "hr.restart.robno.repIzlazni",
+        "PovratnicaOdobrenje",
+        "Ispis povratnice - odobrenja u valuti");
     raDetail.getRepRunner().addReport("hr.restart.robno.repPODSifKup",
         "hr.restart.robno.repRacuniPnP",
         "PODSifKup",
