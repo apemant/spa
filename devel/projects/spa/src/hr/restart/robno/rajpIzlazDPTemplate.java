@@ -828,6 +828,13 @@ public class rajpIzlazDPTemplate extends JPanel {
 		rcc.setLabelLaF(jraIPRODSP, false);
 		rcc.setLabelLaF(jraPORER, false);
 		rcc.setLabelLaF(jraIPROBDP, false);
+		if (raIzlazTemplate.isNabDirect() && fDI.allowNabedit) {
+		  if (!fDI.checkAccess()) {
+		    rcc.setLabelLaF(jtfKOL, false);
+	        rcc.setLabelLaF(jraFC, false);
+	        rcc.setLabelLaF(jraUPRAB, false);
+		  }
+		}
 
 		if (fDI.getDetailSet().getString("VRDOK").equalsIgnoreCase("GOT")
 				|| fDI.getDetailSet().getString("VRDOK")

@@ -180,6 +180,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 
 	boolean isUsluga = false;
 	boolean hideKup = false;
+	boolean allowNabedit = false;
 
 	// private String vrzal="";
 
@@ -480,6 +481,12 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
             what_kind_of_dokument.equals("GRN")) &&
             frmParam.getParam("robno", "kupacHack", "N",
                 "Omoguæiti skrivanje kupca na gotovinskim raèunima (D,N)").equals("D");
+		
+		allowNabedit = (what_kind_of_dokument.equals("RAC") ||
+		    what_kind_of_dokument.equals("ODB") ||
+		    what_kind_of_dokument.equals("TER")) &&
+		    frmParam.getParam("robno", "allowNabedit", "N",
+		        "Omoguæiti izmjenu nabavne vrijednosti proknjiženih RAC (D,N)").equals("D"); 
 		
 		setUserCheck(hr.restart.sisfun.frmParam
 				.getParam("robno", "userCheck", "D",
@@ -2155,9 +2162,14 @@ ST.prn(radninal);
 	public void enableDetailNavBar() {
 		enabdisabNavAction(raDetail, null, true);
 		if (!(checkAccess())) {
-			enabdisabNavAction(raDetail, new String[] { "Ispis" }, false);
-			return;
-		}
+          enabdisabNavAction(raDetail, new String[] { "Ispis" }, false);
+
+          if (isNabDirect() && allowNabedit)
+            raDetail.setEnabledNavAction(raDetail.getNavBar().
+                    getStandardOption(raNavBar.ACTION_UPDATE),true);
+
+          return;
+        }
 		if (getDetailSet().getRowCount() == 0) {
 			enabdisabNavAction(raDetail, new String[] { "Novi" }, false);
 		}
