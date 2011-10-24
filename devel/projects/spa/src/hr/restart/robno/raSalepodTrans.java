@@ -289,19 +289,18 @@ public class raSalepodTrans {
       czs.setBoolean(6, false);
       czs.setBigDecimal(7, Aus.zero2);
       czs.setBoolean(8, true);
-      
+
       System.out.println("Dodano "+czs.executeUpdate()+" zaglavlja cjenika");
-      
-      
+
       importDoc();
-      
+
       if (comm.length() > 0)
         callSync();          
-      
+
     } catch (SQLException e) {
       e.printStackTrace();
     }
-    
+
     } finally {
       release();
     }
@@ -541,5 +540,22 @@ public class raSalepodTrans {
   class Stav {
     int id, rbr, cart, kol;
     BigDecimal fc;
+  }
+  
+  public static void main(String[] args) {
+    
+    MsgDispatcher.install(false);
+    dM.getDataModule();
+    
+    int spod = Aus.getNumber(hr.restart.util.IntParam.getTag("salepod.delay"));
+    if (spod > 0)
+      raSalepodTrans.install(spod);
+   
+    try {
+      Thread.currentThread().join();
+    } catch (InterruptedException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
   }
 }
