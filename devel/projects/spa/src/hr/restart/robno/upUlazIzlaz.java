@@ -302,7 +302,8 @@ public class upUlazIzlaz extends raUpitFat {
           if (showPar && cpar > 0) {
             izdok.setInt("CPAR", cpar);
             izdok.setString("NAZPAR", pc.getNameNotNull(cpar));
-            izdok.setString("OIB", pc.getData(cpar).getOIB());
+            if (pc.getData(cpar) != null)
+              izdok.setString("OIB", pc.getData(cpar).getOIB());
           }
           izdok.setTimestamp("DATDOK",hr.restart.util.Util.getUtil().clearTime(vl.RezSet.getTimestamp("DATDOK")));
           if (!vl.RezSet.isNull("DATDOK"))
@@ -336,7 +337,8 @@ public class upUlazIzlaz extends raUpitFat {
           if (showPar && cpar > 0) {
             uldok.setInt("CPAR", cpar);
             uldok.setString("NAZPAR", pc.getNameNotNull(cpar));
-            uldok.setString("OIB", pc.getData(cpar).getOIB());
+            if (pc.getData(cpar) != null)
+              uldok.setString("OIB", pc.getData(cpar).getOIB());
           }
           dM.copyColumns(vl.RezSet, uldok, cc);
         }
