@@ -1592,7 +1592,7 @@ System.out.println("desetice "+inTxtVal.substring(9,11));
     }
   }
   
-  private static class LoadingConversionRules {
+  public static class LoadingConversionRules {
     public static final int IGNORE = 0;
     public static final int STRING = 1;
     public static final int INT = 2;
