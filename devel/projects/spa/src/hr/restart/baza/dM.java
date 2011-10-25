@@ -159,7 +159,7 @@ public class dM implements DataModule {
       crmURL = null;
     }
   }
-  
+    
   private boolean podInstalled = false;
   public void installPodConnection() {
     if (podInstalled) return;
@@ -186,6 +186,21 @@ public class dM implements DataModule {
     } catch (Exception e) {
       e.printStackTrace();
       podURL = null;
+    }
+    
+    dodURL = frmParam.getParam("sisfun", "dodURL", "", "Url za dodatnu bazu Salepod bazu");
+    
+    if (dodURL == null || dodURL.trim().length() == 0) {
+      dodURL = null;
+        return; 
+    }
+
+    try {
+      Connection c = DriverManager.getConnection(dodURL, conUSER, conPASS);
+      c.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      dodURL = null;
     }
   }
 
@@ -294,6 +309,8 @@ public class dM implements DataModule {
   String podUser = null;
   String podPass = null;
   
+  String dodURL = null;
+  
   public boolean isPod() {
     return podURL != null;
   }
@@ -301,6 +318,15 @@ public class dM implements DataModule {
   public Connection getPodConnection() {
     try {
       return podURL == null ? null : DriverManager.getConnection(podURL, podUser, podPass);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+  
+  public Connection getDodConnection() {
+    try {
+      return dodURL == null ? null : DriverManager.getConnection(dodURL, conUSER, conPASS);
     } catch (SQLException e) {
       e.printStackTrace();
       return null;
