@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import javax.swing.Timer;
 
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 import hr.restart.baza.Condition;
@@ -37,6 +39,7 @@ import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raTransaction;
+import hr.restart.util.Util.LoadingConversionRules;
 
 
 public class raSalepodTrans {
@@ -44,6 +47,7 @@ public class raSalepodTrans {
   String tsif;
   String comm;
   lookupData ld = lookupData.getlookupData();
+  int lastsucc = 0;
   
   static boolean busy = false;
   
@@ -68,6 +72,84 @@ public class raSalepodTrans {
       }
     });
     t.start();
+    Timer tk = new Timer(10*60*1000, new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        new raSalepodTrans().exportKartica(false);
+      }
+    });
+    tk.start();
+  }
+  
+  public void exportKartica(boolean force) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(new Timestamp(System.currentTimeMillis()));
+    int hour = cal.get(cal.HOUR_OF_DAY);
+    if (hour > lastsucc) lastsucc = hour;
+    if (lastsucc != 5 && !force) return;
+   
+    tsif = frmParam.getParam("sisfun", "salespodSifra", "39001",
+    "Šifra tvrtke za salespod");
+
+    comm = frmParam.getParam("sisfun", "salepodComm2", "",
+    "Komanda za sinkronizaciju kartica salepod-a");
+    
+    dM.getDataModule().installPodConnection();
+
+    if (!dM.getDataModule().isPod()) {
+      return;
+    }
+
+    if (isBusy()) return;
+    try {
+      String god = Valid.getValid().findYear();
+      god = Integer.toString(Aus.getNumber(god) - 1);
+      
+      DataSet shema = Aus.q("SELECT * FROM shkonta WHERE app='sisfun' and vrdok='SPD'");
+      String parq = "SELECT * from partneri where exists " +
+        "(select * from doki WHERE doki.cpar = partneri.cpar " +
+        "and doki.god>='#GOD')";
+      if (ld.raLocate(shema, "POLJE", "PAR")) {
+        parq = shema.getString("SQLCONDITION");
+      }
+      parq = new VarStr(parq).replace("#GOD", god).toString();
+      System.out.println(parq);
+    
+      DataSet par = Aus.q(parq);
+      
+      Connection crc = dM.getDataModule().getPodConnection();
+      if (crc == null) return;
+      
+      try {    
+        Statement d = crc.createStatement();
+        d.executeUpdate("DELETE FROM Input_Kartica");
+        d.close();
+        
+        PreparedStatement ps = crc.prepareStatement("INSERT INTO Input_Kartica(" +
+            "TvrtkaSifra,KupacSifra,Rbr,JeHtml,Sadrzaj) " +
+            "VALUES (?,?,?,?,?)"); 
+        
+        for (par.first(); par.inBounds(); par.next()) {
+          ps.setString(1, tsif);
+          ps.setString(2, par.getInt("CPAR")+"");
+          ps.setInt(3, 1);
+          ps.setBoolean(4, false);
+          ps.setString(5, par.getString("NAPS"));
+          System.out.println("Dodano "+ps.executeUpdate()+" kartica");
+        }
+        ps.close();
+        
+        if (comm.length() > 0) {
+          callSync();
+          System.out.println("Proces završio.");
+        }
+        
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    } finally {
+      lastsucc = 6;
+      release();
+    }
   }
 
   public void exportData() {
@@ -130,7 +212,6 @@ public class raSalepodTrans {
     DataSet npj = Aus.q(npjq);
     
     
-    
     String artq = "SELECT artikli.cart, artikli.nazart, artikli.nazpri, " +
     "artikli.bc, artikli.aktiv, artikli.cpor, grupart.cgrart, grupart.nazgrart, stanje.vc, stanje.mc " +
     "FROM artikli, stanje, grupart WHERE artikli.cart = stanje.cart "+
@@ -143,7 +224,36 @@ public class raSalepodTrans {
     
     DataSet art = Aus.q(artq);
     
+    String[] cc = {"NAZART", "NAZPRI", "AKTIV", "CPOR", "CGRART", "NAZGRART", "VC", "MC"};
+    String partq = "SELECT artikli.cart, artikli.nazart, artikli.nazpri, " +
+    "artikli.bc, artikli.aktiv, artikli.cpor, '99' as cgrart, " +
+    "'Reklamni materijal' as nazgrart, artikli.vc, artikli.mc " +
+    "FROM artikli";
+    if (ld.raLocate(shema, "POLJE", "PART")) {
+      partq = shema.getString("SQLCONDITION");
+    }
+
+    System.out.println(partq);
     
+    Connection dod = dM.getDataModule().getDodConnection();
+    
+    if (dod != null) try {
+      StorageDataSet part = new StorageDataSet();
+      part.setColumns(art.getColumns());
+      ResultSet rs = dod.createStatement().executeQuery(partq);
+      LoadingConversionRules lcr = new LoadingConversionRules(part, rs.getMetaData());
+      while (rs.next()) lcr.fillRow(part, rs);
+      rs.close();
+      for (part.first(); part.inBounds(); part.next()) {
+        art.insertRow(false);
+        dM.copyColumns(part, art, cc);
+        art.setInt("CART", part.getInt("CART") + 50000);
+        art.setString("BC", art.getInt("CART") + "");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
     Connection crc = dM.getDataModule().getPodConnection();
     if (crc == null) return;
     
@@ -402,7 +512,9 @@ public class raSalepodTrans {
       z.cagent = Aus.getNumber(zag.getString("PutnikSifra"));
       z.dvo = new Timestamp(zag.getTimestamp("DatumDVO").getTime());
       z.dosp = new Timestamp(zag.getTimestamp("DatumValute").getTime());
-      z.nap = zag.getString("Napomena");
+      z.nap = zag.getString("VrstaTransakcijeSifra") + ", " +
+          zag.getString("NacinPlacanjaSifra") + "\n" + 
+          zag.getString("Napomena");
       if (z.nap.length() > 200)
         z.nap = z.nap.substring(0, 200);
       zags.add(z);
