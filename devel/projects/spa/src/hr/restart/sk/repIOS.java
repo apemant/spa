@@ -21,6 +21,7 @@ import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.robno.repUtil;
 import hr.restart.robno.sgQuerys;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -44,12 +45,15 @@ public class repIOS implements raReportData { //sg.com.elixir.reportwriter.datas
   repUtil ru = repUtil.getrepUtil();
   hr.restart.util.Util ut =  hr.restart.util.Util.getUtil();
   repMemo re = repMemo.getrepMemo();
+  String oib;
 
   public repIOS() {
     ru.setDataSet(ds);
     ds = rik.getDataSet();
     if (rik.stm != null && rik.stm.countSelected() > 1)
       ds = rik.stm.getSelectedView(ds);
+    oib = frmParam.getParam("robno", "oibMode", "MB", 
+      "Staviti matièni broj (MB) ili OIB?");
   //sysoutTEST ST = new sysoutTEST(false);
   //ST.prn(ds);
   }
@@ -125,13 +129,23 @@ public class repIOS implements raReportData { //sg.com.elixir.reportwriter.datas
   
   public String getPartnerText() {
     lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", String.valueOf(ds.getInt("CPAR")));
-    return getCPAR() + "    " + getNAZPAR() + "    " + getMjestoIpbrPARTNERA() + ", " + getAdresaPARTNERA();
+    return getCPAR() + "    " + getNAZPAR() + "    " + getMjestoIpbrPARTNERA() + ", " + getAdresaPARTNERA() +
+      (dm.getPartneri().getString("OIB").length() == 0 ? "" :
+        ", OIB " + dm.getPartneri().getString("OIB"));
 }
 
   public String getMBPAR(){
-    if (lookupData.getlookupData().raLocate(dm.getPartneri(),"CPAR",ds.getInt("CPAR")+""))
-      return dm.getPartneri().getString("MB");
-    return "";
+    String result = "";
+    if (!oib.equalsIgnoreCase("MB")) {
+      if (lookupData.getlookupData().raLocate(dm.getPartneri(),"CPAR",ds.getInt("CPAR")+""))
+        result = "OIB " + dm.getPartneri().getString("OIB");
+    } 
+    if (oib.equalsIgnoreCase("MB") || result.length() == 0) {
+      colname[0] = "CPAR";
+      if (lookupData.getlookupData().raLocate(dm.getPartneri(),"CPAR",ds.getInt("CPAR")+""))
+        result = "MB " + dm.getPartneri().getString("MB"); 
+    }
+    return result;
   }
 
   public String getCORG(){
