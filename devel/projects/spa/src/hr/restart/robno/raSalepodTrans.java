@@ -222,7 +222,7 @@ public class raSalepodTrans {
     artq = new VarStr(artq).replace("#GOD", god).toString();
     System.out.println(artq);
     
-    DataSet art = Aus.q(artq);
+    StorageDataSet art = Aus.q(artq);
     
     String[] cc = {"NAZART", "NAZPRI", "AKTIV", "CPOR", "CGRART", "NAZGRART", "VC", "MC"};
     String partq = "SELECT artikli.cart, artikli.nazart, artikli.nazpri, " +
@@ -236,20 +236,21 @@ public class raSalepodTrans {
     System.out.println(partq);
     
     Connection dod = dM.getDataModule().getDodConnection();
-    
+    StorageDataSet part = null;
     if (dod != null) try {
-      StorageDataSet part = new StorageDataSet();
-      part.setColumns(art.getColumns());
+      part = new StorageDataSet();
+      part.setColumns(art.cloneColumns());
+      part.open();
       ResultSet rs = dod.createStatement().executeQuery(partq);
       LoadingConversionRules lcr = new LoadingConversionRules(part, rs.getMetaData());
       while (rs.next()) lcr.fillRow(part, rs);
       rs.close();
-      for (part.first(); part.inBounds(); part.next()) {
+      /*for (part.first(); part.inBounds(); part.next()) {
         art.insertRow(false);
         dM.copyColumns(part, art, cc);
         art.setInt("CART", part.getInt("CART") + 50000);
         art.setString("BC", art.getInt("CART") + "");
-      }
+      }*/
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -344,12 +345,18 @@ public class raSalepodTrans {
           "Sort,SortGrupa,OsnovicaCijena,UkupnaCijena,Rabat,StavkaAktivna) " +
           "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
       
+      for (int rep = 0; rep < 2; rep++) {
       for (art.first(); art.inBounds(); art.next()) {
         as.setString(1, tsif);
-        as.setString(2, art.getInt("CART")+"");
+        if (rep == 0) {
+          as.setString(2, art.getInt("CART")+"");
+          as.setString(5, art.getString("BC"));
+        } else {
+          as.setString(2, (art.getInt("CART")+50000)+"");
+          as.setString(5, (art.getInt("CART")+50000)+"");
+        }
         as.setString(3, art.getString("NAZART"));
         as.setString(4, max(art.getString("NAZPRI"),30));
-        as.setString(5, art.getString("BC"));
         as.setBoolean(6, false);
         as.setInt(7, 1);
         as.setBoolean(8, art.getString("AKTIV").equals("D"));
@@ -364,8 +371,8 @@ public class raSalepodTrans {
         as.setString(12, art.getString("CGRART"));
         as.setString(13, art.getString("NAZGRART"));
         as.setString(14, art.getString("CGRART"));
-        as.setString(15, art.getString("NAZPRI"));
-        as.setString(16, art.getString("NAZPRI"));
+        as.setString(15, max(art.getString("NAZPRI"), 50));
+        as.setString(16, max(art.getString("NAZPRI"), 50));
         as.setString(17, art.getString("NAZGRART"));
         as.setString(18, art.getString("CGRART"));
         System.out.println("Dodano "+as.executeUpdate()+" artikala");
@@ -375,7 +382,10 @@ public class raSalepodTrans {
         cs.setString(3, art.getString("NAZGRART"));
         cs.setString(4, art.getString("CGRART"));
         cs.setBoolean(5, true);
-        cs.setString(6, art.getInt("CART")+"");
+        if (rep==0)
+          cs.setString(6, art.getInt("CART")+"");
+        else 
+          cs.setString(6, (art.getInt("CART")+50000)+"");
         cs.setString(7, art.getString("NAZPRI"));
         cs.setString(8, art.getString("NAZPRI"));
         cs.setBigDecimal(9, art.getBigDecimal("VC"));
@@ -384,6 +394,8 @@ public class raSalepodTrans {
         cs.setBoolean(12, art.getString("AKTIV").equals("D"));
         
         System.out.println("Dodano "+cs.executeUpdate()+" cjenika");
+      }
+      if (part == null) break; else art = part;
       }
       
       PreparedStatement czs = crc.prepareStatement("INSERT INTO Input_Cjenik(" +
