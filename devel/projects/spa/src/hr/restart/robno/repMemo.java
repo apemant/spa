@@ -95,7 +95,8 @@ public class repMemo  {
   
   public String getOneLine() {
     return ds.getString("nazivlog") + ", " + ds.getString("adresa") + ", " +
-      ds.getInt("pbr") + " " + ds.getString("mjesto");
+      ds.getInt("pbr") + " " + ds.getString("mjesto") + 
+      (ds.getString("OIB").length() == 0 ? "" : ", OIB " + ds.getString("OIB")); 
   }
 
   public String getLogoCorg(){return test()?ds.getString("corg"):"";}
