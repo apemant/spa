@@ -54,6 +54,7 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
   private boolean selectAllOnFocusGained = true;
   private boolean disableEnter = true;
   private String maskCheckString = null;
+  public static JraTextField currentFocus = null; 
   
   protected boolean isSpecialPopUpAllowed(){
   	return false;
@@ -269,6 +270,7 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
       txtBefore = getText();
     }
     maskCheckString = null;
+    currentFocus = this;
     if (mask != null) mask.focusGained(e);
   }
 
@@ -312,8 +314,9 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
   
 
   public void focusLost(FocusEvent e) {
+    if (currentFocus == this) currentFocus = null;
     if (mask != null) mask.focusLost(e);
-    if (maskCheck() && !e.isTemporary()) select(0, 0);
+    if (maskCheck() && (e== null || !e.isTemporary())) select(0, 0);
   }
   void validateText() throws Exception {
     if (!dataBinder.isTextModified()) {

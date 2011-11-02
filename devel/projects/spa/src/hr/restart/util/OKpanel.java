@@ -21,6 +21,7 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.ActionExecutor;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.JraTextField;
 import hr.restart.swing.KeyAction;
 import hr.restart.swing.SharedFlag;
 
@@ -149,7 +150,9 @@ public abstract class OKpanel extends javax.swing.JPanel {
     jPrekid.setIcon(raImages.getImageIcon(raImages.IMGCANCEL));
     jBOK.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-    	  execOK.invoke();
+        if (JraTextField.currentFocus != null)
+          JraTextField.currentFocus.focusLost(null);
+    	execOK.invoke();
       }
     });
     

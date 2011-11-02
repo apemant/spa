@@ -1145,7 +1145,7 @@ public class JlrNavField extends JraTextField {
   }*/
   public void focusLost(FocusEvent e) {
     if (!maskCheck()) return;
-    if (!e.isTemporary()) select(0, 0);
+    if (e == null || !e.isTemporary()) select(0, 0);
     if (lastKey == KeyEvent.VK_ESCAPE) return;
 //    if (lastKey == KeyEvent.VK_F10) return;
     if (!isNavValuesChanged()) return;
