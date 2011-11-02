@@ -17,6 +17,9 @@
 ****************************************************************************/
 package hr.restart.util;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
 public abstract class raUpitFat extends raUpit{
   hr.restart.util.reports.JTablePrintRun jtpr = new hr.restart.util.reports.JTablePrintRun();
 
@@ -42,6 +45,12 @@ public abstract class raUpitFat extends raUpit{
   protected raNavAction rnvDoubleClick = new raNavAction(navDoubleClickActionName(), raImages.IMGSTAV, java.awt.event.KeyEvent.VK_F6){
     public void actionPerformed(java.awt.event.ActionEvent e){
       jptv_doubleClick();
+    }
+  };
+  
+  private raNavAction rnvIzlaz = new raNavAction("Izlaz", raImages.IMGX, KeyEvent.VK_ESCAPE) {
+    public void actionPerformed(ActionEvent e) {
+      raKeyEsc.invokeLater();
     }
   };
 
@@ -88,6 +97,8 @@ public abstract class raUpitFat extends raUpit{
       getJPTV().getNavBar().addOption(rnvDoubleClick, 0);
     if (!getJPTV().getNavBar().contains(rnvIspis))
       getJPTV().getNavBar().addOption(rnvIspis, 1);
+    if (!getJPTV().getNavBar().contains(rnvIzlaz))
+      getJPTV().getNavBar().addOption(rnvIzlaz, 1);
   }
   
   protected void upitCompleted() {
@@ -133,6 +144,8 @@ public abstract class raUpitFat extends raUpit{
     
     if (getJPTV().getNavBar().contains(rnvDoubleClick))
       this.getJPTV().getNavBar().removeOption(rnvDoubleClick);
+    if (getJPTV().getNavBar().contains(rnvIzlaz))
+      this.getJPTV().getNavBar().removeOption(rnvIzlaz);
   }
 
   public void removeNav(){
