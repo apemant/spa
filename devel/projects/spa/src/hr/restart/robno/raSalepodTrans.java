@@ -267,6 +267,7 @@ public class raSalepodTrans {
           "TvrtkaSifra,Sifra,Naziv,NazivSearch,Mbr,PorezniObveznik," +
           "Adresa1,Adresa2,Oib,Kontakt,Napomena,Aktivan) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"); 
       
+      int tot = 0, succ = 0;
       for (par.first(); par.inBounds(); par.next()) {
         ps.setString(1, tsif);
         ps.setString(2, par.getInt("CPAR")+"");
@@ -280,9 +281,11 @@ public class raSalepodTrans {
         ps.setString(10, par.getString("TEL"));
         ps.setString(11, "");
         ps.setBoolean(12, true);
-        System.out.println("Dodano "+ps.executeUpdate()+" partnera");
+        ++tot;
+        succ += ps.executeUpdate();
       }
       ps.close();
+      System.out.println("Dodano "+succ+"/"+tot+" partnera");
       
       Statement dj = crc.createStatement();
       dj.executeUpdate("DELETE FROM Input_KupacLokacija");
@@ -291,7 +294,7 @@ public class raSalepodTrans {
       PreparedStatement ls = crc.prepareStatement("INSERT INTO Input_KupacLokacija(" +
           "TvrtkaSifra,KupacSifra,Sifra,Naziv,NazivSearch," +
           "Adresa1,Adresa2,Aktivan,PutnikSifra,Kontakt,Napomena) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-      
+      tot = succ = 0;
       for (pj.first(); pj.inBounds(); pj.next()) {
         ls.setString(1, tsif);
         ls.setString(2, pj.getInt("CPAR")+"");
@@ -304,10 +307,12 @@ public class raSalepodTrans {
         ls.setString(9, "");
         ls.setString(10, pj.getString("TELPJ"));
         ls.setString(11, "");
-        
-        System.out.println("Dodano "+ls.executeUpdate()+" jedinica");
+        ++tot;
+        succ += ls.executeUpdate();
       }
+      System.out.println("Dodano "+succ+"/"+tot+" jedinica");
       
+      tot = succ = 0;
       for (npj.first(); npj.inBounds(); npj.next()) {
         ls.setString(1, tsif);
         ls.setString(2, npj.getInt("CPAR")+"");
@@ -320,9 +325,10 @@ public class raSalepodTrans {
         ls.setString(9, "");
         ls.setString(10, npj.getString("TELPJ"));
         ls.setString(11, "");
-        
-        System.out.println("Dodano "+ls.executeUpdate()+" default jedinica");
+        ++tot;
+        succ += ls.executeUpdate();
       }
+      System.out.println("Dodano "+succ+"/"+tot+" default jedinica");
       
       Statement da = crc.createStatement();
       da.executeUpdate("DELETE FROM Input_Proizvod");
@@ -345,6 +351,7 @@ public class raSalepodTrans {
           "Sort,SortGrupa,OsnovicaCijena,UkupnaCijena,Rabat,StavkaAktivna) " +
           "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
       
+      tot = succ = 0;
       for (int rep = 0; rep < 2; rep++) {
       for (art.first(); art.inBounds(); art.next()) {
         as.setString(1, tsif);
@@ -375,7 +382,8 @@ public class raSalepodTrans {
         as.setString(16, max(art.getString("NAZPRI"), 50));
         as.setString(17, art.getString("NAZGRART"));
         as.setString(18, art.getString("CGRART"));
-        System.out.println("Dodano "+as.executeUpdate()+" artikala");
+        ++tot;
+        succ += as.executeUpdate();        
       
         cs.setString(1, tsif);
         cs.setString(2, "OSNOVNI");
@@ -392,11 +400,12 @@ public class raSalepodTrans {
         cs.setBigDecimal(10, art.getBigDecimal("MC"));
         cs.setBigDecimal(11, Aus.zero2);
         cs.setBoolean(12, art.getString("AKTIV").equals("D"));
-        
-        System.out.println("Dodano "+cs.executeUpdate()+" cjenika");
+        ++tot;
+        succ += cs.executeUpdate();
       }
-      if (part == null) break; else art = part;
+      if (part == null) break; art = part;
       }
+      System.out.println("Dodano "+succ+"/"+tot+" artikala i cjenika");
       
       PreparedStatement czs = crc.prepareStatement("INSERT INTO Input_Cjenik(" +
           "TvrtkaSifra,CjenikNaziv,DatumVrijemeAktivacije,Pretpostavljen," +
