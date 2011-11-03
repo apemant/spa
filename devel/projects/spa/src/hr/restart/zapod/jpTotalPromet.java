@@ -110,6 +110,16 @@ public class jpTotalPromet extends JPanel {
   private JLabel jlProsjek = new JLabel();
   private JLabel jlProsjekRUC = new JLabel();
   private JLabel jlUkupno = new JLabel();
+  
+  private JPanel jpTotal = new JPanel();
+  private XYLayout tLay = new XYLayout();
+  private JLabel jlTotalSaldo = new JLabel();
+  private JLabel jlTotal = new JLabel();
+  private JLabel jlLimit = new JLabel();
+  private JLabel jlRazlika = new JLabel();
+  private JraTextField jtTotal = new JraTextField();
+  private JraTextField jtLimit = new JraTextField();
+  private JraTextField jtRazlika = new JraTextField();
 
   private JraTextField jtNepok = new JraTextField();
   private JraTextField jtNepokBroj = new JraTextField();
@@ -166,7 +176,7 @@ public class jpTotalPromet extends JPanel {
   private String[] bgc = {"PROKDUG", "PROKP", "PROKPOT", "PROKSALDO", "OTDUG", "OTP",
     "OTPOT", "OTSALDO", "DOSPDUG", "DOSPP", "DOSPPOT", "DOSPSALDO", "NDODUG",
     "NDOP", "NDOPOT", "NDOSALDO", "NEPROK", "NEPROKPROS", "NEPROKRUCPROS",
-    "UKUP", "UKUPPROS", "UKUPRUCPROS"};
+    "UKUP", "UKUPPROS", "UKUPRUCPROS", "TOTAL", "LIMIT", "RAZLIKA"};
 
 
   private void createDataSets() {
@@ -232,6 +242,9 @@ public class jpTotalPromet extends JPanel {
     jtUkupPros.setColumnName("UKUPPROS");
     jtUkupRucPros.setColumnName("UKUPRUCPROS");
     jtUkupBroj.setColumnName("UKUPBROJ");
+    jtTotal.setColumnName("TOTAL");
+    jtLimit.setColumnName("LIMIT");
+    jtRazlika.setColumnName("RAZLIKA");
     jtDugNDPost.setDataSet(totals);
     jtDugNN.setDataSet(totals);
     jtDugNNPost.setDataSet(totals);
@@ -253,6 +266,9 @@ public class jpTotalPromet extends JPanel {
     jtUkupPros.setDataSet(totals);
     jtUkupRucPros.setDataSet(totals);
     jtUkupBroj.setDataSet(totals);
+    jtTotal.setDataSet(totals);
+    jtLimit.setDataSet(totals);
+    jtRazlika.setDataSet(totals);
   }
 
   public DataSet getData() {
@@ -287,6 +303,18 @@ public class jpTotalPromet extends JPanel {
     jcbPoc.setHorizontalTextPosition(JLabel.LEADING);
     jcbPoc.setHorizontalAlignment(JLabel.TRAILING);
     jcbPoc.setSelected(lastPoc = true);
+    jpTotal.setLayout(tLay);
+    tLay.setWidth(565);
+    tLay.setHeight(55);
+    jpTotal.setBorder(BorderFactory.createEtchedBorder());
+    jlTotalSaldo.setText("Ukupno za kupca");
+    jlTotal.setText("Saldo");
+    jlTotal.setHorizontalAlignment(SwingConstants.CENTER);
+    jlLimit.setText("Limit");
+    jlLimit.setHorizontalAlignment(SwingConstants.CENTER);
+    jlRazlika.setText("Razlika");
+    jlRazlika.setHorizontalAlignment(SwingConstants.CENTER);
+    
     jpSaldak.setLayout(skLay);
     skLay.setWidth(565);
     skLay.setHeight(130);
@@ -322,6 +350,14 @@ public class jpTotalPromet extends JPanel {
     jpGod.add(jtGod, new XYConstraints(175, 15, 50, -1));
     jpGod.add(jbStart, new XYConstraints(230, 15, -1, 21));
     jpGod.add(jcbPoc, new XYConstraints(350, 14, 200, -1));
+    this.add(jpTotal);
+    jpTotal.add(jlTotalSaldo, new XYConstraints(15, 20, -1, -1));
+    jpTotal.add(jlTotal, new XYConstraints(230, 2, 100, -1));
+    jpTotal.add(jtTotal, new XYConstraints(230, 20, 100, -1));
+    jpTotal.add(jlLimit, new XYConstraints(340, 2, 100, -1));
+    jpTotal.add(jtLimit, new XYConstraints(340, 20, 100, -1));
+    jpTotal.add(jlRazlika, new XYConstraints(450, 2, 100, -1));
+    jpTotal.add(jtRazlika, new XYConstraints(450, 20, 100, -1));
     this.add(jpSaldak);
     jpSaldak.add(jlProk, new XYConstraints(15, 20, -1, -1));
     jpSaldak.add(jlDug,  new XYConstraints(175, 2, 100, -1));
@@ -366,6 +402,7 @@ public class jpTotalPromet extends JPanel {
 
     rcc.EnabDisabAll(jpSaldak, false);
     rcc.EnabDisabAll(jpNeprok, false);
+    rcc.EnabDisabAll(jpTotal, false);
 
     jpt1.setAutoResizeMode(jpt1.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
     jpt7.setAutoResizeMode(jpt7.AUTO_RESIZE_SUBSEQUENT_COLUMNS);

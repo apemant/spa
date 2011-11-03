@@ -333,6 +333,15 @@ public class dlgTotalPromet {
        totalProd.divide(new BigDecimal(totalBroj), BigDecimal.ROUND_HALF_UP));
     ds.setBigDecimal("UKUPRUCPROS", totalBroj == 0 ? z :
        totalRuc.divide(new BigDecimal(totalBroj), BigDecimal.ROUND_HALF_UP));
+    
+    ds.setBigDecimal("TOTAL", totalDug.subtract(totalPot).add(totalProd));
+    ds.setBigDecimal("LIMIT", Aus.zero2);
+    ds.setBigDecimal("RAZLIKA", Aus.zero2);
+    if (col.equals("CPAR") &&	ld.raLocate(dm.getPartneri(), "CPAR", Integer.toString(key))) {
+    	ds.setBigDecimal("LIMIT", dm.getPartneri().getBigDecimal("LIMKRED"));
+    	if (ds.getBigDecimal("LIMIT").signum() > 0)
+    		Aus.sub(ds, "RAZLIKA", "LIMIT", "TOTAL");
+    }
 
     for (int i = 0; i < 12; i++)
       pan.setMonthVals(i, mjProd[i], mjRuc[i]);
