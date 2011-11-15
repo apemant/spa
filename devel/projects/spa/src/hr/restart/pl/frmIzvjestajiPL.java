@@ -159,12 +159,12 @@ public class frmIzvjestajiPL extends raUpitLite {
   }
   public String getWhereQuery() {
     if (!inQueryNeeded()) return "corg = corg " + getBetweenAhrQuery();
-    return   "corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) + getBetweenAhrQuery();
+    return   "(corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) +") "+ getBetweenAhrQuery();
   }
 
   public String getWhereQuery(String tabela) {
     if (!inQueryNeeded()) return tabela+".corg = "+tabela+".corg"+getBetweenAhrQuery(tabela);
-    return   tabela+".corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) + getBetweenAhrQuery(tabela);
+    return   "("+tabela+".corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),tabela+".corg") +") "+ getBetweenAhrQuery(tabela);
   }
 
   public boolean Validacija(){

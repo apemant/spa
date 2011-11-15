@@ -163,7 +163,7 @@ public class Harach {
     }
     if (cradnik == null) {
       if (godmj==null || godmj.trim().length()!=6) {
-        radnik = "AND radnici.corg in "+OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndKnjig(corg), "radnici.cradnik");
+        radnik = "AND (radnici.corg in "+OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndKnjig(corg), "radnici.cradnik")+")";
       } else {
         OrgStr ors = OrgStr.getOrgStr();
         radnik = "AND (kumulradarh.corg in "+ors.getInQuery(ors.getOrgstrAndCurrKnjig(),"kumulradarh.corg")+")";
