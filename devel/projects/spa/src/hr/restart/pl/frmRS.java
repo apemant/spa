@@ -401,30 +401,37 @@ public class frmRS extends raUpitLite {
 //      detailRS.getColumn("CRADNIK").setRowId(true); // ODKOMENTIRATI AKO SE ODKOMENTIRA LINIJA 169! (???)
 //      detailRS.getColumn("RBR").setRowId(true);
 
-      detailRS.first();
-      do {
-        detailRS.setString("IDENTIFIKATOR",jpHead.headerRS.getString("IDENTIFIKATOR"));
-        detailRS.setString("VRSTAUPL",jpHead.headerRS.getString("CSIF"));
-        if (getVrstaUplate().equals("03")||getVrstaUplate().equals("05")){
-          detailRS.setString("RSINV","0");
-          detailRS.setString("RSB","0");
-//          detailRS.setString("RSZ","1");
-          detailRS.setShort("ODDANA", (short)0);
-          detailRS.setShort("DODANA", (short)0);
-          detailRS.setBigDecimal("SATI", Aus.zero0);
-          detailRS.setBigDecimal("PREMOS", Aus.zero0);
-        }
-        if (getVrstaUplate().equals("00")) {//nema uplate
-        	detailRS.setBigDecimal("NETOPK", Aus.zero0);
-        }
-      } while (detailRS.next());
+      parseDetailRS();
 //      System.out.println("if (!raTransaction.saveChan...");
       if (!raTransaction.saveChangesInTransaction(new QueryDataSet[] {detailRS,orgpl})) return; /// ??? cemu ovo ???
 //      System.out.println("proslo if (!raTransaction.saveChan...");
       dm.getOrgpl().refresh();
+    } else {
+//ovo vrijedi i za arhivu al bez sejvanja      
+      parseDetailRS();
     }
     jbDetail.setEnabled(true);
     System.out.println("jbDetail inejblan");
+  }
+
+  private void parseDetailRS() {
+    detailRS.first();
+    do {
+      detailRS.setString("IDENTIFIKATOR",jpHead.headerRS.getString("IDENTIFIKATOR"));
+      detailRS.setString("VRSTAUPL",jpHead.headerRS.getString("CSIF"));
+      if (getVrstaUplate().equals("03")||getVrstaUplate().equals("05")){
+        detailRS.setString("RSINV","0");
+        detailRS.setString("RSB","0");
+//          detailRS.setString("RSZ","1");
+        detailRS.setShort("ODDANA", (short)0);
+        detailRS.setShort("DODANA", (short)0);
+        detailRS.setBigDecimal("SATI", Aus.zero0);
+        detailRS.setBigDecimal("PREMOS", Aus.zero0);
+      }
+      if (getVrstaUplate().equals("00")) {//nema uplate
+      	detailRS.setBigDecimal("NETOPK", Aus.zero0);
+      }
+    } while (detailRS.next());
   }
 
   public boolean Validacija() {
