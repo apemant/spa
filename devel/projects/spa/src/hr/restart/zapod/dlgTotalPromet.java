@@ -334,7 +334,7 @@ public class dlgTotalPromet {
     ds.setBigDecimal("UKUPRUCPROS", totalBroj == 0 ? z :
        totalRuc.divide(new BigDecimal(totalBroj), BigDecimal.ROUND_HALF_UP));
     
-    ds.setBigDecimal("TOTAL", totalDug.subtract(totalPot).add(totalProd));
+    ds.setBigDecimal("TOTAL", totalDug.subtract(totalPot).add(neprokProd));
     ds.setBigDecimal("LIMIT", Aus.zero2);
     ds.setBigDecimal("RAZLIKA", Aus.zero2);
     if (col.equals("CPAR") &&	ld.raLocate(dm.getPartneri(), "CPAR", Integer.toString(key))) {
