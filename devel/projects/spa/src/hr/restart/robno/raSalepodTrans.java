@@ -34,13 +34,11 @@ import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.help.MsgDispatcher;
 import hr.restart.sisfun.frmParam;
-import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
-import hr.restart.util.raProcess;
 import hr.restart.util.raTransaction;
 import hr.restart.util.Util.LoadingConversionRules;
 import hr.restart.zapod.OrgStr;
@@ -77,27 +75,17 @@ public class raSalepodTrans {
       }
     });
     t.start();
-    Timer tk = new Timer(10*60*1000, new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        new raSalepodTrans().exportKartica(false);
-      }
-    });
-    tk.start();
   }
   
-  public void exportKartica(boolean force) {
+  public void exportKartica() {
     int when = Aus.getNumber(hr.restart.util.IntParam.getTag("salepod.hour"));
     if (when <= 0) when = 5;
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(new Timestamp(System.currentTimeMillis()));
-    int hour = cal.get(cal.HOUR_OF_DAY);
-    if (hour > lastsucc) lastsucc = hour;
-    if (lastsucc != when && !force) return;
+    System.out.println("export kartica, when " + when);
    
     tsif = frmParam.getParam("sisfun", "salespodSifra", "39001",
     "Šifra tvrtke za salespod");
 
-    comm = frmParam.getParam("sisfun", "salepodComm2", "",
+    comm = frmParam.getParam("sisfun", "salepodComm", "",
     "Komanda za sinkronizaciju kartica salepod-a");
     
     dM.getDataModule().installPodConnection();
@@ -136,8 +124,8 @@ public class raSalepodTrans {
         
         PreparedStatement ps = crc.prepareStatement("INSERT INTO Input_Kartica(" +
             "TvrtkaSifra,KupacSifra,KupacLokacijaSifra,Rbr,JeHtml,Sadrzaj) " +
-            "VALUES (?,?,?,?,?)"); 
-        
+            "VALUES (?,?,?,?,?,?)"); 
+        int tot = 0, succ = 0;
         for (par.first(); par.inBounds(); par.next()) {
           ps.setString(1, tsif);
           ps.setString(2, par.getInt("CPAR")+"");
@@ -145,9 +133,10 @@ public class raSalepodTrans {
           ps.setInt(4, 1);
           ps.setBoolean(5, false);
           ps.setString(6, getCard(par.getInt("CPAR")));
-          if (!ld.raLocate(pj, "CPAR", par.getInt("CPAR")+""))
-            System.out.println("Dodano "+ps.executeUpdate()+" kartica");
-          else {
+          if (!ld.raLocate(pj, "CPAR", par.getInt("CPAR")+"")) {
+            ++tot;
+            succ += ps.executeUpdate();
+          } else {
             do {
               ps.setString(1, tsif);
               ps.setString(2, par.getInt("CPAR")+"");
@@ -155,11 +144,13 @@ public class raSalepodTrans {
               ps.setInt(4, 1);
               ps.setBoolean(5, false);
               ps.setString(6, getCard(par.getInt("CPAR")));
-              System.out.println("Dodano "+ps.executeUpdate()+" kartica");
+              ++tot;
+              succ += ps.executeUpdate();
             } while (pj.next() && (pj.getInt("CPAR") == par.getInt("CPAR")));
           }
         }
         ps.close();
+        System.out.println("Dodano "+succ+"/"+tot+" kartica");
         
         if (comm.length() > 0) {
           callSync();
@@ -170,14 +161,15 @@ public class raSalepodTrans {
         e.printStackTrace();
       }
     } finally {
-      lastsucc = 6;
+      lastsucc = when + 1;
+      System.out.println("export kartica, lastsucc " + lastsucc);
       release();
     }
   }
   
   public void findDoks() {
     sk = Skstavke.getDataModule().getTempSet(
-        "CPAR VRDOK BROJDOK DATDOK ID IP SALDO", Aus.getKnjigCond().
+        "CPAR VRDOK BROJDOK DATDOK DATDOSP ID IP SALDO", Aus.getKnjigCond().
         and(Condition.equal("POKRIVENO", "N")).
         and(Aus.getCurrGKDatumCond(Valid.getValid().getToday()).
         and(Condition.in("VRDOK", new String[] {"IRN", "UPL", "OKK"}))));
@@ -194,7 +186,7 @@ public class raSalepodTrans {
 
     String query =
         "SELECT max(doki.cpar) as cpar, max(doki.vrdok) as vrdok, max(doki.pnbz2) as pnbz2, " +
-        "max(doki.datdok) as datdok, sum(stdoki.iprodsp) as iprodsp "+
+        "max(doki.datdok) as datdok,max(doki.datdosp) as datdosp, sum(stdoki.iprodsp) as iprodsp "+
         "FROM doki,stdoki WHERE "+Util.getUtil().getDoc("doki","stdoki")+" AND "+
         period.and(Condition.equal("STATKNJ", "N")).and((sklDok.and(Condition.in("CSKL", skl))).
         or(orgDok.and(Condition.in("CSKL", knj, "CORG")))).qualified("doki") +
@@ -205,11 +197,19 @@ public class raSalepodTrans {
   
   public String getCard(int cpar) {
     List doks = new ArrayList();
-    BigDecimal saldo = Aus.zero0;
+    BigDecimal saldo = Aus.zero0, dsaldo = Aus.zero0, nsaldo = Aus.zero0;
+    Timestamp today = hr.restart.util.Util.getUtil().
+              getFirstSecondOfDay(Valid.getValid().getToday());
     if (ld.raLocate(sk, "CPAR", Integer.toString(cpar))) do {
-      if (sk.getBigDecimal("ID").signum() != 0)
+      if (sk.getBigDecimal("ID").signum() != 0) {
         saldo = saldo.add(sk.getBigDecimal("SALDO"));
-      else saldo = saldo.subtract(sk.getBigDecimal("SALDO"));
+        if (!today.after(sk.getTimestamp("DATDOSP")))
+          nsaldo = nsaldo.add(sk.getBigDecimal("SALDO"));
+        else dsaldo = dsaldo.add(sk.getBigDecimal("SALDO"));
+      } else {
+        saldo = saldo.subtract(sk.getBigDecimal("SALDO"));
+        dsaldo = dsaldo.subtract(sk.getBigDecimal("SALDO"));
+      }
       doks.add(sk.getString("VRDOK") + " " + sk.getString("BROJDOK") +
           " od " + Aus.formatTimestamp(sk.getTimestamp("DATDOK")) +
           " = " + Aus.formatBigDecimal(sk.getBigDecimal("SALDO")));
@@ -218,14 +218,21 @@ public class raSalepodTrans {
     if (ld.raLocate(rob, "CPAR", Integer.toString(cpar))) do {
 
       saldo = saldo.add(rob.getBigDecimal("IPRODSP"));
+      if (!today.after(rob.getTimestamp("DATDOSP")))
+        nsaldo = nsaldo.add(rob.getBigDecimal("IPRODSP"));
+      else dsaldo = dsaldo.add(rob.getBigDecimal("IPRODSP"));
 
       doks.add(rob.getString("VRDOK") + " " + rob.getString("PNBZ2") +
           " od " + Aus.formatTimestamp(rob.getTimestamp("DATDOK")) +
           " = " + Aus.formatBigDecimal(rob.getBigDecimal("IPRODSP")));
     } while (rob.next() && (rob.getInt("CPAR") == cpar));
     
+    if (nsaldo.signum() * dsaldo.signum() == -1)
+      dsaldo = Aus.zero2;
+    
     String card = "\n";
     card += "Ukupni saldo kupca: " + Aus.formatBigDecimal(saldo) + "\n";
+    card += "Dospjeli saldo: " + Aus.formatBigDecimal(dsaldo) + "\n";
     if (ld.raLocate(dM.getDataModule().getPartneri(), "CPAR", Integer.toString(cpar)))
       card += "Limit kreditiranja: " + Aus.formatBigDecimal(
           dM.getDataModule().getPartneri().getBigDecimal("LIMKRED")) + "\n";
@@ -242,6 +249,20 @@ public class raSalepodTrans {
   }
 
   public void exportData() {
+    int when = Aus.getNumber(hr.restart.util.IntParam.getTag("salepod.hour"));
+    if (when <= 0) when = 5;
+    System.out.println("when " + when);
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(new Timestamp(System.currentTimeMillis()));
+    int hour = cal.get(cal.HOUR_OF_DAY);
+    System.out.println("hour " + hour);
+    if (hour > lastsucc) lastsucc = hour;
+    System.out.println("lastsucc " + lastsucc);
+    if (lastsucc == when) {
+      exportKartica();
+      return;
+    }
+    
     tsif = frmParam.getParam("sisfun", "salespodSifra", "39001",
         "Šifra tvrtke za salespod");
     
@@ -302,7 +323,7 @@ public class raSalepodTrans {
     
     
     String artq = "SELECT artikli.cart, artikli.nazart, artikli.nazpri, " +
-    "artikli.bc, artikli.aktiv, artikli.cpor, grupart.cgrart, grupart.nazgrart, stanje.vc, stanje.mc " +
+    "artikli.bc, artikli.aktiv, artikli.cpor, artikli.nazpak, artikli.brjed, grupart.cgrart, grupart.nazgrart, stanje.vc, stanje.mc " +
     "FROM artikli, stanje, grupart WHERE artikli.cart = stanje.cart "+
     "AND artikli.cgrart = grupart.cgrart and stanje.god>='#GOD' and stanje.cskl='206'"; 
     if (ld.raLocate(shema, "POLJE", "ART")) {
@@ -483,10 +504,19 @@ public class raSalepodTrans {
           cs.setString(6, art.getInt("CART")+"");
         else 
           cs.setString(6, (art.getInt("CART")+50000)+"");
-        cs.setString(7, art.getString("NAZPRI"));
-        cs.setString(8, art.getString("NAZPRI"));
-        cs.setBigDecimal(9, art.getBigDecimal("VC"));
-        cs.setBigDecimal(10, art.getBigDecimal("MC"));
+        cs.setString(7, max(art.getString("NAZPRI"), 50));
+        cs.setString(8, max(art.getString("NAZPRI"), 50));
+        if (art.getString("NAZPAK").equals("salespod")) {
+          cs.setBigDecimal(9, art.getBigDecimal("VC").
+              multiply(art.getBigDecimal("BRJED")).
+              setScale(2, BigDecimal.ROUND_HALF_UP));
+          cs.setBigDecimal(10, art.getBigDecimal("MC").
+              multiply(art.getBigDecimal("BRJED")).
+              setScale(2, BigDecimal.ROUND_HALF_UP));
+        } else {
+          cs.setBigDecimal(9, art.getBigDecimal("VC"));
+          cs.setBigDecimal(10, art.getBigDecimal("MC"));
+        }
         cs.setBigDecimal(11, Aus.zero2);
         cs.setBoolean(12, art.getString("AKTIV").equals("D"));
         ++tot;
@@ -553,7 +583,7 @@ public class raSalepodTrans {
   
     String[] acc = {"CART", "CART1", "BC", "NAZART", "JM"};
     
-    
+
     Connection crc = dM.getDataModule().getPodConnection();
     Statement mark = crc.createStatement();
     
@@ -721,11 +751,11 @@ public class raSalepodTrans {
           if (ld.raLocate(dM.getDataModule().getArtikli(), "CART", ""+s.cart)) {
             dM.copyColumns(dM.getDataModule().getArtikli(), dst, acc);
             dst.post();
-            if (dM.getDataModule().getArtikli().getString("NAZPAK").equals("salespod"))
-              Aus.mul(dst, "KOL", dM.getDataModule().getArtikli(), "BRJED"); 
+            if (dM.getDataModule().getArtikli().getString("NAZPAK").equals("salespod")) {
+              Aus.mul(dst, "KOL", dM.getDataModule().getArtikli(), "BRJED");
+              Aus.div(dst, "FC", dM.getDataModule().getArtikli().getBigDecimal("BRJED"));
+            }
           } 
-          
-                    
         }
       }
       saveOrder(dzg, dst);
