@@ -2546,7 +2546,7 @@ System.out.println("findCjenik::else :: "+sql);
         buf.append("\n");
         
         buf.append("DA");        
-        buf.append(getPadded(new VarStr(repUtil.getFormatBroj(ms)).removeChars("/-").toString(), 16));
+        buf.append(getPadded(ms.getString("PNBZ2"), 16));
         buf.append("1");
         buf.append(edif.format(ms.getTimestamp("DVO")));
         buf.append(getPadded(ms.getString("BRNARIZ"), 20));

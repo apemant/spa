@@ -968,7 +968,11 @@ public BigDecimal getIPRODSP() {
   public String getFormatBroj(){
     if (specForm == null || specForm.length() == 0)
       return ru.getFormatBroj();
-    
+    if (specForm.equalsIgnoreCase("pnbz2")) {
+      if (ds.getString("PNBZ2").trim().length()>0)
+        return ds.getString("PNBZ2");
+      return ru.getFormatBroj();
+    }
     return Aus.formatBroj(ds, specForm);
   }
   
@@ -1980,5 +1984,3 @@ public BigDecimal getIPRODSP() {
   //-------------------------------------------------------------
 
 }
-
-

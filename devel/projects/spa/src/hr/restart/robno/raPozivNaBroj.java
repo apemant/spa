@@ -90,7 +90,7 @@ public class raPozivNaBroj {
     String specForm = frmParam.getParam("robno", "specForm", "",
       "Custom format broja izlaznog dokumenta na ispisu");
     
-    if (specForm != null && specForm.length() > 0)
+    if (specForm != null && specForm.length() > 0 && !specForm.equalsIgnoreCase("pnbz2"))
       return Aus.formatBroj(ds, specForm);
 
     if (hr.restart.sisfun.frmParam.getParam
