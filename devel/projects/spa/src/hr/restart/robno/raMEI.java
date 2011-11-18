@@ -114,6 +114,11 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     setDetailKey(dkey);
     this.setVisibleColsMaster(new int[] {5,6,0,1});
     setVisibleColsDetail(new int[] {5,Aut.getAut().getCARTdependable(6,7,8),9,10,11});
+    
+    rCD.setisNeeded(hr.restart.sisfun.frmParam.getParam("robno",
+        "kontKalk", "D",
+        "Kontrola ispravosti redoslijeda unosa dokumenata")
+        .equalsIgnoreCase("D"));
 
     raMaster.getRepRunner().clearAllReports();
     raDetail.getRepRunner().clearAllReports();
