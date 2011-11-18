@@ -878,6 +878,13 @@ System.out.println(StavkeSet.getInt("CARt"));
 				Aus.set(rIT.getDetailSet(), "RNC", StavkeSet, "NC");
 				Aus.set(rIT.getDetailSet(), "RINAB", StavkeSet, "INAB");
 			}
+			if (raIzlazTemplate.isNabDirect() &&
+                (rIT.getDetailSet().getString("VRDOK").equalsIgnoreCase("ROT") ||
+                 rIT.getDetailSet().getString("VRDOK").equalsIgnoreCase("GOT") ||
+                 rIT.getDetailSet().getString("VRDOK").equalsIgnoreCase("POD"))) {
+              Aus.set(rIT.getDetailSet(), "RNC", "NC");
+              Aus.set(rIT.getDetailSet(), "RINAB", "INAB");
+            }
 
 			addVTtext(StavkeSet, keykey);
 			uirac = uirac.add(rIT.getDetailSet().getBigDecimal("IPRODSP"));
