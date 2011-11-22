@@ -18,29 +18,46 @@
 package hr.restart.robno;
 
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
 
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
+import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
+import hr.restart.swing.JraTextField;
+import hr.restart.swing.raDateMask;
+import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raMultiLineMessage;
+import hr.restart.swing.raTextMask;
 import hr.restart.util.Aus;
+import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
+import hr.restart.util.raComboBox;
 import hr.restart.util.raImages;
+import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raProcess;
 import hr.restart.util.raTransaction;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 public class raPOS extends raIzlazTemplate  {
 //  hr.restart.util.startFrame SF;
@@ -221,4 +238,231 @@ public class raPOS extends raIzlazTemplate  {
     expanded.setString("CSKL", cskl.startsWith("#") ? cskl.substring(1) : cskl);
     expanded.post();
   }
+  
+  static int oldpj = 0;
+  static StorageDataSet tds = new StorageDataSet();
+  public static void zakljucak() {
+  	JPanel pan = new JPanel(new XYLayout(415, 75));
+  	tds = new StorageDataSet();
+  		tds.setColumns(new Column[] {
+  				dM.createTimestampColumn("DATDOK")
+  		});
+  		tds.open();
+  		tds.setTimestamp("DATDOK", Valid.getValid().getToday());
+    JraTextField dat = new JraTextField();
+    dat.setColumnName("DATDOK");
+    dat.setDataSet(tds);
+  	raComboBox pj = new raComboBox() {
+    	public void this_itemStateChanged() {
+    		oldpj = getSelectedIndex();
+    	}
+    };
+    pj.setRaItems(new String[][] {
+    		{"Robna kuæa \"Vesna\"", "1"},
+    		{"Robna kuæa \"Tena\"", "2"},
+    		{"Robna kuæa \"Pierre\"", "3"}
+    });
+    dat.setHorizontalAlignment(JLabel.CENTER);
+    new raDateMask(dat);
+    pan.add(new JLabel("Datum zakljuèka"), new XYConstraints(15,15,-1,-1));
+    pan.add(dat, new XYConstraints(300, 15, 100, -1));
+    pan.add(new JLabel("Prodajno mjesto"), new XYConstraints(15,40,-1,-1));
+    pan.add(pj, new XYConstraints(190, 40, 210, -1));
+    pj.setSelectedIndex(oldpj);
+    
+    raInputDialog od = new raInputDialog();
+    if (!od.show(null, pan, "Zakljuèak blagajne")) return;
+    
+    raProcess.runChild(new Runnable() {		
+			public void run() {
+				new raLocalTransaction(){
+					
+					public boolean transaction() throws Exception {
+						perform();
+						return true;
+					}
+				
+				}.execTransaction();
+			}
+		});
+  }
+  
+  public static void perform() throws Exception {
+  	String cpar = frmParam.getParam("robno", "razdCpar", "1", "Šifra partnera za razduženje blagajne");
+  	String tr = frmParam.getParam("robno", "razdTros", "01", "Šifra vrste troška razduženje blagajne");
+  	
+  	Condition dat = Condition.till("DATDOK", tds).and(Condition.from("DATDOK", 
+        hr.restart.util.Util.getUtil().getFirstDayOfYear(tds.getTimestamp("DATDOK"))));
+  	DataSet ds = getArtikliSet(dat);
+
+		QueryDataSet rzag = doki.getDataModule().getTempSet("1=0");
+		rzag.open();
+		
+		QueryDataSet rst = stdoki.getDataModule().getTempSet("1=0");
+		rst.open();
+		
+		QueryDataSet izag = doki.getDataModule().getTempSet("1=0");
+		izag.open();
+		
+		QueryDataSet ist = stdoki.getDataModule().getTempSet("1=0");
+		ist.open();
+		
+		QueryDataSet sta = Stanje.getDataModule().getTempSet("cskl like '" + (oldpj+1) + "%' and god='" + 
+				Valid.getValid().findYear(tds.getTimestamp("DATDOK")) + "'");
+		sta.open();
+		
+		hr.restart.util.LinkClass lc = hr.restart.util.LinkClass.getLinkClass();
+		lookupData ld = lookupData.getlookupData();
+	  raKalkulBDDoc rKD = new raKalkulBDDoc();
+	  
+	  String[] icols = {"CART", "CART1", "BC", "NAZART", "JM", "KOL"};
+	  String[] cols = {"CART", "CART1", "BC", "NAZART", "JM", "KOL", 
+        "UIRAB", "UPRAB", "FC", "INETO", "FVC", 
+        "IPRODBP", "POR1", "POR2", "POR3", "FMC", "MC", 
+        "IPRODSP", "PPOR1", "PPOR2", "PPOR3"};
+		
+		String cskl = "", vrzal = "";
+		int rbr = 0;
+		for (ds.first(); ds.inBounds(); ds.next()) {
+			if (cskl != ds.getString("CSKL")) {
+				cskl = ds.getString("CSKL");
+				
+				
+				ld.raLocate(dM.getDataModule().getSklad(), "CSKL", cskl);
+				vrzal = dM.getDataModule().getSklad().getString("VRZAL");
+				rzag.insertRow(false);
+				rzag.setString("CSKL", cskl);
+				rzag.setString("VRDOK", "POS");
+				rzag.setTimestamp("DATDOK", tds.getTimestamp("DATDOK"));
+				rzag.setTimestamp("DVO", tds.getTimestamp("DATDOK"));
+				rzag.setTimestamp("DATDOSP", tds.getTimestamp("DATDOK"));
+				rzag.setInt("CPAR", Aus.getNumber(cpar));
+				Util.getUtil().getBrojDokumenta(rzag);
+				Aus.clear(rzag, "UIRAC");
+				raTransaction.runSQL("update pos set status='P', rdok='" + raControlDocs.getKey(rzag) +
+            "' where "+ dat.and(Condition.equal("CSKL", cskl).and(Condition.equal("STATUS", "N"))).qualified("pos"));
+				
+				izag.insertRow(false);
+				izag.setString("CSKL", cskl);
+				izag.setString("VRDOK", "IZD");
+				izag.setTimestamp("DATDOK", tds.getTimestamp("DATDOK"));
+				izag.setString("CORG", cskl);
+				izag.setString("CVRTR", tr);
+				Util.getUtil().getBrojDokumenta(izag);
+				
+				rbr = 0;
+			}
+			
+			if (ds.getBigDecimal("KOL").signum() != 0) {
+				Aus.add(rzag, "UIRAC", ds, "IPRODSP");
+				rst.insertRow(false);
+		  	dM.copyColumns(ds, rst, cols);
+		    rst.setString("CSKL", rzag.getString("CSKL"));
+		    rst.setString("VRDOK", rzag.getString("VRDOK"));
+		    rst.setString("GOD", rzag.getString("GOD"));
+		    rst.setInt("BRDOK", rzag.getInt("BRDOK"));
+		    rst.setShort("RBR", (short) ++rbr);
+		    rst.setInt("RBSID", (int) rst.getShort("RBR"));
+		    rst.setString("CSKLART", ds.getString("CSKL"));
+		    rst.setString("ID_STAVKA",
+	          raControlDocs.getKey(rst, new String[] { "cskl",
+	              "vrdok", "god", "brdok", "rbsid" }, "stdoki"));
+		    rst.post();
+		    
+		    ist.insertRow(false);
+		    dM.copyColumns(ds, ist, icols);
+		    ist.setString("CSKL", izag.getString("CSKL"));
+		    ist.setString("VRDOK", izag.getString("VRDOK"));
+		    ist.setString("GOD", izag.getString("GOD"));
+		    ist.setInt("BRDOK", izag.getInt("BRDOK"));
+		    ist.setShort("RBR", (short) rbr);
+		    ist.setInt("RBSID", (int) ist.getShort("RBR"));
+		    ist.setString("ID_STAVKA",
+	          raControlDocs.getKey(ist, new String[] { "cskl",
+	              "vrdok", "god", "brdok", "rbsid" }, "stdoki"));
+		    ist.setString("VEZA", rst.getString("ID_STAVKA"));
+		    
+		    ld.raLocate(sta, new String[] {"CSKL", "CART"}, new String[] {izag.getString("CSKL"), ds.getInt("CART")+""});
+		    Aus.sub(sta, "KOLREZ", ds, "KOL");
+		    
+		    
+		    rKD.stanje.Init();
+	      lc.TransferFromDB2Class(sta,rKD.stanje);
+	      rKD.stanje.sVrSklad=vrzal;
+	      rKD.stavkaold.Init();
+	      rKD.stavka.Init();
+	      rKD.stavka.kol = ds.getBigDecimal("KOL");
+		    
+	      rKD.KalkulacijaStavke("IZD","KOL",'N',cskl,false);
+	      rKD.KalkulacijaStanje("IZD");
+	      lc.TransferFromClass2DB(ist,rKD.stavka);
+	      lc.TransferFromClass2DB(sta,rKD.stanje);
+      }
+			
+		}
+		raTransaction.saveChanges(rzag);
+		raTransaction.saveChanges(rst);
+		raTransaction.saveChanges(izag);
+		raTransaction.saveChanges(ist);
+		raTransaction.saveChanges(sta);
+		raTransaction.saveChanges(dM.getDataModule().getSeq());
+  }
+  
+  static DataSet getArtikliSet(Condition cond) {
+    VarStr q = new VarStr(
+        "SELECT m.cskl, d.cart, d.cart1, d.bc, d.jm, d.nazart, " +
+        "d.kol, d.rezkol, d.ipopust1+d.ipopust2 as uirab, " +
+        "(d.ipopust1+d.ipopust2)/d.iznos*100 as uprab, " +
+        "(d.iznos-d.por1-d.por2-d.por3)/d.kol as fc, " +
+        "(d.iznos-d.por1-d.por2-d.por3) as ineto, " +
+        "(d.neto-d.por1-d.por2-d.por3)/d.kol as fvc, " +
+        "(d.neto-d.por1-d.por2-d.por3) as iprodbp, " +
+        "d.por1, d.por2, d.por3, d.neto/d.kol as fmc, d.mc, " +
+        "d.neto as iprodsp, d.ppor1, d.ppor2, d.ppor3, " +
+        "d.cskl from pos m, stpos d WHERE " + Util.getUtil().getDoc("m", "d") +
+        " AND m.status='N' AND d.iznos!=0 AND d.kol!=0 AND " +
+        "m.cskl like '" + (oldpj+1) + "%' and "
+    );
+   
+    q.append(cond.qualified("m"));
+    System.out.println("sql: "+q);
+    
+    String[] cols = {"CSKL", "CART", "CART1", "BC", "NAZART", "JM", "KOL", 
+        "REZKOL", "UIRAB", "UPRAB", "FC", "INETO", "FVC", 
+        "IPRODBP", "POR1", "POR2", "POR3", "FMC", "MC", 
+        "IPRODSP", "PPOR1", "PPOR2", "PPOR3", "CSKL", "BRDOK"};
+    String[] sumc = {"KOL", "UIRAB", "INETO", "IPRODBP", 
+          "POR1", "POR2", "POR3", "IPRODSP"};
+    StorageDataSet inter = stdoki.getDataModule().getScopedSet(cols);       
+    hr.restart.util.Util.fillReadonlyData(inter, q.toString());
+    inter.setSort(new SortDescriptor(
+        new String[] {"CSKL", "CART", "REZKOL", "UPRAB", "BRDOK"}));
+    
+    StorageDataSet group = stdoki.getDataModule().getScopedSet(cols);
+    group.open();
+    
+    String cskl = "";
+    int cart = -999;
+    String rezkol = "";
+    BigDecimal uprab = Aus.zero2;
+    for (inter.first(); inter.inBounds(); inter.next()) {
+      if (!inter.getString("CSKL").equals(cskl) ||
+      		inter.getInt("CART") != cart || 
+          !inter.getString("REZKOL").equals(rezkol) ||
+          inter.getBigDecimal("UPRAB").compareTo(uprab) != 0) {
+        group.insertRow(false);
+        dM.copyColumns(inter, group, cols);
+        cskl = inter.getString("CSKL");
+        cart = inter.getInt("CART");
+        rezkol = inter.getString("REZKOL");
+        uprab = inter.getBigDecimal("UPRAB");
+      } else {
+        for (int i = 0; i < sumc.length; i++)
+          Aus.add(group, sumc[i], inter, sumc[i]);
+      }
+    }
+    group.setSort(new SortDescriptor(new String[] {"CSKL", "BRDOK"}));
+    return group;
+  }
+  
 }

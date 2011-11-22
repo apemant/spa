@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.pos;
 
+import hr.restart.robno.raPOS;
 import hr.restart.util.PreSelect;
 import hr.restart.util.raLoader;
 
@@ -46,6 +47,7 @@ public class jposMenu extends JMenu {
   public JMenuItem jmRekapitulacijaPOS = new JMenuItem();
   public JMenuItem jmPregledArtikliRacuni = new JMenuItem();
   public JMenuItem jmZbroj = new JMenuItem();
+  public JMenuItem jmZakljucak = new JMenuItem();
 
   public jposMenu(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -111,6 +113,12 @@ public class jposMenu extends JMenu {
         frmSumaPos.show();
       }
     });
+    jmZakljucak.setText("Zakljuèak blagajne");
+    jmZakljucak.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        raPOS.zakljucak();
+      }
+    });
     this.add(jmBlagajna);
 //    this.add(jmGOT);
 //    this.add(jmRazduzenjePOSa);
@@ -119,8 +127,12 @@ public class jposMenu extends JMenu {
     this.addSeparator();
     this.add(jmRekapitulacijaPOS);
     this.add(jmPregledArtikliRacuni);
-    if (presBlag.isSkladOriented())
+    if (presBlag.isSkladOriented()) {
+    	this.addSeparator();
+    	this.add(jmZakljucak);
+    	this.addSeparator();
       this.add(jmZbroj);
+    }
   }
 
   public void jmBlagajna_actionPerformed(ActionEvent e) {
