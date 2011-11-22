@@ -28,19 +28,33 @@ import hr.restart.swing.raNumberMask;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raTextMask;
 import hr.restart.util.Aus;
-import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
+import hr.restart.util.raComboBox;
 
 
 public class frmSumaPos {
-    
+  
+	static int oldpj = 0;
   public static void show() {
-    JPanel pan = new JPanel(new XYLayout(400, 50));
+    JPanel pan = new JPanel(new XYLayout(400, 75));
     JraTextField num = new JraTextField();
+    raComboBox pj = new raComboBox() {
+    	public void this_itemStateChanged() {
+    		oldpj = getSelectedIndex();
+    	}
+    };
+    pj.setRaItems(new String[][] {
+    		{"Robna kuæa \"Vesna\"", "1"},
+    		{"Robna kuæa \"Tena\"", "2"},
+    		{"Robna kuæa \"Pierre\"", "3"}
+    });
     num.setHorizontalAlignment(JLabel.TRAILING);
     new raTextMask(num, 5, false, raTextMask.DIGITS);
     pan.add(new JLabel("Zbrojiti zadnjih raèuna"), new XYConstraints(15,15,-1,-1));
     pan.add(num, new XYConstraints(300, 15, 85, -1));
+    pan.add(new JLabel("Prodajno mjesto"), new XYConstraints(15,40,-1,-1));
+    pan.add(pj, new XYConstraints(175, 40, 210, -1));
+    pj.setSelectedIndex(oldpj);
     
     raInputDialog od = new raInputDialog();
     if (!od.show(null, pan, "Zbroj raèuna")) return;
@@ -54,6 +68,7 @@ public class frmSumaPos {
     	  "FROM pos,rate WHERE pos.cskl = rate.cskl " +
     	  "AND pos.vrdok = rate.vrdok AND pos.god = rate.god " +
     	  "AND pos.brdok = rate.brdok AND pos.cprodmj = pos.cprodmj " +
+    	  "and pos.cskl like '" + (oldpj+1) + "%' " +
     	  "and " + Condition.from("SYSDAT", new Timestamp(
     	      System.currentTimeMillis() - 1000*3600*6)).qualified("pos"));
     
