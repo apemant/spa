@@ -117,7 +117,8 @@ public class frmMasterBlagajna extends raMasterDetail {
   dM dm = dM.getDataModule();
   raNavAction navBEFEXIT = new raNavAction("Naplata",raImages.IMGEXPORT2,KeyEvent.VK_F7) {
     public void actionPerformed(ActionEvent e) {
-      pressF7('B');
+    	if (allowEdit || raUser.getInstance().isSuper() || presBlag.isSuper)
+    		pressF7('B');
     }
   };
   raNavAction navPOPUST = new raNavAction("Popust",raImages.IMGPREFERENCES,KeyEvent.VK_F12) {
@@ -788,7 +789,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     raMaster.setAutoFirstOnShow(false);
     raDetail.setSize(hr.restart.start.getSCREENSIZE());
     raDetail.addOption(navKUPAC,4,false);
-    raDetail.addOption(navBEFEXIT,5);
+    raDetail.addOption(navBEFEXIT,5,false);
     raDetail.addOption(navPOPUST,6);
     raDetail.addOption(navEXIT,7);
     if (hr.restart.sisfun.frmParam.getParam(
@@ -808,7 +809,7 @@ public class frmMasterBlagajna extends raMasterDetail {
 //    jpBl.setDataSet(getMasterSet(), getDetailSet());
     raDetail.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F7) {
       public void keyAction() {
-        if (allowEdit) pressF7('U');
+        if (allowEdit || raUser.getInstance().isSuper() || presBlag.isSuper) pressF7('U');
       }
     });
     raDetail.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F11) {
