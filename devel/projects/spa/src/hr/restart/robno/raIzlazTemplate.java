@@ -3050,6 +3050,21 @@ System.out.println("findCjenik::else :: "+sql);
 				dm.getArtikli().enableDataSetEvents(true);
 
 			}
+			
+			nacPlDod();
+			if (vcinc.signum() > 0) {
+			  BigDecimal mc = lc.getBDField("FMC", rKD.stavka);
+              BigDecimal vc = lc.getBDField("FVC", rKD.stavka);
+              vc = vc.multiply(Aus.one0.add(vcinc.movePointLeft(2))).
+                    setScale(2, BigDecimal.ROUND_HALF_UP);
+              mc = mc.multiply(Aus.one0.add(vcinc.movePointLeft(2))).
+                    setScale(2, BigDecimal.ROUND_HALF_UP);
+              lc.setBDField("FC", vc, rKD.stavka);
+              lc.setBDField("FVC", vc, rKD.stavka);
+              lc.setBDField("FMC", mc, rKD.stavka);
+              lc.setBDField("FMCPRP", mc, rKD.stavka);
+			}
+			
 			// //////////////////////////////////////////////////////////////////////////////
 			// racuna li se popust odmah na MC
 			if (isMaloprodajnaKalkulacija && isPopustMC) {
@@ -3841,10 +3856,10 @@ System.out.println("findCjenik::else :: "+sql);
 	
 	BigDecimal vcinc = Aus.zero2, vcdec = Aus.zero2;
 	void nacPlDod() {
-		if (lD.raLocate(dm.getNamjena(), new String[] { "CNAMJ" },
-				new String[] { getMasterSet().getString("CNAMJ")})) {
-			vcinc = dm.getNamjena().getBigDecimal("VCINC");
-			vcdec = dm.getNamjena().getBigDecimal("VCDEC");
+		if (lD.raLocate(dm.getNacpl(), new String[] { "CNACPL" },
+				new String[] { getMasterSet().getString("CNACPL")})) {
+			vcinc = dm.getNacpl().getBigDecimal("VCINC");
+			vcdec = dm.getNacpl().getBigDecimal("VCDEC");
 		}
 	}
 
