@@ -862,6 +862,22 @@ public BigDecimal getPOR3() {
   public double getUKPOR3() {
     return getPOR1()+getPOR2()+getPOR3();
   }
+  
+  public double getUIU() {
+    return ds.getBigDecimal("UIU").doubleValue();
+  }
+  
+  public Boolean getUIUprint() {
+    return new Boolean(getUIU() > 0);
+  }
+  
+  public String getUIUlabel() {
+    return "Uèešæe";
+  }
+  
+  public String getUIUlabel2() {
+    return "Preostalo";
+  }
 
   public BigDecimal getFMC() {
     return ds.getBigDecimal("FMC");
