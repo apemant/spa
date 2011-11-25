@@ -223,7 +223,7 @@ public class JasperElixirData implements JRDataSource {
   private static final String[] validReturns = {
     "int", "short", "long", "double", "float",
     "java.lang.String", "java.sql.Date",
-    "java.sql.Timestamp", "java.math.BigDecimal"
+    "java.sql.Timestamp", "java.math.BigDecimal", "java.lang.Boolean"
   };
   
   private static final String[][] validTypes = {
@@ -235,7 +235,8 @@ public class JasperElixirData implements JRDataSource {
     {"java.lang.String", "java.lang.String"},
     {"java.sql.Date", "java.sql.Date"},
     {"java.sql.Timestamp", "java.sql.Timestamp"},
-    {"java.math.BigDecimal", "java.math.BigDecimal"}
+    {"java.math.BigDecimal", "java.math.BigDecimal"},
+    {"java.lang.Boolean", "java.lang.Boolean"}
   };
   
   private static final Map valids = new HashMap();

@@ -42,7 +42,7 @@ public class raElixirDatasource {
   private static final String[] validReturns = {
     "int", "short", "long", "double", "float",
     "java.lang.String", "java.sql.Date",
-    "java.sql.Timestamp", "java.math.BigDecimal"
+    "java.sql.Timestamp", "java.math.BigDecimal", "java.lang.Boolean"
   };
   public static final HashSet valids = new HashSet(Arrays.asList(validReturns));
 
