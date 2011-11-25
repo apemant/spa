@@ -47,6 +47,8 @@ public class frmNacPl extends raSifraNaziv {
   XYLayout xYLayout1 = new XYLayout();
   JLabel jLabel1 = new JLabel();
   JraTextField jtfPOP = new JraTextField();
+  JraTextField jtfVCINC = new JraTextField();
+  JraTextField jtfVCDEC = new JraTextField();
 //  JraCheckBox jdbCheckBox1 = new JraCheckBox();
 //  JraCheckBox jdbCheckBox2 = new JraCheckBox();
   raComboBox jcbPlacFlags = new raComboBox();
@@ -70,7 +72,7 @@ public class frmNacPl extends raSifraNaziv {
     dm = hr.restart.baza.dM.getDataModule();
     jLabel1.setText("Popust");
     xYLayout1.setWidth(555);
-    xYLayout1.setHeight(70);
+    xYLayout1.setHeight(95);
     jp.setLayout(xYLayout1);
     this.setRaDataSet(dm.getAllNacpl());
     this.setRaColumnSifra("CNACPL");
@@ -78,6 +80,10 @@ public class frmNacPl extends raSifraNaziv {
     this.setRaText("Na\u010Din pla\u0107anja");
     jtfPOP.setDataSet(getRaDataSet());
     jtfPOP.setColumnName("POPUSTI");
+    jtfVCINC.setDataSet(getRaDataSet());
+    jtfVCINC.setColumnName("VCINC");
+    jtfVCDEC.setDataSet(getRaDataSet());
+    jtfVCDEC.setColumnName("VCDEC");
 /*
     * Standardni naputak za uporabu:
     *
@@ -124,7 +130,11 @@ public class frmNacPl extends raSifraNaziv {
     jp.add(jbVRDOK,     new XYConstraints(544, 30, 21, 21));
     jp.add(jrfNAZDOK,  new XYConstraints(260, 30, 280, -1));
     jp.add(jlVRDOK,  new XYConstraints(15, 30, -1, -1));
-
+    jp.add(new JLabel("Poveæanje cijene"),  new XYConstraints(15, 55, -1, -1));
+    jp.add(jtfVCINC,   new XYConstraints(150, 60, 100, -1));
+    jp.add(new JLabel("Uèešæe"),  new XYConstraints(360, 60, -1, -1));
+    jp.add(jtfVCDEC, new XYConstraints(440, 60, 100, -1));
+    
     /*
     jdbCheckBox1.setHorizontalAlignment(SwingConstants.RIGHT);
     jdbCheckBox1.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -142,6 +152,7 @@ public class frmNacPl extends raSifraNaziv {
     jdbCheckBox2.setUnselectedDataValue("N");
     jp.add(jdbCheckBox1, new XYConstraints(340, 0, 200, -1));
     jp.add(jdbCheckBox2, new XYConstraints(340, 25, 200, -1));
+    
 */
     jp.add(jLabel1, new XYConstraints(15, 0, -1, -1));
     jp.add(jtfPOP,   new XYConstraints(150, 0, 100, -1));

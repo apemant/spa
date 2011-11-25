@@ -1671,6 +1671,9 @@ ST.prn(radninal);
 			try {
 			  if (TD.isDocFinanc(what_kind_of_dokument)) {
     			  Aus.sub(getMasterSet(), "UIRAC", tmpIPRODSP);
+    			  nacPlDod();
+    			  getMasterSet().setBigDecimal("UIU", getMasterSet().getBigDecimal("UIRAC").multiply(vcdec).
+    			  		movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
     				raTransaction.saveChanges(getMasterSet());
 			  } else if (TD.isDocSklad(what_kind_of_dokument)) {
 			    Aus.sub(getMasterSet(), "UIRAC", tmpIRAZ);
@@ -1825,6 +1828,9 @@ ST.prn(radninal);
 		  if (TD.isDocFinanc(what_kind_of_dokument)) {
 		    Aus.addSub(getMasterSet(), "UIRAC",
 		        getDetailSet(), "IPRODSP", tmpIPRODSP);
+		    nacPlDod();
+		    getMasterSet().setBigDecimal("UIU", getMasterSet().getBigDecimal("UIRAC").multiply(vcdec).
+			  		movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
 		    raTransaction.saveChanges(getMasterSet());
 		  } else if (TD.isDocSklad(what_kind_of_dokument)) {
 		    Aus.addSub(getMasterSet(), "UIRAC",
@@ -3832,6 +3838,15 @@ System.out.println("findCjenik::else :: "+sql);
 			}
 		}
 	}
+	
+	BigDecimal vcinc = Aus.zero2, vcdec = Aus.zero2;
+	void nacPlDod() {
+		if (lD.raLocate(dm.getNamjena(), new String[] { "CNAMJ" },
+				new String[] { getMasterSet().getString("CNAMJ")})) {
+			vcinc = dm.getNamjena().getBigDecimal("VCINC");
+			vcdec = dm.getNamjena().getBigDecimal("VCDEC");
+		}
+	}
 
 	public void defNamjena() {
 		// namjena
@@ -4042,6 +4057,8 @@ System.out.println("findCjenik::else :: "+sql);
 		}
 
 		getMasterSet().setBigDecimal("UIRAC", uirac);
+		nacPlDod();
+		getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
 		raLocalTransaction rltpopustAllApply = new raLocalTransaction() {
 			public boolean transaction() throws Exception {
 				raTransaction.saveChanges(forallpopust);
@@ -4353,6 +4370,8 @@ System.out.println("findCjenik::else :: "+sql);
       uirac = uirac.add(ds.getBigDecimal("IPRODSP"));
     }
     getMasterSet().setBigDecimal("UIRAC", uirac);
+    nacPlDod();
+    getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
     if (raTransaction.saveChangesInTransaction(
         new QueryDataSet[] {getMasterSet(), getDetailSet()})) 
       JOptionPane.showMessageDialog(raMaster.getWindow(), 
