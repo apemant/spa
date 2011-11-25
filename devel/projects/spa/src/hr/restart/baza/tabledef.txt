@@ -826,6 +826,7 @@ CBLAG;char;6;;;Blagajna
 PROVISP;numeric;15,2;;0;Isplaæena provizija;8
 PROVPOST;numeric;6,2;;0;Postotak naknade
 BRZAP;int;6;;;Broj zapisnika
+UIU;numeric;15,2;;0;Uèešæe;8
 IDX=cpar
 
 $stdoki
@@ -1276,6 +1277,22 @@ SUPER;char;1;;;Super
 BRISANJE;char;1;;;Brisanje
 LOZINKA;char;16;;;Lozinka;*
 CSMJENA;int;6;;;Smjena
+
+$nacpl
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CNACPL;char;3;pkey;;Šifra;5
+NAZNACPL;char;30;;;Naziv
+FL_CEK;char;1;;;Èek
+FL_KARTICA;char;1;;;Kartica
+FL_GOT;char;1;;;Gotovina
+SALDAK;char;1;;N;Bezgotovinski
+POPUSTI;numeric;10,2;;0;Popust;8
+BROJKONTA;char;8;;;Konto
+VRDOK;char;3;;;Vrsta dokumenta
+VCINC;numeric;10,2;;0;Poveæanje;8
+VCDEC;numeric;10,2;;0;Uèešæe;8
+
 
 $Artnap
 CAN;char;6;pkey;;Šifra

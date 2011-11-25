@@ -24,15 +24,15 @@ import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class nacpl extends KreirDrop implements DataModule {
-  ResourceBundle dmRes = ResourceBundle.getBundle("hr.restart.baza.dmRes");
+  //ResourceBundle dmRes = ResourceBundle.getBundle("hr.restart.baza.dmRes");
   private static nacpl nacplclass;
-  dM dm  = dM.getDataModule();
+  // dM dm  = dM.getDataModule();
   QueryDataSet nacpl = new raDataSet();
   QueryDataSet nacplaktiv = new raDataSet();
   QueryDataSet nacplG = new raDataSet();
   QueryDataSet nacplB = new raDataSet();
 
-  Column nacplLOKK = new Column();
+  /*Column nacplLOKK = new Column();
   Column nacplAKTIV = new Column();
   Column nacplCNACPL = new Column();
   Column nacplNAZNACPL = new Column();
@@ -42,8 +42,8 @@ public class nacpl extends KreirDrop implements DataModule {
   Column nacplSALDAK = new Column();
   Column nacplPOP = new Column();
   Column nacplBROJKONTA = new Column();
-  Column nacplVRDOK = new Column();
-
+  Column nacplVRDOK = new Column();*/
+  
   public static nacpl getDataModule() {
     if (nacplclass == null) {
       nacplclass = new nacpl();
@@ -77,7 +77,7 @@ public class nacpl extends KreirDrop implements DataModule {
   }
 
   private void jbInit() throws Exception {
-    nacplPOP.setCaption("Popust");
+    /*nacplPOP.setCaption("Popust");
     nacplPOP.setColumnName("POPUSTI");
     nacplPOP.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
     nacplPOP.setPrecision(10);
@@ -176,13 +176,14 @@ public class nacpl extends KreirDrop implements DataModule {
     nacpl.setResolver(dm.getQresolver());
     nacpl.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(), "select * from nacpl", null, true, Load.ALL));
  setColumns(new Column[] {nacplLOKK, nacplAKTIV, nacplCNACPL, nacplNAZNACPL, nacplFL_CEK, nacplFL_KARTICA, nacplFL_GOT, nacplSALDAK, nacplPOP, nacplBROJKONTA, nacplVRDOK});
-
+*/
+  	initModule();
     createFilteredDataSet(nacplaktiv, "aktiv='D'");
     createFilteredDataSet(nacplG, "aktiv='D' AND saldak='N'");
     createFilteredDataSet(nacplB, "aktiv='D' AND saldak='D'");
   }
 
-  public void setall(){
+  //public void setall(){
 
     /*SqlDefTabela = "create table nacpl " +
       "(lokk char(1) CHARACTER SET WIN1250 default 'N', " +
@@ -194,7 +195,7 @@ public class nacpl extends KreirDrop implements DataModule {
       "popusti numeric(6,2)," +
       "Primary Key (cnacpl))" ; */
 
-    ddl.create("nacpl")
+/*    ddl.create("nacpl")
        .addChar("lokk", 1, "N")
        .addChar("aktiv", 1, "D")
        .addChar("cnacpl", 3, true)
@@ -216,11 +217,11 @@ public class nacpl extends KreirDrop implements DataModule {
     String[] uidx = new String[] {};
     DefIndex = ddl.getIndices(idx, uidx);
     NaziviIdx = ddl.getIndexNames(idx, uidx);
-
+*/
 /*
     NaziviIdx=new String[]{"inacplkey" };
 
     DefIndex= new String[] {CommonTable.SqlDefIndex+NaziviIdx[0] +" on nacpl (cnacpl)"};
 */
-  }
+//  }
 }
