@@ -27,7 +27,7 @@ public class raIzlazSectionFooterLines extends raReportSection {
   public raReportElement Line2;
   private String[] Line2Props = new String[] {"", "", "6860", "1570", "3950", "0", "", "", ""};
   public raReportElement Label1;
-  private String[] Label1Props = new String[] {"", "", "9040", "160", "1780", "1360", "Normal",
+  private String[] Label1Props = new String[] {"", "", "9040", "160", "1780", "1380", "Normal",
      "Light Gray", "Solid", "Light Gray", "", "", "Lucida Bright", "8", "Bold", "", "", "Center"};
   public raReportElement LabelUkupno;
   private String[] LabelUkupnoProps = new String[] {"Ukupno", "", "6860", "180", "2180", "240", "",
@@ -107,6 +107,28 @@ public class raIzlazSectionFooterLines extends raReportSection {
   public raReportElement Line4;
   private String[] Line4Props = new String[] {"", "No", "660", "960", "5440", "0", "", "", ""};
   
+  public raReportElement Text6;
+  private String[] Text6Props = new String[] {
+     "UIUlabel", "", "", "", "", "", "", "", "6860",
+     "1660", "2180", "240", "", "",
+     "", "", "", "", "Lucida Bright", "9", "", "", "", "Right", ""};
+  public raReportElement Text7;
+  private String[] Text7Props = new String[] {
+     "UIU", "", "",
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9120", "1660", "1700", "240", "", "",
+     "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right", ""};
+  public raReportElement Text8;
+  private String[] Text8Props = new String[] {
+     "UIUlabel2", "", "",
+     "", "", "", "", "", "6860", "1940", "2180", "240", "", "",
+     "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right", ""};
+  public raReportElement Text9;
+  private String[] Text9Props = new String[] {
+     "=(+ (- (dsum \"IPRODBP\") [UIU]) (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")))", "", "",
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9120", "1940", "1700", "240", "", "",
+     "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right", ""};
+  
+  
   public raReportElement TextPOPNASLOV;
   private String[] TextPOPNASLOVProps = new String[] {"POPNASLOV", "", "", "",
      "", "", "Yes", "", "640", "1260", "5020", "240", "", "Light Gray", "", "", "", "",
@@ -178,6 +200,10 @@ public class raIzlazSectionFooterLines extends raReportSection {
     Text4 = addModel(ep.TEXT, Text4Props);
     LabelUkupno_porez = addModel(ep.LABEL, LabelUkupno_porezProps);
     Text5 = addModel(ep.TEXT, Text5Props);
+    Text6 = addModel(ep.TEXT, Text6Props);
+    Text7 = addModel(ep.TEXT, Text7Props);
+    Text8 = addModel(ep.TEXT, Text8Props);
+    Text9 = addModel(ep.TEXT, Text9Props);
     LabelUkupno_s_porezom = addModel(ep.LABEL, LabelUkupno_s_porezomProps);
     Line2 = addModel(ep.LINE, Line2Props);
     Line3 = addModel(ep.LINE, Line3Props);
