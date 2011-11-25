@@ -1142,6 +1142,8 @@ SwingUtilities.invokeLater(new Runnable(){
 		JraRadioButton jrbShemaRAB = new JraRadioButton();
 
 		JraTextField jtfUPRAB = new JraTextField();
+		
+		JraTextField jtfUIU = new JraTextField();
 
 		JraButton jbRabDetail = new JraButton();
 
@@ -1201,6 +1203,7 @@ SwingUtilities.invokeLater(new Runnable(){
 					});
 
 			jtfUPRAB.setColumnName("UPRAB");
+			jtfUIU.setColumnName("UIU");
 			jrfCSHRAB.setColumnName("CSHRAB");
 			jrfCSHRAB.setColNames(new String[] { "NSHRAB" });
 			jrfCSHRAB.setVisCols(new int[] { 0, 1 });
@@ -1224,7 +1227,8 @@ SwingUtilities.invokeLater(new Runnable(){
 //			add(jtfUPRAB, new XYConstraints(280, 15, 80, -1));
 			add(jlUPRAB, new XYConstraints(262, 15, -1, -1));
 			add(jtfUPRAB, new XYConstraints(175, 15, 80, -1));
-			
+			add(new JLabel("Uèešæe"), new XYConstraints(440, 15, -1, -1));
+			add(jtfUIU, new XYConstraints(532, 15, 100, -1));
 
 			add(jrbShemaRAB, new XYConstraints(15, 45, -1, -1));
 			add(jlCSHRAB, new XYConstraints(32, 70, -1, -1));
@@ -1239,6 +1243,7 @@ SwingUtilities.invokeLater(new Runnable(){
 
 		public void BindComp() {
 			jtfUPRAB.setDataSet(fDI.getMasterSet());
+			jtfUIU.setDataSet(fDI.getMasterSet());
 			jrfCSHRAB.setDataSet(fDI.getMasterSet());
 		}
 
