@@ -442,6 +442,13 @@ public class ElixirToJasperConverter {
       return createBarcodeElement(m, cs);
     
     JRDesignTextField tf = new JRDesignTextField();
+    if (cs.indexOf("UIU")>=0) {
+      JRDesignExpression pw = new JRDesignExpression();
+      pw.setText("$F{UIUprint}");
+      pw.setValueClass(Boolean.class);
+      tf.setPrintWhenExpression(pw);
+      data.setUsedGetter("UIUprint");
+    }
     tf.setBlankWhenNull(true);
     tf.setWrapAllowed(!ev.NO.equals(m.getPropertyValue(ep.GROW)));
     tf.setStretchWithOverflow(tf.isWrapAllowed() ||
