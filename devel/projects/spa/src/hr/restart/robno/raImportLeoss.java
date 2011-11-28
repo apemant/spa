@@ -9,17 +9,10 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
-import hr.restart.baza.Condition;
-import hr.restart.baza.Doku;
-import hr.restart.baza.Meskla;
-import hr.restart.baza.Stanje;
-import hr.restart.baza.Stdoku;
-import hr.restart.baza.Stmeskla;
-import hr.restart.baza.dM;
-import hr.restart.baza.doki;
-import hr.restart.baza.stdoki;
+import hr.restart.baza.*;
 import hr.restart.help.MsgDispatcher;
 import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
@@ -33,10 +26,13 @@ public class raImportLeoss {
 
 	lookupData ld = lookupData.getlookupData();
 	allStanje AST = allStanje.getallStanje();
+	boolean delfiles = false;
 	
 	public void process() {
 		String path = frmParam.getParam("robno", "leossPath", "",
   		"Putanja mape za import Leoss dokumenata");
+		delfiles = "D".equals(frmParam.getParam("robno", "leossDel", "N",
+        "Pobrisati leoss datoteke nakon importa (D,N)"));
 		
 		File dir = new File(".");
 		if (path.length() > 0) dir = new File(path);
@@ -78,6 +74,9 @@ public class raImportLeoss {
   	TextFile tst = TextFile.read(st);
   	while (null != (line = tst.in())) lst.add(line);
   	tst.close();
+  	
+  	DataSet cj = Cjenik.getDataModule().getTempSet();
+  	cj.open();
   	
   	for (int i = 0; i < lzag.size(); i++) {
   		QueryDataSet dz = doki.getDataModule().getTempSet("1=0");
@@ -141,6 +140,10 @@ public class raImportLeoss {
     		
   			raTransaction.saveChangesInTransaction(new QueryDataSet[] {dst, AST.gettrenSTANJE()});
   		}
+  	}
+  	if (delfiles) {
+  	  zag.delete();
+  	  st.delete();
   	}
   	System.out.println("over dos");
 	}
@@ -220,6 +223,10 @@ public class raImportLeoss {
   			raTransaction.saveChangesInTransaction(new QueryDataSet[] {dst, AST.gettrenSTANJE()});
   		}
   	}
+  	if (delfiles) {
+      zag.delete();
+      st.delete();
+    }
   	System.out.println("over pri");
 	}
 	
@@ -336,6 +343,10 @@ public class raImportLeoss {
         raTransaction.saveChangesInTransaction(new QueryDataSet[] {ulaz, izlaz, dst});
   		}
   	}
+  	if (delfiles) {
+      zag.delete();
+      st.delete();
+    }
 	}
 	
 	void nulaStanje(QueryDataSet qdsstanje) {
