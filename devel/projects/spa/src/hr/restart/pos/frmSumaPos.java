@@ -1,9 +1,7 @@
 package hr.restart.pos;
 
 import java.awt.BorderLayout;
-import java.awt.DefaultFocusTraversalPolicy;
 import java.awt.Dimension;
-import java.awt.FocusTraversalPolicy;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -182,7 +180,7 @@ public class frmSumaPos {
     
     raInputDialog out = new raInputDialog() {
       protected void beforeShow() {
-        uk.requestFocusInWindow();
+        uk.requestFocusLater();
       }
     };
     if (y > 500) {

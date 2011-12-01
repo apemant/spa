@@ -60,7 +60,6 @@ import com.borland.dx.dataset.TableDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
-import com.ibm.db2.jcc.b.md;
 
 /**
  * <p>Title: Robno poslovanje</p>
