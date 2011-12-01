@@ -150,7 +150,8 @@ public class frmSkladiste extends raMatPodaci {
     {res.getString("rcbTIPSKLroba_text"),"R"},
     {"Poluproizvod","L"},
 	{res.getString("rcbTIPSKLproizvod_text"),"P"},
-    {res.getString("rcbTIPSKLmaterijal_text"),"M"}
+    {res.getString("rcbTIPSKLmaterijal_text"),"M"},
+    {"Reklamni materijal","V"}
     });
     rcbTIPSKL.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
