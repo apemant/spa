@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
+import hr.restart.baza.Rate;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
@@ -239,7 +240,8 @@ public class raPOS extends raIzlazTemplate  {
     expanded.post();
   }
   
-  static int oldpj = 0;
+  static String oldpj = "1";
+  static String err = "";
   static StorageDataSet tds = new StorageDataSet();
   public static void zakljucak() {
   	JPanel pan = new JPanel(new XYLayout(415, 75));
@@ -254,13 +256,14 @@ public class raPOS extends raIzlazTemplate  {
     dat.setDataSet(tds);
   	raComboBox pj = new raComboBox() {
     	public void this_itemStateChanged() {
-    		oldpj = getSelectedIndex();
+    		oldpj = getDataValue();
     	}
     };
     pj.setRaItems(new String[][] {
     		{"Robna kuæa \"Vesna\"", "1"},
     		{"Robna kuæa \"Tena\"", "2"},
-    		{"Robna kuæa \"Pierre\"", "3"}
+    		{"Robna kuæa \"Pierre\"", "3"},
+    		{"Robna kuæa \"Tena\" - higijena", "5"}
     });
     dat.setHorizontalAlignment(JLabel.CENTER);
     new raDateMask(dat);
@@ -268,23 +271,32 @@ public class raPOS extends raIzlazTemplate  {
     pan.add(dat, new XYConstraints(300, 15, 100, -1));
     pan.add(new JLabel("Prodajno mjesto"), new XYConstraints(15,40,-1,-1));
     pan.add(pj, new XYConstraints(190, 40, 210, -1));
-    pj.setSelectedIndex(oldpj);
+    pj.setDataValue(oldpj);
     
     raInputDialog od = new raInputDialog();
     if (!od.show(null, pan, "Zakljuèak blagajne")) return;
     
     raProcess.runChild(new Runnable() {		
 			public void run() {
-				new raLocalTransaction(){
+				if (!new raLocalTransaction(){
 					
 					public boolean transaction() throws Exception {
 						perform();
 						return true;
 					}
 				
-				}.execTransaction();
+				}.execTransaction())
+				  raProcess.fail();
+				
 			}
 		});
+    if (raProcess.isCompleted())
+      JOptionPane.showMessageDialog(null, "Razduženje završeno.", 
+          "Zakljuèak", JOptionPane.INFORMATION_MESSAGE);
+    else if (raProcess.isFailed())
+      JOptionPane.showMessageDialog(null, 
+          new raMultiLineMessage(err, JLabel.LEADING), 
+          "Zakljuèak", JOptionPane.ERROR_MESSAGE);
   }
   
   public static void perform() throws Exception {
@@ -294,6 +306,7 @@ public class raPOS extends raIzlazTemplate  {
   	Condition dat = Condition.till("DATDOK", tds).and(Condition.from("DATDOK", 
         hr.restart.util.Util.getUtil().getFirstDayOfYear(tds.getTimestamp("DATDOK"))));
   	DataSet ds = getArtikliSet(dat);
+  	DataSet rate = getRate(dat);
 
 		QueryDataSet rzag = doki.getDataModule().getTempSet("1=0");
 		rzag.open();
@@ -307,7 +320,10 @@ public class raPOS extends raIzlazTemplate  {
 		QueryDataSet ist = stdoki.getDataModule().getTempSet("1=0");
 		ist.open();
 		
-		QueryDataSet sta = Stanje.getDataModule().getTempSet("cskl like '" + (oldpj+1) + "%' and god='" + 
+		QueryDataSet rt = Rate.getDataModule().getTempSet("1=0");
+        rt.open();
+		
+		QueryDataSet sta = Stanje.getDataModule().getTempSet("cskl like '" + oldpj + "%' and god='" + 
 				Valid.getValid().findYear(tds.getTimestamp("DATDOK")) + "'");
 		sta.open();
 		
@@ -318,16 +334,29 @@ public class raPOS extends raIzlazTemplate  {
 	  String[] icols = {"CART", "CART1", "BC", "NAZART", "JM", "KOL"};
 	  String[] cols = {"CART", "CART1", "BC", "NAZART", "JM", "KOL", 
         "UIRAB", "UPRAB", "FC", "INETO", "FVC", 
-        "IPRODBP", "POR1", "POR2", "POR3", "FMC", "MC", 
+        "IPRODBP", "POR1", "POR2", "POR3", "FMC", "FMCPRP", 
         "IPRODSP", "PPOR1", "PPOR2", "PPOR3"};
 		
 		String cskl = "", vrzal = "";
 		int rbr = 0;
+		BigDecimal total = Aus.zero2;
 		for (ds.first(); ds.inBounds(); ds.next()) {
 			if (cskl != ds.getString("CSKL")) {
+				
+				if (rzag.rowCount() > 0) {
+				  System.out.println("Fran: " + cskl + "  UIRAC " +
+				      rzag.getBigDecimal("UIRAC") + "   IRATA " + total + 
+				      (total.compareTo(rzag.getBigDecimal("UIRAC")) == 0
+				          ? " ok" : " ERROR!"));
+				  if (total.compareTo(rzag.getBigDecimal("UIRAC")) != 0) {
+				    err = "Skladište " + cskl +": kriva suma rata!"+
+				          "\nRaèuni: " + Aus.formatBigDecimal(rzag.getBigDecimal("UIRAC"))+
+				          "\nRate: " + Aus.formatBigDecimal(total);
+				    throw new Exception(err);
+				  }
+				}
+				
 				cskl = ds.getString("CSKL");
-				
-				
 				ld.raLocate(dM.getDataModule().getSklad(), "CSKL", cskl);
 				vrzal = dM.getDataModule().getSklad().getString("VRZAL");
 				rzag.insertRow(false);
@@ -341,6 +370,19 @@ public class raPOS extends raIzlazTemplate  {
 				Aus.clear(rzag, "UIRAC");
 				raTransaction.runSQL("update pos set status='P', rdok='" + raControlDocs.getKey(rzag) +
             "' where "+ dat.and(Condition.equal("CSKL", cskl).and(Condition.equal("STATUS", "N"))).qualified("pos"));
+				
+				short rbs = 0;
+				total = Aus.zero2;
+				if (ld.raLocate(rate, "CSKL", cskl)) do {
+				  rt.insertRow(false);
+				  dM.copyColumns(rzag, rt, Util.mkey);;
+				  rt.setShort("RBR", ++rbs);
+				  rt.setTimestamp("DATDOK", rzag.getTimestamp("DATDOK"));
+				  rt.setTimestamp("DATUM", rzag.getTimestamp("DATDOK"));
+                  dM.copyColumns(rate, rt);
+                  rt.post();
+                  total = total.add(rt.getBigDecimal("IRATA"));
+				} while (rate.next() && rate.getString("CSKL").equals(cskl));
 				
 				izag.insertRow(false);
 				izag.setString("CSKL", cskl);
@@ -405,7 +447,43 @@ public class raPOS extends raIzlazTemplate  {
 		raTransaction.saveChanges(izag);
 		raTransaction.saveChanges(ist);
 		raTransaction.saveChanges(sta);
+		raTransaction.saveChanges(rt);
 		raTransaction.saveChanges(dM.getDataModule().getSeq());
+  }
+  
+  static DataSet getRate(Condition cond) {
+    String q =
+      "select m.cskl, r.cnacpl, r.cbanka, r.irata, r.cprodmj "+
+      "from pos m, rate r where " + Util.getUtil().getDoc("m", "r") +
+      " AND m.status='N' AND " +
+      "m.cskl like '" + oldpj + "%' and " + cond.qualified("m");
+    
+    String[] cols = {"CSKL", "CNACPL", "CBANKA", "IRATA", "CPRODMJ"};
+    StorageDataSet inter = Rate.getDataModule().getScopedSet(cols);       
+    hr.restart.util.Util.fillReadonlyData(inter, q);
+    inter.setSort(new SortDescriptor(
+        new String[] {"CSKL", "CNACPL", "CBANKA"}));
+    
+    StorageDataSet group = Rate.getDataModule().getScopedSet(cols);
+    group.open();
+    
+    String cskl = "";
+    String cnacpl = "";
+    String cbanka = "";
+    for (inter.first(); inter.inBounds(); inter.next()) {
+      if (!inter.getString("CSKL").equals(cskl) ||
+          !inter.getString("CNACPL").equals(cnacpl) ||
+          !inter.getString("CBANKA").equals(cbanka)) {
+        group.insertRow(false);
+        dM.copyColumns(inter, group, cols);
+        cskl = inter.getString("CSKL");
+        cnacpl = inter.getString("CNACPL");
+        cbanka = inter.getString("CBANKA");
+      } else {
+        Aus.add(group, "IRATA", inter);
+      }
+    }
+    return group;
   }
   
   static DataSet getArtikliSet(Condition cond) {
@@ -417,11 +495,11 @@ public class raPOS extends raIzlazTemplate  {
         "(d.iznos-d.por1-d.por2-d.por3) as ineto, " +
         "(d.neto-d.por1-d.por2-d.por3)/d.kol as fvc, " +
         "(d.neto-d.por1-d.por2-d.por3) as iprodbp, " +
-        "d.por1, d.por2, d.por3, d.neto/d.kol as fmc, d.mc, " +
+        "d.por1, d.por2, d.por3, d.neto/d.kol as fmc, d.mc as fmcprp, " +
         "d.neto as iprodsp, d.ppor1, d.ppor2, d.ppor3, " +
         "d.cskl from pos m, stpos d WHERE " + Util.getUtil().getDoc("m", "d") +
         " AND m.status='N' AND d.iznos!=0 AND d.kol!=0 AND " +
-        "m.cskl like '" + (oldpj+1) + "%' and "
+        "m.cskl like '" + oldpj + "%' and "
     );
    
     q.append(cond.qualified("m"));
@@ -429,7 +507,7 @@ public class raPOS extends raIzlazTemplate  {
     
     String[] cols = {"CSKL", "CART", "CART1", "BC", "NAZART", "JM", "KOL", 
         "REZKOL", "UIRAB", "UPRAB", "FC", "INETO", "FVC", 
-        "IPRODBP", "POR1", "POR2", "POR3", "FMC", "MC", 
+        "IPRODBP", "POR1", "POR2", "POR3", "FMC", "FMCPRP", 
         "IPRODSP", "PPOR1", "PPOR2", "PPOR3", "CSKL", "BRDOK"};
     String[] sumc = {"KOL", "UIRAB", "INETO", "IPRODBP", 
           "POR1", "POR2", "POR3", "IPRODSP"};
