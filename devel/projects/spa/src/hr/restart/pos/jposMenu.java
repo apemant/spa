@@ -48,6 +48,8 @@ public class jposMenu extends JMenu {
   public JMenuItem jmPregledArtikliRacuni = new JMenuItem();
   public JMenuItem jmZbroj = new JMenuItem();
   public JMenuItem jmZakljucak = new JMenuItem();
+  public JMenuItem jmKPR = new JMenuItem();
+  public JMenuItem jmPregledKPR = new JMenuItem();
 
   public jposMenu(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -107,6 +109,12 @@ public class jposMenu extends JMenu {
         jmPregledArtikliRacuni_actionPerformed(e);
       }
     });
+    jmPregledKPR.setText("Knjiga popisa-KPR");
+    jmPregledKPR.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmPregledKPR_actionPerformed(e);
+      }
+    });
     jmZbroj.setText("Zbroj raèuna");
     jmZbroj.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -119,6 +127,12 @@ public class jposMenu extends JMenu {
         raPOS.zakljucak();
       }
     });
+    jmKPR.setText("Formiranje KPR");
+    jmKPR.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        frmAllKpr.show();
+      }
+    });
     this.add(jmBlagajna);
 //    this.add(jmGOT);
 //    this.add(jmRazduzenjePOSa);
@@ -128,8 +142,10 @@ public class jposMenu extends JMenu {
     this.add(jmRekapitulacijaPOS);
     this.add(jmPregledArtikliRacuni);
     if (presBlag.isSkladOriented()) {
+        this.add(jmPregledKPR);
     	this.addSeparator();
     	this.add(jmZakljucak);
+    	this.add(jmKPR);
     	this.addSeparator();
       this.add(jmZbroj);
     }
@@ -161,5 +177,8 @@ public class jposMenu extends JMenu {
   }
   public void jmPregledArtikliRacuni_actionPerformed(ActionEvent e){
     SF.showFrame("hr.restart.robno.upRacuniArtikliPOS", jmPregledArtikliRacuni.getText());
+  }
+  public void jmPregledKPR_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.robno.upKPR_NextGeneration", jmKPR.getText());
   }
 }
