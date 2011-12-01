@@ -32,6 +32,7 @@ import hr.restart.robno._Main;
 import hr.restart.robno.allStanje;
 import hr.restart.robno.dlgKupac;
 import hr.restart.robno.frmPlacanje;
+import hr.restart.robno.presPOS;
 import hr.restart.robno.raVart;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
@@ -73,6 +74,7 @@ import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.DataSetException;
 import com.borland.dx.dataset.ReadRow;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYLayout;
@@ -187,6 +189,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   static frmMasterBlagajna frm;
   
   frmTableDataView viewReq = new frmTableDataView(false, false, true);
+  frmTableDataView viewPlac = new frmTableDataView(false, false, true);
 
   JPanel jpSelect = new JPanel();
   Column IZNOS = new Column();
@@ -328,6 +331,10 @@ public class frmMasterBlagajna extends raMasterDetail {
         Artikli.getDataModule().setFilter(
             (QueryDataSet) jpBl.jrfCART.getRaDataSet(),
             Condition.equal("KASA", "D"));
+    }
+    if (presBlag.isSkladOriented()) {
+      setNaslovMaster("Blagajna - " + 
+          ((presBlag) getPreSelect()).jrfNAZSKL.getText());
     }
     dm.getArtikli().open();
   }
@@ -899,20 +906,39 @@ public class frmMasterBlagajna extends raMasterDetail {
       
       raMaster.getJpTableView().addTableModifier(msc);
     } else {
-      if (raUser.getInstance().isSuper()) {
-        raMaster.addOption(navPonisti, 4);
-      }
-      this.raMaster.addOption(new raNavAction("Pregled materijala", raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
-        public void actionPerformed(java.awt.event.ActionEvent ev) {
-          showRequirementsMaster();
+      if (presBlag.isSkladOriented()) {
+        this.raMaster.addOption(new raNavAction("Naplata",raImages.IMGEXPORT2,KeyEvent.VK_F7) {
+          public void actionPerformed(ActionEvent e) {
+            if (allowEdit || raUser.getInstance().isSuper() || presBlag.isSuper)
+              if (getMasterSet().rowCount() > 0 && 
+                  getMasterSet().getBigDecimal("UIRAC").signum() != 0)
+                keyNacinPlac();
+          }
+        },4,true);
+        this.raMaster.addOption(new raNavAction("Pregled plaæanja", raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
+          public void actionPerformed(java.awt.event.ActionEvent ev) {
+            showTotalPlac();
+          }
+        },5,false);
+      } else {
+        if (raUser.getInstance().isSuper()) {
+          raMaster.addOption(navPonisti, 4);
         }
-      },5,false);
+        this.raMaster.addOption(new raNavAction("Pregled materijala", raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
+          public void actionPerformed(java.awt.event.ActionEvent ev) {
+            showRequirementsMaster();
+          }
+        },5,false);
+      }
     }
     
     raDetail.getNavBar().removeStandardOption(raNavBar.ACTION_TOGGLE_TABLE);
 
     raDetail.setkum_tak(true);
     raDetail.setstozbrojiti(new String[] {"IZNOS"});
+    
+    raMaster.setkum_tak(true);
+    raMaster.setstozbrojiti(new String[] {"UKUPNO","IZNOS","NETO","UIRAC"});
 //    this.getOKpanel().setVisible(false);
     IZNOS.setCaption("IZNOS");
     IZNOS.setColumnName("IZNOS");
@@ -1820,6 +1846,52 @@ public class frmMasterBlagajna extends raMasterDetail {
   }
   
   public void ZatvoriOstaloMaster() {
+  }
+  
+  void showTotalPlac() {
+    if (getMasterSet().getRowCount() == 0) return;
+    
+    VarStr q = new VarStr(getMasterSet().getOriginalQueryString().toLowerCase());
+    q.replace("* from pos", "rate.cnacpl, rate.cbanka, rate.irata from pos,rate");
+    q.replace(" where ", " where " + Util.getUtil().getDoc("pos", "rate") + " and ");
+    DataSet ds = Aus.q(q.toString());
+    ds.setSort(new SortDescriptor(new String[] {"CNACPL", "CBANKA"}));
+    
+    StorageDataSet res = new StorageDataSet();
+    res.setColumns(new Column[] {
+        dM.createStringColumn("NACPL", "Naèin plaæanja", 50),
+        dM.createStringColumn("BANKA", "Kartièar", 50),
+        dM.createBigDecimalColumn("IRATA", "Iznos naplate")
+    });
+    res.open();
+    
+    String cnacpl = "", cbanka = "";
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      if (!ds.getString("CNACPL").equals(cnacpl) ||
+          !ds.getString("CBANKA").equals(cbanka)) {
+        cnacpl = ds.getString("CNACPL");
+        cbanka = ds.getString("CBANKA");
+        res.insertRow(false);
+        ld.raLocate(dm.getNacpl(), "CNACPL", cnacpl);
+        res.setString("NACPL", cnacpl + " - " + dm.getNacpl().getString("NAZNACPL"));
+        
+        if (cbanka.length() > 0) {
+          ld.raLocate(dm.getKartice(), "CBANKA", cbanka);
+          res.setString("BANKA", cbanka + " - " + dm.getKartice().getString("NAZIV"));
+        }
+      }
+      Aus.add(res, "IRATA", ds);
+    }
+    
+    viewPlac.setDataSet(res);
+    viewPlac.setSums(new String[] {"IRATA"});
+    viewPlac.setSaveName("Pregled-blag-plac");
+    viewPlac.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+    viewPlac.setTitle("Prikaz naplate za " + ((presBlag) getPreSelect()).jrfNAZSKL.getText() + "  od " + 
+              Aus.formatTimestamp(getPreSelect().getSelRow().getTimestamp("DATDOK-from")) + " do " +
+              Aus.formatTimestamp(getPreSelect().getSelRow().getTimestamp("DATDOK-to")));
+    viewPlac.setVisibleCols(new int[] {0, 1, 2});
+    viewPlac.show();
   }
   
   String[] reqc = {"CART", "CART1", "BC", "NAZART", "JM", "KOL"};
