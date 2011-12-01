@@ -35,6 +35,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.TableDataSet;
 import com.borland.dx.dataset.Variant;
@@ -98,6 +99,10 @@ public class frmFormKPR extends raUpitLite {
         jlrCskl.requestFocus();
       }
     });
+  }
+  
+  public DataSet getTDS() {
+    return tds;
   }
 
   public void componentShow() {
@@ -165,7 +170,7 @@ public class frmFormKPR extends raUpitLite {
     
     System.out.println("opened");
     
-    raProcess.setMessage("Punjenje knjige popisa robe ... ", true);
+    raProcess.setMessage("Punjenje knjige popisa robe " + tds.getString("CSKL") + " ... ", true);
 
 //    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
 //    syst.prn(dejtaSet);
@@ -201,6 +206,10 @@ public class frmFormKPR extends raUpitLite {
                      "and god = '"+knjigodina+"' and datdok <= '"+ut.getLastSecondOfDay(tds.getTimestamp("zavDatum"))+"'";
     
 //    System.out.println(updateDoku);
+  }
+  
+  public void externalSave() {
+    if (flag) saveDataSetAndUpdateRest();
   }
 
   public void afterOKPress(){
