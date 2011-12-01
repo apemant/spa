@@ -406,7 +406,7 @@ public class raPOS extends raIzlazTemplate  {
 				total = Aus.zero2;
 				if (ld.raLocate(rate, "CSKL", cskl)) do {
 				  rt.insertRow(false);
-				  dM.copyColumns(rzag, rt, Util.mkey);;
+				  dM.copyColumns(rzag, rt, Util.mkey);
 				  rt.setShort("RBR", ++rbs);
 				  rt.setTimestamp("DATDOK", rzag.getTimestamp("DATDOK"));
 				  rt.setTimestamp("DATUM", rzag.getTimestamp("DATDOK"));
@@ -482,13 +482,7 @@ public class raPOS extends raIzlazTemplate  {
 		raTransaction.saveChanges(dM.getDataModule().getSeq());
   }
   
-  static DataSet getRate(Condition cond) {
-    String q =
-      "select m.cskl, r.cnacpl, r.cbanka, r.irata, r.cprodmj "+
-      "from pos m, rate r where " + Util.getUtil().getDoc("m", "r") +
-      " AND m.status='N' AND " +
-      "m.cskl like '" + oldpj + "%' and " + cond.qualified("m");
-    
+  public static DataSet getRate(String q) {
     String[] cols = {"CSKL", "CNACPL", "CBANKA", "IRATA", "CPRODMJ"};
     StorageDataSet inter = Rate.getDataModule().getScopedSet(cols);       
     hr.restart.util.Util.fillReadonlyData(inter, q);
@@ -515,6 +509,16 @@ public class raPOS extends raIzlazTemplate  {
       }
     }
     return group;
+  }
+  
+  static DataSet getRate(Condition cond) {
+    String q =
+      "select m.cskl, r.cnacpl, r.cbanka, r.irata, r.cprodmj "+
+      "from pos m, rate r where " + Util.getUtil().getDoc("m", "r") +
+      " AND m.status='N' AND " +
+      "m.cskl like '" + oldpj + "%' and " + cond.qualified("m");
+    
+    return getRate(q);
   }
   
   static DataSet getArtikliSet(Condition cond) {
