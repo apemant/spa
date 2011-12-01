@@ -677,7 +677,7 @@ UPOREZ;numeric;15,2;;0;Ukupni porez
 UIRAC;numeric;15,2;;0;Platiti
 BRRATA;short;2;;1;Broj rata;15
 STATUS;char;1;;N;STATUS;*
-CNACPL;char;3;;;Naèin plaæanja
+CNACPL;char;30;;;Naèin plaæanja
 CUSER;char;15;;;Operater
 CKUPAC;int;6;;;Kupac;5
 CBLAGAJNIK;char;15;;;Blagajnik
