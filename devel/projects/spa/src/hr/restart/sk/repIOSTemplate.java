@@ -66,19 +66,19 @@ public class repIOSTemplate extends repRobnoMiniSaldakCparOrigTemplate {
       
       raReportElement TextZiro;
       String[] TextZiroProperties = new String[] {"ZiroLine", "", "", "", "", "", "", "", 
-          "5900", "3860", "4360", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", 
+          "5900", "2860", "4360", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", 
           ""};
       TextZiro = sh0.addModel(ep.TEXT, TextZiroProperties);
       
       raReportElement TextTel;
       String[] TextTelProperties = new String[] {"TelLine", "", "", "", "", "", "", "", 
-          "5900", "4120", "4360", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", 
+          "5900", "3120", "4360", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", 
           ""};
       TextTel = sh0.addModel(ep.TEXT, TextTelProperties);
       
       raReportElement TextFax;
       String[] TextFaxProperties = new String[] {"FaxLine", "", "", "", "", "", "", "", 
-          "5900", "4380", "4360", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", 
+          "5900", "3380", "4360", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", 
           ""};
       TextFax = sh0.addModel(ep.TEXT, TextFaxProperties);
     } catch (Exception e) {
