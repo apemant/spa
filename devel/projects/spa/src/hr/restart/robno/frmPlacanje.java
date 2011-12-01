@@ -23,14 +23,7 @@ import hr.restart.pos.frmMasterBlagajna;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
-import hr.restart.util.JlrNavField;
-import hr.restart.util.Valid;
-import hr.restart.util.lookupData;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raFrame;
-import hr.restart.util.raMasterDetail;
-import hr.restart.util.raMatPodaci;
-import hr.restart.util.startFrame;
+import hr.restart.util.*;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -39,6 +32,7 @@ import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -540,9 +534,26 @@ public class frmPlacanje extends raMatPodaci {
     tdsTemp.setBigDecimal("NAPLAC", hr.restart.robno.Util.getUtil().getNaplac(mDoki));
     rcc.EnabDisabAll(jp,false);
 
-    frmplacanje.show();
-    if (qdsRate.rowCount() == 1)
+    while (true) {
+      frmplacanje.show();
+      if (Aus.sum("IRATA", qdsRate).compareTo(master.getBigDecimal("UIRAC")) == 0
+        || JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(
+            rmd.raDetail.getWindow(), "Suma rata ne odgovara iznosu raèuna!", 
+            "Greška", JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.ERROR_MESSAGE)) break;
+    }
+    if (qdsRate.rowCount() == 0)
+      master.setString("CNACPL", "");
+    else if (qdsRate.rowCount() == 1)
       master.setString("CNACPL", qdsRate.getString("CNACPL"));
+    else {
+      VarStr all = new VarStr();
+      for (qdsRate.first(); qdsRate.inBounds(); qdsRate.next()) {
+        all.append(qdsRate.getString("CNACPL")).append('+');
+      }
+      master.setString("CNACPL", all.chop().truncate(
+          master.getColumn("CNACPL").getPrecision()).toString());
+    }
     rmd.raDetail.requestFocus();
     return true;
   }
@@ -589,9 +600,10 @@ public class frmPlacanje extends raMatPodaci {
       oldIznos=qdsRate.getBigDecimal("IRATA");
     }
     if (mode=='N') jrfCNACPL.requestFocus();
-    else jtfBROJ_TRG.requestFocus();
+    else jtfIRATA.requestFocus();
   }
   public boolean Validacija(char mode) {
+    if (mode == 'B') return false;
 /*    if (tdsTemp.getBigDecimal("UIRAC").doubleValue()<tdsTemp.getBigDecimal("NAPLAC").doubleValue()+qdsRate.getBigDecimal("IRATA").doubleValue()) {
       JOptionPane.showConfirmDialog(jtfBRCEK.getParent(),"Iznos naplate veæi od iznosa raèuna !","Gre\u0161ka",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
       return false;
