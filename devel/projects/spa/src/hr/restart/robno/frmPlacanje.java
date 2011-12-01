@@ -18,18 +18,34 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Rate;
 import hr.restart.baza.dM;
 import hr.restart.pos.frmMasterBlagajna;
 import hr.restart.sisfun.frmParam;
+import hr.restart.swing.AWTKeyboard;
+import hr.restart.swing.ActionExecutor;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.KeyAction;
+import hr.restart.swing.SharedFlag;
+import hr.restart.swing.raInputDialog;
+import hr.restart.swing.raNumberMask;
 import hr.restart.util.*;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,11 +54,13 @@ import javax.swing.SwingConstants;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.TableDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
+import com.ibm.db2.jcc.b.md;
 
 /**
  * <p>Title: Robno poslovanje</p>
@@ -72,8 +90,8 @@ public class frmPlacanje extends raMatPodaci {
   boolean autoImport;               // Da li ima citac magnetskih kartica
   boolean detMode;                  // Da li se prikazuje broj tekuceg, broj ceka
   static frmPlacanje inst;
-  private static QueryDataSet qdsRate;
-  private static QueryDataSet mDoki;
+  static QueryDataSet qdsRate;
+  static QueryDataSet mDoki;
 
   private static raCommonClass rcc = raCommonClass.getraCommonClass();
   private Valid vl = Valid.getValid();
@@ -351,9 +369,7 @@ public class frmPlacanje extends raMatPodaci {
     master.setString("CNACPL", nacpl);
   }
   
-  private static int prevRow = -1;
-  private static boolean createSingleRata(raMasterDetail rmd, boolean simple) {    
-    QueryDataSet master = rmd.getMasterSet();
+  static StorageDataSet allNac(boolean simple) {
     DataSet dsn = dM.getDataModule().getNacpl();
     DataSet dsb = dM.getDataModule().getBanke();
     DataSet dsk = dM.getDataModule().getKartice();
@@ -400,6 +416,14 @@ public class frmPlacanje extends raMatPodaci {
         nac.post();
       }
     }
+    return nac;
+  }
+  
+  private static int prevRow = -1;
+  private static boolean createSingleRata(raMasterDetail rmd, boolean simple) {    
+    QueryDataSet master = rmd.getMasterSet();
+    
+    StorageDataSet nac = allNac(simple);
     nac.insertRow(false);
     nac.setInt("SORT", 100);
     nac.setString("CNACPL", "");
@@ -499,6 +523,7 @@ public class frmPlacanje extends raMatPodaci {
 
     return justCheckRate(master);
   }
+  
   protected static frmPlacanje frmplacanje;
   public static boolean entryRate(raMasterDetail rmd) {
     QueryDataSet master = rmd.getMasterSet();
@@ -512,6 +537,11 @@ public class frmPlacanje extends raMatPodaci {
         whereAllEqual(frmMasterBlagajna.key, master));
     qdsRate.open();
     mDoki=master;
+    
+    if ("D".equals(frmParam.getParam("zapod", "fancyPlac", "D",
+        "Novi naèin naplate (D,N)", true))) {
+      return new FancyPlac().show(rmd.raDetail.getWindow());
+    }
     
     if (qdsRate.rowCount() <= 1) {
       String sr = frmParam.getParam("zapod", "singleRata", "D",
@@ -542,20 +572,24 @@ public class frmPlacanje extends raMatPodaci {
             "Greška", JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.ERROR_MESSAGE)) break;
     }
+    fillMasterNac();
+    rmd.raDetail.requestFocus();
+    return true;
+  }
+  
+  static void fillMasterNac() {
     if (qdsRate.rowCount() == 0)
-      master.setString("CNACPL", "");
+      mDoki.setString("CNACPL", "");
     else if (qdsRate.rowCount() == 1)
-      master.setString("CNACPL", qdsRate.getString("CNACPL"));
+      mDoki.setString("CNACPL", qdsRate.getString("CNACPL"));
     else {
       VarStr all = new VarStr();
       for (qdsRate.first(); qdsRate.inBounds(); qdsRate.next()) {
         all.append(qdsRate.getString("CNACPL")).append('+');
       }
-      master.setString("CNACPL", all.chop().truncate(
-          master.getColumn("CNACPL").getPrecision()).toString());
+      mDoki.setString("CNACPL", all.chop().truncate(
+          mDoki.getColumn("CNACPL").getPrecision()).toString());
     }
-    rmd.raDetail.requestFocus();
-    return true;
   }
 
   public static String frmPlacanjeClassName = "hr.restart.robno.frmPlacanje"; 
@@ -876,4 +910,309 @@ public class frmPlacanje extends raMatPodaci {
     qdsRate.setString("VRIJEDIDO", vrijedido);*/
   }
 
+  static class FancyPlac extends raInputDialog {
+    
+    JPanel main = new JPanel();
+    XYLayout lay = new XYLayout();
+    List combo = new ArrayList();
+    List rata = new ArrayList();
+    List act = new ArrayList();
+    int num;
+    
+    StorageDataSet nacs;
+    String[][] itm;
+    
+    JraTextField jraTotal = new JraTextField();
+    JraButton jbAdd = new JraButton();
+    
+    SharedFlag csf = new SharedFlag();
+    ActionExecutor exec = new ActionExecutor(csf) {
+      public void run() {
+        press((JraButton) obj);
+      }
+    };
+    ActionListener comm = new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        exec.invoke(e.getSource());
+      }
+    };
+    
+    public FancyPlac() {
+      
+    }
+    
+    protected boolean checkOk() {
+      Set placs = new HashSet();
+      for (int i = 0; i < combo.size(); i++) {
+        raComboBox cb = (raComboBox) combo.get(i);
+        if (!placs.add(cb.getDataValue())) {
+          cb.requestFocus();
+          JOptionPane.showMessageDialog(win, "Naèin plaæanja se ne smije ponavljati!",
+              "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+        JraTextField tf = (JraTextField) rata.get(i);
+        BigDecimal num = Aus.getDecNumber(tf.getText());
+        if (num.signum() == 0) {
+          tf.requestFocus();
+          JOptionPane.showMessageDialog(win, "Rata ne smije biti nula!",
+              "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+        if (num.signum() != mDoki.getBigDecimal("UIRAC").signum()) {
+          tf.requestFocus();
+          JOptionPane.showMessageDialog(win, "Rata ne smije biti suprotnog predznaka od raèuna!",
+              "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+      }
+      
+      if (mDoki.getString("RDOK").length() > 0 
+          && JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(
+              win, "Raèun je veæ razdužen. Želite li ažurirati naplatu?",
+              "Promjena razduženja", JOptionPane.OK_CANCEL_OPTION,
+              JOptionPane.WARNING_MESSAGE)) return false;
+      
+      return true;
+    }
+        
+    public boolean show(Container parent) {
+      generatePanel();
+      
+      if (super.show(parent, main, "Naplata")) {
+        int i = 0;
+        for (qdsRate.first(); qdsRate.inBounds() && i < combo.size(); 
+            qdsRate.next(), i++) {
+          String sort = ((raComboBox) combo.get(i)).getDataValue();
+          lookupData.getlookupData().raLocate(nacs, "SORT", sort);
+          BigDecimal irata = Aus.getDecNumber(((JraTextField) rata.get(i)).getText());
+          qdsRate.setBigDecimal("IRATA", irata);
+          qdsRate.setString("CNACPL", nacs.getString("CNACPL"));
+          qdsRate.setString("CBANKA", nacs.getString("CBANKA"));
+        }
+        while (qdsRate.inBounds() && qdsRate.rowCount() > combo.size()) 
+          qdsRate.deleteRow();
+        for ( ; i < combo.size(); i++) {
+          String sort = ((raComboBox) combo.get(i)).getDataValue();
+          lookupData.getlookupData().raLocate(nacs, "SORT", sort);
+          BigDecimal irata = Aus.getDecNumber(((JraTextField) rata.get(i)).getText());
+          insertSingle(mDoki, nacs.getString("CNACPL"));
+          qdsRate.setString("CBANKA", nacs.getString("CBANKA"));
+          qdsRate.setBigDecimal("IRATA", irata);
+          qdsRate.setShort("RBR", (short) (i + 1));
+        }
+        qdsRate.saveChanges();
+        fillMasterNac();
+        if (mDoki.getString("RDOK").length() > 0)
+          updateRate(mDoki.getString("RDOK"));
+      }
+      return true;
+    }
+    
+    void updateRate(String rdok) {
+      String q =
+        "select m.cskl, r.cnacpl, r.cbanka, r.irata, r.cprodmj "+
+        "from pos m, rate r where " + Util.getUtil().getDoc("m", "r") +
+        " AND m.rdok='"+rdok+"'";
+      
+      DataSet rate = raPOS.getRate(q);
+      
+      String[] cols = {"CSKL", "CNACPL", "CBANKA", "IRATA", "CPRODMJ"};
+      
+      String[] parts = new VarStr(rdok).splitTrimmed('-');
+      QueryDataSet oldr = Rate.getDataModule().getTempSet(
+          Condition.equal("CSKL", parts[0]).
+          and(Condition.equal("VRDOK", parts[1])).
+          and(Condition.equal("GOD", parts[2])).
+          and(Condition.equal("BRDOK", Aus.getNumber(parts[3]))));
+      oldr.open();
+      short rbr = 0;
+      Timestamp dat = null;
+      for (oldr.first(), rate.first(); oldr.inBounds() && rate.inBounds(); oldr.next(), rate.next()) {
+        dat = oldr.getTimestamp("DATDOK");
+        if (oldr.getShort("RBR") > rbr)
+          rbr = oldr.getShort("RBR");
+        dM.copyColumns(rate, oldr);
+      }
+      while (oldr.inBounds() && oldr.rowCount() > rate.rowCount())
+        oldr.deleteRow();
+      for ( ; rate.inBounds(); rate.next()) {
+        oldr.insertRow(false);
+        oldr.setString("CSKL", parts[0]);
+        oldr.setString("VRDOK", parts[1]);
+        oldr.setString("GOD", parts[2]);
+        oldr.setInt("BRDOK", Aus.getNumber(parts[3]));
+        oldr.setShort("RBR", ++rbr);
+        oldr.setTimestamp("DATDOK", dat);
+        oldr.setTimestamp("DATUM", dat);
+        dM.copyColumns(rate, oldr);
+      }
+      
+      oldr.saveChanges();
+    }
+    
+    protected void beforeShow() {
+      super.beforeShow();
+      AWTKeyboard.registerKeyStroke(win, AWTKeyboard.F2,
+          new KeyAction() {
+            public boolean actionPerformed() {
+              if (combo.size() >= 8) return false;
+              exec.invokeLater(jbAdd);
+              return true;
+            }
+          });
+      AWTKeyboard.registerKeyStroke(win, AWTKeyboard.F3,
+          new KeyAction() {
+        public boolean actionPerformed() {
+          if (combo.size() <= 1) return false;
+          Component comp = AWTKeyboard.getFocusedComponent();
+          if (combo.indexOf(comp) >= 0)
+            exec.invokeLater(act.get(combo.indexOf(comp)));
+          else if (rata.indexOf(comp) >= 0)
+            exec.invokeLater(act.get(rata.indexOf(comp)));
+          else return false;
+          return true;
+          }
+        });
+    }
+
+    void generatePanel() {
+      if (qdsRate.rowCount() == 0)
+        insertSingle(mDoki, frmParam.getParam("robno","gotNacPl"));
+      
+      num = qdsRate.getRowCount();
+      
+      lay.setWidth(500);
+      lay.setHeight(60 + 30 * num);
+      main.setLayout(lay);
+
+      new raNumberMask(jraTotal, 2);
+      jraTotal.setText(Aus.formatBigDecimal(mDoki.getBigDecimal("UIRAC")));
+      raCommonClass.getraCommonClass().setLabelLaF(jraTotal, false);
+      jbAdd.setIcon(raImages.getImageIcon(raImages.IMGADD));
+      jbAdd.setToolTipText("Dodaj ratu");
+      jbAdd.addActionListener(comm);
+
+      main.add(new JLabel("Iznos raèuna" +
+          (mDoki.getString("RDOK").length() > 0 ? "  (razdužen!)" : "")), 
+          new XYConstraints(15, 15, -1, -1));
+      main.add(jraTotal, new XYConstraints(350, 15, 100, -1));
+      main.add(jbAdd, new XYConstraints(460, 15, 21, 21));
+      
+      nacs = allNac(false);
+      nacs.setSort(new SortDescriptor(new String[] {"SORT"}));
+      itm = new String[nacs.rowCount()][2];
+      int n = 0;
+      for (nacs.first(); nacs.inBounds(); nacs.next(), n++) {
+        itm[n][0] = nacs.getString("NAZIV");
+        itm[n][1] = Integer.toString(nacs.getInt("SORT"));
+      }
+      
+      n = 0;
+      for (qdsRate.first(); qdsRate.inBounds(); qdsRate.next(), n++) {
+        createLine(n);
+        if (qdsRate.getString("CBANKA").length() == 0)
+          lookupData.getlookupData().raLocate(nacs, "CNACPL",
+              qdsRate.getString("CNACPL"));
+        else lookupData.getlookupData().raLocate(nacs, 
+            new String[] {"CNACPL", "CBANKA"}, 
+            new String[] {qdsRate.getString("CNACPL"),
+                          qdsRate.getString("CBANKA")});
+        ((raComboBox) combo.get(n)).setDataValue(Integer.toString(nacs.getInt("SORT")));
+        ((JraTextField) rata.get(n)).setText(Aus.formatBigDecimal(qdsRate.getBigDecimal("IRATA")));
+        
+        addLine(n, 50);
+      }
+    }
+    
+    void calc(JraTextField tf) {
+      if (rata.size() == 1) {
+        if (tf.getText().equals(jraTotal.getText())) return;
+        tf.setText(jraTotal.getText());
+      } else {
+        int idx = rata.indexOf(tf);
+        BigDecimal total = Aus.zero2;
+        for (int i = 0; i < rata.size(); i++) {
+          total = total.add(Aus.getDecNumber(
+              ((JraTextField) rata.get(i)).getText()));
+        }
+        total = total.subtract(mDoki.getBigDecimal("UIRAC"));
+        if (total.signum() == 0) return;
+        
+        JraTextField sub = (JraTextField) rata.get(
+            idx == rata.size() - 1 ? 0 : rata.size() - 1);
+        sub.setText(Aus.formatBigDecimal(
+            Aus.getDecNumber(sub.getText()).subtract(total)));
+      }
+    }
+    
+    void press(JraButton but) {
+      if (but == jbAdd) {
+        lay.setHeight(90 + 30 * combo.size());
+        for (int i = combo.size() - 1; i >= 0; i--) {
+          removeLine(i);
+          addLine(i, 80);
+        }
+        createLine(0);
+        ((JraTextField) rata.get(0)).setText(
+            Aus.formatBigDecimal(Aus.zero2));
+        addLine(0, 50);
+        win.pack();
+        ((JraTextField) rata.get(0)).requestFocusLater();
+        return;
+      }
+      if (act.size() == 1) return;
+
+      int idx = act.indexOf(but);
+      
+      main.remove((Component) combo.remove(idx));
+      main.remove((Component) rata.remove(idx));
+      main.remove((Component) act.remove(idx));
+      for (int i = idx; i < combo.size(); i++) {
+        removeLine(i);
+        addLine(i, 50);
+      }
+      calc((JraTextField) rata.get(0)); 
+      lay.setHeight(60 + 30 * combo.size());
+      win.pack();
+      ((JraTextField) rata.get(
+          rata.size() == idx ? idx - 1 : idx)).requestFocusLater();
+    }
+    
+    void removeLine(int i) {
+      main.remove((Component) combo.get(i));
+      main.remove((Component) rata.get(i));
+      main.remove((Component) act.get(i));
+    }
+    
+    void addLine(int i, int y) {
+      main.add((Component) combo.get(i), 
+          new XYConstraints(15, y + i*30, 325, -1));
+      main.add((Component) rata.get(i), 
+          new XYConstraints(350, y + i*30, 100, -1));
+      main.add((Component) act.get(i), 
+          new XYConstraints(460, y + i*30, 21, 21));
+    }
+    
+    void createLine(int i) {
+      raComboBox cb = new raComboBox();
+      cb.setRaItems(itm);
+      combo.add(i, cb);
+      cb.setMaximumRowCount(16);
+      
+      JraTextField tf = new JraTextField() {
+        public void valueChanged() {
+          calc(this);
+        }
+      };
+      new raNumberMask(tf, 2);
+      rata.add(i, tf);
+      
+      JraButton but = new JraButton();
+      but.setIcon(raImages.getImageIcon(raImages.IMGDELETE));
+      but.setToolTipText("Obriši ratu");
+      act.add(i, but);
+      but.addActionListener(comm);
+    }
+  }
 }
