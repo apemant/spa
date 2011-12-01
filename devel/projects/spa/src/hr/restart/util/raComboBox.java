@@ -179,6 +179,7 @@ System.out.println("actionPerformed");
   public void this_itemStateChanged() {
     if (raItems==null) return;
     if (!this.isShowing()) return;
+    if (raDataSet == null) return;
 //    raDataSet.open();
     raDataSet.setString(raColumn,raItems[getSelectedIndex()][1]);
   }
