@@ -2,7 +2,9 @@ package hr.restart.pos;
 
 import java.awt.BorderLayout;
 import java.awt.DefaultFocusTraversalPolicy;
+import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.math.BigDecimal;
@@ -22,6 +24,7 @@ import com.borland.jbcl.layout.XYLayout;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
+import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raNumberMask;
@@ -65,7 +68,7 @@ public class frmSumaPos {
     int tracs = racs;
     
     DataSet ds = Aus.q("SELECT pos.cskl,pos.brdok,pos.sysdat," +
-    	  "rate.cnacpl as cnacpl,rate.irata " +
+    	  "rate.cnacpl as cnacpl, rate.cbanka, rate.irata " +
     	  "FROM pos,rate WHERE pos.cskl = rate.cskl " +
     	  "AND pos.vrdok = rate.vrdok AND pos.god = rate.god " +
     	  "AND pos.brdok = rate.brdok AND pos.cprodmj = pos.cprodmj " +
@@ -90,6 +93,8 @@ public class frmSumaPos {
         cskl = ds.getString("CSKL");
       }
       String nacpl = ds.getString("CNACPL");
+      if (ds.getString("CBANKA").length() > 0)
+        nacpl = nacpl + "|" + ds.getString("CBANKA");
       BigDecimal rata = ds.getBigDecimal("IRATA");
       total = total.add(rata);
       
@@ -141,17 +146,27 @@ public class frmSumaPos {
     }
     y += 10;
     for (Iterator i = plac.keySet().iterator(); i.hasNext(); ) {
-      String nacpl = (String) i.next();
+      String nac = (String) i.next();
+      String nacpl = nac;
+      String bank = "";
+      if (nacpl.indexOf('|') >= 0) {
+        bank = nacpl.substring(nacpl.indexOf('|') + 1);
+        nacpl = nacpl.substring(0, nacpl.indexOf('|'));
+      }
       String naznac = nacpl;
       if (ld.raLocate(dm.getNacpl(), "CNACPL", nacpl)) {
         naznac = naznac + " " + dm.getNacpl().getString("NAZNACPL");
       }
+      if (bank.length() > 0 && ld.raLocate(
+          dm.getKartice(), "CBANKA", bank)) {
+        naznac =  naznac + " - " + dm.getKartice().getString("NAZIV"); 
+      }
       result.add(new JLabel(naznac), new XYConstraints(15, y, -1, -1));
       JraTextField tf = new JraTextField();
       tf.setDataSet(data);
-      tf.setColumnName("NACPL_"+nacpl);
+      tf.setColumnName("NACPL_"+nac);
       tf.setProtected(true);
-      data.setBigDecimal("NACPL_"+nacpl, (BigDecimal) plac.get(nacpl));
+      data.setBigDecimal("NACPL_"+nac, (BigDecimal) plac.get(nac));
       result.add(tf, new XYConstraints(385, y, 100, -1));
       
       y += 25;
@@ -170,6 +185,15 @@ public class frmSumaPos {
         uk.requestFocusInWindow();
       }
     };
+    if (y > 500) {
+      JPanel psc = new JPanel(new BorderLayout());
+      JraScrollPane sc = new JraScrollPane(result);
+      sc.setPreferredSize(new Dimension(525, 400));
+      psc.add(sc);
+      result.scrollRectToVisible(new Rectangle(0, y - 1, 1, 1));
+      result = psc;
+      
+    }
     out.show(null, result, "Zbroj zadnjih " + tracs + " raèuna");
   }
   
