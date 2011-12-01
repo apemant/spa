@@ -11,6 +11,7 @@
 package hr.restart.pos;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Sklad;
 import hr.restart.baza.Smjene;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
@@ -25,6 +26,7 @@ import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raCommonClass;
+import hr.restart.zapod.OrgStr;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -257,7 +259,9 @@ public class presBlag extends PreSelect {
     });
     jrfCSKL.setNavButton(jbCSKL);
     // jrfCSKL.setRaDataSet(qdsSklad);
-    jrfCSKL.setRaDataSet(dm.getSklad());
+    bindSklad();
+    
+    
     jrfNAZSKL.setNavProperties(jrfCSKL);
     jrfNAZSKL.setSearchMode(1);
     jrfNAZSKL.setColumnName("NAZSKL");
@@ -374,6 +378,13 @@ public class presBlag extends PreSelect {
   public String refineSQLFilter(String orig) {
     if (!stolovi || !jcbAktiv.isSelected()) return orig;
     return orig + " AND pos.aktiv='D'";
+  }
+  
+  void bindSklad() {
+    String corg = frmParam.getParam("pos", "posCorg", "",
+      "OJ za logotip na POS-u");
+    jrfCSKL.setRaDataSet(Sklad.getDataModule().getFilteredDataSet(
+        Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(corg))));
   }
   
   private static int skladOriented = -1;
