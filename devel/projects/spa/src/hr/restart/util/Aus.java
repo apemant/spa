@@ -235,22 +235,22 @@ public class Aus {
   
   public static void mul(ReadWriteRow ds, String dest, String c1, String c2) {
     ds.setBigDecimal(dest, ds.getBigDecimal(c1).multiply(ds.getBigDecimal(c2)).
-        setScale(ds.getBigDecimal(dest).scale(), BigDecimal.ROUND_HALF_UP));
+        setScale(ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
   }
   
   public static void div(ReadWriteRow ds, String dest, String c1, String c2) {
     ds.setBigDecimal(dest, ds.getBigDecimal(c1).divide(ds.getBigDecimal(c2),
-        ds.getBigDecimal(dest).scale(), BigDecimal.ROUND_HALF_UP));
+        ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
   }
   
   public static void mul(ReadWriteRow ds, String dest, BigDecimal num) {
     ds.setBigDecimal(dest, ds.getBigDecimal(dest).multiply(num).
-        setScale(ds.getBigDecimal(dest).scale(), BigDecimal.ROUND_HALF_UP));
+        setScale(ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
   }
   
   public static void div(ReadWriteRow ds, String dest, BigDecimal num) {
     ds.setBigDecimal(dest, ds.getBigDecimal(dest).divide(num, 
-        ds.getBigDecimal(dest).scale(), BigDecimal.ROUND_HALF_UP));
+        ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
   }
   
   public static void mul(ReadWriteRow ds, String dest, ReadRow row, String src) {
