@@ -1151,6 +1151,10 @@ public class frmMasterBlagajna extends raMasterDetail {
   public void keyNacinPlac(){
     System.out.println("entryRate: "+getMasterSet().getInt("BRDOK"));
   	frmPlacanje.entryRate(this);
+  	if (!newRacun) {
+  	  getMasterSet().saveChanges();
+  	  raMaster.getJpTableView().fireTableDataChanged();
+  	}
   }
   void pressF11(char mode) {
 
