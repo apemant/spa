@@ -241,10 +241,7 @@ public class presBlag extends PreSelect {
     jp.setLayout(xYLayout1);
     xYLayout1.setHeight(145);
     xYLayout1.setWidth(555);
-    jrfNAZSKL.setEditable(false);
-    jrfNAZSKL.setNavProperties(jrfCSKL);
-    jrfNAZSKL.setSearchMode(1);
-    jrfNAZSKL.setColumnName("NAZSKL");
+    
     // qdsSklad.setQuery(new
     // com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(), "select *
     // from sklad where vrzal=\'M\'", null, true, Load.ALL));
@@ -261,6 +258,9 @@ public class presBlag extends PreSelect {
     jrfCSKL.setNavButton(jbCSKL);
     // jrfCSKL.setRaDataSet(qdsSklad);
     jrfCSKL.setRaDataSet(dm.getSklad());
+    jrfNAZSKL.setNavProperties(jrfCSKL);
+    jrfNAZSKL.setSearchMode(1);
+    jrfNAZSKL.setColumnName("NAZSKL");
     jLabel4.setText("Smjena");
     jLabel3.setText("Zaporka");
     jLabel2.setText("Blagajna");
