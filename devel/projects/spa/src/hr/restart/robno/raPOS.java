@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
@@ -276,6 +277,36 @@ public class raPOS extends raIzlazTemplate  {
     raInputDialog od = new raInputDialog();
     if (!od.show(null, pan, "Zakljuèak blagajne")) return;
     
+    Condition cond = Condition.till("DATDOK", tds).and(Condition.from("DATDOK", 
+        hr.restart.util.Util.getUtil().getFirstDayOfYear(tds.getTimestamp("DATDOK"))));
+    
+    String q = "SELECT cskl, datdok from pos WHERE " + 
+        "status='N' AND uirac!=0 AND " +
+        "cskl like '" + oldpj + "%' and " +cond;
+    DataSet allpos = Aus.q(q);
+    if (allpos.rowCount() == 0) {
+      JOptionPane.showMessageDialog(null, "Nema nerazduženog prometa do tog datuma.", 
+          "Zakljuèak", JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
+    Timestamp min = hr.restart.util.Util.getUtil().
+            getFirstSecondOfDay(tds.getTimestamp("DATDOK"));
+    for (allpos.first(); allpos.inBounds(); allpos.next()) {
+      if (allpos.getTimestamp("DATDOK").before(min))
+        min = hr.restart.util.Util.getUtil().
+          getFirstSecondOfDay(allpos.getTimestamp("DATDOK"));
+    }
+    if (min.before(hr.restart.util.Util.getUtil().
+        getFirstSecondOfDay(tds.getTimestamp("DATDOK")))) {
+      if (JOptionPane.showConfirmDialog(
+          null, "Postoji nerazduženi promet od " + 
+          Aus.formatTimestamp(min) + ".\nJeste li sigurni da ga želite "+
+          "zakljuèiti s datumom " + Aus.formatTimestamp(tds.getTimestamp("DATDOK")) 
+          + "?", "Promet", JOptionPane.YES_NO_OPTION,
+          JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION)
+        return;
+    }
+    
     raProcess.runChild(new Runnable() {		
 			public void run() {
 				if (!new raLocalTransaction(){
@@ -488,7 +519,7 @@ public class raPOS extends raIzlazTemplate  {
   
   static DataSet getArtikliSet(Condition cond) {
     VarStr q = new VarStr(
-        "SELECT m.cskl, d.cart, d.cart1, d.bc, d.jm, d.nazart, " +
+        "SELECT m.cskl, m.brdok, d.cart, d.cart1, d.bc, d.jm, d.nazart, " +
         "d.kol, d.rezkol, d.ipopust1+d.ipopust2 as uirab, " +
         "(d.ipopust1+d.ipopust2)/d.iznos*100 as uprab, " +
         "(d.iznos-d.por1-d.por2-d.por3)/d.kol as fc, " +
@@ -496,8 +527,8 @@ public class raPOS extends raIzlazTemplate  {
         "(d.neto-d.por1-d.por2-d.por3)/d.kol as fvc, " +
         "(d.neto-d.por1-d.por2-d.por3) as iprodbp, " +
         "d.por1, d.por2, d.por3, d.neto/d.kol as fmc, d.mc as fmcprp, " +
-        "d.neto as iprodsp, d.ppor1, d.ppor2, d.ppor3, " +
-        "d.cskl from pos m, stpos d WHERE " + Util.getUtil().getDoc("m", "d") +
+        "d.neto as iprodsp, d.ppor1, d.ppor2, d.ppor3 " +
+        "from pos m, stpos d WHERE " + Util.getUtil().getDoc("m", "d") +
         " AND m.status='N' AND d.iznos!=0 AND d.kol!=0 AND " +
         "m.cskl like '" + oldpj + "%' and "
     );
@@ -505,10 +536,10 @@ public class raPOS extends raIzlazTemplate  {
     q.append(cond.qualified("m"));
     System.out.println("sql: "+q);
     
-    String[] cols = {"CSKL", "CART", "CART1", "BC", "NAZART", "JM", "KOL", 
+    String[] cols = {"CSKL", "BRDOK", "CART", "CART1", "BC", "NAZART", "JM", "KOL", 
         "REZKOL", "UIRAB", "UPRAB", "FC", "INETO", "FVC", 
         "IPRODBP", "POR1", "POR2", "POR3", "FMC", "FMCPRP", 
-        "IPRODSP", "PPOR1", "PPOR2", "PPOR3", "CSKL", "BRDOK"};
+        "IPRODSP", "PPOR1", "PPOR2", "PPOR3"};
     String[] sumc = {"KOL", "UIRAB", "INETO", "IPRODBP", 
           "POR1", "POR2", "POR3", "IPRODSP"};
     StorageDataSet inter = stdoki.getDataModule().getScopedSet(cols);       
