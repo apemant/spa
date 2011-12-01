@@ -13,4 +13,7 @@ public class raInputDialog extends raOptionDialog {
     main.add(okp, BorderLayout.SOUTH);
     return super.show(parent, main, title);
   }
+  protected boolean checkOk() {
+    return super.checkOk();
+  }
 }
