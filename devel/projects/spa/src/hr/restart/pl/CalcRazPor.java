@@ -217,7 +217,7 @@ public class CalcRazPor {
   
   private BigDecimal[] getOsnovice(BigDecimal poros, StorageDataSet orgosn) {
     
-    BigDecimal[] ret = new BigDecimal[4];
+    BigDecimal[] ret = new BigDecimal[5];
     Parametripl.getDataModule().getQueryDataSet().open();
     
     // osnpor1
@@ -255,6 +255,7 @@ public class CalcRazPor {
       ret[2] = Aus.zero2;
       ret[3] = Aus.zero2;
     }
+    ret[4]=Aus.zero2;
     return ret;
   }
   private BigDecimal[] getStopePo2010() {

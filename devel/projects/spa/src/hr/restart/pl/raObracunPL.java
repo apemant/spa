@@ -623,7 +623,7 @@ sysoutTEST ST = new sysoutTEST(false);
   }
 
   BigDecimal[] getStopePoreza(String _cradnik) {
-    BigDecimal[] ret = new BigDecimal[] {nula.setScale(0),nula.setScale(0),nula.setScale(0),nula.setScale(0)};
+    BigDecimal[] ret = new BigDecimal[] {nula.setScale(0),nula.setScale(0),nula.setScale(0),nula.setScale(0),nula.setScale(0)};
     QueryDataSet porezi = odbici.getPorez(_cradnik,raOdbici.DEF);
     if (porezi.getRowCount() == 0) return ret;
     short[] cpor = getCpors(porezi);
