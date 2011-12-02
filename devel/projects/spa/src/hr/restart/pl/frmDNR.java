@@ -370,6 +370,7 @@ public class frmDNR extends raUpitLite {
     orgs = hr.restart.zapod.OrgStr.getOrgStr();
 //    addJasper("repIPP", "hr.restart.pl.repIPP", "ipp.jrxml", "IPP Obrazac");
 
+    this.addJasper("repDNR11","hr.restart.pl.repDNR", "dnr11.jrxml", "Obrazac DNR 2011");
     this.addJasper("repDNR","hr.restart.pl.repDNR", "dnr.jrxml", "Obrazac DNR");
 //    this.addReport("hr.restart.pl.repDNR", "DNR", 2);
 
