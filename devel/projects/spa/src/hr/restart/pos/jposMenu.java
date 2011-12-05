@@ -173,7 +173,9 @@ public class jposMenu extends JMenu {
   }
   public void jmRekapitulacijaPOS_actionPerformed(ActionEvent e) {
 //    SF.showFrame("hr.restart.robno.ispPOS_Total", jmRekapitulacijaPOS.getText());
-    SF.showFrame("hr.restart.robno.ispRekapitulacijaRacunaPOS", jmRekapitulacijaPOS.getText());
+    if (presBlag.isSkladOriented())
+      SF.showFrame("hr.restart.pos.ispRekapNew", jmRekapitulacijaPOS.getText());
+    else SF.showFrame("hr.restart.robno.ispRekapitulacijaRacunaPOS", jmRekapitulacijaPOS.getText());
   }
   public void jmPregledArtikliRacuni_actionPerformed(ActionEvent e){
     SF.showFrame("hr.restart.robno.upRacuniArtikliPOS", jmPregledArtikliRacuni.getText());
