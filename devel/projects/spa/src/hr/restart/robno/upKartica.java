@@ -315,6 +315,11 @@ public class upKartica extends raUpitFat {
       }
 
 //      this.getJPTV().setDataSet(card);
+      setTitle("Kartica artikla " + Aut.getAut().getCARTdependable(
+          rpcart.getCART(), rpcart.getCART1(), rpcart.getBC()) + " - "
+          + rpcart.getNAZART() + "  od " + 
+          Aus.formatTimestamp(tds.getTimestamp("pocDatum")) + " do " +
+          Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
       setDataSetAndSums(card, new String[] {"KOLUL","KOLIZ","KOLZAD","KOLRAZ"});
       System.out.println("CART poslije tablice " + rpcart.getCART());
   }
