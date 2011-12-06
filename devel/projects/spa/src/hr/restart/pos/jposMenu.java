@@ -103,7 +103,7 @@ public class jposMenu extends JMenu {
         jmRekapitulacijaPOS_actionPerformed(e);
       }
     });
-    jmPregledArtikliRacuni.setText("Pregled artikli raèuni");
+    jmPregledArtikliRacuni.setText(presBlag.isSkladOriented() ? "Pregled prodaje" : "Pregled artikli raèuni");
     jmPregledArtikliRacuni.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmPregledArtikliRacuni_actionPerformed(e);
@@ -178,7 +178,9 @@ public class jposMenu extends JMenu {
     else SF.showFrame("hr.restart.robno.ispRekapitulacijaRacunaPOS", jmRekapitulacijaPOS.getText());
   }
   public void jmPregledArtikliRacuni_actionPerformed(ActionEvent e){
-    SF.showFrame("hr.restart.robno.upRacuniArtikliPOS", jmPregledArtikliRacuni.getText());
+  	if (presBlag.isSkladOriented())
+  		SF.showFrame("hr.restart.pos.upProdaja", jmPregledArtikliRacuni.getText());
+  	else SF.showFrame("hr.restart.robno.upRacuniArtikliPOS", jmPregledArtikliRacuni.getText());
   }
   public void jmPregledKPR_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upKPR_NextGeneration", jmKPR.getText());
