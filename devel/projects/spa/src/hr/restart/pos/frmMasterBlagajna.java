@@ -1868,7 +1868,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     res.setColumns(new Column[] {
     		dM.createStringColumn("CORG", "Dobavljaè", 12),
     		dM.createStringColumn("CART1", "Šifra", 20),
-        dM.createStringColumn("NAZART", "NAziv artikla", 100),
+        dM.createStringColumn("NAZART", "Naziv artikla", 100),
         dM.createBigDecimalColumn("KOL", "Kolièina", 3),
         dM.createBigDecimalColumn("MC", "Cijena", 2),
         dM.createBigDecimalColumn("NETO", "Neto", 2)
