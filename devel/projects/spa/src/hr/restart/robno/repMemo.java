@@ -70,6 +70,7 @@ public class repMemo  {
       public void knjigChanged(String newk, String oldk) {
         corg = OrgStr.getKNJCORG(false);
         Logotipovi.getDataModule().setFilter((QueryDataSet) ds, Condition.equal("CORG", corg));
+        ds.open();
       }
     });
 
