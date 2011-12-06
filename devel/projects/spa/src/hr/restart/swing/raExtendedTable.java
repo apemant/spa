@@ -86,6 +86,7 @@ public class raExtendedTable extends JraTable2 {
   String clickCol;
   ArrayList group, sort;
   String lastAddedSort;
+  boolean forcePage;
   
   raJPTableView owner;
 
@@ -408,6 +409,14 @@ public class raExtendedTable extends JraTable2 {
   public DataSet getGroupGetDs(int n) {
     return ((ColumnInfo) group.get(n)).getDs;
   }
+  
+  public boolean isForcePage() {
+		return forcePage;
+	}
+
+	public void setForcePage(boolean forcePage) {
+		this.forcePage = forcePage;
+	}
 
   private String xlsRange(int firstRow, int lastRow, short column) {
     char cc = (char) ('A' + column);
