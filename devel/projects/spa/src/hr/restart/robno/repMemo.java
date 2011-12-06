@@ -46,6 +46,11 @@ public class repMemo  {
   public static repMemo getrepMemo(String corgC){
     if (rpm==null)
       rpm= new repMemo(false);
+    if (rpm.ds.rowCount() == 0) {
+      rpm.ds = Logotipovi.getDataModule().
+      getTempSet(Condition.equal("CORG", OrgStr.getKNJCORG(false)));
+      rpm.ds.open();
+    }
     rpm.corg = corgC;
     rpm.posLogotip();
     return rpm;
