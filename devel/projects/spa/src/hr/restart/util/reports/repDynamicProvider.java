@@ -106,8 +106,13 @@ public class repDynamicProvider implements IDataProvider {
       lookupData.getlookupData().raLocate(ds, xt.getGroup(n), v.toString());
       VarStr full = new VarStr(v.toString());
       for (int i = 0; i < xt.getGroupDesc(n).length; i++) {
-        ds.getVariant(xt.getGroupDesc(n)[i], v);
-        full.append(' ').append(v.toString());
+      	if (xt.getGroupDesc(n)[i].equals("#")) full.clear();
+      	else if (xt.getGroupDesc(n)[i].startsWith("#"))
+      		full.append(xt.getGroupDesc(n)[i].substring(1));
+      	else {
+      		ds.getVariant(xt.getGroupDesc(n)[i], v);
+      		full.append(' ').append(v.toString());
+      	}
       }
       return full.toString();
     } else return "";
@@ -232,12 +237,18 @@ public class repDynamicProvider implements IDataProvider {
       int w = createHD(ratio, lt.SectionHeader1, lt.TextHeaderValue0) - 20;
       createHD(ratio, lt.Detail, lt.TextDataValue0);
       createFooter(ratio, lt.SectionFooter1, lt.TextSumValue0, "U K U P N O");
+
       if (subtitle.length() == 0)
         lt.SectionHeader0.setHeight(760);
 
       if (xt != null && xt.getTotalGroupCount() > 0) {
         createGroups(temp, lt.Sections, lt.SectionHeader1, lt.SectionFooter1, lt.TextDataValue0);
-        if (sums) {
+        if (xt.isForcePage()) {
+        	lt.SectionHeader0.setProperty(ep.REPEAT, ev.YES);
+        	lt.SectionHeader0.setProperty(ep.FORCE_NEW, ev.BEFORE);
+        	lt.SectionFooter1.setProperty(ep.FORCE_NEW, ev.AFTER);
+        }
+        if (sums && !(xt != null && xt.isForcePage())) {
           lt.Section0.setProperty(ep.GROUP_FOOTER, ev.YES);
           createFooter(ratio, lt.SectionFooter0, lt.TextTSumValue0, "S V E U K U P N O");
           lt.SectionFooter0.setHeight(400);
@@ -260,11 +271,17 @@ public class repDynamicProvider implements IDataProvider {
       int w = createHD(ratio, lt.SectionHeader1, lt.TextHeaderValue0) - 20;
       createHD(ratio, lt.Detail, lt.TextDataValue0);
       createFooter(ratio, lt.SectionFooter1, lt.TextSumValue0, "U K U P N O");
+
       if (subtitle.length() == 0)
         lt.SectionHeader0.setHeight(760);
       if (xt != null && xt.getTotalGroupCount() > 0) {
         createGroups(temp, lt.Sections, lt.SectionHeader1, lt.SectionFooter1, lt.TextDataValue0);
-        if (sums) {
+        if (xt.isForcePage()) {
+        	lt.SectionHeader0.setProperty(ep.REPEAT, ev.YES);
+        	lt.SectionHeader0.setProperty(ep.FORCE_NEW, ev.BEFORE);
+        	lt.SectionFooter1.setProperty(ep.FORCE_NEW, ev.AFTER);
+        }
+        if (sums && !(xt != null && xt.isForcePage())) {
           lt.Section0.setProperty(ep.GROUP_FOOTER, ev.YES);
           createFooter(ratio, lt.SectionFooter0, lt.TextTSumValue0, "S V E U K U P N O");
           lt.SectionFooter0.setHeight(400);
