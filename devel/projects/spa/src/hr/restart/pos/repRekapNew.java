@@ -5,12 +5,15 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
+import hr.restart.util.reports.mxRM;
 import hr.restart.util.reports.mxReport;
 import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
+import java.util.StringTokenizer;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 
@@ -40,7 +43,19 @@ public class repRekapNew extends mxReport {
       pcorg = OrgStr.getKNJCORG(false);
     
     doubleLineSep = getDoubleLineLength();
-//    System.out.println("WIDTH - "+ width);
+    
+
+      this.setDataSet(new StorageDataSet());
+      this.getDataSet().open();
+      
+      String vc = hr.restart.sisfun.frmParam.getParam(
+          "sisfun", "printerRMcmnd", "1", "Radno mjesto", true);
+      lD.raLocate(dm.getMxPrinterRM(), "CRM", vc);
+      mxRM rm = new mxRM();
+      rm.init(dm.getMxPrinterRM());
+      setRM(rm);
+
+      //    System.out.println("WIDTH - "+ width);
     dm.getLogotipovi().open();
     
     lD.raLocate(dm.getLogotipovi(), "CORG", pcorg);
@@ -57,7 +72,8 @@ public class repRekapNew extends mxReport {
     if (!sks.getString("CORG").equals(OrgStr.getKNJCORG(false)) &&
         lD.raLocate(dm.getLogotipovi(), "CORG", sks.getString("CORG"))) {
       ph = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
-      "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ getPhones();
+      "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ 
+      "<#OIB "+dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>"+ getPhones();
     }
 
     String prep = frmParam.getParam("pos", "addHeader", "",
@@ -82,30 +98,77 @@ public class repRekapNew extends mxReport {
     
     this.setPgHeader(header+getZag()+getPlac()+getPop()+getPor());
     
-    this.setPgFooter(
+    this.setRepFooter(
         "<$newline$><$newline$><$newline$>"+
-        "<$newline$><$newline$><$newline$>"+
-        "\u001B\u0064\u0000");
+        "<$newline$><$newline$><$newline$>"+getLastEscapeString());
 
     super.makeReport();
   }
   
   String getZag() {
-    String z = "<$newline$><#Obrazac R-1 |"+width+"|right><$newline$>";
-    
+    String z = "<$newline$><#Obrazac R-1 |"+width+"|right#><$newline$><$newline$>"+
+    			"<#OBRAÈUN|"+width+"|center#><$newline$>"+
+    			"<#" + ("od " + Aus.formatTimestamp(irn.getPocDatum()) + " do " + Aus.formatTimestamp(irn.getZavDatum())) + 
+    			"|"+width+"|center#><$newline$><$newline$>";
     return z;
   }
   
   String getPlac() {
-    return "";
+  	String z = doubleLineSep + "<$newline$><#Naèin plaæanja|20|left#> <#IZNOS|"+(width-21)+"|right#><$newline$>"+ 
+  						doubleLineSep + "<$newline$>";
+  	
+  	DataSet pl = irn.getFinalSet();
+  	BigDecimal tot = Aus.zero2;
+  	
+  	for (pl.first(); pl.inBounds(); pl.next()) {
+  		if (pl.getBigDecimal("IZNOS").signum() == 0)
+  			z += "<#"+pl.getString("NACPL")+"|25|left#><$newline$>";
+  		else z +="<#"+pl.getString("NACPL")+"|25|left#> <#"+Aus.formatBigDecimal(pl.getBigDecimal("IZNOS"))+"|"+(width-26)+"|right#><$newline$>";
+  		tot = tot.add(pl.getBigDecimal("IZNOS"));
+  	}
+  	z += "<$newline$><#UKUPNO|20|left#> <#"+Aus.formatBigDecimal(tot)+"|"+(width-21)+"|right#><$newline$>";
+  	
+    return z;
   }
   
   String getPop() {
-    return "";
+    return "<$newline$><$newline$>ODOBRENI POPUST: <#"+Aus.formatBigDecimal(irn.getPopust())+"|"+(width-17)+"|right#><$newline$><$newline$>";
   }
   
   String getPor() {
-    return "";
+  	
+    
+  	String z =  "<#P R E G L E D  P O R E Z A|"+width+"|center#><$newline$>"+
+                 "<#NAZIV|6|left#> <#STOPA|8|right#> <#OSNOVICA|12|right#> <#POREZ|"+(width-29)+"|right#><$newline$>"+
+                  doubleLineSep+"<$newline$>";
+  	
+  	DataSet ds = irn.getPorezSet();
+  	for (ds.first(); ds.inBounds(); ds.next()) {    
+      z += "<#"+ds.getString("NAZIV")+"|6|left#> <#"+Aus.formatBigDecimal(ds.getBigDecimal("STOPA"))+"%|8|right#> <#"+
+      	Aus.formatBigDecimal(ds.getBigDecimal("OSNOVICA"))+"|12|right#> <#"+
+      	Aus.formatBigDecimal(ds.getBigDecimal("IZNOS"))+"|"+(width-29)+"|right#>"+ "<$newline$>";
+    }
+    return z;
+  }
+  
+  private String getLastEscapeString() {
+    try {
+      int crm = dm.getMxPrinterRM().getInt("CRM");//jebiga
+      String str = frmParam.getParam("sisfun", "endPOSRM"+crm, "\\u001B\\u0064\\u0000", "Sekvenca koja dolazi na kraju ispisa POS racuna za rm "+crm);
+//String str = "\\u0041\\u004e\\u0044\\u0052\\u0045\\u004a";
+      StringTokenizer tok = new StringTokenizer(str,"\\u");
+      char[] ret = new char[tok.countTokens()];
+      int i=0;
+      while (tok.hasMoreTokens()) {
+        ret[i] = (char)Integer.parseInt(tok.nextToken(), 16);
+        i++;
+      }
+      return new String(ret);
+    } catch (NumberFormatException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return "";
+    }
   }
   
   private String getPhones(){
