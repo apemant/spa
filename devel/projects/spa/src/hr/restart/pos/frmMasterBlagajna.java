@@ -40,6 +40,7 @@ import hr.restart.sisfun.raUser;
 import hr.restart.sk.dlgSplitAmount;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raColors;
+import hr.restart.swing.raExtendedTable;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raStatusColorModifier;
 import hr.restart.swing.raTextMask;
@@ -190,6 +191,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   
   frmTableDataView viewReq = new frmTableDataView(false, false, true);
   frmTableDataView viewPlac = new frmTableDataView(false, false, true);
+  frmTableDataView viewArt = new frmTableDataView(false, false, true);
 
   JPanel jpSelect = new JPanel();
   Column IZNOS = new Column();
@@ -920,6 +922,11 @@ public class frmMasterBlagajna extends raMasterDetail {
             showTotalPlac();
           }
         },5,false);
+        this.raMaster.addOption(new raNavAction("Pregled artikala", raImages.IMGHISTORY, KeyEvent.VK_F8, KeyEvent.SHIFT_MASK) {
+          public void actionPerformed(java.awt.event.ActionEvent ev) {
+            showTotalArt();
+          }
+        },6,false);
       } else {
         if (raUser.getInstance().isSuper()) {
           raMaster.addOption(navPonisti, 4);
@@ -1848,17 +1855,66 @@ public class frmMasterBlagajna extends raMasterDetail {
   public void ZatvoriOstaloMaster() {
   }
   
+  void showTotalArt() {
+  	if (getMasterSet().getRowCount() == 0) return;
+  	
+  	VarStr q = new VarStr(getMasterSet().getOriginalQueryString().toLowerCase());
+    q.replace("* from pos", "stpos.cskl, stpos.cart1, stpos.nazart, stpos.kol, stpos.mc, stpos.neto from pos,stpos");
+    q.replace(" where ", " where " + Util.getUtil().getDoc("pos", "stpos") + " and ");
+    DataSet ds = Aus.q(q.toString());
+    ds.setSort(new SortDescriptor(new String[] {"CART1"}));
+    
+    StorageDataSet res = new StorageDataSet();
+    res.setColumns(new Column[] {
+    		dM.createStringColumn("CORG", "Dobavljaè", 12),
+    		dM.createStringColumn("CART1", "Šifra", 20),
+        dM.createStringColumn("NAZART", "NAziv artikla", 100),
+        dM.createBigDecimalColumn("KOL", "Kolièina", 3),
+        dM.createBigDecimalColumn("MC", "Cijena", 2),
+        dM.createBigDecimalColumn("NETO", "Neto", 2)
+    });
+    res.open();
+    String cart = "";
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      if (!ds.getString("CART1").equals(cart)) {
+      	cart = ds.getString("CART1");
+        res.insertRow(false);
+        res.setString("CORG", ds.getString("CSKL"));
+        res.setString("CART1", cart);
+        res.setString("NAZART", ds.getString("NAZART"));
+        Aus.set(res, "MC", ds);
+      }
+      Aus.add(res, "KOL", ds);
+      Aus.add(res, "NETO", ds);
+    }
+    
+    viewArt.setDataSet(res);
+    viewArt.setSums(new String[] {"NETO"});
+    viewArt.setSaveName("Pregled-blag-art");
+    viewArt.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+    viewArt.setTitle("Prikaz prometa po artiklima  od " + 
+              Aus.formatTimestamp(getPreSelect().getSelRow().getTimestamp("DATDOK-from")) + " do " +
+              Aus.formatTimestamp(getPreSelect().getSelRow().getTimestamp("DATDOK-to")));
+    viewArt.setVisibleCols(new int[] {1, 2, 3, 4, 5});
+    raExtendedTable t = (raExtendedTable) viewArt.jp.getMpTable();
+    t.setForcePage(true);
+    t.addToGroup("CORG", true, new String[] {"#", "NAZIVLOG", "#\n", "ADRESA", "#,", "PBR", "MJESTO", "#, OIB", "OIB"}, 
+    		dM.getDataModule().getLogotipovi(), true);
+    viewArt.show();
+  }
+  
   void showTotalPlac() {
     if (getMasterSet().getRowCount() == 0) return;
     
     VarStr q = new VarStr(getMasterSet().getOriginalQueryString().toLowerCase());
-    q.replace("* from pos", "rate.cnacpl, rate.cbanka, rate.irata from pos,rate");
+    q.replace("* from pos", "rate.cskl, rate.cnacpl, rate.cbanka, rate.irata from pos,rate");
     q.replace(" where ", " where " + Util.getUtil().getDoc("pos", "rate") + " and ");
     DataSet ds = Aus.q(q.toString());
     ds.setSort(new SortDescriptor(new String[] {"CNACPL", "CBANKA"}));
     
     StorageDataSet res = new StorageDataSet();
     res.setColumns(new Column[] {
+    		dM.createStringColumn("CORG", "Dobavljaè", 12),
         dM.createStringColumn("NACPL", "Naèin plaæanja", 50),
         dM.createStringColumn("BANKA", "Kartièar", 50),
         dM.createBigDecimalColumn("IRATA", "Iznos naplate")
@@ -1874,7 +1930,7 @@ public class frmMasterBlagajna extends raMasterDetail {
         res.insertRow(false);
         ld.raLocate(dm.getNacpl(), "CNACPL", cnacpl);
         res.setString("NACPL", cnacpl + " - " + dm.getNacpl().getString("NAZNACPL"));
-        
+        res.setString("CORG", ds.getString("CSKL"));
         if (cbanka.length() > 0) {
           ld.raLocate(dm.getKartice(), "CBANKA", cbanka);
           res.setString("BANKA", cbanka + " - " + dm.getKartice().getString("NAZIV"));
@@ -1887,10 +1943,14 @@ public class frmMasterBlagajna extends raMasterDetail {
     viewPlac.setSums(new String[] {"IRATA"});
     viewPlac.setSaveName("Pregled-blag-plac");
     viewPlac.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-    viewPlac.setTitle("Prikaz naplate za " + ((presBlag) getPreSelect()).jrfNAZSKL.getText() + "  od " + 
+    viewPlac.setTitle("Prikaz prometa po vrsti naplate  od " + 
               Aus.formatTimestamp(getPreSelect().getSelRow().getTimestamp("DATDOK-from")) + " do " +
               Aus.formatTimestamp(getPreSelect().getSelRow().getTimestamp("DATDOK-to")));
-    viewPlac.setVisibleCols(new int[] {0, 1, 2});
+    viewPlac.setVisibleCols(new int[] {1, 2, 3});
+    raExtendedTable t = (raExtendedTable) viewPlac.jp.getMpTable();
+    t.setForcePage(true);
+    t.addToGroup("CORG", true, new String[] {"#", "NAZIVLOG", "#\n", "ADRESA", "#,", "PBR", "MJESTO", "#, OIB", "OIB"}, 
+    		dM.getDataModule().getLogotipovi(), true);
     viewPlac.show();
   }
   
