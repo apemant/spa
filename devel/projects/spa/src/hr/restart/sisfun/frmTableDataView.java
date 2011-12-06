@@ -96,6 +96,7 @@ public class frmTableDataView extends JraFrame {
   public raJPTableView jp = new raJPTableView(mpt) {
     public void mpTable_doubleClicked() {
       if (editable) editCell();
+      else doubleClick(jp);
     }
     public void navBar_afterRefresh() {
       setCount();
@@ -240,6 +241,10 @@ public class frmTableDataView extends JraFrame {
   }
 
   private boolean shown; */
+  
+  protected void doubleClick(raJPTableView jp2) {
+    // for override
+  }
 
   private void jbInit() throws Exception {
  /*   try {
