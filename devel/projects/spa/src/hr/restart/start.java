@@ -79,11 +79,11 @@ public class start {
     fpass = getFrmPassword();
     raSplashAWT.splashMSG("Priprema ekrana ...");
     createMainFrame(1);
+    raSplashAWT.splashMSG("Autorizacija ...");
+    if (!checkLogin(true)) System.exit(0);
     raSplashAWT.splashMSG("Priprema toolbara ...");
     raTB = raToolBar.getRaToolBar();
     raTB.showTB();
-    raSplashAWT.splashMSG("Autorizacija ...");
-    if (!checkLogin(true)) System.exit(0);
     raTB.showIfShowable();
     raSplashAWT.splashMSG("Priprema ekrana ...");
     createMainFrame(2);
