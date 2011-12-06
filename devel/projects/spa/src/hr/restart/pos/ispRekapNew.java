@@ -2,8 +2,12 @@ package hr.restart.pos;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -23,6 +27,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.lookupData;
+import hr.restart.util.raProcess;
 import hr.restart.util.raUpitLite;
 import hr.restart.zapod.OrgStr;
 
@@ -56,6 +61,7 @@ public class ispRekapNew extends raUpitLite {
   
   BigDecimal pop;
   int minr, maxr;
+  int delay;
   
   public ispRekapNew() {
     try {
@@ -92,7 +98,7 @@ public class ispRekapNew extends raUpitLite {
   }
   
   public String getCSKL() {
-    return tds.getString("CSKL");
+    return tds.getString("CORG");
   }
   
   public Timestamp getPocDatum() {
@@ -122,7 +128,7 @@ public class ispRekapNew extends raUpitLite {
         dm.createBigDecimalColumn("IZNOS")
     });
     
-    tds.setColumns(new Column[] {dm.createStringColumn("CSKL","Prodajno mjesto",12),
+    tds.setColumns(new Column[] {dm.createStringColumn("CORG","Prodajno mjesto",12),
         dm.createTimestampColumn("pocDatum", "Poèetni datum"),
         dm.createTimestampColumn("zavDatum", "Krajnji datum"),
         });
@@ -168,29 +174,83 @@ public class ispRekapNew extends raUpitLite {
     });
   }
   
-  
   public void componentShow() {
     tds.open();
     tds.setTimestamp("pocDatum", vl.getToday());
     tds.setTimestamp("zavDatum", vl.getToday());
     jrfCSKL.requestFocus();
+    
+    String sdel = hr.restart.sisfun.frmParam.getParam("pos", "delayRep", "500", 
+    		"Koliko milisekundi da prièeka izmeðu 2 štampanja", true);
+    delay = Aus.getAnyNumber(sdel);
+    if (delay == 0) delay = 250;
   }
 
   public void firstESC() {
-    if (!tds.getString("CSKL").equals("")){
-      rcc.setLabelLaF(jrfCSKL,true);
-      rcc.setLabelLaF(jrfNAZSKL,true);
-      rcc.setLabelLaF(jbCSKL,true);
+    if (!tds.getString("CORG").equals("")){
+    	rcc.EnabDisabAll(mainPanel, true);
       jrfCSKL.setText("");
       jrfCSKL.emptyTextFields();
       jrfCSKL.requestFocus();
     }
+  }
+  
+  public boolean Validacija() {
+  	if (vl.isEmpty(jrfCSKL)) return false;
+  	
+  	if (tds.getString("CORG").length() < 4) {
+  		if (JOptionPane.showConfirmDialog(this.getWindow(), "Želite li ispisati sve obraèune za ovu jedinicu?", 
+  				"Višestruki ispis", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return false;
+  		
+  		String cskl = tds.getString("CORG");
+  		raProcess.runChild(new Runnable() {
+				public void run() {
+					multiplePrint();
+				}
+  		});
+  		tds.setString("CORG", cskl);
+  		return false;  		
+  	}
+  	
+  	return true;
+  }
+  
+  void multiplePrint() {
+		DataSet allc = OrgStr.getOrgStr().getOrgstrFromKnjig(tds.getString("CORG"));
+		HashSet hc = new HashSet();
+		for (allc.first(); allc.inBounds(); allc.next()) {
+			hc.add(allc.getString("CORG"));
+		}
+		System.out.println(hc);
+		
+		String q = "SELECT cskl FROM pos WHERE pos.vrdok = 'GRC' and " +
+    		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").qualified("pos");
+		QueryDataSet ds = Aus.q(q);
+		ds.setSort(new SortDescriptor(new String[] {"CSKL"}));
+		
+		List css = new ArrayList();
+		for (ds.first(); ds.inBounds(); ds.next())
+			if (hc.remove(ds.getString("CSKL")))
+				css.add(ds.getString("CSKL"));
+
+		
+		for (int i = 0; i < css.size(); i++) {
+			tds.setString("CORG", (String) css.get(i));
+			okPress();
+			ispis();
+			try {
+        Thread.sleep(delay);
+      } catch (InterruptedException e) {
+        // blah
+      }
+		}
   }
 
   public void okPress() {
     this.killAllReports();
 
     this.addReport("hr.restart.pos.repRekapNew", "Ispis matrièni");
+    
     
     pop = Aus.zero2;
     minr = maxr = -1;
@@ -207,7 +267,7 @@ public class ispRekapNew extends raUpitLite {
       "AND pos.brdok = stpos.brdok "+
       "AND pos.cprodmj = stpos.cprodmj "+
       "and pos.vrdok = 'GRC' and " +
-      Condition.equal("CSKL", tds).and(Condition.between(
+      Condition.equal("CSKL", tds, "CORG").and(Condition.between(
           "DATDOK", tds, "pocDatum", "zavDatum")).qualified("pos");
 
     System.out.println(porezString);
@@ -248,7 +308,7 @@ public class ispRekapNew extends raUpitLite {
     finalSet.open();
     finalSet.empty();
     
-    String upitString = "SELECT RATE.irata as irata, RATE.cbanka as cbanaka, RATE.cnacpl as cnacpl "+
+    String upitString = "SELECT RATE.irata as irata, RATE.cbanka as cbanka, RATE.cnacpl as cnacpl "+
     "FROM pos, rate "+
     "WHERE pos.cskl = rate.cskl "+
     "AND pos.vrdok = rate.vrdok "+
@@ -256,11 +316,11 @@ public class ispRekapNew extends raUpitLite {
     "AND pos.brdok = rate.brdok "+
     "AND pos.cprodmj = rate.cprodmj "+
     "and pos.vrdok = 'GRC' and "+ 
-    Condition.equal("CSKL", tds).and(Condition.between(
+    Condition.equal("CSKL", tds, "CORG").and(Condition.between(
         "DATDOK", tds, "pocDatum", "zavDatum")).qualified("pos");
     
     System.out.println(upitString);
-    QueryDataSet qds = Aus.q(porezString);
+    QueryDataSet qds = Aus.q(upitString);
     qds.open();
     
     if (qds.isEmpty()) setNoDataAndReturnImmediately();
@@ -279,7 +339,7 @@ public class ispRekapNew extends raUpitLite {
           finalSet.setString("CBANKA", cban);
           ld.raLocate(dm.getNacpl(), "CNACPL", cnac);
           finalSet.setString("NACPL", dm.getNacpl().getString("NAZNACPL"));
-          Aus.clear(finalSet, "IRATA");
+          Aus.clear(finalSet, "IZNOS");
         }
         cban = qds.getString("CBANKA");
         finalSet.insertRow(false);
@@ -287,17 +347,19 @@ public class ispRekapNew extends raUpitLite {
         finalSet.setString("CBANKA", cban);
         if (cban.length() > 0) {
           ld.raLocate(dm.getKartice(), "CBANKA", cban);
-          finalSet.setString("NACPL", dm.getKartice().getString("NAZIV"));
-        } else {
+          finalSet.setString("NACPL", "- " + dm.getKartice().getString("NAZIV"));
+         } else {
           ld.raLocate(dm.getNacpl(), "CNACPL", cnac);
           finalSet.setString("NACPL", dm.getNacpl().getString("NAZNACPL"));
         }
-        Aus.clear(finalSet, "IRATA");
+        Aus.clear(finalSet, "IZNOS");
       }
-      Aus.add(finalSet, "IRATA", qds);
+      Aus.add(finalSet, "IZNOS", qds, "IRATA");
     }
-    
-    
+  }
+  
+  public void addHooks() {
+  	getRepRunner().setOneTimeDirectReport("hr.restart.pos.repRekapNew");
   }
   
   public boolean isIspis(){
@@ -309,7 +371,7 @@ public class ispRekapNew extends raUpitLite {
   }
 
   public boolean runFirstESC() {
-    if (!tds.getString("CSKL").equals("")) return true;
+    if (!tds.getString("CORG").equals("")) return true;
     return false;
   }
 }
