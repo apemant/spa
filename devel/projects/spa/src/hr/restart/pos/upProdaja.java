@@ -128,8 +128,9 @@ public class upProdaja extends raUpitLite {
 	
 	public void componentShow() {
 		tds.open();
-        tds.setTimestamp("pocDatum", rut.findFirstDayOfYear());
+        tds.setTimestamp("pocDatum", vl.getToday());
         tds.setTimestamp("zavDatum", vl.getToday());
+       jrfCSKL.requestFocus();
 	}
 
 	public void firstESC() {
