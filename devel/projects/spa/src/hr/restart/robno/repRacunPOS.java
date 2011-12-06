@@ -140,7 +140,8 @@ public class repRacunPOS extends mxReport {
      if (!sks.getString("CORG").equals(OrgStr.getKNJCORG(false)) &&
          lD.raLocate(dm.getLogotipovi(), "CORG", sks.getString("CORG"))) {
        ph = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
-       "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ getPhones();
+       "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ 
+       "<#OIB "+dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>"+ getPhones();
      }
 
      String prodMjesto = prm.getString("NAZPRODMJ");
