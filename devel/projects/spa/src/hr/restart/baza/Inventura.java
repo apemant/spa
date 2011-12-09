@@ -25,7 +25,7 @@ public class Inventura extends KreirDrop implements DataModule {
   private static Inventura inventclass;
   dM dm  = dM.getDataModule();
   QueryDataSet invent = new raDataSet();
-  Column inventCSKL = new Column();
+  /*Column inventCSKL = new Column();
   Column inventCART = new Column();
   Column inventCART1 = new Column();
   Column inventBC = new Column();
@@ -39,7 +39,7 @@ public class Inventura extends KreirDrop implements DataModule {
   Column inventKOLMANJ = new Column();
   Column inventKOLVIS = new Column();
   Column inventVRIMANJ = new Column();
-  Column inventVRIVIS = new Column();
+  Column inventVRIVIS = new Column();*/
 
   public static Inventura getDataModule() {
     if (inventclass == null) {
@@ -62,8 +62,8 @@ public class Inventura extends KreirDrop implements DataModule {
     }
   }
   private void jbInit() throws Exception {
-
-
+    initModule();
+/*
 
 
     inventCSKL.setCaption("Skladište");
@@ -252,9 +252,9 @@ public class Inventura extends KreirDrop implements DataModule {
         "SELECT * from inventura", null, true, Load.ALL));
  setColumns(new Column[] {inventCSKL, inventCART, inventCART1, inventBC, inventNAZART, inventJM, inventKOLKNJ, inventKOLINV, inventZC,
         inventVRIKNJ, inventVRIINV, inventKOLMANJ, inventKOLVIS, inventVRIMANJ, inventVRIVIS});
-  }
+*/  }
 
-  public void setall(){
+  //public void setall(){
 
 /*      SqlDefTabela = "create table Stdoku " +
       "(lokk char(1) CHARACTER SET WIN1250 default 'N', " + //Status zauzetosti
@@ -302,7 +302,7 @@ public class Inventura extends KreirDrop implements DataModule {
       "porav numeric(17,2),"+ // Poravnanje
       "Primary Key (cskl,vrdok,god,brdok,rbr))" ; */
 
-    ddl.create("inventura")
+    /*ddl.create("inventura")
        .addChar("cskl", 12, true)
        .addInteger("cart", 6, true)
        .addChar("cart1", 20)
@@ -326,7 +326,7 @@ public class Inventura extends KreirDrop implements DataModule {
     String[] idx = new String[] {};
     String[] uidx = new String[] {};
     DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
+    NaziviIdx = ddl.getIndexNames(idx, uidx);*/
 
     /*
     NaziviIdx=new String[]{"ilokkstdoku","iaktivstdoku","icsklstdoku","ivrdokstdoku","ibrdokstdoku",
@@ -342,5 +342,5 @@ public class Inventura extends KreirDrop implements DataModule {
                             CommonTable.SqlDefUniqueIndex+NaziviIdx[6] +" on Stdoku (cskl,vrdok,god,brdok,rbr)" ,
                             CommonTable.SqlDefIndex+NaziviIdx[7] + " on Stdoku (cart)" };
   */
-  }
+  //}
 }
