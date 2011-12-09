@@ -1293,6 +1293,23 @@ VRDOK;char;3;;;Vrsta dokumenta
 VCINC;numeric;10,2;;0;Poveæanje;8
 VCDEC;numeric;10,2;;0;Uèešæe;8
 
+$Inventura
+CSKL;char;12;pkey;;Skladište
+CART;int;6;pkey;;Šifra;7
+CART1;char;20;;;Oznaka;15
+BC;char;20;;;Barcode;15
+NAZART;char;50;;;Naziv;25
+JM;char;3;;;Jm
+KOLKNJ;numeric;15,3;;0;Kolièina;10
+KOLINV;numeric;15,3;;0;Inventurna kolièina;10
+ZC;numeric;12,2;;0;Cijena;10
+VRIKNJ;numeric;15,2;;0;Vrijednost;10
+VRIINV;numeric;15,2;;0;Inventurna vrijednost;10
+KOLMANJ;numeric;15,3;;0;Manjak kolièine;10
+KOLVIS;numeric;15,3;;0;Višak kolièine;10
+VRIMANJ;numeric;15,2;;0;Manjak vrijednosti;10
+VRIVIS;numeric;15,2;;0;Višak vrijednosti;10
+CGRART;char;10;;;Grupa
 
 $Artnap
 CAN;char;6;pkey;;Šifra
