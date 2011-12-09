@@ -26,6 +26,7 @@ import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
@@ -191,13 +192,16 @@ public class frmIzvProdajaAgentiFaktureAparati extends raUpitFat {
     dsp.close();
     
     columns = new Column[] {
-        dm.createIntColumn("CPAR"),
+        dm.createIntColumn("CPAR", "Šifra"),
         dm.createStringColumn("CAGENT","Agent",50),
         dm.createStringColumn("NAZPAR","Kupac",150),
         dm.createStringColumn("APARATI","Prodani aparati u razdoblju",1500),
         dm.createBigDecimalColumn("NOVI","Novi",2),
+        dm.createBigDecimalColumn("NOVIRUC","Novi RuC",2),
         dm.createBigDecimalColumn("POTROSNI","Potrošni",2),
+        dm.createBigDecimalColumn("POTROSNIRUC","Potrošni RuC",2),
         dm.createBigDecimalColumn("UKUPNO","Ukupno",2),
+        dm.createBigDecimalColumn("UKUPNORUC","Ukupno RuC",2),
         dm.createBigDecimalColumn("SVEUKUPNO","Dosadašnji promet",2),
         dm.createBigDecimalColumn("PRPOMJ","Prosjeèni mjeseèni promet",2),
         dm.createStringColumn("KUPOD","Kupac od",5)
@@ -207,7 +211,7 @@ public class frmIzvProdajaAgentiFaktureAparati extends raUpitFat {
     mainData = new QueryDataSet();
     mainData.setColumns(columns);
     mainData.setRowId("CPAR",true);
-    mainData.getColumn("CPAR").setVisible(0);
+    //mainData.getColumn("CPAR").setVisible(0);
     mainData.getColumn("CAGENT").setVisible(0);
     mainData.open();
     
@@ -225,7 +229,7 @@ public class frmIzvProdajaAgentiFaktureAparati extends raUpitFat {
         mainData.setString("NAZPAR",partneriMap.get(Integer.valueOf(prometiSet.getInt("CPAR")+"")).toString());
         mainData.setString("APARATI","Nema aparata");
         
-        QueryDataSet aaaa = ut.getNewQueryDataSet("SELECT min (doki.datdok) as datdok, sum (stdoki.iprodbp) as iprodbp FROM doki, stdoki WHERE doki.cskl = stdoki.cskl AND doki.vrdok = stdoki.vrdok AND doki.god = stdoki.god AND doki.brdok = stdoki.brdok AND DOKI.DATDOK <= '"+ut.getLastSecondOfDay(tds.getTimestamp("DO"))+"'  AND doki.vrdok in ('ROT','RAC','POD') AND  doki.cpar = "+prometiSet.getInt("CPAR") +"and doki.cskl = '1'"); //doki.god = '"+vl.findYear(tds.getTimestamp("OD"))+"'
+        QueryDataSet aaaa = ut.getNewQueryDataSet("SELECT min (doki.datdok) as datdok, sum (stdoki.iprodbp) as iprodbp FROM doki, stdoki WHERE doki.cskl = stdoki.cskl AND doki.vrdok = stdoki.vrdok AND doki.god = stdoki.god AND doki.brdok = stdoki.brdok AND DOKI.DATDOK <= '"+ut.getLastSecondOfDay(tds.getTimestamp("DO"))+"'  AND doki.vrdok in ('ROT','RAC','POD') AND  doki.cpar = "+prometiSet.getInt("CPAR") +"and doki.cskl in ('1', '01')"); //doki.god = '"+vl.findYear(tds.getTimestamp("OD"))+"'
         BigDecimal sveukupno = aaaa.getBigDecimal("IPRODBP");
 //        System.out.println("cpar "+prometiSet.getInt("CPAR")+" sveukupno iz prometa   = " + sveukupno); //XDEBUG delete when no more needed
         String kupacod = ut.getMonth(aaaa.getTimestamp("DATDOK"))+"/"+vl.findYear(aaaa.getTimestamp("DATDOK")).substring(2,4);
@@ -251,25 +255,34 @@ public class frmIzvProdajaAgentiFaktureAparati extends raUpitFat {
         mainData.setString("KUPOD",kupacod);
         
         if (prometiSet.getString("CUG").equals("1")) {
-          mainData.setBigDecimal("NOVI",mainData.getBigDecimal("NOVI").add(prometiSet.getBigDecimal("IPRODBP")));
+          Aus.add(mainData, "NOVI", prometiSet, "IPRODBP");
+          Aus.add(mainData, "NOVIRUC", prometiSet, "IPRODBP");
+          Aus.sub(mainData, "NOVIRUC", prometiSet, "INAB");
         } else {
-          mainData.setBigDecimal("POTROSNI",mainData.getBigDecimal("POTROSNI").add(prometiSet.getBigDecimal("IPRODBP")));
+          Aus.add(mainData, "POTROSNI", prometiSet, "IPRODBP");
+          Aus.add(mainData, "POTROSNIRUC", prometiSet, "IPRODBP");
+          Aus.sub(mainData, "POTROSNIRUC", prometiSet, "INAB");
         }
 
         if (aparatiMap.containsKey(prometiSet.getInt("CART")+"")){
           mainData.setString("APARATI", prometiSet.getBigDecimal("KOL").intValue()+ "|" + aparatiMap.get(prometiSet.getInt("CART")+"").toString());
           System.out.println(prometiSet.getBigDecimal("KOL").intValue()); //XDEBUG delete when no more needed
         }
-        
-        mainData.setBigDecimal("UKUPNO",mainData.getBigDecimal("UKUPNO").add(prometiSet.getBigDecimal("IPRODBP")));
+        Aus.add(mainData, "UKUPNO", prometiSet, "IPRODBP");
+        Aus.add(mainData, "UKUPNORUC", prometiSet, "IPRODBP");
+        Aus.sub(mainData, "UKUPNORUC", prometiSet, "INAB");
         tempPartneri.put(prometiSet.getInt("CPAR")+"",mainData.getRow()+"");
       } else {
         mainData.goToRow(Integer.parseInt(tempPartneri.get(prometiSet.getInt("CPAR")+"").toString()));
         
         if (prometiSet.getString("CUG").equals("1")) {
-          mainData.setBigDecimal("NOVI",mainData.getBigDecimal("NOVI").add(prometiSet.getBigDecimal("IPRODBP")));
+          Aus.add(mainData, "NOVI", prometiSet, "IPRODBP");
+          Aus.add(mainData, "NOVIRUC", prometiSet, "IPRODBP");
+          Aus.sub(mainData, "NOVIRUC", prometiSet, "INAB");
         } else {
-          mainData.setBigDecimal("POTROSNI",mainData.getBigDecimal("POTROSNI").add(prometiSet.getBigDecimal("IPRODBP")));
+          Aus.add(mainData, "POTROSNI", prometiSet, "IPRODBP");
+          Aus.add(mainData, "POTROSNIRUC", prometiSet, "IPRODBP");
+          Aus.sub(mainData, "POTROSNIRUC", prometiSet, "INAB");
         }
         
         if (aparatiMap.containsKey(prometiSet.getInt("CART")+"")){
@@ -279,7 +292,9 @@ public class frmIzvProdajaAgentiFaktureAparati extends raUpitFat {
             mainData.setString("APARATI", mainData.getString("APARATI")+","+ prometiSet.getBigDecimal("KOL").intValue()+ "|" + aparatiMap.get(prometiSet.getInt("CART")+"").toString());
         }
         
-        mainData.setBigDecimal("UKUPNO",mainData.getBigDecimal("UKUPNO").add(prometiSet.getBigDecimal("IPRODBP")));
+        Aus.add(mainData, "UKUPNO", prometiSet, "IPRODBP");
+        Aus.add(mainData, "UKUPNORUC", prometiSet, "IPRODBP");
+        Aus.sub(mainData, "UKUPNORUC", prometiSet, "INAB");
         mainData.last();
       }
 //      if (mainData.getInt("CPAR") == 2851) System.err.println("vrdok " + prometiSet.getString("VRDOK") + " -- " + mainData); //XDEBUG delete when no more needed
@@ -301,8 +316,7 @@ public class frmIzvProdajaAgentiFaktureAparati extends raUpitFat {
           } else {
             rekapApar.put(mainData.getString("APARATI").substring(mainData.getString("APARATI").indexOf("|")+1), String.valueOf(Integer.parseInt(rekapApar.get(mainData.getString("APARATI").substring(mainData.getString("APARATI").indexOf("|")+1)).toString())+Integer.parseInt(mainData.getString("APARATI").substring(0,mainData.getString("APARATI").indexOf("|"))))); //String.valueOf(Integer.parseInt(rekapApar.get(mainData.getString("APARATI").substring(mainData.getString("APARATI").indexOf("|")+1)).toString())+mainData.getString("APARATI").substring(0,mainData.getString("APARATI").indexOf("|"))));
           }
-          mainData.setString("APARATI",mainData.getString("APARATI").substring(0,mainData.getString("APARATI").indexOf("|"))+" x " + mainData.getString("APARATI").substring(mainData.getString("APARATI").indexOf("|")+1));
-          continue;
+          mainData.setString("APARATI",mainData.getString("APARATI").substring(0,mainData.getString("APARATI").indexOf("|"))+" x " + mainData.getString("APARATI").substring(mainData.getString("APARATI").indexOf("|")+1));          continue;
         }
 //        System.out.println("START WITH - " + mainData.getString("APARATI")); //XDEBUG delete when no more needed
         String[] aparats = new String[countTokenz];
@@ -358,12 +372,12 @@ public class frmIzvProdajaAgentiFaktureAparati extends raUpitFat {
   }
 
   protected String getPrometQueryUpit() {
-    String upit = "SELECT doki.vrdok, doki.cagent, doki.cpar, doki.cug, stdoki.cart, stdoki.kol, stdoki.ineto, " +
+    String upit = "SELECT doki.vrdok, doki.cagent, doki.cpar, doki.cug, stdoki.cart, stdoki.kol, stdoki.ineto, stdoki.inab, " +
             "stdoki.iprodbp, stdoki.iprodsp " +
             "FROM doki, stdoki WHERE doki.cskl = stdoki.cskl AND doki.vrdok = stdoki.vrdok " +
             "AND doki.god = stdoki.god AND doki.brdok = stdoki.brdok AND doki.vrdok in ('ROT','RAC','POD') AND " +
             Condition.between("doki.datdok", tds.getTimestamp("OD"),
-                tds.getTimestamp("DO")).toString()+" and doki.cskl = '"+rpc.getCSKL()+"' ";
+                tds.getTimestamp("DO")).toString()+" and (doki.cskl = '"+rpc.getCSKL()+"' or doki.cskl='01')";
     
     /*if (tds.getString("FILTER").equals("1")) upit += "AND doki.cug = '1' ";*/
             
@@ -391,7 +405,7 @@ public class frmIzvProdajaAgentiFaktureAparati extends raUpitFat {
     makeAparatiSet();
     sastaviHashMape();
     mainData.first();
-    setDataSetAndSums(mainData,new String[] {"NOVI","POTROSNI","UKUPNO","SVEUKUPNO"} /*sums*/);
+    setDataSetAndSums(mainData,new String[] {"NOVI","NOVIRUC", "POTROSNI","POTROSNIRUC","UKUPNO","UKUPNORUC","SVEUKUPNO"} /*sums*/);
   }
 
   public boolean runFirstESC() {
