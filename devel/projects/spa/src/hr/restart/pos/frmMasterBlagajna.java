@@ -38,6 +38,7 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raUser;
 import hr.restart.sk.dlgSplitAmount;
+import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raColors;
 import hr.restart.swing.raExtendedTable;
@@ -68,6 +69,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
@@ -192,6 +194,9 @@ public class frmMasterBlagajna extends raMasterDetail {
   frmTableDataView viewReq = new frmTableDataView(false, false, true);
   frmTableDataView viewPlac = new frmTableDataView(false, false, true);
   frmTableDataView viewArt = new frmTableDataView(false, false, true);
+  
+  raExtendedTable totalTab = new raExtendedTable();
+  StorageDataSet totalSet = new StorageDataSet();
 
   JPanel jpSelect = new JPanel();
   Column IZNOS = new Column();
@@ -335,6 +340,7 @@ public class frmMasterBlagajna extends raMasterDetail {
             Condition.equal("KASA", "D"));
     }
     if (presBlag.isSkladOriented()) {
+      updatePlac();
       setNaslovMaster("Blagajna - " + 
           ((presBlag) getPreSelect()).jrfNAZSKL.getText());
     }
@@ -484,6 +490,12 @@ public class frmMasterBlagajna extends raMasterDetail {
                                  subtract(tmpIZNOS));
     globalPopust();
   }
+  public void AfterDeleteMaster() {
+    if (presBlag.isSkladOriented()) {
+      updatePlac();
+    }
+  }
+  
   public void EntryPointMaster(char mode) {
     stavka=0;
     if (mode=='N') newRacun=true;
@@ -973,6 +985,22 @@ public class frmMasterBlagajna extends raMasterDetail {
     if (np.length() > 0) {
       raDetail.getRepRunner().addReport("hr.restart.robno.repNarPOS", "Narudžba");
     }
+    
+    if (presBlag.isSkladOriented()) {
+      totalSet.setColumns(new Column[] {
+          dM.createStringColumn("NACPL", "Naèin plaæanja", 50),
+          dM.createBigDecimalColumn("IRATA", "Iznos naplate")
+      });
+      totalSet.open();
+      totalTab.setDataSet(totalSet);
+      totalTab.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+      totalTab.setCellSelectionEnabled(false);
+      totalTab.clearSelection();
+      totalTab.setAlternateColor(false);
+      totalTab.setBackground(raMaster.getJpTableView().getBackground());
+      
+      raMaster.getJpTableView().installSummary(totalTab, 10, true);
+    }
   }
   /**
    * Disejbliranje pojedinih panela na ekranu zavisno od moda rada
@@ -1186,6 +1214,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   	frmPlacanje.entryRate(this);
   	if (!newRacun) {
   	  getMasterSet().saveChanges();
+  	  updatePlac();
   	  raMaster.getJpTableView().fireTableDataChanged();
   	}
   }
@@ -1269,6 +1298,7 @@ public class frmMasterBlagajna extends raMasterDetail {
       raTransaction.saveChangesInTransaction(
           new QueryDataSet[] {getMasterSet(), getDetailSet(),
               getUpdatedStanje(getMasterSet(), getDetailSet())});
+
 //      raMaster.setEditEnabled(true);
       return true;
   }
@@ -1813,6 +1843,7 @@ public class frmMasterBlagajna extends raMasterDetail {
           e.printStackTrace();
           getMasterSet().refresh();
         }
+        updatePlac();
       raMaster.getJpTableView().fireTableDataChanged();
     }
     makeNext=false;
@@ -1901,6 +1932,50 @@ public class frmMasterBlagajna extends raMasterDetail {
     t.addToGroup("CORG", true, new String[] {"#", "NAZIVLOG", "#\n", "ADRESA", "#,", "PBR", "MJESTO", "#, OIB", "OIB"}, 
     		dM.getDataModule().getLogotipovi(), true);
     viewArt.show();
+  }
+  
+  void updatePlac() {
+    if (!presBlag.isSkladOriented()) return;
+    if (getMasterSet().getRowCount() == 0) {
+      totalSet.empty();
+      totalTab.fireTableDataChanged();
+      return;
+    }
+    try {
+      totalSet.enableDataSetEvents(false);
+      totalTab.stopFire();
+      VarStr q = new VarStr(getMasterSet().getOriginalQueryString().toLowerCase());
+      q.replace("* from pos", "rate.cskl, rate.cnacpl, rate.cbanka, rate.irata from pos,rate");
+      q.replace(" where ", " where " + Util.getUtil().getDoc("pos", "rate") + " and ");
+      DataSet ds = Aus.q(q.toString());
+      ds.setSort(new SortDescriptor(new String[] {"CNACPL", "CBANKA"}));
+      String cnacpl = "", cbanka = "";
+      totalSet.first();
+      int n = 0;
+      for (ds.first(); ds.inBounds(); ds.next()) {
+        if (!ds.getString("CNACPL").equals(cnacpl) ||
+            !ds.getString("CBANKA").equals(cbanka)) {
+          cnacpl = ds.getString("CNACPL");
+          cbanka = ds.getString("CBANKA");
+          if (++n > totalSet.rowCount()) totalSet.insertRow(false);
+          else if (n > 1) totalSet.next();
+          ld.raLocate(dm.getNacpl(), "CNACPL", cnacpl);
+          String nac = cnacpl + " - " + dm.getNacpl().getString("NAZNACPL");
+          if (cbanka.length() > 0) nac = nac + " - " + cbanka;
+          totalSet.setString("NACPL", nac);
+          Aus.clear(totalSet, "IRATA");
+        }
+        Aus.add(totalSet, "IRATA", ds);
+      }
+      while (totalSet.inBounds() && totalSet.rowCount() > n)
+        totalSet.emptyRow();
+      totalTab.clearSelection();
+    } finally {
+      totalSet.enableDataSetEvents(true);
+      totalTab.startFire();
+      totalTab.revalidate();
+      totalTab.repaint();
+    }
   }
   
   void showTotalPlac() {
