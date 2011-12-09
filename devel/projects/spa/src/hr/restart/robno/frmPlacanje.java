@@ -580,11 +580,16 @@ public class frmPlacanje extends raMatPodaci {
     if (qdsRate.rowCount() == 0)
       mDoki.setString("CNACPL", "");
     else if (qdsRate.rowCount() == 1)
-      mDoki.setString("CNACPL", qdsRate.getString("CNACPL"));
+      mDoki.setString("CNACPL", 
+          qdsRate.getString("CBANKA").length() > 0 ?
+            qdsRate.getString("CBANKA") :
+            qdsRate.getString("CNACPL"));
     else {
       VarStr all = new VarStr();
       for (qdsRate.first(); qdsRate.inBounds(); qdsRate.next()) {
-        all.append(qdsRate.getString("CNACPL")).append('+');
+        all.append(qdsRate.getString("CBANKA").length() > 0 ?
+            qdsRate.getString("CBANKA") :
+            qdsRate.getString("CNACPL")).append('+');
       }
       mDoki.setString("CNACPL", all.chop().truncate(
           mDoki.getColumn("CNACPL").getPrecision()).toString());
