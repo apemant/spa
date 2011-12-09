@@ -102,6 +102,10 @@ public class raExtendedTable extends JraTable2 {
   public void setOwner(raJPTableView owner) {
     this.owner = owner;
   }
+  
+  public raJPTableView getOwner() {
+    return owner;
+  }
 
   String oldcolname = "";
   private void createHeaderMouseListener() {
