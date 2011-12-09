@@ -856,7 +856,7 @@ public class ColumnsBean extends JPanel {
       locationOnScreen.y -= Aus.getNumber(off);
       if (locationOnScreen.y < 0)
         locationOnScreen.y = 0;
-      ret.append('@').append(w.getX()).append('|').append(w.getY());
+      ret.append('@').append(w.getX()).append('|').append(locationOnScreen.y);
     }
     return ret.toString();
   }
