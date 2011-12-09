@@ -19,6 +19,7 @@ package hr.restart.util.columnsbean;
 
 
 
+import hr.restart.start;
 import hr.restart.swing.ColumnChangeListener;
 import hr.restart.swing.JraComboBox;
 import hr.restart.swing.JraTable2;
@@ -26,6 +27,7 @@ import hr.restart.swing.JraTableInterface;
 import hr.restart.swing.raSelectTableModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.FileHandler;
+import hr.restart.util.IntParam;
 import hr.restart.util.VarStr;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
@@ -834,14 +836,26 @@ public class ColumnsBean extends JPanel {
     if (cw == null) System.out.println("Cw je null? Zašto");
     
     JTable tab = (JTable) raJdbTable;
+    
     if (tab.getParent() instanceof JViewport) {
       tabheight = ((JViewport) tab.getParent()).getHeight();
       tab.setPreferredScrollableViewportSize(new Dimension(total, tabheight));
+    } else if (tab.getParent().getParent() instanceof JViewport) {
+      tabheight = ((JViewport) tab.getParent().getParent()).getHeight();
+      tab.setPreferredScrollableViewportSize(new Dimension(total, tabheight));
     } else tabheight = tab.getPreferredScrollableViewportSize().height;
+    if (tabheight > start.getSCREENSIZE().height)
+      tabheight = start.getSCREENSIZE().height;
     ret.append('*').append(tabheight);
     Container w = tab.getTopLevelAncestor();
     if (w instanceof Window) {
+      String off = IntParam.getTag("window.offset");
+      if (off.length() == 0)
+        IntParam.setTag("window.offset", off = "0");
       locationOnScreen = w.getLocation();
+      locationOnScreen.y -= Aus.getNumber(off);
+      if (locationOnScreen.y < 0)
+        locationOnScreen.y = 0;
       ret.append('@').append(w.getX()).append('|').append(w.getY());
     }
     return ret.toString();
