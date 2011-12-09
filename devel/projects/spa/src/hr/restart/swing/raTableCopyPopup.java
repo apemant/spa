@@ -163,8 +163,9 @@ public class raTableCopyPopup extends JPopupMenu {
       							((frmTableDataView) jt.getTopLevelAncestor()).isEditable(); 
       boolean ed = extend && dataset && view;
       boolean admin = raUser.getInstance().isSuper() || view;
+      boolean selectable = jt.getRowSelectionAllowed();
       calcMenu.setEnabled(num);
-      adminMenu.setEnabled(admin && extend && dataset);
+      adminMenu.setEnabled(admin && extend && dataset && selectable);
       add.setEnabled(num);
       fastAdd.setEnabled(num);
       addAll.setEnabled(num && multi);
@@ -210,10 +211,10 @@ public class raTableCopyPopup extends JPopupMenu {
       dups.setEnabled(jt.getRowCount() > 0);
 
       reset.setEnabled(calc.data.getBigDecimal("RESULT").signum() != 0);
-      filtShow.setEnabled(extend && dataset);
-      filtEq.setEnabled(extend && dataset);
-      filtNeq.setEnabled(extend && dataset);
-      filtRemove.setEnabled(extend && dataset && 
+      filtShow.setEnabled(extend && dataset && selectable);
+      filtEq.setEnabled(extend && dataset && selectable);
+      filtNeq.setEnabled(extend && dataset && selectable);
+      filtRemove.setEnabled(extend && dataset && selectable &&
           jt.getDataSet().getRowFilterListener() != null);
       inst.jt.repaint(inst.jt.getCellRect(selRow, selCol, true));
       show(jt, e.getX(), e.getY());
