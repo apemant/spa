@@ -70,7 +70,7 @@ public class jpDetBlagajna extends JPanel {
   JraTextField jtfKOL = new JraTextField() {
     public void addNotify() {
       super.addNotify();
-      AWTKeyboard.registerKeyStroke(this, AWTKeyboard.ENTER_RELEASED, enter);
+      AWTKeyboard.registerKeyStroke(this, AWTKeyboard.ENTER_RELEASED, enternext ? enter2 : enter);
       AWTKeyboard.registerKeyStroke(this, AWTKeyboard.ESC, esc);
     }
     public void valueChanged() {
@@ -157,6 +157,7 @@ public class jpDetBlagajna extends JPanel {
   JraLabel jLabel13 = new JraLabel();
   JraLabel jLabel14 = new JraLabel();
   String tCartSifparam, tSifParam;
+  boolean enternext = false;
   
   ActionExecutor f8action = new ActionExecutor() {
     public void run() {
@@ -187,6 +188,8 @@ public class jpDetBlagajna extends JPanel {
     }
   }
   private void jbInit() throws Exception {
+    enternext = "D".equals(frmParam.getParam("pos","enterPop", "D",
+        "Tipka ENTER prvo ide na popust (D,N)", true));
     tCartSifparam= hr.restart.sisfun.frmParam.getParam("robno","indiCart");
     tSifParam = hr.restart.sisfun.frmParam.getParam("robno","focusCart");
     jrfCART.setColumnName("CART");
@@ -340,10 +343,10 @@ public class jpDetBlagajna extends JPanel {
         AWTKeyboard.registerKeyListener(jrfBC, f8adapter);
         AWTKeyboard.registerKeyListener(jrfNAZART, f8adapter);
     }
-    jPanel3.add(labCART,  new XYConstraints(102, 5, 98, -1));
-    jPanel3.add(labNAZART,  new XYConstraints(212, 5, 248, -1));
+    jPanel3.add(labCART,  new XYConstraints(102, 3, 98, -1));
+    jPanel3.add(labNAZART,  new XYConstraints(207, 3, 253, -1));
 
-    jPanel3.add(jrfNAZART,    new XYConstraints(210, 20, 250, -1));
+    jPanel3.add(jrfNAZART,    new XYConstraints(205, 20, 255, -1));
     jPanel3.add(jtfKOL,   new XYConstraints(100, 65, 100, -1));
     this.add(jPanel1,                 new XYConstraints(5, 5, 535, 75));
     jPanel1.add(jLabel11,            new XYConstraints(20, 35, 460, -1));
@@ -351,15 +354,15 @@ public class jpDetBlagajna extends JPanel {
     this.add(jPanel4,    new XYConstraints(540, 5, 200, 75));
     jPanel4.add(jLabel1,     new XYConstraints(10, 23, -1, -1));
     jPanel4.add(jLabel2,      new XYConstraints(80, 0, 110, 75));
-    jPanel3.add(jtfPOPUST,   new XYConstraints(470, 65, 40, -1));
+    jPanel3.add(jtfPOPUST,   new XYConstraints(465, 65, 50, -1));
     jPanel3.add(jrfJM,   new XYConstraints(470, 20, 40, -1));
     
-    jPanel3.add(labKOL,  new XYConstraints(100, 50, 98, -1));
-    jPanel3.add(labMC,  new XYConstraints(210, 50, 98, -1));
-    jPanel3.add(labIZNOS,  new XYConstraints(320, 50, 138, -1));
-    jPanel3.add(labPOP,  new XYConstraints(470, 50, 40, -1));
+    jPanel3.add(labKOL,  new XYConstraints(100, 48, 98, -1));
+    jPanel3.add(labMC,  new XYConstraints(205, 48, 108, -1));
+    jPanel3.add(labIZNOS,  new XYConstraints(320, 48, 138, -1));
+    jPanel3.add(labPOP,  new XYConstraints(465, 48, 48, -1));
     
-    jPanel3.add(jtfMC,  new XYConstraints(210, 65, 100, -1));
+    jPanel3.add(jtfMC,  new XYConstraints(205, 65, 110, -1));
     jPanel3.add(jtfIZNOS,    new XYConstraints(320, 65, 140, -1));
     jPanel2.add(jPanel5,          new XYConstraints(0, 0, 76, 34));
     jPanel5.add(jLabel5,      new XYConstraints(5, 7, -1, -1));
@@ -479,6 +482,14 @@ public class jpDetBlagajna extends JPanel {
     	jtfKOL.maskCheck();
     	jtfPOPUST.maskCheck();
     	pressENTER();
+      return true;
+    }
+  };
+  
+  KeyAction enter2 = new KeyAction() {
+    public boolean actionPerformed() {
+        jtfKOL.maskCheck();
+        jtfPOPUST.requestFocus();
       return true;
     }
   };
