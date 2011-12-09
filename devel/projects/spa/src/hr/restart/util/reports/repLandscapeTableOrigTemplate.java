@@ -72,7 +72,7 @@ public abstract class repLandscapeTableOrigTemplate extends raReportTemplate {
   public raReportElement TextHeaderValue0;
   private String[] TextHeaderValue0Props = new String[] {"HeaderValue0", "", "", "", "", "", "", "",
      "", "120", "1420", "240", "Normal", "Gray", "Solid", "Gray", "", "", "Lucida Bright", "8", "Bold",
-     "", "", "Center", ""};
+     "", "", "Center", "No"};
   public raReportElement Line2;
   private String[] Line2Props = new String[] {"", "", "", "380", "0", "0", "", "", ""};
   public raReportSection Detail;
