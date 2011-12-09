@@ -17,6 +17,10 @@
 ****************************************************************************/
 package hr.restart.util.reports;
 
+import javax.swing.JLabel;
+
+import hr.restart.util.VarStr;
+
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -83,6 +87,31 @@ public class raDynamicTableData {
     if (col >= dp.jt.getColumnCount()) return "";
     try {
       return dp.table.getColumnModel().getColumn(col).getHeaderValue().toString();
+    } catch (Exception e) {
+      return "";
+    }
+  }
+  
+  public String getSummaryHead(int col) {
+    if (col >= dp.summ.getColumnCount()) return "";
+    try {
+      return dp.summ.getColumnModel().getColumn(col).getHeaderValue().toString();
+    } catch (Exception e) {
+      return "";
+    }
+  }
+  
+  public String getSummaryData(int col) {
+    if (col >= dp.summ.getColumnCount()) return "";
+    try {
+      VarStr v = new VarStr();
+      for (int i = 0; i < dp.summ.getRowCount(); i++) {
+        v.append(((JLabel) dp.summ.getDefaultRenderer(Object.class).
+          getTableCellRendererComponent(dp.summ, 
+              dp.summ.getValueAt(i, col), false, false, i, col)).
+              getText()).append('\n');
+      }
+      return v.toString();
     } catch (Exception e) {
       return "";
     }

@@ -104,8 +104,8 @@ public class raElixirDatasource {
     DataSchemaModel m = new DataSchemaModel(dsi.getModel().getModel(DATASCHEMA));
     m.setObjectClassName(raReportDescriptor.DYNAMIC_CLASS_DS);
     String[] gets = new String[] {"Group", "GroupCaption", "GroupValue",
-      "HeaderValue", "DataValue", "SumValue"};
-    int[] params = new int[] {10, 10, 10, 16, 16, 16};
+      "HeaderValue", "DataValue", "SumValue", "SummaryHead", "SummaryData"};
+    int[] params = new int[] {10, 10, 10, 16, 16, 16, 8, 8};
 
     String[] empty = new String[0];
     m.addDetail("Title", "getTitle", empty, empty, STR);
