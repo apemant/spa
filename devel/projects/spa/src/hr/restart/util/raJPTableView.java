@@ -22,6 +22,7 @@ package hr.restart.util;
 import hr.restart.baza.Condition;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.AWTKeyboard;
+import hr.restart.swing.JraPanel;
 import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
@@ -35,6 +36,7 @@ import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -44,10 +46,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.plaf.basic.BasicScrollPaneUI;
+import javax.swing.plaf.basic.BasicViewportUI;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.ReadRow;
@@ -176,7 +185,7 @@ public class raJPTableView extends JPanel {
 
   private boolean createCB = true;
 
-  private hr.restart.swing.JraTable2 mpTable = new hr.restart.swing.raExtendedTable() {
+  hr.restart.swing.JraTable2 mpTable = new hr.restart.swing.raExtendedTable() {
 
     public void killFocus(java.util.EventObject e) {
       mpTable_killFocus(e);
@@ -200,7 +209,9 @@ public class raJPTableView extends JPanel {
       	navBar.getColBean().updateColumnWidths();
     }
   };
-
+  
+  JComponent summary = null;
+  
   java.awt.event.KeyAdapter TableKeyAdapter = new java.awt.event.KeyAdapter() {
 
       public void keyPressed( KeyEvent e){
@@ -305,6 +316,7 @@ public class raJPTableView extends JPanel {
     setBorder(BorderFactory.createEmptyBorder());
 
     jScrollPaneTable.setVerticalScrollBarPolicy(JraScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    jScrollPaneTable.getVerticalScrollBar().setUnitIncrement(mpTable.getRowHeight());
 
     this.addAncestorListener(new javax.swing.event.AncestorListener() {
 
@@ -341,7 +353,53 @@ public class raJPTableView extends JPanel {
     
     setSpeedType();
   }
+  
+  class TrackPanel extends JPanel implements Scrollable {
+    public TrackPanel() {
+      super(new BorderLayout());
+    }
+    public Dimension getPreferredScrollableViewportSize() {
+      return mpTable.getPreferredScrollableViewportSize();
+    }
+    public int getScrollableBlockIncrement(Rectangle visibleRect,
+        int orientation, int direction) {
+      return mpTable.getScrollableBlockIncrement(visibleRect, orientation, direction);
+    }
+    public boolean getScrollableTracksViewportHeight() {
+      return mpTable.getScrollableTracksViewportHeight();
+    }
+    public boolean getScrollableTracksViewportWidth() {
+      return mpTable.getScrollableTracksViewportWidth();
+    }
+    public int getScrollableUnitIncrement(Rectangle visibleRect,
+        int orientation, int direction) {
+      return mpTable.getScrollableUnitIncrement(visibleRect, orientation, direction);
+    }
+  }
+  
+  public void installSummary(JComponent mpDod, int spacing, boolean trailing) {
+    jScrollPaneTable.setViewportView(null);
+    
+    JPanel outer = new TrackPanel();
+    JPanel lower = new JPanel(new BorderLayout());
+    JPanel tab = new JPanel(new BorderLayout());
 
+    outer.add(mpTable, BorderLayout.NORTH);
+    outer.add(lower);
+    lower.add(Box.createVerticalStrut(spacing), BorderLayout.NORTH);
+    lower.add(Box.createGlue());
+    lower.add(tab, trailing ? BorderLayout.EAST : BorderLayout.WEST);
+    tab.add(mpDod, BorderLayout.NORTH);
+    tab.add(Box.createGlue());
+    jScrollPaneTable.setViewportView(outer);
+    jScrollPaneTable.setColumnHeaderView(mpTable.getTableHeader());
+    
+    summary = mpDod;
+  }
+  
+  public JComponent getSummary() {
+    return summary;
+  }
 
   public static boolean speedset = false;
   void setSpeedType() {

@@ -29,14 +29,18 @@ import hr.restart.util.startFrame;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.table.JTableHeader;
@@ -201,6 +205,8 @@ public class JraTable2 extends JTable implements JraTableInterface {
   public void changeSelection(int row, int col, boolean toggle, boolean extend) {
     int oldrow = getSelectedRow();
     int oldcol = getSelectedColumn();
+    
+    if (!altEnabled) return;
 
     // ako se pokušava promijeniti redak, prvo provjeri je li navigacija dopuštena
     if (oldrow != row)
@@ -671,8 +677,14 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
   }
   
+  
   protected Color alterCol = null;
+  boolean altEnabled = true;
+  public void setAlternateColor(boolean enable) {
+    altEnabled = enable;
+  }
   void setAlternateColor() {
+    if (!altEnabled) return;
     String col = frmParam.getParam("sisfun", "alterCol", "gray", 
         "Boja pozadine svakog drugog reda (ime ili hex)", true);
     String tone = frmParam.getParam("sisfun", "alterAlpha", "10",
@@ -782,6 +794,8 @@ public class JraTable2 extends JTable implements JraTableInterface {
   public void valueChanged(javax.swing.event.ListSelectionEvent e) {
 
     if (ignoreNavigation) return;
+    
+    if (!altEnabled) return;
 
     if (getSelectedRow() == -1) return;
 
@@ -939,6 +953,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
   }
 
   public void processTableKeyTyped(KeyEvent e) {
+    if (!altEnabled) return;
     if (AWTKeyboard.getFocusedComponent() instanceof JTextComponent) return;
     if (isShowing() && !e.isConsumed() && getDataSet() != null && isEnabled() && selectedCol != -1) {
       char ch = e.getKeyChar();
@@ -953,14 +968,24 @@ public class JraTable2 extends JTable implements JraTableInterface {
   }
 
   public void processTableKeyEvent(KeyEvent e) {
+    if (!altEnabled) return;
     if (AWTKeyboard.getFocusedComponent() instanceof JTextComponent) return;
     if (isShowing()&&!e.isConsumed()&&(getDataSet()!=null&&isEnabled())) {
       if (speed.length() > 0 && e.getKeyCode() == e.VK_SPACE)
         e.consume();
       if (e.getModifiers()==0) {
+        JComponent sc = this;
+        Rectangle vis = getVisibleRect();
+        if (getParent() instanceof JPanel &&
+            getParent().getParent() instanceof JViewport)
+          vis = (sc = (JPanel) getParent()).getVisibleRect();
+        
         if (e.getKeyCode()==e.VK_UP) {
-
-          if (!getDataSet().atFirst() && allowRowChange(
+          
+          if (getDataSet().atFirst()) {
+            vis.y = 0;
+            scrollRectToVisible(vis);
+          } else if (!getDataSet().atFirst() && allowRowChange(
               getDataSet().getRow(), getDataSet().getRow() - 1))
             if (!getDataSet().prior()) getDataSet().first();
 
@@ -968,7 +993,10 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
         } else if (e.getKeyCode()==e.VK_DOWN)  {
 
-          if (!getDataSet().atLast() && allowRowChange(
+          if (getDataSet().atLast()) {
+            vis.y += getRowHeight();
+            scrollRectToVisible(vis);
+          } else if (!getDataSet().atLast() && allowRowChange(
               getDataSet().getRow(), getDataSet().getRow() + 1))
             if (!getDataSet().next()) getDataSet().last();
 
@@ -976,7 +1004,10 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
         } else if (e.getKeyCode()==e.VK_PAGE_DOWN)  {
 
-          if (!getDataSet().atLast() && allowRowChange(
+          if (getDataSet().atLast()) {
+            vis.y += vis.height;
+            scrollRectToVisible(vis);
+          } else if (!getDataSet().atLast() && allowRowChange(
               getDataSet().getRow(), getDataSet().getRow() + getVisibleTableRows()))
             if (!getDataSet().goToRow(getDataSet().getRow()+getVisibleTableRows()))
               getDataSet().last();
@@ -985,7 +1016,10 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
         } else if (e.getKeyCode()==e.VK_PAGE_UP)  {
 
-          if (!getDataSet().atFirst() && allowRowChange(
+          if (getDataSet().atFirst()) {
+            vis.y = 0;
+            scrollRectToVisible(vis);
+          } else if (!getDataSet().atFirst() && allowRowChange(
               getDataSet().getRow(), getDataSet().getRow() - getVisibleTableRows()))
             if (!getDataSet().goToRow(getDataSet().getRow()-getVisibleTableRows())) 
               getDataSet().first();
@@ -997,6 +1031,9 @@ public class JraTable2 extends JTable implements JraTableInterface {
           if (!getDataSet().atFirst() && allowRowChange(
               getDataSet().getRow(), 1))
             getDataSet().first();
+          
+          vis.y = 0;
+          scrollRectToVisible(vis);
 
           e.consume();
 
@@ -1006,22 +1043,26 @@ public class JraTable2 extends JTable implements JraTableInterface {
               getDataSet().getRow(), getDataSet().getRowCount() - 1))
             getDataSet().last();
 
+          vis.y = sc.getHeight() - vis.height;
+          scrollRectToVisible(vis);
+
           e.consume();
 
         } else if (getAutoResizeMode() == JTable.AUTO_RESIZE_OFF && e.getKeyCode() == e.VK_LEFT) {
-          java.awt.Rectangle r = getVisibleRect();
-          int col = getColumnModel().getColumnIndexAtX(r.x - 1);
+          int col = getColumnModel().getColumnIndexAtX(vis.x - 1);
 //        System.out.println(col);
           if (col >= 0) {
-            scrollRectToVisible(getCellRect(getSelectedRow(), col, true));
+            vis.x = getCellRect(getSelectedRow(), col, true).x;
+            scrollRectToVisible(vis);
             getColumnModel().getSelectionModel().setSelectionInterval(col, col);
           }
         } else if (getAutoResizeMode() == JTable.AUTO_RESIZE_OFF && e.getKeyCode() == e.VK_RIGHT) {
-          java.awt.Rectangle r = getVisibleRect();
-          int col = getColumnModel().getColumnIndexAtX(r.x + r.width);
+          int col = getColumnModel().getColumnIndexAtX(vis.x + vis.width);
 //        System.out.println(col);
           if (col > 0) {
-            scrollRectToVisible(getCellRect(getSelectedRow(), col, true));
+            Rectangle r = getCellRect(getSelectedRow(), col, true);
+            vis.x = r.x + r.width - vis.width;
+            scrollRectToVisible(vis);
             getColumnModel().getSelectionModel().setSelectionInterval(col, col);
           }
         } else if (e.getKeyCode()==e.VK_BACK_SPACE && speed.length() > 0) {
@@ -1376,9 +1417,10 @@ public class JraTable2 extends JTable implements JraTableInterface {
         if (summerComp != null) return summerComp;
 
 //color
-        isSelected = isSelected || raTableCopyPopup.isPopupDisplayedFor(row, column);
+        //isSelected = isSelected; 
+        boolean popup = raTableCopyPopup.isPopupDisplayedFor(row, column);
 
-        if (isSelected) {
+        if (isSelected && altEnabled || popup) {
 
           setBackground(table.getSelectionBackground());
 
