@@ -497,7 +497,33 @@ System.out.println("Za "+mji+":: godtotalneop = "+godtotalneop);
     masterCaPo.setBigDecimal("RPOR",rpor);
     masterCaPo.setBigDecimal("RPRIR",rprir);
     masterCaPo.setBigDecimal("RPORPRIR",rporprir);
+    if (masterCaPo.getBigDecimal("RPORPRIR").abs().compareTo(getLimit())<=0) {
+      masterCaPo.setString("STATUS","<");
+    } else if (!workedAllYear(cradnik)) {
+      masterCaPo.setString("STATUS","G");
+    } else {
+      masterCaPo.setString("STATUS","D");
+    }
     masterCaPo.post();
+  }
+  private boolean workedAllYear(String cradnik) {
+    Calendar c = Calendar.getInstance();
+    c.set(_godina, 0, 1);
+    Timestamp prvi = new Timestamp(c.getTimeInMillis());
+    c.set(_godina+1, 0, 1);
+    Timestamp zadnji = new Timestamp(c.getTimeInMillis());
+    QueryDataSet ayset = Aus.q("SELECT DATDOL, DATODL from radnicipl where cradnik = '"+cradnik+"'");
+    ayset.open();
+    if (ayset.getRowCount() == 0) return false;
+    ayset.first();
+    
+    if (!ayset.isNull("DATDOL")) {
+      if (ayset.getTimestamp("DATDOL").after(prvi)) return false;
+    }
+    if (!ayset.isNull("DATODL")) {
+      if (ayset.getTimestamp("DATODL").before(zadnji)) return false;
+    }
+    return true;
   }
   /**
    * Dodaje izracunate razlike poreza u odbitke
@@ -521,7 +547,8 @@ System.out.println("Za "+mji+":: godtotalneop = "+godtotalneop);
 		    }
 		    for (masterCaPo.first(); masterCaPo.inBounds(); masterCaPo.next()) {
 		      String cr = masterCaPo.getString("CRADNIK");
-		      if (masterCaPo.getBigDecimal("RPORPRIR").abs().compareTo(getLimit())>=0) {
+//		      if (masterCaPo.getBigDecimal("RPORPRIR").abs().compareTo(getLimit())>=0) {
+		      if (masterCaPo.getString("STATUS").equals("D")) {
 		        addOdbitak(cvrodb_rpor, cr, p, masterCaPo.getBigDecimal("RPOR"));
 		        addOdbitak(cvrodb_rprir, cr, r, masterCaPo.getBigDecimal("RPRIR"));
 		      }
@@ -584,6 +611,7 @@ System.out.println("Za "+mji+":: godtotalneop = "+godtotalneop);
    */
   private void initSets() {
     masterCaPo = new StorageDataSet();
+    masterCaPo.addColumn(dM.createStringColumn("STATUS", "STATUS",1));
     masterCaPo.addColumn(dM.createStringColumn("CRADNIK", "Radnik",6));
     masterCaPo.addColumn(dM.createStringColumn("OPIS", "Opis",50));
     masterCaPo.addColumn(dM.createBigDecimalColumn("RPOR","Razl.poreza",2));
