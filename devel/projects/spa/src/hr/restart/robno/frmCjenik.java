@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Akcije;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.Asql;
 import hr.restart.swing.JraButton;
@@ -82,6 +83,10 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     }
   }*/;
   JraButton jbSelSkl = new JraButton();
+  
+  JlrNavField jlrAk = new JlrNavField();
+  JlrNavField jlrNazak = new JlrNavField();
+  JraButton jbAk = new JraButton();
   
   //TODO njuli added
   
@@ -224,6 +229,9 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     rcc.setLabelLaF(jraPromjena, true);
     rcc.setLabelLaF(jraVC, true);
     rcc.setLabelLaF(jraMC, true);
+    rcc.setLabelLaF(jlrAk, true);
+    rcc.setLabelLaF(jlrNazak, true);
+    rcc.setLabelLaF(jbAk, true);
   }
 
   public void EntryPointMaster(char mode) {
@@ -698,6 +706,21 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     jlrNazSkl.setSearchMode(1);
 
     
+    //jlrAk.setHorizontalAlignment(SwingConstants.TRAILING);
+    jlrAk.setColumnName("CAK");
+    jlrAk.setTextFields(new JTextComponent[] {jlrNazak});
+    jlrAk.setColNames(new String[] {"NAZAK"});
+    jlrAk.setSearchMode(0);
+    jlrAk.setDataSet(this.getDetailSet());
+    jlrAk.setRaDataSet(Akcije.getDataModule().copyDataSet());
+    jlrAk.setVisCols(new int[] {0,1});
+    jlrAk.setNavButton(jbAk);
+
+    jlrNazak.setColumnName("NAZAK");
+    jlrNazak.setNavProperties(jlrSkl);
+    //jlrNazak.setDataSet(this.getMasterSet());
+    jlrNazak.setSearchMode(1);
+    
     //TODO njuli dodato
     
     
@@ -829,6 +852,11 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     jpCjenik.add(jlPromjena, new XYConstraints(390, 95, -1, -1));
     jpCjenik.add(jraPromjena, new XYConstraints(505, 95, 100, -1));
     jpCjenik.add(jlPosto, new XYConstraints(610, 95, -1, -1));
+    
+    jpCjenik.add(jlrAk, new XYConstraints(150, 170, 100, -1));
+    jpCjenik.add(jlrNazak, new XYConstraints(255, 170, 280, -1));
+    jpCjenik.add(jbAk, new XYConstraints(540, 170, 21, 21));
+    jpCjenik.add(new JLabel("Akcija"), new XYConstraints(15, 170, -1, -1));
 
     this.SetPanels(jpPres, jpCjenik, true);
     this.raMaster.getRepRunner().addReport("repCjenik", "hr.restart.robno.repCjenik", "Cjenik", "Ispis svih cjenika");
