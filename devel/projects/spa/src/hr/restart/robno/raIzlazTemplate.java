@@ -2619,7 +2619,8 @@ System.out.println("findCjenik::else :: "+sql);
           j.setKnownHosts(IntParam.getTag("sftp.hosts"));
           Session sess = j.getSession(
               IntParam.getTag("sftp.user"), 
-              IntParam.getTag("sftp.addr"));
+              IntParam.getTag("sftp.addr"),
+              Aus.getNumber(IntParam.getTag("sftp.port")));
           sess.setPassword(IntParam.getTag("sftp.pass"));
           sess.connect();
           System.out.println("spojeno");
