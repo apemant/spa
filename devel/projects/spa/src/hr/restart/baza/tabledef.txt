@@ -1293,6 +1293,26 @@ VRDOK;char;3;;;Vrsta dokumenta
 VCINC;numeric;10,2;;0;Poveæanje;8
 VCDEC;numeric;10,2;;0;Uèešæe;8
 
+$Cjenik
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;OJ
+CSKL;char;12;pkey;;Skladište
+CPAR;int;6;pkey;;Partner
+CART;int;6;pkey;;Šifra
+CART1;char;20;;;Oznaka;15
+BC;char;20;;;Barcode;15
+NAZART;char;50;;;Naziv;15
+JM;char;3;;;Jm
+POSTO;numeric;6,2;;0;Posto popusta
+VCKALDOM;numeric;17,2;;0;Cijena domicijalna;15
+VCKALVAL;numeric;17,2;;0;Cijena valutna;15
+VC;numeric;17,2;;0;Cijena bez poreza;15
+MC;numeric;17,2;;0;Cijena s porezom;15
+OZNVAL;char;3;;;Valuta
+TECAJ;numeric;15,6;;0;Teèaj
+CAK;char;6;;;Akcija
+
 $Inventura
 CSKL;char;12;pkey;;Skladište
 CART;int;6;pkey;;Šifra;7

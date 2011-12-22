@@ -31,7 +31,7 @@ public class Cjenik extends KreirDrop implements DataModule {
 
   QueryDataSet cjenik = new raDataSet();
 
-  Column cjenikLOKK = new Column();
+  /*Column cjenikLOKK = new Column();
   Column cjenikAKTIV = new Column();
   Column cjenikCORG = new Column();
   Column cjenikCSKL = new Column();
@@ -48,7 +48,7 @@ public class Cjenik extends KreirDrop implements DataModule {
   Column cjenikMC = new Column();
   Column cjenikCVAL = new Column();
   Column cjenikTECAJ = new Column();
-
+*/
   public static Cjenik getDataModule() {
     if (Cjenikclass == null) {
       Cjenikclass = new Cjenik();
@@ -71,7 +71,7 @@ public class Cjenik extends KreirDrop implements DataModule {
   }
 
   private void jbInit() throws Exception {
-    cjenikLOKK.setCaption("Status zauzetosti");
+    /*cjenikLOKK.setCaption("Status zauzetosti");
     cjenikLOKK.setColumnName("LOKK");
     cjenikLOKK.setDataType(com.borland.dx.dataset.Variant.STRING);
     cjenikLOKK.setPrecision(1);
@@ -235,9 +235,11 @@ public class Cjenik extends KreirDrop implements DataModule {
     setColumns(new Column[] {cjenikLOKK, cjenikAKTIV, cjenikCORG, cjenikCSKL, cjenikCPAR, 
     		cjenikCART, cjenikCART1, cjenikBC, cjenikNAZART, cjenikJM, cjenikPOSTO, 
 			cjenikVCKALDOM, cjenikVCKALVAL, cjenikVC, cjenikMC, cjenikCVAL, cjenikTECAJ});
+*/  
+    initModule();
   }
 
-  public void setall() {
+  /*public void setall() {
 
     ddl.create("Cjenik")
        .addChar("lokk", 1, "N")
@@ -268,5 +270,5 @@ public class Cjenik extends KreirDrop implements DataModule {
     String[] uidx = new String[] {};
     DefIndex = ddl.getIndices(idx, uidx);
     NaziviIdx = ddl.getIndexNames(idx, uidx);
-  }
+  }*/
 }
