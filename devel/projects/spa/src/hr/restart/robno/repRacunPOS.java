@@ -300,10 +300,10 @@ public class repRacunPOS extends mxReport {
 
   private String getNacinPlacanja(int cnp, String cskl){
 //    String nacini = "";
-    QueryDataSet npos = ut.getNewQueryDataSet("SELECT nacpl.naznacpl as naznacpl, sum(rate.irata) as irata FROM rate,nacpl "+
+    QueryDataSet npos = ut.getNewQueryDataSet("SELECT nacpl.naznacpl as naznacpl, rate.cbanka, rate.irata as irata FROM rate,nacpl "+
                                               "WHERE rate.cnacpl = nacpl.cnacpl "+
                                               "and rate.brdok = " + cnp + " and rate.vrdok = 'GRC' and rate.god='"+ god + //Aut.getAut().getKnjigodRobno() +
-                                              "' and rate.cskl= '" + cskl + "' group by naznacpl");
+                                              "' and rate.cskl= '" + cskl + "'");
     
 //    System.out.println("SELECT max(nacpl.naznacpl) as naznacpl, sum(rate.irata) as irata FROM rate,nacpl,banke "+
 //                                              "WHERE rate.cnacpl = nacpl.cnacpl "+
@@ -321,7 +321,10 @@ public class repRacunPOS extends mxReport {
 //                  "<#NAÈINA PLAÆANJA|21|left#>               IZNOS<$newline$>"+
                   doubleLineSep+"<$newline$>");
     do {
-      np +=  "<#"+npos.getString("NAZNACPL").toUpperCase()+"|21|left#> <#"+sgq.format(npos.getBigDecimal("IRATA"),2)+"|"+(width-22)+"|right#><$newline$>";
+      String nac = npos.getString("NAZNACPL");
+      if (npos.getString("CBANKA").trim().length() > 0)
+        nac = nac + " - " + npos.getString("CBANKA"); 
+      np +=  "<#"+nac+"|27|left#> <#"+sgq.format(npos.getBigDecimal("IRATA"),2)+"|"+(width-28)+"|right#><$newline$>";
     } while (npos.next());
 
 //    np += doubleLineSep+"<$newline$>";
