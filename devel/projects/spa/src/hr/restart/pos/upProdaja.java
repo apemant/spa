@@ -85,6 +85,7 @@ public class upProdaja extends raUpitLite {
     izv.setRaItems(new String[][] {
     		{"Prodaja po naèinu plaæanja", "N"},
     		{"Prodaja po artiklima", "A"},
+    		{"Prodaja po artiklima i komisionarima", "AK"},
     		{"Prodaja po artiklima i popustima", "A2"},
     		{"Prodaja po raèunima", "R"},
     		{"Ukupna prodaja po karticama", "U"},
@@ -252,7 +253,56 @@ public class upProdaja extends raUpitLite {
 	    t.addToGroup("CORG", true, new String[] {"#", "NAZIVLOG", "#\n", "ADRESA", "#,", "PBR", "MJESTO", "#, OIB", "OIB"}, 
 	    		dM.getDataModule().getLogotipovi(), true);
 	    
-		} else if (izv.getSelectedIndex() == 2) {
+		} else if (izv.getSelectedIndex() == 2) {			
+			String q = "SELECT stpos.cskl, stpos.cart1, stpos.nazart, stpos.kol, stpos.mc, stpos.neto from pos,stpos "+
+	    						"WHERE " + Util.getUtil().getDoc("pos", "stpos") + " and " +
+	    						Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
+	    						Condition.equal("CSKL", tds, "CORG")).qualified("pos");
+			
+	    DataSet ds = Aus.q(q.toString());
+	    ds.setSort(new SortDescriptor(new String[] {"CART1"}));
+	    
+	    StorageDataSet res = new StorageDataSet();
+	    res.setColumns(new Column[] {
+	    		dM.createIntColumn("CPAR", "Dobavljaè"),
+	    		dM.createStringColumn("CART1", "Šifra", 20),
+	        dM.createStringColumn("NAZART", "Naziv artikla", 100),
+	        dM.createBigDecimalColumn("KOL", "Kolièina", 3),
+	        dM.createBigDecimalColumn("MC", "Cijena", 2),
+	        dM.createBigDecimalColumn("NETO", "Neto", 2)
+	    });
+	    res.open();
+	    String cart = "";
+	    for (ds.first(); ds.inBounds(); ds.next()) {
+	      if (!ds.getString("CART1").equals(cart)) {
+	      	cart = ds.getString("CART1");
+	      	ld.raLocate(dm.getArtikli(), "CART1", cart);
+	        res.insertRow(false);
+	        res.setInt("CPAR", dm.getArtikli().getInt("CPAR"));
+	        res.setString("CART1", cart);
+	        res.setString("NAZART", ds.getString("NAZART"));
+	        Aus.set(res, "MC", ds);
+	      }
+	      Aus.add(res, "KOL", ds);
+	      Aus.add(res, "NETO", ds);
+	    }
+	    res.setSort(new SortDescriptor(new String[] {"CPAR", "CART1"}));
+	    	    
+	    ret = new frmTableDataView();
+	    ret.setDataSet(res);
+	    ret.setSums(new String[] {"NETO"});
+	    ret.setSaveName("Pregled-blag-art-kom");
+	    ret.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+	    ret.setTitle("Prikaz prometa po artiklima  od " + 
+	              Aus.formatTimestamp(tds.getTimestamp("pocDatum")) + " do " +
+	              Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
+	    ret.setVisibleCols(new int[] {1, 2, 3, 4, 5});
+	    raExtendedTable t = (raExtendedTable) ret.jp.getMpTable();
+	    t.setForcePage(true);
+	    t.addToGroup("CPAR", true, new String[] {"#", "NAZPAR", "#\n", "ADR", "#,", "PBR", "MJ", "#, OIB", "OIB"}, 
+	    		dm.getPartneri(), true);
+	    
+		} else if (izv.getSelectedIndex() == 3) {
           DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
           
           String q = "SELECT stpos.cskl, stpos.cart1, stpos.nazart, stpos.kol, stpos.mc, stpos.ppopust1, stpos.ukupno, stpos.neto from pos,stpos "+
@@ -313,7 +363,7 @@ public class upProdaja extends raUpitLite {
               dM.getDataModule().getLogotipovi(), true);
       t.addToGroup("POP", true, new String[] {"#%"}, "", true);
 	    
-		} else if (izv.getSelectedIndex() == 3) {
+		} else if (izv.getSelectedIndex() == 4) {
 		  boolean single = tds.getString("CORG").length() == 4;
           DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
           
@@ -426,7 +476,7 @@ public class upProdaja extends raUpitLite {
         ret.jp.installSummary(totalTab, 10, false);
       }
       
-      } else if (izv.getSelectedIndex() == 4) {
+      } else if (izv.getSelectedIndex() == 5) {
         DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
         
         String q = "SELECT rate.cskl, rate.cnacpl, rate.cbanka, rate.irata from pos,rate "+
@@ -498,7 +548,7 @@ public class upProdaja extends raUpitLite {
                   Aus.formatTimestamp(tds.getTimestamp("pocDatum")) + " do " +
                   Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
         ret.setVisibleCols(new int[] {0, 1, 2});
-      } else if (izv.getSelectedIndex() == 5) {
+      } else if (izv.getSelectedIndex() == 6) {
         DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
         
         String q = "SELECT rate.cskl, rate.cnacpl, rate.irata from pos,rate "+
