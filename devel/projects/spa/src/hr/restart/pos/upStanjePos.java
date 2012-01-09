@@ -213,7 +213,7 @@ public class upStanjePos extends raUpitLite {
   		if ((di.getString("VRDOK").equals("IZD") || di.getString("VRDOK").equals("OTP"))
   				&& di.getString("VEZA").length() > 0) continue;
   		
-  		if (!di.getString("CART1").equals(cart) && !ld.raLocate(res, "CART1", di.getString("CART1"))) {
+  		if (!di.getString("CART1").equals(cart) && !ld.raLocate(res, "CART1", cart = di.getString("CART1"))) {
   			ld.raLocate(dm.getArtikli(), "CART1", cart = di.getString("CART1"));
   			if (!jpc.isEmpty() && dm.getArtikli().getInt("CPAR") != jpc.getCpar()) continue;
   			
@@ -246,7 +246,7 @@ public class upStanjePos extends raUpitLite {
   	
   	cart = "";
   	for (pi.first(); pi.inBounds(); pi.next()) {
-  		if (!pi.getString("CART1").equals(cart) && !ld.raLocate(res, "CART1", pi.getString("CART1"))) {
+  		if (!pi.getString("CART1").equals(cart) && !ld.raLocate(res, "CART1", cart = pi.getString("CART1"))) {
   			ld.raLocate(dm.getArtikli(), "CART1", cart = pi.getString("CART1"));
   			if (!jpc.isEmpty() && dm.getArtikli().getInt("CPAR") != jpc.getCpar()) continue;
   			
