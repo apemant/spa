@@ -305,7 +305,7 @@ public class frmMasterBlagajna extends raMasterDetail {
 
   public void beforeShowMaster() {
   	cskl = getPreSelect().getSelRow().getString("CSKL");
-    god = vl.findYear();
+    god = vl.findYear(getPreSelect().getSelRow().getTimestamp("DATDOK-to"));
     rm = getPreSelect().getSelRow().getString("CPRODMJ");
 //    cblag="1";
     cblag = presBlag.getBlagajnik();
