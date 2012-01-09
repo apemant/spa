@@ -8,7 +8,7 @@ public class repDiskRSm2010 extends repDiskRSm {
   public StringBuffer insertSlog0() {
     StringBuffer b = super.insertSlog0();
     b.replace(0, 12, "            ");
-    String o = getOIB();
+    String o = getOIB(repDiskRS.getOvlCLog());
     b.replace(12, 12+o.length(),o);
     return b;
   }
@@ -28,7 +28,7 @@ public class repDiskRSm2010 extends repDiskRSm {
   }
   public StringBuffer insertSlog9() {
     StringBuffer b = super.insertSlog9();
-    String o = getOIB();
+    String o = getOIB(repDiskRS.getOvlCLog());
     b.replace(0, 12, "            ");
     b.replace(12, 12+o.length(), o);
     return b;
@@ -41,7 +41,10 @@ public class repDiskRSm2010 extends repDiskRSm {
     return b;
   }
   public static String getOIB() {
-    String cKnjig = OrgStr.getKNJCORG();
+    return getOIB(OrgStr.getKNJCORG());
+  }
+  public static String getOIB(String clog) {
+    String cKnjig = clog;
     String oib = "";
     lookupData.getlookupData().raLocate(hr.restart.baza.dM.getDataModule().getLogotipovi(), new String[]{"CORG"}, new String[]{cKnjig});
     oib=hr.restart.baza.dM.getDataModule().getLogotipovi().getString("OIB");

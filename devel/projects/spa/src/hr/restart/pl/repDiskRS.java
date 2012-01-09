@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -65,7 +66,13 @@ public class repDiskRS extends repDisk{
     catch (Exception ex) {
     }
   }
-
+  public static String getOvlCLog() {
+    //za slog 0 i 9
+    if (frmParam.getParam("pl", "useOvlRSL", "N", "Koristiti posebne podatke o ovl. osobi na RSm datoteci?").equalsIgnoreCase("D")) {
+      return frmParam.getParam("pl", "ovlRSLog", OrgStr.getKNJCORG(), "Oznaka logotipa ovlastene osobe za predaju rs obrazaca");
+    }
+    return OrgStr.getKNJCORG();
+  }
   public void fill() throws Exception
   {
     vl = Valid.getValid();
@@ -95,13 +102,13 @@ public class repDiskRS extends repDisk{
   public StringBuffer insertSlog0()
   {
     StringBuffer sb = getNullSB();
-    String matBr = getMatBr();
-    String jmbg = getJMBG();
-    String naziv = getNaziv(0);
-    String adresa = getNaziv(1);
+    String matBr = getMatBr(getOvlCLog());
+    String jmbg = getJMBG(getOvlCLog());
+    String naziv = getNaziv(getOvlCLog(),0);
+    String adresa = getNaziv(getOvlCLog(),1);
     String user = raUser.getInstance().getImeUsera();
-    String tel = getTelEmail(0);
-    String email = getTelEmail(1);
+    String tel = getTelEmail(getOvlCLog(),0);
+    String email = getTelEmail(getOvlCLog(),1);
     String date = getDate();
 
     if(matBr.equals(""))
@@ -297,8 +304,8 @@ public class repDiskRS extends repDisk{
   public StringBuffer insertSlog9()
   {
     StringBuffer sb = getNullSB();
-    String matBr = getMatBr();
-    String jmbg = getJMBG();
+    String matBr = getMatBr(getOvlCLog());
+    String jmbg = getJMBG(getOvlCLog());
     String date = getDate();
     String brRS = vl.maskString(qdsIdent.getRowCount()+"",'0',3);
     if(matBr.equals(""))
@@ -331,9 +338,12 @@ public class repDiskRS extends repDisk{
     return dm.getAllRadnici().getString("IME")+" "+dm.getAllRadnici().getString("PREZIME");
   }
 
-  private String getNaziv(int i)
+  private String getNaziv(int i) {
+    return getNaziv(OrgStr.getKNJCORG(), i);
+  }
+  private String getNaziv(String clog, int i)
  {
-   String cKnjig = OrgStr.getKNJCORG();
+   String cKnjig = clog;
    ld.raLocate(dm.getLogotipovi(), new String[]{"CORG"}, new String[]{cKnjig});
    if(i==0) return dm.getLogotipovi().getString("NAZIVLOG");
    else     return dm.getLogotipovi().getString("ADRESA") + ", " + dm.getLogotipovi().getInt("PBR")+" " + dm.getLogotipovi().getString("MJESTO");
@@ -375,12 +385,16 @@ public class repDiskRS extends repDisk{
     return prefix + vl.maskString(intPart+decPart,'0',len);
   }
 
-  public static String getMatBr() //koristi se u repSBDisk_*
+  public static String getMatBr() {
+    return getMatBr(OrgStr.getKNJCORG());
+  }
+  public static String getMatBr(String clog) //koristi se u repSBDisk_*
   {
-    String cKnjig = OrgStr.getKNJCORG();
+    String cKnjig = clog;
     String mb = "";
-    lookupData.getlookupData().raLocate(hr.restart.baza.dM.getDataModule().getLogotipovi(), new String[]{"CORG"}, new String[]{cKnjig});
+    boolean nasao = lookupData.getlookupData().raLocate(hr.restart.baza.dM.getDataModule().getLogotipovi(), new String[]{"CORG"}, new String[]{cKnjig});
     mb=hr.restart.baza.dM.getDataModule().getLogotipovi().getString("MATBROJ");
+    System.err.println("Logotip "+clog+" ... "+(nasao?"nasao!":"NEMA!!!")+" mb="+mb);
     if(mb.length()<9) {
       //return "0" + dm.getLogotipovi().getString("MATBROJ"); //uzas 
       try {
@@ -393,21 +407,29 @@ public class repDiskRS extends repDisk{
     }
   }
 
-  private String getTelEmail(int i)
+  private String getTelEmail(int i) {
+    return getTelEmail(OrgStr.getKNJCORG(), i);
+  }
+  
+  private String getTelEmail(String clog, int i)
   {
-    String cKnjig = OrgStr.getKNJCORG();
+    String cKnjig = clog;
     ld.raLocate(dm.getLogotipovi(), new String[]{"CORG"}, new String[]{cKnjig});
     if(i == 0)
       return removeNonDigit(dm.getLogotipovi().getString("TEL1"));
     return dm.getLogotipovi().getString("EMAIL");
   }
 
-  private String getJMBG()
+  private String getJMBG() {
+    return getJMBG(OrgStr.getKNJCORG());
+  }
+  private String getJMBG(String clog)
   {
-    String cKnjig = OrgStr.getKNJCORG();
+    String cKnjig = clog;
     String jmbg = "";
-    ld.raLocate(dm.getLogotipovi(), new String[]{"CORG"}, new String[]{cKnjig});
+    boolean nasao = ld.raLocate(dm.getLogotipovi(), new String[]{"CORG"}, new String[]{cKnjig});
     jmbg=dm.getLogotipovi().getString("MATBROJ");
+    System.err.println("Logotip "+clog+" ... "+(nasao?"nasao!":"NEMA!!!")+" jmbg="+jmbg);
     if(jmbg.length()<10)
       return"";
     else
