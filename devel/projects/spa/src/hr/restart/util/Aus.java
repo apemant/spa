@@ -610,11 +610,12 @@ public class Aus {
     DataSet ds = Knjigod.getDataModule().getTempSet(Condition.equal("CORG",
         OrgStr.getKNJCORG(false)).and(Condition.equal("APP", "gk")));
     ds.open();
-    
+
     if (ds.rowCount() == 0) return Util.getUtil().getFirstDayOfYear(upto);
     
     String thisYear = Valid.getValid().findYear(upto);
     String firstYear = null;
+    System.out.println(thisYear);
     for (ds.first(); ds.inBounds(); ds.next()) {
       String knjYear = ds.getString("GOD");
       if (knjYear.compareTo(thisYear) <= 0 &&
@@ -622,7 +623,8 @@ public class Aus {
             firstYear = knjYear;
     }
     
-    if (firstYear != null) Util.getUtil().getYearBegin(firstYear); 
+    if (firstYear != null) 
+      return Util.getUtil().getYearBegin(firstYear); 
       
     return Util.getUtil().getFirstDayOfYear(upto); 
   }
