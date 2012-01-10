@@ -24,6 +24,7 @@ import hr.restart.baza.Sklad;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.raDateRange;
 import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.lookupData;
@@ -143,6 +144,8 @@ public class ispRekapNew extends raUpitLite {
     jtfZavDatum.setHorizontalAlignment(SwingConstants.CENTER);
     jtfZavDatum.setColumnName("zavDatum");
     jtfZavDatum.setDataSet(tds);
+    
+    new raDateRange(jtfPocDatum, jtfZavDatum);
     
     jrfCSKL.setColumnName("CORG");
     jrfCSKL.setColNames(new String[] {"NAZIV"});

@@ -25,6 +25,7 @@ import hr.restart.robno.Util;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.raDateRange;
 import hr.restart.swing.raExtendedTable;
 import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
@@ -128,6 +129,8 @@ public class upProdaja extends raUpitLite {
     mainPanel.add(jlDatum,   new XYConstraints(15, 75, -1, -1));
     mainPanel.add(jtfPocDatum, new XYConstraints(150, 75, 100, -1));
     mainPanel.add(jtfZavDatum, new XYConstraints(255, 75, 100, -1));
+    
+    new raDateRange(jtfPocDatum, jtfZavDatum);
     
     hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
       public void knjigChanged(String oldKnj, String newKnj){
