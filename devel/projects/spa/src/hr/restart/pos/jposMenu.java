@@ -47,6 +47,7 @@ public class jposMenu extends JMenu {
   public JMenuItem jmRekapitulacijaPOS = new JMenuItem();
   public JMenuItem jmKartica = new JMenuItem();
   public JMenuItem jmStanje = new JMenuItem();
+  public JMenuItem jmOdjava = new JMenuItem();
   public JMenuItem jmPregledArtikliRacuni = new JMenuItem();
   public JMenuItem jmZbroj = new JMenuItem();
   public JMenuItem jmZakljucak = new JMenuItem();
@@ -117,6 +118,12 @@ public class jposMenu extends JMenu {
         jmStanje_actionPerformed(e);
       }
     });
+    jmOdjava.setText("Odjava komisije");
+    jmOdjava.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+      	jmOdjava_actionPerformed(e);
+      }
+    });
     jmPregledArtikliRacuni.setText(presBlag.isSkladOriented() ? "Pregled prodaje" : "Pregled artikli raèuni");
     jmPregledArtikliRacuni.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -158,6 +165,7 @@ public class jposMenu extends JMenu {
     if (presBlag.isSkladOriented()) {
         this.add(jmKartica);
         this.add(jmStanje);
+        this.add(jmOdjava);
         this.add(jmPregledKPR);
     	this.addSeparator();
     	this.add(jmZakljucak);
@@ -198,6 +206,9 @@ public class jposMenu extends JMenu {
   }
   public void jmStanje_actionPerformed(ActionEvent e){
     SF.showFrame("hr.restart.pos.upStanjePos", jmStanje.getText());
+  }
+  public void jmOdjava_actionPerformed(ActionEvent e){
+    SF.showFrame("hr.restart.pos.upOdjava", jmOdjava.getText());
   }
   public void jmPregledArtikliRacuni_actionPerformed(ActionEvent e){
   	if (presBlag.isSkladOriented())
