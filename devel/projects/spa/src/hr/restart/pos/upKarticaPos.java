@@ -23,6 +23,7 @@ import hr.restart.robno.rapancart;
 import hr.restart.robno.rapancskl;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.raDateRange;
 import hr.restart.swing.raExtendedTable;
 import hr.restart.swing.raTableRunningSum;
 import hr.restart.util.Aus;
@@ -97,6 +98,8 @@ public class upKarticaPos extends raUpitLite {
     jtfZavDatum.setColumnName("zavDatum");
     jtfZavDatum.setDataSet(tds);
     
+    new raDateRange(jtfPocDatum, jtfZavDatum);
+    
     rpcart.setMode("DOH");
     rpcart.setBorder(null);
     rpcskl.setRaMode('S');
@@ -154,8 +157,8 @@ public class upKarticaPos extends raUpitLite {
   }
 
   public void okPress() {
-  	String us = "SELECT doku.vrdok, doku.brdok, doku.datdok, stdoku.kol, stdoku.inab, stdoku.nc, stdoku.mc, stdoku.izad " +
-  			"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST') and " +
+  	String us = "SELECT doku.vrdok, doku.brdok, doku.datdok, stdoku.kol, stdoku.inab, stdoku.nc, stdoku.mc, stdoku.izad, stdoku.skol, stdoku.porav " +
+  			"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR') and " +
   			Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
 						Condition.equal("CSKL", rpcskl.getCSKL())).qualified("doku") + " and stdoku.cart = " + rpcart.getCART();
   	System.out.println(us);
@@ -189,22 +192,43 @@ public class upKarticaPos extends raUpitLite {
     });
     res.open();
   	for (du.first(); du.inBounds(); du.next()) {
-  		res.insertRow(false);
-  		res.setString("CORG", rpcskl.getCSKL());
-  		res.setString("DOK", du.getString("VRDOK")+"-"+du.getInt("BRDOK"));
-  		res.setTimestamp("DATDOK", du.getTimestamp("DATDOK"));
-  		Aus.set(res, "KOLUL", du, "KOL");
-  		Aus.clear(res, "KOLIZ");
-  		Aus.set(res, "KOL", "KOLUL");
-  		Aus.set(res, "NC", du);
-  		Aus.set(res, "NABUL", du, "INAB");
-  		Aus.clear(res, "NABIZ");
-  		Aus.set(res, "MC", du);
-  		Aus.set(res, "IZAD", du);
-  		Aus.clear(res, "IRAZ");
-  		Aus.set(res, "VRI", "IZAD");
-  		Aus.clear(res, "POP");
-  		Aus.clear(res, "NETO");
+  		if (du.getString("VRDOK").equals("PRK") && du.getBigDecimal("PORAV").signum() != 0
+  				|| du.getString("VRDOK").equals("POR")) {
+  			res.insertRow(false);
+    		res.setString("CORG", rpcskl.getCSKL());
+    		res.setString("DOK", "POR-"+du.getInt("BRDOK"));
+    		res.setTimestamp("DATDOK", du.getTimestamp("DATDOK"));
+    		Aus.set(res, "KOLUL", du, "SKOL");
+    		Aus.clear(res, "KOLIZ");
+    		Aus.clear(res, "KOL");
+    		Aus.set(res, "NC", du);
+    		Aus.clear(res, "NABUL");
+    		Aus.clear(res, "NABIZ");
+    		Aus.set(res, "IZAD", du, "PORAV");
+    		Aus.div(res, "MC", "IZAD", "KOLUL");
+    		Aus.clear(res, "IRAZ");
+    		Aus.set(res, "VRI", "IZAD");
+    		Aus.clear(res, "POP");
+    		Aus.clear(res, "NETO");
+  		} 
+  		if (!du.getString("VRDOK").equals("POR")) {
+	  		res.insertRow(false);
+	  		res.setString("CORG", rpcskl.getCSKL());
+	  		res.setString("DOK", du.getString("VRDOK")+"-"+du.getInt("BRDOK"));
+	  		res.setTimestamp("DATDOK", du.getTimestamp("DATDOK"));
+	  		Aus.set(res, "KOLUL", du, "KOL");
+	  		Aus.clear(res, "KOLIZ");
+	  		Aus.set(res, "KOL", "KOLUL");
+	  		Aus.set(res, "NC", du);
+	  		Aus.set(res, "NABUL", du, "INAB");
+	  		Aus.clear(res, "NABIZ");
+	  		Aus.set(res, "MC", du);
+	  		Aus.set(res, "IZAD", du);
+	  		Aus.clear(res, "IRAZ");
+	  		Aus.set(res, "VRI", "IZAD");
+	  		Aus.clear(res, "POP");
+	  		Aus.clear(res, "NETO");
+  		}
   	}
   	
   	HashMap inab = new HashMap();
