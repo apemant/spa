@@ -23,6 +23,7 @@ import hr.restart.baza.dM;
 import hr.restart.db.raVariant;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -285,7 +286,6 @@ public class frmID extends raUpitLite {
     } while (tidamtidamtidam.next());
     return sumum;
   }
-
   private void makeRepSet(){   // A.K.A. SQL BOMBER :)
     if (!repSet.isOpen()) repSet.open();
     else repSet.deleteAllRows();
@@ -367,6 +367,18 @@ public class frmID extends raUpitLite {
 //      System.out.println("... done");
       for (idBporqds.first(); idBporqds.inBounds(); idBporqds.next()) {
         boolean raz = idBporqds.getString("CRADNIK").trim().equals(idBporqds.getString("COPCINE").trim());//razlika poreza
+        //ugurati pravi copcine u razliku poreza 
+        if (raz) {
+          String rzsql = "SELECT copcine from "+_radtab+" where "+_radtab+".cradnik = '"+idBporqds.getString("CRADNIK")+"' "+getWhereSQL(_radtab,"AND");
+          QueryDataSet rzopcset = Aus.q(rzsql);
+          if (rzopcset.getRowCount() > 0) {
+            rzopcset.first();
+            idBporqds.setString("COPCINE", rzopcset.getString("COPCINE"));
+            raz = false;
+          } else {
+            raz = true;
+          }
+        }
         if (!raz && !lookupData.getlookupData().raLocate(repSetStrB,"COPCINE",idBporqds.getString("COPCINE"))){
           repSetStrB.insertRow(false);
           repSetStrB.setString("COPCINE",idBporqds.getString("COPCINE").trim());
@@ -383,6 +395,17 @@ public class frmID extends raUpitLite {
       }
       for (idBprirqds.first(); idBprirqds.inBounds(); idBprirqds.next()) {
         boolean raz = idBprirqds.getString("CRADNIK").trim().equals(idBprirqds.getString("COPCINE").trim());//razlika prireza
+        if (raz) {//malo kopipejsta nije na odmet
+          String rzsql = "SELECT copcine from "+_radtab+" where "+_radtab+".cradnik = '"+idBprirqds.getString("CRADNIK")+"' "+getWhereSQL(_radtab,"AND");
+          QueryDataSet rzopcset = Aus.q(rzsql);
+          if (rzopcset.getRowCount() > 0) {
+            rzopcset.first();
+            idBprirqds.setString("COPCINE", rzopcset.getString("COPCINE"));
+            raz = false;
+          } else {
+            raz = true;
+          }
+        }
         if (raz || lookupData.getlookupData().raLocate(repSetStrB,"COPCINE",idBprirqds.getString("COPCINE"))){
           repSetStrB.setBigDecimal("PRIR",repSetStrB.getBigDecimal("PRIR")
               .add(idBprirqds.getBigDecimal("OBRIZNOS")));
