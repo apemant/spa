@@ -984,7 +984,7 @@ public class plUtil {
                 "sum("+table+".saldo) as saldo, max("+table+".rbrodb) as rbrodb, " +
                 		"max(radnici.prezime) as prezime, max(radnici.ime) as ime"+
                 " from "+table+", radnici where "+table+"."+where+
-                  " and radnici.cradnik= "+table+".cradnik and radnici.";
+                  " and radnici.cradnik= "+table+".cradnik and ";//radnici.";
 
     return sIsp;
   }

@@ -223,8 +223,8 @@ public class frmSpecKred extends frmIzvjestajiPL {
   public void prepareIspis()
   {
     String table = getTableName();
-    String sIspZbir = plUtil.getPlUtil().getSpecKredStr(table, where)+this.getWhereQuery();
-    String sIspPoj =  plUtil.getPlUtil().getSpecKredStr(table, where)+this.getWhereQuery();
+    String sIspZbir = plUtil.getPlUtil().getSpecKredStr(table, where)+this.getWhereQuery("radnici");
+    String sIspPoj =  plUtil.getPlUtil().getSpecKredStr(table, where)+this.getWhereQuery("radnici");
 
     if(qdsZB.isOpen())
       qdsZB.close();
