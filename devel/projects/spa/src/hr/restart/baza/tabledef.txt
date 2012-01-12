@@ -1009,7 +1009,7 @@ RBR;short;2;pkey;;Rbr;5
 CART;int;6;;;Šifra;7
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
-NAZART;char;50;;;Naziv;25
+NAZART;char;75;;;Naziv;25
 JM;char;3;;;Jm;5
 KOL;numeric;15,3;;0;Kolièina;10
 DC;numeric;15,2;;0;Dobavljaèeva cijena;12
