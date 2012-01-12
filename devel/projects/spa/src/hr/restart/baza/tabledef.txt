@@ -1318,7 +1318,7 @@ CSKL;char;12;pkey;;Skladište
 CART;int;6;pkey;;Šifra;7
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
-NAZART;char;50;;;Naziv;25
+NAZART;char;75;;;Naziv;25
 JM;char;3;;;Jm
 KOLKNJ;numeric;15,3;;0;Kolièina;10
 KOLINV;numeric;15,3;;0;Inventurna kolièina;10
