@@ -158,7 +158,7 @@ public class upKarticaPos extends raUpitLite {
 
   public void okPress() {
   	String us = "SELECT doku.vrdok, doku.brdok, doku.datdok, stdoku.kol, stdoku.inab, stdoku.nc, stdoku.mc, stdoku.izad, stdoku.skol, stdoku.porav " +
-  			"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR') and " +
+  			"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR','PTE') and " +
   			Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
 						Condition.equal("CSKL", rpcskl.getCSKL())).qualified("doku") + " and stdoku.cart = " + rpcart.getCART();
   	System.out.println(us);
@@ -191,7 +191,11 @@ public class upKarticaPos extends raUpitLite {
     		dM.createBigDecimalColumn("NETO", "Utržak", 2)
     });
     res.open();
+    int py = Aus.getNumber(ut.getYear(tds.getTimestamp("pocDatum")));
+    
   	for (du.first(); du.inBounds(); du.next()) {
+  		if (du.getString("VRDOK").equals("PST") && Aus.getNumber(ut.getYear(du.getTimestamp("DATDOK")))>py) continue;
+  		
   		if (du.getString("VRDOK").equals("PRK") && du.getBigDecimal("PORAV").signum() != 0
   				|| du.getString("VRDOK").equals("POR")) {
   			res.insertRow(false);
