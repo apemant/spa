@@ -129,7 +129,7 @@ public class upStanjePos extends raUpitLite {
   public void okPress() {
   	tds.setTimestamp("POCDATUM", ut.getFirstSecondOfDay(ut.getFirstDayOfYear(tds.getTimestamp("ZAVDATUM"))));
   	String us = "SELECT doku.vrdok, doku.datdok, stdoku.cart1, stdoku.kol, stdoku.inab, stdoku.nc, stdoku.mc, stdoku.izad, stdoku.porav " +
-		"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR') and " +
+		"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR','PTE') and " +
 		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
 				Condition.equal("CSKL", rpcskl.getCSKL())).qualified("doku");
   	System.out.println(us);
