@@ -84,6 +84,7 @@ public class upKarticaPos extends raUpitLite {
     mainPanel.setLayout(mainXYLayout);
     
     tds.setColumns(new Column[] {dm.createStringColumn("CSKL","Prodajno mjesto",12),
+        dm.createIntColumn("CART", "Artikl"),
         dm.createTimestampColumn("pocDatum", "Poèetni datum"),
         dm.createTimestampColumn("zavDatum", "Krajnji datum"),
         });
@@ -113,12 +114,13 @@ public class upKarticaPos extends raUpitLite {
   
   public void componentShow() {
     tds.open();
-    tds.setTimestamp("pocDatum", vl.getToday());
+    tds.setTimestamp("pocDatum", ut.getYearBegin(vl.getKnjigYear("robno")));
     tds.setTimestamp("zavDatum", vl.getToday());
     rpcart.EnabDisab(true);
     rpcart.clearFields();
     rpcskl.setDisab('N');
     rpcskl.setCSKL("");
+    check = true;
   }
 
   public void firstESC() {
@@ -132,7 +134,10 @@ public class upKarticaPos extends raUpitLite {
     rpcskl.setCSKL("");
   }
   
+  public boolean check = true;
   public boolean Validacija() {
+    if (!check) return check = true;
+    
     if (rpcskl.getCSKL().length() == 0) {
       rpcskl.setCSKL("");
       JOptionPane.showConfirmDialog(getWindow(),"Obavezan unos skladišta !","Greška",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
@@ -144,6 +149,7 @@ public class upKarticaPos extends raUpitLite {
       return false;
     }
     if (!Aus.checkDateRange(jtfPocDatum, jtfZavDatum)) return false;
+    tds.setInt("CART", Aus.getNumber(rpcart.getCART()));
     return true; 
   }
   
@@ -154,23 +160,31 @@ public class upKarticaPos extends raUpitLite {
 
   public void afterOKPress() {
     rcc.EnabDisabAll(mainPanel, true);
+    check = true;
   }
 
   public void okPress() {
   	String us = "SELECT doku.vrdok, doku.brdok, doku.datdok, stdoku.kol, stdoku.inab, stdoku.nc, stdoku.mc, stdoku.izad, stdoku.skol, stdoku.porav " +
   			"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR','PTE') and " +
   			Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-						Condition.equal("CSKL", rpcskl.getCSKL())).qualified("doku") + " and stdoku.cart = " + rpcart.getCART();
+						Condition.equal("CSKL", tds)).qualified("doku").and(Condition.equal("CART", tds));
   	System.out.println(us);
   	DataSet du = Aus.q(us);
   	
-  	String is = "SELECT doki.vrdok, doki.brdok, doki.datdok, stdoki.kol, stdoki.inab, stdoki.mc, stdoki.iraz, " +
+  	String is = "SELECT doki.vrdok, doki.brdok, doki.datdok, stdoki.kol, stdoki.nc, stdoki.inab, stdoki.mc, stdoki.iraz, " +
   			"stdoki.uirab, stdoki.iprodbp, stdoki.iprodsp, stdoki.veza, stdoki.id_stavka FROM doki,stdoki WHERE " +
-  			Util.getUtil().getDoc("doki", "stdoki") + " and doki.vrdok in ('POS','IZD','ROT','RAC','OTP','POD') and " +
+  			Util.getUtil().getDoc("doki", "stdoki") + " and doki.vrdok in ('IZD','ROT','RAC','OTP','POD') and " +
   			Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-						Condition.equal("CSKL", rpcskl.getCSKL())).qualified("doki") + " and stdoki.cart = " + rpcart.getCART();
+  			  Condition.equal("CSKL", tds)).qualified("doki").and(Condition.equal("CART", tds));
   	System.out.println(is);
   	DataSet di = Aus.q(is);
+  	
+  	String ps = "SELECT pos.brdok, pos.datdok, stpos.kol, stpos.mc, stpos.ukupno, stpos.neto, pos.rdok FROM pos,stpos WHERE " +
+    Util.getUtil().getDoc("pos", "stpos") + " and " +
+    Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
+        Condition.equal("CSKL", tds)).qualified("pos").and(Condition.equal("CART", tds));
+  	System.out.println(ps);
+    DataSet pi = Aus.q(ps);
   	
   	StorageDataSet res = new StorageDataSet();
     res.setColumns(new Column[] {
@@ -199,10 +213,10 @@ public class upKarticaPos extends raUpitLite {
   		if (du.getString("VRDOK").equals("PRK") && du.getBigDecimal("PORAV").signum() != 0
   				|| du.getString("VRDOK").equals("POR")) {
   			res.insertRow(false);
-    		res.setString("CORG", rpcskl.getCSKL());
+    		res.setString("CORG", tds.getString("CSKL"));
     		res.setString("DOK", "POR-"+du.getInt("BRDOK"));
     		res.setTimestamp("DATDOK", du.getTimestamp("DATDOK"));
-    		Aus.set(res, "KOLUL", du, "SKOL");
+    		Aus.clear(res, "KOLUL");
     		Aus.clear(res, "KOLIZ");
     		Aus.clear(res, "KOL");
     		Aus.set(res, "NC", du);
@@ -217,7 +231,7 @@ public class upKarticaPos extends raUpitLite {
   		} 
   		if (!du.getString("VRDOK").equals("POR")) {
 	  		res.insertRow(false);
-	  		res.setString("CORG", rpcskl.getCSKL());
+	  		res.setString("CORG", tds.getString("CSKL"));
 	  		res.setString("DOK", du.getString("VRDOK")+"-"+du.getInt("BRDOK"));
 	  		res.setTimestamp("DATDOK", du.getTimestamp("DATDOK"));
 	  		Aus.set(res, "KOLUL", du, "KOL");
@@ -235,49 +249,73 @@ public class upKarticaPos extends raUpitLite {
   		}
   	}
   	
-  	HashMap inab = new HashMap();
-  	HashMap iraz = new HashMap();
+  	HashMap inc = new HashMap();
+  	HashMap imc = new HashMap();
   	for (di.first(); di.inBounds(); di.next()) {
   		if ((di.getString("VRDOK").equals("IZD") || di.getString("VRDOK").equals("OTP"))
   				&& di.getString("VEZA").length() > 0) {
-  			inab.put(di.getString("VEZA"), di.getBigDecimal("INAB"));
-  			iraz.put(di.getString("VEZA"), di.getBigDecimal("IRAZ"));
+  		  String st = di.getString("VEZA");
+          int last = st.lastIndexOf('-');
+          if (last > 0) st = st.substring(0, last);
+          last = st.lastIndexOf('-');
+          if (last > 0) st = st.substring(0, last + 1);
+          inc.put(st, di.getBigDecimal("NC"));
+          imc.put(st, di.getBigDecimal("MC"));
+  		  continue;
   		}
-  	}
-  	for (di.first(); di.inBounds(); di.next()) {
-  		if ((di.getString("VRDOK").equals("IZD") || di.getString("VRDOK").equals("OTP"))
-  				&& di.getString("VEZA").length() > 0) continue;
   		
   		res.insertRow(false);
-  		res.setString("CORG", rpcskl.getCSKL());
+  		res.setString("CORG", tds.getString("CSKL"));
   		res.setString("DOK", di.getString("VRDOK")+"-"+di.getInt("BRDOK"));
   		res.setTimestamp("DATDOK", di.getTimestamp("DATDOK"));
   		Aus.clear(res, "KOLUL");
   		Aus.set(res, "KOLIZ", di, "KOL");
   		Aus.sub(res, "KOL", "KOLUL", "KOLIZ");
-  		BigDecimal sn = (BigDecimal) inab.get(di.getString("ID_STAVKA"));
-  		if (sn != null) {
-  			res.setBigDecimal("NABIZ", sn);
-  			Aus.div(res, "NC", "NABIZ", "KOL");
-  		} else {
-  			Aus.set(res, "NC", di);
-  			Aus.set(res, "NABIZ", di, "INAB");
-  		}
-  		Aus.clear(res, "NABUL");
-  		BigDecimal sm = (BigDecimal) iraz.get(di.getString("ID_STAVKA"));
-  		if (sm != null) {
-  			res.setBigDecimal("IRAZ", sm);
-  			Aus.div(res, "MC", "IRAZ", "KOL");
-  		} else {
-  			Aus.set(res, "MC", di);
-  			Aus.set(res, "IRAZ", di);
-  		}
+		Aus.set(res, "NC", di);
+		Aus.set(res, "NABIZ", di, "INAB");
+		Aus.set(res, "MC", di);
+		Aus.set(res, "IRAZ", di);
   		Aus.clear(res, "IZAD");
   		Aus.sub(res, "VRI", "IZAD", "IRAZ");
   		Aus.set(res, "POP", di, "UIRAB");
   		Aus.set(res, "NETO", di, "IPRODSP");
   	}
+  	for (pi.first(); pi.inBounds(); pi.next()) {
+  	  String rdok = pi.getString("RDOK");
+  	  res.insertRow(false);
+  	  res.setString("CORG", tds.getString("CSKL"));
+  	  res.setString("DOK", "GRC-"+pi.getInt("BRDOK"));
+  	  res.setTimestamp("DATDOK", pi.getTimestamp("DATDOK"));
+  	  Aus.clear(res, "KOLUL");
+  	  Aus.set(res, "KOLIZ", pi, "KOL");
+  	  Aus.sub(res, "KOL", "KOLUL", "KOLIZ");
+  	  
+  	  BigDecimal nc = (BigDecimal) inc.get(rdok);
+  	  if (nc == null) {
+  	    Aus.clear(res, "NC");
+  	    Aus.clear(res, "NABIZ");
+  	  } else {
+  	    res.setBigDecimal("NC", nc);
+  	    Aus.mul(res, "NABIZ", "NC", "KOLIZ");
+  	  }
+  	  Aus.set(res, "MC", pi);
+  	  BigDecimal mc = (BigDecimal) imc.get(rdok);
+  	  if (mc == null) {
+  	    Aus.clear(res, "IRAZ");
+  	  } else {
+  	    res.setBigDecimal("MC", mc);
+  	    Aus.mul(res, "IRAZ", "MC", "KOLIZ");
+  	  }
+  	  
+      Aus.clear(res, "IZAD");
+      Aus.sub(res, "VRI", "IZAD", "IRAZ");
+      Aus.set(res, "NETO", pi, "NETO");
+      Aus.set(res, "POP", pi, "UKUPNO");
+      Aus.sub(res, "POP", "NETO");
+  	}
   	res.setSort(new SortDescriptor(new String[] {"DATDOK"}));
+  	
+  	ld.raLocate(dm.getArtikli(), "CART", tds.getInt("CART")+"");
   	
   	ret = new frmTableDataView();
     ret.setDataSet(res);
@@ -286,7 +324,8 @@ public class upKarticaPos extends raUpitLite {
     ret.jp.addTableModifier(new raTableRunningSum("KOL"));
     ret.jp.addTableModifier(new raTableRunningSum("VRI"));
     ret.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-    ret.setTitle("Prikaz kartice artikla " + rpcart.getCART1() + " " + rpcart.getNAZART() + "  od " + 
+    ret.setTitle("Prikaz kartice artikla " + dm.getArtikli().getString("CART1")
+              + " " + dm.getArtikli().getString("NAZART") + "  od " + 
               Aus.formatTimestamp(tds.getTimestamp("pocDatum")) + " do " +
               Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
     ret.setVisibleCols(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14});
