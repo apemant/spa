@@ -650,6 +650,7 @@ public class upProdaja extends raUpitLite {
       	System.out.println(is);
       	DataSet di = Aus.q(is);
       	di.setSort(new SortDescriptor(new String[] {"CSKL"}));
+      	tds.setTimestamp("pocDatum", poc);
       	
       	StorageDataSet res = new StorageDataSet();
         res.setColumns(new Column[] {
@@ -678,7 +679,7 @@ public class upProdaja extends raUpitLite {
       			res.setString("DOB", cskl + " " + getNazivDob(cskl));
       		}
       		Aus.add(res, "VZAV", du, "IZAD");
-    			Aus.add(res, "VZAV", du, "PORAV");
+    		Aus.add(res, "VZAV", du, "PORAV");
       		if (dat.before(poc)) {
       			Aus.add(res, "VPOC", du, "IZAD");
       			Aus.add(res, "VPOC", du, "PORAV");
@@ -702,7 +703,7 @@ public class upProdaja extends raUpitLite {
       		}
       		Aus.sub(res, "VZAV", di, "IRAZ");
       		if (dat.before(poc)) {
-      			Aus.sub(res, "VZAV", di, "IRAZ");
+      			Aus.sub(res, "VPOC", di, "IRAZ");
       		} else if (vd.equals("POS") || vd.equals("ROT") || vd.equals("RAC") || vd.equals("POD")) {
       			Aus.add(res, "VIZ", di, "IPRODSP");
       			Aus.add(res, "POP", di, "UIRAB");
