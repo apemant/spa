@@ -496,39 +496,54 @@ public class upProdaja extends raUpitLite {
         res.setColumns(new Column[] {
             dM.createStringColumn("CORG", "Dobavljaè", 50),           
             dM.createBigDecimalColumn("IZNOS", "Iznos", 2),
+            dM.createBigDecimalColumn("TOT", "Ukupno", 2),
             dM.createStringColumn("DUMMY", "", 50),
         });
         res.open();
         
-        
+        BigDecimal tot = Aus.zero2;
         String cnac = "", cban = "", cskl = "";
         for (ds.first(); ds.inBounds(); ds.next()) {
           if (!ds.getString("CNACPL").equals(cnac) ||
             !ds.getString("CBANKA").equals(cban)) {
+            if (cnac.length() > 0) {
+              res.insertRow(false);
+              res.setString("CORG", "Ukupno " + getNacpl(cnac, cban));
+              res.setAssignedNull("IZNOS");
+              res.setBigDecimal("TOT", tot);
+              tot = Aus.zero2;
+            }
             cnac = ds.getString("CNACPL");
             cban = ds.getString("CBANKA");
             cskl = "";
             res.insertRow(false);
             res.setAssignedNull("IZNOS");
+            res.setAssignedNull("TOT");
             res.insertRow(false);
             res.setAssignedNull("IZNOS");
-            ld.raLocate(dm.getNacpl(), "CNACPL", cnac);
-            String nac = cnac + " " + dm.getNacpl().getString("NAZNACPL");
-            if (cban.length() > 0 &&
-                ld.raLocate(dm.getKartice(), "CBANKA", cban)) {
-              nac = nac + " - " + dm.getKartice().getString("NAZIV");
-            }
-            res.setString("CORG", nac);
+            res.setAssignedNull("TOT");
+            
+            res.setString("CORG", getNacpl(cnac, cban));
           }
           if (!ds.getString("CSKL").equals(cskl)) {
             cskl = ds.getString("CSKL");
             res.insertRow(false);
+            res.setAssignedNull("TOT");
             res.setString("CORG", cskl + " " + getNazivDob(cskl));
           }
           Aus.add(res, "IZNOS", ds, "IRATA");
+          tot = tot.add(ds.getBigDecimal("IRATA"));
+        }
+        if (cnac.length() > 0) {
+          res.insertRow(false);
+          res.setString("CORG", "Ukupno " + getNacpl(cnac, cban));
+          res.setAssignedNull("IZNOS");
+          res.setBigDecimal("TOT", tot);
+          tot = Aus.zero2;
         }
         res.insertRow(false);
         res.setAssignedNull("IZNOS");
+        res.setAssignedNull("TOT");
         
         ret = new frmTableDataView();
         ret.setDataSet(res);
@@ -554,20 +569,31 @@ public class upProdaja extends raUpitLite {
         res.setColumns(new Column[] {
             dM.createStringColumn("CORG", "Dobavljaè", 50),           
             dM.createBigDecimalColumn("IZNOS", "Iznos", 2),
+            dM.createBigDecimalColumn("TOT", "Ukupno", 2),
             dM.createStringColumn("DUMMY", "", 50),
         });
         res.open();
         
-        
+        BigDecimal tot = Aus.zero2;
         String cnac = "", cskl = "";
         for (ds.first(); ds.inBounds(); ds.next()) {
           if (!ds.getString("CNACPL").equals(cnac)) {
+            if (cnac.length() > 0) {
+              res.insertRow(false);
+              res.setString("CORG", "Ukupno " + cnac + " " + 
+                  dm.getNacpl().getString("NAZNACPL"));
+              res.setAssignedNull("IZNOS");
+              res.setBigDecimal("TOT", tot);
+              tot = Aus.zero2;
+            }
             cnac = ds.getString("CNACPL");
             cskl = "";
             res.insertRow(false);
             res.setAssignedNull("IZNOS");
+            res.setAssignedNull("TOT");
             res.insertRow(false);
             res.setAssignedNull("IZNOS");
+            res.setAssignedNull("TOT");
             ld.raLocate(dm.getNacpl(), "CNACPL", cnac);
             String nac = cnac + " " + dm.getNacpl().getString("NAZNACPL");
             res.setString("CORG", nac);
@@ -576,11 +602,22 @@ public class upProdaja extends raUpitLite {
             cskl = ds.getString("CSKL");
             res.insertRow(false);
             res.setString("CORG", cskl + " " + getNazivDob(cskl));
+            res.setAssignedNull("TOT");
           }
           Aus.add(res, "IZNOS", ds, "IRATA");
+          tot = tot.add(ds.getBigDecimal("IRATA"));
+        }
+        if (cnac.length() > 0) {
+          res.insertRow(false);
+          res.setString("CORG", "Ukupno " + cnac + " " + 
+              dm.getNacpl().getString("NAZNACPL"));
+          res.setAssignedNull("IZNOS");
+          res.setBigDecimal("TOT", tot);
+          tot = Aus.zero2;
         }
         res.insertRow(false);
         res.setAssignedNull("IZNOS");
+        res.setAssignedNull("TOT");
         
         ret = new frmTableDataView();
         ret.setDataSet(res);
@@ -682,6 +719,16 @@ public class upProdaja extends raUpitLite {
                   Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
         ret.setVisibleCols(new int[] {1, 2, 3, 4, 5, 6, 7, 8});
       }
+	}
+	
+	String getNacpl(String cnac, String cban) {
+	  ld.raLocate(dm.getNacpl(), "CNACPL", cnac);
+      String nac = cnac + " " + dm.getNacpl().getString("NAZNACPL");
+      if (cban.length() > 0 &&
+          ld.raLocate(dm.getKartice(), "CBANKA", cban)) {
+        nac = nac + " - " + dm.getKartice().getString("NAZIV");
+      }
+      return nac;
 	}
 	
 	String getNazivDob(String cskl) {
