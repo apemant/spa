@@ -209,7 +209,7 @@ public class upKarticaPos extends raUpitLite {
     		Aus.clear(res, "NABUL");
     		Aus.clear(res, "NABIZ");
     		Aus.set(res, "IZAD", du, "PORAV");
-    		Aus.div(res, "MC", "IZAD", "KOLUL");
+    		Aus.set(res, "MC", du);
     		Aus.clear(res, "IRAZ");
     		Aus.set(res, "VRI", "IZAD");
     		Aus.clear(res, "POP");
