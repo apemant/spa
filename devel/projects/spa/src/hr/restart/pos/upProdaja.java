@@ -1,6 +1,7 @@
 package hr.restart.pos;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -90,7 +91,8 @@ public class upProdaja extends raUpitLite {
     		{"Prodaja po artiklima i popustima", "A2"},
     		{"Prodaja po raèunima", "R"},
     		{"Ukupna prodaja po karticama", "U"},
-    		{"Ukupna prodaja po naèinu plaæanja", "U2"}
+    		{"Ukupna prodaja po naèinu plaæanja", "U2"},
+    		{"Izvješæe o poslovanju", "I"}
     });
     
     jlSkladiste.setText("Prodajno mjesto");
@@ -521,21 +523,7 @@ public class upProdaja extends raUpitLite {
           if (!ds.getString("CSKL").equals(cskl)) {
             cskl = ds.getString("CSKL");
             res.insertRow(false);
-            String naz = "";
-            if (ld.raLocate(dm.getLogotipovi(), "CORG", cskl))
-              naz = dm.getLogotipovi().getString("NAZIVLOG");
-            else {
-              ld.raLocate(dm.getOrgstruktura(), "CORG", cskl);
-              if (ld.raLocate(dm.getLogotipovi(), "CORG", 
-                  dm.getOrgstruktura().getString("PRIPADNOST")))
-                naz = dm.getLogotipovi().getString("NAZIVLOG");
-              else {
-                ld.raLocate(dm.getSklad(), "CSKL", cskl);
-                naz = dm.getSklad().getString("NAZSKL");
-              }
-            }
-            if (naz.startsWith("Za:")) naz = naz.substring(4);
-            res.setString("CORG", cskl + " " + naz);
+            res.setString("CORG", cskl + " " + getNazivDob(cskl));
           }
           Aus.add(res, "IZNOS", ds, "IRATA");
         }
@@ -587,21 +575,7 @@ public class upProdaja extends raUpitLite {
           if (!ds.getString("CSKL").equals(cskl)) {
             cskl = ds.getString("CSKL");
             res.insertRow(false);
-            String naz = "";
-            if (ld.raLocate(dm.getLogotipovi(), "CORG", cskl))
-              naz = dm.getLogotipovi().getString("NAZIVLOG");
-            else {
-              ld.raLocate(dm.getOrgstruktura(), "CORG", cskl);
-              if (ld.raLocate(dm.getLogotipovi(), "CORG", 
-                  dm.getOrgstruktura().getString("PRIPADNOST")))
-                naz = dm.getLogotipovi().getString("NAZIVLOG");
-              else {
-                ld.raLocate(dm.getSklad(), "CSKL", cskl);
-                naz = dm.getSklad().getString("NAZSKL");
-              }
-            }
-            if (naz.startsWith("Za:")) naz = naz.substring(4);
-            res.setString("CORG", cskl + " " + naz);
+            res.setString("CORG", cskl + " " + getNazivDob(cskl));
           }
           Aus.add(res, "IZNOS", ds, "IRATA");
         }
@@ -617,8 +591,116 @@ public class upProdaja extends raUpitLite {
                   Aus.formatTimestamp(tds.getTimestamp("pocDatum")) + " do " +
                   Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
         ret.setVisibleCols(new int[] {0, 1, 2});
+      } else if (izv.getSelectedIndex() == 7) {
+      	DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
+      	Timestamp poc = ut.getFirstSecondOfDay(tds.getTimestamp("pocDatum"));
+      	String py = vl.getKnjigYear("robno");
+      	tds.setTimestamp("pocDatum", ut.getYearBegin(py));
+      	
+      	String us = "SELECT doku.cskl, doku.vrdok, doku.datdok, stdoku.inab, stdoku.izad, stdoku.porav " +
+    		"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR','PTE') and " +
+    		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
+    				Condition.in("CSKL", corgs, "CORG")).qualified("doku");
+      	System.out.println(us);
+      	DataSet du = Aus.q(us);
+      	du.setSort(new SortDescriptor(new String[] {"CSKL"}));
+      	
+      	String is = "SELECT doki.cskl, doki.vrdok, doki.datdok, stdoki.inab, stdoki.iraz, " +
+    		"stdoki.uirab, stdoki.iprodbp, stdoki.iprodsp, stdoki.veza, stdoki.id_stavka FROM doki,stdoki WHERE " +
+    		Util.getUtil().getDoc("doki", "stdoki") + " and doki.vrdok in ('POS','IZD','ROT','RAC','OTP','POD') and " +
+    		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
+    				Condition.in("CSKL", corgs, "CORG")).qualified("doki");
+      	System.out.println(is);
+      	DataSet di = Aus.q(is);
+      	di.setSort(new SortDescriptor(new String[] {"CSKL"}));
+      	
+      	StorageDataSet res = new StorageDataSet();
+        res.setColumns(new Column[] {
+        		dM.createStringColumn("CORG", "Šifra", 12),
+        		dM.createStringColumn("DOB", "Dobavljaè", 60),
+        		dM.createBigDecimalColumn("VPOC", "Poè. zaliha", 2),
+        		dM.createBigDecimalColumn("VUL", "Ulaz", 2),
+        		dM.createBigDecimalColumn("POR", "Poravnanje", 2),
+        		dM.createBigDecimalColumn("POV", "Povrat", 2),
+        		dM.createBigDecimalColumn("VIZ", "Promet", 2),
+        		dM.createBigDecimalColumn("POP", "Popust", 2),
+        		dM.createBigDecimalColumn("VZAV", "Zaliha", 2),
+        });
+        res.open();
+      	
+        String cskl = "";
+      	for (du.first(); du.inBounds(); du.next()) {
+      		Timestamp dat = du.getTimestamp("DATDOK");
+      		String vd = du.getString("VRDOK");
+      		if ("PST".equals(vd) && !ut.getYear(dat).equals(py)) continue;
+      		
+      		if (!cskl.equals(du.getString("CSKL"))) {
+      			res.insertRow(false);
+      			cskl = du.getString("CSKL");
+      			res.setString("CORG", cskl);
+      			res.setString("DOB", cskl + " " + getNazivDob(cskl));
+      		}
+      		Aus.add(res, "VZAV", du, "IZAD");
+    			Aus.add(res, "VZAV", du, "PORAV");
+      		if (dat.before(poc)) {
+      			Aus.add(res, "VPOC", du, "IZAD");
+      			Aus.add(res, "VPOC", du, "PORAV");
+      		} else {
+      			Aus.add(res, "POR", du, "PORAV");
+      			if ("PTE".equals(vd))
+      				Aus.add(res, "POV", du, "IZAD");
+      			else Aus.add(res, "VUL", du, "IZAD");
+      		}
+      	}
+      	
+      	for (di.first(); di.inBounds(); di.next()) {
+      		Timestamp dat = di.getTimestamp("DATDOK");
+      		String vd = di.getString("VRDOK");
+      		if (!di.getString("CSKL").equals(res.getString("CORG")) && 
+      				!ld.raLocate(res, "CORG", di.getString("CSKL"))) {
+      			res.insertRow(false);
+      			cskl = di.getString("CSKL");
+      			res.setString("CORG", cskl);
+      			res.setString("DOB", cskl + " " + getNazivDob(cskl));
+      		}
+      		Aus.sub(res, "VZAV", di, "IRAZ");
+      		if (dat.before(poc)) {
+      			Aus.sub(res, "VZAV", di, "IRAZ");
+      		} else if (vd.equals("POS") || vd.equals("ROT") || vd.equals("RAC") || vd.equals("POD")) {
+      			Aus.add(res, "VIZ", di, "IPRODSP");
+      			Aus.add(res, "POP", di, "UIRAB");
+      		}
+      	}
+      	
+      	ret = new frmTableDataView();
+        ret.setDataSet(res);
+        ret.setSums(new String[] {"VPOC", "VUL", "POR", "POV", "VIZ", "POP", "VZAV"});
+        ret.setSaveName("Pregled-tot-posl");
+        ret.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        ret.setTitle("IZVIJEŠÆE O POSLOVANJU  u periodu od " + 
+                  Aus.formatTimestamp(poc) + " do " +
+                  Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
+        ret.setVisibleCols(new int[] {1, 2, 3, 4, 5, 6, 7, 8});
       }
-		
+	}
+	
+	String getNazivDob(String cskl) {
+		String naz = "";
+    if (ld.raLocate(dm.getLogotipovi(), "CORG", cskl))
+      naz = dm.getLogotipovi().getString("NAZIVLOG");
+    else {
+      ld.raLocate(dm.getOrgstruktura(), "CORG", cskl);
+      if (ld.raLocate(dm.getLogotipovi(), "CORG", 
+          dm.getOrgstruktura().getString("PRIPADNOST")))
+        naz = dm.getLogotipovi().getString("NAZIVLOG");
+      else {
+        ld.raLocate(dm.getSklad(), "CSKL", cskl);
+        naz = dm.getSklad().getString("NAZSKL");
+      }
+    }
+    if (naz.startsWith("Za:")) naz = naz.substring(4);
+    
+    return naz;
 	}
 	
 	protected void upitCompleted() {
