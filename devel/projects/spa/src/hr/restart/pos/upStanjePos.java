@@ -27,7 +27,9 @@ import hr.restart.swing.raExtendedTable;
 import hr.restart.swing.raTableRunningSum;
 import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
+import hr.restart.util.raJPTableView;
 import hr.restart.util.raUpitLite;
+import hr.restart.util.raLoader;
 
 public class upStanjePos extends raUpitLite {
 	
@@ -127,7 +129,9 @@ public class upStanjePos extends raUpitLite {
   }
 
   public void okPress() {
-  	tds.setTimestamp("POCDATUM", ut.getFirstSecondOfDay(ut.getFirstDayOfYear(tds.getTimestamp("ZAVDATUM"))));
+    tds.setTimestamp("POCDATUM", ut.getYearBegin(vl.getKnjigYear("robno")));
+    System.out.println(tds);
+    
   	String us = "SELECT doku.vrdok, doku.datdok, stdoku.cart1, stdoku.kol, stdoku.inab, stdoku.nc, stdoku.mc, stdoku.izad, stdoku.porav " +
 		"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR','PTE') and " +
 		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
@@ -173,8 +177,12 @@ public class upStanjePos extends raUpitLite {
     		dM.createBigDecimalColumn("NETO", "Utržak", 2)
     });
     res.open();
+    String py = ut.getYear(tds.getTimestamp("pocDatum"));
+    
     String cart = "";
   	for (du.first(); du.inBounds(); du.next()) {
+  	  if (du.getString("VRDOK").equals("PST") && !ut.getYear(du.getTimestamp("DATDOK")).equals(py)) continue;
+  	
   		if (!du.getString("CART1").equals(cart)) {
   			ld.raLocate(dm.getArtikli(), "CART1", cart = du.getString("CART1"));
   			if (!jpc.isEmpty() && dm.getArtikli().getInt("CPAR") != jpc.getCpar()) continue;
@@ -268,7 +276,12 @@ public class upStanjePos extends raUpitLite {
   	
   	res.setSort(new SortDescriptor(new String[] {"CORG", "CPAR", "CART1"}));
   	
-  	ret = new frmTableDataView();
+  	ret = new frmTableDataView() { 
+  	  protected void doubleClick(raJPTableView jp2) {
+  	    showKartica(jp2.getStorageDataSet().getString("CORG"),
+  	        jp2.getStorageDataSet().getString("CART1"));
+  	  }
+  	};
     ret.setDataSet(res);
     ret.setSums(new String[] {"NABUL", "NABIZ", "IZAD", "IRAZ", "VRI", "POP", "NETO"});
     ret.setSaveName("Pregled-stanje-pos");
@@ -284,6 +297,17 @@ public class upStanjePos extends raUpitLite {
     else
     	t.addToGroup("CPAR", true, new String[] {"#", "NAZPAR", "#\n", "ADR", "#,", "PBR", "MJ", "#, OIB", "OIB"}, 
 	    		dm.getPartneri(), true);
+  }
+  
+  void showKartica(String corg, String cart1) {
+    upKarticaPos ukp = (upKarticaPos) raLoader.load("hr.restart.pos.upKarticaPos");
+    ukp.tds.setString("CSKL", corg);
+    ld.raLocate(dm.getArtikli(), "CART1", cart1);
+    ukp.tds.setInt("CART", dm.getArtikli().getInt("CART"));
+    ukp.tds.setTimestamp("pocDatum", ut.getYearBegin(vl.getKnjigYear("robno")));
+    ukp.tds.setTimestamp("zavDatum", tds.getTimestamp("zavDatum"));
+    ukp.check = false;
+    ukp.ok_action_thread();
   }
   
   public boolean isIspis() {
