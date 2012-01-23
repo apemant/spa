@@ -288,7 +288,7 @@ System.out.println(sqlupit);
   	String knjig = hr.restart.zapod.OrgStr.getOrgStr().getKNJCORG(true);
   	ArrayList al = new ArrayList();
   	if (jlrCSKL.getText().equalsIgnoreCase("")) {    // aako je za sve dokumente
-  		String sqlupit = "select cskl from sklad where knjig='"+knjig+"'";
+  		String sqlupit = "select cskl from sklad where tipskl!='V' and knjig='"+knjig+"'";
   		QueryDataSet qds = Util.getNewQueryDataSet(sqlupit,true);
 //System.out.println(sqlupit);  		
         for (qds.first();qds.inBounds();qds.next()) {
