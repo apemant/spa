@@ -44,6 +44,7 @@ public class menuUpit extends JMenu {
   JMenuItem jmDnevnik = new JMenuItem();
   JMenuItem jmCjenik = new JMenuItem();
   JMenuItem jmCjenikCORG = new JMenuItem();
+  JMenuItem jmRab = new JMenuItem();
   JMenuItem jmArtSklad = new JMenuItem();
   JMenuItem jmUIDoc = new JMenuItem();
   JMenuItem jmTotaliKartica = new JMenuItem();
@@ -117,6 +118,13 @@ public class menuUpit extends JMenu {
       }
     });
     
+    jmRab.setText("Rabati za partnere");
+    jmRab.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmRab_actionPerformed(e);
+      }
+    });
+    
     jmArtSklad.setText("Artikli - skladišta");
     jmArtSklad.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -161,6 +169,7 @@ public class menuUpit extends JMenu {
     this.add(jmViewCalc);
     this.add(jmCjenik);
     this.add(jmCjenikCORG);
+    this.add(jmRab);
   }
   void jmStanje_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.UpStanjeRobno", jmStanje.getText()); //was upStanjeNaSkladistu
@@ -188,6 +197,10 @@ public class menuUpit extends JMenu {
   void jmCjenik_actionPerformed(ActionEvent e) {
     hr.restart.robno.frmCjenik fCjenik = (frmCjenik) SF.showFrame("hr.restart.robno.frmCjenik", 0, jmCjenik.getText(), false);
     fCjenik.go();
+  }
+  void jmRab_actionPerformed(ActionEvent e) {
+    hr.restart.robno.frmRabatShema fRab = (frmRabatShema) SF.showFrame("hr.restart.robno.frmRabatShema", 0, jmRab.getText(), false);
+    fRab.go();
   }
   void jmCjenikCORG_actionPerformed(ActionEvent e) {
     hr.restart.robno.frmCjenik fCjenik = (frmCjenik) SF.showFrame("hr.restart.robno.frmCjenikCORG", 0, jmCjenikCORG.getText(), false);

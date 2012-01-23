@@ -1444,3 +1444,19 @@ RBR;int;6;pkey;;Rbr
 IMEKOL;char;20;;;Ime kolone
 NUMCHAR;int;6;;;Broj znakova
 FORMAT;char;1;;;Format
+
+$Rabshema
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CPAR;int;6;pkey;;Partner
+CART;int;6;pkey;;Šifra
+CART1;char;20;;;Oznaka;15
+BC;char;20;;;Barcode;15
+NAZART;char;50;;;Naziv;15
+JM;char;3;;;Jm
+VC;numeric;17,2;;0;Cijena bez poreza;15
+MC;numeric;17,2;;0;Cijena s porezom;15
+CRAB1;char;2;;;Rabat 1
+CRAB2;char;2;;;Rabat 2
+CRAB3;char;2;;;Rabat 3
+

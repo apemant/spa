@@ -261,6 +261,25 @@ public class Asql {
     mast.setRowId("CORG", false);
     mast.setTableName("Cjenik_master");
   }
+  
+  public static void createMasterRab(QueryDataSet mast) {   
+    mast.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(),
+        "SELECT rabshema.cpar as cpar, "+ 
+        "max(partneri.nazpar) as nazpar FROM rabshema,partneri " +
+        "WHERE rabshema.cpar = partneri.cpar GROUP BY rabshema.cpar"
+    ));
+
+    mast.setColumns(new Column[] {
+      (Column) dm.getCjenik().getColumn("CPAR").clone(),
+      (Column) dm.getPartneri().getColumn("NAZPAR").clone(),
+    });
+    mast.getColumn("NAZPAR").setCaption("Naziv partnera");
+    
+    mast.open();
+    mast.setRowId("CPAR", true);
+    mast.setRowId("NAZPAR", false);
+    mast.setTableName("Rabshema_master");
+  }
 
 
   /**

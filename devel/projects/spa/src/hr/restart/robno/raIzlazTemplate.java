@@ -2983,7 +2983,6 @@ System.out.println("findCjenik::else :: "+sql);
 	                getDetailSet().getInt("CART"));
 			}
 			
-			
 //			findCjenik();
 			//if (isCijenikExist) {
 			if (tmpCijenik != null) {
@@ -3025,6 +3024,11 @@ System.out.println("findCjenik::else :: "+sql);
 				// lc.setBDField("FMCPRP", tmpCijenik.getBigDecimal("MC"),
 				// rKD.stavka);
 			}
+			
+			if (what_kind_of_dokument.equals("GOT") && getMasterSet().getInt("CKUPAC")>0 &&
+					lD.raLocate(dm.getPartneri(), "CKUPAC", getMasterSet().getInt("CKUPAC")+""))
+				cpar = dm.getPartneri().getInt("CPAR");
+			
 
 			/**
 			 * Ovaj dio ako ne postoje cijena u cijeniku za dobavlja\u010Da ili
@@ -3050,6 +3054,50 @@ System.out.println("findCjenik::else :: "+sql);
 						rKD.stavka);
 				dm.getArtikli().enableDataSetEvents(true);
 
+			}
+			
+			if (cpar > 0 && (what_kind_of_dokument.equals("GOT") || what_kind_of_dokument.equals("ROT") ||
+					what_kind_of_dokument.equals("RAC"))) {
+				
+				DataSet ds = Rabshema.getDataModule().getTempSet(Condition.equal("CPAR", cpar).and(
+						Condition.equal("CART", getDetailSet())));
+				ds.open();
+				if (ds.rowCount() > 0) {
+					BigDecimal bdvc = Aus.zero2, bdmc = Aus.zero2;
+					if (ds.getBigDecimal("VC").signum() > 0) {
+						bdvc = ds.getBigDecimal("VC");
+						bdmc = bdvc.add(bdvc.multiply(getDetailSet().getBigDecimal("UPPOR").movePointLeft(2)).setScale(2, BigDecimal.ROUND_HALF_UP));
+					} else if (ds.getBigDecimal("MC").signum() > 0) {
+						bdmc = ds.getBigDecimal("MC");
+						bdvc = bdmc.divide(getDetailSet().getBigDecimal("UPPOR").movePointLeft(2).add(Aus.one0), 2, BigDecimal.ROUND_HALF_UP);
+					}
+					if (ds.getBigDecimal("VC").signum() > 0 || ds.getBigDecimal("MC").signum() > 0) {
+						lc.setBDField("FC", bdvc, rKD.stavka);
+						lc.setBDField("FVC", bdvc, rKD.stavka);
+						lc.setBDField("FMC", bdmc, rKD.stavka);
+						lc.setBDField("FMCPRP", bdmc, rKD.stavka);
+						
+					}
+					lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
+					
+					if (ds.getString("CRAB1").length() > 0) {
+						initRab();
+						lD.raLocate(dm.getRabati(), "CRAB", ds.getString("CRAB1")); 
+						getrDR().insertTempRow((short) 1, ds.getString("CRAB1"), dm.getRabati().getString("NRAB"),
+											dm.getRabati().getBigDecimal("PRAB"), "N");
+						if (ds.getString("CRAB2").length() > 0) {
+							lD.raLocate(dm.getRabati(), "CRAB", ds.getString("CRAB2")); 
+							getrDR().insertTempRow((short) 2, ds.getString("CRAB2"), dm.getRabati().getString("NRAB"),
+												dm.getRabati().getBigDecimal("PRAB"), dm.getRabati().getString("RABNARAB"));
+							if (ds.getString("CRAB3").length() > 0) {
+								lD.raLocate(dm.getRabati(), "CRAB", ds.getString("CRAB3")); 
+								getrDR().insertTempRow((short) 3, ds.getString("CRAB3"), dm.getRabati().getString("NRAB"),
+													dm.getRabati().getBigDecimal("PRAB"), dm.getRabati().getString("RABNARAB"));
+							}
+						}
+						getrDR().afterJob();
+					}
+				}
 			}
 			
 			nacPlDod();
