@@ -684,6 +684,7 @@ public class rajpIzlazDPTemplate extends JPanel {
         jpDetailCenter.add(focusField, new XYConstraints(560, 501, 1, -1));
         
     if ((fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") ||
+        fDI.what_kind_of_dokument.equalsIgnoreCase("PON") ||
     	fDI.what_kind_of_dokument.equalsIgnoreCase("ODB")) && raIzlazTemplate.isNabDirect()) {
     	jpDetailCenter.add(jlNABTR, new XYConstraints(15, 50, 360, -1));
     	jpDetailCenter.add(jraRNC, new XYConstraints(395, 50, 110, -1));
