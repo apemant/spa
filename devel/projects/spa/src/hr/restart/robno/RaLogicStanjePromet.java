@@ -399,7 +399,7 @@ public class RaLogicStanjePromet {
             
             "from DOKI, STDOKI " +
             "WHERE doki.cskl = stdoki.cskl AND doki.vrdok = stdoki.vrdok AND doki.god = stdoki.god AND " +
-            "doki.brdok = stdoki.brdok AND STDOKI.VRDOK NOT IN ('RAC','GRN','PRD','PON','NKU','DOS','POS','RNL','TER','ODB','TER','ZAH') " +
+            "doki.brdok = stdoki.brdok AND STDOKI.VRDOK NOT IN ('RAC','GRN','PRD','PON','NKU','NDO','DOS','POS','RNL','TER','ODB','TER','ZAH') " +
             
             conds.get("CSKL").toString() +
             conds.get("CART").toString() +
