@@ -160,7 +160,8 @@ public class upOdjava extends raUpitLite {
     	} else if (!res.getString("CART1").equals(cart)) continue;
     	Aus.add(res, "KOL", ds);
     	Aus.add(res, "INAB", ds);
-    	Aus.div(res, "NC", "INAB", "KOL");
+    	if (res.getBigDecimal("KOL").signum() != 0)
+    	  Aus.div(res, "NC", "INAB", "KOL");
     }
     
     res.setSort(new SortDescriptor(new String[] {"CPAR", "CART1"}));
