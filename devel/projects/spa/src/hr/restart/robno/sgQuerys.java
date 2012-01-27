@@ -155,7 +155,7 @@ public class sgQuerys {
       _sort = _sort+" "+vl.getCollateSQL(); // _was_ [QUOTE] _sort = sort+" "+vl.getCollateSQL();
     }
     String queryString = "select stanje.cskl,stanje.cart,artikli.cart1, " +
-                         "artikli.bc, artikli.nazart, artikli.jm, sklad.nazskl from artikli, " +
+                         "artikli.bc, artikli.nazart, artikli.jm, artikli.cgrart, sklad.nazskl from artikli, " +
                          "stanje, sklad where artikli.cart=stanje.cart and stanje.cskl='" +
                          cskl + "' and stanje.god= '"+/*sklad.godina stara varijanta*/god+"' and stanje.cskl=sklad.cskl " + stanjeNula +
                          " order by " + _sort; /// PROXIMITY WARNING
