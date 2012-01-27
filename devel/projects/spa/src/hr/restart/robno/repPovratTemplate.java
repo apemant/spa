@@ -44,10 +44,13 @@ public class repPovratTemplate extends repIzlazOrigTemplate {
     sh.LabelRACUNOTPREMNICA.setDefault(ep.CAPTION, "\nPOVRATNICA");
     sh.defaultAltererSect().getView(sh.LabelMjestoDatum, sh.TextNAZFRA).
     deleteElementsPushDown(sh, new raReportElement[] {sh.LabelDospijeceDatum, sh.LabelDospijeceDatum,
-    sh.LabelNacin_otpreme, sh.LabelNacin_placanja, sh.LabelNarudzba,
-    sh.LabelParitet, sh.TextSgetDATDOSP, sh.TextSgetDDOSP, sh.TextBRNARIZ,
-    sh.TextSgetDATNARIZ, sh.TextNAZNAC, sh.TextNAZNACPL, sh.TextNAZFRA});
+    sh.LabelNacin_otpreme, sh.LabelNacin_placanja, /*sh.LabelNarudzba,*/
+    sh.LabelParitet, sh.TextSgetDATDOSP, sh.TextSgetDDOSP, /*sh.TextBRNARIZ,*/
+    /*sh.TextSgetDATNARIZ,*/ sh.TextNAZNAC, sh.TextNAZNACPL, sh.TextNAZFRA});
 //    sh.LabelR1.setDefault(ep.VISIBLE, raElixirPropertyValues.NO);
+    sh.LabelNarudzba.setDefault(ep.CAPTION, "Izlazni dokument");
+    sh.TextBRNARIZ.setDefault(ep.CONTROL_SOURCE, "BRDOKIZ");
+    sh.TextSgetDATNARIZ.setDefault(ep.CONTROL_SOURCE, "SgetDATDOKIZ");
     sh.TextLogoMjestoZarez.defaultAlterer().setTop(
         sh.LabelMjestoDatum.defaultAlterer().getTop());
     return sh;
