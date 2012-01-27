@@ -63,6 +63,9 @@ public class upProdaja extends raUpitLite {
   
   frmTableDataView ret;
   
+  public static String uldok = "doku.vrdok in ('PRK','PST','POR','PTE','INV')";
+  public static String izdok = "doki.vrdok in ('POS','IZD','ROT','RAC','OTP','POD','INM','OTR')";
+  
   public upProdaja() {
     try {
       jbInit();
@@ -635,7 +638,7 @@ public class upProdaja extends raUpitLite {
       	tds.setTimestamp("pocDatum", ut.getYearBegin(py));
       	
       	String us = "SELECT doku.cskl, doku.vrdok, doku.datdok, stdoku.inab, stdoku.izad, stdoku.porav " +
-    		"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR','PTE') and " +
+    		"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and " + uldok + " and " +
     		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
     				Condition.in("CSKL", corgs, "CORG")).qualified("doku");
       	System.out.println(us);
@@ -644,7 +647,7 @@ public class upProdaja extends raUpitLite {
       	
       	String is = "SELECT doki.cskl, doki.vrdok, doki.datdok, stdoki.inab, stdoki.iraz, " +
     		"stdoki.uirab, stdoki.iprodbp, stdoki.iprodsp, stdoki.veza, stdoki.id_stavka FROM doki,stdoki WHERE " +
-    		Util.getUtil().getDoc("doki", "stdoki") + " and doki.vrdok in ('POS','IZD','ROT','RAC','OTP','POD') and " +
+    		Util.getUtil().getDoc("doki", "stdoki") + " and " + izdok + " and " +
     		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
     				Condition.in("CSKL", corgs, "CORG")).qualified("doki");
       	System.out.println(is);

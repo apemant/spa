@@ -165,7 +165,7 @@ public class upKarticaPos extends raUpitLite {
 
   public void okPress() {
   	String us = "SELECT doku.vrdok, doku.brdok, doku.datdok, stdoku.kol, stdoku.inab, stdoku.nc, stdoku.mc, stdoku.izad, stdoku.skol, stdoku.porav " +
-  			"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR','PTE') and " +
+  			"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and " + upProdaja.uldok + " and " +
   			Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
 						Condition.equal("CSKL", tds)).qualified("doku").and(Condition.equal("CART", tds));
   	System.out.println(us);
@@ -173,7 +173,7 @@ public class upKarticaPos extends raUpitLite {
   	
   	String is = "SELECT doki.vrdok, doki.brdok, doki.datdok, stdoki.kol, stdoki.nc, stdoki.inab, stdoki.mc, stdoki.iraz, " +
   			"stdoki.uirab, stdoki.iprodbp, stdoki.iprodsp, stdoki.veza, stdoki.id_stavka FROM doki,stdoki WHERE " +
-  			Util.getUtil().getDoc("doki", "stdoki") + " and doki.vrdok in ('IZD','ROT','RAC','OTP','POD') and " +
+  			Util.getUtil().getDoc("doki", "stdoki") + " and " + upProdaja.izdok + " and doki.vrdok!='POS' and " +
   			Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
   			  Condition.equal("CSKL", tds)).qualified("doki").and(Condition.equal("CART", tds));
   	System.out.println(is);

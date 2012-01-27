@@ -133,7 +133,7 @@ public class upStanjePos extends raUpitLite {
     System.out.println(tds);
     
   	String us = "SELECT doku.vrdok, doku.datdok, stdoku.cart1, stdoku.kol, stdoku.inab, stdoku.nc, stdoku.mc, stdoku.izad, stdoku.porav " +
-		"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and doku.vrdok in ('PRK','PST','POR','PTE') and " +
+		"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and " + upProdaja.uldok + " and " +
 		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
 				Condition.equal("CSKL", rpcskl.getCSKL())).qualified("doku");
   	System.out.println(us);
@@ -142,7 +142,7 @@ public class upStanjePos extends raUpitLite {
   	
   	String is = "SELECT doki.vrdok, stdoki.cart1, stdoki.kol, stdoki.inab, stdoki.mc, stdoki.iraz, " +
 		"stdoki.uirab, stdoki.iprodbp, stdoki.iprodsp, stdoki.veza, stdoki.id_stavka FROM doki,stdoki WHERE " +
-		Util.getUtil().getDoc("doki", "stdoki") + " and doki.vrdok in ('POS','IZD','ROT','RAC','OTP','POD') and " +
+		Util.getUtil().getDoc("doki", "stdoki") + " and " + upProdaja.izdok + " and " +
 		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
 				Condition.equal("CSKL", rpcskl.getCSKL())).qualified("doki");
   	System.out.println(is);
