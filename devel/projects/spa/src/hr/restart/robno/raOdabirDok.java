@@ -127,6 +127,8 @@ public class raOdabirDok extends JraDialog {
       return "REV";
     }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("DOS"))){
       return "DOS";
+    }else if (opis.equals(TypeDoc.getTypeDoc().nazivDokumenta("POD"))){
+      return "POD";
     }
     return null;
   }
@@ -182,6 +184,10 @@ public class raOdabirDok extends JraDialog {
     else if (vrsta_dok.equals("ROT")) {
       zaodabrati = new String[] {"Narudžba","Ponuda","Predra\u010Dun","Dostavnica"};
       odabrano = "NKU";
+    }
+    else if (vrsta_dok.equals("POD")) {
+      zaodabrati = new String[] {"Dostavnica"};
+      odabrano = "DOS";
     }
     else if (vrsta_dok.equals("GRN")) {
     	odabrano=hr.restart.sisfun.frmParam.getParam("robno","selDokOnRAC", "OTP", "Dokument za dohvat na RACu");

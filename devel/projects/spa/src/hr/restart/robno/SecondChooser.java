@@ -321,7 +321,8 @@ public class SecondChooser extends JraDialog {
         if ((ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS")
         		|| ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("OTP"))
             && (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC") 
-            || rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("ROT"))) {
+            || rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("ROT")
+            || rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("POD"))) {
           rIT.getMasterSet().setString("BRNARIZ", ZaglavljeSet.getString("BRNARIZ"));
           if (!ZaglavljeSet.isNull("DATNARIZ"))
             rIT.getMasterSet().setTimestamp("DATNARIZ", ZaglavljeSet.getTimestamp("DATNARIZ"));
@@ -330,6 +331,7 @@ public class SecondChooser extends JraDialog {
             rIT.getMasterSet().setString("BRDOKIZ", repUtil.getFormatBroj(ZaglavljeSet));
             rIT.getMasterSet().setTimestamp("DATDOKIZ", ZaglavljeSet.getTimestamp("DATDOK"));
           }
+          rIT.getMasterSet().setString("CRADNAL", ZaglavljeSet.getString("CRADNAL"));
         }
 
      if (copyDatum && ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("OTP")
@@ -449,7 +451,8 @@ public class SecondChooser extends JraDialog {
         // provjeri treba li rjesavati skladisnu kolicinu za ovaj prijenos
         
         fixDOS = ("ROT".equalsIgnoreCase(rIT.what_kind_of_dokument)
-            || "OTP".equalsIgnoreCase(rIT.what_kind_of_dokument))
+            || "OTP".equalsIgnoreCase(rIT.what_kind_of_dokument)
+            || "POD".equalsIgnoreCase(rIT.what_kind_of_dokument))
             && ZaglavljeSetTmp.getString("VRDOK").equalsIgnoreCase("DOS");
         
         /*if (!fixDOS && "OTP".equalsIgnoreCase(rIT.what_kind_of_dokument) &&
@@ -840,6 +843,7 @@ System.out.println(StavkeSet.getInt("CARt"));
 				setToNull = ZaglavljeSetTmp.getString("GARANC").equalsIgnoreCase("D");
 				calcFinancPart();
 			} else if (("ROT".equalsIgnoreCase(rIT.what_kind_of_dokument) ||
+			          "POD".equalsIgnoreCase(rIT.what_kind_of_dokument) ||
                       "RAC".equalsIgnoreCase(rIT.what_kind_of_dokument)) 
                     && StavkeSet.getString("VRDOK").equalsIgnoreCase("DOS")) {
 				calcFinancPart();
