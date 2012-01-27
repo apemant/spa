@@ -172,6 +172,7 @@ public class raPopListaInv extends raUpitLite {
     updateColumn("CART", "Šifra");
     updateColumn("CART1", "Oznaka");
     updateColumn("BC", "Barkod");
+    updateColumn("CGRART", "Grupa");
     updateColumn("NAZART", "Naziv");
     updateColumn("JM", "Jmj");
     updateColumn("NAZSKL", null);
