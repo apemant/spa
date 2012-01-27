@@ -77,6 +77,12 @@ public class SanityCheck {
 		vrdokMeskla(ds);
 	}
 	
+	public static void consistencyIzlaz(ReadRow master, ReadRow detail) {
+	  if (dM.compareColumns(master, detail, hr.restart.robno.Util.mkey) != null)
+	    throw new SanityException("Nekonzistentni master i detail!");
+	  
+	}
+	
 	public static void basicCSKL(ReadRow ds) {
 		if (ds.isNull("CSKL") || ds.getString("CSKL").trim().length() == 0)
 			throw new SanityException("Nedefinirano skladište!");
