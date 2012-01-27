@@ -57,12 +57,7 @@ import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
+
 
 abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 
@@ -1950,6 +1945,7 @@ ST.prn(radninal);
 				ClearAll();
 				// rki.Clean();
 				setupRabat();
+				isRabatCallBefore = false;
 				setupZavTr();
 				DP.setEnabledAll(false);
 				DP.rpcart.EnabDisab(true);
@@ -2615,9 +2611,9 @@ System.out.println("findCjenik::else :: "+sql);
         
         try {
           System.out.println("slanje ftp");
-          JSch j = new JSch();
+          com.jcraft.jsch.JSch j = new com.jcraft.jsch.JSch();
           j.setKnownHosts(IntParam.getTag("sftp.hosts"));
-          Session sess = j.getSession(
+          com.jcraft.jsch.Session sess = j.getSession(
               IntParam.getTag("sftp.user"), 
               IntParam.getTag("sftp.addr"),
               Aus.getNumber(IntParam.getTag("sftp.port")));
@@ -2625,10 +2621,10 @@ System.out.println("findCjenik::else :: "+sql);
           sess.connect();
           System.out.println("spojeno");
 
-          Channel channel = sess.openChannel("sftp");
+          com.jcraft.jsch.Channel channel = sess.openChannel("sftp");
           channel.connect();
 
-          ChannelSftp sch = (ChannelSftp) channel;
+          com.jcraft.jsch.ChannelSftp sch = (com.jcraft.jsch.ChannelSftp) channel;
           
           System.out.println("chg dir");
           sch.cd("out");
@@ -2640,11 +2636,11 @@ System.out.println("findCjenik::else :: "+sql);
           sess.disconnect();
           
           System.out.println("disconnected");
-        } catch (JSchException e) {
+        } catch (com.jcraft.jsch.JSchException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
           throw new RuntimeException("Greška kod slanja ftp-om!");
-        } catch (SftpException e) {
+        } catch (com.jcraft.jsch.SftpException e) {
           e.printStackTrace();
           throw new RuntimeException("Greška kod slanja ftp-om!");
         }
@@ -3062,6 +3058,7 @@ System.out.println("findCjenik::else :: "+sql);
 				DataSet ds = Rabshema.getDataModule().getTempSet(Condition.equal("CPAR", cpar).and(
 						Condition.equal("CART", getDetailSet())));
 				ds.open();
+				System.out.println(ds);
 				if (ds.rowCount() > 0) {
 					BigDecimal bdvc = Aus.zero2, bdmc = Aus.zero2;
 					if (ds.getBigDecimal("VC").signum() > 0) {
