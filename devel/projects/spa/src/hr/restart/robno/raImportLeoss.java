@@ -98,6 +98,8 @@ public class raImportLeoss {
   		dz.setString("VRDOK", "DOS");
   		dz.setTimestamp("DATDOK", getDate(pl[2], pl[3]));
   		dz.setString("BRNARIZ", pl[6]);
+  		if (pl.length > 7)
+  		  dz.setString("CRADNAL", pl[7]);
   		Util.getUtil().getBrojDokumenta(dz);
   		dz.saveChanges();
   		
