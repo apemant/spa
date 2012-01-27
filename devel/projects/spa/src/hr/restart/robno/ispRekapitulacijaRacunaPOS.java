@@ -310,7 +310,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 
 
 
-    String artikliString = "SELECT Stpos.cart, max(Stpos.cart1) as cart1, max(Stpos.bc) as bc, Stpos.nazart, sum(Stpos.kol) as kol FROM pos, Stpos "+
+    String artikliString = "SELECT Stpos.cart, max(Stpos.cart1) as cart1, max(Stpos.bc) as bc, Stpos.nazart, sum(Stpos.kol) as kol, sum(stpos.neto) as neto FROM pos, Stpos "+
                            "WHERE pos.cskl = stpos.cskl "+
                            "AND pos.vrdok = stpos.vrdok "+
                            "AND pos.god = stpos.god "+
@@ -321,7 +321,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
                            "and pos.cskl = '"+tds.getString("CSKL")+"' "+
                            "and "+kondishnDatumOrBroj()+kondishnOperater()+ // kondishnOperator diprektid...
                            "group by cart, nazart UNION ALL " + 
-                           "SELECT Stpos.cart, max(Stpos.cart1) as cart1, max(Stpos.bc) as bc, Stpos.nazart, sum(Stpos.kol) as kol FROM pos, Stpos "+
+                           "SELECT Stpos.cart, max(Stpos.cart1) as cart1, max(Stpos.bc) as bc, Stpos.nazart, sum(Stpos.kol) as kol, sum(stpos.neto) as neto FROM pos, Stpos "+
                            "WHERE pos.cskl = stpos.cskl "+
                            "AND pos.vrdok = stpos.vrdok "+
                            "AND pos.god = stpos.god "+
@@ -457,6 +457,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 //      artikliReportQDS.open();
 //      artikliReportQDS.deleteAllRows();
       artikliReportQDS = ut.getNewQueryDataSet(artStr);
+      artikliReportQDS.getColumn("NETO").setDisplayMask("###,###,##0.00");
       
       artikliReportQDS.setRowId("CART",true);
       
@@ -658,6 +659,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   private String kondishnDatumOrBroj(){
     Condition akt = presBlag.stolovi && !presBlag.isUserOriented() ? 
         Condition.equal("AKTIV", "N") : Condition.none;
+    akt = akt.and(Condition.equal("RDOK", "arh").not());
     if (jrbDatum.isSelected()) 
       return Condition.between("DATDOK",tds, "POCDATUM", "ZAVDATUM").
                 and(akt).qualified("pos").toString();
