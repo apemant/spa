@@ -332,7 +332,7 @@ public class upKPR_NextGeneration extends raUpit {
   }
 
   public QueryDataSet getRepSet(){
-    return qdsKPR;
+    return qdsJPTV;
   }
 
   public double getDonosZad(){
