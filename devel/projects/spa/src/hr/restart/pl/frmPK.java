@@ -147,12 +147,15 @@ public class frmPK extends frmDNR{
     disejblajPanel();
     try {
       this.killAllReports();
-      this.addJasper("hr.restart.pl.repIP","hr.restart.pl.repPK","repIP.jrxml", "Obrazac IP");
-//      this.addReport("hr.restart.pl.repIP","hr.restart.pl.repPK","IP", "Obrazac IP");
-      this.addReport("hr.restart.pl.repIPDisk","Obrazac IP disketa");
-      this.addReport("hr.restart.pl.repPK", "Obrazac PK-1", 5);
-      this.addReport("hr.restart.pl.repPKDisk","Obrazac PK-1 disketa");
-      this.addReport("hr.restart.pl.repPKDisk_PL","Popratni list diskete",5);
+      this.addJasper("hr.restart.pl.repIP","hr.restart.pl.repPK","repIP2011.jrxml", "Obrazac IP 2011+");
+      this.addJasper("hr.restart.pl.repIP","hr.restart.pl.repPK","repIP.jrxml", "Stari Obrazac IP");
+//      this.addReport("hr.restart.pl.repIP","hr.restart.pl.repPK","IP", "Obrazac IP 2009");
+      this.addReport("hr.restart.pl.repIPDisk","Obrazac IP datoteka");
+      this.addJasper("hr.restart.pl.repID1","hr.restart.pl.repID_1","repID_1.jrxml", "Obrazac ID-1");
+      this.addReport("hr.restart.pl.repID_1XLSDisk","Obrazac ID-1 CSV datoteka");
+//      this.addReport("hr.restart.pl.repPK", "Obrazac PK-1", 5);
+//      this.addReport("hr.restart.pl.repPKDisk","Obrazac PK-1 disketa");
+      this.addReport("hr.restart.pl.repPKDisk_PL","Popratni list",5);
     }
     catch (Exception ex) {
       ex.printStackTrace();

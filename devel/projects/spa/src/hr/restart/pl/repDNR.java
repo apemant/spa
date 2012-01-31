@@ -20,6 +20,7 @@ package hr.restart.pl;
 import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.robno.repUtil;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Valid;
 import hr.restart.util.reports.raReportData;
 
@@ -98,7 +99,10 @@ public class repDNR implements raReportData, sg.com.elixir.reportwriter.datasour
   public String getDATUMISPLATE(){
      return rdu.dataFormatter(ds.getTimestamp("DATUMISPL"));
   }
-
+  
+  public String getPOTVRDANaslov() {
+    return "POTVRDA O ISPLAÆENOM PRIMITKU, DOHOTKU, UPLAÆENOM DOPRINOSU, POREZU NA DOHODAK I PRIREZU U "+ds.getShort("GODOBR")+". GODINI";
+  }
 //  public Date getDATUMISPLATEDT(){
 //    return Date.valueOf(ds.getTimestamp("DATUMISPL").toString().substring(0,10));
 //  }
@@ -113,7 +117,13 @@ public class repDNR implements raReportData, sg.com.elixir.reportwriter.datasour
   public BigDecimal getDOPRINOSI(){
      return ds.getBigDecimal("DOPRINOSI");
   }
-
+  public String getOSNOVA() {
+    return frmParam.getParam("pl", "potvOSN", "ugovor", "Što piše u koloni 3 na obrascu POTVRDA");
+  }
+  public BigDecimal getPOSTOIZD() {
+    if (getBRUTO().signum() == 0) return null;
+    return getISKNEOP().divide(getBRUTO(), BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+  }
   public BigDecimal getDOP1(){
      return ds.getBigDecimal("DOP1");
   }
