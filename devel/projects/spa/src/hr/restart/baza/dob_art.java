@@ -118,7 +118,7 @@ public class dob_art extends KreirDrop implements DataModule {
     dob_artNAZART.setCaption("Naziv");
     dob_artNAZART.setColumnName("NAZART");
     dob_artNAZART.setDataType(com.borland.dx.dataset.Variant.STRING);
-    dob_artNAZART.setPrecision(50);
+    dob_artNAZART.setPrecision(75);
     dob_artNAZART.setTableName("DOB_ART");
     dob_artNAZART.setWidth(30);
     dob_artNAZART.setServerColumnName("NAZART");
@@ -203,7 +203,7 @@ public class dob_art extends KreirDrop implements DataModule {
        .addInteger("cart", 6, true)
        .addChar("cart1", 20)
        .addChar("bc", 20)
-       .addChar("nazart", 50)
+       .addChar("nazart", 75)
        .addFloat("dc", 12, 2)
        .addFloat("prab", 6, 2)
        .addChar("nazpak", 10)
