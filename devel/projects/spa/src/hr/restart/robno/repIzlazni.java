@@ -872,11 +872,11 @@ public BigDecimal getPOR3() {
   }
   
   public String getUIUlabel() {
-    return "Uèešæe";
+    return "Plaæeno/uèešæe";
   }
   
   public String getUIUlabel2() {
-    return "Preostalo";
+    return "Za platiti";
   }
 
   public BigDecimal getFMC() {
@@ -1433,8 +1433,13 @@ public BigDecimal getIPRODSP() {
         ds.getString("AKTIV").equals("N");
   }
   
+  boolean isPar() {
+    return gotpar && ds.getInt("CPAR") > 0;
+  }
+  
   public int getCKUPAC() {
     if (isHide()) return -99;
+    if (isPar()) return getCPAR();
    return ds.getInt("CKUPAC");
   }
 
@@ -1445,7 +1450,23 @@ public BigDecimal getIPRODSP() {
    colname[0] = "CKUPAC";
    return cache.returnValue(ru.getSomething(colname,dm.getKupci(),"IME").getString());
   }
+  
+  public String getLEOSS() {
+    if (ds.getInt("PJ") <= 0)
+      return ds.getInt("CPAR") + "/" + ds.getString("BRNARIZ");
+    return ds.getInt("CPAR") + "-" + ds.getInt("PJ") + "/" + ds.getString("BRNARIZ");
+  }
 
+  public String getDLEOSS() {
+    if (ds.getInt("PJ") <= 0)
+      return ds.getInt("CPAR") + ";" + 
+        Aus.formatTimestamp(ds.getTimestamp("DATDOK")) + ";" + 
+        ds.getString("BRNARIZ");
+    return ds.getInt("CPAR") + "-" + ds.getInt("PJ") + ";" + 
+        Aus.formatTimestamp(ds.getTimestamp("DATDOK")) + ";" +
+        ds.getString("BRNARIZ");
+  }
+  
   public String getPREZIME() {
     String cached = cache.getValue("PREZIME", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached; 
@@ -1468,6 +1489,7 @@ public BigDecimal getIPRODSP() {
     String cached = cache.getValue("MJKUPCA", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
     if (isHide()) return cache.returnValue("");
+    if (isPar()) return cache.returnValue(getMJ());
    colname[0] = "CKUPAC";
    return cache.returnValue(ru.getSomething(colname,dm.getKupci(),"MJ").getString());
   }
@@ -1476,6 +1498,7 @@ public BigDecimal getIPRODSP() {
     String cached = cache.getValue("ADRKUPCA", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
     if (isHide()) return cache.returnValue("");
+    if (isPar()) return cache.returnValue(getADR());
    colname[0] = "CKUPAC";
    return cache.returnValue(ru.getSomething(colname,dm.getKupci(),"ADR").getString());
   }
@@ -1490,6 +1513,7 @@ public BigDecimal getIPRODSP() {
     String cached = cache.getValue("TELKUPCA", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
     if (isHide()) return cache.returnValue("");
+    if (isPar()) return cache.returnValue(getTEL());
     colname[0] = "CKUPAC";
     return "Tel "+cache.returnValue(ru.getSomething(colname,dm.getKupci(),"TEL").getString());
   }
@@ -1498,6 +1522,7 @@ public BigDecimal getIPRODSP() {
     String cached = cache.getValue("PBRMJKUPCA", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
     if (isHide()) return cache.returnValue("");
+    if (isPar()) return cache.returnValue(getMJ());
     String pm ="";
     colname[0] = "CKUPAC";
     if (ru.getSomething(colname,dm.getKupci(),"PBR").getAsInt() != 0){
@@ -1512,6 +1537,7 @@ public BigDecimal getIPRODSP() {
     String cached = cache.getValue("JMBG", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
     if (isHide()) return cache.returnValue("");
+    if (isPar()) return cache.returnValue(getMB());
    colname[0] = "CKUPAC";
    String result = "";
    if (!oib.equalsIgnoreCase("MB")) {
@@ -1926,6 +1952,8 @@ public BigDecimal getIPRODSP() {
   String oib = "";
   String prefn = "";
   String labdod = "";
+  
+  boolean gotpar = false;
   boolean hideKup = false;
   boolean specChars = false;
   boolean iznosPop = false;
@@ -1957,6 +1985,9 @@ public BigDecimal getIPRODSP() {
       "Ispis teèaja zajedno s iznosom u valuti (D,N)").equalsIgnoreCase("D");
     prefv = frmParam.getParam("robno", "prefVal", "N",
       "Ispis prefiksa ispred iznosa u valuti (D,N)").equalsIgnoreCase("D");
+    gotpar = "D".equalsIgnoreCase(
+        frmParam.getParam("robno", "gotPar", "N",
+        "Gotovinski raèuni za partnere (D,N)"));
     
     if (prefn.length() > 0) prefn = prefn + "\n";
     
