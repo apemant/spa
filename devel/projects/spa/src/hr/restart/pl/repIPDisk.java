@@ -17,10 +17,8 @@
 ****************************************************************************/
 package hr.restart.pl;
 
-import hr.porezna_uprava.e_porezna.obrasci.ip.v3_0.Generator;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.raUser;
-import hr.restart.util.Aus;
 import hr.restart.util.FileHandler;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
@@ -90,8 +88,8 @@ public class repIPDisk extends repDisk {
     try {
       dumpHead();
       dumpDetail();
-      Generator.delimiter = separator;
-      new Generator("ip_head.csv", "ip_det.csv", new FileOutputStream(mxReport.TMPPRINTFILE));
+      hr.porezna_uprava.e_porezna.obrasci.ip.v3_0.Generator.delimiter = separator;
+      new hr.porezna_uprava.e_porezna.obrasci.ip.v3_0.Generator("ip_head.csv", "ip_det.csv", new FileOutputStream(mxReport.TMPPRINTFILE));
     } catch (Exception e) {
       e.printStackTrace();
     }
