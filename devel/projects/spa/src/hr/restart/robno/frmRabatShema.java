@@ -30,8 +30,10 @@ import com.borland.jbcl.layout.XYLayout;
 
 import hr.restart.baza.Rabshema;
 import hr.restart.baza.dM;
+import hr.restart.baza.rabati;
 import hr.restart.sisfun.Asql;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
@@ -72,6 +74,8 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
   JlrNavField jlrNRAB3 = new JlrNavField();
   JlrNavField jlrIRAB3 = new JlrNavField();
   JraButton jbSelRab3 = new JraButton();
+  
+  JraCheckBox jcbGrupa = new JraCheckBox();
   
 	
   String[] key = new String[] {"CPAR"};
@@ -127,7 +131,7 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
     
     jpRab.setLayout(xYLayout2);
     xYLayout2.setWidth(630);
-    xYLayout2.setHeight(175);
+    xYLayout2.setHeight(200);
     
     jraVC.setColumnName("VC");
     jraVC.setDataSet(this.getDetailSet());
@@ -136,91 +140,99 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
     jraMC.setDataSet(this.getDetailSet());
     
     jlrRAB1.setColumnName("CRAB1");
-    jlrRAB1.setTextFields(new JTextComponent[] {jlrNRAB1, jlrIRAB1});
-    jlrRAB1.setColNames(new String[] {"NRAB", "PRAB"});
     jlrRAB1.setNavColumnName("CRAB");
+    jlrRAB1.setTextFields(new JTextComponent[] {jlrNRAB1, jlrIRAB1});
+    jlrRAB1.setColNames(new String[] {"NRAB", "PRAB"});    
     jlrRAB1.setSearchMode(0);
     jlrRAB1.setDataSet(this.getDetailSet());
-    jlrRAB1.setRaDataSet(dm.getRabati());
+    jlrRAB1.setRaDataSet(rabati.getDataModule().copyDataSet());
     jlrRAB1.setVisCols(new int[] {0,1});
     jlrRAB1.setNavButton(jbSelRab1);
     
     jlrNRAB1.setColumnName("NRAB");
     jlrNRAB1.setNavProperties(jlrRAB1);
-    jlrNRAB1.setDataSet(this.getDetailSet());
+    //jlrNRAB1.setDataSet(this.getDetailSet());
     jlrNRAB1.setSearchMode(1);
     
     jlrIRAB1.setColumnName("PRAB");
     jlrIRAB1.setNavProperties(jlrRAB1);
-    jlrIRAB1.setDataSet(this.getDetailSet());
+    //jlrIRAB1.setDataSet(this.getDetailSet());
     jlrIRAB1.setSearchMode(1);
     
     jlrRAB2.setColumnName("CRAB2");
+    jlrRAB2.setNavColumnName("CRAB");
     jlrRAB2.setTextFields(new JTextComponent[] {jlrNRAB2, jlrIRAB2});
     jlrRAB2.setColNames(new String[] {"NRAB", "PRAB"});
-    jlrRAB2.setNavColumnName("CRAB");
     jlrRAB2.setSearchMode(0);
     jlrRAB2.setDataSet(this.getDetailSet());
-    jlrRAB2.setRaDataSet(dm.getRabati());
+    jlrRAB2.setRaDataSet(rabati.getDataModule().copyDataSet());
     jlrRAB2.setVisCols(new int[] {0,1});
     jlrRAB2.setNavButton(jbSelRab2);
     
     jlrNRAB2.setColumnName("NRAB");
     jlrNRAB2.setNavProperties(jlrRAB2);
-    jlrNRAB2.setDataSet(this.getDetailSet());
+    //jlrNRAB2.setDataSet(this.getDetailSet());
     jlrNRAB2.setSearchMode(1);
     
     jlrIRAB2.setColumnName("PRAB");
     jlrIRAB2.setNavProperties(jlrRAB2);
-    jlrIRAB2.setDataSet(this.getDetailSet());
+    //jlrIRAB2.setDataSet(this.getDetailSet());
     jlrIRAB2.setSearchMode(1);
     
     jlrRAB3.setColumnName("CRAB3");
+    jlrRAB3.setNavColumnName("CRAB");
     jlrRAB3.setTextFields(new JTextComponent[] {jlrNRAB3, jlrIRAB3});
     jlrRAB3.setColNames(new String[] {"NRAB", "PRAB"});
-    jlrRAB3.setNavColumnName("CRAB");
     jlrRAB3.setSearchMode(0);
     jlrRAB3.setDataSet(this.getDetailSet());
-    jlrRAB3.setRaDataSet(dm.getRabati());
+    jlrRAB3.setRaDataSet(rabati.getDataModule().copyDataSet());
     jlrRAB3.setVisCols(new int[] {0,1});
     jlrRAB3.setNavButton(jbSelRab3);
     
     jlrNRAB3.setColumnName("NRAB");
     jlrNRAB3.setNavProperties(jlrRAB3);
-    jlrNRAB3.setDataSet(this.getDetailSet());
+    //jlrNRAB3.setDataSet(this.getDetailSet());
     jlrNRAB3.setSearchMode(1);
     
     jlrIRAB3.setColumnName("PRAB");
     jlrIRAB3.setNavProperties(jlrRAB3);
-    jlrIRAB3.setDataSet(this.getDetailSet());
+    //jlrIRAB3.setDataSet(this.getDetailSet());
     jlrIRAB3.setSearchMode(1);
     
+    jcbGrupa.setDataSet(this.getDetailSet());
+    jcbGrupa.setColumnName("ALLGR");
+    jcbGrupa.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbGrupa.setHorizontalAlignment(SwingConstants.TRAILING);
+    jcbGrupa.setText(" Popust za sve artikle iz grupe ");
+    jcbGrupa.setSelectedDataValue("D");
+    jcbGrupa.setUnselectedDataValue("N");
     
     jpPres.add(jlPartner, new XYConstraints(15, 20, -1, -1));
     jpPres.add(jlrPart, new XYConstraints(150, 20, 100, -1));
     jpPres.add(jlrNazPart, new XYConstraints(255, 20, 280, -1));
     jpPres.add(jbSelPart, new XYConstraints(540, 20, 21, 21));
     
-    jpRab.add(new JLabel("Cijena bez poreza"),  new XYConstraints(300, 20, -1, -1));
-    jpRab.add(jraVC, new XYConstraints(485, 20, 100, -1));
-    jpRab.add(new JLabel("Cijena s porezom"),  new XYConstraints(300, 45, -1, -1));
-    jpRab.add(jraMC, new XYConstraints(485, 45, 100, -1));
+    jpRab.add(jcbGrupa, new XYConstraints(200, 15, 385, -1));
+    jpRab.add(new JLabel("Cijena bez poreza"),  new XYConstraints(300, 45, -1, -1));
+    jpRab.add(jraVC, new XYConstraints(485, 45, 100, -1));
+    jpRab.add(new JLabel("Cijena s porezom"),  new XYConstraints(300, 70, -1, -1));
+    jpRab.add(jraMC, new XYConstraints(485, 70, 100, -1));
     
-    jpRab.add(new JLabel("Rabat 1"),  new XYConstraints(15, 75, -1, -1));
-    jpRab.add(jlrRAB1, new XYConstraints(150, 75, 75, -1));
-    jpRab.add(jlrNRAB1, new XYConstraints(230, 75, 250, -1));
-    jpRab.add(jlrIRAB1, new XYConstraints(485, 75, 100, -1));
-    jpRab.add(jbSelRab1, new XYConstraints(590, 75, 21, 21));
-    jpRab.add(new JLabel("Rabat 2"),  new XYConstraints(15, 100, -1, -1));
-    jpRab.add(jlrRAB2, new XYConstraints(150, 100, 75, -1));
-    jpRab.add(jlrNRAB2, new XYConstraints(230, 100, 250, -1));
-    jpRab.add(jlrIRAB2, new XYConstraints(485, 100, 100, -1));
-    jpRab.add(jbSelRab2, new XYConstraints(590, 100, 21, 21));
-    jpRab.add(new JLabel("Rabat 3"),  new XYConstraints(15, 125, -1, -1));
-    jpRab.add(jlrRAB3, new XYConstraints(150, 125, 75, -1));
-    jpRab.add(jlrNRAB3, new XYConstraints(230, 125, 250, -1));
-    jpRab.add(jlrIRAB3, new XYConstraints(485, 125, 100, -1));
-    jpRab.add(jbSelRab3, new XYConstraints(590, 125, 21, 21));
+    jpRab.add(new JLabel("Rabat 1"),  new XYConstraints(15, 100, -1, -1));
+    jpRab.add(jlrRAB1, new XYConstraints(150, 100, 75, -1));
+    jpRab.add(jlrNRAB1, new XYConstraints(230, 100, 250, -1));
+    jpRab.add(jlrIRAB1, new XYConstraints(485, 100, 100, -1));
+    jpRab.add(jbSelRab1, new XYConstraints(590, 100, 21, 21));
+    jpRab.add(new JLabel("Rabat 2"),  new XYConstraints(15, 125, -1, -1));
+    jpRab.add(jlrRAB2, new XYConstraints(150, 125, 75, -1));
+    jpRab.add(jlrNRAB2, new XYConstraints(230, 125, 250, -1));
+    jpRab.add(jlrIRAB2, new XYConstraints(485, 125, 100, -1));
+    jpRab.add(jbSelRab2, new XYConstraints(590, 125, 21, 21));
+    jpRab.add(new JLabel("Rabat 3"),  new XYConstraints(15, 150, -1, -1));
+    jpRab.add(jlrRAB3, new XYConstraints(150, 150, 75, -1));
+    jpRab.add(jlrNRAB3, new XYConstraints(230, 150, 250, -1));
+    jpRab.add(jlrIRAB3, new XYConstraints(485, 150, 100, -1));
+    jpRab.add(jbSelRab3, new XYConstraints(590, 150, 21, 21));
     
     this.SetPanels(jpPres, jpRab, true);
     
