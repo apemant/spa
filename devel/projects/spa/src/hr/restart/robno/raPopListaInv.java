@@ -176,6 +176,7 @@ public class raPopListaInv extends raUpitLite {
     updateColumn("NAZART", "Naziv");
     updateColumn("JM", "Jmj");
     updateColumn("NAZSKL", null);
+    updateColumn("SORTKOL", "Poredak");
     view.setDataSet(repSet);
     view.setSaveName("popisna-lista");
     view.setCustomReport(raReportDescriptor.create("hr.restart.robno.repPopLista","hr.restart.robno.repPopLista","PopLista","Popisna lista"));
