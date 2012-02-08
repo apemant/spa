@@ -959,6 +959,7 @@ POV;char;1;;N;Povratna naknada
 CNAP;char;3;;;Napomena
 BCPAK;char;20;;;Barcode pakiranja;10
 BCKOL;char;20;;;Barcode kolete;10
+SORTKOL;int;6;;;Sortiranje
 UIDX=cart1
 UIDX=bc
 
@@ -1459,4 +1460,5 @@ MC;numeric;17,2;;0;Cijena s porezom;15
 CRAB1;char;2;;;Rabat 1
 CRAB2;char;2;;;Rabat 2
 CRAB3;char;2;;;Rabat 3
+ALLGR;char;1;;N;Cijela grupa
 
