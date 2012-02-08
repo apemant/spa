@@ -49,6 +49,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import javax.swing.plaf.basic.BasicTableUI;
 
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
@@ -103,6 +104,7 @@ class rajpIzlazMPTemplate extends JPanel {
 	BorderLayout borderLayout2 = new BorderLayout();
 
 	int version = 0;
+	boolean gotpar = false;
 
 	public rajpIzlazMPTemplate(String what_kind_of_dokument, raIzlazTemplate FDI) {
 		fDI = FDI;
@@ -189,6 +191,10 @@ class rajpIzlazMPTemplate extends JPanel {
 
 	private void jbInit(int version) throws Exception {
 
+	  gotpar = "D".equalsIgnoreCase(
+	      frmParam.getParam("robno", "gotPar", "N",
+          "Gotovinski raèuni za partnere (D,N)"));
+
 		setLayout(borderLayout2);
 		rajpBrDok.addBorder();
 		add(rajpBrDok, BorderLayout.NORTH);
@@ -196,7 +202,8 @@ class rajpIzlazMPTemplate extends JPanel {
 		if (version == 0 || version == 2 || version == 5) {
 			add(mainTab, BorderLayout.CENTER);
 			mainTab.add(panelBasic, "Osnovni podaci");
-			mainTab.add(panelBasicExt, version == 0 ? "Poslovne jedinice"
+			mainTab.add(panelBasicExt, (version == 0 || 
+			    (version==2 && gotpar)) ? "Poslovne jedinice"
 					: "Osnovni podaci nastavak");
 			mainTab.add(panelPopust, "Popusti");
 			//			if (version != 0)
@@ -798,7 +805,7 @@ SwingUtilities.invokeLater(new Runnable(){
 
 				add(jlDATDOK, new XYConstraints(15, 75, -1, -1));
 				add(jtfDATDOK, new XYConstraints(150, 75, 100, -1));
-			} else if (version == 2) {
+			} else if (version == 2 && !gotpar) {
 				add(rpku, new XYConstraints(0, 0, -1, -1));
 				add(jlDATDOK, new XYConstraints(15, 115, -1, -1));
 				add(jtfDATDOK, new XYConstraints(150, 115, 100, -1));
@@ -834,7 +841,7 @@ SwingUtilities.invokeLater(new Runnable(){
 					//          add(chbock,new XYConstraints(400, 85, 150, -1));
 					add(jpgetval, new XYConstraints(0, 110, -1, -1));
 				}
-			} else if (version == 6) {
+			} else if (version == 6 || (version == 2 || gotpar)) {
 				setupRadio();
 				add(jrbPartner, new XYConstraints(15, 15, -1, -1));
 				add(jlCPAR, new XYConstraints(15, 40, -1, -1));
@@ -1056,7 +1063,7 @@ SwingUtilities.invokeLater(new Runnable(){
     			jlrCNAMJ.setNavButton(jbCNAMJ);
             }
 
-			if (version == 0 || version == 5) {
+			if (version == 0 || version == 5 || (version == 2 && gotpar)) {
 				add(jlPJ, new XYConstraints(15, 15, -1, -1));
 				add(jrfPJ, new XYConstraints(150, 15, 100, -1));
 				add(jrfNAZPJ, new XYConstraints(254, 15, 351, -1));
@@ -1078,7 +1085,7 @@ SwingUtilities.invokeLater(new Runnable(){
 				add(jlrCNAMJ, new XYConstraints(442, 95, 30, -1));
 				add(jlrNAZNAMJ, new XYConstraints(476, 95, 130, -1));
 				add(jbCNAMJ, new XYConstraints(612, 95, 21, 21));
-			} else if (version == 2) {
+			} else if (version == 2 && !gotpar) {
 				add(jlFRANK, new XYConstraints(15, 15, -1, -1));
 				add(jlrFRANKA, new XYConstraints(150, 15, 30, -1));
 				add(jlrNAZFRA, new XYConstraints(185, 15, 130, -1));
