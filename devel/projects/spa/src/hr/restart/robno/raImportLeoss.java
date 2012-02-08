@@ -97,6 +97,7 @@ public class raImportLeoss {
   		dz.setString("CSKL", cskl);
   		dz.setString("VRDOK", "DOS");
   		dz.setTimestamp("DATDOK", getDate(pl[2], pl[3]));
+  		dz.setString("BRDOKIZ", brdok);
   		dz.setString("BRNARIZ", pl[6]);
   		if (pl.length > 7)
   		  dz.setString("CRADNAL", pl[7]);
@@ -139,6 +140,10 @@ public class raImportLeoss {
   			}
   			Aus.add(AST.gettrenSTANJE(), "KOLSKLADIZ", dst, "KOL");
   			Aus.sub(AST.gettrenSTANJE(), "KOLSKLAD", "KOLSKLADUL", "KOLSKLADIZ");
+  			
+  			dst.setString("ID_STAVKA",
+                raControlDocs.getKey(dst, new String[] { "cskl",
+                        "vrdok", "god", "brdok", "rbsid" }, "stdoki"));
     		
   			raTransaction.saveChangesInTransaction(new QueryDataSet[] {dst, AST.gettrenSTANJE()});
   		}
@@ -221,6 +226,10 @@ public class raImportLeoss {
   			}
   			Aus.add(AST.gettrenSTANJE(), "KOLSKLADUL", dst, "KOL");
   			Aus.sub(AST.gettrenSTANJE(), "KOLSKLAD", "KOLSKLADUL", "KOLSKLADIZ");
+  			
+  			dst.setString("ID_STAVKA",
+                raControlDocs.getKey(dst, new String[] { "cskl",
+                        "vrdok", "god", "brdok", "rbsid" }, "stdoku"));
     		
   			raTransaction.saveChangesInTransaction(new QueryDataSet[] {dst, AST.gettrenSTANJE()});
   		}
@@ -296,7 +305,7 @@ public class raImportLeoss {
         if (izlaz.rowCount() == 0) {
         	izlaz.insertRow(false);
         	izlaz.setString("GOD", dst.getString("GOD"));
-        	izlaz.setString("CSKL", dst.getString("CSKL"));
+        	izlaz.setString("CSKL", dst.getString("CSKLIZ"));
         	izlaz.setInt("CART", dst.getInt("CART"));
   				nulaStanje(izlaz);
         }
