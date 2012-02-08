@@ -3058,22 +3058,41 @@ System.out.println("findCjenik::else :: "+sql);
 				DataSet ds = Rabshema.getDataModule().getTempSet(Condition.equal("CPAR", cpar).and(
 						Condition.equal("CART", getDetailSet())));
 				ds.open();
-				System.out.println(ds);
-				if (ds.rowCount() > 0) {
+				boolean allgr = false;
+				boolean direct = ds.rowCount() > 0;
+				if (!direct) {
+				  ds = Rabshema.getDataModule().getTempSet(Condition.equal("CPAR", cpar).and(
+				            Condition.equal("ALLGR", "D")));
+				  ds.open();
+				  lD.raLocate(dm.getArtikli(), "CART", Integer.toString(getDetailSet().getInt("CART")));
+				  String gr = dm.getArtikli().getString("CGRART");
+				  
+				  for (ds.first(); ds.inBounds(); ds.next()) {
+				    lD.raLocate(dm.getArtikli(), "CART", Integer.toString(ds.getInt("CART")));
+				    if (dm.getArtikli().getString("CGRART").equals(gr)) {
+				      allgr = true;
+				      break;
+				    }
+				  }
+				}
+				
+				if (direct || allgr) {
 					BigDecimal bdvc = Aus.zero2, bdmc = Aus.zero2;
-					if (ds.getBigDecimal("VC").signum() > 0) {
-						bdvc = ds.getBigDecimal("VC");
-						bdmc = bdvc.add(bdvc.multiply(getDetailSet().getBigDecimal("UPPOR").movePointLeft(2)).setScale(2, BigDecimal.ROUND_HALF_UP));
-					} else if (ds.getBigDecimal("MC").signum() > 0) {
-						bdmc = ds.getBigDecimal("MC");
-						bdvc = bdmc.divide(getDetailSet().getBigDecimal("UPPOR").movePointLeft(2).add(Aus.one0), 2, BigDecimal.ROUND_HALF_UP);
-					}
-					if (ds.getBigDecimal("VC").signum() > 0 || ds.getBigDecimal("MC").signum() > 0) {
-						lc.setBDField("FC", bdvc, rKD.stavka);
-						lc.setBDField("FVC", bdvc, rKD.stavka);
-						lc.setBDField("FMC", bdmc, rKD.stavka);
-						lc.setBDField("FMCPRP", bdmc, rKD.stavka);
-						
+					if (!allgr) {
+    					if (ds.getBigDecimal("VC").signum() > 0) {
+    						bdvc = ds.getBigDecimal("VC");
+    						bdmc = bdvc.add(bdvc.multiply(getDetailSet().getBigDecimal("UPPOR").movePointLeft(2)).setScale(2, BigDecimal.ROUND_HALF_UP));
+    					} else if (ds.getBigDecimal("MC").signum() > 0) {
+    						bdmc = ds.getBigDecimal("MC");
+    						bdvc = bdmc.divide(getDetailSet().getBigDecimal("UPPOR").movePointLeft(2).add(Aus.one0), 2, BigDecimal.ROUND_HALF_UP);
+    					}
+    					if (ds.getBigDecimal("VC").signum() > 0 || ds.getBigDecimal("MC").signum() > 0) {
+    						lc.setBDField("FC", bdvc, rKD.stavka);
+    						lc.setBDField("FVC", bdvc, rKD.stavka);
+    						lc.setBDField("FMC", bdmc, rKD.stavka);
+    						lc.setBDField("FMCPRP", bdmc, rKD.stavka);
+    						
+    					}
 					}
 					lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
 					
