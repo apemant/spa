@@ -329,6 +329,8 @@ public class SecondChooser extends JraDialog {
           if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS") 
               || transOtp) {
             rIT.getMasterSet().setString("BRDOKIZ", repUtil.getFormatBroj(ZaglavljeSet));
+            if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS"))
+                rIT.getMasterSet().setString("BRDOKIZ", ZaglavljeSet.getString("BRDOKIZ"));
             rIT.getMasterSet().setTimestamp("DATDOKIZ", ZaglavljeSet.getTimestamp("DATDOK"));
           }
           rIT.getMasterSet().setString("CRADNAL", ZaglavljeSet.getString("CRADNAL"));

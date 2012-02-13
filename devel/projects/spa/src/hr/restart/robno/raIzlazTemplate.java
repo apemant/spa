@@ -889,9 +889,11 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 			util.getBrojDokumenta(getMasterSet());
 			getMasterSet().setString("PNBZ2",
 					pnb.getPozivNaBroj(getMasterSet()));
-			if (!extrasave()) return false;
+			if (!extrasave()) return false;			
 		} else if (mode == 'I') {
 			getMasterSet().setString("CUSER", cuser);
+			getMasterSet().setString("PNBZ2",
+                pnb.getPozivNaBroj(getMasterSet()));
 		}
 		if (mode != 'B') 
 			SanityCheck.basicDoki(getMasterSet());
@@ -3570,7 +3572,7 @@ System.out.println("findCjenik::else :: "+sql);
       String[] dods = (prep == null ? 
           qDS.hasColumn("CPAR") != null : 
             prep.hasColumn("CPAR") != null) ?
-              new String[] {"DATDOK", "CPAR", "UIRAC", "BRNARIZ"} : 
+              new String[] {"DATDOK", "CPAR", "UIRAC", "BRDOKIZ", "BRNARIZ"} : 
               new String[] {"DATDOK"};
       dcz.setUpClass(this);
       dcz.setDataSetKey(new String[] { "CSKL", "GOD", "VRDOK", "BRDOK" }, dods);
@@ -3753,7 +3755,7 @@ System.out.println("findCjenik::else :: "+sql);
 						.getString("CSKL"), odabrano, dodatak);
 			}
 
-            qDS = doki.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK DATDOK CPAR UIRAC BRNARIZ", upit);
+            qDS = doki.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK DATDOK CPAR UIRAC BRDOKIZ BRNARIZ", upit);
             qDS.open();
 		}
 	}
