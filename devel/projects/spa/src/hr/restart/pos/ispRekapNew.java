@@ -262,7 +262,8 @@ public class ispRekapNew extends raUpitLite {
     porezSet.empty();
     
     String porezString = 
-      "SELECT stpos.brdok, stpos.ukupno, stpos.neto, stpos.por1, stpos.por2 " +
+      "SELECT stpos.brdok as brdok, stpos.ukupno as ukupno, stpos.neto as neto, " +
+      "stpos.por1 as por1, stpos.por2 as por2 " +
       "FROM pos, Stpos "+
       "WHERE pos.cskl = stpos.cskl "+
       "AND pos.vrdok = stpos.vrdok "+
@@ -271,7 +272,16 @@ public class ispRekapNew extends raUpitLite {
       "AND pos.cprodmj = stpos.cprodmj "+
       "and pos.vrdok = 'GRC' and " +
       Condition.equal("CSKL", tds, "CORG").and(Condition.between(
-          "DATDOK", tds, "pocDatum", "zavDatum")).qualified("pos");
+          "DATDOK", tds, "pocDatum", "zavDatum")).qualified("pos") + 
+          
+       " UNION ALL " +
+       "SELECT stdoki.brdok as brdok, stdoki.iraz as ukupno, " +
+       "stdoki.iprodsp as neto, stdoki.por1 as por1, stdoki.por2 as por2 " +
+       "FROM doki,stdoki WHERE " + rut.getDoc("doki", "stdoki") +
+       " and doki.vrdok = 'ROT' and "+
+       Condition.equal("CSKL", tds, "CORG").and(Condition.between(
+           "DATDOK", tds, "pocDatum", "zavDatum")).qualified("doki");
+       
 
     System.out.println(porezString);
     QueryDataSet qdsp = Aus.q(porezString);
@@ -320,8 +330,15 @@ public class ispRekapNew extends raUpitLite {
     "AND pos.cprodmj = rate.cprodmj "+
     "and pos.vrdok = 'GRC' and "+ 
     Condition.equal("CSKL", tds, "CORG").and(Condition.between(
-        "DATDOK", tds, "pocDatum", "zavDatum")).qualified("pos");
-    
+        "DATDOK", tds, "pocDatum", "zavDatum")).qualified("pos") + 
+        
+     " UNION ALL " +
+     "SELECT stdoki.iprodsp as irata, '' as cbanka, 'VR' as cnacpl " +
+     "FROM doki,stdoki WHERE " + rut.getDoc("doki", "stdoki") +
+     " and doki.vrdok = 'ROT' and "+
+     Condition.equal("CSKL", tds, "CORG").and(Condition.between(
+         "DATDOK", tds, "pocDatum", "zavDatum")).qualified("doki");
+         
     System.out.println(upitString);
     QueryDataSet qds = Aus.q(upitString);
     qds.open();
