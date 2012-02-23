@@ -87,6 +87,9 @@ public class raImportRac {
       for (int i = 0; i < list.length; i++)
         if (list[i].getName().toLowerCase().endsWith(".xml"))
           ir.importSingle(list[i]);
+      
+      JOptionPane.showMessageDialog(null, "Obrada završena.",
+          "Poruka", JOptionPane.INFORMATION_MESSAGE);
     }
   }
   
@@ -182,6 +185,7 @@ public class raImportRac {
     
     Element partn = head.getChild("Buyer");
     String oib = partn.getChildText("OIB");
+    String nazpar = partn.getChildText("Name");
     if (ld.raLocate(dm.getPartneri(), "OIB", oib))
       sk.setInt("CPAR", dm.getPartneri().getInt("CPAR"));
     else throw new RuntimeException("Nepoznat OIB: "+ oib + 
@@ -214,6 +218,8 @@ public class raImportRac {
         sk.setBigDecimal("IP", Aus.zero2);
         sk.setBigDecimal("SSALDO", amount);
         sk.setBigDecimal("SALDO", amount);
+        sk.setBigDecimal("TECAJ", Aus.one0);
+        sk.setString("OZNVAL", "kn");
         sk.setBigDecimal("PVID", amount);
         sk.setBigDecimal("PVIP", Aus.zero2);
         sk.setBigDecimal("PVSSALDO", amount);
@@ -284,6 +290,7 @@ public class raImportRac {
           txt = txt + " " + desc;
         txt = txt + " - " + por + "%";
         dlg.jlText.setText(txt);
+        dlg.jlNext.setText(sk.getString("BROJDOK") + ", " + nazpar);
         dlg.open(null);
         if (!dlg.ok) return false;
         
@@ -418,13 +425,13 @@ public class raImportRac {
     JlrNavField nazkonta = new JlrNavField();
     JraButton jbselknj = new JraButton();
     JLabel jlkol = new JLabel();
-    JLabel jltex = new JLabel();
     JlrNavField ckolone = new JlrNavField();
     JlrNavField nazkolone = new JlrNavField();
     JraButton jbselkol = new JraButton();
     
     JLabel jlOpis = new JLabel();
     JLabel jlText = new JLabel();
+    JLabel jlNext = new JLabel();
 
     OKpanel okp = new OKpanel() {
       public void jBOK_actionPerformed() {
@@ -512,7 +519,7 @@ public class raImportRac {
     private void jbInit() throws Exception {
       center.setLayout(xy);
       xy.setWidth(525);
-      xy.setHeight(115);
+      xy.setHeight(150);
 
       fields.setColumns(new Column[] {
         dM.createStringColumn("BROJKONTA", "Konto", 12),
@@ -556,17 +563,17 @@ public class raImportRac {
 
       center.add(jlOpis, new XYConstraints(15, 20, -1, -1));
       center.add(jlText, new XYConstraints(150, 20, -1, -1));
+      center.add(jlNext, new XYConstraints(150, 45, -1, -1));
       
-      center.add(jltex, new XYConstraints(150, 20, -1, -1));
-      center.add(jlknj, new XYConstraints(15, 50, -1, -1));
-      center.add(konto, new XYConstraints(150, 50, 75, -1));
-      center.add(nazkonta, new XYConstraints(230, 50, 250, -1));
-      center.add(jbselknj, new XYConstraints(485, 50, 21, 21));
+      center.add(jlknj, new XYConstraints(15, 80, -1, -1));
+      center.add(konto, new XYConstraints(150, 80, 75, -1));
+      center.add(nazkonta, new XYConstraints(230, 80, 250, -1));
+      center.add(jbselknj, new XYConstraints(485, 80, 21, 21));
 
-      center.add(jlkol, new XYConstraints(15, 75, -1, -1));
-      center.add(ckolone, new XYConstraints(150, 75, 75, -1));
-      center.add(nazkolone, new XYConstraints(230, 75, 250, -1));
-      center.add(jbselkol, new XYConstraints(485, 75, 21, 21));
+      center.add(jlkol, new XYConstraints(15, 105, -1, -1));
+      center.add(ckolone, new XYConstraints(150, 105, 75, -1));
+      center.add(nazkolone, new XYConstraints(230, 105, 250, -1));
+      center.add(jbselkol, new XYConstraints(485, 105, 21, 21));
 
       main.setLayout(new BorderLayout());
       main.add(center, BorderLayout.CENTER);
