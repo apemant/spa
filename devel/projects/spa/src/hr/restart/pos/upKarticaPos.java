@@ -210,7 +210,7 @@ public class upKarticaPos extends raUpitLite {
   	for (du.first(); du.inBounds(); du.next()) {
   		if (du.getString("VRDOK").equals("PST") && Aus.getNumber(ut.getYear(du.getTimestamp("DATDOK")))>py) continue;
   		
-  		if (du.getString("VRDOK").equals("PRK") && du.getBigDecimal("PORAV").signum() != 0
+  		if ((du.getString("VRDOK").equals("PRK") || du.getString("VRDOK").equals("PTE")) && du.getBigDecimal("PORAV").signum() != 0
   				|| du.getString("VRDOK").equals("POR")) {
   			res.insertRow(false);
     		res.setString("CORG", tds.getString("CSKL"));
