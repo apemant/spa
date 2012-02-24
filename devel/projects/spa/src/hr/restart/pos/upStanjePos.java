@@ -174,7 +174,8 @@ public class upStanjePos extends raUpitLite {
     		dM.createBigDecimalColumn("IRAZ", "Razduženje", 2),
     		dM.createBigDecimalColumn("VRI", "Vrijednost", 2),
     		dM.createBigDecimalColumn("POP", "Popust", 2),
-    		dM.createBigDecimalColumn("NETO", "Utržak", 2)
+    		dM.createBigDecimalColumn("NETO", "Utržak", 2),
+    		dM.createBigDecimalColumn("ERR", "Razlika vrijednosti", 2),
     });
     res.open();
     String py = ut.getYear(tds.getTimestamp("pocDatum"));
@@ -204,6 +205,9 @@ public class upStanjePos extends raUpitLite {
   		Aus.set(res, "MC", du);
   		if (res.getBigDecimal("KOL").signum() != 0)
   			Aus.div(res, "NC", "NABUL", "KOL");
+  		
+  		Aus.mul(res, "ERR", "KOL", "MC");
+  		Aus.sub(res, "ERR", "VRI");
   	}
   	
   	HashMap inab = new HashMap();
@@ -250,6 +254,9 @@ public class upStanjePos extends raUpitLite {
   		Aus.sub(res, "VRI", "IZAD", "IRAZ");
   		Aus.add(res, "POP", di, "UIRAB");
   		Aus.add(res, "NETO", di, "IPRODSP");
+  		
+  		Aus.mul(res, "ERR", "KOL", "MC");
+        Aus.sub(res, "ERR", "VRI");
   	}
   	
   	cart = "";
