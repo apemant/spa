@@ -119,7 +119,7 @@ public class raImportLeoss {
     		
     		ld.raLocate(dM.getDataModule().getArtikli(), "CART1", pls[1]);
     		Aut.getAut().copyArtFields(dst, dM.getDataModule().getArtikli());
-    		dst.setBigDecimal("KOL", Aus.getDecNumber(pls[2]));
+    		dst.setBigDecimal("KOL", Aus.getDecNumber(pls[2].trim()));
     		Aus.set(dst, "KOL2", "KOL");
     		
     		dst.setString("LOT", pls[7]);
