@@ -320,13 +320,23 @@ public class frmMasterBlagajna extends raMasterDetail {
     pov = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
         "Iznos povratne naknade"));
     
+    
+    if (raUser.getInstance().isSuper() && "D".equalsIgnoreCase(
+        frmParam.getParam("pos", "vrijemeRac", "N",
+        "Prikazati vrijeme na racunima POS (D,N)"))) { 
+      getMasterSet().getColumn("DATDOK").setDisplayMask("dd-MM-yyyy  'u' HH:mm:ss");
+      getMasterSet().getColumn("DATDOK").setWidth(24);
+    } else { 
+      getMasterSet().getColumn("DATDOK").setDisplayMask("dd-MM-yyyy");
+      getMasterSet().getColumn("DATDOK").setWidth(12);
+    }
+    
     if (presBlag.stolovi) {
       getMasterSet().last();
       if (presBlag.stol == null || presBlag.stol.length() == 0)
         setNaslovMaster("Blagajna - svi raèuni");
       else setNaslovMaster("Blagajna - raèuni stola " + presBlag.stol);
       setNaslovDetail("Stavke raèuna (stol " + presBlag.stol + ")");
-    
     
       String va = frmParam.getParam("pos", "csklVrart"+cskl, "",
           "Vrsta artikla na POS-u za skladište "+cskl);
