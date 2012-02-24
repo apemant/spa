@@ -71,8 +71,8 @@ public class repRekapitulacijaPOS extends mxReport {
     if (artz > 20) artz = 20;
 
     detail[0] = "<#"+Aut.getAut().getCARTdependable("CART","CART1","BC")+
-                "|"+artz+"|left#> <#NAZART|"+(width-15-artz)
-                +"|left#><#KOL|4|right#><#NETO|10|right#>";
+                "|"+artz+"|left#> <#NAZART|"+(width-18-artz)
+                +"|left#> <#KOL|6|right#><#NETO|10|right#>";
 
     if (irrpos.getRekapitulacijaPoAretiklima()) this.setDetail(detail);
 
