@@ -19,6 +19,7 @@ package hr.restart.sk;
 
 import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.reports.raReportData;
 
@@ -127,6 +128,10 @@ public class repIRA implements raReportData {
   
   public BigDecimal getKOL17() {
     return raIspisUraIra.getKolona(ds,"17");
+  }
+  
+  public BigDecimal getKOL18() {
+    return Aus.zero2;
   }
 
   public String getFirstLine(){
