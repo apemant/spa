@@ -1001,7 +1001,8 @@ public class raRekalkulacijaStanja extends raUpitLite {
     if (log.isDebugEnabled()) 
       log.debug("KOL =" + stanje.getBigDecimal("KOL"));
 		if (vrzal.equalsIgnoreCase("N")) {
-			if (stanje.getBigDecimal("KOL").compareTo(Nula) == 0) {
+			if (stanje.getBigDecimal("KOL").abs().doubleValue() < 0.999 || 
+			    stanje.getBigDecimal("KOL").signum() != stanje.getBigDecimal("VRI").signum()) {
 			  if (isNewArt) {
 				if (stanje.getBigDecimal("KOLUL").compareTo(Nula) == 0) {				
 				  stanje.setBigDecimal("ZC", Nula);
@@ -1028,7 +1029,9 @@ public class raRekalkulacijaStanja extends raUpitLite {
 
 	public void kalkulateNC(DataSet stanje) {
 		BigDecimal bd = Aus.zero2;
-		if (stanje.getBigDecimal("KOL").doubleValue() != 0) {
+		if (stanje.getBigDecimal("KOL").abs().doubleValue() > 0.999 && 
+		    stanje.getBigDecimal("KOL").signum() == stanje.getBigDecimal("NABUL").subtract(
+                stanje.getBigDecimal("NABIZ")).signum()) {
 			bd = stanje.getBigDecimal("NABUL").subtract(
 					stanje.getBigDecimal("NABIZ"));
 			bd = bd.divide(stanje.getBigDecimal("KOL"), 2,
@@ -1039,7 +1042,7 @@ public class raRekalkulacijaStanja extends raUpitLite {
       System.out.println(stanje.getBigDecimal("NABIZ"));
       System.out.println(stanje);
 */      
-		} else if (stanje.getBigDecimal("KOLUL").doubleValue() != 0 
+		} else if (stanje.getBigDecimal("KOLUL").abs().doubleValue() > 0.999 
 		    && (isNewArt || !vrzal.equalsIgnoreCase("N") ||
 		        stanje.getBigDecimal("NC").signum() == 0)) {
 			bd = stanje.getBigDecimal("NABUL");
