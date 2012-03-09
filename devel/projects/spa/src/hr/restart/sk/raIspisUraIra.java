@@ -389,7 +389,7 @@ public class raIspisUraIra extends raFrame {
     uraira.open();
     uraira.getColumn("BROJ").setVisible(TriStateProperty.FALSE);
     uraira.getColumn("SORTER").setVisible(TriStateProperty.FALSE);
-    uraira.getColumn("MB").setVisible(TriStateProperty.FALSE);
+    //uraira.getColumn("MB").setVisible(TriStateProperty.FALSE);
   }
   
   public static BigDecimal getKolona(ReadRow _set, String nc) {
@@ -483,9 +483,12 @@ public class raIspisUraIra extends raFrame {
   }
   
   void showDataSet() {
+    final boolean showSum = "D".equalsIgnoreCase(frmParam.getParam("sk", "showSum", "N", 
+      "Prikazivati sume na prikazu URA/IRA? (D/N)"));
     raProcess.runChild(new Runnable() {
       public void run() {
-        findUraIra(jrbUraira1.isSelected() ? "U" : "I", false);
+        
+        findUraIra(jrbUraira1.isSelected() ? "U" : "I", showSum);
       }
     });
     if (raProcess.isCompleted()) {
@@ -501,7 +504,8 @@ public class raIspisUraIra extends raFrame {
       List sumc = new ArrayList();
       for (int i = 10; i < uraira.getColumnCount(); i++)
         sumc.add(uraira.getColumn(i).getColumnName());
-      view.setSums((String[]) sumc.toArray(new String[sumc.size()]));
+      if (!showSum)
+        view.setSums((String[]) sumc.toArray(new String[sumc.size()]));
       
       String odm = jraMfrom.getText().trim();
       String dom = jraMto.getText().trim();
