@@ -563,6 +563,7 @@ public class frmDugPot extends raFrame {
     this.getRepRunner().addReport("hr.restart.sk.repIOS","hr.restart.sk.repIOS","IOS", "Ispis otvorenih stavki oznaèenog partnera"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repIOSint","hr.restart.sk.repIOS","IOSint", "Skraæeni ispis otvorenih stavki"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repDosp","hr.restart.sk.repKarticaDosp","Dosp", "Ispis dospjelih raèuna partnera"/*, 42*/);
+    this.getRepRunner().addReport("hr.restart.sk.repDospDan","hr.restart.sk.repKarticaDosp","Dosp", "Ispis dospjelih raèuna partnera otvorenih do danas"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repPnP","hr.restart.sk.repOpomena","PodsjetnikNaPlacanje", "Ispis podsjetnika za plaæanje oznaèenog partnera"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repOpomena","hr.restart.sk.repOpomena","Opomena", "Ispis opomene oznaèenog partnera"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repOpomenaPT","hr.restart.sk.repOpomena","OpomenaPT", "Ispis opomene pred tužbu oznaèenog partnera"/*, 42*/);

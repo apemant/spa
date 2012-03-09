@@ -25,6 +25,7 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
+import hr.restart.util.reports.dlgRunReport;
 import hr.restart.util.reports.raReportData;
 
 import java.math.BigDecimal;
@@ -49,7 +50,13 @@ public class repIOS implements raReportData { //sg.com.elixir.reportwriter.datas
 
   public repIOS() {
     ru.setDataSet(ds);
-    ds = rik.getDataSet();
+    try {
+      String prov = dlgRunReport.getCurrentDlgRunReport().getCurrentDescriptor().getName();
+      rik.outrange = !prov.equals("hr.restart.sk.repDospDan");
+      ds = rik.getDataSet();
+    } finally {
+      rik.outrange = true;
+    }
     if (rik.stm != null && rik.stm.countSelected() > 1)
       ds = rik.stm.getSelectedView(ds);
     oib = frmParam.getParam("robno", "oibMode", "MB", 

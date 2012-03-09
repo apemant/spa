@@ -65,10 +65,11 @@ public class raIspisKartica {
   private DataSet outData = null;
 
   private int vrsta, status, cparSingle;
-  private boolean kupci, datdok, both, prepared;
+  private boolean kupci, datdok, both, prepared, oldout;
   private Timestamp dfrom, dto;
   private String konto = null;
   public static String dokformat;
+  public boolean outrange = true;
   
   raSelectTableModifier stm = null;
   
@@ -117,7 +118,7 @@ public class raIspisKartica {
     return opis.toString();
   }
   public DataSet getDataSet() {
-    if (!prepared) prepare();
+    if (!prepared || oldout != outrange) prepare();
     return outData == null ? repQDS : outData;
   }
 
@@ -133,7 +134,13 @@ public class raIspisKartica {
   }
   
   void prepareNow() {
+    if (prepared) {
+      close();
+      repQDS.setQuery(repQDS.getQuery());
+      System.out.println("requery" + repQDS.getQuery().getQueryString());
+    }
     prepared = true;
+    oldout = outrange;
     repQDS.setMetaDataUpdate(repQDS.getMetaDataUpdate() & ~MetaDataUpdate.ROWID);
     repQDS.open();
     repQDS.getColumn("CSKSTAVKE").setRowId(true);
@@ -143,11 +150,11 @@ public class raIspisKartica {
   
   public static void findFormat(String param) {
     dokformat = frmParam.getParam("sk", param, "$B", 
-    "Format opisa Dokumenta kod ispisa IOSa/Kartice ($O-opis, $B-br.dok., $E-br.URA, $I-izvod)"); 
+      "Format opisa Dokumenta kod ispisa IOSa/Kartice ($O-opis, $B-br.dok., $E-br.URA, $I-izvod)"); 
   }
 
   void prepare() {
-    if (prepared) return;
+    if (prepared && oldout == outrange) return;
     raProcess.runChild(new Runnable() {
       public void run() {
         prepareNow();
@@ -162,17 +169,19 @@ public class raIspisKartica {
   }
   
   void checkOutOfBoundsDocs(DataSet ds) {
-    Condition cparCond = null;
-    if (cparSingle != -999) cparCond = Condition.equal("CPAR", cparSingle);
-    else if (stm == null) cparCond = Condition.none;
-    else if (stm.getSelectionCondition() == null)
-      cparCond = Condition.equal("CPAR", repQDS);
-    else cparCond = stm.getSelectionCondition();
+    if (outrange) {
+      Condition cparCond = null;
+      if (cparSingle != -999) cparCond = Condition.equal("CPAR", cparSingle);
+      else if (stm == null) cparCond = Condition.none;
+      else if (stm.getSelectionCondition() == null)
+        cparCond = Condition.equal("CPAR", repQDS);
+      else cparCond = stm.getSelectionCondition();
     
-    Condition remDoc = Aus.getKnjigCond().and(cparCond).and(Aus.getVrdokCond(kupci)).
-        and(Condition.where(datdok ? "DATDOK" : "DATUMKNJ", Condition.AFTER, dto));
-    
-    raSaldaKonti.updateOutOfRangeSaldo(ds, remDoc);
+      Condition remDoc = Aus.getKnjigCond().and(cparCond).and(Aus.getVrdokCond(kupci)).
+          and(Condition.where(datdok ? "DATDOK" : "DATUMKNJ", Condition.AFTER, dto));
+      
+      raSaldaKonti.updateOutOfRangeSaldo(ds, remDoc);
+    }
     
     ds.first();
     while (ds.inBounds())
@@ -185,6 +194,7 @@ public class raIspisKartica {
   
   public void setDataSet(DataSet ds) {
     prepared = true;
+    oldout = outrange;
     checkOutOfBoundsDocs(ds);
     findCparTotals(outData = ds);
   }
@@ -204,6 +214,7 @@ public class raIspisKartica {
     stm = null;
     konto = null;
     prepared = false;
+    oldout = outrange;
     cparSingle = -999;
     totals.empty();
   }
