@@ -280,9 +280,11 @@ public class raIspisUraIra extends raFrame {
     getRepRunner().clearAllReports();
     if (jrbUraira1.isSelected()) {
       getRepRunner().addJasper("hr.restart.sk.repURA09", "hr.restart.sk.repURANew",
+          "ura25.jrxml", "Ispis knjige URA 25%");
+      getRepRunner().addJasper("hr.restart.sk.repURA09", "hr.restart.sk.repURANew",
           "ura09.jrxml", "Ispis knjige URA 23%");
       getRepRunner().addReport("hr.restart.sk.repURA06", "hr.restart.sk.repURANew",
-          "URA06", "Ispis knjige URA");
+          "URA06", "Ispis knjige URA 22%");
       getRepRunner().addReport("hr.restart.sk.repURA", "hr.restart.sk.repURA",
                                "URA_ORGINAL", "Ispis knjige URA 2005");
       getRepRunner().addReport("hr.restart.sk.repURA11", "hr.restart.sk.repURA",
@@ -300,7 +302,9 @@ public class raIspisUraIra extends raFrame {
 //      getRepRunner().addReport("hr.restart.sk.repURADod", "Ispis knjige URA sa dodatnim kolonama", 5);
     } else {
       getRepRunner().addJasper("hr.restart.sk.repIRA10", "hr.restart.sk.repIRA",
-          "ira10.jrxml", "Ispis knjige IRA s 18 kolona");
+          "ira25.jrxml", "Ispis knjige IRA 25%");
+      getRepRunner().addJasper("hr.restart.sk.repIRA10", "hr.restart.sk.repIRA",
+          "ira10.jrxml", "Ispis knjige IRA 23%");
       getRepRunner().addJasper("hr.restart.sk.repIRA09", "hr.restart.sk.repIRA",
           "ira09.jrxml", "Ispis knjige IRA 2009");
       getRepRunner().addReport("hr.restart.sk.repIRA06", "hr.restart.sk.repIRA",

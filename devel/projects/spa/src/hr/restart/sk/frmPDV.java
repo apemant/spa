@@ -544,6 +544,7 @@ public class frmPDV extends raUpitLite {
     mainPanel.add(panelPDV, BorderLayout.CENTER);
 //    this.addReport("hr.restart.sk.repPrijavaPDV", "Obrazac PDV", 2);
 //    this.addReport("hr.restart.sk.repPrijavaPDV_K", "Obrazac PDV-K", 2);
+    this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv25.jrxml","Obrazac PDV od 01.03.2012 (25%)");
     this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv10.jrxml","Obrazac PDV 2010");
     this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv09.jrxml","Obrazac PDV 2009");
     this.addReport("hr.restart.sk.repPrijavaPDV","hr.restart.sk.repPrijavaPDV_K","PrijavaPDV06","Obrazac PDV 22%");
