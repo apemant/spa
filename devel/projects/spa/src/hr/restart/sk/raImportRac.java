@@ -175,9 +175,8 @@ public class raImportRac {
     setDate(sk, "DATUNOS", head, "ServiceDate");
     setDate(sk, "DATDOK", head, "InvoiceDate");
     setDate(sk, "DATDOSP", head, "InvoiceDueDate");
-    setDate(sk, "DATUMKNJ", head, "BookedOn");
-    setDate(sk, "DATPRI", head, "BookedOn");
-    
+    setDate(sk, "DATUMKNJ", head, "InvoiceDate");
+    setDate(sk, "DATPRI", head, "InvoiceDate");
     
 
     sk.setString("BROJDOK", head.getChildText("DocumentIdentifier"));
