@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Rnser;
 import hr.restart.baza.dM;
 import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
@@ -164,6 +165,13 @@ public class raenginePRD {
           suma = suma.add(dm.getArtikli().getBigDecimal("NC")).multiply(normativUs.getBigDecimal("KOL"));
         }
       }
+      
+      QueryDataSet rns = Rnser.getDataModule().getTempSet("cradnal='"+cradnal+"' and rbsid="+rbsrn);
+      rns.open();
+      for (rns.first();rns.inBounds();rns.next()){
+      	suma = suma.add(rns.getBigDecimal("VRI"));
+      }
+      
       return suma;
   }
   

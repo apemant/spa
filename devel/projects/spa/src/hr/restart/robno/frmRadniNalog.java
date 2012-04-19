@@ -285,6 +285,13 @@ public abstract class frmRadniNalog extends raMasterDetail {
         e.printStackTrace();
         return false;
       }
+      try {
+        raTransaction.runSQL("DELETE FROM Rnser WHERE "+Condition.equal("CRADNAL",
+            getMasterSet().getString("CRADNAL")).and(Condition.equal("RBSID", oldRbsid)));
+      } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+      }
     }
     return true;
   }

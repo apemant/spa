@@ -1462,3 +1462,15 @@ CRAB2;char;2;;;Rabat 2
 CRAB3;char;2;;;Rabat 3
 ALLGR;char;1;;N;Cijela grupa
 
+$Rnser
+CRADNAL;text;30;pkey;;Šifra RN
+RBSID;int;6;pkey;;ID stavke
+RBR;short;2;pkey;;Rbr
+CART;int;6;;;Šifra
+CART1;char;20;;;Oznaka;15
+BC;char;20;;;Barcode;15
+NAZART;char;50;;;Naziv;20
+JM;char;3;;;Jm
+KOL;numeric;17,3;;0;Kolièina;15
+ZC;numeric;15,2;;0;Cijena
+VRI;numeric;15,2;;0;Vrijednost

@@ -849,6 +849,6 @@ public class ConsoleCreator {
             "hr.restart.baza.Smjene", "hr.restart.baza.Repxhead",
             "hr.restart.baza.Repxdata", "hr.restart.baza.dokidod",
             "hr.restart.baza.Exphead", "hr.restart.baza.Expdata",
-            "hr.restart.baza.Rabshema"
+            "hr.restart.baza.Rabshema", "hr.restart.baza.Rnser"
       };
 }

@@ -28,9 +28,11 @@ import hr.restart.swing.raTableColumnModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
 import hr.restart.util.raImages;
+import hr.restart.util.raLoader;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raNavBar;
 import hr.restart.util.raProcess;
+import hr.restart.util.startFrame;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -56,6 +58,8 @@ public class frmProizvodnja extends frmRadniNalog {
   raNavAction potob;
 
   frmTableDataView viewReq = new frmTableDataView(false, false, true);
+  
+  frmRnser rns;
   
   public static frmProizvodnja getInstance() {
     return frmRNL;
@@ -408,6 +412,12 @@ public class frmProizvodnja extends frmRadniNalog {
         showRequirements();
       }
     }, 4);
+    raDetail.addOption(new raNavAction("Radne operacije", raImages.IMGCOMPOSEMAIL, KeyEvent.VK_F8) {
+      public void actionPerformed(ActionEvent e) {
+      	rns.setStav(getMasterSet().getString("CRADNAL"), getDetailSet().getInt("RBSID"));
+        startFrame.getStartFrame().showFrame(rns);
+      }
+    }, 5);
     raMaster.removeRnvCopyCurr();
     raDetail.removeRnvCopyCurr();
     
@@ -416,5 +426,7 @@ public class frmProizvodnja extends frmRadniNalog {
 
     this.raMaster.installSelectionTracker("CRADNAL");
     this.setMasterDeleteMode(DELDETAIL);
+    
+    rns = (frmRnser) startFrame.getStartFrame().showFrame("hr.restart.robno.frmRnser", 0, "Pregled radnih operacija", false);
   }
 }
