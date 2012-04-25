@@ -381,12 +381,12 @@ public class raIspisUraIra extends raFrame {
     cols.add(dM.createBigDecimalColumn("OSTALO", "Ostalo"));
     if (ui.equals("U")) {
       cols.add(dM.createBigDecimalColumn("OCHECK10", "Greška 10% poreza"));
-      cols.add(dM.createBigDecimalColumn("OCHECK22", "Greška 22% poreza"));
-      cols.add(dM.createBigDecimalColumn("OCHECK23", "Greška 23% poreza"));
+      cols.add(dM.createBigDecimalColumn("OCHECK22", "Greška 23% poreza"));
+      cols.add(dM.createBigDecimalColumn("OCHECK23", "Greška 25% poreza"));
     } else {
       cols.add(dM.createBigDecimalColumn("OCHECK10", "Greška 10% poreza"));
-      cols.add(dM.createBigDecimalColumn("OCHECK22", "Greška 22% poreza"));
-      cols.add(dM.createBigDecimalColumn("OCHECK23", "Greška 23% poreza"));
+      cols.add(dM.createBigDecimalColumn("OCHECK22", "Greška 23% poreza"));
+      cols.add(dM.createBigDecimalColumn("OCHECK23", "Greška 25% poreza"));
     }
     cols.add(dM.createBigDecimalColumn("SALDO", "Greška zbroja"));
     uraira.setColumns((Column[]) cols.toArray(new Column[] {}));
@@ -429,8 +429,8 @@ public class raIspisUraIra extends raFrame {
   
   private void findErrors(boolean ulaz) {
     BigDecimal x10 = new BigDecimal("0.1");
-    BigDecimal x22 = new BigDecimal("0.22");
     BigDecimal x23 = new BigDecimal("0.23");
+    BigDecimal x25 = new BigDecimal("0.25");
     boolean nem = "D".equalsIgnoreCase(frmParam.getParam("sk", 
         "checkNemoze", "N", "Uraèunati kolonu ne može se odbiti u provjeru (D,N)"));
     for (uraira.first(); uraira.inBounds(); uraira.next()) {
@@ -440,11 +440,11 @@ public class raIspisUraIra extends raFrame {
               subtract(uraira.getBigDecimal("KOLONA12")).
               subtract(nem ? uraira.getBigDecimal("KOLONA13") : Aus.zero2));
         uraira.setBigDecimal("OCHECK22", uraira.getBigDecimal("KOLONA8").
-            multiply(x22).setScale(2, BigDecimal.ROUND_HALF_UP).
+            multiply(x23).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA14")).
             subtract(nem ? uraira.getBigDecimal("KOLONA15") : Aus.zero2));
         uraira.setBigDecimal("OCHECK23", uraira.getBigDecimal("KOLONA9").
-            multiply(x23).setScale(2, BigDecimal.ROUND_HALF_UP).
+            multiply(x25).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA16")).
             subtract(nem ? uraira.getBigDecimal("KOLONA17") : Aus.zero2));
         uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA10").
@@ -464,10 +464,10 @@ public class raIspisUraIra extends raFrame {
             multiply(x10).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA13")));
         uraira.setBigDecimal("OCHECK22", uraira.getBigDecimal("KOLONA14").
-            multiply(x22).setScale(2, BigDecimal.ROUND_HALF_UP).
+            multiply(x23).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA15")));
         uraira.setBigDecimal("OCHECK23", uraira.getBigDecimal("KOLONA16").
-            multiply(x23).setScale(2, BigDecimal.ROUND_HALF_UP).
+            multiply(x25).setScale(2, BigDecimal.ROUND_HALF_UP).
             subtract(uraira.getBigDecimal("KOLONA17")));
         uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA6").
             subtract(uraira.getBigDecimal("KOLONA7")).
