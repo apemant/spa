@@ -324,6 +324,7 @@ public class raEDI {
       
       zag.setString("GOD", hr.restart.util.Util.getUtil().
           getYear(zag.getTimestamp("DATDOK")));
+      zag.setString("CRADNAL", "EDI");
       
       String nbr = line.substring(49, 84);
       
