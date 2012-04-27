@@ -338,6 +338,10 @@ final public class raRAC extends raIzlazTemplate {
     public boolean ValidacijaStanje() {
         return testStanjeRACGRN();
     }
+    
+    public boolean isKPR() {
+      return false;
+    }
 
     public String dodatak(String odabrano) {
         String dodatakic = new String("");
