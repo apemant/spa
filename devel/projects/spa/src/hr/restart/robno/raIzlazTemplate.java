@@ -2559,7 +2559,7 @@ System.out.println("findCjenik::else :: "+sql);
         buf.append(getPadded("", 40));
         
         buf.append(getNum(Aus.sum("IPRODBP", ds), 13));
-        buf.append(getPadded("23", 4));
+        buf.append(getPadded(ds.getBigDecimal("PPOR1").intValue()+"", 4));
         buf.append(getNum(Aus.sum("POR1", ds), 13));
         buf.append(getNum(Aus.zero2, 13));
         buf.append("HRK");
@@ -2598,7 +2598,7 @@ System.out.println("findCjenik::else :: "+sql);
           buf.append(getPadded(Aus.formatBigDecimal2(kol.abs()), 8));
           buf.append(getNum(ds.getBigDecimal("FVC"), 13));
           buf.append(getNum(ds.getBigDecimal("POR1"), 13));
-          buf.append(getPadded("23", 4));
+          buf.append(getPadded(ds.getBigDecimal("PPOR1").intValue()+"", 4));
           buf.append(getNum(ds.getBigDecimal("IPRODBP"), 13));
           buf.append(getPadded("", 100));
           buf.append("\n");
@@ -4096,6 +4096,35 @@ System.out.println("findCjenik::else :: "+sql);
 			}
 		}
 		return true;
+	}
+	
+	public void changeGlobalPopust() {
+	  getDetailSet().refresh();
+	  if (getDetailSet().rowCount() == 0) {
+	    JOptionPane.showMessageDialog(this.raMaster, "Ne postoje stavke ovog raèuna!",
+            "Greška", JOptionPane.ERROR_MESSAGE);
+        return;
+	  }
+	  String gr = hr.restart.sisfun.frmParam.getParam(
+          "robno", "defglobrab", "",
+          "Predefinirana šifra rabata na raèunu");
+	  if (gr == null || gr.length() == 0) {
+	    JOptionPane.showMessageDialog(this.raMaster, "Potrebno je definirati parametar defglobrab prije dodavanja rabata na raèun!",
+	        "Nedostaje parametar", JOptionPane.WARNING_MESSAGE);
+	    return;
+	  }
+	  
+	  QueryDataSet ds = hr.restart.util.Util
+      .getNewQueryDataSet("SELECT * FROM vtrabat where cskl ='"
+              + getDetailSet().getString("CSKL") + "' AND VRDOK='"
+              + getDetailSet().getString("VRDOK") + "' AND GOD='"
+              + getDetailSet().getString("GOD") + "' AND BRDOK="
+              + getDetailSet().getInt("BRDOK") + " AND rbr ="
+              + getDetailSet().getInt("RBSID"));
+	  
+	  
+	  
+	  
 	}
 
 	private QueryDataSet forallpopust;
