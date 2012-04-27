@@ -561,6 +561,10 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
     detail.setBigDecimal("MC", qds.getBigDecimal("MC"));
     detail.setBigDecimal("IPRODSP", qds.getBigDecimal("IPRODSP"));*/
     detail.setString("CSKLART", qds.getString("CSKL"));
+    detail.setInt("RBSID", rbr);
+    detail.setString("ID_STAVKA",
+        raControlDocs.getKey(detail, new String[] { "cskl",
+                "vrdok", "god", "brdok", "rbsid" }, "stdoki"));
     detail.post();
     if (arh) return;
     if (raVart.isStanje(qds.getInt("CART")) && (!raVart.isNorma(qds.getInt("CART")) 
