@@ -56,6 +56,12 @@ public class RaLogicStanjePromet {
     QueryDataSet mesMei = getMeiData(makeCondition("MESKLA","STMESKLA","CSKLIZ",cskl,cart,dodat));
     QueryDataSet mesMeuPor = getMesPorData(makeCondition("MESKLA","STMESKLA","CSKLUL",cskl,cart,dodat));
     
+    String vrzal = "N";
+    if (lookupData.getlookupData().raLocate(dm.getSklad(), "CSKL", cskl))
+      vrzal = dm.getSklad().getString("VRZAL");
+    
+    boolean mpc = vrzal.equals("M");
+    
     povratImovine = new QueryDataSet();
     
     povratImovine.setMetaDataUpdate(MetaDataUpdate.TABLENAME + MetaDataUpdate.PRECISION + MetaDataUpdate.SCALE + MetaDataUpdate.SEARCHABLE);
@@ -194,7 +200,7 @@ public class RaLogicStanjePromet {
     for (povratImovine.first(); povratImovine.next(); povratImovine.inBounds()) {
       if (povratImovine.getBigDecimal("KOL").signum() != 0) {
         Aus.div(povratImovine, "NC", "NAB", "KOL");
-        Aus.div(povratImovine, "ZC", "VRI", "KOL");
+        if (!mpc) Aus.div(povratImovine, "ZC", "VRI", "KOL");
       }
     }
     
