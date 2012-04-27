@@ -122,6 +122,7 @@ public class frmUlazTemplate extends raMasterDetail {
 	
 	boolean isTranzit;
 	boolean isNar;
+	boolean isMinusAllowed = false;
 
 	boolean isDobArt; // Da li ima record u DOBART
 
@@ -180,6 +181,9 @@ public class frmUlazTemplate extends raMasterDetail {
         this.raMaster.installSelectionTracker("BRDOK");
         
         raDetail.removeRnvCopyCurr();
+        
+        isMinusAllowed = frmParam.getParam("robno", "allowMinusU", "N",
+          "Dopustiti odlazak u minus na ulazima (D,N)?").equals("D");
 
 		setMasterKey(key);
 		System.out.println("setting master key for "+getClass().getName() + " " + Arrays.asList(key));
@@ -341,7 +345,7 @@ public class frmUlazTemplate extends raMasterDetail {
 		
 		BigDecimal dk = getDetailSet().getBigDecimal("KOL");
 		if (mode == 'I') dk = dk.subtract(oldKOL);
-		if (isFind && !isTranzit && prSTAT!='K' && (mode == 'I' || dk.signum() < 0) && 
+		if (isFind && !isTranzit && !isMinusAllowed && prSTAT!='K' && (mode == 'I' || dk.signum() < 0) && 
 		    stanjeSet.getBigDecimal("KOL").compareTo(dk.negate()) < 0) {
           JOptionPane.showConfirmDialog(raDetail.getWindow(),
                 "Nedovoljna kolièina na zalihi za smanjivanje ovom stavkom!",
