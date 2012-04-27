@@ -960,6 +960,7 @@ CNAP;char;3;;;Napomena
 BCPAK;char;20;;;Barcode pakiranja;10
 BCKOL;char;20;;;Barcode kolete;10
 SORTKOL;int;6;;;Sortiranje
+POSTOPROV;numeric;15,3;;0;Postotak provizije
 UIDX=cart1
 UIDX=bc
 
@@ -997,6 +998,56 @@ DEST;char;50;;;Na
 KOL;numeric;15,3;;0;Kolièina
 IDX=src
 IDX=dest
+
+
+$Doku
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSKL;char;12;pkey;;Skladište
+VRDOK;char;3;pkey;;Vrsta;4
+CUSER;char;15;;;Operater
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj;8
+UI;char;1;;U;Ul.;*
+SYSDAT;date;;;;SYSDAT;*
+DATDOK;date;;;;Datum;10
+CPAR;int;6;;;Partner;15
+CORG;char;12;;;Organizacijska jedinica
+BRRAC;char;20;;;Broj raèuna;15
+DATRAC;date;;;;Datum raèuna;10
+DVO;date;;;;DVO;10
+DDOSP;short;2;;0;Dani dospijeæa;15
+DATDOSP;date;;;;Datum dospijeæa;10
+BRDOKUL;char;20;;;Broj ulaznog dokumenta;15
+DATDOKUL;date;;;;Datum ulaznog dokumenta;10
+BRNARUL;char;20;;;Broj narudžbe;15
+DATNARUL;date;;;;Datum narudžbe;10
+OZNVAL;char;3;;;Oznaka valute
+TECAJ;numeric;15,6;;0;Teèaj
+BRNAL;char;8;;;Nalog
+DATKNJ;date;;;;Datum knjiženja;10
+STATUS;char;1;;N;STATUS;*
+STATKNJ;char;1;;N;Stat. knj.;*
+STATPLA;char;1;;N;Stat. plaæ.;*
+STATURA;char;1;;N;Stat. trans.;*
+UINAB;numeric;15,2;;0;Nabavni iznos
+UIZT;numeric;15,2;;0;Iznos zavisnih troškova
+UPZT;numeric;17,7;;0;Posto zavisnih troškova;15
+UIPRPOR;numeric;15,2;;0;Iznos pretporeza
+CSHZT;char;3;;;Shema zavisnih troškova
+ZIRO;char;40;;;Žiro raèun;15
+PNBZ2;char;30;;;Poziv na broj (zaduž.) 2;15
+OPIS;char;200;;;Opis;15
+CRADNAL;char;20;;;Broj radnog naloga;15
+PARAM;char;8;;;Parametri
+STAT_KPR;char;1;;N;Stat KPR
+CSKLAD;char;12;;N;Stat KPR
+UIKAL;numeric;15,2;;0;Iznos kalk.;8
+UIRAC;numeric;15,2;;0;Iznos raèuna;8
+PLATITI;numeric;15,2;;0;Uplata;8
+DATUPL;date;;;;Datum dospijeæa;10
+DEVIZN;numeric;15,2;;0;Devizni iznos;8
+UIPRPOR2;numeric;15,2;;0;Iznos pretporeza 2
 
 
 $Stdoku
