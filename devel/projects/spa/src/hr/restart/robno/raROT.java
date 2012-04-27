@@ -104,6 +104,11 @@ public class raROT extends raIzlazTemplate  {
   
   public void zamraciMaster(DataSet ds){}
   public void zamraciDetail(DataSet ds){
+    
+    if (frmParam.getParam("robno", "ROTzarada", "D",
+    "Izraèunati stvarnu zaradu na ROT-u (D,N)").equals("D")) {
+      dm.getStRot().getColumn("KOL2").setCaption("Jedinièni RuC");
+    }
   
   	ds.getColumn("CRADNAL").setVisible(TriStateProperty.TRUE);
   	ds.getColumn("UPRAB").setVisible(TriStateProperty.TRUE);
@@ -196,6 +201,33 @@ public class raROT extends raIzlazTemplate  {
             JraTable2 tab = (JraTable2) getTable();
             Column col = tab.getDataSetColumn(getColumn());
             return (col != null && col.getColumnName().equalsIgnoreCase("IMAR"));
+          }
+          return false;
+        }
+      });
+      
+      raDetail.getJpTableView().addTableModifier(new raTableModifier() {
+        Variant shared = new Variant();
+        public void modify() {
+          JraTable2 tab = (JraTable2) getTable();
+          DataSet ds = tab.getDataSet();
+          ds.getVariant("IPRODBP", getRow(), shared);
+          BigDecimal ruc = shared.getBigDecimal();
+          ds.getVariant("INAB", getRow(), shared);
+          ruc = ruc.subtract(shared.getBigDecimal());
+          ds.getVariant("KOL", getRow(), shared);
+          if (shared.getBigDecimal().signum() != 0)
+            shared.setBigDecimal(ruc.divide(shared.getBigDecimal(), 3, BigDecimal.ROUND_HALF_UP));
+          else shared.setBigDecimal(ruc);
+          Column bcol = ds.getColumn("KOL2");
+          setComponentText(bcol.format(shared));
+        }
+      
+        public boolean doModify() {
+          if (getTable() instanceof JraTable2) {
+            JraTable2 tab = (JraTable2) getTable();
+            Column col = tab.getDataSetColumn(getColumn());
+            return (col != null && col.getColumnName().equalsIgnoreCase("KOL2"));
           }
           return false;
         }
