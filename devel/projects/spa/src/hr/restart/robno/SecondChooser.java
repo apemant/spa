@@ -329,8 +329,13 @@ public class SecondChooser extends JraDialog {
           if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS") 
               || transOtp) {
             rIT.getMasterSet().setString("BRDOKIZ", repUtil.getFormatBroj(ZaglavljeSet));
-            if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS"))
-                rIT.getMasterSet().setString("BRDOKIZ", ZaglavljeSet.getString("BRDOKIZ"));
+
+            if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS")) {
+                if (frmParam.getParam("robno", "copyDOSbrdok",  
+                     "Prenijeti broj izlaznog dokumenta s DOS-a (D,N)", "N").equalsIgnoreCase("D"))
+                  rIT.getMasterSet().setString("BRDOKIZ", ZaglavljeSet.getString("BRDOKIZ"));
+                rIT.getMasterSet().setString("OPIS", ZaglavljeSet.getString("OPIS"));
+            }
             rIT.getMasterSet().setTimestamp("DATDOKIZ", ZaglavljeSet.getTimestamp("DATDOK"));
           }
           rIT.getMasterSet().setString("CRADNAL", ZaglavljeSet.getString("CRADNAL"));
