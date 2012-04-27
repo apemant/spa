@@ -267,6 +267,7 @@ public class frmArtikli extends raMatPodaci {
 //  JraComboBox jraInventura = new JraComboBox();
 
   JraTextField postomanjka = new JraTextField();
+  JraTextField postoprov = new JraTextField();
   raComboBox jraTipKalkul = new raComboBox();
   JPanel jpSubjekt = new JPanel();
   JlrNavField jlrPreSub = new JlrNavField();
@@ -794,6 +795,8 @@ public class frmArtikli extends raMatPodaci {
     
     postomanjka.setDataSet(getRaQueryDataSet());
     postomanjka.setColumnName("POSTOINV");
+    postoprov.setDataSet(getRaQueryDataSet());
+    postoprov.setColumnName("POSTOPROV");
     
 //    jraTipKalkul.setDataSet(getRaQueryDataSet());
 //    jraTipKalkul.set
@@ -905,12 +908,17 @@ public class frmArtikli extends raMatPodaci {
     jpNarucivanje.add(jtfNAZORIG, new XYConstraints(150, 120, 390, -1));
     jpNarucivanje.add(jtfKOLZANAR, new XYConstraints(150, 145, 100, -1));
 
-    jpNarucivanje.add(new JLabel("Posto dozvoljenog otpisa"), 
-            new XYConstraints(260, 145, 150, -1));    
-    jpNarucivanje.add(postomanjka, new XYConstraints(440, 145, 100, -1));
-    jpNarucivanje.add(new JLabel("Naèin raèunanja otpisa"),
-            new XYConstraints(260, 170, 150, -1));
-    jpNarucivanje.add(jraTipKalkul, new XYConstraints(392, 170, 150, -1));
+    
+    jpNarucivanje.add(new JLabel("Postotak provizije"), 
+        new XYConstraints(260, 145, 150, -1));    
+    jpNarucivanje.add(postoprov, new XYConstraints(440, 145, 100, -1));
+    
+    jpNarucivanje.add(new JLabel("Postotak otpisa"), 
+            new XYConstraints(260, 170, 150, -1));    
+    jpNarucivanje.add(postomanjka, new XYConstraints(440, 170, 100, -1));
+    jpNarucivanje.add(new JLabel("Naèin otpisa"),
+            new XYConstraints(260, 195, 150, -1));
+    jpNarucivanje.add(jraTipKalkul, new XYConstraints(392, 195, 150, -1));
 
     
     // Dio oko subjekta radnog naloga 
