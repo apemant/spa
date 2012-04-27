@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.baza.Artikli;
 import hr.restart.baza.dM;
 import hr.restart.sk.PartnerCache;
+import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 
@@ -993,6 +994,7 @@ System.out.println("QS : " + queryString);
       (Column) dm.getStdoki().getColumn("INAB").clone(),
       dm.createBigDecimalColumn("RUC","RuC",2),
       dm.createBigDecimalColumn("PostoRUC","% RuC",2),
+      dm.createBigDecimalColumn("JRUC","Jed. RuC", 3),
       (Column) dm.getStdoki().getColumn("IPRODBP").clone(),
       dm.createBigDecimalColumn("POR","Porez",2),
       (Column) dm.getStdoki().getColumn("IPRODSP").clone(),
@@ -1078,6 +1080,8 @@ System.out.println("QS : " + queryString);
         catch (Exception ex) {
           stds.setBigDecimal("PostoRUC",new java.math.BigDecimal("0.00"));
         }
+        if (stds.getBigDecimal("KOL").signum() != 0)
+          Aus.div(stds, "JRUC", "RUC", "KOL");
       } else {
         /*if (ts.getString("CSKL").equals(cskl))*/ stds.setBigDecimal("KOL", stds.getBigDecimal("KOL").add(ts.getBigDecimal("KOL")));
 
@@ -1107,6 +1111,8 @@ System.out.println("QS : " + queryString);
         catch (Exception ex) {
           stds.setBigDecimal("PostoRUC",new java.math.BigDecimal("0.00"));
         }
+        if (stds.getBigDecimal("KOL").signum() != 0)
+          Aus.div(stds, "JRUC", "RUC", "KOL");
       }
     } while (ts.next());
     if (sortum.equals("CART") || sortum.equals("CART1") || sortum.equals("BC") || sortum.equals("NAZART"))stds.setSort(new SortDescriptor(new String[] {sortum}));
