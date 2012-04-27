@@ -116,7 +116,7 @@ public class frmVrtros extends raSifraNaziv {
     
 
     this.jpRoot.add(jPanel1, BorderLayout.SOUTH);
-    raDataIntegrity.installFor(this).setProtectedColumns(new String[]{"OSNOVICA"});
+    //raDataIntegrity.installFor(this).setProtectedColumns(new String[]{"OSNOVICA"});
     this.setVisibleCols(new int[] {0,1,2});
     
 
