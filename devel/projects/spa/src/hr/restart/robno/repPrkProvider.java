@@ -151,10 +151,13 @@ public class repPrkProvider implements raReportData { //implements sg.com.elixir
     return ds.getString("NAZART");
   }
   public BigDecimal getPOSTOPOREZA(){
-	 ru.setDataSet(ds);
-	 getPorezPos();
-	 colname[0] ="CPOR";
-	 return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"ukupor").getBigDecimal();
+	 //ru.setDataSet(ds);
+	 //getPorezPos();
+	 //colname[0] ="CPOR";
+	 //return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"ukupor").getBigDecimal();
+    
+    return ds.getBigDecimal("MC").divide(ds.getBigDecimal("VC"), 2, BigDecimal.ROUND_HALF_UP).subtract(Aus.one0).movePointRight(2).setScale(2);
+    
   }
   public String getPorezPos() {
 	 ru.setDataSet(ds);
