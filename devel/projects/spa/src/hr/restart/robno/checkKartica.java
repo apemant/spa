@@ -441,7 +441,7 @@ public class checkKartica {
     QueryDataSet ds;
     raProcess.setMessage("Dohvat ulaznih dokumenata ...", false);
     ds = Stdoku.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK RBR CART KOL NC VC MC ZC "+
-          "INAB IMAR IBP IPOR ISP IZAD SKOL SVC SMC DIOPORMAR DIOPORPOR PORAV RBSID",
+          "INAB IMAR IBP IPOR ISP IZAD SKOL SVC SMC DIOPORMAR DIOPORPOR PORAV RBSID STATUS",
           cCskl.and(cGod).and(cUl).and(arts));
     raProcess.openScratchDataSet(ds);
     ds.setSort(csort);
@@ -928,6 +928,8 @@ public class checkKartica {
 			/*if (!TypeDoc.getTypeDoc().isDocDiraZalihu(ds.getString("VRDOK"))) {
 				continue;
 			}*/
+      if (ds.getString("VRDOK").equals("PRI") && ds.getString("STATUS").equals("N")) continue;
+      
       String key = getHeaderKey(ds);
       if (!zag.containsKey(key)) {
         fatal.addError("Nema zaglavlja za stavku "+ds.getString("VRDOK")+
