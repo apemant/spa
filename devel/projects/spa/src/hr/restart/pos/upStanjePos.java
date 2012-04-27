@@ -169,6 +169,7 @@ public class upStanjePos extends raUpitLite {
     		dM.createBigDecimalColumn("NC", "Nab. cijena", 2),
     		dM.createBigDecimalColumn("NABUL", "Nab. ulaz", 2),
     		dM.createBigDecimalColumn("NABIZ", "Nab. izlaz", 2),
+    		dM.createBigDecimalColumn("NABVRI", "Nab. vrijednost", 2),
     		dM.createBigDecimalColumn("MC", "Cijena", 2),
     		dM.createBigDecimalColumn("IZAD", "Zaduženje", 2),
     		dM.createBigDecimalColumn("IRAZ", "Razduženje", 2),
@@ -198,12 +199,13 @@ public class upStanjePos extends raUpitLite {
   		Aus.add(res, "KOLUL", du, "KOL");
   		Aus.add(res, "KOL", du);
   		Aus.add(res, "NABUL", du, "INAB");
+  		Aus.add(res, "NABVRI", du, "INAB");
   		Aus.add(res, "IZAD", du);
   		Aus.add(res, "VRI", du, "IZAD");
   		Aus.add(res, "IZAD", du, "PORAV");
   		Aus.add(res, "VRI", du, "PORAV");
   		Aus.set(res, "MC", du);
-  		if (res.getBigDecimal("KOL").signum() != 0)
+  		if (res.getBigDecimal("KOL").abs().intValue() >=1)
   			Aus.div(res, "NC", "NABUL", "KOL");
   		
   		Aus.mul(res, "ERR", "KOL", "MC");
@@ -251,6 +253,10 @@ public class upStanjePos extends raUpitLite {
   		} else {
   			Aus.set(res, "IRAZ", di);
   		}
+  		Aus.sub(res, "NABVRI", "NABUL", "NABIZ");
+  		if (res.getBigDecimal("KOL").abs().intValue() >=1)
+  		  Aus.div(res, "NC", "NABVRI", "KOL");
+  		
   		Aus.sub(res, "VRI", "IZAD", "IRAZ");
   		Aus.add(res, "POP", di, "UIRAB");
   		Aus.add(res, "NETO", di, "IPRODSP");
