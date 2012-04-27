@@ -20,7 +20,6 @@ package hr.restart.robno;
 import javax.swing.JOptionPane;
 
 import com.borland.dx.dataset.DataSet;
-import com.sun.jndi.url.ldaps.ldapsURLContextFactory;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.RN;
