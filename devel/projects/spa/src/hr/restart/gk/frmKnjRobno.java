@@ -1068,7 +1068,7 @@ System.out.println("**** DEVIZNI ANLAGE");
         for (int i = 0; i < alVrdok.size(); i++) {
             vrdok = (String) alVrdok.get(i);
             if (TD.isDocStdoku(vrdok)) {
-                sqlQuery = "SELECT count(*) as brojac from doku,stdoku "
+                sqlQuery = "SELECT CAST(count(*) AS INT) as brojac from doku,stdoku "
                         + "WHERE " + rut.getDoc("doku", "stdoku")
                         + " AND doku.vrdok ='" + vrdok + "' "
                         + " AND doku.datdok " + getDatumDoSQL()
@@ -1081,7 +1081,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                     ex.printStackTrace();
                 }
             } else if (TD.isDocStdoki(vrdok)) {
-                sqlQuery = "SELECT count(*) as brojac from doki,stdoki "
+                sqlQuery = "SELECT CAST(count(*) AS INT) as brojac from doki,stdoki "
                         + "WHERE " + rut.getDoc("doki", "stdoki")
                         + " AND doki.vrdok ='" + vrdok + "' "
                         + " AND doki.datdok " + getDatumDoSQL()
@@ -1101,7 +1101,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                         || (vrdok.equalsIgnoreCase("MES") && (uis
                                 .equalsIgnoreCase("I") || uis
                                 .equalsIgnoreCase("S")))) {
-                    sqlQuery = "SELECT count(*) as brojac from meskla,stmeskla "
+                    sqlQuery = "SELECT CAST(count(*) AS INT) as brojac from meskla,stmeskla "
                             + "WHERE meskla.csklul = stmeskla.csklul "
                             + "AND meskla.cskliz = stmeskla.cskliz "
                             + "AND meskla.vrdok = stmeskla.vrdok "
