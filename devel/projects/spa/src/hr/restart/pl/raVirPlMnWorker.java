@@ -28,6 +28,7 @@ import hr.restart.baza.Odbici;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.Radnicipl;
 import hr.restart.util.Util;
+import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.raMnemVar;
 import hr.restart.util.raMnemonics;
@@ -62,13 +63,14 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
     striped_radpl.open();
     radnici = Radnici.getDataModule().copyDataSet();
     radnici.open();
+    
     addVar(new raMnemVar("$matbr","Matièni broj poduzeæa") {
       public String getText() {
         ld.raLocate(dm.getLogotipovi(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
         return dm.getLogotipovi().getString(raObracunPL.isOIB()?"OIB":"MATBROJ");
       }
     });
-    
+
     addVar(new raMnemVar("$cop","Oznaka opæine") {
       public String getText() {
         String ckeySif="";
@@ -96,7 +98,7 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
         return dm.getOrgpl().getShort("MJOBR") + "";        
       }
     });
-    
+
     addVar(new raMnemVar("$godo","Godina obrade") {
       public String getText() {
         ld.raLocate(dm.getOrgpl(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
@@ -235,6 +237,13 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
         return getFromBankepl("BRDOM");
       }
     });
+    
+    addVar(new raMnemVar("$pnbzN", "Poziv na broj zaduzenja za NETO (nn 49/12)") {
+      
+      public String getText() {
+        return getPnb2zNeto();
+      }
+    });
   }
 
 //  
@@ -258,6 +267,23 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
     return day+"."+month+"."+year+".";
   }
 
+  private String getPnb2zNeto() {
+    String ret = "";
+    ld.raLocate(dm.getLogotipovi(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
+    ret = dm.getLogotipovi().getString(raObracunPL.isOIB()?"OIB":"MATBROJ");
+    ld.raLocate(dm.getOrgpl(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
+    ret = ret + "-" + Valid.getValid().maskZeroInteger(new Integer(dm.getOrgpl().getShort("MJOBR")), 2);
+    ret = ret + Short.toString(dm.getOrgpl().getShort("GODOBR")).substring(2);
+//    Podatak o plaæi:
+//      0 – isplata plaæe u cijelosti
+//      1 – isplata prvog dijela plaæe
+//      2 – isplata drugog dijela plaæe
+//      3 – isplata koja ne podliježe uplati doprinosa za mirovinsko osiguranje temeljem individualne kapitalizirane štednje
+//      4 – isplata koje ne podliježe uplati doprinosa na osnovicu
+//    ret = ret + "-0"; // :)
+    //
+    return ret;
+  }
 /*
 NN 1/2003: Raèuni se sastoje od dva dijela koji su meðusobno odvojeni: vodeæeg broja banke i
 broja raèuna u banci. Vodeæi broj banke je 1001005 -
