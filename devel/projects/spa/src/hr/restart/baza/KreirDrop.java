@@ -1312,6 +1312,10 @@ public abstract class KreirDrop {
     }
   }
   
+  protected void modifyColumn(Column c) {
+    
+  }
+  
   private Column parseColumnDef(String[] parts) {
     if (parts.length < 6)
       terror("premalo tokena za definiciju kolone");
@@ -1351,6 +1355,8 @@ public abstract class KreirDrop {
     
     Column c = dM.createColumn(parts[0].toUpperCase(), parts[5], parts[4].trim(), 
         dtype, Dialect.getSqlType(dtype), prec, scale);
+    
+    modifyColumn(c);
 
     if (parts[3].equalsIgnoreCase("pkey") || parts[3].equalsIgnoreCase("key"))
       c.setRowId(true);
