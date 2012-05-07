@@ -16,6 +16,10 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
+import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
+
+import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
@@ -858,6 +862,18 @@ public class stdoki extends KreirDrop implements DataModule {
 		stdokiIDSTAVKA, stdokiKOL1, stdokiKOL2});
 */
     initClones();
+  }
+  
+  protected void modifyColumn(Column c) {
+    if (c.getColumnName().equals("FC") || c.getColumnName().equals("FVC") ||
+        c.getColumnName().equals("FMC") || c.getColumnName().equals("FMCPRP")) {
+      int scale = Aus.getNumber(frmParam.getParam("robno", "cijenaDec", 
+          "2", "Broj decimala za cijenu na izlazu (2-4)").trim());
+      c.setScale(scale);
+      c.setPrecision(c.getPrecision() - 2 + scale);
+      if (scale > 0 && scale < 8)
+        c.setDisplayMask("###,###,##0."+hr.restart.util.Aus.string(scale, '0'));
+    }
   }
 
   private void initClones() {
