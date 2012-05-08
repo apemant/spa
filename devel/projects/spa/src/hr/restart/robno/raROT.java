@@ -298,6 +298,7 @@ public class raROT extends raIzlazTemplate  {
        raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniGetro","hr.restart.robno.repRacuniPnP","RacGetro","Raèun za Getro");
      }
      raMaster.getRepRunner().addReport("hr.restart.robno.repMxROT","Matri\u010Dni ispis ra\u010Duna");
+     raMaster.getRepRunner().addReport("hr.restart.robno.repMxROTPop","Matri\u010Dni ispis ra\u010Duna s više popusta");
      
      //test
      
@@ -352,6 +353,7 @@ public class raROT extends raIzlazTemplate  {
        raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniGetro","hr.restart.robno.repRacuniPnP","RacGetro","Raèun za Getro");
      }
      raDetail.getRepRunner().addReport("hr.restart.robno.repMxROT","Matri\u010Dni ispis ra\u010Duna");
+     raDetail.getRepRunner().addReport("hr.restart.robno.repMxROTPop","Matri\u010Dni ispis ra\u010Duna s više popusta");
  }
  
  String tranzitVeza;

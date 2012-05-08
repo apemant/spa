@@ -120,7 +120,7 @@ public class repMxRacun extends mxReport {
     this.setDetail(detail);
   }
 
-  private void fill()
+  protected void fill()
   {
     sumaBP = Aus.zero2;
     sumaSP = Aus.zero2;
@@ -235,7 +235,7 @@ public class repMxRacun extends mxReport {
 
   String racunString = "";
 
-  private String getKupac()
+  protected String getKupac()
   {
     ds.open();
     ds.first();
@@ -295,7 +295,7 @@ public class repMxRacun extends mxReport {
 //    return "REKAPITULACIJA PLAÆANJA";
 //  }
 
-  private String getSkladiste()
+  protected String getSkladiste()
   {
     ds.open();
     ds.first();
@@ -306,7 +306,7 @@ public class repMxRacun extends mxReport {
     return prMj+date+"<$newline$>";
   }
 
-  private String getRacun()
+  protected String getRacun()
   {
     ds.open();
     ds.first();
@@ -470,7 +470,7 @@ public class repMxRacun extends mxReport {
     }
   }
 
-  private String getNP()
+  protected String getNP()
   {
     String np="";
     if(rata.size()<=0)

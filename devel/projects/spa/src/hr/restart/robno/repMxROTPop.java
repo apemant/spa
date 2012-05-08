@@ -1,5 +1,5 @@
 /****license*****************************************************************
-**   file: repMxRacunPop.java
+**   file: repMxROTPOP.java
 **   Copyright 2006 Rest Art
 **
 **   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,29 +17,26 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import java.math.BigDecimal;
-
 import hr.restart.util.Aus;
+
+import java.math.BigDecimal;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 
-
-public class repMxRacunPop extends repMxRacun {
-  
+public class repMxROTPop extends repMxROT {
 	
 	protected void fill() {
 		super.fill();
 		String [] detail =new String[]{"<#RBR|3|right#>"+". "+"<#SIFRA|20|left#>"+" "+"<#NAZIV|48|left#>"+" "+
-	      "<#KOL|12|right#>"+" "+"<#JM|6|right#>"+" "+"<#POREZ|10|right#>"+" "+"<#CIJENA|13|right#>"+
-	      " "+"<#IZNOS|16|right#>"};
+	      "<#KOL|12|right#>"+" "+"<#JM|6|right#>"+" "+"<#POREZ|10|right#>"+" "+"<#CIJENA|13|right#>"+" "+"<#IZNOS|16|right#>"};
 		this.setDetail(detail);
 		
-		this.setHeader(new String[]{"                                                                                                                                                         "+"<$DoubleWidthON$>"+/*"R-1"+*/"<$DoubleWidthOFF$>"+"<$newline$>"+
-        "<$Reset$><$CondensedON$>"+getKupac()+getRacun()+getSkladiste()+
+		this.setHeader(new String[]{"                                                                                                                                                         "+"<$DoubleWidthON$>"+"R-1"+"<$DoubleWidthOFF$>"+"<$newline$>"+
+        "<$Reset$><$CondensedON$>"+getPartner()+"<$Reset$><$DoubleWidthON$>"+formatStr("RAÈUN-OTPREMNICA br. ",71)+"<$newline$>"+getRacun()+getSkladiste()+
         "----------------------------------------------------------------------------------------------------------------------------------------"+"<$newline$>"+
         "R.B."+" Šifra               "+" Naziv artikla/usluge                            "+"     Kolièina"+"     JM"+"  Porez (%)"+"        Cijena"+"            Iznos"+"<$newline$>"+
-		"----------------------------------------------------------------------------------------------------------------------------------------"});
+"----------------------------------------------------------------------------------------------------------------------------------------"});
   }
 	
 	protected String getNP(){

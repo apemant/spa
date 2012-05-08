@@ -128,7 +128,7 @@ public class repMxROT extends mxReport {
   }
 
 
-  private void fill()
+  protected void fill()
   {
     getDatum();
     String param = Aut.getAut().getIzlazCART();
@@ -210,13 +210,13 @@ public class repMxROT extends mxReport {
     return Valid.getValid().maskString(finalStr,' ', len);
   }
 
-  private String formatStr(String i, int length)
+  protected String formatStr(String i, int length)
   {
 
     return Valid.getValid().maskString(i+"",' ', length);
   }
 
-  private String getPartner()
+  protected String getPartner()
   {
     ds.open();
     ds.first();
@@ -261,7 +261,7 @@ public class repMxROT extends mxReport {
   }
 
 
-  private String getSkladiste()
+  protected String getSkladiste()
   {
     ds.open();
     ds.first();
@@ -272,7 +272,7 @@ public class repMxROT extends mxReport {
     return prMj+date+"<$newline$>";
   }
 
-  private String getRacun()
+  protected String getRacun()
   {
     ds.open();
     ds.first();
@@ -478,7 +478,7 @@ public class repMxROT extends mxReport {
     }
   }
 
-  private String getNP()
+  protected String getNP()
   {
     String np="";
     if(rata.size()<=0)
