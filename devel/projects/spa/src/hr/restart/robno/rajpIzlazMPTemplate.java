@@ -837,6 +837,7 @@ SwingUtilities.invokeLater(new Runnable(){
 					add(jtfDATDOSP, new XYConstraints(505, 65, 100, -1));
 					add(new JLabel("Dani važenja"), new XYConstraints(15, 65,
 							-1, -1));
+					add(jdohvatDokumenta, new XYConstraints(612, 65, 21, 21));
 					add(jtfDDOSP, new XYConstraints(150, 65, 50, -1));
 					//          add(chbock,new XYConstraints(400, 85, 150, -1));
 					add(jpgetval, new XYConstraints(0, 110, -1, -1));
