@@ -1017,7 +1017,9 @@ public class raKnjizenje {
   private boolean isForSK() {
     if (getStavkaSK().getString("BROJDOK") == null)
       return false;
-    if (getStavkaSK().getString("BROJDOK").equals(""))
+    if (getStavkaSK().getString("BROJDOK").trim().equals(""))
+      return false;
+    if (getStavkaSK().getString("VRDOK").trim().equals("NK!"))
       return false;
     return true;
   }
