@@ -3763,10 +3763,15 @@ System.out.println("findCjenik::else :: "+sql);
         String year = val.findYear(pressel.getSelRow().
             getTimestamp("DATDOK-to"));
         
-        boolean twoy = frmParam.getParam("robno", "sc2god", "D",
-            "Dopustiti dohvat dokumenata iz prošle godine (D,N)", true).equals("D");
-        String yc = !twoy ? "god='"+year+"'" : "god in ('"+
-              year+"','"+(Aus.getNumber(year) - 1)+"')";
+        boolean ally = frmParam.getParam("robno", "sc2god", "D",
+            "Dopustiti dohvat dokumenata iz prošlih godina (D,N)", true).equals("D");
+        
+        String ky = Valid.getValid().getKnjigYear("robno");
+        
+        String yc = ky.equalsIgnoreCase(year) ? "god='"+year+"' and " : "god in ('"+
+              year+"','"+ky+"') and ";
+        
+        if (ally) yc = "";
         
 
 		if (odabrano.equals("RN")) {
@@ -3783,13 +3788,13 @@ System.out.println("findCjenik::else :: "+sql);
 
             if (getMasterSet().getString("VRDOK").equalsIgnoreCase("PON")
                 && odabrano.equalsIgnoreCase("PON")) {
-              upit = yc+" and vrdok= 'PON'" + dodatak
+              upit = yc+" vrdok= 'PON'" + dodatak
               + " and cskl in ('"
               + pressel.getSelRow().getString("CSKL") + "')"; // samo
             } else if ((getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC") ||
 			    getMasterSet().getString("VRDOK").equalsIgnoreCase("GRN"))
 					&& odabrano.equalsIgnoreCase("PON")) {
-				upit = "statira='N' and "+yc+" and vrdok= 'PON'" + dodatak
+				upit = "statira='N' and "+yc+" vrdok= 'PON'" + dodatak
 						+ " and cskl in ('"
 						+ pressel.getSelRow().getString("CSKL") + "')"; // samo
 			} else if ((getMasterSet().getString("VRDOK").equalsIgnoreCase(
