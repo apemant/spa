@@ -265,7 +265,8 @@ public class raKalkulBDDoc extends raTopCalcUtil {
     if (stavka.uprab.compareTo(Nula)!=0) {
       tmpBD= Jedan.subtract(stavka.uprab.divide(Sto,4,BigDecimal.ROUND_HALF_UP));
       stavka.ineto=stavka.iprodbp.divide(tmpBD,2,BigDecimal.ROUND_HALF_UP);
-      stavka.uirab = stavka.ineto.subtract(stavka.iprodbp);
+      //stavka.uirab = stavka.ineto.subtract(stavka.iprodbp);
+      stavka.uirab = stavka.fmcprp.subtract(stavka.fmc).multiply(stavka.kol).setScale(2, BigDecimal.ROUND_HALF_UP);
     } else {
       stavka.ineto=stavka.iprodbp;
     }
