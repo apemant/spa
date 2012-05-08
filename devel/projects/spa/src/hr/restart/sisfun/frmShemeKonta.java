@@ -430,7 +430,8 @@ public class frmShemeKonta extends raMasterDetail {
 
     String sql = "SELECT shkonta.cskl, MAX("+table+"."+nazcol+") as "+nazcol+", shkonta.csklul, "+
        "shkonta.vrdok, MAX(vrdokum.nazdok) as nazdok "+
-       "FROM shkonta,"+table+",vrdokum WHERE shkonta.cskl = "+table+"."+col+" AND shkonta.vrdok = vrdokum.vrdok"+
+       "FROM shkonta INNER JOIN vrdokum ON shkonta.vrdok = vrdokum.vrdok LEFT OUTER JOIN "+table+
+       " ON shkonta.cskl = "+table+"."+col+" WHERE 1=1 "+
        appcond+/*kcond+*/" AND vrdokum.app = '"+app+"' GROUP BY shkonta.vrdok, shkonta.cskl, shkonta.csklul";
     //vl.execSQL(sql);
     mast.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(
