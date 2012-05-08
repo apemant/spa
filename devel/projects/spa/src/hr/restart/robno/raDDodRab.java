@@ -126,7 +126,7 @@ public class raDDodRab extends JraDialog {
                     jlrNAZRAB1.getText(),
                     rabatTMP4Browse2.getBigDecimal("PRAB"),
                     /*parseTextField(jlrPRAB1.getText()),*/
-                    jcrabnarab.isSelected()?"D"  :"N");
+                    jcrabnarab.isSelected() && rabatTMP4Browse.rowCount() > 0 ? "D"  :"N");
       rabatTMP4Browse.first();
       if (rabatTMP4Browse.getShort("LRBR")!=1) renumeracija();
       sumaPopusta();
@@ -406,7 +406,7 @@ System.out.println("transferFill()");
     }
     jlUkupno.setText("U K U P N O     "+sp);
   }
-  private BigDecimal sumaPopusta()
+  public BigDecimal sumaPopusta()
   {
 
     sp = BigDecimal.valueOf(0);
