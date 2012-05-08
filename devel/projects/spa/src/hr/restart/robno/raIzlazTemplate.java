@@ -23,6 +23,8 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.raDateMask;
+import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raTableColumnModifier;
@@ -50,6 +52,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
@@ -353,10 +356,17 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
     	}
     };
     
-    raNavAction rnvEDI = new raNavAction("Prebacivanje dokumenta", 
+    raNavAction rnvEDI = new raNavAction("Prebacivanje dokumenta putem EDI", 
         raImages.IMGEXPORT, KeyEvent.VK_UNDEFINED) {
       public void actionPerformed(ActionEvent e) {
         sendDoc();
+      }
+    };
+    
+    raNavAction rnvPop = new raNavAction("Promjena popusta na raèunu", 
+        raImages.IMGHISTORY, KeyEvent.VK_UNDEFINED) {
+      public void actionPerformed(ActionEvent e) {
+        changeGlobalPopust();
       }
     };
     
@@ -549,8 +559,15 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
               what_kind_of_dokument.equals("ROT") ||
               what_kind_of_dokument.equals("POD") ||
               what_kind_of_dokument.equals("ODB") ||
+              what_kind_of_dokument.equals("NKU") ||
               what_kind_of_dokument.equals("TER"))
             raMaster.addOption(rnvEDI, 5, false);
+        
+        if (what_kind_of_dokument.equals("RAC") ||
+            what_kind_of_dokument.equals("ROT") ||
+            what_kind_of_dokument.equals("GOT") ||
+            what_kind_of_dokument.equals("GRN"))
+          raMaster.addOption(rnvPop, 5, false);
         
 		setUpfrmDokIzlaz();
 		rCD.setisNeeded(hr.restart.sisfun.frmParam.getParam("robno",
@@ -2488,7 +2505,9 @@ System.out.println("findCjenik::else :: "+sql);
       
       if (vr.equals("RAC") || vr.equals("ROT") ||
           vr.equals("POD") || vr.equals("ODB") ||
-          vr.equals("TER")) {
+          vr.equals("TER") || vr.equals("NKU")) {
+        
+        boolean nar = false;
         
         VarStr buf = new VarStr();
         buf.append("HD");
@@ -2498,8 +2517,13 @@ System.out.println("findCjenik::else :: "+sql);
           buf.append("02");
         else if (vr.equals("TER"))
           buf.append("04");
-        else err("Kriva vrsta dokumenta.");
-        buf.append("R-1");
+        else if (vr.equals("NDO") || vr.equals("NKU")) {
+          buf.append("10");
+          nar = true;
+        } else
+          err("Kriva vrsta dokumenta.");
+        
+        buf.append(nar ? "   " : "R-1");
         
         DataSet logo = dm.getLogotipovi();
         if (!lD.raLocate(logo, "CORG", OrgStr.getKNJCORG(false)))
@@ -2520,7 +2544,14 @@ System.out.println("findCjenik::else :: "+sql);
         if (!lD.raLocate(par, "CPAR", Integer.toString(ms.getInt("CPAR"))))
           err("Neispravni partner na dokumentu.");
         
-        buf.append(getPadded("3859888798007", 13));
+        String cp = par.getInt("CPAR") + "";
+        
+        if (nar) buf.append(getPadded("3855900001230", 13));
+        else buf.append(getPadded("3859888798007", 13));
+        /*if (par.getString("GLN").length() > 0)
+          buf.append(getPadded(par.getString("GLN"), 13));
+        else 
+          buf.append(getPadded(cp, 13));*/
         buf.append(getPadded(par.getString("NAZPAR"), 35));
         buf.append(getPadded(par.getString("MB"), 13));
         
@@ -2533,14 +2564,24 @@ System.out.println("findCjenik::else :: "+sql);
           pj.open();
           if (pj.rowCount() == 0)
             err("Neispravna poslovna jedinica dokumenta.");
+          cp = cp + "-" + pj.getInt("PJ");
         }
-        buf.append(getPadded(pj.getString("GLN"), 13));
-        buf.append(getPadded(logo.getString("GLN"), 13));
-        buf.append(getPadded("3855002103856", 13));
-        buf.append(getPadded(par.getString("ADR"), 35));
-        buf.append(getPadded(par.getString("MJ"), 15));
-        buf.append(getPadded("HR", 8));
-        buf.append(getPadded(par.getInt("PBR")+"", 5));
+        if (pj.getString("GLN").length() > 0) {
+          buf.append(getPadded(pj.getString("GLN"), 13));
+        } else {
+          buf.append(getPadded(cp, 13));
+        }
+        
+        if (nar) buf.append(getPadded("", 13+13+35+15+8+5));
+        else {
+          buf.append(getPadded(logo.getString("GLN"), 13));
+          buf.append(getPadded("3855002103856", 13));        
+          buf.append(getPadded(par.getString("ADR"), 35));
+          buf.append(getPadded(par.getString("MJ"), 15));
+          buf.append(getPadded("HR", 8));
+          buf.append(getPadded(par.getInt("PBR")+"", 5));
+        }
+        
         buf.append(edif.format(ms.getTimestamp("DVO")));
         buf.append(getPadded("", 96));
         buf.append(getPadded("", 16));
@@ -2551,26 +2592,37 @@ System.out.println("findCjenik::else :: "+sql);
         
         buf.append("DA");        
         buf.append(getPadded(ms.getString("PNBZ2"), 16));
-        buf.append("1");
+        buf.append(nar ? " " : "1");
         buf.append(edif.format(ms.getTimestamp("DVO")));
-        buf.append(getPadded(ms.getString("BRNARIZ"), 20));
-        buf.append(getPadded(ms.getString("CUG"), 20));
-        buf.append(getPadded(ms.getString("BRDOKIZ"), 20));
-        buf.append(getPadded("", 40));
         
-        buf.append(getNum(Aus.sum("IPRODBP", ds), 13));
-        buf.append(getPadded(ds.getBigDecimal("PPOR1").intValue()+"", 4));
-        buf.append(getNum(Aus.sum("POR1", ds), 13));
-        buf.append(getNum(Aus.zero2, 13));
-        buf.append("HRK");
-        buf.append(getNum(Aus.sum("IPRODSP", ds), 13));
+        if (nar) {
+          buf.append(getPadded("", 20+20+20+40+13+4+13+13+3+13));
+        } else {
+          buf.append(getPadded(ms.getString("BRNARIZ"), 20));
+          buf.append(getPadded(ms.getString("CUG"), 20));
+          buf.append(getPadded(ms.getString("BRDOKIZ"), 20));
+          buf.append(getPadded("", 40));
+          
+          buf.append(getNum(Aus.sum("IPRODBP", ds), 13));
+          buf.append(getPadded(ds.getBigDecimal("PPOR1").intValue()+"", 4));
+          buf.append(getNum(Aus.sum("POR1", ds), 13));
+          buf.append(getNum(Aus.zero2, 13));
+          buf.append("HRK");
+          buf.append(getNum(Aus.sum("IPRODSP", ds), 13));
+        }
+        
         buf.append(getPadded("VIRMAN", 10));
-        buf.append(edif.format(ms.getTimestamp("DATDOSP")));
-        buf.append(getPadded("00 "+ms.getString("PNBZ2"), 30));
-        buf.append(getPadded(zr.getString("BANKA"), 30));
-        buf.append(getPadded(logo.getString("ZIRO"), 18));
-        buf.append(getNum(Aus.sum("POR1", ds), 13));
-        buf.append(getPadded("", 100));
+        
+        if (nar) {
+          buf.append(getPadded("", 8+30+30+18+13+87));
+        } else {
+          buf.append(edif.format(ms.getTimestamp("DATDOSP")));
+          buf.append(getPadded("00 "+ms.getString("PNBZ2"), 30));
+          buf.append(getPadded(zr.getString("BANKA"), 30));
+          buf.append(getPadded(logo.getString("ZIRO"), 18));
+          buf.append(getNum(Aus.sum("POR1", ds), 13));
+          buf.append(getPadded("", 87));
+        }
         buf.append("\n");
         
         for (ds.first(); ds.inBounds(); ds.next()) {
@@ -2597,8 +2649,14 @@ System.out.println("findCjenik::else :: "+sql);
             }
           buf.append(getPadded(Aus.formatBigDecimal2(kol.abs()), 8));
           buf.append(getNum(ds.getBigDecimal("FVC"), 13));
-          buf.append(getNum(ds.getBigDecimal("POR1"), 13));
-          buf.append(getPadded(ds.getBigDecimal("PPOR1").intValue()+"", 4));
+          
+          if (nar) {
+            buf.append(getPadded("", 13+4));
+          } else {
+            buf.append(getNum(ds.getBigDecimal("POR1"), 13));
+            buf.append(getPadded(ds.getBigDecimal("PPOR1").intValue()+"", 4));
+          }
+          
           buf.append(getNum(ds.getBigDecimal("IPRODBP"), 13));
           buf.append(getPadded("", 100));
           buf.append("\n");
@@ -3723,8 +3781,13 @@ System.out.println("findCjenik::else :: "+sql);
             aSS.ispisDA = true;
             
 
-			if ((getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC") || getMasterSet()
-					.getString("VRDOK").equalsIgnoreCase("GRN"))
+            if (getMasterSet().getString("VRDOK").equalsIgnoreCase("PON")
+                && odabrano.equalsIgnoreCase("PON")) {
+              upit = yc+" and vrdok= 'PON'" + dodatak
+              + " and cskl in ('"
+              + pressel.getSelRow().getString("CSKL") + "')"; // samo
+            } else if ((getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC") ||
+			    getMasterSet().getString("VRDOK").equalsIgnoreCase("GRN"))
 					&& odabrano.equalsIgnoreCase("PON")) {
 				upit = "statira='N' and "+yc+" and vrdok= 'PON'" + dodatak
 						+ " and cskl in ('"
@@ -4099,7 +4162,7 @@ System.out.println("findCjenik::else :: "+sql);
 	}
 	
 	public void changeGlobalPopust() {
-	  getDetailSet().refresh();
+	  refilterDetailSet();
 	  if (getDetailSet().rowCount() == 0) {
 	    JOptionPane.showMessageDialog(this.raMaster, "Ne postoje stavke ovog raèuna!",
             "Greška", JOptionPane.ERROR_MESSAGE);
@@ -4113,18 +4176,92 @@ System.out.println("findCjenik::else :: "+sql);
 	        "Nedostaje parametar", JOptionPane.WARNING_MESSAGE);
 	    return;
 	  }
-	  
+	  lD.raLocate(dm.getRabati(), "CRAB", gr);
+	  String nr = dm.getRabati().getString("NRAB");
+	  	  
 	  QueryDataSet ds = hr.restart.util.Util
       .getNewQueryDataSet("SELECT * FROM vtrabat where cskl ='"
               + getDetailSet().getString("CSKL") + "' AND VRDOK='"
               + getDetailSet().getString("VRDOK") + "' AND GOD='"
               + getDetailSet().getString("GOD") + "' AND BRDOK="
-              + getDetailSet().getInt("BRDOK") + " AND rbr ="
-              + getDetailSet().getInt("RBSID"));
+              + getDetailSet().getInt("BRDOK"));
+	  
+	  BigDecimal old = Aus.zero2;
+	  for (ds.first(); ds.inBounds(); ds.next())
+	    if (ds.getString("CRAB").equals(gr)) old = ds.getBigDecimal("PRAB");
 	  
 	  
+	  JPanel pan = new JPanel(new XYLayout(415, 50));
+	   StorageDataSet tds = new StorageDataSet();
+	        tds.setColumns(new Column[] {
+	                dM.createBigDecimalColumn("PRAB", 2)
+	        });
+	    tds.open();
+	    tds.setBigDecimal("PRAB", old);
+
+	    JraTextField prab = new JraTextField();
+	    prab.setColumnName("PRAB");
+	    prab.setDataSet(tds);
+	    
+	    pan.add(new JLabel("Popust na raèun"), new XYConstraints(15,15,-1,-1));
+	    pan.add(prab, new XYConstraints(300, 15, 100, -1));
+	    
+	    raInputDialog od = new raInputDialog();
+	    if (!od.show(null, pan, "Dodavanje popusta")) return;
 	  
-	  
+	   BigDecimal pop = tds.getBigDecimal("PRAB");
+	   if (pop.compareTo(old) == 0) return;
+	   
+	   
+	   BigDecimal uirac = Aus.zero2;
+       for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next()) {
+
+           rKD.stavka.Init();
+           rKD.stavkaold.Init();
+           rKD.setWhat_kind_of_document(getDetailSet().getString("VRDOK"));
+           
+           setupRabat();
+           getrDR().getMyDataSet();
+           isRabatShema = true;
+           short lrbr = 0;
+           DataSet dpd = getrDR().getDPDataSet();
+           for (dpd.first(); dpd.inBounds(); dpd.next()) {
+             if (dpd.getString("CRAB").equals(gr)) {
+               dpd.setString("RABNARAB", dpd.atFirst() ? "N" : "D");
+               dpd.setBigDecimal("PRAB", pop);
+               isRabatShema = false;               
+             }
+             if (dpd.getShort("LRBR") > lrbr) lrbr = dpd.getShort("LRBR");
+           }
+           if (isRabatShema) {
+             getrDR().insertTempRow((short) (lrbr + 1), gr, nr, pop, lrbr == 0 ? "N" : "D");
+             isRabatShema = false;
+           }
+           
+           getrDR().sumaPopusta();
+           lc.TransferFromDB2Class(getDetailSet(), rKD.stavka);
+           lc.printAll(rKD.stavka);
+                      
+           rKD.stavka.uprab = getrDR().sp;
+           if (isMaloprodajnaKalkulacija) {
+               rKD.MaloprodajnaKalkulacija();
+           } else {
+               rKD.kalkFinancPart();
+           }
+           lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
+           uirac = uirac.add(getDetailSet().getBigDecimal("IPRODSP"));
+           maintanceRabat(false);
+           
+           raTransaction.saveChangesInTransaction(new QueryDataSet[] {getDetailSet(), vtrabat});
+           
+           lc.printAll(rKD.stavka);
+       }
+
+       getMasterSet().setBigDecimal("UIRAC", uirac);
+       nacPlDod();
+       getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+       getMasterSet().saveChanges();
+       raMaster.getJpTableView().fireTableDataChanged();
 	}
 
 	private QueryDataSet forallpopust;
