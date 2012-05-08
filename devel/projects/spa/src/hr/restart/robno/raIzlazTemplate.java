@@ -871,7 +871,9 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 			vtrabat.setBigDecimal("PRAB", rDR.getDPDataSet().getBigDecimal(
 					"PRAB"));
 
-			osnovica = getDetailSet().getBigDecimal("INETO");
+			if (isMaloprodajnaKalkulacija)
+				osnovica = getDetailSet().getBigDecimal("FMCPRP").multiply(getDetailSet().getBigDecimal("KOL")).setScale(2, BigDecimal.ROUND_HALF_UP);
+			else osnovica = getDetailSet().getBigDecimal("INETO");
 			iznosrabat = Aus.zero2;
 			if (rDR.getDPDataSet().getString("RABNARAB").equalsIgnoreCase("D")) {
 				osnovica = osnovica.subtract(sumarabat);
@@ -4266,6 +4268,7 @@ System.out.println("findCjenik::else :: "+sql);
        nacPlDod();
        getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
        getMasterSet().saveChanges();
+       ValidacijaPrijeIzlazaDetail();
        raMaster.getJpTableView().fireTableDataChanged();
 	}
 
