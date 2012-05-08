@@ -310,6 +310,11 @@ public class SecondChooser extends JraDialog {
 		if (!(ZaglavljeSet.isAssignedNull("PJ") || ZaglavljeSet.getInt("PJ") == 0)) {
 			rIT.getMasterSet().setInt("PJ", ZaglavljeSet.getInt("PJ"));
 		}
+		
+		if (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("PON")) {
+		  if (rIT.isOJ) rIT.getMasterSet().setString("PARAM", "OJ");
+		  else if (rIT.isMaloprodajnaKalkulacija) rIT.getMasterSet().setString("PARAM", "K");
+		}
         
 		if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("NKU") &&
 		    rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("DOS")) {
@@ -862,24 +867,26 @@ System.out.println(StavkeSet.getInt("CARt"));
 			keyVeza = rCD.getKey(StavkeSet, new String[] { "CSKL", "VRDOK",
 					"GOD", "BRDOK", "RBSID" }, "stdoki");
 			rIT.getDetailSet().setString("ID_STAVKA", keykey);
-			rIT.getDetailSet().setString("VEZA", keyVeza);
-			if (lD.raLocate(findStavkeSet, new String[] { "CSKL", "VRDOK",
-					"GOD", "BRDOK", "RBSID" }, new String[] {
-					StavkeSet.getString("CSKL"), StavkeSet.getString("VRDOK"),
-					StavkeSet.getString("GOD"),
-					String.valueOf(StavkeSet.getInt("BRDOK")),
-					String.valueOf(StavkeSet.getInt("RBSID")) })) {
-				findStavkeSet.setString("VEZA", keykey);
-				findStavkeSet.setString("STATUS", "P");
-				if (raIzlazTemplate.isNabDirect() &&
-						(StavkeSet.getString("VRDOK").equalsIgnoreCase("RAC") ||
-						 StavkeSet.getString("VRDOK").equalsIgnoreCase("GRN") ||
-						 StavkeSet.getString("VRDOK").equalsIgnoreCase("POS"))
-						&& TD.isDocSklad(rIT.what_kind_of_dokument)) {
-					Aus.add(findStavkeSet, "RINAB", rIT.getDetailSet(), "INAB");
-					if (findStavkeSet.getBigDecimal("KOL").signum() != 0)
-						Aus.div(findStavkeSet, "RNC", "RINAB", "KOL");
-				}
+			if (!rIT.getDetailSet().getString("VRDOK").equals("PON")) {
+    			rIT.getDetailSet().setString("VEZA", keyVeza);
+    			if (lD.raLocate(findStavkeSet, new String[] { "CSKL", "VRDOK",
+    					"GOD", "BRDOK", "RBSID" }, new String[] {
+    					StavkeSet.getString("CSKL"), StavkeSet.getString("VRDOK"),
+    					StavkeSet.getString("GOD"),
+    					String.valueOf(StavkeSet.getInt("BRDOK")),
+    					String.valueOf(StavkeSet.getInt("RBSID")) })) {
+    				findStavkeSet.setString("VEZA", keykey);
+    				findStavkeSet.setString("STATUS", "P");
+    				if (raIzlazTemplate.isNabDirect() &&
+    						(StavkeSet.getString("VRDOK").equalsIgnoreCase("RAC") ||
+    						 StavkeSet.getString("VRDOK").equalsIgnoreCase("GRN") ||
+    						 StavkeSet.getString("VRDOK").equalsIgnoreCase("POS"))
+    						&& TD.isDocSklad(rIT.what_kind_of_dokument)) {
+    					Aus.add(findStavkeSet, "RINAB", rIT.getDetailSet(), "INAB");
+    					if (findStavkeSet.getBigDecimal("KOL").signum() != 0)
+    						Aus.div(findStavkeSet, "RNC", "RINAB", "KOL");
+    				}
+    			}
 			}
 			
 			if (raIzlazTemplate.isNabDirect() &&
@@ -1068,6 +1075,8 @@ System.out.println(StavkeSet.getInt("CARt"));
 						+ rIT.getMasterSet().getString("GOD")+ "-"
 						+ String.valueOf(rIT.getMasterSet().getInt("BRDOK")));
 			} else {
+			  
+			  if (!rIT.getMasterSet().getString("VRDOK").equals("PON"))
 				ZaglavljeSetTmp.setString("STATIRA", "P");
 				
 				if ((ZaglavljeSetTmp.getString("VRDOK").equals("OTP") &&
@@ -1079,14 +1088,16 @@ System.out.println(StavkeSet.getInt("CARt"));
 
 			//System.out.println("ZaglavljeSetTmp.getTableName() " +
 			// ZaglavljeSetTmp.getTableName());
-			keysrc = rPVT.makeKey(ZaglavljeSetTmp.getTableName(),
-					ZaglavljeSetTmp.getString("CSKL"), ZaglavljeSetTmp
-							.getString("VRDOK"), ZaglavljeSetTmp
-							.getString("GOD"), ZaglavljeSetTmp.getInt("BRDOK"));
-            QueryDataSet vtpr = VTprijenos.getDataModule().getTempSet("1=0");
-            vtpr.open();
-			rPVT.InsertLink(vtpr, "KEYSRC", keysrc, "KEYDEST",
-					keydest);
+			if (!rIT.getMasterSet().getString("VRDOK").equals("PON")) {
+    			keysrc = rPVT.makeKey(ZaglavljeSetTmp.getTableName(),
+    					ZaglavljeSetTmp.getString("CSKL"), ZaglavljeSetTmp
+    							.getString("VRDOK"), ZaglavljeSetTmp
+    							.getString("GOD"), ZaglavljeSetTmp.getInt("BRDOK"));
+                QueryDataSet vtpr = VTprijenos.getDataModule().getTempSet("1=0");
+                vtpr.open();
+    			rPVT.InsertLink(vtpr, "KEYSRC", keysrc, "KEYDEST",
+    					keydest);
+			}
 		}
 	}
 

@@ -157,7 +157,7 @@ public class raOdabirDok extends JraDialog {
 
     String[] zaodabrati;
      if (vrsta_dok.equals("PON")) {
-       zaodabrati = new String[] {"Narudžba"};
+       zaodabrati = new String[] {"Narudžba", "Ponuda"};
        odabrano = "NKU";
     }
     else if (vrsta_dok.equals("OTP")) {
@@ -175,10 +175,10 @@ public class raOdabirDok extends JraDialog {
     else if (vrsta_dok.equals("RAC")) {
     	odabrano=hr.restart.sisfun.frmParam.getParam("robno","selDokOnRAC", "OTP", "Dokument za dohvat na RACu");
     	if (odabrano.equalsIgnoreCase("RN")) {
-      	  zaodabrati = new String[] {"Radni nalog","Otpremnica","Radni nalog po izdatnici","Ponuda","Revers","Dostavnica"};
+      	  zaodabrati = new String[] {"Radni nalog","Otpremnica","Radni nalog po izdatnici","Ponuda","Raèun","Revers","Dostavnica"};
     	}
     	else {
-    	  zaodabrati = new String[] {"Otpremnica","Radni nalog","Radni nalog po izdatnici","Ponuda","Revers","Dostavnica"};
+    	  zaodabrati = new String[] {"Otpremnica","Radni nalog","Radni nalog po izdatnici","Ponuda","Raèun","Revers","Dostavnica"};
     	}
     }
     else if (vrsta_dok.equals("ROT")) {
