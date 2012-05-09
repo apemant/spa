@@ -566,7 +566,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         if (what_kind_of_dokument.equals("RAC") ||
             what_kind_of_dokument.equals("ROT") ||
             what_kind_of_dokument.equals("GOT") ||
-            what_kind_of_dokument.equals("GRN"))
+            what_kind_of_dokument.equals("GRN") ||
+            what_kind_of_dokument.equals("PON"))
           raMaster.addOption(rnvPop, 5, false);
         
 		setUpfrmDokIzlaz();
@@ -871,7 +872,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 			vtrabat.setBigDecimal("PRAB", rDR.getDPDataSet().getBigDecimal(
 					"PRAB"));
 
-			if (isMaloprodajnaKalkulacija)
+			if (isMaloprodajnaKalkulacija && !bPonudaZaKupca)
 				osnovica = getDetailSet().getBigDecimal("FMCPRP").multiply(getDetailSet().getBigDecimal("KOL")).setScale(2, BigDecimal.ROUND_HALF_UP);
 			else osnovica = getDetailSet().getBigDecimal("INETO");
 			iznosrabat = Aus.zero2;

@@ -44,6 +44,7 @@ public class repMxROTPop extends repMxROT {
 		
 		String rpop =	"              REKAPITULACIJA POPUSTA<$newline$>"+
     							"      Naziv                         "+"   %"+"     Iznos<$newline$>";
+		brRedRekPl += 3;
 		
 		DataSet pops = Aus.q("SELECT * FROM vtrabat where cskl ='"
 				+ ds.getString("CSKL") + "' AND VRDOK='"
@@ -62,7 +63,7 @@ public class repMxROTPop extends repMxROT {
 				ld.raLocate(dm.getRabati(), "CRAB", crab);
 				rpop += "      " + getPadded(dm.getRabati().getString("NRAB"), 30) + 
 					getFront(Aus.formatBigDecimal(prab), 5) + getFront(Aus.formatBigDecimal(irab), 10) + "<$newline$>";
-				
+				brRedRekPl++;				
 				crab = pops.getString("CRAB");
 				prab = pops.getBigDecimal("PRAB");
 				irab = Aus.zero2; 
@@ -73,6 +74,7 @@ public class repMxROTPop extends repMxROT {
 			ld.raLocate(dm.getRabati(), "CRAB", crab);
 			rpop += "      " + getPadded(dm.getRabati().getString("NRAB"), 30) + 
 					getFront(Aus.formatBigDecimal(prab), 5) + getFront(Aus.formatBigDecimal(irab), 10) + "<$newline$>";
+			brRedRekPl++;
 		}
 		
 		return rpop + "<$newline$>" + np;  

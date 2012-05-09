@@ -116,7 +116,7 @@ public class repMxPONKup extends mxReport {
     this.setDetail(detail);
   }
 
-  private void fill()
+  protected void fill()
   {
     sumaBP = Aus.zero2;
     sumaSP = Aus.zero2;
@@ -197,12 +197,12 @@ public class repMxPONKup extends mxReport {
     return Valid.getValid().maskString(finalStr,' ', len);
   }
 
-  private String formatStr(String i, int length)
+  protected String formatStr(String i, int length)
   {
     return Valid.getValid().maskString(i+"",' ', length);
   }
 
-  private String getPartner()
+  protected String getPartner()
   {
     ds.open();
     ds.first();
@@ -233,7 +233,7 @@ public class repMxPONKup extends mxReport {
     return "";
   }
 
-  private String getSkladiste()
+  protected String getSkladiste()
   {
     ds.open();
     ds.first();
@@ -244,7 +244,7 @@ public class repMxPONKup extends mxReport {
     return prMj+date+"<$newline$>";
   }
 
-  private String getRacun()
+  protected String getRacun()
   {
     ds.open();
     ds.first();
@@ -307,6 +307,7 @@ public class repMxPONKup extends mxReport {
                         qds_porez.next();
     }
     brRedRekap = qds_porez.getRowCount()+2;
+    rekapitulacija += getNPP();
     rekapitulacija +="<$newline$>"+"<$newline$>"+"SLOVIMA: " +getSLOVIMA();
     return rekapitulacija;
   }
@@ -446,8 +447,12 @@ public class repMxPONKup extends mxReport {
       ex.printStackTrace();
     }
   }
+  
+  protected String getNPP() {
+  	return "";
+  }
 
-  private String getNP()
+  protected String getNP()
   {
     String np="";
     if(rata.size()<=0)

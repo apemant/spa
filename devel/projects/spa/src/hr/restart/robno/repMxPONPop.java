@@ -1,5 +1,5 @@
 /****license*****************************************************************
-**   file: repMxRacunPop.java
+**   file: repMxPONPop.java
 **   Copyright 2006 Rest Art
 **
 **   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,38 +17,32 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import java.math.BigDecimal;
-
 import hr.restart.util.Aus;
+
+import java.math.BigDecimal;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 
-
-public class repMxRacunPop extends repMxRacun {
-  
-	
+public class repMxPONPop extends repMxPON {
 	protected void fill() {
 		super.fill();
 		String [] detail =new String[]{"<#RBR|3|right#>"+". "+"<#SIFRA|20|left#>"+" "+"<#NAZIV|48|left#>"+" "+
-	      "<#KOL|12|right#>"+" "+"<#JM|6|right#>"+" "+"<#POREZ|10|right#>"+" "+"<#CIJENA|13|right#>"+
-	      " "+"<#IZNOS|16|right#>"};
+	      "<#KOL|12|right#>"+" "+"<#JM|6|right#>"+" "+"<#POREZ|10|right#>"+" "+"<#CIJENA|13|right#>"+" "+"<#IZNOS|16|right#>"};
 		this.setDetail(detail);
 		
-		this.setHeader(new String[]{"                                                                                                                                                         "+"<$DoubleWidthON$>"+/*"R-1"+*/"<$DoubleWidthOFF$>"+"<$newline$>"+
-        "<$Reset$><$CondensedON$>"+getKupac()+getRacun()+getSkladiste()+
+		this.setHeader(new String[]{"                                                                                                                                                         "+"<$DoubleWidthON$>"+"R-1"+"<$DoubleWidthOFF$>"+"<$newline$>"+
+				"<$Reset$><$CondensedON$>"+"<$newline$>"+getPartner()+getRacun()+getSkladiste()+
         "----------------------------------------------------------------------------------------------------------------------------------------"+"<$newline$>"+
         "R.B."+" Šifra               "+" Naziv artikla/usluge                            "+"     Kolièina"+"     JM"+"  Porez (%)"+"        Cijena"+"            Iznos"+"<$newline$>"+
-		"----------------------------------------------------------------------------------------------------------------------------------------"});
+"----------------------------------------------------------------------------------------------------------------------------------------"});
   }
 	
-	protected String getNP(){
-		String np = super.getNP();
-		
+	protected String getNPP(){		
 		String rpop =	"              REKAPITULACIJA POPUSTA<$newline$>"+
     							"      Naziv                         "+"   %"+"     Iznos<$newline$>";
 		
-		brRedRekPl += 3;
+		brRedRekap += 3;
 		
 		DataSet pops = Aus.q("SELECT * FROM vtrabat where cskl ='"
 				+ ds.getString("CSKL") + "' AND VRDOK='"
@@ -67,7 +61,7 @@ public class repMxRacunPop extends repMxRacun {
 				ld.raLocate(dm.getRabati(), "CRAB", crab);
 				rpop += "      " + getPadded(dm.getRabati().getString("NRAB"), 30) + 
 					getFront(Aus.formatBigDecimal(prab), 5) + getFront(Aus.formatBigDecimal(irab), 10) + "<$newline$>";
-				brRedRekPl++;
+				brRedRekap++;
 				crab = pops.getString("CRAB");
 				prab = pops.getBigDecimal("PRAB");
 				irab = Aus.zero2; 
@@ -78,10 +72,10 @@ public class repMxRacunPop extends repMxRacun {
 			ld.raLocate(dm.getRabati(), "CRAB", crab);
 			rpop += "      " + getPadded(dm.getRabati().getString("NRAB"), 30) + 
 					getFront(Aus.formatBigDecimal(prab), 5) + getFront(Aus.formatBigDecimal(irab), 10) + "<$newline$>";
-			brRedRekPl++;
+			brRedRekap++;
 		}
 		
-		return rpop + "<$newline$>" + np;  
+		return "<$newline$>" + rpop;  
 	}
 	
 	private String getPadded(String orig, int chars) {
