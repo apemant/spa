@@ -33,6 +33,7 @@ public class raPONkup extends raIzlazTemplate  {
       raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaNop",
           "hr.restart.robno.repIzlazni", "PonudaNop", "Ponuda bez cijena stavki");
       raMaster.getRepRunner().addReport("hr.restart.robno.repMxPONKup","Matri\u010Dni ispis ponude");
+      raMaster.getRepRunner().addReport("hr.restart.robno.repMxPONKupPop","Matri\u010Dni ispis ponude s više popusta");
     }
     public void MyaddIspisDetail(){
       raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaKup","hr.restart.robno.repIzlazni","PonudaKup","Ponuda 1 red");
@@ -42,6 +43,7 @@ public class raPONkup extends raIzlazTemplate  {
       raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaNop",
           "hr.restart.robno.repIzlazni", "PonudaNop", "Ponuda bez cijena stavki");
       raDetail.getRepRunner().addReport("hr.restart.robno.repMxPONKup","Matri\u010Dni ispis ponude");
+      raDetail.getRepRunner().addReport("hr.restart.robno.repMxPONKupPop","Matri\u010Dni ispis ponude s više popusta");
     }
 
     public void ConfigViewOnTable(){

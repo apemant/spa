@@ -50,6 +50,8 @@ public class raPONOJ extends raIzlazTemplate {
             "hr.restart.robno.repIzlazni","ProformaInvoice3","Offer");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repMxPON",
 				"Matri\u010Dni ispis ponude");
+		raMaster.getRepRunner().addReport("hr.restart.robno.repMxPONPop",
+			"Matri\u010Dni ispis ponude s više popusta");
 	}
 
 	public void MyaddIspisDetail() {
@@ -73,6 +75,8 @@ public class raPONOJ extends raIzlazTemplate {
             "hr.restart.robno.repIzlazni","ProformaInvoice3","Offer");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repMxPON",
 				"Matri\u010Dni ispis ponude");
+		raDetail.getRepRunner().addReport("hr.restart.robno.repMxPONPop",
+		"Matri\u010Dni ispis ponude s više popusta");
 
 	}
 
