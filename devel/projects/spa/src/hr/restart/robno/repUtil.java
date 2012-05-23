@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.lookupData;
 
 import com.borland.dx.dataset.DataSet;
@@ -68,10 +69,17 @@ public class repUtil {
     else
       return new Variant();
   }
-
+  public static int getBrdokSize() {
+    try {
+      return Integer.parseInt(frmParam.getParam("robno", "brdoksize", "6", "Koliko je velik broj dokumenta na ispisima 6=000001"));
+    } catch (Exception e) {
+    }
+    return 6;
+  }
   public static String getFormatBroj(String cskl,String vrdok,String god,int brdok){
+    
     return (vrdok.trim()+"-"+cskl.trim()+"/"+god+"-"+
-            hr.restart.util.Valid.getValid().maskZeroInteger(new Integer(brdok),6));
+            hr.restart.util.Valid.getValid().maskZeroInteger(new Integer(brdok),getBrdokSize()));
   }
   
   public static String getFormatBroj(DataSet ds) {
