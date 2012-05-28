@@ -41,7 +41,7 @@ public class allSelect {
     if (!isCORG) {
       return getS4raCatchDoc(godc,cskl,odabrana_vrsta_dok,dodatak);
     }
-    return "statira='N' and "+godc+" and vrdok= '"+odabrana_vrsta_dok+"'"+dodatak+
+    return "statira='N' and "+godc+" vrdok= '"+odabrana_vrsta_dok+"'"+dodatak+
                     " and cskl in (select cskl from sklad where sklad.corg in ('"+cskl+"') "+
                     " or sklad.knjig in ('"+cskl+"')) "; //samo trenutno
   }
@@ -50,11 +50,11 @@ public class allSelect {
                         String odabrana_vrsta_dok,String dodatak)  {
 
     if (odabrana_vrsta_dok.equalsIgnoreCase("OTP") || odabrana_vrsta_dok.equalsIgnoreCase("IZD")) {
-      queryString = "statira='N' and "+godc+" and vrdok= '"+odabrana_vrsta_dok+"'"+dodatak+
+      queryString = "statira='N' and "+godc+" vrdok= '"+odabrana_vrsta_dok+"'"+dodatak+
                     " and cskl in (select cskl from sklad where sklad.corg in ('"+cskl+"') "+
                     " or sklad.knjig in ('"+cskl+"')) "; //samo trenutno
      } else {
-       queryString = "statira='N' and "+godc+" and cskl='" +cskl +"' "+dodatak+
+       queryString = "statira='N' and "+godc+" cskl='" +cskl +"' "+dodatak+
                      " and vrdok= '"+odabrana_vrsta_dok+"'" ; //samo trenutno
      }
      ispisQuery();
