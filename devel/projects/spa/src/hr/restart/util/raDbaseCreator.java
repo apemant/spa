@@ -225,6 +225,7 @@ public class raDbaseCreator {
         dats[i].delete();
       src.delete();
     }
+    dm.getParametri().refresh();
   }
 
   int bufSize = 8192;
