@@ -17,12 +17,15 @@
 ****************************************************************************/
 package hr.restart.gk;
 
+import hr.restart.baza.Shkonta;
+import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.VarStr;
+import hr.restart.util.raGlob;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raTransaction;
 import hr.restart.util.sysoutTEST;
@@ -81,6 +84,8 @@ public class frmKnjRobno extends frmKnjizenje {
             .getlookupData();
 
     private StorageDataSet tmpskstavke = null;
+    
+    private StorageDataSet globSheme = null;
 
     private boolean prijenosUQNX = false;
 
@@ -436,7 +441,7 @@ public class frmKnjRobno extends frmKnjizenje {
                         sheme.getString("CKNJIGE"));
                 BigDecimal iznos = null;
                 BigDecimal iznosdev = null;
-System.out.println("**** maintance prosao");
+System.out.println("**** maintance prosao " + sheme.getString("POLJE"));
 
                 
                 if (podaci.hasColumn("DEVIZN")!=null) {
@@ -482,8 +487,14 @@ System.out.println("**** DEVIZNI ANLAGE");
                 try {
                     iznos = podaci.getBigDecimal(sheme.getString("POLJE"));
                 } catch (Exception ex) {
-                    iznos = new BigDecimal(podaci.getDouble(sheme
-                            .getString("POLJE")));
+                    try {
+                      iznos = new BigDecimal(podaci.getDouble(sheme
+                              .getString("POLJE")));
+                    } catch (Exception e) {
+                      System.out.println(sheme);
+                      System.out.println(podaci);
+                      throw (RuntimeException) e;
+                    }
                     iznos = iznos.setScale(2, BigDecimal.ROUND_HALF_UP);
                 }
 
@@ -536,17 +547,18 @@ System.out.println("**** DEVIZNI ANLAGE");
                         + "prazno = ne koristi se!").trim());
 
         if (!getStatusCheck()) {
-        	vs.replaceAll("'K'", "'QW' AND DATDOK>'"
+        	vs.replaceLast("'K'", "'QW' AND DATDOK>'"
                     + new java.sql.Date(Util.getUtil().addDays(
                             dataSet.getTimestamp("DATUMKNJ"), 1).getTime())
                             .toString() + "' ");
         }
         if (kAP != null && kAP.getBrnal().length() > 0) {
-          vs.replaceAll("'K'", "'QW' AND brnal='"+kAP.getBrnal()+"' ");
+          vs.replaceLast("'K'", "'QW' AND brnal='"+kAP.getBrnal()+"' ");
           if (sheme.getString("VRDOK").equals("MEU") ||
               (sheme.getString("VRDOK").equals("MES") &&
                   sheme.getShort("CKOLONE") == 1))
-            vs.replaceAll("brnal=", "brnalu=");
+            vs.replaceLast("brnal=", "brnalu=");
+          
           System.out.println(vs);
         }
         return vs.toString();
@@ -1201,6 +1213,18 @@ System.out.println("**** DEVIZNI ANLAGE");
             }
         }
 
+        DataSet zagshem = Aus.q("SELECT DISTINCT vrdok,cskl,csklul FROM shkonta");
+        globSheme = Shkonta.getDataModule().getScopedSet("VRDOK CSKL CSKLUL");
+        globSheme.open();
+        
+        for (zagshem.first(); zagshem.inBounds(); zagshem.next()) {
+          if (zagshem.getString("CSKL").indexOf("*") >= 0 || 
+              zagshem.getString("CSKLUL").indexOf("*") >= 0) {
+            globSheme.insertRow(false);
+            dM.copyColumns(zagshem, globSheme, new String[] {"VRDOK", "CSKL", "CSKLUL"});
+          }
+        }
+        
         String dokumentiskl = arrayList2String(alskladdok, false);
         String dokumentioj = arrayList2String(alorgddok, false);
         String dokumentimeul = arrayList2String(almeulgddok, false);
@@ -1357,9 +1381,19 @@ System.out.println("**** DEVIZNI ANLAGE");
 
             if (!ld.raLocate(dm.getShkonta(), new String[] { "CSKLUL", "CSKL",
                     "VRDOK" }, filter)) {
+              boolean globed = false;
+              for (globSheme.first(); !globed && globSheme.inBounds(); globSheme.next()) {
+                if (globSheme.getString("VRDOK").equals(filter[2]) && 
+                    new raGlob(globSheme.getString("CSKLUL")).matches(filter[0]) &&
+                    new raGlob(globSheme.getString("CSKL")).matches(filter[1]))
+                  globed = true;
+                  
+              }
+              if (!globed) {
                 errors.insertRow(false);
                 errors.setString("OPIS", filter[0] + "-" + filter[1] + "-"
                         + filter[2]);
+              }
             }
         }
     }
