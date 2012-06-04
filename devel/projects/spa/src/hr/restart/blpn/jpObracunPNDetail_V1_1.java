@@ -20,13 +20,18 @@ package hr.restart.blpn;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
+import hr.restart.util.VarStr;
+import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.math.BigDecimal;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -399,22 +404,30 @@ public class jpObracunPNDetail_V1_1 extends JPanel {
   JLabel jlCrtica = new JLabel();
 
   JraButton jbSelPrSr = new JraButton();
+  JraButton jbSelRels = new JraButton();
 
   JraTextField jraDomj = new JraTextField();
-  JraTextField jraOdmj = new JraTextField();
+  
+  JlrNavField jraOdmj = new JlrNavField(){
+    public void after_lookUp() {
+      aftlRelacije();
+    }
+  };
 
   JlrNavField jlrSifPrSredstva = new JlrNavField() {
     public void after_lookUp() {
+      calcIznos();
     }
   };
   JlrNavField jlrNazivPrSredstva = new JlrNavField() {
     public void after_lookUp() {
+      calcIznos();
     }
   };
 
   private void setDetail02(){
     jpDetail02.setLayout(lay);
-    jlBrojdnk.setText("Razred");
+    jlBrojdnk.setText("Cijena x km = 0.00 x");
     jlPrSredstvo.setText("Prijevozno sredstvo");
     jlIznos2.setText("Iznos troškova");
     jlOdmj.setText("Relacija");
@@ -427,10 +440,16 @@ public class jpObracunPNDetail_V1_1 extends JPanel {
 
     jraOdmj.setColumnName("ODMJ");
     jraOdmj.setDataSet(fPN_V1_1.getDetailSet());
-
+    jraOdmj.setNavColumnName("NAZIV");
+    jraOdmj.setVisCols(new int[] {0,1});
+    jraOdmj.setSearchMode(1);
+    jraOdmj.setRaDataSet(frmRelacije.getFRelacije().getSifraSet());
+    jraOdmj.setNavButton(jbSelRels);
+    
     jraDomj.setColumnName("DOMJ");
     jraDomj.setDataSet(fPN_V1_1.getDetailSet());
 
+    
     jlrSifPrSredstva.setColumnName("CPRIJSRED");
     jlrSifPrSredstva.setNavColumnName("CSIF");
     jlrSifPrSredstva.setDataSet(fPN_V1_1.getDetailSet());
@@ -438,7 +457,7 @@ public class jpObracunPNDetail_V1_1 extends JPanel {
     jlrSifPrSredstva.setTextFields(new JTextComponent[] {jlrNazivPrSredstva});
     jlrSifPrSredstva.setVisCols(new int[] {0, 2});
     jlrSifPrSredstva.setSearchMode(0);
-    jlrSifPrSredstva.setRaDataSet(ss.prijevoznaSredstvaIzSifrarnika());
+    jlrSifPrSredstva.setRaDataSet(frmPSredstva.getPSInstance().getSifraSet()/*ss.prijevoznaSredstvaIzSifrarnika()*/);
     jlrSifPrSredstva.setNavButton(jbSelPrSr);
 
     jlrNazivPrSredstva.setColumnName("NAZIV");
@@ -457,9 +476,56 @@ public class jpObracunPNDetail_V1_1 extends JPanel {
     jpDetail02.add(jlrSifPrSredstva, new XYConstraints(150, 65, 100, -1));
     jpDetail02.add(jlrNazivPrSredstva, new XYConstraints(255, 65, 295, -1));
     jpDetail02.add(jbSelPrSr, new XYConstraints(555, 65, 21, 21));
+    jpDetail02.add(jbSelRels, new XYConstraints(555, 40, 21, 21));
     jpDetail02.add(jlStavka2, new XYConstraints(15, 140, -1, -1));
   }
   // jpDetail02 - EOB
+
+  protected void aftlRelacije() {
+    String naz = jraOdmj.getRaDataSet().getString("NAZIV");
+    String s_od = naz.substring(0,naz.indexOf("--")).trim();
+    String s_do = naz.substring(naz.indexOf("--")+2,naz.length()).trim();
+    jraOdmj.getDataSet().setString("ODMJ", s_od);
+    jraOdmj.getDataSet().setString("DOMJ", s_do);
+    jraOdmj.getDataSet().setBigDecimal("BROJDNK", getDistance());
+    calcIznos();
+  }
+
+  public BigDecimal getDistance() {
+    if ("".equals(jraOdmj.getText().trim())) {
+      return Aus.zero2;
+    }
+    BigDecimal distance;
+    try {
+      distance = new BigDecimal(jraOdmj.getRaDataSet().getString("PARAMETRI").trim());
+    } catch (Exception e) {
+      distance = Aus.zero2;
+    }
+    return distance;
+  }
+
+  public BigDecimal getCijena() {
+    if ("".equals(jlrSifPrSredstva.getText().trim())) {
+      System.err.println("getCijena::vracam nulu!!");
+      return Aus.zero2;
+    }
+    BigDecimal cijena;
+    try {
+//      jlrSifPrSredstva.forceFocLost();
+//      System.out.println("jlrSifPrSredstva.getRaDataSet():: "+jlrSifPrSredstva.getRaDataSet());
+      if (!lookupData.getlookupData().raLocate(jlrSifPrSredstva.getRaDataSet(), "CSIF", jlrSifPrSredstva.getText())) return Aus.zero2;
+      cijena = new BigDecimal(jlrSifPrSredstva.getRaDataSet().getString("PARAMETRI").trim());
+    } catch (Exception e) {
+      cijena = Aus.zero2;
+    }
+    return cijena;
+  }
+
+  private void calcIznos() {
+    if (!jlBrojdnk.isShowing()) return;
+    jlBrojdnk.setText("Cijena x km = "+getCijena()+" x");
+    fPN_V1_1.getDetailSet().setBigDecimal("IZNOS", getCijena().multiply(fPN_V1_1.getDetailSet().getBigDecimal("BROJDNK")));
+  }
 
   // jpDetail03 - BOB
   JLabel jlBrojDNK03 = new JLabel();
@@ -527,7 +593,11 @@ public class jpObracunPNDetail_V1_1 extends JPanel {
 
     jraBrojDNK.setColumnName("BROJDNK");
     jraBrojDNK.setDataSet(fPN_V1_1.getDetailSet());
-
+    jraBrojDNK.addFocusListener(new FocusAdapter() {
+      public void focusLost(FocusEvent e) {
+        calcIznos();
+      }
+    });
     jraIznos.setColumnName("IZNOS");
     jraIznos.setDataSet(fPN_V1_1.getDetailSet());
   }

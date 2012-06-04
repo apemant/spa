@@ -36,6 +36,8 @@ public class frmBLPN extends startFrame {
   JMenuItem jmiShemeKontaBLPN = new JMenuItem();
   JMenuItem jmiVrskBLPN = new JMenuItem();
   JMenuItem jmiZemlje = new JMenuItem();
+  JMenuItem jmiPSredstva = new JMenuItem();
+  JMenuItem jmiRelacije = new JMenuItem();
   JMenuItem jmiParamBLPN = new JMenuItem();
   JMenu jmPN = new JMenu();
   JMenuItem jmiPrijavaPN = new JMenuItem();
@@ -93,6 +95,18 @@ public class frmBLPN extends startFrame {
     jmiZemlje.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiZemlje_actionPerformed(e);
+      }
+    });
+    jmiPSredstva.setText("Prijevozna sredstva");
+    jmiPSredstva.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiPSredstva_actionPerformed(e);
+      }
+    });
+    jmiRelacije.setText("Relacije");
+    jmiRelacije.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiRelacije_actionPerformed(e);
       }
     });
     jmiParamBLPN.setText("Parametri");
@@ -162,6 +176,8 @@ public class frmBLPN extends startFrame {
     jmBlagajna.add(jmiAkontacijaPN);
     jmBlagajna.add(jmiRazlikaPN);
     jmOsnovni.add(jmiZemlje);
+    jmOsnovni.add(jmiPSredstva);
+    jmOsnovni.add(jmiRelacije);
     jmOsnovni.add(jmiShemeKontaBLPN);
     jmOsnovni.add(jmiVrskBLPN);
     jmOsnovni.add(jmiParamBLPN);
@@ -196,6 +212,14 @@ public class frmBLPN extends startFrame {
 
   void jmiZemlje_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.blpn.frmZemlje",jmiZemlje.getText());
+  }
+  
+  void jmiPSredstva_actionPerformed(ActionEvent e) {
+    showFrame("hr.restart.blpn.frmPSredstva",jmiPSredstva.getText());
+  }
+
+  void jmiRelacije_actionPerformed(ActionEvent e) {
+    showFrame("hr.restart.blpn.frmRelacije",jmiRelacije.getText());
   }
 
   void jmiParamBLPN_actionPerformed(ActionEvent e) {
