@@ -483,8 +483,10 @@ public class frmRS extends raUpitLite {
     if (rsmode.equals("A") && !IND.equals("")) {
       String qry = "SELECT max("+getTableName()+".GODINA),max("
                  +getTableName()+".MJESEC),max("+getTableName()+".VRSTAUPL) from "
-                 +getTableName()+" WHERE "+getTableName()+".IDENTIFIKATOR = '"+IND+"'";
-//      System.out.println("qry focLost : " + qry);
+                 +getTableName()+" WHERE "+getTableName()+".IDENTIFIKATOR = '"+IND+"' " +
+                 		"AND EXISTS (SELECT * FROM radnici WHERE radnici.cradnik="+getTableName()+".cradnik and radnici.corg in "
+                 		    +OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "radnici.corg")+")";
+      System.out.println("qry focLost : " + qry);
       QueryDataSet qds = Util.getNewQueryDataSet(qry);
       short godrs = qds.getShort(0);
       short mjrs = qds.getShort(1);
