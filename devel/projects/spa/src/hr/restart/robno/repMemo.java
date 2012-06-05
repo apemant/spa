@@ -101,8 +101,8 @@ public class repMemo  {
   }
   
   public String getOneLine() {
-    return ds.getString("nazivlog") + ", " + ds.getString("adresa") + ", " +
-      ds.getInt("pbr") + " " + ds.getString("mjesto") + 
+    return ds.getString("nazivlog") + ", " + ds.getString("adresa") + (ds.getInt("pbr") == 0 ? "" : ", " +
+      ds.getInt("pbr") + " " + ds.getString("mjesto")) +
       (ds.getString("OIB").length() == 0 ? "" : ", OIB " + ds.getString("OIB")); 
   }
 
