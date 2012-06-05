@@ -96,8 +96,9 @@ public class repMemo  {
     return ds.getString("adresa");
   }
   public String getThirdLine(){
-    return ds.getInt("pbr") + " " + ds.getString("mjesto") + (ds.getString("OIB").length() == 0 ? "" :
-    	", OIB " + ds.getString("OIB"));
+    return (ds.getInt("pbr") == 0 ? (ds.getString("OIB").length() == 0 ? "" : "OIB " + ds.getString("OIB")) :    
+        ds.getInt("pbr") + " " + ds.getString("mjesto") + (ds.getString("OIB").length() == 0 ? "" :
+    	", OIB " + ds.getString("OIB")));
   }
   
   public String getOneLine() {
