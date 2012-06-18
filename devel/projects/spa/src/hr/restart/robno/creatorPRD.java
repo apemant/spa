@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
@@ -53,6 +54,7 @@ public class creatorPRD {
   private hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(false);
   private Timestamp datdok= null;
   private String cradnal = "";
+  private BigDecimal randman;
 
 
 //  final PreparedStatement p1 = raTransaction.getPreparedStatement
@@ -75,6 +77,12 @@ public class creatorPRD {
       ls.add(String.valueOf(ds.getInt("CART")));
       lsrn.add(String.valueOf(ds.getInt("RBSID")));
     }
+    
+    DataSet nus = Aus.q("SELECT * FROM rnus WHERE "+Condition.in("CARTNOR", ds, "CART"));
+    for (nus.first(); nus.inBounds(); nus.next()) {
+      ls.add(String.valueOf(nus.getInt("CART")));
+    }
+    
 //    dodatak = VarStr.join(ls, ',');
 
     for (int i = 0;i<ls.size();i++) {
@@ -101,7 +109,7 @@ public class creatorPRD {
         "cradnal='"+cradnal+"' and rbsid in ("+dodatakRN.toString()+")",true);
   }
 
-  public boolean creatPRD(DataSet ds,String cskl,Timestamp datdok,String cradnal,int brdok,QueryDataSet detail){
+  public boolean creatPRD(DataSet ds,String cskl,Timestamp datdok,String cradnal,BigDecimal randman,int brdok,QueryDataSet detail){
 
   	this.datdok= datdok;
     greska.clear();
@@ -124,6 +132,7 @@ public class creatorPRD {
     this.cskl = cskl;
     this.cradnal = cradnal;
     this.brdok = brdok;
+    this.randman = randman;
     rbr = 1;
     
     forceArtCjenik = frmParam.getParam("robno", "forcePredArt", "N", "Forsirati cijene " +
@@ -252,6 +261,94 @@ public class creatorPRD {
   	dm.getVTPred().setBigDecimal("TOTAL",sds.getBigDecimal("TOTAL"));
   
   }
+  
+  
+  boolean fillHm(DataSet ds, BigDecimal tempBD) {
+  	hm.clear();
+    boolean isFindStanje = ld.raLocate(stanje,new String[] {"CART","GOD"},new String[] {String.valueOf(ds.getInt("CART")),
+    		hr.restart.util.Valid.getValid().findYear(datdok)});
+    
+    
+    hm.put("INAB",tempBD);
+//  insertVtPred(reP.getVtPred(),ds.getString("ID_STAVKA"));
+ 
+
+	  try {
+	    tempBD = tempBD.divide(ds.getBigDecimal("KOL"),2,BigDecimal.ROUND_HALF_UP);
+	  }
+	  catch (Exception ex) {
+	    tempBD = Aus.zero2;
+	  }
+	
+	  hm.put("NC",tempBD);
+	
+	
+	  if (isFindStanje) {
+	    hm.put("VC",stanje.getBigDecimal("VC"));
+	    hm.put("MC",stanje.getBigDecimal("MC"));
+	    hm.put("ZC",stanje.getBigDecimal("ZC"));
+	  }
+	  else {
+	    hm.put("VC",artikl.getBigDecimal("VC"));
+	    hm.put("MC",artikl.getBigDecimal("MC"));
+	  }
+	  
+	  if (forceArtCjenik) {
+	    hm.put("NC",artikl.getBigDecimal("NC"));
+	    hm.put("VC",artikl.getBigDecimal("VC"));
+	    hm.put("MC",artikl.getBigDecimal("MC"));
+	    hm.put("INAB", artikl.getBigDecimal("NC").multiply(ds.getBigDecimal("KOL")).
+	          setScale(2, BigDecimal.ROUND_HALF_UP));
+	  }
+	
+	  if (getKalkulIznos("VC").doubleValue()==0 ) {
+	    NemaCijene(ds);
+	  }
+	  else {
+	    ImaCijene(ds);
+	  }
+	
+	  if (zaliha.equalsIgnoreCase("N")) {
+	    hm.put("IMAR",Aus.zero2);
+	    hm.put("IPOR",Aus.zero2);
+	    hm.put("IZAD",getKalkulIznos("INAB"));
+	//    if (!isFindStanje)
+	    hm.put("ZC",getKalkulIznos("NC"));
+	  }else if (zaliha.equalsIgnoreCase("V")) {
+	    hm.put("IMAR",getKalkulIznos("IBP").subtract(getKalkulIznos("INAB")));
+	    hm.put("IPOR",Aus.zero2);
+	    hm.put("IZAD",getKalkulIznos("IBP"));
+	//    if (!isFindStanje)
+	    hm.put("ZC",getKalkulIznos("VC"));
+	
+	  }else if (zaliha.equalsIgnoreCase("M")) {
+	    hm.put("IMAR",getKalkulIznos("IBP").subtract(getKalkulIznos("INAB")));
+	    hm.put("IPOR",getKalkulIznos("ISP").subtract(getKalkulIznos("IBP")));
+	    hm.put("IZAD",getKalkulIznos("IBP"));
+	//    if (!isFindStanje)
+	    hm.put("ZC",getKalkulIznos("MC"));
+	
+	  }
+	  if (isFindStanje) {
+	    hm.put("SKOL", stanje.getBigDecimal("KOL"));
+	    hm.put("SVC", stanje.getBigDecimal("VC"));
+	    hm.put("SMC", stanje.getBigDecimal("MC"));
+	    hm.put("TKAL", stanje.getString("TKAL"));
+	/*
+	    if (stanje.getBigDecimal("KOL").floatValue()!=0 &&
+	        (stanje.getBigDecimal("VC").compareTo(getKalkulIznos("VC")) !=0 ||
+	         stanje.getBigDecimal("MC").compareTo(getKalkulIznos("MC")) !=0)){
+	
+	      if (zaliha.equalsIgnoreCase("V")) {
+	        hm.put("DIOPORMAR",
+	      }
+	      else if (zaliha.equalsIgnoreCase("V")) {
+	      }
+	    }
+	*/
+	  }
+    return isFindStanje;
+  }
 
 
   public boolean kakulacija(DataSet ds) {
@@ -279,87 +376,16 @@ public class creatorPRD {
 /*
     BigDecimal tempBD = reP.iznosTroskovaMaterijala(cradnal,ds.getInt("RBSID"));
     tempBD = tempBD.add(reP.iznosTroskovaUsluge(cradnal,ds.getInt("RBSID")));
+
 */
+    Aus.mul(ds, "KOL", randman);
     
-    reP.prepareVtPred(cradnal,ds.getInt("RBSID"));
+    reP.prepareVtPred(cradnal, ds.getInt("RBSID"), ds.rowCount() == 1);
+    
     BigDecimal tempBD = reP.getProIzn();
-    hm.put("INAB",tempBD);
-//    insertVtPred(reP.getVtPred(),ds.getString("ID_STAVKA"));
-
-    try {
-      tempBD = tempBD.divide(ds.getBigDecimal("KOL"),2,BigDecimal.ROUND_HALF_UP);
-    }
-    catch (Exception ex) {
-      tempBD = Aus.zero2;
-    }
-
-    hm.put("NC",tempBD);
-
-
-    if (isFindStanje) {
-      hm.put("VC",stanje.getBigDecimal("VC"));
-      hm.put("MC",stanje.getBigDecimal("MC"));
-      hm.put("ZC",stanje.getBigDecimal("ZC"));
-    }
-    else {
-      hm.put("VC",artikl.getBigDecimal("VC"));
-      hm.put("MC",artikl.getBigDecimal("MC"));
-    }
     
-    if (forceArtCjenik) {
-      hm.put("NC",artikl.getBigDecimal("NC"));
-      hm.put("VC",artikl.getBigDecimal("VC"));
-      hm.put("MC",artikl.getBigDecimal("MC"));
-      hm.put("INAB", artikl.getBigDecimal("NC").multiply(ds.getBigDecimal("KOL")).
-            setScale(2, BigDecimal.ROUND_HALF_UP));
-    }
-
-    if (getKalkulIznos("VC").doubleValue()==0 ) {
-      NemaCijene(ds);
-    }
-    else {
-      ImaCijene(ds);
-    }
-
-    if (zaliha.equalsIgnoreCase("N")) {
-      hm.put("IMAR",Aus.zero2);
-      hm.put("IPOR",Aus.zero2);
-      hm.put("IZAD",getKalkulIznos("INAB"));
-//      if (!isFindStanje)
-      hm.put("ZC",getKalkulIznos("NC"));
-    }else if (zaliha.equalsIgnoreCase("V")) {
-      hm.put("IMAR",getKalkulIznos("IBP").subtract(getKalkulIznos("INAB")));
-      hm.put("IPOR",Aus.zero2);
-      hm.put("IZAD",getKalkulIznos("IBP"));
-//      if (!isFindStanje)
-      hm.put("ZC",getKalkulIznos("VC"));
-
-    }else if (zaliha.equalsIgnoreCase("M")) {
-      hm.put("IMAR",getKalkulIznos("IBP").subtract(getKalkulIznos("INAB")));
-      hm.put("IPOR",getKalkulIznos("ISP").subtract(getKalkulIznos("IBP")));
-      hm.put("IZAD",getKalkulIznos("IBP"));
-//      if (!isFindStanje)
-      hm.put("ZC",getKalkulIznos("MC"));
-
-    }
-    if (isFindStanje) {
-      hm.put("SKOL", stanje.getBigDecimal("KOL"));
-      hm.put("SVC", stanje.getBigDecimal("VC"));
-      hm.put("SMC", stanje.getBigDecimal("MC"));
-      hm.put("TKAL", stanje.getString("TKAL"));
-/*
-      if (stanje.getBigDecimal("KOL").floatValue()!=0 &&
-          (stanje.getBigDecimal("VC").compareTo(getKalkulIznos("VC")) !=0 ||
-           stanje.getBigDecimal("MC").compareTo(getKalkulIznos("MC")) !=0)){
-
-        if (zaliha.equalsIgnoreCase("V")) {
-          hm.put("DIOPORMAR",
-        }
-        else if (zaliha.equalsIgnoreCase("V")) {
-        }
-      }
-  */
-    }
+    fillHm(ds, tempBD);
+    
     stavkeRN.setString("STATUS","Z");
     return updateStanje(isFindStanje,ds);
   }
@@ -447,59 +473,77 @@ public class creatorPRD {
     return Aus.zero2;
 
   }
+  
+  void fillDs(DataSet ds,QueryDataSet detalji) {
+    detalji.setString("CSKL",cskl);
+    detalji.setString("GOD",god);
+    detalji.setString("VRDOK","PRE");
+    detalji.setInt("BRDOK",brdok);
+    detalji.setShort("RBR",(short) rbr++);
+    detalji.setInt("RBSID",(int) detalji.getShort("RBR"));
+    detalji.setInt("CART",ds.getInt("CART"));
+    detalji.setString("CART1",ds.getString("CART1"));
+    detalji.setString("BC",ds.getString("BC"));
+    detalji.setString("NAZART",ds.getString("NAZART"));
+    detalji.setString("JM",ds.getString("JM"));
+    detalji.setBigDecimal("KOL",ds.getBigDecimal("KOL"));
+    detalji.setBigDecimal("DC",getKalkulIznos("DC")); // ovo mjenjati
+    detalji.setBigDecimal("DC_VAL",getKalkulIznos("DC_VAL"));
+    detalji.setBigDecimal("IDOB",getKalkulIznos("IDOB"));  // ovo mijenjati
+    detalji.setBigDecimal("IDOB_VAL",getKalkulIznos("IDOB_VAL"));
+    detalji.setBigDecimal("PRAB",getKalkulIznos("PRAB"));
+    detalji.setBigDecimal("IRAB",getKalkulIznos("IRAB"));
+    detalji.setBigDecimal("PZT",getKalkulIznos("PZT"));
+    detalji.setBigDecimal("IZT",getKalkulIznos("IZT"));
+    detalji.setBigDecimal("NC",getKalkulIznos("NC"));    // promjeniti
+    detalji.setBigDecimal("PMAR",getKalkulIznos("PMAR"));
+    detalji.setBigDecimal("MAR",getKalkulIznos("MAR"));
+    detalji.setBigDecimal("VC",getKalkulIznos("VC"));
+    detalji.setBigDecimal("POR1",getKalkulIznos("POR1"));
+    detalji.setBigDecimal("POR2",getKalkulIznos("POR2"));
+    detalji.setBigDecimal("POR3",getKalkulIznos("POR3"));
+    detalji.setBigDecimal("MC",getKalkulIznos("MC"));
+    detalji.setBigDecimal("INAB",getKalkulIznos("INAB"));
+    detalji.setBigDecimal("IMAR",getKalkulIznos("IMAR"));
+    detalji.setBigDecimal("IBP",getKalkulIznos("IBP"));
+    detalji.setBigDecimal("IPOR",getKalkulIznos("IPOR"));
+    detalji.setBigDecimal("ISP",getKalkulIznos("ISP"));
+    detalji.setBigDecimal("ZC",getKalkulIznos("ZC"));
+    detalji.setBigDecimal("IZAD",getKalkulIznos("IZAD"));
+    detalji.setBigDecimal("SKOL",getKalkulIznos("SKOL"));
+    detalji.setBigDecimal("SVC",getKalkulIznos("SVC"));
+    detalji.setBigDecimal("SMC",getKalkulIznos("SMC"));
+    detalji.setBigDecimal("DIOPORMAR",getKalkulIznos("DIOPORMAR"));
+    detalji.setBigDecimal("DIOPORPOR",getKalkulIznos("DIOPORPOR"));
+    detalji.setBigDecimal("PORAV",getKalkulIznos("PORAV"));
+    detalji.setString("SKAL",hm.containsKey("SKAL")? (String) hm.get("TKAL"):"");
+    detalji.setString("ID_STAVKA",rCD.getKey(detalji));
+    stanje.setString("TKAL",rCD.getKey(detalji));
+  }
 
   public boolean creatStavke(DataSet ds,QueryDataSet detalji){
 
      if (!kakulacija(ds)) return false;
      try {
        detalji.insertRow(true);
-       detalji.setString("CSKL",cskl);
-       detalji.setString("GOD",god);
-       detalji.setString("VRDOK","PRE");
-       detalji.setInt("BRDOK",brdok);
-       detalji.setShort("RBR",(short) rbr++);
-       detalji.setInt("RBSID",(int) detalji.getShort("RBR"));
-       detalji.setInt("CART",ds.getInt("CART"));
-       detalji.setString("CART1",ds.getString("CART1"));
-       detalji.setString("BC",ds.getString("BC"));
-       detalji.setString("NAZART",ds.getString("NAZART"));
-       detalji.setString("JM",ds.getString("JM"));
-       detalji.setBigDecimal("KOL",ds.getBigDecimal("KOL"));
-       detalji.setBigDecimal("DC",getKalkulIznos("DC")); // ovo mjenjati
-       detalji.setBigDecimal("DC_VAL",getKalkulIznos("DC_VAL"));
-       detalji.setBigDecimal("IDOB",getKalkulIznos("IDOB"));  // ovo mijenjati
-       detalji.setBigDecimal("IDOB_VAL",getKalkulIznos("IDOB_VAL"));
-       detalji.setBigDecimal("PRAB",getKalkulIznos("PRAB"));
-       detalji.setBigDecimal("IRAB",getKalkulIznos("IRAB"));
-       detalji.setBigDecimal("PZT",getKalkulIznos("PZT"));
-       detalji.setBigDecimal("IZT",getKalkulIznos("IZT"));
-       detalji.setBigDecimal("NC",getKalkulIznos("NC"));    // promjeniti
-       detalji.setBigDecimal("PMAR",getKalkulIznos("PMAR"));
-       detalji.setBigDecimal("MAR",getKalkulIznos("MAR"));
-       detalji.setBigDecimal("VC",getKalkulIznos("VC"));
-       detalji.setBigDecimal("POR1",getKalkulIznos("POR1"));
-       detalji.setBigDecimal("POR2",getKalkulIznos("POR2"));
-       detalji.setBigDecimal("POR3",getKalkulIznos("POR3"));
-       detalji.setBigDecimal("MC",getKalkulIznos("MC"));
-       detalji.setBigDecimal("INAB",getKalkulIznos("INAB"));
-       detalji.setBigDecimal("IMAR",getKalkulIznos("IMAR"));
-       detalji.setBigDecimal("IBP",getKalkulIznos("IBP"));
-       detalji.setBigDecimal("IPOR",getKalkulIznos("IPOR"));
-       detalji.setBigDecimal("ISP",getKalkulIznos("ISP"));
-       detalji.setBigDecimal("ZC",getKalkulIznos("ZC"));
-       detalji.setBigDecimal("IZAD",getKalkulIznos("IZAD"));
-       detalji.setBigDecimal("SKOL",getKalkulIznos("SKOL"));
-       detalji.setBigDecimal("SVC",getKalkulIznos("SVC"));
-       detalji.setBigDecimal("SMC",getKalkulIznos("SMC"));
-       detalji.setBigDecimal("DIOPORMAR",getKalkulIznos("DIOPORMAR"));
-       detalji.setBigDecimal("DIOPORPOR",getKalkulIznos("DIOPORPOR"));
-       detalji.setBigDecimal("PORAV",getKalkulIznos("PORAV"));
-       detalji.setString("SKAL",hm.containsKey("SKAL")? (String) hm.get("TKAL"):"");
-       detalji.setString("ID_STAVKA",rCD.getKey(detalji));
+       fillDs(ds, detalji);
        detalji.setString("VEZA",stavkeRN.getString("ID_STAVKA"));
-       stanje.setString("TKAL",rCD.getKey(detalji));
        insertVtPred(reP.getVtPred(),detalji.getString("ID_STAVKA"));
+       BigDecimal kol = detalji.getBigDecimal("KOL");
+       BigDecimal nc = detalji.getBigDecimal("NC");
        
+       DataSet nus = Aus.q("SELECT * FROM rnus WHERE cartnor = " + ds.getInt("CART"));
+       for (nus.first(); nus.inBounds(); nus.next()) {
+      	 detalji.insertRow(true);
+      	 Aut.getAut().copyArtFields(detalji, nus);
+      	 detalji.setBigDecimal("KOL", kol);
+      	 Aus.mul(detalji, "KOL", nus, "KOEFKOL");
+      	 detalji.setBigDecimal("NC", nc);
+      	 Aus.mul(detalji, "NC", nus, "KOEFZC");
+      	 Aus.mul(detalji, "INAB", "NC", "KOL");
+      	 updateStanje(fillHm(detalji, detalji.getBigDecimal("INAB")),detalji);
+      	 fillDs(detalji, detalji);
+       }       
        return true;
      }
      catch (Exception ex) {

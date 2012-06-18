@@ -102,6 +102,6 @@ public class Doku extends KreirDrop implements DataModule {
     createFilteredDataSet(dokuPRK, "1=0");
     createFilteredDataSet(dokuKAL, "1=0");
     createFilteredDataSet(dokuPRE, "1=0");
-    createFilteredDataSet(dokuPRE, "1=0");
+    createFilteredDataSet(dokuINV, "1=0");
   }
 }

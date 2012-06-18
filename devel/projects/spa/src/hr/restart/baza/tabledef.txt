@@ -1048,6 +1048,7 @@ PLATITI;numeric;15,2;;0;Uplata;8
 DATUPL;date;;;;Datum dospijeæa;10
 DEVIZN;numeric;15,2;;0;Devizni iznos;8
 UIPRPOR2;numeric;15,2;;0;Iznos pretporeza 2
+RANDMAN;numeric;17,6;;0;Randman
 
 
 $Stdoku
@@ -1525,3 +1526,14 @@ JM;char;3;;;Jm
 KOL;numeric;17,3;;0;Kolièina;15
 ZC;numeric;15,2;;0;Cijena
 VRI;numeric;15,2;;0;Vrijednost
+
+$Rnus
+CARTNOR;int;6;pkey;;Šifra normativa
+CART;int;6;pkey;;Šifra
+CART1;char;20;;;Oznaka;15
+BC;char;20;;;Barcode;15
+NAZART;char;50;;;Naziv;20
+JM;char;3;;;Jm
+KOEFKOL;numeric;17,3;;0;Koeficijent kolièine
+KOEFZC;numeric;17,3;;0;Koeficijent cijene
+

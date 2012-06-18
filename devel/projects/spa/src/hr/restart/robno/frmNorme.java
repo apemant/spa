@@ -31,6 +31,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raProcess;
+import hr.restart.util.startFrame;
 import hr.restart.util.sysoutTEST;
 
 import java.awt.BorderLayout;
@@ -68,6 +69,7 @@ public class frmNorme extends raMasterFakeDetailArtikl {
   raOptionDialog rod = new raOptionDialog();
 //  raArtiklUnos rpn = new raArtiklUnos();
 
+  frmRnus rns;
   
   frmTableDataView viewReq = new frmTableDataView(false, false, true);
 
@@ -194,11 +196,20 @@ public class frmNorme extends raMasterFakeDetailArtikl {
       public void actionPerformed(java.awt.event.ActionEvent ev) {
         showRequirementsMaster();
       }
-    },4);
+    },4,true);
+    
+    this.raMaster.addOption(new raNavAction("Nusproizvodi", raImages.IMGCOMPOSEMAIL, KeyEvent.VK_F7) {
+      public void actionPerformed(java.awt.event.ActionEvent ev) {
+      	rns.setOwner(getMasterSet().getInt("CARTNOR"));
+        startFrame.getStartFrame().showFrame(rns);
+      }
+    },3,true);
     
     SetPanels(rpn, jPanel1, false);
     initRpn();
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repFormatNorme","hr.restart.robno.repFormatNorme","FormatNorme","Normirani artikli s normama");
+    
+    rns = (frmRnus) startFrame.getStartFrame().showFrame("hr.restart.robno.frmRnus", 0, "Pregled nusproizvoda", false);
   }
 
   protected void initRpcart() {
