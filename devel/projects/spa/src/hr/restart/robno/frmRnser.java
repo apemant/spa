@@ -17,17 +17,24 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
 import javax.swing.JOptionPane;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.RN;
 import hr.restart.baza.Rnser;
+import hr.restart.baza.dM;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
+import hr.restart.util.raImages;
 import hr.restart.util.raMatPodaci;
+import hr.restart.util.raNavAction;
 
 public class frmRnser extends raMatPodaci {
 	
@@ -67,6 +74,12 @@ public class frmRnser extends raMatPodaci {
     
     removeRnvCopyCurr();
     
+    addOption(new raNavAction("Rastavi proces", raImages.IMGMOVIE, KeyEvent.VK_F7) {
+      public void actionPerformed(ActionEvent e) {
+        splitProc();
+      }
+    }, 4, true);
+    
 	}
 	
 	public void setStav(String cradnal, int rbsid) {
@@ -81,6 +94,39 @@ public class frmRnser extends raMatPodaci {
     cr.open();
     setEditEnabled(cr.rowCount()>0 && !cr.getString("STATUS").equals("Z"));
   }
+	
+	void splitProc() {
+		if (getRaQueryDataSet().rowCount() == 0) return;
+		
+		QueryDataSet ds = Aut.getAut().expandArt(getRaQueryDataSet(), true);
+		if (ds.rowCount() == 0 || ds.getInt("CART") == getRaQueryDataSet().getInt("CART")) {
+			JOptionPane.showMessageDialog(this.jp, "Proces nije normiran!", "Greška",
+          JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		String[] ccs = {"CART", "CART1", "BC", "NAZART", "JM", "KOL"};
+		
+		this.getJpTableView().enableEvents(false);
+		short rbs = rbr.vrati_rbr("RNSER","WHERE CRADNAL='"+cradnal+"' and rbsid="+rbsid);
+		boolean first = true;
+		for (ds.first(); ds.inBounds(); ds.next()) {
+			if (!first) {
+				getRaQueryDataSet().insertRow(false);
+				getRaQueryDataSet().setString("CRADNAL", cradnal);
+        getRaQueryDataSet().setInt("RBSID", rbsid);
+        getRaQueryDataSet().setShort("RBR", rbs++);
+			}
+			first = false;
+      dM.copyColumns(ds, getRaQueryDataSet(), ccs);
+      if (ld.raLocate(dm.getArtikli(), "CART1", ds.getString("CART1"))) {
+      	getRaQueryDataSet().setBigDecimal("ZC", dm.getArtikli().getBigDecimal("NC"));
+      	Aus.mul(getRaQueryDataSet(), "VRI", "ZC", "KOL");
+      }
+		}
+		getRaQueryDataSet().saveChanges();
+		this.getJpTableView().enableEvents(true);
+	}
 
   public void EntryPoint(char mode) {
     if (mode == 'N')
