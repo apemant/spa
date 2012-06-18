@@ -19,11 +19,13 @@ package hr.restart.robno;
 
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
+import hr.restart.baza.Rnser;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
+import hr.restart.swing.raExtendedTable;
 import hr.restart.swing.raTableColumnModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
@@ -58,6 +60,9 @@ public class frmProizvodnja extends frmRadniNalog {
   raNavAction potob;
 
   frmTableDataView viewReq = new frmTableDataView(false, false, true);
+  frmTableDataView viewReal = new frmTableDataView(false, false, true);
+  
+  StorageDataSet realVa = new StorageDataSet();
   
   frmRnser rns;
   
@@ -264,6 +269,11 @@ public class frmProizvodnja extends frmRadniNalog {
   void showRequirementsMaster() {
     if (getMasterSet().getRowCount() == 0) return;
     
+    if (getMasterSet().getString("STATUS").equals("Z") || getMasterSet().getString("STATUS").equals("O")) {
+    	showRealReq();
+    	return;
+    }
+    
     final StorageDataSet reqs = new StorageDataSet();
     String[] coln = {"CART", "CART1", "BC", "NAZART", "JM", "KOL", "NC", "INAB", "CSKL"};
     Column[] cols = new Column[coln.length];
@@ -330,7 +340,72 @@ public class frmProizvodnja extends frmRadniNalog {
     viewReq.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
     viewReq.setTitle("Prikaz ukupne potrošnje materijala  za oznaèene radne naloge");
     viewReq.setVisibleCols(new int[] {Aut.getAut().getCARTdependable(0, 1, 2), 3, 4, 5, 6, 7});
+    
     viewReq.show();
+  }
+  
+  void showRealReq() {
+  	final StorageDataSet reqs = new StorageDataSet();
+  	
+  	final String[] coln = {"CART", "CART1", "BC", "NAZART", "JM", "KOL", "NC", "INAB"};
+    Column[] cols = new Column[coln.length + 1];
+    for (int i = 1; i < cols.length; i++)
+      cols[i] = (Column) dm.getStdoki().getColumn(coln[i - 1]).clone();
+    cols[0] = dM.createStringColumn("VRA", "Vrsta", 1);
+    reqs.setColumns(cols);
+    reqs.open();
+    
+    raProcess.runChild(raMaster.getWindow(), new Runnable() {
+      public void run() {
+        Condition sel = Condition.equal("CRADNAL", getMasterSet()).and(Condition.equal("VRDOK", "RNL").not());
+        
+        DataSet ds = stdoki.getDataModule().getTempSet(sel);
+        raProcess.openScratchDataSet(ds);
+        for (ds.first(); ds.inBounds(); ds.next()) {
+        	if (ld.raLocate(reqs, "CART1", ds.getString("CART1"))) {
+        		Aus.add(reqs, "KOL", ds);
+        		Aus.add(reqs, "INAB", ds);
+        	} else {
+        		reqs.insertRow(false);
+        		reqs.setString("VRA", "M");
+        		dM.copyColumns(ds, reqs, coln);
+        	}
+        }
+        ds.close();
+        raProcess.checkClosing();
+        
+        DataSet rn = Rnser.getDataModule().getTempSet(Condition.equal("CRADNAL", getMasterSet()));
+        raProcess.openScratchDataSet(rn);
+        for (rn.first(); rn.inBounds(); rn.next()) {
+        	if (ld.raLocate(reqs, "CART1", rn.getString("CART1"))) {
+        		Aus.add(reqs, "KOL", rn);
+        		Aus.add(reqs, "INAB", rn, "VRI");
+        	} else {
+        		reqs.insertRow(false);
+        		reqs.setString("VRA", "P");
+        		Aut.getAut().copyArtFields(reqs, rn);
+        		Aus.set(reqs, "KOL", rn);
+        		Aus.set(reqs, "NC", rn, "ZC");
+        		Aus.set(reqs, "INAB", rn, "VRI");
+        	}
+        }
+        rn.close();
+      }
+    });
+    
+    if (!raProcess.isCompleted()) return;
+    
+    
+    viewReal.setDataSet(reqs);
+    viewReal.setSums(new String[] {"INAB"});
+    viewReal.setSaveName("Pregled-potrosnje-stvarne");
+    viewReal.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+    viewReal.setTitle("Prikaz stvarne potrošnje materijala i usluga  za radni nalog " + getMasterSet().getString("CRADNAL"));
+    viewReal.setVisibleCols(new int[] {Aut.getAut().getCARTdependable(1, 2, 3), 4, 5, 6, 7, 8});    
+  	raExtendedTable t = (raExtendedTable) viewReal.jp.getMpTable();
+    t.addToGroup("VRA", true, new String[] {"#", "NAZVRA"}, realVa, true);
+    
+    viewReal.show();
   }
   
   void showRequirements() {
@@ -423,6 +498,18 @@ public class frmProizvodnja extends frmRadniNalog {
     
     viewReq.setSize(640, 400);
     viewReq.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - 320, 200);
+    
+    realVa.setColumns(new Column[] {
+    		dM.createStringColumn("VRA", "Vrsta", 1),
+    		dM.createStringColumn("NAZVRA", "Naziv", 50),
+    });
+    realVa.open();
+    realVa.insertRow(false);
+    realVa.setString("VRA", "M");
+    realVa.setString("NAZVRA", "Utrošeni materijal");
+    realVa.insertRow(false);
+    realVa.setString("VRA", "P");
+    realVa.setString("NAZVRA", "Radne operacije");
 
     this.raMaster.installSelectionTracker("CRADNAL");
     this.setMasterDeleteMode(DELDETAIL);
