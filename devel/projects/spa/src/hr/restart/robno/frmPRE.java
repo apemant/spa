@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
 import hr.restart.util.raTransaction;
 
@@ -80,6 +81,7 @@ public class frmPRE extends frmUlazTemplate {
       rcc.EnabDisabAll(jpMaster.jpRN,true);
       getMasterSet().setTimestamp("DATDOK", jpp.getSelRow().getTimestamp("DATDOK-to"));
       getMasterSet().setTimestamp("DVO", jpp.getSelRow().getTimestamp("DATDOK-to"));
+      getMasterSet().setBigDecimal("RANDMAN", Aus.one0);
       jpp.copySelValues();
       jpMaster.jrfCORG.requestFocus();
     }
@@ -254,7 +256,7 @@ public class frmPRE extends frmUlazTemplate {
       try {
 
         if (creatorPRD.creatPRD(stavkern,getMasterSet().getString("CSKL"),
-                        getMasterSet().getTimestamp("DATDOK"),jpMaster.jpRN.getCRADNAL(),
+                        getMasterSet().getTimestamp("DATDOK"),jpMaster.jpRN.getCRADNAL(),getMasterSet().getBigDecimal("RANDMAN"),
                         getMasterSet().getInt("BRDOK"),getDetailSet())){
           raTransaction.saveChanges(getDetailSet());
           raTransaction.saveChanges(creatorPRD.getStanje());

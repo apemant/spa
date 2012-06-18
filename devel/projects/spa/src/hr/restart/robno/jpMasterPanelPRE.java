@@ -16,6 +16,7 @@
 **
 ****************************************************************************/
 package hr.restart.robno;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
@@ -55,7 +56,8 @@ public class jpMasterPanelPRE extends JPanel {
     }
   };
 
-
+  JLabel jlRandman = new JLabel("Randman"); 
+  JraTextField jraRandman = new JraTextField();
 
   JlrNavField jrfCORG = new JlrNavField(){
     public void after_lookUp(){
@@ -95,6 +97,9 @@ public class jpMasterPanelPRE extends JPanel {
       jrfNAZORG.setColumnName("NAZIV");
       jrfNAZORG.setSearchMode(1);
       jrfNAZORG.setNavProperties(jrfCORG);
+      
+      jraRandman.setColumnName("RANDMAN");
+      
 
       jbCORG.setText("...");
       jrfCORG.setNavButton(jbCORG);
@@ -118,6 +123,11 @@ public class jpMasterPanelPRE extends JPanel {
 //      jpMasterCenter.add(jrfRN, new XYConstraints(150, 65, 100, -1));
 //      jpMasterCenter.add(jbCRN, new XYConstraints(255, 65, 21, 21));
       jpMasterCenter.add(jpRN, new XYConstraints(0, 65, -1, -1));
+      
+      if (frmParam.getParam("rn", "randman", "D", "Omoguæiti unos parametra RANDMAN (D,N)").equals("D")) {
+	      jpMasterCenter.add(jlRandman, new XYConstraints(400, 65, -1, -1));
+	      jpMasterCenter.add(jraRandman, new XYConstraints(500, 65, 100, -1));
+      }
 
       jpMasterCenter.add(new JLabel("Opis"), new XYConstraints(15, 90, -1, -1));
       jpMasterCenter.add(jtfOPis, new XYConstraints(150, 90, 450, 80));
@@ -149,7 +159,7 @@ public class jpMasterPanelPRE extends JPanel {
       jtfDATDOK.setDataSet(qds);
       jrfCORG.setDataSet(qds);
       jpBRDOK.setDataSet(qds);
-
+      jraRandman.setDataSet(qds);
     }
 
 
