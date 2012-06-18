@@ -51,8 +51,9 @@ public class raenginePRD {
    * @return
    */
 
-  public QueryDataSet selectIzdatnice(String cradnal,int rbsrn){
-    String selectIzdat = "select * from stdoki where cradnal = '"+
+  public QueryDataSet selectIzdatnice(String cradnal,int rbsrn, boolean single){
+    String selectIzdat = single ? "select * from stdoki where cradnal = '"+	cradnal+"' and vrdok='IZD'"  
+    												: "select * from stdoki where cradnal = '"+
                          cradnal+"' and vrdok='IZD' and rbsrn="+rbsrn;
     return  hr.restart.util.Util.getNewQueryDataSet(selectIzdat,true);
   }
@@ -77,13 +78,13 @@ public class raenginePRD {
   
   }
   
-  public void prepareVtPred(String cradnal,int rbsrn){
+  public void prepareVtPred(String cradnal,int rbsrn, boolean single){
   	sds = new StorageDataSet();
   	sds.setColumns(dm.getVTPred().cloneColumns());
   	sds.open();
   	sds.insertRow(false);
   	initParams();
-  	QueryDataSet materijal = selectIzdatnice(cradnal,rbsrn);
+  	QueryDataSet materijal = selectIzdatnice(cradnal,rbsrn, single);
     for (materijal.first();materijal.inBounds();materijal.next()){
     	if (ld.raLocate(dm.getSklad(),"CSKL",materijal.getString("CSKL"))){
     		if (dm.getSklad().getString("TIPSKL").equalsIgnoreCase("M")){
@@ -136,7 +137,7 @@ public class raenginePRD {
   	return sds.getBigDecimal("TOTAL");
   }
   
-  public BigDecimal iznosTroskovaMaterijala(String cradnal,int rbsrn){
+  /*public BigDecimal iznosTroskovaMaterijala(String cradnal,int rbsrn){
 
   	
   	QueryDataSet materijal = selectIzdatnice(cradnal,rbsrn);
@@ -148,7 +149,7 @@ public class raenginePRD {
     }
     return suma;
 
-  }
+  }*/
 
 
   public BigDecimal iznosTroskovaUsluge(String cradnal,int rbsrn) {
