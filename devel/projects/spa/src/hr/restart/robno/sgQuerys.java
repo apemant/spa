@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Artikli;
+import hr.restart.baza.Pjpar;
 import hr.restart.baza.dM;
 import hr.restart.sk.PartnerCache;
 import hr.restart.util.Aus;
@@ -28,6 +29,7 @@ import java.math.BigDecimal;
 import java.util.Locale;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
@@ -1174,7 +1176,7 @@ System.out.println("QS : " + queryString);
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+"))";
 
-    String queryString = "select doki.cpar, "+
+    String queryString = "select doki.cpar, doki.pj, "+
 //                         "doki.brdok "+
                          "stdoki.cskl, "+
                          "stdoki.cart, "+
@@ -1190,6 +1192,7 @@ System.out.println("QS : " + queryString);
                          "(stdoki.iprodsp - stdoki.iprodbp) as por, "+
                          "stdoki.iprodsp, "+
                          "stdoki.inab, "+
+                         "stdoki.iprodsp + stdoki.uirab as itot, "+
                          "(stdoki.iprodbp-stdoki.inab) as ruc "+caprDobart+
                          "from artikli, doki, stdoki " +dobart+
                          "where doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok "+
@@ -1243,6 +1246,8 @@ System.out.println("QS : " + queryString);
         stds.setColumns(new Column[] {
           dm.getPartneri().getColumn("CPAR").cloneColumn(),
           dm.getPartneri().getColumn("NAZPAR").cloneColumn(),
+          dm.getPjpar().getColumn("PJ").cloneColumn(),
+          dm.getPjpar().getColumn("NAZPJ").cloneColumn(),
           dm.getStdoki().getColumn("CSKL").cloneColumn(),
           dm.getStdoki().getColumn("CART").cloneColumn(),
           dm.getStdoki().getColumn("CART1").cloneColumn(),
@@ -1257,11 +1262,14 @@ System.out.println("QS : " + queryString);
           dm.getStdoki().getColumn("IPRODBP").cloneColumn(),
           dm.createBigDecimalColumn("POR","Porez",2),
           dm.getStdoki().getColumn("IPRODSP").cloneColumn(),
+          dm.createBigDecimalColumn("ITOT","Bez popusta",2)
         });
     stds.open();
-    ts.setSort(new SortDescriptor(new String[] {"CPAR", "CART"}));
+    ts.setSort(new SortDescriptor(new String[] {"CPAR", "PJ", "CART"}));
     ts.first();
+    DataSet pjp = dm.getPjpar();
     hr.restart.util.lookupData ld = hr.restart.util.lookupData.getlookupData();
+    
 
 //    System.out.println("ts rowcount = " + ts.rowCount());
     //dm.getPartneri().open();
@@ -1272,11 +1280,17 @@ System.out.println("QS : " + queryString);
       dbl = true;
     }
 
-    int cpar = -1027, cart = -1027;
+    int cpar = -1027, cart = -1027, pj = -1027;
     do {
-      if (ts.getInt("CPAR") != cpar || ts.getInt("CART") != cart) {
+      if (ts.getInt("CPAR") != cpar || ts.getInt("PJ") != pj || ts.getInt("CART") != cart) {
         stds.insertRow(false);
         stds.setInt("CPAR", cpar = ts.getInt("CPAR"));
+        stds.setInt("PJ", pj = ts.getInt("PJ"));
+        stds.setString("NAZPJ","");
+        if (pj > 0) {
+        	DataRow dr = ld.raLookup(pjp, new String[] {"CPAR", "PJ"}, ts);
+        	if (dr != null) stds.setString("NAZPJ", dr.getString("NAZPJ"));
+        }
         /*ld.raLocate(dm.getPartneri(), "CPAR",ts.getInt("CPAR")+"");
         stds.setString("NAZPAR",dm.getPartneri().getString("NAZPAR"));*/
         stds.setString("NAZPAR",pc.getNameNotNull(cpar));
@@ -1320,6 +1334,7 @@ System.out.println("QS : " + queryString);
         stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
         stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
         stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(dbl ? new BigDecimal(ts.getDouble("RUC")) : ts.getBigDecimal("RUC")));
+        stds.setBigDecimal("ITOT", stds.getBigDecimal("ITOT").add(dbl ? new BigDecimal(ts.getDouble("ITOT")) : ts.getBigDecimal("ITOT")));
         try {
           stds.setBigDecimal("PostoRUC",stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),4,java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
         }
@@ -1350,6 +1365,7 @@ System.out.println("QS : " + queryString);
         stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
         stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
         stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(dbl ? new BigDecimal(ts.getDouble("RUC")) : ts.getBigDecimal("RUC")));
+        stds.setBigDecimal("ITOT", stds.getBigDecimal("ITOT").add(dbl ? new BigDecimal(ts.getDouble("ITOT")) : ts.getBigDecimal("ITOT")));
         try {
           stds.setBigDecimal("PostoRUC",stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),4,java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
         }
