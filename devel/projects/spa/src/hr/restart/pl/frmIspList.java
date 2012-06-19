@@ -273,6 +273,8 @@ public class frmIspList extends frmIzvjestajiPL {
   protected void addReports() {
     this.addReport("hr.restart.pl.repIspList", "hr.restart.pl.repIspList", "IspList", "Ispis isplatnih listi\u0107a po abecedi");
     this.addReport("hr.restart.pl.repIspListCorg", "hr.restart.pl.repIspListCorg", "IspList", "Ispis isplatnih listiæa po org. jedinicama");
+    addJasper("hr.restart.pl.repIspListNa", "hr.restart.pl.repIspList", "ispListNa.jrxml", "Isplatni listiæ sa svim doprinosima");
+    addJasper("hr.restart.pl.repIspListNaCorg", "hr.restart.pl.repIspListCorg", "ispListNa.jrxml", "Isplatni listiæ sa svim doprinosima po org.jed.");
 //    this.addReport("hr.restart.pl.repIspListCorg", "Ispis isplatnih listi\u0107a po org. jedinicama",2);
     this.addReport("hr.restart.pl.repPlatjnaLista", "Ispis obra\u010Dunske liste radnika",2);
     this.addReport("hr.restart.pl.repMxIsplListUk", "Matri\u010Dni ispis isplatnih listi\u0107a");
@@ -464,6 +466,13 @@ public class frmIspList extends frmIzvjestajiPL {
     }
     return raOdbici.getInstance().getDoprinosiRadnik(rad, raOdbici.OBR);
   }
+  public QueryDataSet getDoprinosiNaSet(String rad) {
+    if (isArh) {
+//      System.out.println("KVERI : " + raOdbici.getInstance().getDoprinosiRadnik(rad, raOdbici.ARH).getOriginalQueryString());
+      return raOdbici.getInstance().getDoprinosiNa(rad, raOdbici.ARH);
+    }
+    return raOdbici.getInstance().getDoprinosiNa(rad, raOdbici.OBR);
+  }
 
   public QueryDataSet getKreditiSet(String rad) {
     if (isArh) return raOdbici.getInstance().getKrediti(rad, raOdbici.ARH);
@@ -485,8 +494,8 @@ public class frmIspList extends frmIzvjestajiPL {
       .equalsIgnoreCase("D")?"DOHODAK":"NETO";
     //"NETO";
   }
-  BigDecimal totalStopa;
-  String nazivPrim, sati, koef, neto, bruto, nazivDop, osnovicaDop, stopa, iznos;
+  BigDecimal totalStopa, totalStopaNa, totalIznosNa;
+  String nazivPrim, sati, koef, neto, bruto, nazivDop, osnovicaDop, stopa, iznos, nazivDopNa, osnovicaDopNa, stopaNa, iznosNa;
   String nazivNak, satiNaknada, iznosNak, nazivKred, iznosKred;
   String cradmj, nazradmj;
   String brojtek, nazbanke, tipIsplate, nazvro, copcine, oib, adresa, fondsati;
@@ -547,39 +556,7 @@ public class frmIspList extends frmIzvjestajiPL {
     _nazivN.setLength(Math.max(0, _nazivN.length() - 1));
     _satiN.setLength(Math.max(0, _satiN.length() - 1));
     _iznosN.setLength(Math.max(0, _iznosN.length() - 1));
-
-    ds = getDoprinosiSet(crad);
-    StringBuffer _nazivD = new StringBuffer();
-    StringBuffer _osnovD = new StringBuffer();
-    StringBuffer _stopa = new StringBuffer();
-    StringBuffer _iznos = new StringBuffer();
-    totalStopa = new BigDecimal(0.0);
-    for (ds.first(); ds.inBounds(); ds.next()) {
-      if (isArh) {
-        if (rbrObr == ds.getShort("RBROBR")
-            && mjObr == ds.getShort("MJOBR")
-            && godObr == ds.getShort("GODOBR")){
-      ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
-      _nazivD.append(getVrodb().getString("OPISVRODB")).append("\n");
-      _osnovD.append(format(ds, "OBROSN")).append("\n");
-      _stopa.append(format(ds, "OBRSTOPA")).append("\n");
-      _iznos.append(format(ds, "OBRIZNOS")).append("\n");
-      totalStopa = totalStopa.add(ds.getBigDecimal("OBRSTOPA"));
-    }
-      } else {
-        ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
-        _nazivD.append(getVrodb().getString("OPISVRODB")).append("\n");
-        _osnovD.append(format(ds, "OBROSN")).append("\n");
-        _stopa.append(format(ds, "OBRSTOPA")).append("\n");
-        _iznos.append(format(ds, "OBRIZNOS")).append("\n");
-        totalStopa = totalStopa.add(ds.getBigDecimal("OBRSTOPA"));
-      }
-    }
-    _nazivD.setLength(Math.max(0, _nazivD.length() - 1));
-    _osnovD.setLength(Math.max(0, _osnovD.length() - 1));
-    _stopa.setLength(Math.max(0, _stopa.length() - 1));
-    _iznos.setLength(Math.max(0, _iznos.length() - 1));
-
+//krediti
     ds = getKreditiSet(crad);
     StringBuffer _nazivK = new StringBuffer();
     StringBuffer _iznosK = new StringBuffer();
@@ -610,11 +587,26 @@ public class frmIspList extends frmIzvjestajiPL {
     satiNaknada= _satiN.toString();
     iznosNak = _iznosN.toString();
 
-    nazivDop = _nazivD.toString();
-    osnovicaDop = _osnovD.toString();
-    stopa = _stopa.toString();
-    iznos = _iznos.toString();
+    //doprinosi
+    ds = getDoprinosiSet(crad);
+    Object[] doprinosi = makeDoprStringBuffers(ds, rbrObr, mjObr, godObr);
 
+    nazivDop = ((StringBuffer)doprinosi[0]).toString();
+    osnovicaDop = ((StringBuffer)doprinosi[1]).toString();
+    stopa = ((StringBuffer)doprinosi[2]).toString();
+    iznos = ((StringBuffer)doprinosi[3]).toString();
+    totalStopa = (BigDecimal)doprinosi[4];
+    //doprinosiNa
+    ds = getDoprinosiNaSet(crad);
+    Object[] doprinosiNa = makeDoprStringBuffers(ds, rbrObr, mjObr, godObr);
+
+    nazivDopNa = doprinosiNa[0].toString();
+    osnovicaDopNa = doprinosiNa[1].toString();
+    stopaNa = doprinosiNa[2].toString();
+    iznosNa = doprinosiNa[3].toString();
+    totalStopaNa = (BigDecimal)doprinosiNa[4];
+    totalIznosNa = (BigDecimal)doprinosiNa[5];
+    
     nazivKred = _nazivK.toString();
     iznosKred = _iznosK.toString();
 
@@ -642,6 +634,43 @@ public class frmIspList extends frmIzvjestajiPL {
 //    this.addReports();
 
   }
+  private Object[] makeDoprStringBuffers(DataSet ds, short rbrObr, short mjObr, short godObr) {
+    StringBuffer _nazivD = new StringBuffer();
+    StringBuffer _osnovD = new StringBuffer();
+    StringBuffer _stopa = new StringBuffer();
+    StringBuffer _iznos = new StringBuffer();
+    BigDecimal _totalStopa = new BigDecimal(0.0);
+    BigDecimal _totalIznos = new BigDecimal(0.0);
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      if (isArh) {
+        if (rbrObr == ds.getShort("RBROBR")
+            && mjObr == ds.getShort("MJOBR")
+            && godObr == ds.getShort("GODOBR")){
+      ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
+      _nazivD.append(getVrodb().getString("OPISVRODB")).append("\n");
+      _osnovD.append(format(ds, "OBROSN")).append("\n");
+      _stopa.append(format(ds, "OBRSTOPA")).append("\n");
+      _iznos.append(format(ds, "OBRIZNOS")).append("\n");
+      _totalStopa = _totalStopa.add(ds.getBigDecimal("OBRSTOPA"));
+      _totalIznos = _totalIznos.add(ds.getBigDecimal("OBRIZNOS"));
+        }
+      } else {
+        ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
+        _nazivD.append(getVrodb().getString("OPISVRODB")).append("\n");
+        _osnovD.append(format(ds, "OBROSN")).append("\n");
+        _stopa.append(format(ds, "OBRSTOPA")).append("\n");
+        _iznos.append(format(ds, "OBRIZNOS")).append("\n");
+        _totalStopa = _totalStopa.add(ds.getBigDecimal("OBRSTOPA"));
+        _totalIznos = _totalIznos.add(ds.getBigDecimal("OBRIZNOS"));
+      }
+    }
+    _nazivD.setLength(Math.max(0, _nazivD.length() - 1));
+    _osnovD.setLength(Math.max(0, _osnovD.length() - 1));
+    _stopa.setLength(Math.max(0, _stopa.length() - 1));
+    _iznos.setLength(Math.max(0, _iznos.length() - 1));
+    return new Object[] {_nazivD,_osnovD,_stopa,_iznos, _totalStopa, _totalIznos};
+  }
+
   private String getKreditInfo(DataSet ds) {
     if (frmParam.getParam("pl", "ildetkred", "D", "Detaljna specifikacija kredita na ispl.listi").equalsIgnoreCase("N")) return "";
 System.out.println("KreditInfo za "+ds);
@@ -725,17 +754,39 @@ System.out.println("KreditInfo za "+ds);
   public String getDoprinosi() {
     return nazivDop;
   }
-
+  
   public String getOsnovicaDoprinosa(){
     return osnovicaDop;
   }
-
+  
   public String getStopa() {
     return stopa;
   }
-
+  
   public String getIznosDoprinosa() {
     return iznos;
+  }
+  
+  public String getDoprinosiNa() {
+    return nazivDopNa;
+  }
+
+  public String getOsnovicaDoprinosaNa(){
+    return osnovicaDopNa;
+  }
+
+  public String getStopaNa() {
+    return stopaNa;
+  }
+
+  public String getIznosDoprinosaNa() {
+    return iznosNa;
+  }
+  public BigDecimal getTotalStopaNa() {
+    return totalStopaNa;
+  }
+  public BigDecimal getTotalIznosNa() {
+    return totalIznosNa;
   }
 
   public String getNaknade() {

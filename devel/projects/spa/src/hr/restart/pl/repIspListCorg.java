@@ -167,6 +167,22 @@ public class repIspListCorg implements raReportData {//implements sg.com.elixir.
   public String getIznosDoprinosa() {
     return fil.getIznosDoprinosa();
   }
+  
+  public String getDoprinosiNa() {
+    return fil.getDoprinosiNa();
+  }
+
+  public String getOsnovicaDopNa() {
+    return fil.getOsnovicaDoprinosaNa();
+  }
+
+  public String getStopaNa() {
+    return fil.getStopaNa();
+  }
+
+  public String getIznosDoprinosaNa() {
+    return fil.getIznosDoprinosaNa();
+  }
 
   public String getNaknade() {
     return fil.getNaknade();
@@ -217,7 +233,15 @@ public class repIspListCorg implements raReportData {//implements sg.com.elixir.
   public BigDecimal getTotalStopa() {
     return fil.getTotalStopa();
   }
-
+  public BigDecimal getTotalStopaNa() {
+    return fil.getTotalStopaNa();
+  }
+  public BigDecimal getTotalDoprinosiNa() {
+    return fil.getTotalIznosNa();
+  }
+  public BigDecimal getBruto2() {
+    return getTotalDoprinosiNa().add(getTotalBruto());
+  }
   public BigDecimal getDohodak() {
     return radnici.getBigDecimal("NETO");
   }

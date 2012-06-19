@@ -157,17 +157,33 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
   public String getDoprinosi() {
     return fil.getDoprinosi();
   }
-
+  
   public String getOsnovicaDop() {
     return fil.getOsnovicaDoprinosa();
   }
-
+  
   public String getStopa() {
     return fil.getStopa();
   }
-
+  
   public String getIznosDoprinosa() {
     return fil.getIznosDoprinosa();
+  }
+  
+  public String getDoprinosiNa() {
+    return fil.getDoprinosiNa();
+  }
+
+  public String getOsnovicaDopNa() {
+    return fil.getOsnovicaDoprinosaNa();
+  }
+
+  public String getStopaNa() {
+    return fil.getStopaNa();
+  }
+
+  public String getIznosDoprinosaNa() {
+    return fil.getIznosDoprinosaNa();
   }
 
   public String getNaknade() {
@@ -216,7 +232,15 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
   public BigDecimal getTotalStopa() {
     return fil.getTotalStopa();
   }
-
+  public BigDecimal getTotalStopaNa() {
+    return fil.getTotalStopaNa();
+  }
+  public BigDecimal getTotalDoprinosiNa() {
+    return fil.getTotalIznosNa();
+  }
+  public BigDecimal getBruto2() {
+    return getTotalDoprinosiNa().add(getTotalBruto());
+  }
   public BigDecimal getDohodak() {
     return radnici.getBigDecimal("NETO");
   }
