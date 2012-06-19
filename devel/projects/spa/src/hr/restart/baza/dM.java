@@ -2377,7 +2377,16 @@ public class dM implements DataModule {
   public void loadModules() {
     if (modulesLoaded) return;
     modulesLoaded = true;
-    Method[] meth = dM.class.getMethods();
+    String[] allc = ConsoleCreator.getModuleClasses();
+    
+    for (int i = 0; i < allc.length; i++)
+      try {
+        Class.forName(allc[i]).newInstance();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    
+    /*Method[] meth = dM.class.getMethods();
     try {
       for (int i = 0; i < meth.length; i++)
         if (meth[i].getReturnType().isAssignableFrom(QueryDataSet.class) &&
@@ -2385,7 +2394,7 @@ public class dM implements DataModule {
           meth[i].invoke(this, null);
     } catch (Exception e) {
       e.printStackTrace();
-    }
+    }*/
   }
 
   public static String[] getAllDataSetGetters() {
