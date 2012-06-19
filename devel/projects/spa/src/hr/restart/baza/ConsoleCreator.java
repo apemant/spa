@@ -700,7 +700,7 @@ public class ConsoleCreator {
 	}
 
 	public static String[] getModuleClasses() {
-		return new ConsoleCreator().moduleClasses;
+		return moduleClasses;
 	}
 
 	public static void addModuleClass(String mc) {
