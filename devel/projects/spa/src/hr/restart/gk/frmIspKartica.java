@@ -240,9 +240,11 @@ public class frmIspKartica extends frmKarticeGK {
     if (stds.getString("SALDO").equals("D")) { //jcbSaldo.isSelected()) {
 //      this.addReport("hr.restart.gk.repKarticeGK_Saldirana", "Ispis izvještaja konto kartica", 2);
       this.addReport("hr.restart.gk.repKarticeGK_Saldirana","hr.restart.gk.repKarticeGK_Saldirana","KarticeGK_Saldirana", "Ispis izvještaja konto kartica");
+      this.addReport("hr.restart.gk.repKarticeGK_Saldirana_single","hr.restart.gk.repKarticeGK_Saldirana","KarticeGK_Saldirana_single", "Ispis izvještaja konto kartica - kompaktno");
     } else {
 //      this.addReport("hr.restart.gk.repKarticeGK", "Ispis izvještaja konto kartica", 2);
       this.addReport("hr.restart.gk.repKarticeGK", "hr.restart.gk.repKarticeGK", "KarticeGK", "Ispis izvještaja konto kartica");
+      this.addReport("hr.restart.gk.repKarticeGK_single", "hr.restart.gk.repKarticeGK", "KarticeGK_single", "Ispis izvještaja konto kartica - kompaktno");
     }
     this.addReport("hr.restart.gk.repKarticeGKpar", "hr.restart.gk.repKarticeGKpar", "KarticeGKpartneri", "Ispis izvještaja konto kartica po partnerima");
     this.addReport("hr.restart.gk.repKarticeGKcorg", "hr.restart.gk.repKarticeGKcorg", "KarticeGKcorg", "Ispis izvještaja konto kartica po org. jedinicama");
