@@ -21,6 +21,7 @@ import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
+import hr.restart.baza.norme;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.Asql;
 import hr.restart.sisfun.frmTableDataView;
@@ -47,6 +48,7 @@ import javax.swing.SwingConstants;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -230,22 +232,33 @@ public class frmNorme extends raMasterFakeDetailArtikl {
     rpn.InitRaPanCart();
   }
   
-  private QueryDataSet detailReportSet = null;
-  private HashMap nazivljeNormativa = null;
+  private QueryDataSet detailReportSet = dm.getNorme();
+  private HashMap nazivljeNormativa = new HashMap();
   
   private void makeDetailReportSet(){
-    nazivljeNormativa = new HashMap();
-    detailReportSet = dm.getNorme();
+    nazivljeNormativa.clear();
+    
+    int[] cs = new int[mast.getRowCount()];
+    
+    Variant v = new Variant();
+    for (int i = 0; i < mast.getRowCount(); i++) {
+      mast.getVariant("CARTNOR", i, v);
+      System.out.println(v);
+      cs[i] = v.getAsInt();
+      ld.raLocate(dm.getArtikli(), "CART", v.toString());
+      nazivljeNormativa.put(v.toString(),dm.getArtikli().getString("NAZART"));
+    }
+    norme.getDataModule().setFilter(Condition.in("CARTNOR", cs));
     detailReportSet.open();
     
-    QueryDataSet normativi = hr.restart.util.Util.getUtil().getNewQueryDataSet("SELECT cart, nazart FROM Artikli WHERE cart in (select distinct cartnor from norme)");
+    /*QueryDataSet normativi = hr.restart.util.Util.getUtil().getNewQueryDataSet("SELECT cart, nazart FROM Artikli WHERE cart in (select distinct cartnor from norme)");
     for (normativi.first();normativi.inBounds();normativi.next()){
       nazivljeNormativa.put(normativi.getInt("CART")+"",normativi.getString("NAZART"));
       System.out.println(normativi.getString("NAZART")); //XDEBUG delete when no more needed
-    }
+    }*/
     
-    sysoutTEST st = new sysoutTEST(false); //XDEBUG delete when no more needed
-    st.prn(detailReportSet);
+    //sysoutTEST st = new sysoutTEST(false); //XDEBUG delete when no more needed
+    //st.prn(detailReportSet);
   }
   
   String[] reqc = {"CART", "CART1", "BC", "NAZART", "JM", "KOL"};
