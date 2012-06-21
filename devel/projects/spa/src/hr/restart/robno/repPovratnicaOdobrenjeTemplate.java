@@ -41,10 +41,12 @@ public class repPovratnicaOdobrenjeTemplate extends repIzlazOrigTemplate {
     sh.LabelRACUNOTPREMNICA.setDefault(ep.CAPTION, "\nPOVRATNICA-ODOBRENJE");
     sh.defaultAltererSect().getView(sh.LabelMjestoDatum, sh.TextNAZFRA).
     deleteElementsPushDown(sh, new raReportElement[] {
-    sh.LabelNacin_otpreme, sh.LabelNacin_placanja, /*sh.LabelNarudzba,*/
+    /*sh.LabelNacin_otpreme,*/ sh.LabelNacin_placanja, /*sh.LabelNarudzba,*/
     sh.LabelParitet, /*sh.TextBRNARIZ,*/
-    /*sh.TextSgetDATNARIZ,*/ sh.TextNAZNAC, sh.TextNAZNACPL, sh.TextNAZFRA});
+    /*sh.TextSgetDATNARIZ,*/ /*sh.TextNAZNAC,*/ sh.TextNAZNACPL, sh.TextNAZFRA});
 //    sh.LabelR1.setDefault(ep.VISIBLE, raElixirPropertyValues.NO);
+    sh.LabelNacin_otpreme.setDefault(ep.CAPTION, "Vezani dokument");
+    sh.TextNAZNAC.setDefault(ep.CONTROL_SOURCE, "BRNARIZ");
     sh.LabelNarudzba.setDefault(ep.CAPTION, "Izlazni dokument");
     sh.TextBRNARIZ.setDefault(ep.CONTROL_SOURCE, "BRDOKIZ");
     sh.TextSgetDATNARIZ.setDefault(ep.CONTROL_SOURCE, "SgetDATDOKIZ");
