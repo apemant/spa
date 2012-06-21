@@ -2549,14 +2549,20 @@ System.out.println("findCjenik::else :: "+sql);
         
         String cp = par.getInt("CPAR") + "";
         
-        if (nar) buf.append(getPadded("3855900001230", 13));
-        else buf.append(getPadded("3859888798007", 13));
+        if (nar) {
+          buf.append(getPadded(logo.getString("GLN"), 13));
+          buf.append(getPadded(logo.getString("NAZIVLOG"), 35));
+          buf.append(getPadded(logo.getString("MATBROJ"), 13));
+        } else {
+          buf.append(getPadded("3859888798007", 13));
+          buf.append(getPadded(par.getString("NAZPAR"), 35));
+          buf.append(getPadded(par.getString("MB"), 13));
+        }
         /*if (par.getString("GLN").length() > 0)
           buf.append(getPadded(par.getString("GLN"), 13));
         else 
           buf.append(getPadded(cp, 13));*/
-        buf.append(getPadded(par.getString("NAZPAR"), 35));
-        buf.append(getPadded(par.getString("MB"), 13));
+        
         
         DataSet pj = par;
         
@@ -2599,7 +2605,8 @@ System.out.println("findCjenik::else :: "+sql);
         buf.append(edif.format(ms.getTimestamp("DVO")));
         
         if (nar) {
-          buf.append(getPadded("", 20+20+20+40+13+4+13+13+3+13));
+          buf.append(getPadded(ms.getString("BRNARIZ"), 20));
+          buf.append(getPadded("", 20+20+40+13+4+13+13+3+13));
         } else {
           buf.append(getPadded(ms.getString("BRNARIZ"), 20));
           buf.append(getPadded(ms.getString("CUG"), 20));
