@@ -346,8 +346,8 @@ public class rajpIzlazDPTemplate extends JPanel {
 		rezervacija.setBorder(BorderFactory.createEtchedBorder());
 		rezervacija.setHorizontalAlignment(SwingConstants.CENTER);
 		rcc.setLabelLaF(rezervacija, false);
-		jpDetailCenter.add(rezervacija, new XYConstraints(500, nd ? 70: 40, 108, -1));
-		jpDetailCenter.add(jrtbRezervacija, new XYConstraints(613, nd ? 70 : 40, 21, 21));
+		jpDetailCenter.add(rezervacija, new XYConstraints(500, nd ? 75: 40, 108, -1));
+		jpDetailCenter.add(jrtbRezervacija, new XYConstraints(613, nd ? 75 : 40, 21, 21));
 	}
 
 	public void setRezervacija() {
@@ -561,7 +561,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 		jpDetailCenter.setLayout(xYLayoutDC);
 		xYLayoutDC.setHeight(50);
 		if (fDI.what_kind_of_dokument.equalsIgnoreCase("PON"))
-		  xYLayoutDC.setHeight(raIzlazTemplate.isNabDirect() ? 100 : 70);
+		  xYLayoutDC.setHeight(raIzlazTemplate.isNabDirect() ? 105 : 70);
 		if ((fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") ||
 				fDI.what_kind_of_dokument.equalsIgnoreCase("ODB")) && raIzlazTemplate.isNabDirect())
 			xYLayoutDC.setHeight(80);
