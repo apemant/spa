@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 
@@ -299,6 +300,7 @@ public class ispStatArt extends raPanStats {
         dm.getStdoki().getColumn("INAB").cloneColumn(),
         dm.createBigDecimalColumn("RUC","RuC",2),
         dm.createBigDecimalColumn("PostoRUC","% RuC",2),
+        dm.createBigDecimalColumn("JRUC","Jed. RuC", 3),
         dm.getStdoki().getColumn("IPRODBP").cloneColumn(),
         dm.createBigDecimalColumn("POR","Porez",2),
         dm.getStdoki().getColumn("IPRODSP").cloneColumn(),
@@ -331,6 +333,8 @@ public class ispStatArt extends raPanStats {
         prikazSet.setBigDecimal("POR",new java.math.BigDecimal(dkSet.getDouble("POR")));
         prikazSet.setBigDecimal("RUC",new java.math.BigDecimal(dkSet.getDouble("RUC")));
       }
+      if (prikazSet.getBigDecimal("KOL").signum() != 0)
+        Aus.div(prikazSet, "JRUC", "RUC", "KOL"); 
       prikazSet.setBigDecimal("IPRODSP",dkSet.getBigDecimal("IPRODSP"));
     } while (dkSet.next());
 
