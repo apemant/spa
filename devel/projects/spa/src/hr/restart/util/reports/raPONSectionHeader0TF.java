@@ -227,7 +227,7 @@ public class raPONSectionHeader0TF extends raReportSection {
       last = now;
       if ("L".equalsIgnoreCase(now)) this.restoreDefaults();
       else {
-        raReportSection left = this.getView(Rectangle2, Rectangle2);
+        raReportSection left = this.getView(Rectangle2.getLeft(), Rectangle2.getTop(), Rectangle2.getRight(), Rectangle2.getBottom() + 400);
         raReportSection right1 = this.getView(LabelP_O_N_U_D_A, LabelP_O_N_U_D_A);
         raReportSection right2 = this.getView(LabelBroj, LabelR1);
         left.moveRightCm(9.5);
