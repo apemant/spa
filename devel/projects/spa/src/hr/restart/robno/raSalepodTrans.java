@@ -482,8 +482,8 @@ public class raSalepodTrans {
           as.setString(10, "PDV0");
           as.setBigDecimal(11, Aus.zero2);
         } else {
-          as.setString(10, "PDV23");
-          as.setBigDecimal(11, new BigDecimal("23.00"));
+          as.setString(10, "PDV25");
+          as.setBigDecimal(11, new BigDecimal("25.00"));
         }
         as.setString(12, art.getString("CGRART"));
         as.setString(13, art.getString("NAZGRART"));
