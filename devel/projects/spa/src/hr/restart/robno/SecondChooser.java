@@ -867,7 +867,8 @@ System.out.println(StavkeSet.getInt("CARt"));
 			keyVeza = rCD.getKey(StavkeSet, new String[] { "CSKL", "VRDOK",
 					"GOD", "BRDOK", "RBSID" }, "stdoki");
 			rIT.getDetailSet().setString("ID_STAVKA", keykey);
-			if (!rIT.getDetailSet().getString("VRDOK").equals("PON")) {
+			if (!rIT.getDetailSet().getString("VRDOK").equals("PON") &&
+			    !rIT.getDetailSet().getString("VRDOK").equals(StavkeSet.getString("VRDOK"))) {
     			rIT.getDetailSet().setString("VEZA", keyVeza);
     			if (lD.raLocate(findStavkeSet, new String[] { "CSKL", "VRDOK",
     					"GOD", "BRDOK", "RBSID" }, new String[] {
@@ -909,7 +910,9 @@ System.out.println(StavkeSet.getInt("CARt"));
 			brstavke++;
 			brsid++;
 		}
-		srediPreneseno();
+		
+		if (!rIT.getMasterSet().getString("VRDOK").equals(ZaglavljeSetTmp.getString("VRDOK")))
+		  srediPreneseno();
 		rIT.getMasterSet().setBigDecimal("UIRAC",
 				rIT.getMasterSet().getBigDecimal("UIRAC").add(uirac));
 		return true;
