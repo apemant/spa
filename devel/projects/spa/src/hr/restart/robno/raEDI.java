@@ -11,6 +11,7 @@ import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
+import hr.restart.util.IntParam;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
@@ -37,6 +39,7 @@ import org.jdom.input.SAXBuilder;
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.jcraft.jsch.ChannelSftp.LsEntry;
 
 
 public class raEDI {
@@ -147,8 +150,10 @@ public class raEDI {
     if (!new raLocalTransaction() {
       public boolean transaction() throws Exception {
         Util.getUtil().getBrojDokumenta(zag);
-        for (st.first(); st.inBounds(); st.next())
+        for (st.first(); st.inBounds(); st.next()) {
           st.setInt("BRDOK", zag.getInt("BRDOK"));
+          st.setString("GOD", zag.getString("GOD"));
+        }
         
         raTransaction.saveChanges(zag);
         raTransaction.saveChanges(st);
@@ -232,6 +237,138 @@ public class raEDI {
   			MsgDispatcher.send("EDI", us[i], "Dohvaæeno " + doc + " narudžbi putem EDI.");
   		}
   	}
+  }
+  
+  public static void importMagros(boolean report) {
+    try {
+      System.out.println("dohvat ftp");
+      com.jcraft.jsch.JSch j = new com.jcraft.jsch.JSch();
+      j.setKnownHosts(IntParam.getTag("sftp.hosts"));
+      com.jcraft.jsch.Session sess = j.getSession(
+          IntParam.getTag("sftp.user"), 
+          IntParam.getTag("sftp.addr"),
+          Aus.getNumber(IntParam.getTag("sftp.port")));
+      sess.setPassword(IntParam.getTag("sftp.pass"));
+      sess.connect();
+      System.out.println("spojeno");
+
+      com.jcraft.jsch.Channel channel = sess.openChannel("sftp");
+      channel.connect();
+
+      com.jcraft.jsch.ChannelSftp sch = (com.jcraft.jsch.ChannelSftp) channel;
+      
+      System.out.println("chg dir");
+      sch.cd("in");
+      System.out.println("remote dir " + sch.pwd());
+      Vector v = sch.ls("*");
+      for (int i = 0; i < v.size(); i++) {
+        String fname = ((LsEntry) v.get(i)).getFilename();
+        sch.get(fname, fname);
+        importMagrosImpl(fname);
+        
+        sch.rm(fname);
+      }
+      
+      sess.disconnect();
+      
+      System.out.println("disconnected");
+    } catch (com.jcraft.jsch.JSchException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException("Greška kod slanja ftp-om!");
+    } catch (com.jcraft.jsch.SftpException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Greška kod slanja ftp-om!");
+    }
+    
+  }
+  
+  private static int importMagrosImpl(String fname) {
+    
+    String cskl = frmParam.getParam("robno", "ediMagCskl", "100",
+      "Šifra skladišta za EDI magros dostavnice");
+    
+    lookupData ld = lookupData.getlookupData();
+    DataSet part = dM.getDataModule().getPartneri();
+    DataSet art = dM.getDataModule().getArtikli();
+    
+    QueryDataSet zag = doki.getDataModule().getTempSet(Condition.nil);
+    QueryDataSet st = stdoki.getDataModule().getTempSet(Condition.nil);
+    zag.open();
+    st.open();
+    
+    String[] acc = {"CART", "CART1", "BC", "NAZART", "JM"};
+    
+    TextFile.setEncoding("UTF-8");
+    TextFile tf = TextFile.read(fname);
+    String line;
+    short rbr = 0;
+    while ((line = tf.in()) != null) {
+      if (line.startsWith("HD")) {
+        zag.insertRow(false);
+        
+        zag.setString("CUSER", raUser.getInstance().getUser());
+        zag.setString("CSKL", cskl);
+        zag.setString("VRDOK", "DOS");
+        
+        String prim = line.substring(335, 348).trim();
+        String oj = null;
+        if (prim.indexOf("-") >= 0) {
+          oj = prim.substring(prim.indexOf("-") + 1);
+          prim = prim.substring(0, prim.indexOf("-"));
+        }
+        
+        if (ld.raLocate(part, "CPAR", prim)) {
+          zag.setInt("CPAR", part.getInt("CPAR"));
+          System.out.println("Partner: " + part.getInt("CPAR"));
+          /*DataSet pj = Pjpar.getDataModule().getTempSet(
+              Condition.equal("CPAR", part));
+          pj.open();
+          String md = line.substring(335, 347).trim();
+          if (ld.raLocate(pj, "GLN", md)) {
+            zag.setInt("PJ", pj.getInt("PJ"));
+            System.out.println("PJ: " + pj.getInt("PJ"));
+          }*/
+          if (oj != null) {
+            zag.setInt("PJ", Aus.getNumber(oj));
+            System.out.println("PJ: " + zag.getInt("PJ"));
+          }
+          
+          /*cpart = VTCartPart.getDataModule().getTempSet(
+              Condition.equal("CPAR", part));
+          cpart.open();*/
+        }        
+      } else if (line.startsWith("DA")) {
+        zag.setString("BRDOKIZ", line.substring(2, 22).trim());
+        zag.setTimestamp("SYSDAT", getMDate(line.substring(22, 30).trim()));
+        zag.setTimestamp("DATDOK", getMDate(line.substring(30, 38).trim()));
+        zag.setTimestamp("DVO", getMDate(line.substring(38, 46).trim()));
+        zag.setString("BRNARIZ", line.substring(46, 66).trim());
+        if (line.substring(66, 74).trim().length() == 8)
+          zag.setTimestamp("DATNARIZ", getMDate(line.substring(66, 74).trim()));
+      } else if (line.startsWith("IT")) {
+        st.insertRow(false);
+        dM.copyColumns(zag, st, Util.mkey);
+        st.setShort("RBR", ++rbr);
+        st.setInt("RBSID", rbr);
+        
+        String bc = line.substring(42, 62).trim();
+        if (bc != null && (ld.raLocate(dM.getDataModule().getArtikli(), "BC", bc) ||
+            ld.raLocate(dM.getDataModule().getArtikli(), "BCKOL", bc))) {
+            dM.copyColumns(dM.getDataModule().getArtikli(), st, acc);
+          st.post();
+        } else 
+          throw new RuntimeException("Nepoznata šifra artikla! " + bc);
+        
+        st.setBigDecimal("KOL", Aus.getDecNumber(line.substring(102, 110).trim()));
+        Aus.set(st, "KOL2", "KOL");
+      }
+    }
+    System.out.println(zag);
+    saveOrder(zag, st);
+    
+    tf.close();
+    return 0;
   }
   
   private static int importPanteonImpl(File dir, boolean report) {
@@ -383,6 +520,18 @@ public class raEDI {
   	return new Timestamp(cal.getTime().getTime());
   }  
   
+  private static Timestamp getMDate(String sd) {
+    Calendar cal = Calendar.getInstance();
+    cal.set(cal.YEAR, Integer.parseInt(sd.substring(4, 8)));
+    cal.set(cal.MONTH, Integer.parseInt(sd.substring(2, 4)) - 1);
+    cal.set(cal.DAY_OF_MONTH, Integer.parseInt(sd.substring(0, 2)));
+    cal.set(cal.HOUR_OF_DAY, 0);
+    cal.set(cal.MINUTE, 0);
+    cal.set(cal.SECOND, 0);
+    cal.set(cal.MILLISECOND, 0);
+    return new Timestamp(cal.getTime().getTime());
+  }
+  
   public static void main(String[] args) {
   	
     MsgDispatcher.install(false);
@@ -390,7 +539,17 @@ public class raEDI {
 			public void actionPerformed(ActionEvent e) {
 				String path = frmParam.getParam("robno", "panteonPath", "/home/abf/tmp/hr/test",
 		    	"Putanja mape za EDI preko Panteona");
-				raEDI.importPanteon(new File(path), false);
+				try {
+                  raEDI.importPanteon(new File(path), false);
+                } catch (RuntimeException e1) {
+                  e1.printStackTrace();
+                }
+				
+                try {
+                  raEDI.importMagros(false);
+                } catch (RuntimeException e1) {
+                  e1.printStackTrace();
+                }
 			}
 		});
   	t.setDelay(15*60*1000);
