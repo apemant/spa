@@ -182,7 +182,7 @@ public class raOdabirDok extends JraDialog {
     	}
     }
     else if (vrsta_dok.equals("ROT")) {
-      zaodabrati = new String[] {"Narudžba","Ponuda","Predra\u010Dun","Dostavnica"};
+      zaodabrati = new String[] {"Narudžba","Ponuda","Predra\u010Dun","Dostavnica","Raèun - otpremnica"};
       odabrano = "NKU";
     }
     else if (vrsta_dok.equals("POD")) {
