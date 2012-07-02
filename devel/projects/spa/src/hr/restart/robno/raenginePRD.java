@@ -97,7 +97,10 @@ public class raenginePRD {
     		}else if (dm.getSklad().getString("TIPSKL").equalsIgnoreCase("R")){
     			sds.setBigDecimal("ROB_I",sds.getBigDecimal("ROB_I").
     					add(materijal.getBigDecimal("IRAZ")));
-    		}
+    		}else if (dm.getSklad().getString("TIPSKL").equalsIgnoreCase("L")){
+              sds.setBigDecimal("POL_I",sds.getBigDecimal("POL_I").
+                  add(materijal.getBigDecimal("IRAZ")));
+    		} 
     	} else {
     		throw new RuntimeException("Skladište "+materijal.getString("CSKL")+" nisam uspio pronaæi sa raLocate !!! "); 
     	}
@@ -155,22 +158,24 @@ public class raenginePRD {
   public BigDecimal iznosTroskovaUsluge(String cradnal,int rbsrn) {
 
       BigDecimal suma = Aus.zero2;
-      String selectRN = "select cart,kol from stdoki where cradnal = '"+
-                           cradnal+"' and vrdok='RNL' and rbsid="+rbsrn;
-      QueryDataSet radninalog = hr.restart.util.Util.getNewQueryDataSet(selectRN,true);
-      QueryDataSet normativUs = Aut.getAut().expandArt(radninalog.getInt("CART"),radninalog.getBigDecimal("KOL"),false);
-
-      for (normativUs.first();normativUs.inBounds();normativUs.next()){
-        if (raVart.isUsluga(normativUs.getInt("CART"))) {
-            //Aut.getAut().artTipa(normativUs.getInt("CART"),"U")) {
-          suma = suma.add(dm.getArtikli().getBigDecimal("NC")).multiply(normativUs.getBigDecimal("KOL"));
-        }
-      }
-      
       QueryDataSet rns = Rnser.getDataModule().getTempSet("cradnal='"+cradnal+"' and rbsid="+rbsrn);
       rns.open();
       for (rns.first();rns.inBounds();rns.next()){
-      	suma = suma.add(rns.getBigDecimal("VRI"));
+        suma = suma.add(rns.getBigDecimal("VRI"));
+      }
+      
+      if (rns.rowCount() == 0) {
+        String selectRN = "select cart,kol from stdoki where cradnal = '"+
+                             cradnal+"' and vrdok='RNL' and rbsid="+rbsrn;
+        QueryDataSet radninalog = hr.restart.util.Util.getNewQueryDataSet(selectRN,true);
+        QueryDataSet normativUs = Aut.getAut().expandArt(radninalog.getInt("CART"),radninalog.getBigDecimal("KOL"),false);
+  
+        for (normativUs.first();normativUs.inBounds();normativUs.next()){
+          if (raVart.isUsluga(normativUs.getInt("CART"))) {
+              //Aut.getAut().artTipa(normativUs.getInt("CART"),"U")) {
+            suma = suma.add(dm.getArtikli().getBigDecimal("NC")).multiply(normativUs.getBigDecimal("KOL"));
+          }
+        }
       }
       
       return suma;
