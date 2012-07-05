@@ -21,6 +21,7 @@ import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
@@ -83,10 +84,19 @@ public class jpProizvodnjaMaster extends JPanel {
     }
   };
   JraTextField jraNorm = new JraTextField();
-  JlrNavField jlrNorm = new JlrNavField();
+  JlrNavField jlrNorm = new JlrNavField() {
+    public void after_lookUp() {
+      if (fProizvodnja.raMaster.getMode() != 'B') {
+         fProizvodnja.getMasterSet().setBigDecimal("MULT", Aus.one0);
+      }
+    }
+  };
   JlrNavField jlrNaznorm = new JlrNavField();
   JraButton jbSelNorm = new JraButton();
   JLabel jlNorm = new JLabel();
+  
+  JLabel jlMult = new JLabel();
+  JraTextField jraMult = new JraTextField();
 
   JLabel jlNapomene = new JLabel();
   JlrNavField jlrNap1 = new JlrNavField();
@@ -123,6 +133,7 @@ public class jpProizvodnjaMaster extends JPanel {
     jlrNap1.setDataSet(ds);
     jlrNap2.setDataSet(ds);
     jraDatum.setDataSet(ds);
+    jraMult.setDataSet(ds);
     jlrRadovi.setDataSet(ds);
     jpMasterHeader.setDataSet(ds);
   }
@@ -139,18 +150,20 @@ public class jpProizvodnjaMaster extends JPanel {
     rcc.setLabelLaF(jlrNorm, false);
     rcc.setLabelLaF(jlrNaznorm, false);
     rcc.setLabelLaF(jbSelNorm, false);
+    rcc.setLabelLaF(jraMult, false);
   }
 
   private void jbInit() throws Exception {
     jpDetail.setLayout(lay);
     lay.setWidth(675);
-    lay.setHeight(280);
+    lay.setHeight(305);
 
     jlPar.setText("Naru\u010Ditelj");
     jlRadovi.setText("Naru\u010Deni radovi");
     jLabel1.setText("Datum otvaranja");
     jlNapomene.setText("Napomene");
     jlNorm.setText("Skupina artikala");
+    jlMult.setText("Kolièina skupine");
 
     jlrCpar.setColumnName("CPAR");
     jlrCpar.setColNames(new String[] {"NAZPAR"});
@@ -188,6 +201,8 @@ public class jpProizvodnjaMaster extends JPanel {
     jlrNaznorm.setColumnName("NAZSKUPART");
     jlrNaznorm.setNavProperties(jlrNorm);
     jlrNaznorm.setSearchMode(1);
+    
+    jraMult.setColumnName("MULT");
 
     jlrNap1.setColumnName("CNAP1");
     jlrNap1.setNavColumnName("CNAP");
@@ -230,13 +245,13 @@ public class jpProizvodnjaMaster extends JPanel {
 
     jpDetail.add(jlRadovi, new XYConstraints(15, 50, -1, -1));
     jpDetail.add(scroller, new XYConstraints(15, 80, 645, 100));
-    jpDetail.add(jlNapomene, new XYConstraints(15, 225, -1, -1));
-    jpDetail.add(jlrNap1, new XYConstraints(150, 225, 75, -1));
-    jpDetail.add(jlrNaznap1, new XYConstraints(230, 225, 400, -1));
-    jpDetail.add(jlrNap2, new XYConstraints(150, 250, 75, -1));
-    jpDetail.add(jlrNaznap2, new XYConstraints(230, 250, 400, -1));
-    jpDetail.add(jbSelNap1, new XYConstraints(635, 225, 21, 21));
-    jpDetail.add(jbSelNap2, new XYConstraints(635, 250, 21, 21));
+    jpDetail.add(jlNapomene, new XYConstraints(15, 250, -1, -1));
+    jpDetail.add(jlrNap1, new XYConstraints(150, 250, 75, -1));
+    jpDetail.add(jlrNaznap1, new XYConstraints(230, 250, 400, -1));
+    jpDetail.add(jlrNap2, new XYConstraints(150, 275, 75, -1));
+    jpDetail.add(jlrNaznap2, new XYConstraints(230, 275, 400, -1));
+    jpDetail.add(jbSelNap1, new XYConstraints(635, 250, 21, 21));
+    jpDetail.add(jbSelNap2, new XYConstraints(635, 275, 21, 21));
     jpDetail.add(jLabel1, new XYConstraints(375, 52, -1, -1));
     jpDetail.add(jraDatum, new XYConstraints(530, 50, 100, -1));
     jpDetail.add(jbSelRadovi, new XYConstraints(230, 50, 21, 21));
@@ -245,6 +260,8 @@ public class jpProizvodnjaMaster extends JPanel {
     jpDetail.add(jlrNaznorm, new XYConstraints(230, 190, 400, -1));
     jpDetail.add(jbSelNorm, new XYConstraints(635, 190, 21, 21));
     jpDetail.add(jlNorm, new XYConstraints(15, 190, -1, -1));
+    jpDetail.add(jlMult, new XYConstraints(15, 215, -1, -1));
+    jpDetail.add(jraMult, new XYConstraints(150, 215, 75, -1));
 
     BindComponents(fProizvodnja.getMasterSet());
 

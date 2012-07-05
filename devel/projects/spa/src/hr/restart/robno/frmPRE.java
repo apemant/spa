@@ -220,17 +220,19 @@ public class frmPRE extends frmUlazTemplate {
   
 	public boolean doWithSaveDetail(char mode) {
 		if (mode=='B'){
-			if (ld.raLocate(dm.getVTPred(),"ID_STAVKA",id_stavka)){
+			if (id_stavka != null && id_stavka.length() > 0 && ld.raLocate(dm.getVTPred(),"ID_STAVKA",id_stavka)){
 				dm.getVTPred().deleteRow();
 				raTransaction.saveChanges(dm.getVTPred());
 			}
-			stavkaRadnogNalogaZaBrisanje = hr.restart.util.Util.getNewQueryDataSet(
-					"SELECT * FROM STDOKI WHERE ID_STAVKA='"+veza+"'",true);
-			
-			if (stavkaRadnogNalogaZaBrisanje != null ||
-					stavkaRadnogNalogaZaBrisanje.getRowCount()!=0){
-			    stavkaRadnogNalogaZaBrisanje.setString("STATUS","N");
-				raTransaction.saveChanges(stavkaRadnogNalogaZaBrisanje);	
+			if (veza != null && veza.length() > 0) {
+    			stavkaRadnogNalogaZaBrisanje = hr.restart.util.Util.getNewQueryDataSet(
+    					"SELECT * FROM STDOKI WHERE ID_STAVKA='"+veza+"'",true);
+    			
+    			if (stavkaRadnogNalogaZaBrisanje != null ||
+    					stavkaRadnogNalogaZaBrisanje.getRowCount()!=0){
+    			    stavkaRadnogNalogaZaBrisanje.setString("STATUS","N");
+    				raTransaction.saveChanges(stavkaRadnogNalogaZaBrisanje);	
+    			}
 			}
 			id_stavka = null;
 			veza=null;

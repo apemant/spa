@@ -18,10 +18,12 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Rnser;
 import hr.restart.baza.Skupart;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.VTRnl;
 import hr.restart.baza.dM;
+import hr.restart.baza.stdoki;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.Aus;
@@ -34,6 +36,7 @@ import hr.restart.util.raNavBar;
 import hr.restart.util.raTransaction;
 import hr.restart.util.sysoutTEST;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import javax.swing.JOptionPane;
@@ -154,12 +157,17 @@ public abstract class frmRadniNalog extends raMasterDetail {
   protected void fillStavke() {
     int rbr = 0;
     if (!getDetailSet().isOpen()) {
-      Aus.setFilter(getDetailSet(), "1=0");
+      stdoki.getDataModule().setFilter(getDetailSet(), "1=0");
       getDetailSet().open();
     }
+    BigDecimal mult = getMasterSet().getBigDecimal("MULT");
+    if (mult.signum() <= 0) mult = Aus.one0;
+    
     QueryDataSet skup = Skupart.getDataModule().setFilter(
         new QueryDataSet(), "cskupart = '"+this.getMasterSet().getString("CSKUPART")+"'");
     skup.open();
+    QueryDataSet rns = Rnser.getDataModule().getTempSet("1=0");
+    rns.open();
     QueryDataSet vti = VTRnl.getDataModule().getTempSet("1=0");
     vti.open();
     for (skup.first(); skup.inBounds(); skup.next()) {
@@ -175,14 +183,16 @@ public abstract class frmRadniNalog extends raMasterDetail {
         //System.out.println("master "+this.getMasterSet().getString("CRADNAL"));
         //System.out.println("detail "+this.getDetailSet().getString("CRADNAL"));
 //        this.getDetailSet().setString("CRADNAL", this.getMasterSet().getString("CRADNAL"));
-        this.getDetailSet().setBigDecimal("KOL", skup.getBigDecimal("KOL"));
+        this.getDetailSet().setBigDecimal("KOL", skup.getBigDecimal("KOL").multiply(mult).setScale(3, BigDecimal.ROUND_HALF_UP));
         addVtrnl(vti);
+        addRnser(rns);
         getDetailSet().setString("ID_STAVKA",
             raControlDocs.getKey(getDetailSet(), new String[] { "cskl",
                 "vrdok", "god", "brdok", "rbsid" }, "stdoki"));
       }
     }
     raTransaction.saveChanges(vti);
+    raTransaction.saveChanges(rns);
     raTransaction.saveChanges(this.getDetailSet());
   }
 
@@ -230,6 +240,26 @@ public abstract class frmRadniNalog extends raMasterDetail {
     }
     return true;
   }
+  
+  void addRnser(QueryDataSet rns) {
+    short rbr = 0;
+    
+    DataSet ds = Aut.getAut().expandArt(getDetailSet().getInt("CART"),getDetailSet().getBigDecimal("KOL"),false);
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      if (!raVart.isStanje(ds.getInt("CART"))) {
+        rns.insertRow(false);
+        rns.setString("CRADNAL", getMasterSet().getString("CRADNAL"));
+        rns.setInt("RBSID", getDetailSet().getInt("RBSID"));
+        rns.setShort("RBR", ++rbr);
+        Aut.getAut().copyArtFields(rns, ds);
+        Aus.set(rns, "KOL", ds);
+        if (ld.raLocate(dm.getArtikli(), "CART1", ds.getString("CART1"))) {
+          Aus.set(rns, "ZC", dm.getArtikli(), "NC");
+          Aus.mul(rns, "VRI", "ZC", "KOL");
+        }
+      }
+    }
+  }
 
   void addVtrnl(QueryDataSet vti) {
     DataSet skl = Util.getSkladFromCorg();
@@ -242,11 +272,8 @@ public abstract class frmRadniNalog extends raMasterDetail {
       DataSet exp = Aut.getAut().expandArt(getDetailSet(),
           getMasterSet().getString("SERPR").equalsIgnoreCase("S") || forceTotalExpand);
       exp.open();
-      for (exp.first(); exp.inBounds(); exp.next()) {
-        art = Stanje.getDataModule().getRowCount(Condition.in("CSKL", skl).
-            and(Condition.equal("CART", getDetailSet())).
-            and(Condition.equal("GOD", getMasterSet())));
-        if (art > 0 || raVart.isStanje(exp.getInt("CART"))) {
+      for (exp.first(); exp.inBounds(); exp.next()) {    
+        if (raVart.isStanje(exp.getInt("CART"))) {
             // Aut.getAut().artTipa(exp.getInt("CART"), "PRM")) {
           vti.insertRow(false);
           vti.setString("CRADNAL", getMasterSet().getString("CRADNAL"));
@@ -292,6 +319,11 @@ public abstract class frmRadniNalog extends raMasterDetail {
         e.printStackTrace();
         return false;
       }
+    } else if (mode == 'N') {
+      QueryDataSet rns = Rnser.getDataModule().getTempSet("1=0");
+      rns.open();
+      addRnser(rns);
+      raTransaction.saveChanges(rns);
     }
     return true;
   }
@@ -399,11 +431,25 @@ public abstract class frmRadniNalog extends raMasterDetail {
       if (!isAutomaticIZD()) {
         for (ds.first(); ds.inBounds(); ds.next())
           if (!checkIzdDetailRow(true)) {
-          JOptionPane.showMessageDialog(raMaster.getWindow(), "Stavka br. "+
-          ds.getShort("RBR") + " (" + ds.getString("NAZART") +
-          ") nije izdana!", "Greška", JOptionPane.ERROR_MESSAGE);
-          return;
-        }
+            /*if (ds.rowCount() > 1) {
+              JOptionPane.showMessageDialog(raMaster.getWindow(), "Stavka br. "+
+              ds.getShort("RBR") + " (" + ds.getString("NAZART") +
+              ") nije izdana!", "Greška", JOptionPane.ERROR_MESSAGE);
+              return;
+            }*/
+            if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Stavka br. "+
+                  ds.getShort("RBR") + " (" + ds.getString("NAZART") +
+                  ") nije izdana! \nOznaèiti preostale stavke normativa kao nevažne?", "Greška", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) != JOptionPane.YES_OPTION) return;
+            DataSet vt = VTRnl.getDataModule().getTempSet(Condition.equal("CRADNAL",
+                getMasterSet().getString("CRADNAL")).and(Condition.equal("RBSRNL",
+                getDetailSet().getInt("RBSID"))));
+            vt.open();
+            for (vt.first(); vt.inBounds(); vt.next()) {
+              if (vt.getInt("RBSIZD") < 0)
+                vt.setInt("RBSIZD", 0);
+            }
+            vt.saveChanges();
+          }
         if (st.equals("P")) Potvrdi();
         else Zatvori();
       } else AutomaticIZD(st.equals("F"));

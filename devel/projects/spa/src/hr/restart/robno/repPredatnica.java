@@ -64,6 +64,10 @@ public class repPredatnica implements sg.com.elixir.reportwriter.datasource.IDat
   public String getBRDOKUL(){
     return ds.getString("CRADNAL");
   }
+  
+  public String getCRADNAL(){
+    return ds.getString("CRADNAL");
+  }
 
   public String getCPAR() {
     return ds.getString("CORG");
@@ -82,6 +86,9 @@ public class repPredatnica implements sg.com.elixir.reportwriter.datasource.IDat
     return ru.getSomething(colname,dm.getSklad(),"NAZSKL").getString();
   }
   public String getDATDOK() {
+    return rdu.dataFormatter(ds.getTimestamp("DATDOK"));
+  }
+  public String SgetDATDOK() {
     return rdu.dataFormatter(ds.getTimestamp("DATDOK"));
   }
   public short getRBR() {

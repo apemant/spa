@@ -23,6 +23,7 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.JraTextMultyKolField;
+import hr.restart.util.Aus;
 import hr.restart.util.raImages;
 import hr.restart.util.raKeyAction;
 import hr.restart.zapod.Tecajevi;
@@ -956,9 +957,16 @@ public class jpUlazDetail extends JPanel {
     BigDecimal kol = frm.getDetailSet().getBigDecimal("KOL");
     BigDecimal jedval = Tecajevi.getJedVal(frm.getMasterSet().getString("OZNVAL"));
     if (mode==0) {        // Kolicina
-      frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
-      frm.getDetailSet().setBigDecimal("IDOB",    util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
-      calcFromIDOB();
+      if (frm.vrDok.equals("PRE")) {
+        if (kol.signum() != 0) {
+          frm.getDetailSet().setBigDecimal("NC", util.divideValue(frm.getDetailSet().getBigDecimal("INAB"), kol));
+          calcFromINAB();
+        }
+      } else {
+        frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
+        frm.getDetailSet().setBigDecimal("IDOB",    util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
+        calcFromIDOB();
+      }
     }
     else if (mode==1) {   // Dobavljacev iznos u valuti
       if (kol.signum() == 0) {

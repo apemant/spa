@@ -54,7 +54,7 @@ public class creatorPRD {
   private hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(false);
   private Timestamp datdok= null;
   private String cradnal = "";
-  private BigDecimal randman;
+  private BigDecimal randman, koef;
 
 
 //  final PreparedStatement p1 = raTransaction.getPreparedStatement
@@ -384,6 +384,14 @@ public class creatorPRD {
     
     BigDecimal tempBD = reP.getProIzn();
     
+    koef = Aus.one0;
+    DataSet nus = Aus.q("SELECT * FROM rnus WHERE cartnor = " + ds.getInt("CART"));
+    for (nus.first(); nus.inBounds(); nus.next()) {
+      koef = koef.add(nus.getBigDecimal("KOEFKOL").multiply(nus.getBigDecimal("KOEFZC")));
+    }
+    
+    tempBD = tempBD.divide(koef, 2, BigDecimal.ROUND_HALF_UP);
+    
     fillHm(ds, tempBD);
     
     stavkeRN.setString("STATUS","Z");
@@ -527,6 +535,7 @@ public class creatorPRD {
      try {
        detalji.insertRow(true);
        fillDs(ds, detalji);
+       BigDecimal total = detalji.getBigDecimal("INAB");
        detalji.setString("VEZA",stavkeRN.getString("ID_STAVKA"));
        insertVtPred(reP.getVtPred(),detalji.getString("ID_STAVKA"));
        BigDecimal kol = detalji.getBigDecimal("KOL");
@@ -541,6 +550,9 @@ public class creatorPRD {
       	 detalji.setBigDecimal("NC", nc);
       	 Aus.mul(detalji, "NC", nus, "KOEFZC");
       	 Aus.mul(detalji, "INAB", "NC", "KOL");
+      	 total = total.add(detalji.getBigDecimal("INAB"));
+      	 if (nus.atLast()) 
+      	   Aus.add(detalji, "INAB", reP.getProIzn().subtract(total));
       	 updateStanje(fillHm(detalji, detalji.getBigDecimal("INAB")),detalji);
       	 fillDs(detalji, detalji);
        }       
