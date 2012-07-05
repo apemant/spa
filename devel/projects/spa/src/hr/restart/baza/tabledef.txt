@@ -295,6 +295,7 @@ NAPOMI;text;50;;;Interna napomena
 CRADNIK;text;6;;;Serviser
 ZAMJENA;text;1;;N;Zamjenski ureðaj
 SLIKA;text;1;;N;Slika;*
+MULT;numeric;17,3;;;Množitelj
 
 $Gkstavke
 LOKK;char;1;;N;Lokk;*
