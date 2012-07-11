@@ -104,6 +104,7 @@ public class upKarticaPos extends raUpitLite {
     rpcart.setMode("DOH");
     rpcart.setBorder(null);
     rpcskl.setRaMode('S');
+    rpcskl.setDataSet(tds);
     
     mainPanel.add(rpcskl, new XYConstraints(0, 0, -1, -1));
     mainPanel.add(rpcart, new XYConstraints(0, 50, -1, -1));
@@ -167,7 +168,7 @@ public class upKarticaPos extends raUpitLite {
   	String us = "SELECT doku.vrdok, doku.brdok, doku.datdok, stdoku.kol, stdoku.inab, stdoku.nc, stdoku.mc, stdoku.izad, stdoku.skol, stdoku.porav " +
   			"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and " + upProdaja.uldok + " and " +
   			Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-						Condition.equal("CSKL", tds)).qualified("doku").and(Condition.equal("CART", tds));
+						Condition.equal("CSKL", tds)).qualified("doku").and(Condition.equal("CART", tds).qualified("stdoku"));
   	System.out.println(us);
   	DataSet du = Aus.q(us);
   	
@@ -175,14 +176,14 @@ public class upKarticaPos extends raUpitLite {
   			"stdoki.uirab, stdoki.iprodbp, stdoki.iprodsp, stdoki.veza, stdoki.id_stavka FROM doki,stdoki WHERE " +
   			Util.getUtil().getDoc("doki", "stdoki") + " and " + upProdaja.izdok + " and doki.vrdok!='POS' and " +
   			Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-  			  Condition.equal("CSKL", tds)).qualified("doki").and(Condition.equal("CART", tds));
+  			  Condition.equal("CSKL", tds)).qualified("doki").and(Condition.equal("CART", tds).qualified("stdoki"));
   	System.out.println(is);
   	DataSet di = Aus.q(is);
   	
   	String ps = "SELECT pos.brdok, pos.datdok, stpos.kol, stpos.mc, stpos.ukupno, stpos.neto, pos.rdok FROM pos,stpos WHERE " +
     Util.getUtil().getDoc("pos", "stpos") + " and " +
     Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-        Condition.equal("CSKL", tds)).qualified("pos").and(Condition.equal("CART", tds));
+        Condition.equal("CSKL", tds)).qualified("pos").and(Condition.equal("CART", tds).qualified("stpos"));
   	System.out.println(ps);
     DataSet pi = Aus.q(ps);
   	
