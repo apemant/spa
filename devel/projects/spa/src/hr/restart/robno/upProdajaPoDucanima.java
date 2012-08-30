@@ -381,16 +381,16 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
 
     for (int i = odInt; i <= doInt; i++) {
       if (i < 10) {
-        cols[iter1++] = dm.createBigDecimalColumn("0" + i, moonshine[i - 1], 2);
+        cols[iter1++] = dm.createBigDecimalColumn("K0" + i, moonshine[i - 1], 2);
         //        monthCols[iter1-1] = dm.createBigDecimalColumn("0"+i, moonshine[i-1],
         // 2);
-        prikaz[iter2++] = "0" + i;
+        prikaz[iter2++] = "K0" + i;
         //        mjesecniPrikaz[iter2++] = "0"+i;
       } else {
-        cols[iter1++] = dm.createBigDecimalColumn("" + i, moonshine[i - 1], 2);
+        cols[iter1++] = dm.createBigDecimalColumn("K" + i, moonshine[i - 1], 2);
         //        monthCols[iter1-1] = dm.createBigDecimalColumn(""+i, moonshine[i-1],
         // 2);
-        prikaz[iter2++] = "" + i;
+        prikaz[iter2++] = "K" + i;
         //        mjesecniPrikaz[iter2++] = ""+i;
       }
 
@@ -409,7 +409,7 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
         String cskl = origigi.getString("CSKL");
         if (origigi.getString("CSKLART").length() > 0)
           cskl = origigi.getString("CSKLART");
-        misec = origigi.getTimestamp("DATDOK").toString().substring(5, 7);
+        misec = "K" + origigi.getTimestamp("DATDOK").toString().substring(5, 7);
         if (!ld.raLocate(tmpSet, "CSKL", cskl)) {
           tmpSet.insertRow(false);
 
@@ -452,7 +452,7 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
           chartSet.setString("CSNS", tmpSet.getString("CSKL") + " - " + tmpSet.getString("NAZSKL"));
           chartSet.setString("CSKL", tmpSet.getString("CSKL"));
           chartSet.setString("NAZSKL", tmpSet.getString("NAZSKL"));
-          chartSet.setString("MJESEC", prikaz[i]);
+          chartSet.setString("MJESEC", prikaz[i].substring(1));
           chartSet.setBigDecimal("IZNOS", tmpSet.getBigDecimal(prikaz[i]));
         }
       } while (tmpSet.next());
@@ -594,6 +594,7 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
     
 
     String cskls;
+    String csklc = "";
     if (getCskl().equals("")) {
       QueryDataSet sklds = hr.restart.robno.Util.getSkladFromCorg();
       sklds.open();
@@ -604,11 +605,14 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
       } while (sklds.next());
       cskls = cskls.substring(0, cskls.length() - 1) + ")";
       //        System.out.println("cskls " + cskls);
+      
+      
     } else {
       System.out.println("GETCSKL() = "+getCskl());
 
         cskls = "in " + getCskl() + " ";
 
+      csklc = " AND stdoki.csklart " + cskls;
     }
 
     String inq;
@@ -626,9 +630,9 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
     if (sklfin)
       dokumsi = "AND (" + oj.not() + " AND DOKI.CSKL " + cskls + ") ";
     else if (fin)
-      dokumsi = "AND (" + oj + " AND " + inq + " AND stdoki.csklart " + cskls + ") ";
+      dokumsi = "AND (" + oj + " AND " + inq + csklc + ") ";
     else
-    dokumsi = "AND ((" + oj + " AND " + inq + " AND stdoki.csklart " + cskls + ") OR (" + oj.not() + " AND DOKI.CSKL " + cskls + ")) ";
+    dokumsi = "AND ((" + oj + " AND " + inq + csklc + ") OR (" + oj.not() + " AND DOKI.CSKL " + cskls + ")) ";
 
     
 //    String dokumsi = " (";
