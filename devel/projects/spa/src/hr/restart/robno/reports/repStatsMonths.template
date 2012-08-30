@@ -1367,7 +1367,7 @@ TOP LISTA KUPACA PO MJESECIMA</Property>
           <Model Name="Text26">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text26</Property>
-               <Property Name="Control Source">NAZART</Property>
+               <Property Name="Control Source">NK</Property>
                <Property Name="Running Sum">No</Property>
                <Property Name="Locale">Template Locale</Property>
                <Property Name="Format">None</Property>
