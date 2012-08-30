@@ -774,7 +774,8 @@ public class ColumnsBean extends JPanel {
   }
   
   private int getColNum(String s) {
-  	return Aus.isNumber(s) ? Aus.getNumber(s) : raJdbTable.getModelColumnIndex(s);
+    return raJdbTable.getModelColumnIndex(s) < 0 ? Aus.getNumber(s) : raJdbTable.getModelColumnIndex(s);
+  	//return Aus.isNumber(s) ? Aus.getNumber(s) : raJdbTable.getModelColumnIndex(s);
   }
 
 /*  private int[] makeSavedVisCols(String par) {
