@@ -85,7 +85,8 @@ public class repDiskZap extends repDisk {
     String corg = hr.restart.zapod.OrgStr.getKNJCORG();
     lookupData.getlookupData().raLocate(dm.getOrgstruktura(), new String [] {"CORG"}, new String[]{corg});
     nalogodavatelj = dm.getOrgstruktura().getString("NAZIV");
-    mjesto = dm.getOrgstruktura().getString("MJESTO");
+    mjesto = dm.getOrgstruktura().getString("MJESTO")+"          ";
+    mjesto = mjesto.substring(0,10);
     zirorac = zrParser(dm.getOrgstruktura().getString("ZIRO"));
     identifikator=zirorac.substring(0,3);
     param = hr.restart.sisfun.frmParam.getParam("zapod", "znoIzdok");
@@ -97,7 +98,7 @@ public class repDiskZap extends repDisk {
     else
     {
       sb.replace(18,18+nalogodavatelj.length(), nalogodavatelj);
-      sb.replace(68,68+mjesto.length(), mjesto);
+      sb.replace(68,68+10/*mjesto.length()*/, mjesto+"          ");
       sb.replace(78,78+datumParser(datumizv, 0).length(),
                  datumParser(datumizv,0));
       sb.replace(84,84+nule.length(),nule);
@@ -168,7 +169,8 @@ public class repDiskZap extends repDisk {
     else
       nalogodavatelj = cjelineDS.getString("NATERET").trim();
     lookupData.getlookupData().raLocate(dm.getOrgstruktura(), new String [] {"NAZIV"}, new String[]{nalogodavatelj});
-    mjesto = dm.getOrgstruktura().getString("MJESTO");
+    mjesto = dm.getOrgstruktura().getString("MJESTO")+"          ";
+    mjesto = mjesto.substring(0,10);
     zirorac = zrParser(cjelineDS.getString("BRRACNT"));
     try {
       DI = dm.getOrgstruktura().getString("ZIRO").substring(0,dm.getOrgstruktura().getString("ZIRO").indexOf("-"));
@@ -189,7 +191,7 @@ public class repDiskZap extends repDisk {
     {
       sb.replace(18,18+nalogodavatelj.length(),nalogodavatelj);
 
-      sb.replace(68,68+mjesto.length(),mjesto);
+      sb.replace(68,68+10/*mjesto.length()*/,mjesto+"          ");
       sb.replace(78, 78+svota.length(),svota);
       sb.replace(93,93+brNal.length(),brNal);
 //      sb.replace(98,98+DI.length(),DI);
@@ -233,7 +235,8 @@ public class repDiskZap extends repDisk {
         svrha = qds.getString("SVRHA").trim();
         if(svrha.length()>36)
           svrha = svrha.substring(0,36).trim();
-        mjesto = dm.getPartneri().getString("MJ");
+        mjesto = dm.getPartneri().getString("MJ")+"          ";
+        mjesto = mjesto.substring(0,10);
         try {
           DI= qds.getString("BRRACUK").substring(0, qds.getString("BRRACUK").indexOf("-"));
         }
@@ -242,7 +245,7 @@ public class repDiskZap extends repDisk {
         }
         zirorac = zrParser(qds.getString("BRRACUK")) ;
         sb.replace(18,18+primatelj.length(),primatelj);
-        sb.replace(68,68+mjesto.length(),mjesto);
+        sb.replace(68,68+10/*mjesto.length()*/,mjesto);
         sb.replace(78,78+pnbz1.length(),pnbz1);
         sb.replace(80,80+pnbz2.length(),pnbz2);
         sb.replace(102,102+svrha.length(),svrha);
