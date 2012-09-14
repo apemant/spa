@@ -2640,7 +2640,12 @@ System.out.println("findCjenik::else :: "+sql);
           buf.append(getNum(ds.getShort("RBR"), 2));
           if (ds.getString("BC").length() == 13)
             buf.append(getPadded(ds.getString("BC"), 13));
-          else buf.append(getPadded("", 13));
+          else if (ds.getString("BC").length() == 7) {
+            if (lD.raLocate(dm.getArtikli(), "CART1", ds.getString("CART1")) &&
+                dm.getArtikli().getString("BCKOL").length() == 13)
+              buf.append(getPadded(dm.getArtikli().getString("BCKOL"), 13));
+            else buf.append(getPadded("", 13));
+          } else buf.append(getPadded("", 13));
           buf.append(getPadded(ds.getString("CART1"), 20));
           buf.append(getPadded(ds.getString("NAZART"), 35));
           if (ds.getString("JM").equalsIgnoreCase("kg"))
@@ -4718,6 +4723,10 @@ System.out.println("findCjenik::else :: "+sql);
 
   public static boolean allowPriceChange() {
     return frmParam.getParam("robno", "priceChIzl", "N", "Dozvoliti izmjenu cijena na OTP, MEI, INM, OTR...(D/N)").equalsIgnoreCase("D");
+  }
+  
+  public static boolean allowIznosChange() {
+    return frmParam.getParam("robno", "iznosChange", "N", "Dapustiti izmjenu iznosa s porezom (D/N)").equalsIgnoreCase("D");
   }
 
 }
