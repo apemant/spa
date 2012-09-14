@@ -1600,7 +1600,7 @@ public class frmMasterBlagajna extends raMasterDetail {
             ld.raLocate(dm.getArtikli(), "CART", Integer.toString(det.getInt("CART"))) 
             && gr.equals(mgr.get(dm.getArtikli().getString("CGRART")))) {
           narSet.insertRow(false);
-          dM.copyColumns(det, narSet);
+          dM.copyDestColumns(det, narSet);
           det.setString("AKTIV", "N");
           narSet.setInt("BRDOK", getMasterSet().getInt("BRDOK"));
           narSet.post();
@@ -1793,16 +1793,17 @@ public class frmMasterBlagajna extends raMasterDetail {
         "sisfun", "printerRMcmnd", "1", "Radno mjesto", true);
   }
   
-  public String getStol() {
+  public static String getStol() {
+    DataSet mast = frm == null ? alterMaster : frm.getMasterSet();
     try {
       DataSet ds = Aus.q("SELECT * FROM places WHERE id='" +
-            getMasterSet().getString("STOL")+"'");
+            mast.getString("STOL")+"'");
       if (ds.rowCount() > 0)
         return ds.getString("NAME");
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return getMasterSet().getString("STOL");
+    return mast.getString("STOL");
   }
 
 
