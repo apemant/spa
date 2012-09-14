@@ -30,7 +30,7 @@ public class repPosJas implements raReportData {
   
   public repPosJas() {
     frmMasterBlagajna fmb = frmMasterBlagajna.getInstance();
-    master = fmb.getMasterSet();
+    master = fmb == null ? frmMasterBlagajna.getAlterMaster() : fmb.getMasterSet();
     god =master.getString("GOD");
     ds = hr.restart.baza.Stpos.getDataModule().getTempSet("cskl='"+master.getString("CSKL")+"' and vrdok = 'GRC' and god =  '"+master.getString("GOD")+"' and brdok =  "+master.getInt("BRDOK")); 
     ds.open();
@@ -236,7 +236,7 @@ public class repPosJas implements raReportData {
   }
   
   protected String getStol() {
-    return frmMasterBlagajna.getInstance().getStol();
+    return frmMasterBlagajna.getStol();
   }
   
   String placnaziv, placiznos;
