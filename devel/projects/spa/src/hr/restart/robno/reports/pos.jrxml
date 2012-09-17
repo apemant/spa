@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="design" pageWidth="216" pageHeight="850" columnWidth="216" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="design" pageWidth="216" pageHeight="648" columnWidth="216" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<field name="HeadFirst" class="java.lang.String"/>
 	<field name="HeadSecond" class="java.lang.String"/>
 	<field name="Title" class="java.lang.String"/>
@@ -20,6 +20,10 @@
 	<field name="KUPLAB" class="java.lang.String"/>
 	<field name="KUPAC" class="java.lang.String"/>
 	<field name="HVALA" class="java.lang.String"/>
+	<field name="POP" class="java.lang.String"/>
+	<field name="UIPOP" class="java.math.BigDecimal"/>
+	<field name="UKUPLAB" class="java.lang.String"/>
+	<field name="UKUPNO" class="java.math.BigDecimal"/>
 	<group name="Section0">
 		<groupExpression><![CDATA[$F{Title}]]></groupExpression>
 		<groupHeader>
@@ -84,7 +88,7 @@
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="168" splitType="Prevent">
+			<band height="185" splitType="Prevent">
 				<line>
 					<reportElement x="1" y="1" width="196" height="1"/>
 					<graphicElement>
@@ -92,7 +96,7 @@
 					</graphicElement>
 				</line>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="137" y="10" width="59" height="15" forecolor="#000000"/>
+					<reportElement positionType="Float" x="137" y="29" width="59" height="15" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
@@ -100,14 +104,14 @@
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{TOTAL}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="1" y="14" width="84" height="10"/>
+					<reportElement x="1" y="33" width="84" height="10"/>
 					<textElement>
 						<font fontName="Arial" size="8"/>
 					</textElement>
 					<text><![CDATA[PLATITI]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="1" y="32" width="102" height="12" forecolor="#000000"/>
+					<reportElement positionType="Float" x="1" y="51" width="102" height="12" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -115,7 +119,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{PLACNAME}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="116" y="32" width="81" height="12" forecolor="#000000"/>
+					<reportElement positionType="Float" x="116" y="51" width="81" height="12" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -123,41 +127,41 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{PLACIZNOS}]]></textFieldExpression>
 				</textField>
 				<line>
-					<reportElement positionType="Float" x="1" y="72" width="196" height="1"/>
+					<reportElement positionType="Float" x="1" y="91" width="196" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</line>
 				<staticText>
-					<reportElement positionType="Float" x="1" y="61" width="49" height="10"/>
+					<reportElement positionType="Float" x="1" y="80" width="49" height="10"/>
 					<textElement>
 						<font fontName="Arial" size="8"/>
 					</textElement>
 					<text><![CDATA[Naziv]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="52" y="61" width="48" height="10"/>
+					<reportElement positionType="Float" x="52" y="80" width="48" height="10"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="8"/>
 					</textElement>
 					<text><![CDATA[Stopa]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="152" y="61" width="44" height="10"/>
+					<reportElement positionType="Float" x="152" y="80" width="44" height="10"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="8"/>
 					</textElement>
 					<text><![CDATA[Porez]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="102" y="61" width="48" height="10"/>
+					<reportElement positionType="Float" x="102" y="80" width="48" height="10"/>
 					<textElement textAlignment="Right">
 						<font fontName="Arial" size="8"/>
 					</textElement>
 					<text><![CDATA[Osnovica]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="1" y="74" width="54" height="12" forecolor="#000000"/>
+					<reportElement positionType="Float" x="1" y="93" width="54" height="12" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -165,7 +169,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{PORNAME}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="60" y="74" width="40" height="12" forecolor="#000000"/>
+					<reportElement positionType="Float" x="60" y="93" width="40" height="12" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -173,7 +177,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{PORSTOPA}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="102" y="74" width="48" height="12" forecolor="#000000"/>
+					<reportElement positionType="Float" x="102" y="93" width="48" height="12" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -181,7 +185,7 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{POROSN}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="152" y="74" width="44" height="12" forecolor="#000000"/>
+					<reportElement positionType="Float" x="152" y="93" width="44" height="12" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -189,13 +193,13 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{PORIZNOS}]]></textFieldExpression>
 				</textField>
 				<line>
-					<reportElement positionType="Float" x="1" y="87" width="196" height="1"/>
+					<reportElement positionType="Float" x="1" y="106" width="196" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</line>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="1" y="92" width="171" height="12" forecolor="#000000"/>
+					<reportElement positionType="Float" x="1" y="111" width="171" height="12" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -203,14 +207,14 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{POSLUGA}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement positionType="Float" x="5" y="121" width="188" height="10"/>
+					<reportElement positionType="Float" x="5" y="140" width="188" height="10"/>
 					<textElement textAlignment="Center" markup="none">
 						<font fontName="Arial" size="8"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{HVALA}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="2" y="150" width="96" height="12" forecolor="#000000"/>
+					<reportElement positionType="Float" x="2" y="169" width="96" height="12" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -218,12 +222,44 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{NADNEVAK}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="102" y="150" width="95" height="12" forecolor="#000000"/>
+					<reportElement positionType="Float" x="102" y="169" width="95" height="12" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{VRIJEME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="1" y="18" width="102" height="12" isRemoveLineWhenBlank="true" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{POP}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="116" y="18" width="81" height="12" isRemoveLineWhenBlank="true" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{UIPOP}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="1" y="6" width="102" height="12" isRemoveLineWhenBlank="true" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{UKUPLAB}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="116" y="6" width="81" height="12" isRemoveLineWhenBlank="true" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{UKUPNO}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupFooter>
