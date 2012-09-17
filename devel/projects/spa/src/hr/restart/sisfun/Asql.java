@@ -180,7 +180,7 @@ public class Asql {
     mast.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(),
       "SELECT norme.cartnor as cartnor, MAX(artikli.cart) as cart, "+
       "MAX(artikli.cart1) as cart1, MAX(artikli.bc) as bc, MAX(artikli.nazart) as nazart, "+
-      "MAX(artikli.jm) as jm FROM norme,artikli WHERE norme.cartnor = artikli.cart GROUP BY cartnor"
+      "MAX(artikli.jm) as jm, MAX(artikli.cgrart) as cgrart FROM norme,artikli WHERE norme.cartnor = artikli.cart GROUP BY cartnor"
     ));
     //part = vl.RezSet;
     mast.setColumns(new Column[] {
@@ -189,7 +189,8 @@ public class Asql {
       (Column) dm.getArtikli().getColumn("CART1").clone(),
       (Column) dm.getArtikli().getColumn("BC").clone(),
       (Column) dm.getArtikli().getColumn("NAZART").clone(),
-      (Column) dm.getArtikli().getColumn("JM").clone()
+      (Column) dm.getArtikli().getColumn("JM").clone(),
+      (Column) dm.getArtikli().getColumn("CGRART").clone()
     });
 
     mast.open();
@@ -199,6 +200,7 @@ public class Asql {
     mast.setRowId("BC", false);
     mast.setRowId("NAZART", false);
     mast.setRowId("JM", false);
+    mast.setRowId("CGRART", false);
     mast.setTableName("norme_master");
   }
 
