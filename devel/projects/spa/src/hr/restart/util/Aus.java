@@ -783,6 +783,22 @@ public class Aus {
   }
 
   /**
+   * Ispisuje imena varijabli i njenih trenutaènih vrijednosti u objektu o.
+   * Za debugging.
+   */
+  public static void dumpVars(Object o) {
+    try {
+      Field[] fields = o.getClass().getDeclaredFields();
+      for (int i = 0; i < fields.length; i++) {
+        fields[i].setAccessible(true);
+        System.out.println(fields[i].getName() + "=" + fields[i].get(o));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
+  /**
    * Ispisuje ime varijable i njenu trenutaènu vrijednost u objektu o.
    * Za debugging.
    */
