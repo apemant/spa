@@ -157,11 +157,29 @@ public class repPosJas implements raReportData {
   }
   
   public BigDecimal getIZNOS() {
-    return ds.getBigDecimal("NETO");
+    return ds.getBigDecimal("IZNOS");
   }
   
   public BigDecimal getTOTAL() {
     return master.getBigDecimal("NETO");
+  }
+  
+  public BigDecimal getUIPOP() {
+    return master.getBigDecimal("UIPOPUST2").signum() == 0 ? null : master.getBigDecimal("UIPOPUST2");
+  }
+  
+  public String getPOP() {
+    return master.getBigDecimal("UPPOPUST2").signum() == 0 ? "" :
+      "POPUST " + master.getBigDecimal("UPPOPUST2").doubleValue() + "%";
+  }
+  
+  public BigDecimal getUKUPNO() {
+    return master.getBigDecimal("UIPOPUST2").signum() == 0 ? null : master.getBigDecimal("UKUPNO");
+  }
+  
+  public String getUKUPLAB() {
+    return master.getBigDecimal("UPPOPUST2").signum() == 0 ? "" :
+      "UKUPNO";
   }
   
   public String getPLACNAME() {
