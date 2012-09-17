@@ -1586,8 +1586,12 @@ public class dlgRunReport {
           super.setFitWidthZoomRatio();
         }
       };
-      Dimension scr = Toolkit.getDefaultToolkit().getScreenSize();
-      jv.setPreferredSize(new Dimension(scr.height - 60, scr.height - 60));
+      if (dlgRR.runner.getSize() != null) 
+        jv.setPreferredSize(dlgRR.runner.getSize());
+      else {
+        Dimension scr = Toolkit.getDefaultToolkit().getScreenSize();
+        jv.setPreferredSize(new Dimension(scr.height - 60, scr.height - 60));
+      }
       jv.setFitWidthZoomRatio();
       panel.add(jv);
       return null;

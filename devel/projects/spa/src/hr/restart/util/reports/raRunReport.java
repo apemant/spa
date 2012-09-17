@@ -27,6 +27,7 @@ package hr.restart.util.reports;
  */
 import hr.restart.sisfun.frmParam;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -55,6 +56,7 @@ public class raRunReport {
   static ReportRuntime rt;
   static Frame lastFrame;
   private String ownerName, immedName;
+  private Dimension immedSize;
   private boolean ownerlock, immedView;
   private TemplateModifier temod;
 //  private static raRunReport rr;
@@ -309,11 +311,19 @@ public class raRunReport {
   public void setOneTimeDirectReport(String reportName) {
     immedName = reportName;
     immedView = false;
+    immedSize = null;
   }
   
   public void setOneTimeDirectReport(String reportName, boolean view) {
     immedName = reportName;
     immedView = view;
+    immedSize = null;
+  }
+  
+  public void setOneTimeDirectReport(String reportName, boolean view, Dimension size) {
+    immedName = reportName;
+    immedView = view;
+    immedSize = size;
   }
 
   public int getDirectReport() {
@@ -324,12 +334,17 @@ public class raRunReport {
     return -1;
   }
   
+  public Dimension getSize() {
+    return immedSize;
+  }
+  
   public boolean isDirectView() {
     return immedView;
   }
 
   public void clearDirectReport() {
     immedName = null;
+    immedSize = null;
   }
 
   /**
