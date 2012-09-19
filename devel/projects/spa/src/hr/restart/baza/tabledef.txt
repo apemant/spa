@@ -748,6 +748,7 @@ KOMADNO;char;1;;N;Komadno
 SSORT;int;6;;;Sortno polje;*
 POSTOINV;numeric;12,3;;0;Postotak otpisa
 TIPINV;char;1;;I;Naèin otpisa
+CAN;char;6;;;Dodatni opis
 
 $IzlazneCijene
 KNJIG;text;12;;;Knjigovodstvo
@@ -1404,6 +1405,7 @@ DATDO;date;;;;Datum do
 VRIOD;int;6;;;Vrijeme od
 VRIDO;int;6;;;Vrijeme do
 PPOP;numeric;10,2;;0;Pop (%);8
+DANI;char;7;;;Dani važenja
 
 $Stakcije
 CAK;char;6;pkey;;Akcija
