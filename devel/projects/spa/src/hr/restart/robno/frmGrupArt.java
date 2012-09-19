@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.raDataSet;
 import hr.restart.swing.JrCheckBox;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
@@ -77,6 +78,11 @@ public class frmGrupArt extends raMatPodaci {
 
   raComboBox jraTipKalkul = new raComboBox();
   raComboBox rcmbKOMADNO = new raComboBox();
+  
+  JLabel JlNap = new JLabel("Grupa napomena");
+  JlrNavField jlrCAN = new JlrNavField();
+  JlrNavField jlrNAZAN = new JlrNavField();
+  JraButton jbNap = new JraButton();
   
   JLabel jLabel1 = new JLabel();
   com.borland.dx.sql.dataset.QueryDataSet grart;
@@ -149,10 +155,27 @@ public class frmGrupArt extends raMatPodaci {
     jrfCGRARTPRIPNAZ.setSearchMode(1);
     jrfCGRARTPRIPNAZ.setNavProperties(jrfCGRART);
     
+    raDataSet artnap = new raDataSet();
+    frmArtNap.createMain(artnap);
+    artnap.setTableName("artnap");
+    
+    jlrCAN.setColumnName("CAN");
+    jlrCAN.setColNames(new String[] {"NAZAN"});
+    jlrCAN.setTextFields(new javax.swing.text.JTextComponent[] {jlrNAZAN});
+    jlrCAN.setVisCols(new int[] {0,1});
+    jlrCAN.setSearchMode(0);
+    jlrCAN.setRaDataSet(artnap);
+    jlrCAN.setDataSet(getRaQueryDataSet());
+    jlrCAN.setNavButton(jbNap);
+    
+    jlrNAZAN.setColumnName("NAZAN");
+    jlrNAZAN.setSearchMode(1);
+    jlrNAZAN.setNavProperties(jlrCAN);
+    
     jlNaziv1.setText("Naziv");
     jlSifra1.setText("Šifra");
-    xYLayout1.setWidth(555);
-    xYLayout1.setHeight(240);
+    xYLayout1.setWidth(570);
+    xYLayout1.setHeight(265);
     
     jtfPPOP.setColumnName("PPOP");
     jtfPPOP.setDataSet(getRaQueryDataSet());
@@ -182,7 +205,7 @@ public class frmGrupArt extends raMatPodaci {
     
     jLabel1.setText("Popust na POS-u (%)");
     jp.add(jlCGRART, new XYConstraints(15, 38, -1, -1));
-    jp.add(jpCGRARTPRIP, new XYConstraints(15, 165, 525, 65));
+    jp.add(jpCGRARTPRIP, new XYConstraints(15, 190, 525, 65));
     jpCGRARTPRIP.add(jlCGRARTPRIP, new XYConstraints(15, 5, -1, -1));
     jpCGRARTPRIP.add(jrfCGRARTPRIPNAZ, new XYConstraints(240, 5, 245, -1));
     jpCGRARTPRIP.add(jrfCGRART, new XYConstraints(130, 5, 100, -1));
@@ -210,7 +233,12 @@ public class frmGrupArt extends raMatPodaci {
     jp.add(jtfTRO, new XYConstraints(440, 63, 100, -1));
     jp.add(new JLabel("Komadna prodaja"), new XYConstraints(15, 115, 100, -1));
     jp.add(rcmbKOMADNO, new XYConstraints(150, 113, 100, -1));
-    jp.add(jcbCGRARTPRIP, new XYConstraints(15, 138, -1, -1));
+    jp.add(JlNap, new XYConstraints(15, 140, -1, -1));
+    jp.add(jlrCAN, new XYConstraints(150, 140, 100, -1));
+    jp.add(jlrNAZAN, new XYConstraints(260, 140, 280, -1));
+    jp.add(jbNap, new XYConstraints(545, 140, 21, 21));
+    
+    jp.add(jcbCGRARTPRIP, new XYConstraints(15, 165, -1, -1));
   }
 
   public boolean Validacija(char mode) {
