@@ -17,7 +17,9 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
@@ -27,6 +29,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raLLFrames;
 import hr.restart.util.raUpitLite;
 import hr.restart.util.sysoutTEST;
+import hr.restart.util.reports.raReportDescriptor;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
@@ -144,7 +147,7 @@ public class upPregledTroskova extends raUpitLite {
     rcc.EnabDisabAll(jpMainPanel,false);
     dateP = new java.sql.Date(this.tds.getTimestamp("pocDatum").getTime());
     dateZ = new java.sql.Date(this.tds.getTimestamp("zavDatum").getTime());
-    String qStr;
+    String qStr = "";
     String newDateP, newDateZ;
 
     newDateP = util.getTimestampValue(tds.getTimestamp("pocDatum"), 0);
@@ -175,7 +178,8 @@ public class upPregledTroskova extends raUpitLite {
         this.addReport("hr.restart.robno.repPregledTroskova1", "hr.restart.robno.repPregledTroskova", "PregledTroskova1", "Pregled troškova");
       }
     } else {
-      qStr ="SELECT max(doki.corg) as corg, max(doki.cskl) as cskl, " +
+      if (rpcart.getCGRART().length()==0)
+        qStr ="SELECT max(doki.corg) as corg, max(doki.cskl) as cskl, " +
             "max(stdoki.cart) as cart, max(stdoki.cart1) as cart1, max(stdoki.bc) as bc, max(stdoki.nazart) as nazart, " +
             "max(stdoki.jm) as jm, sum(stdoki.kol) as kol, sum(stdoki.iraz) as iraz, max(sklad.nazskl) as nazskl, " +
             "max(orgstruktura.naziv) as nazorg, max(vrtros.naziv) as vrstros " +
@@ -187,6 +191,20 @@ public class upPregledTroskova extends raUpitLite {
             " AND DOKI.CSKL=SKLAD.CSKL AND DOKI.CORG=ORGSTRUKTURA.CORG"+
             " and DOKI.CVRTR=VRTROS.CVRTR"+
             " GROUP BY stdoki.cart";
+      else qStr = "SELECT max(doki.corg) as corg, max(doki.cskl) as cskl, " +
+            "max(stdoki.cart) as cart, max(stdoki.cart1) as cart1, max(stdoki.bc) as bc, max(stdoki.nazart) as nazart, " +
+            "max(stdoki.jm) as jm, sum(stdoki.kol) as kol, sum(stdoki.iraz) as iraz, max(sklad.nazskl) as nazskl, " +
+            "max(orgstruktura.naziv) as nazorg, max(vrtros.naziv) as vrstros " +
+            "FROM DOKI,STDOKI,SKLAD,ORGSTRUKTURA,VRTROS,ARTIKLI " +
+            "WHERE DOKI.VRDOK='IZD' " + fiveC +
+            " AND " + util.getDoc("DOKI", "STDOKI") +
+            " AND STDOKI.CART = ARTIKLI.CART AND ARTIKLI.CGRART='" +rpcart.getCGRART()+"'" +
+            " AND DOKI.DATDOK >=" + newDateP +
+            " AND DOKI.DATDOK <=" + newDateZ +
+            " AND DOKI.CSKL=SKLAD.CSKL AND DOKI.CORG=ORGSTRUKTURA.CORG"+
+            " and DOKI.CVRTR=VRTROS.CVRTR"+
+            " GROUP BY stdoki.cart";
+      
 
       this.killAllReports();
       this.addReport("hr.restart.robno.repPregledTroskova2", "hr.restart.robno.repPregledTroskova", "PregledTroskova2", "Pregled troškova");
@@ -315,11 +333,11 @@ public class upPregledTroskova extends raUpitLite {
     jcbPoArtiklima.setHorizontalAlignment(SwingConstants.RIGHT);
     jcbPoArtiklima.setHorizontalTextPosition(SwingConstants.LEADING);
     jcbPoArtiklima.setText("Po artiklima");
-    jcbPoArtiklima.addActionListener(new java.awt.event.ActionListener() {
+    /*jcbPoArtiklima.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jcbPoArtiklima_actionPerformed(e);
       }
-    });
+    });*/
     jpContainPanel.add(jtfZavDatum, new XYConstraints(260, 80, 105, -1));
     jpContainPanel.add(jlDatumi, new XYConstraints(15, 80, -1, -1));
     jpContainPanel.add(jLabel2, new XYConstraints(15, 5, -1, -1));
@@ -357,7 +375,7 @@ public class upPregledTroskova extends raUpitLite {
     jraNAZTR.setText("");
     jraNalog.setText("");
     this.rpcskl.setCSKL(hr.restart.sisfun.raUser.getInstance().getDefSklad()); //sgQuerys.getSgQuerys().getDefSklad());
-//    rcc.EnabDisabAll(this.rpcskl, false); //TODO zasad vako, kasnije vidit èemo kako....
+//    rcc.EnabDisabAll(this.rpcskl, false); 
     if (upSNS.nTransData==0) {
       lTrans=false;
       rpcart.setCART();
@@ -381,7 +399,42 @@ public class upPregledTroskova extends raUpitLite {
       firstESC();
       return false;
     }
-    return true;
+    if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(this,
+        "Prikazati rezultat u tablici?", "Tablièni prikaz",
+        JOptionPane.OK_CANCEL_OPTION)) return true;
+      
+    showTable();
+    firstESC();
+    return false;
+  }
+  
+  void showTable() {
+    frmTableDataView view = new frmTableDataView();
+    view.setTitle("Pregled troškova za skladište " + getCskl());
+    updateColumn("CORG", null);
+    updateColumn("CSKL", null);
+    updateColumn("CART", "Šifra");
+    updateColumn("CART1", "Oznaka");
+    updateColumn("BC", "Barkod");
+    updateColumn("NAZART", "Naziv");
+    updateColumn("JM", "Jmj");
+    updateColumn("NAZSKL", null);
+    updateColumn("NAZORG", null);
+    updateColumn("VRSTROS", null);
+    view.setDataSet(reportSet);
+    //view.setSaveName("pregled-troskova");
+    view.show();
+    view.resizeLater();
+  }
+  
+  void updateColumn(String name, String title) {
+    if (reportSet.hasColumn(name) == null) return;
+    if (title == null) reportSet.hasColumn(name).setVisible(0);
+    else {
+      reportSet.hasColumn(name).setCaption(title);
+      reportSet.hasColumn(name).setWidth(
+          Artikli.getDataModule().getColumn(name).getWidth());
+    }
   }
 
   private String Cskl() {
