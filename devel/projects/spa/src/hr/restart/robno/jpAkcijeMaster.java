@@ -53,9 +53,19 @@ public class jpAkcijeMaster extends JPanel {
     JLabel jlPOP = new JLabel();
     JraTextField jraPOP = new JraTextField();
     
-    JraRadioButton jraDatum = new JraRadioButton();
-    JraRadioButton jraVrijeme = new JraRadioButton();
-    raButtonGroup bgr = new raButtonGroup();
+    JraCheckBox jraDatum = new JraCheckBox("Akcija od-do");
+    JraCheckBox jraVrijeme = new JraCheckBox("Happy hour");
+    JraCheckBox jraDani = new JraCheckBox("Dani tjedna");
+    
+    JraCheckBox jraPon = new JraCheckBox("Pon");
+    JraCheckBox jraUto = new JraCheckBox("Uto");
+    JraCheckBox jraSri = new JraCheckBox("Sri");
+    JraCheckBox jraCet = new JraCheckBox("Èet");
+    JraCheckBox jraPet = new JraCheckBox("Pet");
+    JraCheckBox jraSub = new JraCheckBox("Sub");
+    JraCheckBox jraNed = new JraCheckBox("Ned");
+    
+    //raButtonGroup bgr = new raButtonGroup();
     
     JLabel jlDatum = new JLabel();
     JraTextField jraDATOD = new JraTextField();
@@ -87,7 +97,7 @@ public class jpAkcijeMaster extends JPanel {
 
     private void jbInit() throws Exception {
         lay.setWidth(540);
-        lay.setHeight(170);
+        lay.setHeight(200);
         setLayout(lay);
         
         jlCAK.setText("Šifra");
@@ -104,12 +114,12 @@ public class jpAkcijeMaster extends JPanel {
         jcbAKTIV.setSelectedDataValue("D");
         jcbAKTIV.setUnselectedDataValue("N");
         
-        bgr.setDataSet(fAkcije.getMasterSet());
+        /*bgr.setDataSet(fAkcije.getMasterSet());
         bgr.setColumnName("TIP");
         bgr.setHorizontalAlignment(SwingConstants.LEFT);
         bgr.setHorizontalTextPosition(SwingConstants.TRAILING);
         bgr.add(jraDatum, "Akcija od-do", "A");
-        bgr.add(jraVrijeme, "Happy hour", "H");
+        bgr.add(jraVrijeme, "Happy hour", "H");*/
         
         jraDatum.addChangeListener(new ChangeListener() {
           public void stateChanged(ChangeEvent e) {
@@ -118,6 +128,12 @@ public class jpAkcijeMaster extends JPanel {
         });
         
         jraVrijeme.addChangeListener(new ChangeListener() {
+          public void stateChanged(ChangeEvent e) {
+            updateTip();
+          }
+        });
+        
+        jraDani.addChangeListener(new ChangeListener() {
           public void stateChanged(ChangeEvent e) {
             updateTip();
           }
@@ -140,13 +156,23 @@ public class jpAkcijeMaster extends JPanel {
         add(jlPOP, new XYConstraints(15, 70, -1, -1));
         add(jraPOP, new XYConstraints(150, 70, 100, -1));
         
-        add(jraDatum, new XYConstraints(150, 100, 150, -1));
-        add(jraDATOD, new XYConstraints(310, 100, 100, -1));
-        add(jraDATDO, new XYConstraints(415, 100, 100, -1));
+        add(jraDatum, new XYConstraints(15, 100, 130, -1));
+        add(jraDATOD, new XYConstraints(150, 100, 100, -1));
+        add(jraDATDO, new XYConstraints(255, 100, 100, -1));
         
-        add(jraVrijeme, new XYConstraints(150, 130, 150, -1));
-        add(jraVRIOD, new XYConstraints(310, 130, 100, -1));
-        add(jraVRIDO, new XYConstraints(415, 130, 100, -1));
+        add(jraVrijeme, new XYConstraints(15, 130, 130, -1));
+        add(jraVRIOD, new XYConstraints(150, 130, 100, -1));
+        add(jraVRIDO, new XYConstraints(255, 130, 100, -1));
+        
+        add(jraDani, new XYConstraints(15, 160, 130, -1));
+        add(jraPon, new XYConstraints(150, 160, 45, -1));
+        add(jraUto, new XYConstraints(200, 160, 45, -1));
+        add(jraSri, new XYConstraints(250, 160, 45, -1));
+        add(jraCet, new XYConstraints(300, 160, 45, -1));
+        add(jraPet, new XYConstraints(350, 160, 45, -1));
+        add(jraSub, new XYConstraints(400, 160, 45, -1));
+        add(jraNed, new XYConstraints(450, 160, 45, -1));
+        
         
         BindComponents(fAkcije.getMasterSet());
         
@@ -155,11 +181,21 @@ public class jpAkcijeMaster extends JPanel {
         new raTextMask(jraVRIDO, 2, false, raTextMask.DIGITS);
     }
     
-    void updateTip() {
-      rcc.setLabelLaF(jraDATOD, jraDatum.isSelected());
-      rcc.setLabelLaF(jraDATDO, jraDatum.isSelected());
-      rcc.setLabelLaF(jraVRIOD, jraVrijeme.isSelected());
-      rcc.setLabelLaF(jraVRIDO, jraVrijeme.isSelected());
+    public void updateTip() {
+      if (fAkcije.raMaster.getMode() != 'B') {
+        rcc.setLabelLaF(jraDATOD, jraDatum.isSelected());
+        rcc.setLabelLaF(jraDATDO, jraDatum.isSelected());
+        rcc.setLabelLaF(jraVRIOD, jraVrijeme.isSelected());
+        rcc.setLabelLaF(jraVRIDO, jraVrijeme.isSelected());
+        rcc.setLabelLaF(jraPon, jraDani.isSelected());
+        rcc.setLabelLaF(jraUto, jraDani.isSelected());
+        rcc.setLabelLaF(jraSri, jraDani.isSelected());
+        rcc.setLabelLaF(jraCet, jraDani.isSelected());
+        rcc.setLabelLaF(jraPet, jraDani.isSelected());
+        rcc.setLabelLaF(jraSub, jraDani.isSelected());
+        rcc.setLabelLaF(jraNed, jraDani.isSelected());
+      }
     }
+    
 }
 

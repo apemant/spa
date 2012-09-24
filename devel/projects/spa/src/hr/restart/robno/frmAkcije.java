@@ -26,8 +26,10 @@ import java.util.HashSet;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -93,15 +95,19 @@ public class frmAkcije extends raMasterDetail {
   }
   
   public void EntryPointMaster(char mode) {
-    if (mode == 'I')
+    if (mode == 'I') {
       rcc.setLabelLaF(jpMaster.jraCAK, false);
+    }
+    masterSet_navigated(null);
+    jpMaster.updateTip();
   }
   
   public void SetFokusMaster(char mode) {
-    if (mode == 'I')
+    if (mode == 'N')
       jpMaster.jraCAK.requestFocusLater();
-    else if (mode == 'N')
+    else if (mode == 'I') {
       jpMaster.jraPOP.requestFocusLater();
+    }
   }
   
   public boolean ValidacijaMaster(char mode) {
@@ -119,7 +125,7 @@ public class frmAkcije extends raMasterDetail {
           "Greška", JOptionPane.ERROR_MESSAGE);
         return false;
       }
-    } else {
+    } else if (jpMaster.jraVrijeme.isSelected()){
       if (vl.isEmpty(jpMaster.jraVRIOD) || 
           vl.isEmpty(jpMaster.jraVRIDO)) return false;
       if (getMasterSet().getInt("VRIOD") > 24) {
@@ -136,7 +142,38 @@ public class frmAkcije extends raMasterDetail {
           "Greška", JOptionPane.ERROR_MESSAGE);
         return false;
       }
+    } else if (jpMaster.jraDani.isSelected()) {
+      if (!jpMaster.jraPon.isSelected() && 
+          !jpMaster.jraUto.isSelected() &&
+          !jpMaster.jraSri.isSelected() &&
+          !jpMaster.jraCet.isSelected() &&
+          !jpMaster.jraPet.isSelected() &&
+          !jpMaster.jraSub.isSelected() &&
+          !jpMaster.jraNed.isSelected()) {
+          JOptionPane.showMessageDialog(raMaster.getWindow(),
+            "Nijedan dan nije oznaèen!",
+            "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+    } else {
+      JOptionPane.showMessageDialog(raMaster.getWindow(),
+          "Nijedan uvjet nije definiran!",
+          "Greška", JOptionPane.ERROR_MESSAGE);
     }
+    getMasterSet().setString("TIP", 
+        (jpMaster.jraDatum.isSelected() ? "A" : "") +
+        (jpMaster.jraVrijeme.isSelected() ? "H" : "") +
+        (jpMaster.jraDani.isSelected() ? "D" : ""));
+    if (jpMaster.jraDani.isSelected())
+      getMasterSet().setString("DANI",
+        (jpMaster.jraPon.isSelected() ? "1" : "") +
+        (jpMaster.jraUto.isSelected() ? "2" : "") +
+        (jpMaster.jraSri.isSelected() ? "3" : "") +
+        (jpMaster.jraCet.isSelected() ? "4" : "") +
+        (jpMaster.jraPet.isSelected() ? "5" : "") +
+        (jpMaster.jraSub.isSelected() ? "6" : "") +
+        (jpMaster.jraNed.isSelected() ? "7" : ""));
+    else getMasterSet().setString("DANI", "");
     return true;
   }
   
@@ -290,6 +327,23 @@ public class frmAkcije extends raMasterDetail {
     this.setJPanelDetail(main);
     
     setupChooser();
+  }
+  
+  public void masterSet_navigated(NavigationEvent e) {
+    if (getMasterSet().rowCount() > 0) {
+      String tip = getMasterSet().getString("TIP");
+      jpMaster.jraDatum.setSelected(tip.indexOf("A") >= 0);
+      jpMaster.jraVrijeme.setSelected(tip.indexOf("H") >= 0);
+      jpMaster.jraDani.setSelected(tip.indexOf("D") >= 0);
+      String dani = getMasterSet().getString("DANI");
+      jpMaster.jraPon.setSelected(dani.indexOf("1") >= 0);
+      jpMaster.jraUto.setSelected(dani.indexOf("2") >= 0);
+      jpMaster.jraSri.setSelected(dani.indexOf("3") >= 0);
+      jpMaster.jraCet.setSelected(dani.indexOf("4") >= 0);
+      jpMaster.jraPet.setSelected(dani.indexOf("5") >= 0);
+      jpMaster.jraSub.setSelected(dani.indexOf("6") >= 0);
+      jpMaster.jraNed.setSelected(dani.indexOf("7") >= 0);
+    }
   }
   
   void setupChooser() {
