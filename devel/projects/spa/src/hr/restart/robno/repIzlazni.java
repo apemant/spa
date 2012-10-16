@@ -1509,13 +1509,22 @@ public BigDecimal getIPRODSP() {
    return ru.getSomething(colname,dm.getKupci(),"PBR").getAsInt();
   }
   
-  public String getTELKUPCA() {
-    String cached = cache.getValue("TELKUPCA", Integer.toString(ds.getInt("CKUPAC")));
+  public String getKUPTEL() {
+    String cached = cache.getValue("KUPTEL", Integer.toString(ds.getInt("CKUPAC")));
     if (cached != null) return cached;
     if (isHide()) return cache.returnValue("");
     if (isPar()) return cache.returnValue(getTEL());
     colname[0] = "CKUPAC";
     return "Tel "+cache.returnValue(ru.getSomething(colname,dm.getKupci(),"TEL").getString());
+  }
+  
+  public String getKUPEMADR() {
+    String cached = cache.getValue("KUPEMADR", Integer.toString(ds.getInt("CKUPAC")));
+    if (cached != null) return cached;
+/*    if (isHide()) return cache.returnValue("");
+    if (isPar()) return cache.returnValue(getTEL());*/
+    colname[0] = "CKUPAC";
+    return cache.returnValue(ru.getSomething(colname,dm.getKupci(),"EMADR").getString());
   }
 
   public String getPbrMjestoKupca() {
