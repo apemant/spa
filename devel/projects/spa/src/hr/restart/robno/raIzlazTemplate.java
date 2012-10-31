@@ -36,10 +36,13 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -560,7 +563,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
               what_kind_of_dokument.equals("POD") ||
               what_kind_of_dokument.equals("ODB") ||
               what_kind_of_dokument.equals("NKU") ||
-              what_kind_of_dokument.equals("TER"))
+              what_kind_of_dokument.equals("TER") ||
+              what_kind_of_dokument.equals("DOS"))
             raMaster.addOption(rnvEDI, 5, false);
         
         if (what_kind_of_dokument.equals("RAC") ||
@@ -1885,6 +1889,11 @@ ST.prn(radninal);
 
 	public void AfterSaveDetail(char mode) {
 		vttext = null;
+		if (TD.isDocDiraZalihu(getMasterSet().getString("VRDOK")) && 
+		    raWebSync.active && raWebSync.isWeb(getMasterSet().getString("CSKL")) && 
+		    raWebSync.isWeb(getDetailSet().getInt("CART"))) {
+          raWebSync.updateStanje(getDetailSet().getInt("CART"), getMasterSet());
+        }
 	}
 
 	final public void AfterDeleteDetail() {
@@ -1894,6 +1903,11 @@ ST.prn(radninal);
 					enableDetailNavBar();
 				}
 			});
+		}
+		
+		if (TD.isDocDiraZalihu(getMasterSet().getString("VRDOK")) &&
+		    raWebSync.active && raWebSync.isWeb(getMasterSet().getString("CSKL")) && raWebSync.isWeb(delCART)) {
+		  raWebSync.updateStanje(delCART, getMasterSet());
 		}
 	}
 
@@ -2492,8 +2506,155 @@ System.out.println("findCjenik::else :: "+sql);
 	
 	private SimpleDateFormat edif = new SimpleDateFormat("ddMMyyyy");
 	
+	private SimpleDateFormat pantf = new SimpleDateFormat("yyyyMMdd");
+	
+	private DecimalFormat d4 = new DecimalFormat("#.0000");
+	private DecimalFormat d2 = new DecimalFormat("#.00");
+	private DecimalFormat d0 = new DecimalFormat("#");
+	
 	void err(String txt) {
 	  throw new RuntimeException("Greška! " + txt);
+	}
+	
+	void sendDocImplP() {
+	  DataSet ms = getMasterSet();
+      
+      DataSet ds = stdoki.getDataModule().getTempSet(
+          Condition.whereAllEqual(Util.mkey, ms));
+      ds.open();
+      //BigDecimal iznos = Aus.sum("IPRODSP", ds);
+      
+      String vr = ms.getString("VRDOK");
+      
+      if (vr.equals("DOS")) {
+        VarStr buf = new VarStr();
+        
+        buf.append("G");
+        buf.append(getPadded(ds.getInt("BRDOK")+"", 20));
+        
+        
+        DataSet logo = dm.getLogotipovi();
+        if (!lD.raLocate(logo, "CORG", OrgStr.getKNJCORG(false)))
+          err("Neispravni logotip.");
+        DataSet zr = dm.getZirorn();
+        if (!lD.raLocate(zr, "ZIRO", logo.getString("ZIRO")))
+          err("Neispravni ziro u logotipu.");
+        
+        DataSet par = dm.getPartneri();
+        if (!lD.raLocate(par, "CPAR", Integer.toString(ms.getInt("CPAR"))))
+          err("Neispravni partner na dokumentu.");
+        
+        String cp = par.getInt("CPAR") + "";
+        
+        
+        buf.append(getPadded(par.getString("GLN"), 35));
+        buf.append(getPadded(par.getString("NAZPAR"), 35));
+        
+        buf.append(getPadded(logo.getString("GLN"), 35));
+        buf.append(getPadded(par.getString("GLN"), 35));
+        
+        if (ms.getInt("PJ") > 0) {
+          DataSet pj = Pjpar.getDataModule().getTempSet(
+              Condition.equal("CPAR", ms).and(
+                  Condition.equal("PJ", ms)));
+          pj.open();
+          if (pj.rowCount() == 0)
+            err("Neispravna poslovna jedinica dokumenta.");
+          
+          buf.append(getPadded(pj.getString("GLN"), 35));
+          buf.append(getPadded(pj.getString("NAZPJ"), 35));
+        } else {
+          buf.append(getPadded(par.getString("GLN"), 35));
+          buf.append(getPadded(par.getString("NAZPAR"), 35));
+        }
+        
+        buf.append(getPadded(logo.getString("GLN"), 35));
+        buf.append(getPadded(logo.getString("NAZIVLOG"), 35));
+        
+        buf.append(getPadded(pantf.format(ms.getTimestamp("DATDOK")), 35));
+        buf.append(getPadded(pantf.format(ms.getTimestamp("DVO")), 35));
+        if (ms.isNull("DATNARIZ")) buf.append(getPadded("", 35));
+        else buf.append(getPadded(pantf.format(ms.getTimestamp("DATNARIZ")), 35));
+        buf.append(getPadded(ms.getString("BRNARIZ"), 35));
+        buf.append(getPadded("", 70));
+        buf.append(getRPadded(ds.rowCount()+"", 18));
+        buf.append(getPadded("", 114));
+        buf.append(getPadded("9", 3));
+        buf.append(getPadded("", 248));
+        buf.append("\n");
+        
+        buf.append("E");
+        buf.append(getPadded(logo.getString("GLN"), 35));
+        buf.append(getPadded(ds.getInt("BRDOK")+"", 20));
+        buf.append(getPadded("1", 6));
+        buf.append(getPadded("", 213));
+        buf.append("\n");
+        
+        for (ds.first(); ds.inBounds(); ds.next()) {
+          buf.append("S");
+          buf.append(getPadded(logo.getString("GLN"), 35));
+          buf.append(getPadded(ds.getInt("BRDOK")+"", 20));
+          buf.append(getRPadded("1", 6));
+          buf.append(getRPadded(ds.getShort("RBR")+"", 6));
+          buf.append(getPadded("5", 3));
+          buf.append(getPadded(ds.getString("CART1"), 35));
+          buf.append(getPadded(ds.getString("NAZART"), 35));
+          buf.append(getPadded("", 35));
+          buf.append(getPadded(ds.getString("BC"), 35));
+          buf.append(getPadded("SRV", 3));
+          buf.append(getPadded(ds.getString("CART1"), 35));
+          buf.append(getRPadded("0", 15));
+          if (ds.getString("JM").equalsIgnoreCase("pak") || ds.getString("JM").equalsIgnoreCase("kom"))
+            buf.append("PCE");
+          else buf.append("KGM");
+          buf.append(getRPadded(ds.getShort("RBR")+"", 6));
+          buf.append(getRPadded(d2.format(ds.getBigDecimal("KOL")), 15));
+          buf.append(getPadded("", 15));
+          /*buf.append(getRPadded(d4.format(ds.getBigDecimal("FVC")), 15));
+          buf.append(getRPadded(d4.format(ds.getBigDecimal("FMC")), 15));
+          buf.append(getRPadded(d2.format(ds.getBigDecimal("PPOR1")), 10));*/
+          buf.append(getPadded("", 40));
+          
+          buf.append(getPadded("", 105));
+          
+          /*buf.append(getRPadded(d2.format(ds.getBigDecimal("IPRODBP")), 15));
+          buf.append(getRPadded(d2.format(ds.getBigDecimal("POR1")), 15));*/
+          buf.append(getPadded("", 30));
+          buf.append(getPadded("CU", 17));
+          buf.append(getPadded("", 153));          
+          buf.append("\n");
+        }
+        
+        TextFile.setEncoding("Cp1250");
+        String fname = ms.getInt("BRDOK") + ".des";
+        TextFile tf = TextFile.write(fname);
+        tf.out(buf.chop().split('\n'));
+        tf.close();
+        
+        String comm = frmParam.getParam("sisfun", "ediPantCmd", "", "Komanda za kopiranje fajla na EDI server (# = datoteka)");
+        if (comm.length() >0) {
+          comm = new VarStr(comm).replace("#", fname).toString();
+          
+          
+          try {
+            Runtime.getRuntime().exec(comm);
+          } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+          
+          DataSet save = doki.getDataModule().getTempSet(
+              Condition.whereAllEqual(Util.mkey, ms));
+          save.open();
+          save.setString("STATUS", "P");
+          save.saveChanges();
+          
+          ms.refetchRow(ms);
+
+        JOptionPane.showMessageDialog(this, "Dokument poslan.",
+            "Export", JOptionPane.INFORMATION_MESSAGE);
+        }
+      }
 	}
 	
 	void sendDocImpl() {
@@ -2744,7 +2905,8 @@ System.out.println("findCjenik::else :: "+sql);
 	      return;
 	  
 	  try {
-	    sendDocImpl();
+	    if (ms.getInt("CPAR") == 114) sendDocImplP();
+	    else sendDocImpl();
 	  } catch (RuntimeException e) {
 	    e.printStackTrace();
 	    JOptionPane.showMessageDialog(this,
@@ -2759,6 +2921,15 @@ System.out.println("findCjenik::else :: "+sql);
 	    return orig.concat(Aus.string(chars - orig.length(), ' '));
 	  return orig;
 	}
+	
+	private String getRPadded(String orig, int chars) {
+	  orig = new VarStr(orig).replace(',', '.').toString();
+      if (orig.length() > chars)
+        return orig.substring(0, chars);
+      if (orig.length() < chars)
+        return Aus.string(chars - orig.length(), ' ').concat(orig);
+      return orig;
+    }
 	
 	private String getNum(int num, int chars) {
       String txt = Integer.toString(num);
