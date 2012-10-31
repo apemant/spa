@@ -1321,6 +1321,7 @@ SUPER;char;1;;N;SUPER
 OGRANICEN;char;1;;G;OGRANICEN
 CSMJENA;int;6;;;Smjena
 ROLA;char;20;;;Pos role
+OIB;char;20;;;Oib
 
 $Blagajnici
 LOKK;char;1;;N;Status zauzetosti;*
@@ -1332,6 +1333,7 @@ SUPER;char;1;;;Super
 BRISANJE;char;1;;;Brisanje
 LOZINKA;char;16;;;Lozinka;*
 CSMJENA;int;6;;;Smjena
+OIB;char;20;;;Oib
 
 $nacpl
 LOKK;char;1;;N;Lokk;*
