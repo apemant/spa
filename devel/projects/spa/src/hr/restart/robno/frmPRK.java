@@ -32,9 +32,12 @@ import hr.restart.util.Aus;
 import hr.restart.util.LinkClass;
 import hr.restart.util.MasterDetailChooser;
 import hr.restart.util.VarStr;
+import hr.restart.util.raImages;
+import hr.restart.util.raNavAction;
 import hr.restart.util.raTransaction;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -78,6 +81,17 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
    raKalkulBDDoc rKD = new raKalkulBDDoc();
    LinkClass lc = LinkClass.getLinkClass();
    
+   boolean allowRecalc = frmParam.getParam("robno","recalcPRK","N",
+     "Omoguæiti rekalkulaciju primke sa stavkama (D/N)").equals("D");
+   
+   raNavAction rnvRecalc = new raNavAction("Rekalkulacija stavki",
+       raImages.IMGPREFERENCES, java.awt.event.KeyEvent.VK_F7) {
+     public void actionPerformed(ActionEvent e) {
+       recalcStavke();
+     }
+   };
+
+   
   public jpUlazDetail getDetailPanel() {
 		return jpDetail;
 	}
@@ -112,6 +126,8 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
     jpDetail.setDataSet(getDetailSet(), getMasterSet());
     
     raDetail.addOption(rnvKartica, 4, false);
+    if (allowRecalc) raDetail.addOption(rnvRecalc, 4, true);
+    
 //    raMaster.getRepRunner().addReport("hr.restart.robno.repPriKalk","Primka - kolièinska",2);
 //    raDetail.getRepRunner().addReport("hr.restart.robno.repPriKalk","Primka - kolièinska",2);
 //    raMaster.getRepRunner().addReport("hr.restart.robno.repPriKalkExtendedVersion","Primka - vrijednosna",2);
@@ -181,6 +197,30 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
         }
       }
     }
+  }
+  
+  
+  private void recalcStavke() {
+    
+    if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(jpDetail,
+        "Rekalkulirati sve stavke s teèajem i troškovima?", "Rekalkulacija", JOptionPane.OK_CANCEL_OPTION,
+        JOptionPane.WARNING_MESSAGE)) return;
+    
+    for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next()) {
+      findOldValues('I');
+      getDetailSet().setBigDecimal("PZT", getMasterSet().getBigDecimal("UPZT"));
+      getDetailPanel().kalkulacija(1);
+      isFind = findSTANJE();
+      findIZAD();
+      updateStanje('I');
+      raTransaction.saveChangesInTransaction(new QueryDataSet[] {
+                      getDetailSet(), stanjeSet});
+    }
+    
+    raDetail.getJpTableView().fireTableDataChanged();
+    JOptionPane.showMessageDialog(jpDetail, 
+        "Rekalkulacija završena.",
+        "Rekalkulacija", JOptionPane.ERROR_MESSAGE);
   }
   
   private void findTransStavka(char mode) {
@@ -340,11 +380,11 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
   public void SetFokusMaster(char mode) {
   	super.SetFokusMaster(mode);
     boolean detailExist = Stdoku.getDataModule().getRowCount(Condition.whereAllEqual(
-        new String[] {"CSKL","GOD","VRDOK","BRDOK"}, getMasterSet())) > 0;
-    if (mode == 'I' && detailExist)
+        new String[] {"CSKL","GOD","VRDOK","BRDOK"}, getMasterSet())) > 0;    
+    if (mode == 'I' && detailExist && !allowRecalc)
       jpMaster.jpGetVal.setValutaEditable(false);
     else jpMaster.jpGetVal.setValutaEditable(true);
-    super.SetFokusMaster(mode);
+
     if (mode=='N') {
       getMasterSet().setTimestamp("DATDOK", vl.getPresToday(presPRK.getPres().getSelRow()));
       getMasterSet().setTimestamp("DVO", vl.getPresToday(presPRK.getPres().getSelRow()));
@@ -353,6 +393,12 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
     enableZT = (mode == 'N' || (mode == 'I' && !detailExist));
     zt.needsRefresh();
     jpMaster.initPanel(mode);
+    if (allowRecalc && mode == 'I') {
+      jpMaster.rcc.setLabelLaF(jpMaster.jtfDEVIZN, true);
+      jpMaster.rcc.setLabelLaF(jpMaster.jtfUINAB, true);
+      jpMaster.rcc.setLabelLaF(jpMaster.jtfUIZT, true);
+      jpMaster.rcc.setLabelLaF(jpMaster.jtfUPZT, true);
+    }
   }
   public void afterSetModeMaster(char oldm, char newm) {
     super.afterSetModeMaster(oldm, newm);
