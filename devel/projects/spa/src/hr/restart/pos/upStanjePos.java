@@ -245,13 +245,13 @@ public class upStanjePos extends raUpitLite {
   		if (sn != null) {
   			Aus.add(res, "NABIZ", sn);
   		} else {
-  			Aus.set(res, "NABIZ", di, "INAB");
+  			Aus.add(res, "NABIZ", di, "INAB");
   		}
   		BigDecimal sm = (BigDecimal) iraz.get(di.getString("ID_STAVKA"));
   		if (sm != null) {
   			Aus.add(res, "IRAZ", sm);
   		} else {
-  			Aus.set(res, "IRAZ", di);
+  			Aus.add(res, "IRAZ", di);
   		}
   		Aus.sub(res, "NABVRI", "NABUL", "NABIZ");
   		if (res.getBigDecimal("KOL").abs().intValue() >=1)
