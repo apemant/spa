@@ -61,7 +61,7 @@ public class repRacRnalKupacTemplate extends repRacZaRnalOrigTemplate {
 //=(dsum \"IPRODSP\")(+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")))
       rgsfml.Text2.defaultAlterer().setControlSource
 //      ("=(-(+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")) (- (dsum \"ISP\"))))");
-      ("=(-(+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")) (- (dsum \"IZNFMCPRP\"))))");
+      ("=(- (dsum \"IZNFMCPRP\") (+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\"))))");
       return rgsfml;
     }
     return new raGRSectionFooterLines(this);

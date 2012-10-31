@@ -20,7 +20,9 @@ package hr.restart.robno;
 import hr.restart.util.reports.raGRNSectionHeader0;
 import hr.restart.util.reports.raGRSectionFooterLines;
 import hr.restart.util.reports.raGRSectionFooterMCLines;
+import hr.restart.util.reports.raGRSectionHeaderWin;
 import hr.restart.util.reports.raIzlazDetail;
+import hr.restart.util.reports.raIzlazDetailMC;
 import hr.restart.util.reports.raIzlazSectionHeaderLines;
 import hr.restart.util.reports.raReportSection;
 /**
@@ -35,7 +37,10 @@ import hr.restart.util.reports.raReportSection;
 public class repGrnRacTemplate extends repIzlazOrigTemplate {
 
 //   raGRNSectionHeader0 sh;
-  raIzlazDetail rid;
+  //raIzlazDetail rid;
+  
+  raGRSectionHeaderWin sh;
+  raIzlazDetailMC ridmc;
 
   public raReportSection createSectionHeader0() {
 //    sh = new raGRSectionHeaderWin(this);
@@ -61,11 +66,14 @@ public class repGrnRacTemplate extends repIzlazOrigTemplate {
   }
 
   public raReportSection createDetail() {
-
-      rid = new raIzlazDetail(this);
-      return rid;
-
-//    return new raIzlazDetail(this);
+    if (hr.restart.sisfun.frmParam.getParam("robno", "GOTcijena", "VC").equalsIgnoreCase("MC")){
+//    System.out.println("\n\n\nMALOPRODAJA\n\n\n");
+      ridmc = new raIzlazDetailMC(this);
+//    ridmc.TextIZNOSSTAVKESP.defaultAlterer().setControlSource("IPRODSP");
+      ridmc.TextIZNOSSTAVKESP.defaultAlterer().setControlSource("IZNFMCPRP");
+      return ridmc;
+    }
+    return new raIzlazDetail(this);
   }
 
 //  public raReportSection createSectionFooter0() {
@@ -73,7 +81,7 @@ public class repGrnRacTemplate extends repIzlazOrigTemplate {
 //  }
 
   public repGrnRacTemplate() {
-    this.ReportTemplate.setDefault(ep.RECORD_SOURCE, "JDOrepGotRac");
+    this.ReportTemplate.setDefault(ep.RECORD_SOURCE, "JDOrepGrnRac");
 //    this.addReportModifier(new ReportModifier(){
 //      public void modify(){
 //        System.out.println("reportsQuerysCollector.getRQCModule().getQueryDataSet().getInt(\"CKUPAC\") = "+reportsQuerysCollector.getRQCModule().getQueryDataSet().getInt("CKUPAC"));
@@ -101,7 +109,7 @@ public class repGrnRacTemplate extends repIzlazOrigTemplate {
 //=(dsum \"IPRODSP\")(+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")))
       rgsfml.Text2.defaultAlterer().setControlSource
 //      ("=(-(+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")) (- (dsum \"ISP\"))))");
-      ("=(-(+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")) (- (dsum \"IZNFMCPRP\"))))");
+      ("=(- (dsum \"IZNFMCPRP\") (+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\"))))");
       return rgsfml;
     }
     return new raGRSectionFooterLines(this);
