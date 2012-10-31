@@ -23,6 +23,7 @@ import hr.restart.baza.Telehist;
 import hr.restart.baza.Telemark;
 import hr.restart.baza.VTCartPart;
 import hr.restart.baza.dM;
+import hr.restart.robno.raWebSync;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.swing.JraButton;
@@ -715,6 +716,11 @@ public class frmPartneri extends raMatPodaci {
 //      ziroPar.initDS.post();
 //      ziroPar.initDS.saveChanges();
     }
+    if (mode == 'N' || mode == 'I') {
+      if (raWebSync.active && getRaQueryDataSet().getString("EMADR").length() > 0 &&
+          getRaQueryDataSet().getString("EMADR").indexOf('@') > 0)
+        raWebSync.updatePartner(getRaQueryDataSet());
+    }
 
   }
 
@@ -800,6 +806,8 @@ public class frmPartneri extends raMatPodaci {
 //    dm.getPjpar().deleteAllRows();
 //    dm.getPjpar().saveChanges();
 //    super.AfterDelete();
+    
+    if (raWebSync.active) raWebSync.deletePartner(delCpar);
   }
 
 
