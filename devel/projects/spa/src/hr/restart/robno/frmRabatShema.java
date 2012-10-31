@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import java.math.BigDecimal;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
 
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -35,6 +38,7 @@ import hr.restart.sisfun.Asql;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
@@ -270,6 +274,44 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
     }   
     mast.post();
     return true;
+  }
+  
+  int delCart;
+  public boolean DeleteCheckDetail() {
+    delCart = getDetailSet().getInt("CART");
+    return true;
+  }
+  
+  public void AfterDeleteDetail() {
+    if (raWebSync.active && raWebSync.isWeb(delCart)) {
+      raWebSync.updatePopust(getMasterSet().getString("CPAR"), Integer.toString(delCart), Aus.zero0);
+    }
+  }
+  
+  public void AfterSaveDetail(char mode) {
+    if (raWebSync.active && raWebSync.isWeb(delCart)) {
+      DataSet rab = rabati.getDataModule().getQueryDataSet();
+      
+      BigDecimal r1 = Aus.zero0;
+      BigDecimal r2 = Aus.zero0;
+      BigDecimal r3 = Aus.zero0;
+      if (getDetailSet().getString("CRAB1").length() > 0 &&
+          ld.raLocate(rab, "CRAB", getDetailSet().getString("CRAB1")))
+        r1 = rab.getBigDecimal("PRAB");
+      if (getDetailSet().getString("CRAB2").length() > 0 &&
+          ld.raLocate(rab, "CRAB", getDetailSet().getString("CRAB1")))
+        r2 = rab.getBigDecimal("PRAB");
+      if (getDetailSet().getString("CRAB3").length() > 0 &&
+          ld.raLocate(rab, "CRAB", getDetailSet().getString("CRAB1")))
+        r3 = rab.getBigDecimal("PRAB");
+      
+      BigDecimal uk = Aus.one0.subtract(r1.movePointLeft(2)).
+      multiply(Aus.one0.subtract(r2.movePointLeft(2))).
+      multiply(Aus.one0.subtract(r3.movePointLeft(2)));
+      
+      raWebSync.updatePopust(getMasterSet().getString("CPAR"), Integer.toString(delCart),
+          Aus.one0.subtract(uk).movePointRight(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+    }
   }
   
   public void SetFokusIzmjena() {
