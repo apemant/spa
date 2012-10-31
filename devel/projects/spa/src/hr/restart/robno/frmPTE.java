@@ -47,7 +47,7 @@ public class frmPTE extends frmUlazTemplate {
     setDetailSet(dm.getStdokuPTE());
     jpMaster.setDataSet(getMasterSet());
     jpDetail.setDataSet(getDetailSet(), getMasterSet());
-    jpMaster.jtabs.setEnabledAt(1, false);
+    //jpMaster.jtabs.setEnabledAt(1, false);
     raDetail.addOption(rnvKartica, 4, false);
     
     raMaster.getRepRunner().addReport("hr.restart.robno.repPovratnicaTerecenje", "hr.restart.robno.repPovratnicaTerecenje", "PovratnicaTerecenje", "Povratnica - tereæenje");
