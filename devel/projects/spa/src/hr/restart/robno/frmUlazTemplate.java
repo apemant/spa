@@ -443,7 +443,7 @@ public class frmUlazTemplate extends raMasterDetail {
 	public boolean DeleteCheckDetail() {
 		rCD.prepareFields(getDetailSet());
 		isFind = findSTANJE();
-		if (isFind && !isTranzit && prSTAT!='K' && stanjeSet.getBigDecimal("KOL").
+		if (isFind && !isTranzit &&!isMinusAllowed && prSTAT!='K' && stanjeSet.getBigDecimal("KOL").
 				compareTo(getDetailSet().getBigDecimal("KOL")) < 0) {
 			JOptionPane.showConfirmDialog(raDetail.getWindow(),
 					"Brisanje nije moguæe. Kolièina na stanju je manja od kolièine na ovoj stavci!",
@@ -512,6 +512,19 @@ public class frmUlazTemplate extends raMasterDetail {
 		//    dm.getVtzavtr().getDatabase().executeStatement(rdUtil.getUtil().deleteExistingZavtrU(getMasterSet(),
 		// delStavka));
 		//    util.recalcRBR(getDetailSet(), delStavka);
+		
+		if (TD.isDocDiraZalihu(getMasterSet().getString("VRDOK")) &&
+            raWebSync.active && raWebSync.isWeb(oldCART) && raWebSync.isWeb(getMasterSet().getString("CSKL"))) {
+          raWebSync.updateStanje(oldCART, getMasterSet());
+        }
+	}
+	
+	public void AfterSaveDetail(char mode) {
+	  // TODO Auto-generated method stub
+	  if (TD.isDocDiraZalihu(getMasterSet().getString("VRDOK")) &&
+          raWebSync.active && raWebSync.isWeb(oldCART) && raWebSync.isWeb(getMasterSet().getString("CSKL"))) {
+        raWebSync.updateStanje(getDetailSet().getInt("CART"), getMasterSet());
+      }
 	}
 
 	/*
