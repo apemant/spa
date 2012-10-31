@@ -66,10 +66,10 @@ public class norme extends KreirDrop implements DataModule {
     normeKOL.setCaption(dmRes.getString("normeKOL_caption"));
     normeKOL.setColumnName("KOL");
     normeKOL.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
-    normeKOL.setDisplayMask("###,###,##0.000");
+    normeKOL.setDisplayMask("###,###,##0.000000");
     normeKOL.setDefault("0");
     normeKOL.setPrecision(15);
-    normeKOL.setScale(3);
+    normeKOL.setScale(6);
     normeKOL.setTableName("NORME");
     normeKOL.setWidth(10);
     normeKOL.setSqlType(2);
@@ -167,7 +167,7 @@ public class norme extends KreirDrop implements DataModule {
        .addChar("bc", 20, true)
        .addChar("nazart", 50)
        .addChar("jm", 3)
-       .addFloat("kol", 17, 3)
+       .addFloat("kol", 17, 6)
        .addPrimaryKey("cartnor,cart");
 
     Naziv="norme";
