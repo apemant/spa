@@ -229,7 +229,11 @@ public class raKalkulBDDoc extends raTopCalcUtil {
       stavka.por2= Aus.zero2; // ne tretiram ispravno ostale poreze
       stavka.por3= Aus.zero2; // ali ionako se ova metoda više
       stavka.uipor = stavka.por1;          // ne koristi
-      stavka.uirab = stavka.ineto.subtract(stavka.iprodbp);
+      if (raIzlazTemplate.allowIznosChange()) {
+        stavka.ineto = stavka.iprodbp;
+        if (stavka.kol.signum()!=0)
+          stavka.fc = stavka.ineto.divide(stavka.kol, 2, BigDecimal.ROUND_HALF_UP);
+      } else stavka.uirab = stavka.ineto.subtract(stavka.iprodbp);
 
       initTmp();
       tmpBD = stavka.ineto.divide(Sto,2,BigDecimal.ROUND_HALF_UP);
