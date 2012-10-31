@@ -394,8 +394,8 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
 //    jpZT.add(jbDetail, new XYConstraints(510, 85, 80, 21));
 //    jpZT.add(jbCSHZT, new XYConstraints(485, 85, 21, 21));
 //    jpZT.add(jrfNAZSHZT, new XYConstraints(240, 85, 240, -1));
-    jpZT.add(jlUPZT, new XYConstraints(520, 30, -1, -1));
-    jpZT.add(jtfUPZT, new XYConstraints(540, 30, 50, -1));
+    jpZT.add(jlUPZT, new XYConstraints(610, 30, -1, -1));
+    jpZT.add(jtfUPZT, new XYConstraints(505, 30, 100, -1));
     jpZT.add(new JLabel("Devizni iznos UR-a"), new XYConstraints(27, 70, -1, -1));
     jpZT.add(jtfDEVIZN, new XYConstraints(135, 70, 100, -1));
     this.add(jpBRDOK, BorderLayout.NORTH);
@@ -569,7 +569,12 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
       jcbZT.setSelected(false);
       ZTchanged();
 //      findZT();
-    } else if (mode=='I') rcc.EnabDisabAll(jpZT, false);
+    } else if (mode=='I') {
+      rcc.EnabDisabAll(jpZT, false);
+      rcc.setLabelLaF(jtfUIPRPOR, true);
+      rcc.setLabelLaF(jtfUIPRPOR2, true);
+      enabdisabUIPRPOR();
+    }
     jcbZT.setSelected(frm.getMasterSet().getString("CSHZT").equals("YES"));
     if (jcbZT.isSelected() && !frm.enableZT) rcc.setLabelLaF(jbZT, true);
     jpGetVal.initJP(mode);
