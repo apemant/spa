@@ -574,6 +574,7 @@ public class dlgDataFilter extends raOptionDialog {
     
     void defineFilter() {
       selRow.setUserObject(dlgDataFilter.inst.createNewFilter());
+      dlgDataFilter.inst.fieldChanged();
       dlgDataFilter.inst.updateNode(selRow, false);
       dlgDataFilter.inst.editFilter(selRow);
     }
