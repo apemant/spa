@@ -38,10 +38,10 @@ public class menuNabava extends JMenu {
   ResourceBundle res = ResourceBundle.getBundle("hr.restart.robno.Res");
 
   hr.restart.util.startFrame SF;
-  JMenuItem jmPRK = new JMenuItem();
-  JMenuItem jmPTE = new JMenuItem();
-  JMenuItem jmPOR = new JMenuItem();
-  JMenuItem jmKAL = new JMenuItem();
+  public JMenuItem jmPRK = new JMenuItem();
+  public JMenuItem jmPTE = new JMenuItem();
+  public JMenuItem jmPOR = new JMenuItem();
+  public JMenuItem jmKAL = new JMenuItem();
 
   public menuNabava(hr.restart.util.startFrame startframe) {
     SF = startframe;

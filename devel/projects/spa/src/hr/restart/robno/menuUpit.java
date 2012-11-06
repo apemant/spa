@@ -36,20 +36,20 @@ public class menuUpit extends JMenu {
   ResourceBundle res = ResourceBundle.getBundle("hr.restart.robno.Res");
 
   hr.restart.util.startFrame SF;
-  JMenuItem jmStanje = new JMenuItem();
-  JMenuItem jmStanjeOld = new JMenuItem();
-  JMenuItem jmKartica = new JMenuItem();
-  JMenuItem jmKartKupArt = new JMenuItem();
-  JMenuItem jmKartKupArt2 = new JMenuItem();
-  JMenuItem jmDnevnik = new JMenuItem();
-  JMenuItem jmCjenik = new JMenuItem();
-  JMenuItem jmCjenikCORG = new JMenuItem();
-  JMenuItem jmRab = new JMenuItem();
-  JMenuItem jmArtSklad = new JMenuItem();
-  JMenuItem jmUIDoc = new JMenuItem();
-  JMenuItem jmTotaliKartica = new JMenuItem();
-  JMenuItem jmViewCalc = new JMenuItem();
-  JMenuItem jmRuc = new JMenuItem();
+  public JMenuItem jmStanje = new JMenuItem();
+  public JMenuItem jmStanjeOld = new JMenuItem();
+  public JMenuItem jmKartica = new JMenuItem();
+  public JMenuItem jmKartKupArt = new JMenuItem();
+  public JMenuItem jmKartKupArt2 = new JMenuItem();
+  public JMenuItem jmDnevnik = new JMenuItem();
+  public JMenuItem jmCjenik = new JMenuItem();
+  public JMenuItem jmCjenikCORG = new JMenuItem();
+  public JMenuItem jmRab = new JMenuItem();
+  public JMenuItem jmArtSklad = new JMenuItem();
+  public JMenuItem jmUIDoc = new JMenuItem();
+  public JMenuItem jmTotaliKartica = new JMenuItem();
+  public JMenuItem jmViewCalc = new JMenuItem();
+  public JMenuItem jmRuc = new JMenuItem();
 //  JMenu jmOP = new JMenu();
 
   public menuUpit(hr.restart.util.startFrame startframe) {
