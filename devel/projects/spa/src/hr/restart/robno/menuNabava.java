@@ -87,19 +87,19 @@ public class menuNabava extends JMenu {
     this.add(jmPOR);
     this.add(jmKAL);
   }
-  void jmPRK_actionPerformed(ActionEvent e) {
+  public void jmPRK_actionPerformed(ActionEvent e) {
     frmPRK fPRK = (frmPRK)raLoader.load("hr.restart.robno.frmPRK");
     presPRK.getPres().showJpSelectDoc("PRK", fPRK, true, jmPRK.getText());
   }
-  void jmPTE_actionPerformed(ActionEvent e) {
+  public void jmPTE_actionPerformed(ActionEvent e) {
     frmPTE fPTE = (frmPTE)raLoader.load("hr.restart.robno.frmPTE");
     presPTE.getPres().showJpSelectDoc("PTE", fPTE, true, jmPTE.getText());
   }
-  void jmPOR_actionPerformed(ActionEvent e) {
+  public void jmPOR_actionPerformed(ActionEvent e) {
     frmNivelacija frmNivel = (frmNivelacija)raLoader.load("hr.restart.robno.frmNivelacija");
     presPOR.getPres().showJpSelectDoc("POR", frmNivel, true, jmPOR.getText());
   }
-  void jmKAL_actionPerformed(ActionEvent e) {
+  public void jmKAL_actionPerformed(ActionEvent e) {
     frmKAL fKAL = (frmKAL)raLoader.load("hr.restart.robno.frmKAL");
     presKAL.getPres().showJpSelectDoc("KAL", fKAL, true, jmKAL.getText());
   }

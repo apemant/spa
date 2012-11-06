@@ -171,54 +171,54 @@ public class menuUpit extends JMenu {
     this.add(jmCjenikCORG);
     this.add(jmRab);
   }
-  void jmStanje_actionPerformed(ActionEvent e) {
+  public void jmStanje_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.UpStanjeRobno", jmStanje.getText()); //was upStanjeNaSkladistu
     
   }
-  void jmStanjeOld_actionPerformed(ActionEvent e) {
+  public void jmStanjeOld_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upStanjeNaSkladistu", jmStanje.getText()+" - STARO"); //was upStanjeNaSkladistu
     
   }
-  void jmKartica_actionPerformed(ActionEvent e) {
+  public void jmKartica_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upKartica", 15, jmKartica.getText(), false);
     upKartica.getupKartica().clearOutsideData();
     SF.showFrame("hr.restart.robno.upKartica", jmKartica.getText());
     
   }
-  void jmKartKupArt_actionPerformed(ActionEvent e) {
+  public void jmKartKupArt_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upKarticaKupca", jmKartKupArt.getText());
   }
-  void jmKartKupArt2_actionPerformed(ActionEvent e) {
+  public void jmKartKupArt2_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upKartKupArt2", jmKartKupArt2.getText());
   }
-  void jmDnevnik_actionPerformed(ActionEvent e) {
+  public void jmDnevnik_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upDnevnik", jmDnevnik.getText());
   }
-  void jmCjenik_actionPerformed(ActionEvent e) {
+  public void jmCjenik_actionPerformed(ActionEvent e) {
     hr.restart.robno.frmCjenik fCjenik = (frmCjenik) SF.showFrame("hr.restart.robno.frmCjenik", 0, jmCjenik.getText(), false);
     fCjenik.go();
   }
-  void jmRab_actionPerformed(ActionEvent e) {
+  public void jmRab_actionPerformed(ActionEvent e) {
     hr.restart.robno.frmRabatShema fRab = (frmRabatShema) SF.showFrame("hr.restart.robno.frmRabatShema", 0, jmRab.getText(), false);
     fRab.go();
   }
-  void jmCjenikCORG_actionPerformed(ActionEvent e) {
+  public void jmCjenikCORG_actionPerformed(ActionEvent e) {
     hr.restart.robno.frmCjenik fCjenik = (frmCjenik) SF.showFrame("hr.restart.robno.frmCjenikCORG", 0, jmCjenikCORG.getText(), false);
     fCjenik.go();
   }
-  void jmArtSklad_actionPerformed(ActionEvent e) {
+  public void jmArtSklad_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upArtSklad", jmArtSklad.getText());
   }
-  void jmUIDoc_actionPerformed(ActionEvent e) {
+  public void jmUIDoc_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upUlazIzlaz", jmUIDoc.getText());
   }
-  void jmTotaliKartica_actionPerformed(ActionEvent e) {
+  public void jmTotaliKartica_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upTotKar", jmTotaliKartica.getText());
   }
-  void jmRuc_actionPerformed(ActionEvent e) {
+  public void jmRuc_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.dlgPregledRUC", jmRuc.getText());/*"hr.restart.robno.dlgPregledMarze", jmRuc.getText());*/
   }
-  void jmViewCalc_actionPerformed(ActionEvent e) {
+  public void jmViewCalc_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.prewievCalc", jmViewCalc.getText());
   }
 }
