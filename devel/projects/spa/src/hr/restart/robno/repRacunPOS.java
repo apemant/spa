@@ -140,8 +140,10 @@ public class repRacunPOS extends mxReport {
      if (!sks.getString("CORG").equals(OrgStr.getKNJCORG(false)) &&
          lD.raLocate(dm.getLogotipovi(), "CORG", sks.getString("CORG"))) {
        ph = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
-       "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ 
-       "<#OIB "+dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>"+ getPhones();
+       "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+
+       " "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ 
+       (dm.getLogotipovi().getString("OIB").length()== 0 ? "" : "<#OIB "+
+           dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>")+ getPhones();
      }
 
      String prodMjesto = prm.getString("NAZPRODMJ");
@@ -266,6 +268,7 @@ public class repRacunPOS extends mxReport {
   }
   
   private String getPhones(){
+    if (dm.getLogotipovi().getString("TEL1").equals("")) return "";
     String phoneString = "<#Tel. ";
     if (!dm.getLogotipovi().getString("TEL1").equals(""))
     phoneString += dm.getLogotipovi().getString("TEL1");
@@ -500,11 +503,14 @@ public class repRacunPOS extends mxReport {
                "OPERATER: "+operater+"<$newline$>";
       } else if (blop.equalsIgnoreCase("2")) {
         return blag+", "+operater+"<$newline$>";
-      } else {
+      } else if (blop.equalsIgnoreCase("3")) {
         //return "Poslužio: "+operater+"<$newline$>"+
         //"Broj stola: " + getStol() + "<$newline$>";
         return "Stol: " + getStol() + "   Poslužio: " + operater + "<$newline$>";
+      } else if (blop.equalsIgnoreCase("4")) {
+        return "OPERATER: "+operater+"<$newline$>";
       }
+      
     }
     return "";
   }
