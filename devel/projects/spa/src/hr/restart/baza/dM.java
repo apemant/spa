@@ -45,6 +45,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.ReadWriteRow;
 import com.borland.dx.dataset.StorageDataSet;
@@ -82,6 +83,37 @@ public class dM implements DataModule {
   private static Map tabledefStart;
   
   static IDataSetSynchronizer sync = new DBDataSetSynchronizer();
+  
+  static IDataSetSynchronizer nosync = new IDataSetSynchronizer() {
+  
+    public void synchronize(DataSet ds) {
+      // TODO Auto-generated method stub
+  
+    }
+  
+    public void propagateChanges(DataSet ds) {
+      // TODO Auto-generated method stub
+  
+    }
+  
+    public void markAsFresh(DataSet ds) {
+      // TODO Auto-generated method stub
+  
+    }
+  
+    public void markAsDirty(String table) {
+      // TODO Auto-generated method stub
+  
+    }
+  
+    public int getSerialNumber(String table) {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+  
+  };
+  
+  static boolean isSync = true;
 
   public static Connection getDatabaseConnection() {
     return getDataModule().getDatabase1().getJdbcConnection();
@@ -91,8 +123,12 @@ public class dM implements DataModule {
   	return getDataModule().getNewConnection();
   }
   
+  public static void setSynchronized(boolean synced) {
+    isSync = synced;
+  }
+  
   public static IDataSetSynchronizer getSynchronizer() {
-    return sync;
+    return isSync ? sync : nosync;
   }
   
   public static boolean isMinimal() {
