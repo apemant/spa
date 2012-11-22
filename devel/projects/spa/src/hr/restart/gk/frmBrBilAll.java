@@ -2002,7 +2002,7 @@ public class frmBrBilAll extends raUpitFat {
   
   public boolean Validacija() {
     if ((!stds.getString("POCMJ").equals("01") && stds.getString("MODE").equals("BB")) || 
-        (stds.getTimestamp("POCDAT").after(util.getLastSecondOfDay(util.getFirstDayOfYear())) && stds.getString("MODE").equals("BP"))){
+        (stds.getTimestamp("POCDAT").after(util.getLastSecondOfDay(util.getFirstDayOfYear(stds.getTimestamp("POCDAT")))) && stds.getString("MODE").equals("BP"))){
 //      int pocst = JOptionPane.showConfirmDialog(this.getJPan(), new String[]{"Ukljuèiti i poèetno stanje iako promet nije od poèetka godine?"}, "Poèetno stanje", javax.swing.JOptionPane.YES_NO_CANCEL_OPTION);
 //      if (pocst == JOptionPane.NO_OPTION){
         rcbPocStanje.setSelectedIndex(1);
