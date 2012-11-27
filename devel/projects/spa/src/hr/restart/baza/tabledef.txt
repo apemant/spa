@@ -685,6 +685,9 @@ CBLAGAJNIK;char;15;;;Blagajnik
 STOL;char;20;;;Stol
 RDOK;char;60;;;Dokument razduženja
 CSMJENA;int;6;;;Smjena
+FBR;int;6;;;Broj fiskalizacije
+JIR;char;40;;;JIR
+FOK;char;1;;N;Fiskaliziran;*
 IDX=brdok
 
 $Stpos
@@ -829,6 +832,9 @@ PROVISP;numeric;15,2;;0;Isplaæena provizija;8
 PROVPOST;numeric;6,2;;0;Postotak naknade
 BRZAP;int;6;;;Broj zapisnika
 UIU;numeric;15,2;;0;Uèešæe;8
+FBR;int;6;;;Broj fiskalizacije
+JIR;char;40;;;JIR
+FOK;char;1;;N;Fiskalizitan;*
 IDX=cpar
 
 $stdoki
