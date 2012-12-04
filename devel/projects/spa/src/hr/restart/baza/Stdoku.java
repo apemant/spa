@@ -16,6 +16,9 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
+import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
+
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
 import com.borland.dx.sql.dataset.Load;
@@ -128,6 +131,17 @@ public class Stdoku extends KreirDrop implements DataModule {
 
   public com.borland.dx.sql.dataset.QueryDataSet getStdokuINV() {
     return stdokuINV;
+  }
+  
+  protected void modifyColumn(Column c) {
+    if (c.getColumnName().equals("DC_VAL") || c.getColumnName().equals("IDOB_VAL")) {
+      int scale = Aus.getNumber(frmParam.getParam("robno", "ulazValDec", 
+          "2", "Broj decimala za valutne iznose na ulazu (2-4)").trim());
+      c.setScale(scale);
+      c.setPrecision(c.getPrecision() - 2 + scale);
+      if (scale > 0 && scale < 8)
+        c.setDisplayMask("###,###,##0."+hr.restart.util.Aus.string(scale, '0'));
+    }
   }
 
 
