@@ -565,6 +565,9 @@ public class SecondChooser extends JraDialog {
 				&& (rIT.what_kind_of_dokument.equals("IZD") || rIT.what_kind_of_dokument
 						.equals("OTP"));
 		
+		if (frmParam.getParam("robno", "rastavIZD", "D", "Rastaviti normativ na izdatnici (D,N)?").equalsIgnoreCase("N"))
+		  needNorm = false;
+		
         if (directRNL && !bprennormativ) needNorm = true;
 
 		//  hack *HARDCODED*
