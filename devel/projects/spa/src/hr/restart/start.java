@@ -562,6 +562,7 @@ System.out.println("no port starting shell");
   }
 //MAIN CLASS
   public static void main(String[] args) {
+ //   System.setProperty("awt.toolkit", "hr.restart.MyXToolkit");
     expirationCheck();
 //    LiveUtils.liveStart();
  // Dodano od strane Siniše na zahtjev Filipa
@@ -576,6 +577,8 @@ System.out.println("no port starting shell");
     }
     if (checkArgs("-adbchoose")) {
       if (!raDbaseChooser.showInstance(true)) System.exit(0);
+    } else if (checkArgs("-cdbchoose")) {
+      if (!raDbaseChooser.showInstance(true, true)) System.exit(0);
     } else if (checkArgs("-dbchoose")) {
       if (!raDbaseChooser.showInstance(false)) System.exit(0);
     } else if (checkArgs("-dbinit")) {

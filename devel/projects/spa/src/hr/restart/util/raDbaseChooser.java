@@ -1,9 +1,14 @@
 package hr.restart.util;
 
 import hr.restart.start;
+import hr.restart.baza.dM;
 import hr.restart.help.raShortcutItem;
 import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.ActionExecutor;
+import hr.restart.swing.JraScrollPane;
+import hr.restart.swing.JraTable2;
+import hr.restart.swing.JraTableScrollPane;
+import hr.restart.swing.JraTextField;
 import hr.restart.swing.KeyAction;
 import hr.restart.swing.SharedFlag;
 import hr.restart.swing.raMultiLineMessage;
@@ -22,6 +27,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -32,13 +40,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.TooManyListenersException;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.swing.AbstractAction;
+import javax.swing.ComboBoxEditor;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.FocusManager;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -50,9 +66,25 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListDataListener;
+import javax.swing.plaf.basic.BasicComboBoxEditor;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
 
+import com.borland.dx.dataset.DataRow;
+import com.borland.dx.dataset.ReadRow;
+import com.borland.dx.dataset.RowFilterListener;
+import com.borland.dx.dataset.RowFilterResponse;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 
@@ -88,6 +120,10 @@ public class raDbaseChooser extends JDialog {
   int index;
   
   private raDbaseChooser(final boolean edit) {
+    this(edit, false);
+//    this(edit, true);
+  }
+  private raDbaseChooser(final boolean edit, boolean combo) {
     super((JFrame) null, "Odabir baze podataka", true);
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     Properties props = new Properties();
@@ -127,7 +163,11 @@ public class raDbaseChooser extends JDialog {
       if (url != null && tip != null && user != null && pass != null)
         vb.add(new BaseDef("Inicijalna", url, tip, user, pass, "", dbdialect));
     }
-    
+    if (combo) {
+      //initializeCombo();
+      initializeTable();
+      return;
+    }
     if (vb.size() > 0) bases.setSelectedIndex(index);
  //   bases.setFont(bases.getFont().deriveFont(Font.ITALIC).deriveFont(18f));
     raShortcutItem.setFancyFont(bases);
@@ -228,11 +268,218 @@ public class raDbaseChooser extends JDialog {
     this.pack();
     this.setLocationRelativeTo(null);
   }
-  
+  StorageDataSet dbset;
+  JTextField searchbox;
+  JraTable2 jt;
+  private void initializeTable() {
+    dbset  = new StorageDataSet();
+    dbset.addColumn(dM.createStringColumn("NAME", 200));
+    dbset.addColumn(dM.createStringColumn("URL", 200));
+    dbset.addColumn(dM.createIntColumn("IDX", "INDEX"));
+    dbset.open();
+
+    jt = new JraTable2(true) {
+      public void tableDoubleClicked() {
+        acceptTable();
+      }
+    };
+    //jt.setAlternateColor(false);
+    jt.setDataSet(dbset);
+    JraTableScrollPane sjt = new JraTableScrollPane(jt);
+    searchbox = new JTextField();
+    searchbox.getDocument().addDocumentListener(new DocumentListener() {
+      
+      public void removeUpdate(DocumentEvent e) {     
+        dbset.refilter();
+        System.out.println("filter :: "+dbset.getRowFilterListener());
+        jt.fireTableDataChanged();
+      }
+      
+      public void insertUpdate(DocumentEvent e) {
+        dbset.refilter();
+        System.out.println("filter :: "+dbset.getRowFilterListener());
+        jt.fireTableDataChanged();
+      }
+      
+      public void changedUpdate(DocumentEvent e) {
+        dbset.refilter();
+        jt.fireTableDataChanged();
+      }
+    });
+    searchbox.addKeyListener(new KeyAdapter() {
+      public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+          acceptTable();
+        }
+      }
+    });
+    refreshDbset();
+    addDbsetRowFilterListener();
+    
+    JPanel buttons = new JPanel(new GridLayout(1, 6));
+    buttons.add(getExtButton("X"));
+    buttons.add(getExtButton("New"));
+    buttons.add(getExtButton("Edit"));
+    buttons.add(getExtButton("Del"));
+    buttons.add(getExtButton("Init"));
+    JButton b = getExtButton(">>");
+//    b.setDefaultCapable(true);
+    buttons.add(b);
+    
+    getContentPane().setLayout(new BorderLayout());
+    getContentPane().add(searchbox, BorderLayout.NORTH);
+    getContentPane().add(sjt, BorderLayout.CENTER);
+    getContentPane().add(buttons, BorderLayout.SOUTH);
+    
+    addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+        accept = false;
+        hideLater();
+      }
+    });
+    pack();
+    setLocationRelativeTo(null);
+  }
+  public void addDbsetRowFilterListener() {
+    try {
+      dbset.addRowFilterListener(new RowFilterListener() {
+        public void filterRow(ReadRow row, RowFilterResponse response) {
+          if (searchbox == null) {
+            response.add();
+          } else if (searchbox.getText().trim().equals("") || row.getString("NAME").toLowerCase().contains(searchbox.getText().toLowerCase())) {
+            response.add();
+          } else {
+            response.ignore();
+          }
+        }
+        public String toString() {
+          if (searchbox != null)
+            return "RowFilterListener on " + searchbox.getText();
+          return super.toString();
+        }
+      });
+    } catch (TooManyListenersException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+  }
+  public void refreshDbset() {
+    dbset.emptyAllRows();
+    int idx = 0;
+    for (Iterator iterator = vb.iterator(); iterator.hasNext();) {
+      BaseDef dbd = (BaseDef) iterator.next();
+      dbset.insertRow(false);
+      dbset.setString("NAME", dbd.name);
+      dbset.setString("URL", dbd.url);
+      dbset.setInt("IDX", idx++);
+      dbset.post();
+    }
+    dbset.refilter();
+  }
+  JComboBox jcb;
+  private void initializeCombo() {
+    jcb = new JComboBox(vb);
+    BasicComboBoxRenderer renderer = new BasicComboBoxRenderer() {
+      public Component getListCellRendererComponent(
+          JList list, 
+          Object value,
+          int index, 
+          boolean isSelected, 
+          boolean cellHasFocus) {
+        
+        if (isSelected) {
+          setBackground(list.getSelectionBackground());
+          setForeground(list.getSelectionForeground());
+        } else {
+          setBackground(list.getBackground());
+          setForeground(list.getForeground());
+        }
+        setFont(list.getFont());
+        String ret = null;
+        if (value instanceof BaseDef) {
+          try {
+            ret = ((BaseDef)value).name;
+          } catch (Exception e) {
+            ret = "";
+          }
+        } else ret = (value==null)?"":value.toString();
+        setText(ret);
+        return this;
+      }
+    };
+    jcb.setRenderer(renderer);
+    jcb.setEditor(new AutoCompleteEditor(jcb));
+    jcb.setEditable(true);
+    getContentPane().setLayout(new BorderLayout());
+    getContentPane().add(jcb,BorderLayout.NORTH);
+    jcb.addAncestorListener(new AncestorListener() {
+      public void ancestorRemoved(AncestorEvent event) {
+      }
+      public void ancestorMoved(AncestorEvent event) {
+      }
+      public void ancestorAdded(AncestorEvent event) {
+        jcb.setSelectedIndex(index);
+        ((AutoCompleteEditorComponent)jcb.getEditor().getEditorComponent()).setText(((BaseDef)vb.get(index)).name.trim());
+      }
+    });
+    JPanel buttons = new JPanel(new GridLayout(1, 6));
+    buttons.add(getExtButton("X"));
+    buttons.add(getExtButton("New"));
+    buttons.add(getExtButton("Edit"));
+    buttons.add(getExtButton("Del"));
+    buttons.add(getExtButton("Init"));
+    JButton b = getExtButton(">>");
+//    b.setDefaultCapable(true);
+    buttons.add(b);
+    getContentPane().add(buttons, BorderLayout.SOUTH);
+    this.pack();
+    this.setLocationRelativeTo(null);
+  }
+  private JButton getExtButton(final String act) {
+    JButton b = new JButton(act);
+    b.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        bases.setSelectedIndex(dbset.getInt("IDX"));
+//        bases.setSelectedIndex(jcb.getSelectedIndex());
+        if (act.equals("X")) {
+          accept = false;
+          hideLater();
+        } else if (act.equals("New")) {
+          addRow();
+        } else if (act.equals("Edit")) {
+          editRow();
+        } else if (act.equals("Del")) {
+          deleteRow();
+        } else if (act.equals("Init")) {
+          if (JOptionPane.showConfirmDialog(raDbaseChooser.this, "Inicijalizirati bazu "+((BaseDef)bases.getSelectedValue()).name.trim()+"?", "Ej", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+            selectInitFile();
+        } else if (act.equals(">>")) {
+          accept = true;
+          hideLater();
+        }
+        if (act.length()>2 && !act.equals("Init")) {//New,Edit,Del,
+          refreshDbset();
+          navDbset(bases.getSelectedIndex());
+        }
+      }
+    });
+    return b;
+  }
   public static boolean showInstance(boolean edit) {
-    raDbaseChooser dbc = new raDbaseChooser(edit);
+    return showInstance(edit, false);
+  }
+  public static boolean showInstance(boolean edit, boolean combo) {
+    raDbaseChooser dbc = new raDbaseChooser(edit, combo);
     if (dbc.vb.size() == 0 || (dbc.vb.size() == 1 && !edit)) return true;
     
+    if (dbc.searchbox != null) {
+      dbc.searchbox.requestFocusInWindow();
+      Properties props = new Properties();
+      FileHandler.loadProperties("base.properties", props);
+      int idx = Integer.parseInt(props.getProperty("index","1"));
+      System.err.println("props idx :::: "+idx);
+      dbc.navDbset(idx);
+    }
     dbc.setVisible(true);
     dbc.saveChanges();
     if (dbc.accept && dbc.initFile != null)
@@ -453,6 +700,19 @@ public class raDbaseChooser extends JDialog {
     dispose();
   }
   
+  public void navDbset(int idx) {
+    DataRow row = new DataRow(dbset, "IDX");
+    row.setInt("IDX", idx);
+    dbset.locate(row, com.borland.dx.dataset.Locate.FIRST|com.borland.dx.dataset.Locate.FAST);
+    jt.fireTableDataChanged();
+  }
+
+  public void acceptTable() {
+    bases.setSelectedIndex(dbset.getInt("IDX"));
+    accept = true;
+    hideLater();
+  }
+
   static class BaseDef {
     String name, url, tip, user, pass, params, dbdialect;
     
@@ -681,5 +941,111 @@ public class raDbaseChooser extends JDialog {
     public abstract void okPress();
       
     public abstract void cancelPress();
+  }
+  boolean setComboItem = false;
+  public class AutoCompleteEditorComponent extends JTextField {
+    JComboBox combo = null;
+    public AutoCompleteEditorComponent(JComboBox combo) {
+      super();
+      this.combo = combo;
+    }
+    protected Document createDefaultModel() {
+      return new PlainDocument() {
+        public void insertString(int offs, String str, javax.swing.text.AttributeSet a) throws BadLocationException {
+          setComboItem = false;
+          if (str == null || str.length() == 0) return;
+          int size = combo.getItemCount();
+          String text = getText(0, getLength());
+          for (int i = 0; i < size; i++) {
+            String item = ((BaseDef)combo.getItemAt(i)).name.trim();
+            if (getLength() + str.length() > item.length()) continue;
+            if ((text + str).equalsIgnoreCase(item)) {
+              combo.setSelectedIndex(i);
+              //if (!combo.isPopupVisible())
+              //  combo.setPopupVisible(true);
+              super.remove(0, getLength());
+              super.insertString(0, item, a);
+              return;
+            }
+            else if (item.substring(0, getLength() + str.length()).equalsIgnoreCase(text + str)) {
+              combo.setSelectedIndex(i);
+              if (!combo.isPopupVisible())
+                  combo.setPopupVisible(true);
+//                super.remove(0, getLength());
+//                super.insertString(0, item, a);
+                super.insertString(offs, str, a);
+                return;
+            }
+          }
+        }
+      };
+    }
+    public void addNotify() {
+      super.addNotify();
+      AWTKeyboard.registerKeyListener(this, new java.awt.event.KeyAdapter() {
+        public void keyReleased(KeyEvent e) {
+          if  (e.getKeyCode()==e.VK_ENTER) {
+//            if (combo.isPopupVisible()) {
+              setComboItem = true;
+              try {
+                setText(((BaseDef)combo.getSelectedItem()).name);
+              } catch (Exception ex){
+                e.consume();
+              }
+//            } else {
+//              accept = true;
+//              hideLater();
+//            }
+            if (!e.isConsumed()) {
+            }
+          } else if (e.getKeyCode()==e.VK_UP) {
+            setComboItem = true;
+            if (combo.getSelectedIndex()>0) combo.setSelectedIndex(combo.getSelectedIndex()-1);
+          } else if (e.getKeyCode()==e.VK_DOWN) {
+            setComboItem = true;
+            if (combo.getSelectedIndex()<combo.getItemCount()-1) combo.setSelectedIndex(combo.getSelectedIndex()+1);
+          }
+        }
+      });
+    }
+    
+    public void removeNotify() {
+      super.removeNotify();
+      AWTKeyboard.unregisterComponent(this);
+    }
+  }
+  public class AutoCompleteEditor extends BasicComboBoxEditor {
+    private JTextField editor = null;
+    public AutoCompleteEditor(JComboBox combo) {
+      super();
+      editor = new AutoCompleteEditorComponent(combo);
+    }
+    public Component getEditorComponent() {
+      return editor;
+    }
+    public void setItem(Object anObject) {
+      if (!setComboItem) return;
+      try {
+        editor.setText(((BaseDef)anObject).name.trim());
+      } catch (Exception e) {
+        e.printStackTrace();
+        if (anObject==null) 
+          editor.setText("");
+        else
+          editor.setText(anObject.toString());
+      }
+    }
+    public Object getItem() {
+      String aName = editor.getText();
+      BaseDef ret = null;
+      for (Iterator iterator = vb.iterator(); iterator.hasNext();) {
+        BaseDef member = (BaseDef) iterator.next();
+        if (member.name.trim().equals(aName.trim())) {
+          ret = member;
+          break;
+        }
+      }
+      return ret;
+    }
   }
 }

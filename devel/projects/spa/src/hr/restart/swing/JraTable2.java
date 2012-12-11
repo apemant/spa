@@ -171,6 +171,11 @@ public class JraTable2 extends JTable implements JraTableInterface {
   private boolean descendingTableSort = true;
 
   public JraTable2() {
+    this(false);
+  }
+  boolean offline;
+  public JraTable2(boolean _offline) {
+    offline = _offline;
     tabModel = new dataSetTableModel();
     setModel(tabModel);
     tabModel.setTableSumRow(new raTableSumRow(this));
@@ -350,7 +355,8 @@ public class JraTable2 extends JTable implements JraTableInterface {
     
     addKeyListener(new JraKeyListener(JraKeyListener.allFuncKeys));
 
-    raTableCopyPopup.installFor(this);
+    if (!offline ) 
+      raTableCopyPopup.installFor(this);
 
     this.setDefaultRenderer(Object.class,new dataSetTableCellRenderer());
 
@@ -506,7 +512,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
     if (dsSortType == null) {
 
-      dsSortType = hr.restart.sisfun.frmParam.getParam("sisfun", "dsSortType", "sql", "sql ili mem Naèin sortiranja podataka u datasetu metodom JraTable2.sortDataset");
+//      dsSortType = hr.restart.sisfun.frmParam.getParam("sisfun", "dsSortType", "sql", "sql ili mem Naèin sortiranja podataka u datasetu metodom JraTable2.sortDataset");
       dsSortType = "mem";
     }
 
@@ -685,11 +691,10 @@ public class JraTable2 extends JTable implements JraTableInterface {
   }
   void setAlternateColor() {
     if (!altEnabled) return;
-    String col = frmParam.getParam("sisfun", "alterCol", "gray", 
+    String col = offline?"gray":frmParam.getParam("sisfun", "alterCol", "gray", 
         "Boja pozadine svakog drugog reda (ime ili hex)", true);
-    String tone = frmParam.getParam("sisfun", "alterAlpha", "10",
+    String tone = offline?"10":frmParam.getParam("sisfun", "alterAlpha", "10",
         "Faktor zastupljenosti alterCol boje u odnosu na original (1-100)", true);
-    
     alterCol = null;
     
     try {
@@ -1418,7 +1423,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
 //color
         //isSelected = isSelected; 
-        boolean popup = raTableCopyPopup.isPopupDisplayedFor(row, column);
+        boolean popup = !offline && raTableCopyPopup.isPopupDisplayedFor(row, column);
 
         if (isSelected && altEnabled || popup) {
 
