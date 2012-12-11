@@ -161,8 +161,26 @@ public class CalcRazPor {
         dM.createBigDecimalColumn("OSNPOR1"),dM.createBigDecimalColumn("OSNPOR2"),dM.createBigDecimalColumn("OSNPOR3"),dM.createBigDecimalColumn("OSNPOR4"),dM.createBigDecimalColumn("OSNPOR5")});
     Util.fillReadonlyData(orgosn,"SELECT godobr, mjobr, max(osnpor1) as osnpor1, max(osnpor2) as osnpor2, max(osnpor3) as osnpor3, max(osnpor4) as osnpor4, max(osnpor5)  as osnpor5 " +
     		"from kumulorgarh where "+Condition.equal("CORG",corg)+" AND "+inqrange+" group by godobr, mjobr");
-    BigDecimal[] osn = (_godina==2010)?getOsnovice2010(poros, orgosn):getOsnovice(poros, orgosn);
-    BigDecimal[] stpo = (_godina==2010)?getStopePo2010():raObracunPL.getInstance().getStopePoreza(cradnik);
+    BigDecimal[] osn; 
+    BigDecimal[] stpo;
+    switch (_godina) {
+    case 2010:
+      osn = getOsnovice2010(poros, orgosn);
+      stpo = getStopePo2010();
+      break;
+
+    case 2012:
+      osn = getOsnovice2012(poros, orgosn);
+      stpo = getStopePo2012();
+      break;
+      
+    default:
+      osn = getOsnovice(poros, orgosn);
+      stpo = raObracunPL.getInstance().getStopePoreza(cradnik);
+      break;
+    }
+//    = (_godina==2010)?getOsnovice2010(poros, orgosn):getOsnovice(poros, orgosn);
+//    = (_godina==2010)?getStopePo2010():raObracunPL.getInstance().getStopePoreza(cradnik);
     BigDecimal por1 = osn[0].multiply(stpo[0]);
     BigDecimal por2 = osn[1].multiply(stpo[1]);
     BigDecimal por3 = osn[2].multiply(stpo[2]);
@@ -256,6 +274,69 @@ public class CalcRazPor {
       ret[3] = Aus.zero2;
     }
     ret[4]=Aus.zero2;
+    return ret;
+  }
+  private BigDecimal[] getStopePo2012() {
+    return new BigDecimal[] {
+        new BigDecimal("0.1200"),
+        new BigDecimal("0.2283"),
+        new BigDecimal("0.2500"),
+        new BigDecimal("0.3750"),
+        new BigDecimal("0.4000")
+    };
+  }
+  /*
+0-26.400,00 kn        26.400,00   12%
+26.400,00-43.200,00   16.800,00   22,83%
+43.200,00-105.600,00  62.400,00   25%
+105.600,00-129.600,00 24.000,00   37.5%
+129.600,00-beskonacno             40%      
+
+bravo Zoki, bravo Linicu
+   */
+  private BigDecimal[] getOsnovice2012(BigDecimal poros, StorageDataSet orgosn) {
+    BigDecimal[] ret = new BigDecimal[5];
+    Arrays.fill(ret, Aus.zero2);
+    Parametripl.getDataModule().getQueryDataSet().open();
+    
+    // osnpor1
+//    BigDecimal parporos1 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR1").multiply(new BigDecimal(12));
+//    BigDecimal parporos1 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR1").add(getSum(orgosn, "OSNPOR1"));
+    BigDecimal parporos1 = new BigDecimal("26400.00"); //d1
+    if (poros.compareTo(parporos1)>=0) {
+      ret[0] = parporos1;
+      BigDecimal parporos2 = new BigDecimal("16800.00");// d2
+      if (poros.add(parporos1.negate()).compareTo(parporos2) >= 0) {
+        ret[1] = parporos2;
+        BigDecimal parporos3 = new BigDecimal("62400.00");// d3  
+        if (poros.add(parporos1.negate()).add(parporos2.negate()).compareTo(parporos3) >= 0) {
+          ret[2] = parporos3;
+          BigDecimal parporos4 = new BigDecimal("24000.00");// d4 
+          if (poros.add(parporos1.negate()).add(parporos2.negate()).add(parporos3.negate()).compareTo(parporos4) >= 0) {
+            ret[3] = parporos4;
+            ret[4] = poros.add(parporos1.negate()).add(parporos2.negate()).add(parporos3.negate()).add(parporos4.negate());
+          } else {
+            ret[3] = poros.add(parporos1.negate()).add(parporos2.negate()).add(parporos3.negate());
+            ret[4] = Aus.zero2;
+          }
+        } else {
+          ret[2] = poros.add(parporos1.negate()).add(parporos2.negate());
+          ret[3] = Aus.zero2;
+          ret[4] = Aus.zero2;
+        }
+      } else {
+        ret[1] = poros.add(parporos1.negate());
+        ret[2] = Aus.zero2;
+        ret[3] = Aus.zero2;
+        ret[4] = Aus.zero2;
+      }
+    } else {
+      ret[0] = poros;
+      ret[1] = Aus.zero2;
+      ret[2] = Aus.zero2;
+      ret[3] = Aus.zero2;
+      ret[4] = Aus.zero2;
+    }
     return ret;
   }
   private BigDecimal[] getStopePo2010() {
