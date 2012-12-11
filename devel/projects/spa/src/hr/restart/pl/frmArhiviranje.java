@@ -37,6 +37,8 @@ import hr.restart.zapod.OrgStr;
 
 import javax.swing.JOptionPane;
 
+import hr.restart.util.VarStr;
+
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
@@ -123,6 +125,7 @@ public class frmArhiviranje extends frmObradaPL {
             setValues(addKUMULORGARH, parametriplCols, dm.getParametripl());
             //datum isplate
             addKUMULORGARH.setTimestamp("DATUMISPL", tds.getTimestamp("DATUM"), false);
+            setOjFor(addKUMULORGARH,null,1);
             addKUMULORGARH.execute();
             
             //kumulradarh
@@ -137,6 +140,7 @@ public class frmArhiviranje extends frmObradaPL {
               addKUMULRADARH.setValues(ds);
               setValuesObrada(addKUMULRADARH);
               setValues(addKUMULRADARH, radniciplCols, radnicipl);
+              setOjFor(addKUMULRADARH, radnicipl.getString("CRADNIK"), 2);
               addKUMULRADARH.execute();
               addKUMULRADARH.clearParameters();//RJESAVA GADAN BUG AKO NEMA ISPLATE NEGO SAMO EVIDENCIJA SATI (PORODILJSKI)
               //primanjaarh
@@ -150,6 +154,7 @@ public class frmArhiviranje extends frmObradaPL {
                   throw new Exception("Nepoznata vrsta primanja "+primanjaobr.getString("CVRP"));
                 //setValues(addPRIMANJAARH, vrsteprimCols, primanjaobr);//UFF!
                 setValues(addPRIMANJAARH, vrsteprimCols, vrsteprim);
+                setOjFor(addPRIMANJAARH, radnicipl.getString("CRADNIK"), 3);
                 addPRIMANJAARH.execute();
               }
               
@@ -170,6 +175,8 @@ public class frmArhiviranje extends frmObradaPL {
                 	raTransaction.saveChanges(odbici1);
                 }
                 setValues(addODBICIARH, odbiciCols, odbici1);
+                setOjFor(addODBICIARH, radnicipl.getString("CRADNIK"), 4);
+                setOjForOdbici(addODBICIARH, radnicipl.getString("CRADNIK"), vrsteodb.getString("NIVOODB"));
                 addODBICIARH.execute();
               }
               
@@ -179,6 +186,7 @@ public class frmArhiviranje extends frmObradaPL {
               for (prisutobr.first(); prisutobr.inBounds(); prisutobr.next()) {
                 addPRISUTARH.setValues(prisutobr);
                 setValuesObrada(addPRISUTARH);
+                setOjFor(addPRISUTARH, radnicipl.getString("CRADNIK"), 5);
                 addPRISUTARH.execute();
               }
 
@@ -188,10 +196,11 @@ public class frmArhiviranje extends frmObradaPL {
               for (rsperiodobr.first(); rsperiodobr.inBounds(); rsperiodobr.next()) {
                 addRSPERIODARH.setValues(rsperiodobr);
                 setValuesObrada(addRSPERIODARH);
+                setOjFor(addRSPERIODARH, radnicipl.getString("CRADNIK"), 6);
                 addRSPERIODARH.execute();
               }
-            }
-          }
+            }//radnicipl for
+          }//kumulorg for
           
           return true;
         }
@@ -205,6 +214,64 @@ public class frmArhiviranje extends frmObradaPL {
     return b;
   }
   
+  protected void setOjForOdbici(raPreparedStatement stmt,
+      String cradnik, String nivoodb) {
+    String ojFor = frmIniciranje.getOJFor();
+    if ("".equals(ojFor)) return;
+    String cradFor = new VarStr(cradnik).replaceLast("@"+ojFor,"").toString().trim();
+    
+    if (nivoodb.toUpperCase().startsWith("RA")) {
+      stmt.setValue("CKEY", cradFor, false);
+    }
+    if (nivoodb.toUpperCase().startsWith("PO")) {
+      stmt.setValue("CKEY", ojFor, false);
+    }
+    
+    
+  }
+  protected void setOjFor(raPreparedStatement stmt, String cradnik, int i) {
+    String ojFor = frmIniciranje.getOJFor();
+    if ("".equals(ojFor)) return;
+    String cradFor="";
+    if (cradnik!=null) cradFor = new VarStr(cradnik).replaceLast("@"+ojFor,"").toString().trim();
+    
+    switch (i) {
+    case 1: //kumulorgarh
+      stmt.setString("CORG", ojFor, false);
+      stmt.setString("KNJIG", ojFor, false);
+      break;
+
+    case 2: //kumulradarh
+      stmt.setString("CORG", ojFor, false);
+      stmt.setString("CRADNIK", cradFor, false);
+      
+      break;
+      
+    case 3: //primanjaarh
+      stmt.setString("CORG", ojFor, false);
+      stmt.setString("CRADNIK", cradFor, false);
+      
+      break;
+
+    case 4: //odbiciarh
+      stmt.setString("CRADNIK", cradFor, false);
+      
+      break;
+
+    case 5: //prisutarh
+      stmt.setString("CRADNIK", cradFor, false);
+      
+      break;
+      
+    case 6: //rsperiodarh
+      stmt.setString("CRADNIK", cradFor, false);
+      
+      break;
+
+    default:
+      break;
+    }
+  }
   private void setValuesObrada(raPreparedStatement ps) {
     System.out.println("setValuesObrada "+ dm.getOrgpl());
     setValues(ps, new String[] {"godobr", "mjobr", "rbrobr"}, dm.getOrgpl());

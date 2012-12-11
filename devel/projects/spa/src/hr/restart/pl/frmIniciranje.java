@@ -17,20 +17,32 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Orgpl;
+import hr.restart.baza.Orgstruktura;
+import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraComboBox;
+import hr.restart.util.lookupData;
+import hr.restart.zapod.OrgStr;
 
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.jbcl.layout.XYConstraints;
+import com.lowagie.text.Font;
+import com.sun.java_cup.internal.sym;
 
 public class frmIniciranje extends frmObradaPL {
   raIniciranje rin = raIniciranje.getInstance();
@@ -46,8 +58,35 @@ public class frmIniciranje extends frmObradaPL {
   boolean[] nivoi = new boolean[] {true,true,true,true,true}; //svi,oj,vro,radnici, ini 5
   public frmIniciranje() {
     addCheckBox();
+    addOrgFor();
   }
 
+  private void addOrgFor() {
+    String oj4 = getOJFor();
+    if ("".equals(oj4)) return;
+    StorageDataSet orgs = Orgstruktura.getDataModule().getTempSet(Condition.equal("CORG", oj4));
+    orgs.open();
+    JLabel jl = new JLabel("Obrada za O.J. "+getOJFor()+" "+orgs.getString("NAZIV"));
+    jl.setForeground(Color.RED);
+    jl.setFont(jl.getFont().deriveFont(Font.BOLD));
+    jp.add(jl, new XYConstraints(15, 115, -1, -1));
+//    xYLayout1.setHeight(155);//130
+  }
+  static StorageDataSet orgpl4;
+  public static String getOJFor() {
+    String oj4 = frmParam.getParam("pl", "plOOJFor"+OrgStr.getKNJCORG(), "", "Za koju org jedinicu se radi obracun place na knjigovodstvu "+OrgStr.getKNJCORG()+" (prazno za norm.op.)").trim();
+    if ("".equals(oj4)) return "";
+    if (orgpl4 == null || !oj4.equals(orgpl4.getString("CORG")) ) {
+      orgpl4 = Orgpl.getDataModule().getFilteredDataSet(Condition.equal("CORG", oj4));
+      orgpl4.open();
+      if (orgpl4.getRowCount() == 0) {
+        System.err.println("Neispravan parametar plOOJFor - ne postoji oj "+oj4+" u orgpl!");
+        return "";
+      }
+    }
+    return oj4;
+    
+  }
   private void addCheckBox() {
 /*    jcbIniPrim.setHorizontalTextPosition(SwingConstants.LEADING);
     jcbIniPrim.setHorizontalAlignment(SwingConstants.RIGHT);

@@ -19,9 +19,13 @@ package hr.restart.pl;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Iniprim;
+import hr.restart.baza.KreirDrop;
+import hr.restart.baza.Odbici;
+import hr.restart.baza.Radnici;
 import hr.restart.baza.Radnicipl;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -187,6 +191,11 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
     return iniciranje(ds, nivoidxs != null);
   }
   private boolean iniciranje(final com.borland.dx.dataset.DataSet ds, final boolean iniPrim) {
+    //ojFor
+    if (!copyFromOJFor(ds)) {
+      return false;
+    }
+    
     raLocalTransaction trans = new raLocalTransaction() {
       public boolean transaction() throws Exception {
         try {
@@ -242,6 +251,64 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
     };
     return trans.execTransaction();
   }
+  
+  protected static boolean deleteFromOJFor() {
+    String oj4 = frmIniciranje.getOJFor();
+    if ("".equals(oj4)) return true;
+    raLocalTransaction trans = raTransaction.getLocalTransaction(new String[] {
+        "DELETE FROM odbici WHERE EXISTS (select * from vrsteodb " +
+            "WHERE odbici.cvrodb = vrsteodb.cvrodb and nivoodb like 'RA%') AND " +
+            "TRIM(ckey) like '%@"+oj4+"'",
+         "DELETE from radnicipl WHERE TRIM(cradnik) like '%@"+oj4+"'",
+         "DELETE from radnici WHERE TRIM(cradnik) like '%@"+oj4+"'"
+    });
+    return trans.execTransaction();
+  }
+  protected boolean copyFromOJFor(com.borland.dx.dataset.DataSet
+      ds) {
+    // kopiraj radnici, radnicipl, odbici sa getOJFor
+    String oj4 = frmIniciranje.getOJFor();
+    if ("".equals(oj4)) return true;
+    QueryDataSet rpl = Radnicipl.getDataModule().getTempSet(
+          Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(oj4))
+          .and(Condition.equal("AKTIV", "D"))
+        );
+    rpl.open();
+    QueryDataSet erpl = Radnicipl.getDataModule().getTempSet(Condition.nil);
+    QueryDataSet erad = Radnici.getDataModule().getTempSet(Condition.nil);
+    QueryDataSet eodb = Odbici.getDataModule().getTempSet(Condition.nil);
+    erpl.open(); erad.open(); eodb.open();
+    for (rpl.first(); rpl.inBounds(); rpl.next()) {
+      String orgcrad = rpl.getString("CRADNIK");
+      String newcrad = rpl.getString("CRADNIK")+"@"+oj4;
+      //radnicipl
+      erpl.insertRow(false);
+      rpl.copyTo(erpl);
+      erpl.setString("CRADNIK", newcrad);
+      erpl.setString("PARAMETRI", orgcrad);
+      erpl.setString("CORG", ds.getString("CORG"));
+      erpl.post();
+      //radnici
+      QueryDataSet radnik = Radnici.getDataModule().getTempSet(Condition.equal("CRADNIK", orgcrad));
+      radnik.open();
+      erad.insertRow(false);
+      radnik.copyTo(erad);
+      erad.setString("CRADNIK", newcrad);
+      erad.setString("CORG", ds.getString("CORG"));
+      erad.post();
+      //odbici
+      QueryDataSet odbici = Aus.q("SELECT * FROM Odbici where ckey='"+orgcrad+"' and EXISTS (select * from vrsteodb " +
+      		"WHERE odbici.cvrodb = vrsteodb.cvrodb and nivoodb like 'RA%')");
+      odbici.open();
+      for (odbici.first(); odbici.inBounds(); odbici.next()) {
+        eodb.insertRow(false);
+        odbici.copyTo(eodb);
+        eodb.setString("ckey", newcrad);
+        odbici.post();
+      }
+    }
+    return raTransaction.saveChangesInTransaction(new QueryDataSet[] {erpl,erad,eodb});
+  }
   public boolean posOrgsPl(String corg) {
     if (!ld.raLocate(dm.getOrgpl(), new String[] {"CORG"}, new String[] {corg})) {
       ld.raLocate(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), new String[] {"CORG"}, new String[] {corg});
@@ -269,6 +336,7 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
 
   public boolean ponistavanje(String ds) {
     sjUtil.getSjUtil().delIniciranje(ds);
+    deleteFromOJFor();
     return true;
   }
 }
