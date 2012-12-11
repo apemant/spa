@@ -351,7 +351,7 @@ public class frmRekObr extends frmIzvjestajiPL{
 
   private String getWhereSQL(String table) {
     if (this.getRepMode() == 'A'){
-      String squereWhere = " where".concat(raPlObrRange.getInQueryIsp(fieldSet.getShort("GODINAOD"),fieldSet.getShort("MJESECOD"),
+      String squereWhere = " where ".concat(raPlObrRange.getInQueryIsp(fieldSet.getShort("GODINAOD"),fieldSet.getShort("MJESECOD"),
           fieldSet.getShort("GODINADO"),fieldSet.getShort("MJESECDO"), table));
       return squereWhere;
     } else {
@@ -394,20 +394,26 @@ public class frmRekObr extends frmIzvjestajiPL{
 
   private QueryDataSet addOlaksice(QueryDataSet qds, int cas)
   {
-    QueryDataSet temp1=null, temp2=null, temp3=null;
+    QueryDataSet temp1=null, temp2=null, temp3=null, tempOVRHA=null;
+    BigDecimal ol_1=null, ol_2=null, ol_3=null, bOVRHA=null;
     if(!qds.isOpen()) qds.open();
     qds.first();
 
     while(qds.inBounds())
     {
 
-      String ID1,ID2,ID3;
+      String ID1,ID2,ID3,OVRHA;
       String odbWh1=odbiciWh(raIzvjestaji.ID_3_1);
       String odbWh2=odbiciWh(raIzvjestaji.ID_3_2);
       String odbWh3=odbiciWh(raIzvjestaji.ID_3_3);
+      
+      String odbWhOvrha=odbiciWh(new short[] {10005,10});
+      
       String uvjetRadnik1 = getCRadnik(qds.getString("CORG"), qds.getString("CVRO"), odbWh1, cas);
       String uvjetRadnik2 = getCRadnik(qds.getString("CORG"), qds.getString("CVRO"), odbWh2, cas);
       String uvjetRadnik3 = getCRadnik(qds.getString("CORG"), qds.getString("CVRO"), odbWh3, cas);
+
+      String uvjetRadnikOvrha = getCRadnik(qds.getString("CORG"), qds.getString("CVRO"), odbWhOvrha, cas);
 
       ID1 = "select sum(obriznos) as obriznos from " + getOdbiciTableName() +
             getWhereSQL(getOdbiciTableName()) +
@@ -416,21 +422,44 @@ public class frmRekObr extends frmIzvjestajiPL{
             getWhereSQL(getOdbiciTableName()) +
             odbWh2+ uvjetRadnik2;
       ID3 = "select sum(obriznos) as obriznos from " + getOdbiciTableName() +
+          getWhereSQL(getOdbiciTableName()) +
+          odbWh3+ uvjetRadnik3;
+
+      OVRHA = "select sum(obriznos) as obriznos from " + getOdbiciTableName() +
             getWhereSQL(getOdbiciTableName()) +
-            odbWh3+ uvjetRadnik3;
+            odbWhOvrha+ uvjetRadnikOvrha;
+      
 System.out.println("ID1 = "+ID1);
 System.out.println("ID2 = "+ID2);
 System.out.println("ID3 = "+ID3);
+System.out.println("OVRHA = "+OVRHA);
       try {
         temp1 = Util.getNewQueryDataSet(ID1 , true );
+        ol_1 = temp1.getBigDecimal("OBRIZNOS");
+      } catch (Exception e) {
+        e.printStackTrace();
+      } 
+      try {
         temp2 = Util.getNewQueryDataSet(ID2, true );
+        ol_2 = temp2.getBigDecimal("OBRIZNOS");
+      } catch (Exception e) {
+        e.printStackTrace();
+      } 
+      try {
         temp3 = Util.getNewQueryDataSet(ID3, true );
-      }
-      catch (Exception ex) {
-      }
-      BigDecimal ol_1 = temp1.getBigDecimal("OBRIZNOS");
-      BigDecimal ol_2 = temp2.getBigDecimal("OBRIZNOS");
-      BigDecimal ol_3 = temp3.getBigDecimal("OBRIZNOS");
+        ol_3 = temp3.getBigDecimal("OBRIZNOS");
+      } catch (Exception e) {
+        e.printStackTrace();
+      } 
+
+      try {
+        tempOVRHA = Util.getNewQueryDataSet(OVRHA, true );
+        bOVRHA = tempOVRHA.getBigDecimal("OBRIZNOS");
+      } catch (Exception e) {
+        e.printStackTrace();
+      } 
+      System.out.println("bOVRHA = "+bOVRHA);
+      
 
       qds.setRowId("CORG", true);
       if(ol_1 != null)
@@ -441,7 +470,14 @@ System.out.println("ID3 = "+ID3);
 
       if(ol_3 != null)
         qds.setBigDecimal("OL33", ol_3);
-
+      
+      if(bOVRHA != null) {
+        qds.setBigDecimal("NETO2", qds.getBigDecimal("NETO2").add(bOVRHA));
+        qds.setBigDecimal("NETOPK", qds.getBigDecimal("NETOPK").add(bOVRHA));
+        qds.setBigDecimal("NARUKE", qds.getBigDecimal("NARUKE").add(bOVRHA));
+        qds.setBigDecimal("KREDITI", qds.getBigDecimal("KREDITI").subtract(bOVRHA));
+      }
+      qds.post();
       qds.next();
     }
     return qds;
