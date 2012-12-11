@@ -303,7 +303,7 @@ public class raROT extends raIzlazTemplate  {
      //test
      
      //test
-
+     if (repFISBIH.isFISBIH()) raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
  }
 
  public void MyaddIspisDetail(){
@@ -354,6 +354,7 @@ public class raROT extends raIzlazTemplate  {
      }
      raDetail.getRepRunner().addReport("hr.restart.robno.repMxROT","Matri\u010Dni ispis ra\u010Duna");
      raDetail.getRepRunner().addReport("hr.restart.robno.repMxROTPop","Matri\u010Dni ispis ra\u010Duna s više popusta");
+//     if (repFISBIH.isFISBIH()) raDetail.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
  }
  
  String tranzitVeza;

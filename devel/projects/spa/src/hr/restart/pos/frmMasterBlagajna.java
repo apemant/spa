@@ -34,6 +34,7 @@ import hr.restart.robno.dlgKupac;
 import hr.restart.robno.frmPlacanje;
 import hr.restart.robno.presPOS;
 import hr.restart.robno.raVart;
+import hr.restart.robno.repFISBIH;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raUser;
@@ -991,6 +992,10 @@ public class frmMasterBlagajna extends raMasterDetail {
     raMaster.getTab().remove(1);
     raMaster.getRepRunner().addReport("hr.restart.robno.repRacunPOS", "Raèun");
     raMaster.getRepRunner().addJasper("hr.restart.robno.repRacunPOSj", "hr.restart.robno.repPosJas", "pos.jrxml", "Raèun jasper");
+    if (repFISBIH.isFISBIH()) {
+      raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHPos", "Fiskalni raèun");
+      raDetail.getRepRunner().addReport("hr.restart.robno.repFISBIHPos", "Fiskalni raèun");
+    }
     raDetail.getRepRunner().addReport("hr.restart.robno.repRacunPOS", "Raèun");
     if (np.length() > 0) {
       raDetail.getRepRunner().addReport("hr.restart.robno.repNarPOS", "Narudžba");
@@ -1695,9 +1700,12 @@ public class frmMasterBlagajna extends raMasterDetail {
 
   public void justPrintGRC() {
     int maxGrcF5 = Integer.parseInt(hr.restart.sisfun.frmParam.getParam("pos", "GRC_kom_int", "1", "Broj raèuna kod ispisa na F5 iz unosa POS-a",true));
-
+    String oneTimeReportName = "hr.restart.robno.repRacunPOS";
+    if (repFISBIH.isFISBIH() && frmParam.getParam("robno", "FISBIHdirPos", "N", "Koristiti BiH fiskalni raèun za direktni ispis sa POS-a", true).equalsIgnoreCase("D")) {
+      oneTimeReportName = "hr.restart.robno.repFISBIHPos";
+    }
       for (int print = 1; print <= maxGrcF5; print++) {
-        raDetail.getRepRunner().setOneTimeDirectReport("hr.restart.robno.repRacunPOS");
+        raDetail.getRepRunner().setOneTimeDirectReport(oneTimeReportName);
         raDetail.Funkcija_ispisa();
         try {
           Thread.sleep(250);

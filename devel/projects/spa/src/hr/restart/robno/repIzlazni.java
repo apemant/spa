@@ -1941,7 +1941,18 @@ public BigDecimal getIPRODSP() {
     }
   }
   
-  
+  public String getJIR() {
+    try {
+      if (repFISBIH.isFISBIH() && (ds.hasColumn("FBR") != null) && (ds.getInt("FBR") > 0)) {
+        return Valid.getValid().maskZeroInteger(new Integer(ds.getInt("FBR")), 6);
+      } else if (ds.hasColumn("JIR") != null) {
+        return ds.getString("JIR").trim();
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return "";
+  }
   
   public String getDODATNIOPIS() {
     String dep = ds.getString("CSKL")+ds.getString("VRDOK")+ds.getString("GOD")+ds.getInt("BRDOK");

@@ -17,6 +17,9 @@
 ****************************************************************************/
 package hr.restart.util.reports;
 
+import hr.restart.robno.repFISBIH;
+import hr.restart.sisfun.frmParam;
+
 public class raGRSectionHeaderWin extends raReportSection {
 
   private String[] thisProps = new String[] {"BRDOK", "Before", "", "", "Yes", "", "Yes", "", 
@@ -116,6 +119,20 @@ public class raGRSectionHeaderWin extends raReportSection {
         modifyThis();
       }
     });
+    int prijemicano = 0;
+    if (frmParam.getParam("robno", "ispJIRizd", "N", "Ispis fiskalnog identifikatora na izlaznim dokumentima (D/N)").equals("D")) {//fiskalni broj 
+      raReportSection alt = defaultAltererSect();
+      alt.setHeight(alt.getHeight()+220);
+      //alt.getView(LabelNacin_placanja, LabelR1).moveDown(220);
+      
+      raReportElement jirlab = copyToModify(LabelParitet);
+      raReportElement jirtext = copyToModify(TextNAZFRA);
+      jirlab.setCaption(repFISBIH.isFISBIH()?"Br.fiskal.RN":"JIR");
+      jirlab.setTop(jirlab.getTop() + 220 + prijemicano);
+      jirtext.setControlSource("JIR");
+      jirtext.setTop(jirtext.getTop() + 220 + prijemicano);
+      prijemicano = prijemicano + 220;
+    }
   }
 
   private void addElements() {

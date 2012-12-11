@@ -235,8 +235,9 @@ final public class raRAC extends raIzlazTemplate {
         //test
         raMaster.getRepRunner().addReport("hr.restart.robno.repInvoice",
                 "hr.restart.robno.repIzlazni","ProformaInvoice","Invoice");
-        //test
-
+        
+        if (repFISBIH.isFISBIH()) raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+        
     }
 
     public void MyaddIspisDetail() {
@@ -297,6 +298,7 @@ final public class raRAC extends raIzlazTemplate {
         raDetail.getRepRunner().addReport("hr.restart.robno.repInvoice",
                 "hr.restart.robno.repIzlazni","ProformaInvoice","Invoice");
         //test
+//        if (repFISBIH.isFISBIH()) raDetail.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
     }
 
     public raRAC() {

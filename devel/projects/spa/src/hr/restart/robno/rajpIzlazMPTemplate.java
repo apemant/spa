@@ -1509,6 +1509,10 @@ SwingUtilities.invokeLater(new Runnable(){
 		
 		JraButton jbDod = new JraButton();
 
+		JraTextField jraFBR = new JraTextField();
+		JLabel jlFBR = new JLabel();
+		
+
 		panOstatak() {
 
 			addAncestorListener(new AncestorListener() {
@@ -1551,6 +1555,9 @@ SwingUtilities.invokeLater(new Runnable(){
 			jraDATUG.setHorizontalAlignment(SwingConstants.CENTER);
 			jraDATPRD.setColumnName("DATPRD");
 			jraDATPRD.setHorizontalAlignment(SwingConstants.CENTER);
+			jraFBR.setColumnName("FBR");
+			jlFBR.setText("Broj fiskalnog RN");
+			jlFBR.setEnabled(repFISBIH.isFISBIH());
 
 			add(jlIZDOK, new XYConstraints(15, 15, -1, -1));
 			add(jraBRDOKIZ, new XYConstraints(130, 15, 110, -1));
@@ -1572,7 +1579,9 @@ SwingUtilities.invokeLater(new Runnable(){
 			add(jraBRPRD, new XYConstraints(130, 90, 110, -1));
 			add(jlIZDOK4, new XYConstraints(365, 90, -1, -1));
 			add(jraDATPRD, new XYConstraints(522, 90, 110, -1));
-
+			
+      add(jlFBR, new XYConstraints(15, 115, -1, -1));
+      add(jraFBR, new XYConstraints(130, 115, 110, -1));
 		}
 
 		public void BindComp() {
@@ -1584,6 +1593,7 @@ SwingUtilities.invokeLater(new Runnable(){
 			jraDATNARIZ.setDataSet(fDI.getMasterSet());
 			jraDATUG.setDataSet(fDI.getMasterSet());
 			jraDATPRD.setDataSet(fDI.getMasterSet());
+			jraFBR.setDataSet(fDI.getMasterSet());
 		}
 	}
 
