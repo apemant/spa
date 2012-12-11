@@ -107,7 +107,10 @@ public class repIPDisk extends repDisk {
     qds.first();
     String retci = "";
     for (qds.first(); qds.inBounds(); qds.next()) {
-      if (qds.getBigDecimal("BRUTO").signum()!=0) {
+      if (qds.getBigDecimal("BRUTO").signum()==0 || qds.getBigDecimal("PORIPRIR").signum()!=0) {
+        System.out.println(":: B:0 P:>0 Radnik ::"+qds.getString("cradnik"));
+      }
+      if (qds.getBigDecimal("BRUTO").signum()!=0 || qds.getBigDecimal("PORIPRIR").signum()!=0) {
         String redak = getJMBG()+separator
           +"1"+separator
           +qds.getString("MJISPL")+separator
