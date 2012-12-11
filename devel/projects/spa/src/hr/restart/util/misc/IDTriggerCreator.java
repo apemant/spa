@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.andiv.print.VarStr;
+import hr.restart.util.VarStr;
 
 public class IDTriggerCreator {
   private static VarStr createtrigger = new VarStr(
