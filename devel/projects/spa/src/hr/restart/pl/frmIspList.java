@@ -385,7 +385,7 @@ public class frmIspList extends frmIzvjestajiPL {
       oldcorg = jlrCorg.getText();
       corgradnici.close();
       Radnici.getDataModule().setFilter(corgradnici,
-                                        "corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(oldcorg)));
+                                        "radnici.aktiv='D' AND corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(oldcorg)));
       corgradnici.open();
     }
   }
