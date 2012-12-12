@@ -346,7 +346,7 @@ public class raDbaseChooser extends JDialog {
         public void filterRow(ReadRow row, RowFilterResponse response) {
           if (searchbox == null) {
             response.add();
-          } else if (searchbox.getText().trim().equals("") || row.getString("NAME").toLowerCase().contains(searchbox.getText().toLowerCase())) {
+          } else if (searchbox.getText().trim().equals("") || (row.getString("NAME").toLowerCase().indexOf(searchbox.getText().toLowerCase())>=0)) {
             response.add();
           } else {
             response.ignore();
