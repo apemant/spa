@@ -20,15 +20,14 @@ package hr.restart.pl;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Orgpl;
 import hr.restart.baza.Orgstruktura;
-import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraComboBox;
-import hr.restart.util.lookupData;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,8 +40,6 @@ import javax.swing.JPanel;
 
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.jbcl.layout.XYConstraints;
-import com.lowagie.text.Font;
-import com.sun.java_cup.internal.sym;
 
 public class frmIniciranje extends frmObradaPL {
   raIniciranje rin = raIniciranje.getInstance();
