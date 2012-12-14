@@ -65,7 +65,7 @@ public class repGotRacTemplate extends repIzlazOrigTemplate {
       ridmc.TextIZNOSSTAVKESP.defaultAlterer().setControlSource("IZNFMCPRP");
       return ridmc;
     }
-    else return new raIzlazDetail(this);
+    return new raIzlazDetail(this);
   }
 
   public raReportSection createSectionFooter1() {
