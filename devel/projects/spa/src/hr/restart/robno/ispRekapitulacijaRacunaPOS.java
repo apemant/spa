@@ -277,7 +277,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
                         "and "+kondishnDatumOrBroj()+ kondishnOperater()/*+*/ // kondishnOperator diprektid...
                         /*" group by cnacpl"*/;
 
-//    System.out.println("\n"+upitString);
+    System.out.println("\n"+upitString);
 
     QueryDataSet qds = getSumQdsPoCnacpl(ut.getNewQueryDataSet(upitString));
     
@@ -427,6 +427,10 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   public String getBlagajnik() {
     return jrfNazivBlagajnika.getText();
   }
+  
+  public String getCSKL() {
+    return tds.getString("CSKL");
+  }
 
   private void calculateAndPrepare(QueryDataSet qst, String artStr){
     qst.first();
@@ -458,6 +462,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 //      artikliReportQDS.deleteAllRows();
       artikliReportQDS = ut.getNewQueryDataSet(artStr);
       artikliReportQDS.getColumn("NETO").setDisplayMask("###,###,##0.00");
+      artikliReportQDS.getColumn("KOL").setDisplayMask("###,###,##0.###");
       
       artikliReportQDS.setRowId("CART",true);
       
@@ -659,7 +664,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   private String kondishnDatumOrBroj(){
     Condition akt = presBlag.stolovi && !presBlag.isUserOriented() ? 
         Condition.equal("AKTIV", "N") : Condition.none;
-    akt = akt.and(Condition.equal("RDOK", "arh").not());
+    akt = akt.and(Condition.equal("RDOK", "arh").andNotNull().not());
     if (jrbDatum.isSelected()) 
       return Condition.between("DATDOK",tds, "POCDATUM", "ZAVDATUM").
                 and(akt).qualified("pos").toString();
