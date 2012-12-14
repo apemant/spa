@@ -266,6 +266,10 @@ public class repIzlazni implements raReportData {
     }
     return cache.returnValue(np);
   }
+  
+  public String getPISP() {
+    return getISPORUKA();
+  }
 
   public String getISPORUKA(){    
     String cached = cache.getValue("ISPORUKA", ds.getInt("CPAR") + "-" + ds.getInt("PJ"));
