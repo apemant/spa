@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.pos;
 
+import hr.apis_it.fin._2012.types.f73.RacunType;
+import hr.apis_it.fin._2012.types.f73.RacunZahtjev;
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Pos;
@@ -45,6 +47,7 @@ import hr.restart.swing.raColors;
 import hr.restart.swing.raExtendedTable;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raStatusColorModifier;
+import hr.restart.swing.raTableModifier;
 import hr.restart.swing.raTextMask;
 import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
@@ -67,6 +70,7 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -80,6 +84,7 @@ import com.borland.dx.dataset.DataSetException;
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYLayout;
 
@@ -187,6 +192,45 @@ public class frmMasterBlagajna extends raMasterDetail {
   
   raStatusColorModifier msc = new raStatusColorModifier("AKTIV", "D",
       raColors.green, Color.green.darker().darker());
+  
+  public static raTableModifier fsc = new raTableModifier() {
+    Variant shared = new Variant();
+
+    Color fcol = Color.green.darker().darker().darker();
+    Color fbcol = Color.green;
+    
+    Color fncol = Color.red.darker().darker();
+    Color fnbcol = Color.red;
+    
+    boolean succ = false;
+    
+    public boolean doModify() {
+      if (getTable() instanceof JraTable2) {
+        JraTable2 tab = (JraTable2) getTable();
+        if (tab.getDataSet().getRowCount() > 0 && 
+            tab.getDataSet().hasColumn("FOK") != null) {
+          tab.getDataSet().getVariant("FOK", this.getRow(), shared);
+          if (!shared.getString().equals("D")) return false;
+          tab.getDataSet().getVariant("JIR", this.getRow(), shared);
+          succ = shared.getString().length() > 0;
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    public void modify() {
+      JComponent jRenderComp = (JComponent) renderComponent;
+      if (isSelected()) {
+        jRenderComp.setBackground(succ ? fbcol : fnbcol);
+        jRenderComp.setForeground(Color.black);
+      } else {
+        //jRenderComp.setBackground(getTable().getBackground());
+        jRenderComp.setForeground(succ ? fcol : fncol);
+      }
+    }
+  };
+  
   
   public static final String[] key = {"cskl","vrdok","god","brdok","cprodmj"};
 
@@ -320,6 +364,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     
     pov = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
         "Iznos povratne naknade"));
+    
     
     
     if (raUser.getInstance().isSuper() && "D".equalsIgnoreCase(
@@ -919,9 +964,11 @@ public class frmMasterBlagajna extends raMasterDetail {
       jpStol.add(upper);
       jpStol.add(dlgStol.getOkPanel(), BorderLayout.SOUTH);
       dlgStol.getOkPanel().setEnterEnabled(true);
-      raMaster.addOption(navZatvori, 4);
-      if (raUser.getInstance().isSuper()) {
-        raMaster.addOption(navPonisti, 5);
+      if (!presBlag.isFiskal()) {
+        raMaster.addOption(navZatvori, 4);
+        if (raUser.getInstance().isSuper()) {
+          raMaster.addOption(navPonisti, 5);
+        }
       }
       this.raMaster.addOption(new raNavAction("Pregled materijala", raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
         public void actionPerformed(java.awt.event.ActionEvent ev) {
@@ -929,7 +976,7 @@ public class frmMasterBlagajna extends raMasterDetail {
         }
       },6,false);
       
-      raMaster.getJpTableView().addTableModifier(msc);
+      if (!presBlag.isFiskal()) raMaster.getJpTableView().addTableModifier(msc);
     } else {
       if (presBlag.isSkladOriented()) {
         this.raMaster.addOption(new raNavAction("Naplata",raImages.IMGEXPORT2,KeyEvent.VK_F7) {
@@ -961,6 +1008,8 @@ public class frmMasterBlagajna extends raMasterDetail {
         },5,false);
       }
     }
+    
+    if (presBlag.isFiskal()) raMaster.getJpTableView().addTableModifier(fsc);
     
     raDetail.getNavBar().removeStandardOption(raNavBar.ACTION_TOGGLE_TABLE);
 
@@ -1329,6 +1378,12 @@ public class frmMasterBlagajna extends raMasterDetail {
     }*/
     if (getDetailSet().getRowCount()>0) {
       if (!checkRate()) return;
+      if (presBlag.isFiskal() && !getMasterSet().getString("FOK").equals("D")) {
+        if (JOptionPane.showConfirmDialog(raDetail, "Želite li ispisati predraèun?", "Ispis", JOptionPane.OK_CANCEL_OPTION) 
+            == JOptionPane.OK_OPTION) {
+          justPrintGRC();
+        }
+      }
       justExit=true;
       makeNext=newRacun;
       raDetail.rnvExit_action();
@@ -1645,10 +1700,98 @@ public class frmMasterBlagajna extends raMasterDetail {
     
     if (needSave&&saveChanges) det.saveChanges();
     return true;
-  }
+  } 
   
   
   static String racDest;
+  
+//  public RacunType rtype = null;
+  
+  public static RacunType getRacType(DataSet ms) {
+    lookupData ld = lookupData.getlookupData();
+    dM dm = dM.getDataModule();
+    
+    DataSet ds = Stpos.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ms));
+    ds.open();
+
+    BigDecimal osnpdv = Aus.zero2;
+    BigDecimal osnpnp = Aus.zero2;
+    BigDecimal izpdv = Aus.zero2;
+    BigDecimal izpnp = Aus.zero2;
+    BigDecimal tot = Aus.zero2;
+    BigDecimal povn = Aus.zero2;
+  
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      BigDecimal osn = ds.getBigDecimal("NETO").subtract(ds.getBigDecimal("POR1")).subtract(ds.getBigDecimal("POR2"));
+      if (ds.getBigDecimal("POR1").signum() != 0) osnpdv = osnpdv.add(osn);
+      if (ds.getBigDecimal("POR2").signum() != 0) osnpnp = osnpnp.add(osn);
+      izpdv = izpdv.add(ds.getBigDecimal("POR1"));
+      izpnp = izpnp.add(ds.getBigDecimal("POR2"));
+      tot = tot.add(ds.getBigDecimal("NETO"));
+      
+      ld.raLocate(dm.getArtikli(), new String[]{"CART"}, new String[] {String.valueOf(ds.getInt("CART"))});
+      if ("D".equals(dm.getArtikli().getString("POV")))
+        povn = povn.add(povn.multiply(ds.getBigDecimal("KOL")).
+                  setScale(2, BigDecimal.ROUND_HALF_UP));
+    }
+    
+    ld.raLocate(dm.getLogotipovi(), "CORG", OrgStr.getKNJCORG(false));
+    String oibf = dm.getLogotipovi().getString("OIB");
+    
+    DataRow usr = ld.raLookup(dM.getDataModule().getUseri(),"CUSER", ms.getString("CUSER"));
+    String oibu = usr.getString("OIB");
+    
+    Timestamp datvri = new Timestamp(System.currentTimeMillis());
+    
+    return presBlag.getFis().createRacun(
+        oibf, //oib firme (Rest Art) NE PREPISUJ!!
+        presBlag.isFiskPDV(), //da li je obveznik pdv-a 
+        datvri, // datum i vrijeme kreiranja racuna
+        "N", // oznaka slijednosti
+        ms.getInt("FBR"), // broj racuna 
+        "P1", // oznaka poslovne jedinice
+        1, // oznaka naplatnog mjesta
+        new BigDecimal(25), //stopa pdv-a 
+        osnpdv, //osnovica za pdv
+        izpdv, //iznos pdv-a
+        new BigDecimal(3), //stopa pnp-a
+        osnpnp, //osnovica za pnp
+        izpnp, //iznos pnp 
+        null, //naziv naknade - defaults to 'Povradna naknada' 
+        povn, //iznos naknade
+        tot, //ukupan iznos racuna
+        "G",//nacin placanja
+        oibu,//oib prodavatelja (Ja) NE PREPISUJ!!
+        false //da li je naknadna dostava
+     );
+  }
+  
+  public static void fisk(DataSet ms) {
+    if (presBlag.isFiskal() && (!ms.getString("FOK").equals("D") || ms.getString("JIR").length() == 0)) {
+      
+      if (!ms.getString("FOK").equals("D")) {
+        String cOpis = "FISK-GRC"+ms.getString("GOD");
+        if (presBlag.isFiskSep())
+          cOpis = "FISK-"+ms.getString("CPRODMJ")+"-GRC"+ms.getString("GOD");
+        
+        ms.setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
+      }
+      
+     
+    Timestamp datvri = new Timestamp(System.currentTimeMillis());
+    RacunZahtjev zahtj = presBlag.getFis().createRacunZahtjev(
+        presBlag.getFis().createZaglavlje(datvri, null), 
+        getRacType(ms));
+      
+      String jir = presBlag.getFis().fiskaliziraj(zahtj);
+      if (jir != null && jir.length() > 0 && !jir.startsWith("ZKI") && !jir.startsWith("false"))
+        ms.setString("JIR", jir);
+      else ms.setString("JIR", "");
+      ms.setString("FOK", "D");
+      ms.saveChanges();
+
+    }
+  }
   
   public void pressF5(char mode) {
   	System.out.println("press F5");
@@ -1665,6 +1808,9 @@ public class frmMasterBlagajna extends raMasterDetail {
   	} else return;
   	
   	joinAll();
+  	
+  	System.out.println("FISKALIZACIJA?");
+  	fisk(getMasterSet());
   	
   	justPrintGRC();
     raDetail.rnvExit_action();

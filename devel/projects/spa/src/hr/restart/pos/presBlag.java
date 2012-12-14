@@ -20,6 +20,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
+import hr.restart.util.FisUtil;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.PreSelect;
 import hr.restart.util.Valid;
@@ -325,11 +326,14 @@ public class presBlag extends PreSelect {
       jlStol.setText("Stol");
       jraStol.setColumnName("STOL");
       jraVRDOK.setColumnName("VRDOK");
-      jcbAktiv.setText(" Samo aktivni raèuni ");
-      jcbAktiv.setHorizontalTextPosition(SwingConstants.LEADING);
-      jcbAktiv.setHorizontalAlignment(SwingConstants.TRAILING);
       jp.add(jlStol, new XYConstraints(375, 70, -1, -1));
       jp.add(jraStol, new XYConstraints(415, 70, 100, 21));
+      
+    }
+    if (isFiskal()) {
+      jcbAktiv.setText(" Samo raèuni ");
+      jcbAktiv.setHorizontalTextPosition(SwingConstants.LEADING);
+      jcbAktiv.setHorizontalAlignment(SwingConstants.TRAILING);
       jp.add(jcbAktiv, new XYConstraints(350, 120, 165, -1));
     }
     
@@ -377,12 +381,15 @@ public class presBlag extends PreSelect {
 
   public String refineSQLFilter(String orig) {
     if (!stolovi || !jcbAktiv.isSelected()) return orig;
-    return orig + " AND pos.aktiv='D'";
+    return orig + " AND pos.fok='D'";
   }
   
   void bindSklad() {
-    String corg = frmParam.getParam("pos", "posCorg", "",
+    String corg = frmParam.getParam("pos", "posCorg", OrgStr.getKNJCORG(false),
       "OJ za logotip na POS-u");
+    if (corg == null || corg.length() == 0)
+      corg = OrgStr.getKNJCORG(false);
+
     jrfCSKL.setRaDataSet(Sklad.getDataModule().getFilteredDataSet(
         Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(corg))));
   }
@@ -410,6 +417,42 @@ public class presBlag extends PreSelect {
   }
   
   private static int smjena = -1;
+  
+  private static int fiskal = -1;
+  
+  public static boolean isFiskal() {
+    if (fiskal < 0) {
+      fiskal = frmParam.getParam("robno", "fiskalizacija", "N",
+          "Radi li se fiskalizacija (D,N)")
+          .equalsIgnoreCase("D") ? 1 : 0;
+    }
+    return fiskal == 1;
+  }
+  
+  private static int fiskpdv = -1;
+  
+  public static boolean isFiskPDV() {
+    if (fiskpdv < 0) {
+      fiskpdv = frmParam.getParam("robno", "fiskPDV", "D",
+          "Je li korisnik u sustavu PDV-a (D,N)")
+          .equalsIgnoreCase("D") ? 1 : 0;
+    }
+    return fiskpdv == 1;
+  }
+  
+  
+  private static int fisksep = -1;
+  
+  public static boolean isFiskSep() {
+    if (fisksep < 0) {
+      fisksep = frmParam.getParam("robno", "fiskPojed", "N",
+          "Brojaè fiskalizacije po naplatnom mjestu (D,N)")
+          .equalsIgnoreCase("D") ? 1 : 0;
+    }
+    return fisksep == 1;
+  }
+  
+  
   
   public static boolean isSmjena() {
     if (smjena < 0) {
@@ -445,6 +488,21 @@ public class presBlag extends PreSelect {
    */
   protected String getVRDOK() {
     return "GRC";
+  }
+  
+  static FisUtil fis = null;
+  
+  public static FisUtil getFis() {
+    if (fis == null) {
+      try {
+        fis = new FisUtil(frmParam.getParam("sisfun", "fiskey", "", "Keystore za fiskalizaciju"),
+            frmParam.getParam("sisfun", "fispass", "1restart2", "Password za fiskalizaciju"), null);
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    return fis;
   }
 
   private void setProd_mjLookup() {
