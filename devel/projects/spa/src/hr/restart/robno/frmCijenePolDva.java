@@ -30,6 +30,7 @@ import hr.restart.util.raComboBox;
 import hr.restart.util.raKeyAction;
 import hr.restart.util.raUpitLite;
 import hr.restart.util.reports.JasperHook;
+import hr.restart.zapod.Tecajevi;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -37,6 +38,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Iterator;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -45,7 +47,9 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
+import net.sf.jasperreports.engine.JRStaticText;
 import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
@@ -545,7 +549,6 @@ public class frmCijenePolDva extends raUpitLite {
     this.addReport("hr.restart.robno.repCijenePol","hr.restart.robno.repCijenePol","CijenePol","Ispis cjena za police 6 kom/str");
     this.addReport("hr.restart.robno.repCijenePolSmall","hr.restart.robno.repCijenePol","CijenePolSmall","Ispis cjena za police 24 kom/str");
     this.addReport("hr.restart.robno.repCijenePolTiny","hr.restart.robno.repCijenePol","CijenePolTiny","Ispis cjena za police 48 kom/str");
-
     
 //    jptv.addTableModifier(dablclickTableColorModifier);
 //    jptv.fireTableDataChanged();
@@ -566,7 +569,7 @@ public class frmCijenePolDva extends raUpitLite {
       }
     });
   }
-  
+    
   void setJPTV(){
     artikliTable.close();
     artikliTable.setColumns(new Column[] { /** @todo broj iz KPR */
@@ -615,12 +618,17 @@ public class frmCijenePolDva extends raUpitLite {
   }
   
   public void addHooks() {
+    JasperHook jhook;
     getRepRunner().addJasperHook("hr.restart.robno.repCijenePolTiny",
-    new JasperHook() {
+    jhook = new JasperHook() {
       public void adjustDesign(String reportName, JasperDesign design) {
         adjustReport(reportName, design);        
       }
     });
+    
+    getRepRunner().addJasperHook("hr.restart.robno.repCijenePol", jhook);
+    getRepRunner().addJasperHook("hr.restart.robno.repCijenePolSmall", jhook);
+
   }
   
   void adjustReport(String reportName, JasperDesign design) {
@@ -632,6 +640,14 @@ public class frmCijenePolDva extends raUpitLite {
       ((JRDesignBand) design.getDetail()).setHeight(
           design.getDetail().getHeight() + Aus.getNumber(ver));
       design.setColumnSpacing(Aus.getNumber(hor));
+    }
+    
+    JRDesignBand detail = ((JRDesignBand) design.getDetail());
+    for (Iterator i = detail.getChildren().iterator(); i.hasNext(); ) {
+      JRDesignElement el = (JRDesignElement) i.next();
+      if (el instanceof JRStaticText  &&  ((JRStaticText) el).getText().equals("kn")) {
+        ((JRStaticText) el).setText(Tecajevi.getDomOZNVAL());
+      }
     }
   }
 
