@@ -20,8 +20,10 @@ package hr.restart.pos;
 import hr.restart.robno.Aut;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.mxReport;
+import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
 
@@ -57,7 +59,57 @@ public class repRekapitulacijaPOS extends mxReport {
   }
 
   private void makeIspis(){
-    this.setPgHeader("<$newline$>"+getDoubleLineLength()+"<$newline$>"+
+    
+    String pcorg = frmParam.getParam("pos", "posCorg", "",
+    "OJ za logotip na POS-u");
+    if (pcorg == null || pcorg.length() == 0)
+      pcorg = OrgStr.getKNJCORG(false);
+    
+    dm.getLogotipovi().open();
+    
+    lD.raLocate(dm.getLogotipovi(), "CORG", pcorg);
+    
+    String kh = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
+    "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+
+    "<#OIB "+dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>"+ getPhones();
+    
+
+    QueryDataSet sks = hr.restart.baza.Sklad.getDataModule().getTempSet("cskl = '"+irrpos.getCSKL()+"'");
+    sks.open();
+    
+    String ph = kh;
+    if (!sks.getString("CORG").equals(OrgStr.getKNJCORG(false)) &&
+        lD.raLocate(dm.getLogotipovi(), "CORG", sks.getString("CORG"))) {
+      ph = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
+      "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+
+      " "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ 
+      (dm.getLogotipovi().getString("OIB").length()== 0 ? "" : "<#OIB "+
+          dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>")+ getPhones();
+    }
+
+    String prep = frmParam.getParam("pos", "addHeader", "",
+        "Dodatni header ispred POS raèuna", true);
+    
+    if (prep.length() > 0) {
+      String[] parts = new VarStr(prep).split('|');
+      VarStr buf = new VarStr();
+      for (int i = 0; i < parts.length; i++)
+        buf.append("<#").append(parts[i]).append('|').
+          append(width).append("|center#><$newline$>");
+      prep = buf.toString();
+    }
+    
+    String th = frmParam.getParam("pos", "posHeader", "",
+        "POS header (1 - poslovnica, knjigovodstvo  2 - obrnuto, ostalo - samo knjigovodstvo)");
+    String header = prep + kh;
+    if (th.equals("1") && !kh.equals(ph))
+      header = ph + kh;
+    if (th.equals("2") && !kh.equals(ph))
+      header = kh + ph;
+
+    
+    
+    this.setPgHeader("<$newline$>"+header+"<$newline$>"+getDoubleLineLength()+"<$newline$>"+
                      "<#T O T A L|"+width+"|center#>"+
                      "<$newline$>"+getDoubleLineLength()+"<$newline$>"+
                      z3+
@@ -92,6 +144,19 @@ public class repRekapitulacijaPOS extends mxReport {
 //    System.out.println("SETIRAM DATASET");
 //    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
 //    syst.prn(this.getDataSet());
+  }
+  
+  private String getPhones(){
+    if (dm.getLogotipovi().getString("TEL1").equals("")) return "";
+    String phoneString = "<#Tel. ";
+    if (!dm.getLogotipovi().getString("TEL1").equals(""))
+    phoneString += dm.getLogotipovi().getString("TEL1");
+    if (!dm.getLogotipovi().getString("TEL2").equals(""))
+      if (dm.getLogotipovi().getString("TEL1").equals(""))
+        phoneString += dm.getLogotipovi().getString("TEL2");
+      else
+        phoneString += ", "+dm.getLogotipovi().getString("TEL2");
+   return phoneString+"|"+width+"|center#><$newline$>"; 
   }
 
   private void makeLittleZaglavlje(){
@@ -220,6 +285,9 @@ public class repRekapitulacijaPOS extends mxReport {
   private String footer(){
     String rgp = getRekapGrupePorez();
     if (irrpos.getRekapitulacijaPoAretiklima()){
+      BigDecimal kol = Aus.sum("KOL", getDataSet());
+      rgp = getSinglLineLength()+"<$newline$>Ukupno kolièina:  " + sgq.format(kol, 3) + "<$newline$><$newline$>" + rgp;
+      
       if (rgp.length() > 0) return rgp;
       return getDoubleLineLength()+"<$newline$><$newline$>";
     }
