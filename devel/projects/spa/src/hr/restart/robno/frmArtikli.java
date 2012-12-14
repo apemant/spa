@@ -1141,12 +1141,12 @@ public boolean  doWithSave(char mode) {
 //          Artikli.getDataModule().getTempSet(), "CART1");
       if(!hr.restart.sisfun.frmParam.getParam("robno","indiCart").equals("CART"))
       {
-        rcc.setLabelLaF(jtfCART, false);
+        //rcc.setLabelLaF(jtfCART, false);
         jtfCART1.requestFocus();
       }
       else
       {
-        rcc.setLabelLaF(jtfCART, true);
+        //rcc.setLabelLaF(jtfCART, true);
         jtfCART.requestFocus();
       }
       jrfNAZGRART.setText("");
@@ -1451,10 +1451,12 @@ public boolean  doWithSave(char mode) {
   }
   
   void jtfCART_focusLost(FocusEvent e) {
-    if (getRaQueryDataSet().getString("CART1").length() == 0)
-      getRaQueryDataSet().setString("CART1", jtfCART.getText());
-    if (getRaQueryDataSet().getString("BC").length() == 0)
-      getRaQueryDataSet().setString("BC", jtfCART.getText());
+    if (hr.restart.sisfun.frmParam.getParam("robno","indiCart").equals("CART")) {
+      if (getRaQueryDataSet().getString("CART1").length() == 0)
+        getRaQueryDataSet().setString("CART1", jtfCART.getText());
+      if (getRaQueryDataSet().getString("BC").length() == 0)
+        getRaQueryDataSet().setString("BC", jtfCART.getText());
+    }
   }
   void jtfCART1_focusLost(FocusEvent e) {
     if (getRaQueryDataSet().getString("BC").length() == 0)

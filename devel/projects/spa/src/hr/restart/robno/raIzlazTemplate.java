@@ -2530,7 +2530,7 @@ System.out.println("findCjenik::else :: "+sql);
         VarStr buf = new VarStr();
         
         buf.append("G");
-        buf.append(getPadded(ds.getInt("BRDOK")+"", 20));
+        buf.append(getPadded(ms.getString("BRDOKIZ")+"", 20));
         
         
         DataSet logo = dm.getLogotipovi();
@@ -2585,7 +2585,7 @@ System.out.println("findCjenik::else :: "+sql);
         
         buf.append("E");
         buf.append(getPadded(logo.getString("GLN"), 35));
-        buf.append(getPadded(ds.getInt("BRDOK")+"", 20));
+        buf.append(getPadded(ms.getString("BRDOKIZ")+"", 20));
         buf.append(getPadded("1", 6));
         buf.append(getPadded("", 213));
         buf.append("\n");
@@ -2593,7 +2593,7 @@ System.out.println("findCjenik::else :: "+sql);
         for (ds.first(); ds.inBounds(); ds.next()) {
           buf.append("S");
           buf.append(getPadded(logo.getString("GLN"), 35));
-          buf.append(getPadded(ds.getInt("BRDOK")+"", 20));
+          buf.append(getPadded(ms.getString("BRDOKIZ")+"", 20));
           buf.append(getRPadded("1", 6));
           buf.append(getRPadded(ds.getShort("RBR")+"", 6));
           buf.append(getPadded("5", 3));
@@ -2626,7 +2626,7 @@ System.out.println("findCjenik::else :: "+sql);
         }
         
         TextFile.setEncoding("Cp1250");
-        String fname = ms.getInt("BRDOK") + ".des";
+        String fname = ms.getString("BRDOKIZ") + ".des";
         TextFile tf = TextFile.write(fname);
         tf.out(buf.chop().split('\n'));
         tf.close();
@@ -3299,7 +3299,8 @@ System.out.println("findCjenik::else :: "+sql);
 			}
 			
 			if (cpar > 0 && (what_kind_of_dokument.equals("GOT") || what_kind_of_dokument.equals("ROT") ||
-					what_kind_of_dokument.equals("RAC"))) {
+					what_kind_of_dokument.equals("RAC") || what_kind_of_dokument.equals("PON") || 
+					what_kind_of_dokument.equals("POD") || what_kind_of_dokument.equals("ODB"))) {
 				
 				DataSet ds = Rabshema.getDataModule().getTempSet(Condition.equal("CPAR", cpar).and(
 						Condition.equal("CART", getDetailSet())));
@@ -4549,14 +4550,18 @@ System.out.println("findCjenik::else :: "+sql);
 
 	public boolean ValidacijaLimit(java.math.BigDecimal oldvalue,
 			java.math.BigDecimal newvalue) {
-		if (checkLimit) {
+		//if (checkLimit) {
 			lD.raLocate(dm.getPartneri(), new String[] { "CPAR" },
 					new String[] { String
 							.valueOf(getMasterSet().getInt("CPAR")) });
+			if (dm.getPartneri().getString("STATUS").equalsIgnoreCase("C")) {
+			  javax.swing.JOptionPane.showMessageDialog(null, "Partneru je zabranjeno fakturiranje!", "Greška", JOptionPane.ERROR_MESSAGE);
+			  return false;
+			}
 
 			java.math.BigDecimal limit = dm.getPartneri().getBigDecimal(
 					"LIMKRED");
-			if (limit.doubleValue() != 0) {
+			if (limit.doubleValue() != 0 && dm.getPartneri().getString("STATUS").equalsIgnoreCase("B")) {
 				java.math.BigDecimal saldo = getSaldo();
 				if (!checkLimit(limit, saldo, oldvalue, newvalue)) {
 					javax.swing.JOptionPane.showMessageDialog(null,
@@ -4572,7 +4577,7 @@ System.out.println("findCjenik::else :: "+sql);
 					return false;
 				}
 			}
-		}
+		//}
 		return true;
 	}
 
