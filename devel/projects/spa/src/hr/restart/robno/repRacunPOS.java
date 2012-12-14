@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.baza.dM;
 import hr.restart.pos.frmMasterBlagajna;
+import hr.restart.pos.presBlag;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
@@ -194,18 +195,25 @@ public class repRacunPOS extends mxReport {
          /*"NAÈIN PLAÆANJA - "+*/getNacinPlacanja(master.getInt("BRDOK"),master.getString("CSKL")) : "")+//"<$newline$>"+
          (oneRow ? "" : doubleLineSep)+"<$newline$>"+
          porezString+
-         getBlagajnaOperater(prodMjesto,user)+
          "<$newline$>"+ getPotpis_i_MP(master.getInt("CKUPAC")) +/*"<$newline$>"+ */
          getFooting()+
 //         "<#HVALA NA POVJERENJU !|"+width+"|center#><$newline$>"+
          "<$newline$>"+
 //         "<$newline$>"+
          "Nadnevak: "+raDateUtil.getraDateUtil().dataFormatter(master.getTimestamp("DATDOK"))+"  "+getRazlikaWidthBlank()+"Vrijeme: " + master.getTimestamp("DATDOK").toString().substring(11,19) +   "<$newline$>"+
-         "<$newline$><$newline$><$newline$>"+
+         "<$newline$>"+ getBlagajnaOperater(prodMjesto,user)+"<$newline$><$newline$>"+
+         (presBlag.isFiskal() && master.getString("FOK").equals("D") ? getFisk() : "") +
          "<$newline$><$newline$>"+
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
     );
+  }
+  
+  private String getFisk() {
+    System.out.println("fisk string");
+    //System.out.println(frmMasterBlagajna.getInstance().rtype);
+    return "Zaštitni kod:<$newline$> " + presBlag.getFis().generateZKI(frmMasterBlagajna.getInstance().getRacType(master)) + "<$newline$>" +
+      "JIR:" + master.getString("JIR") + "<$newline$>";
   }
   
   private String getDetailHeader() {
@@ -445,12 +453,19 @@ public class repRacunPOS extends mxReport {
       } System.out.println("Kupac je (ako ga ima) null!!!");
     }
 //    porezString = "";
-    return "<$newline$><#RAÈUN br. " + getBRDOK() + "|"+((width-2)/2)+"|left#><$newline$>";
+    
+    String ractex = "<$newline$><#RAÈUN br. ";
+    if (presBlag.isFiskal() && !master.getString("FOK").equals("D"))
+      ractex = "<$newline$><#PREDRAÈUN br. ";
+    
+    return ractex + getBRDOK() + "|"+((width-2)/2)+"|left#><$newline$>";
 //        "\u001B\u0045<#"+ru.getFormatBroj()+"|20|center#>\u001B\u0046<$newline$>";
         //"\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
   }
   
   public String getBRDOK() {
+    if (presBlag.isFiskal() && master.getString("FOK").equals("D"))
+      return Integer.toString(master.getInt("FBR"));
     if (specForm == null || specForm.length() == 0) 
       return Integer.toString(getDataSet().getInt("BRDOK"));
     
