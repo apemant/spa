@@ -201,9 +201,9 @@ public class repRacunPOS extends mxReport {
          "<$newline$>"+
 //         "<$newline$>"+
          "Nadnevak: "+raDateUtil.getraDateUtil().dataFormatter(master.getTimestamp("DATDOK"))+"  "+getRazlikaWidthBlank()+"Vrijeme: " + master.getTimestamp("DATDOK").toString().substring(11,19) +   "<$newline$>"+
-         "<$newline$>"+ getBlagajnaOperater(prodMjesto,user)+"<$newline$><$newline$>"+
+         "<$newline$>"+ getBlagajnaOperater(prodMjesto,user)+"<$newline$>"+
          (presBlag.isFiskal() && master.getString("FOK").equals("D") ? getFisk() : "") +
-         "<$newline$><$newline$>"+
+         "<$newline$><$newline$><$newline$>"+
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
     );
@@ -212,8 +212,8 @@ public class repRacunPOS extends mxReport {
   private String getFisk() {
     System.out.println("fisk string");
     //System.out.println(frmMasterBlagajna.getInstance().rtype);
-    return "Zaštitni kod:<$newline$> " + presBlag.getFis().generateZKI(frmMasterBlagajna.getInstance().getRacType(master)) + "<$newline$>" +
-      "JIR:" + master.getString("JIR") + "<$newline$>";
+    return "ZKI: " + presBlag.getFis().generateZKI(frmMasterBlagajna.getInstance().getRacType(master)) + "<$newline$>" +
+      "JIR: " + master.getString("JIR") + "<$newline$><$newline$>";
   }
   
   private String getDetailHeader() {
