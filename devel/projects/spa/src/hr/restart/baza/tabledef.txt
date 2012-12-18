@@ -663,7 +663,7 @@ AKTIV;char;1;;D;AKTIV;*
 CSKL;char;12;pkey;;Skladište;4
 VRDOK;char;3;pkey;;Vrsta
 GOD;char;4;pkey;;Godina
-BRDOK;int;6;pkey;;Broj;7
+BRDOK;int;6;pkey;;Broj prn;7
 SYSDAT;date;;;;Sysdat;*
 DATDOK;date;;;;Datum;10
 CPAR;int;6;;;Partner;7
@@ -685,7 +685,7 @@ CBLAGAJNIK;char;15;;;Blagajnik
 STOL;char;20;;;Stol
 RDOK;char;60;;;Dokument razduženja
 CSMJENA;int;6;;;Smjena
-FBR;int;6;;;Broj fiskalizacije
+FBR;int;6;;;Broj raè
 JIR;char;40;;;JIR
 FOK;char;1;;N;Fiskaliziran;*
 IDX=brdok
@@ -1081,7 +1081,7 @@ PRAB;numeric;10,2;;0;Posto popusta;8
 IRAB;numeric;15,2;;0;Popust;14
 PZT;numeric;15,7;;0;Posto zavisnih troškova;8
 IZT;numeric;15,2;;0;Troškovi;14
-NC;numeric;15,2;;0;Nabavna cijena;12
+NC;numeric;15,4;;0;Nabavna cijena;12
 PMAR;numeric;10,2;;0;Posto RuC;8
 MAR;numeric;15,2;;0;Jed. RuC;14
 VC;numeric;15,2;;0;Cijena bez poreza;12
@@ -1094,7 +1094,7 @@ IMAR;numeric;15,2;;0;RuC;14
 IBP;numeric;15,2;;0;Iznos bez poreza;14
 IPOR;numeric;15,2;;0;Porez;14
 ISP;numeric;15,2;;0;Iznos s porezom;14
-ZC;numeric;15,2;;0;Cijena;12
+ZC;numeric;15,4;;0;Cijena;12
 IZAD;numeric;15,2;;0;Zaduženje;14
 KOLFLH;numeric;15,3;;0;Kolièina FLH;*
 SKOL;numeric;15,3;;0;Stara kolièina;10
@@ -1292,6 +1292,49 @@ KOL2;numeric;15,3;;0;Poleta
 PPOP;numeric;10,2;;0;Posto popusta
 FC;numeric;17,2;;0;Fakturna cijena
 IDX=cart
+
+$Stanje
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+GOD;char;4;pkey;;Godina
+CSKL;char;12;pkey;;Skladište
+CART;int;6;pkey;;Artikl;15
+KOLPS;numeric;15,3;;0;Poèetno stanje
+KOLUL;numeric;15,3;;0;Ulaz
+KOLIZ;numeric;15,3;;0;Izlaz
+KOLREZ;numeric;15,3;;0;Rezervirano
+NABPS;numeric;15,2;;0;Nabavna vrijednost po\u10detnog stanja
+MARPS;numeric;15,2;;0;Marža po\u10detnog stanja
+PORPS;numeric;15,2;;0;Porez poèetnog stanja
+VPS;numeric;15,2;;0;Vrijednost poèetnog stanja
+NABUL;numeric;15,2;;0;Nabavna vrijednost ulaza
+MARUL;numeric;15,2;;0;Marža vrijednosti ulaza
+PORUL;numeric;15,2;;0;Porez vrijednosti ulaza
+VUL;numeric;15,2;;0;Vrijednost ulaza
+NABIZ;numeric;15,2;;0;Nabavna vrijednost izlaza
+MARIZ;numeric;15,2;;0;Marža vrijednosti izlaza
+PORIZ;numeric;15,2;;0;Porez vrijednosti izlaza
+VIZ;numeric;15,2;;0;Vrijednost izlaza
+KOL;numeric;15,3;;0;Kolièina
+ZC;numeric;15,4;;0;Cijena
+VRI;numeric;15,2;;0;Vrijednost
+NC;numeric;15,4;;0;Nabavna cijena
+VC;numeric;15,2;;0;Cijena bez poreza
+MC;numeric;15,2;;0;Cijena s porezom
+DATZK;date;;;;Datum zadnje kalkulacije;*
+SKAL;char;52;;;Prethodni broj kalkulacije;*
+TKAL;char;52;;;Tekuæi broj kalkulacije;*
+ITKAL;char;52;;;Broj kalkulacije zadnjeg izlaza;*
+SITKAL;char;52;;;Broj prethodne kalkulacije izlaza;*
+BSIZ;short;2;;;Broj stavki izlaza napravljenih po zadnjem izlazu;*
+SBSIZ;short;2;;;Broj stavki izlaza napravljenih po prethodnom izlazu;*
+KOLMAT;numeric;15,3;;0;Kolmat;*
+KOLSKLAD;numeric;15,3;;0;Kol. sklad.
+KOLSKLADUL;numeric;15,3;;0;Ulaz
+KOLSKLADIZ;numeric;15,3;;0;Izlaz
+KOLSKLADPS;numeric;15,3;;0;Poèetno stanje
+IDX=cart
+
 
 $Logotipovi
 LOKK;char;1;;N;LOKK;*
