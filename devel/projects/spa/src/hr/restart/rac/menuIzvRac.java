@@ -23,6 +23,8 @@
  */
 package hr.restart.rac;
 
+import hr.restart.robno.repFISBIH;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -45,6 +47,7 @@ public class menuIzvRac extends JMenu {
 	  JMenuItem jmNezaracunatiDoksi = new JMenuItem();
 	  JMenuItem jmPregledKPRGRN = new JMenuItem();
 	  JMenuItem jmPregledZaduzenjeKPR = new JMenuItem();
+	  public JMenuItem jmFISBIH = new JMenuItem();
 	  
 	  public menuIzvRac(hr.restart.util.startFrame startframe) {
 	    SF = startframe;
@@ -61,6 +64,13 @@ public class menuIzvRac extends JMenu {
 
 	  private void jbInit() {
 	    this.setText("Pregledi");
+	    jmFISBIH.setText("Fiskalni izvještaji");
+	    jmFISBIH.addActionListener(new java.awt.event.ActionListener() {
+	      public void actionPerformed(ActionEvent e) {
+	        jmFISBIH_actionPerformed(e);
+	      }
+	    });
+
 	    jmUnFuckDoc.setText("Pregled nezaraèunatih otpremnica");
 	    jmUnFuckDoc.addActionListener(new java.awt.event.ActionListener() {
 	      public void actionPerformed(ActionEvent e) {
@@ -120,6 +130,10 @@ public class menuIzvRac extends JMenu {
 //	    this.addSeparator();
 //	    this.add(jmPregledKPRGRN);
 //	    this.add(jmPregledZaduzenjeKPR);
+	    if (repFISBIH.isFISBIH()) {
+	      addSeparator();
+	      add(jmFISBIH);
+	    }
 	  }
 	  void jmUnFuckDoc_actionPerformed(ActionEvent e) {
 	    SF.showFrame("hr.restart.robno.upUnFuckDoc", jmUnFuckDoc.getText());
@@ -147,5 +161,8 @@ public class menuIzvRac extends JMenu {
 	  void jmRmRezKol_actionPerformed(ActionEvent e) {
 	    SF.showFrame("hr.restart.robno.upUnrealPonude", jmRmRezKol.getText()); // waas frmDelPon...
 	  }
-
+	  public void jmFISBIH_actionPerformed(ActionEvent e) {
+	    // TODO Auto-generated method stub
+	    SF.showFrame("hr.restart.robno.FISBIHIzvjestaji", jmFISBIH.getText());
+	  }
 }

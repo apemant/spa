@@ -18,6 +18,7 @@
 package hr.restart.pos;
 
 import hr.restart.robno.raPOS;
+import hr.restart.robno.repFISBIH;
 import hr.restart.util.PreSelect;
 import hr.restart.util.raLoader;
 
@@ -53,6 +54,7 @@ public class jposMenu extends JMenu {
   public JMenuItem jmZakljucak = new JMenuItem();
   public JMenuItem jmKPR = new JMenuItem();
   public JMenuItem jmPregledKPR = new JMenuItem();
+  public JMenuItem jmFISBIH = new JMenuItem();
 
   public jposMenu(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -104,6 +106,12 @@ public class jposMenu extends JMenu {
     jmRekapitulacijaPOS.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmRekapitulacijaPOS_actionPerformed(e);
+      }
+    });
+    jmFISBIH.setText("Fiskalni izvještaji");
+    jmFISBIH.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmFISBIH_actionPerformed(e);
       }
     });
     jmKartica.setText("Kartica artikla");
@@ -173,6 +181,15 @@ public class jposMenu extends JMenu {
     	this.addSeparator();
       this.add(jmZbroj);
     }
+    if (repFISBIH.isFISBIH()) {
+      addSeparator();
+      add(jmFISBIH);
+    }
+  }
+
+  public void jmFISBIH_actionPerformed(ActionEvent e) {
+    // TODO Auto-generated method stub
+    SF.showFrame("hr.restart.robno.FISBIHIzvjestaji", jmFISBIH.getText());
   }
 
   public void jmBlagajna_actionPerformed(ActionEvent e) {

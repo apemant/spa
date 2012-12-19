@@ -50,6 +50,7 @@ public class menuIzvMalo extends JMenu {
   JMenuItem jmZOP = new JMenuItem();
   JMenuItem jmPregledKPRGRN = new JMenuItem();
   JMenuItem jmPregledZaduzenjeKPR = new JMenuItem();
+  public JMenuItem jmFISBIH = new JMenuItem();
 
   public menuIzvMalo(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -65,6 +66,12 @@ public class menuIzvMalo extends JMenu {
   }
   private void jbInit() {
     this.setText("Izvještaji");
+    jmFISBIH.setText("Fiskalni izvještaji");
+    jmFISBIH.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmFISBIH_actionPerformed(e);
+      }
+    });
     jmRekapUplata.setText("Rekapitulacija uplata");
     jmRekapUplata.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -167,6 +174,10 @@ public class menuIzvMalo extends JMenu {
     this.add(jmPregledZaduzenjeKPR);
     this.addSeparator();
     this.add(jmOstaliRep);
+    if (repFISBIH.isFISBIH()) {
+      addSeparator();
+      add(jmFISBIH);
+    }
   }
   void jmRekapUplata_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upRekapUplata", jmRekapUplata.getText());
@@ -211,4 +222,9 @@ public class menuIzvMalo extends JMenu {
   void jmPregledZaduzenjeKPR_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.UpPregledZaduzenjeKPR", jmPregledZaduzenjeKPR.getText());	  	
   }
+  public void jmFISBIH_actionPerformed(ActionEvent e) {
+    // TODO Auto-generated method stub
+    SF.showFrame("hr.restart.robno.FISBIHIzvjestaji", jmFISBIH.getText());
+  }
+
 }

@@ -54,6 +54,8 @@ public class menuIzvVele extends JMenu {
   
   JMenuItem jmPorezUgostiteljstvo = new JMenuItem();
 
+  public JMenuItem jmFISBIH = new JMenuItem();
+  
   public menuIzvVele(hr.restart.util.startFrame startframe) {
     SF = startframe;
     jbInit();
@@ -68,6 +70,14 @@ public class menuIzvVele extends JMenu {
   }
   private void jbInit() {
     this.setText("Pregledi");
+    
+    jmFISBIH.setText("Fiskalni izvještaji");
+    jmFISBIH.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmFISBIH_actionPerformed(e);
+      }
+    });
+    
     jmPregledKol.setText("Pregled signalnih i minimalnih kolièina");
     jmPregledKol.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -198,7 +208,10 @@ public class menuIzvVele extends JMenu {
       this.add(jmPregHCCP);
       this.add(jmPregHCCPu);
     }
-    
+    if (repFISBIH.isFISBIH()) {
+      addSeparator();
+      add(jmFISBIH);
+    }
     this.addSeparator();
     this.add(jmOstaliRep);
 /*    this.add(jmUIDok);
@@ -259,4 +272,9 @@ public class menuIzvVele extends JMenu {
   void jmPregledNeiskalkPrim_actionPerformed(ActionEvent ae) {
     SF.showFrame("hr.restart.robno.frmNeiskalkPrim", jmPreglNeiskalkPrim.getText());
   }
+  public void jmFISBIH_actionPerformed(ActionEvent e) {
+    // TODO Auto-generated method stub
+    SF.showFrame("hr.restart.robno.FISBIHIzvjestaji", jmFISBIH.getText());
+  }
+
 }
