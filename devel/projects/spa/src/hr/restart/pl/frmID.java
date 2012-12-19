@@ -30,6 +30,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
 import hr.restart.util.sysoutTEST;
+import hr.restart.zapod.dlgGetKnjig;
 
 import java.awt.BorderLayout;
 import java.math.BigDecimal;
@@ -150,6 +151,9 @@ public class frmID extends raUpitLite {
       jraMjesec.selectAll();
   }
 
+  private String getOjWith() {
+    return frmParam.getParam("pl", "ojwithID"+dlgGetKnjig.getKNJCORG(), "", "Sa kojim još knjigovodstvom da zbroji ID za knjigov. "+dlgGetKnjig.getKNJCORG());
+  }
   public void okPress() {
     getOKPanel().requestFocus();
     rcc.EnabDisabAll(jPanel1, false);
@@ -160,11 +164,14 @@ public class frmID extends raUpitLite {
                  "sum(prir) as prir from " + this.getKumulorgTableName() +
                  getWhereSQL(getKumulorgTableName(),"where"); // + " and corg = '"+  +"'";*/
 
-    kumulorgStr = "select bruto as bruto, doprinosi as doprinosi, neto as neto, "+
+    String prefix_kumulorgStr = "select cvro, bruto as bruto, doprinosi as doprinosi, neto as neto, "+
                   "iskneop as iskneop, porosn as porosn, poruk as poruk, "+
-                  "prir as prir from " + this.getKumulorgTableName() +
-                  getWhereSQL(getKumulorgTableName(),"where"); // + " and corg = '"+  +"'";
-
+                  "prir as prir from " + this.getKumulorgTableName();
+    kumulorgStr = prefix_kumulorgStr + getWhereSQL(getKumulorgTableName(),"where",dlgGetKnjig.getKNJCORG()); 
+    if (!"".equals(getOjWith())) {
+      kumulorgStr = kumulorgStr + " UNION " + prefix_kumulorgStr + getWhereSQL(getKumulorgTableName(),"where",getOjWith());
+    }
+System.out.println("kumulorgStr::::: "+kumulorgStr);
 /* ne koristi se jer se prirez i porez vuku iz odbitaka = virmani = rekapitulacija    
     if(isObr)idBsql = "SELECT poruk, prir, poriprir, copcine "+
                       "FROM Kumulrad, radnici, radnicipl, opcine "+
@@ -182,10 +189,10 @@ public class frmID extends raUpitLite {
     System.out.println("b strana sql - "+idBsql+"\nOBRACUN - "+isObr);
 */
     II_1    = "select COUNT (DISTINCT "+getRadniciTableNameQ()+".cradnik) from " + this.getKumulradTableName() +
-              getWhereSQL(this.getKumulradTableName(),(this.getRepMode() == 'A')?"where":"and");
+              getWhereSQL(this.getKumulradTableName(),(this.getRepMode() == 'A')?"where":"and", dlgGetKnjig.getKNJCORG());
 
     II_3    = "select max(godobr) as godina, max(mjobr) as mjesec from " + this.getKumulorgTableName() +
-              getWhereSQL(this.getKumulorgTableName(),"where") +
+              getWhereSQL(this.getKumulorgTableName(),"where", dlgGetKnjig.getKNJCORG()) +
               " group by mjobr, godobr";
 
     makeRepSet();
@@ -226,9 +233,15 @@ public class frmID extends raUpitLite {
       return false;
     }
 
-    String controlStr = "select count(*) from " + getKumulorgTableName() + getWhereSQL(getKumulorgTableName(),"where");
+    String controlStr = "select count(*) from " + getKumulorgTableName() + getWhereSQL(getKumulorgTableName(),"where", dlgGetKnjig.getKNJCORG());
     QueryDataSet controlSet = ut.getNewQueryDataSet(controlStr);
-    if (vl.getSetCount(controlSet,0) == 0){
+    int withcount = 0;
+    if (!"".equals(getOjWith())) {
+      withcount = vl.getSetCount(ut.getNewQueryDataSet(
+          "select count(*) from " + getKumulorgTableName() + getWhereSQL(getKumulorgTableName(),"where", getOjWith())
+          ),0);
+    }
+    if ((withcount+vl.getSetCount(controlSet,0)) == 0){
       javax.swing.JOptionPane.showMessageDialog(this.getContentPane(),
           new hr.restart.swing.raMultiLineMessage(new String[]{"Nema podataka za " + mjesec + ". mjesec " + godina + ". godine"}),
           "Pozor",
@@ -272,11 +285,13 @@ public class frmID extends raUpitLite {
 //    System.out.println("rmiParam - " + rmiParam);
     if (rmiParam.equals("")) return NULA;
     String odbiciOrPrimanja = odbiciTabela?getOdbiciTableName():getPrimanjaTableName();
-    String pok = "select " + colName + " as "+ colName + " from " + odbiciOrPrimanja +
-                 getWhereSQL(odbiciOrPrimanja,"and") +
-                 rmiParam;
+    String pref_pok = "select "+getKumulradTableName()+".cradnik, " + colName + " as "+ colName + " from " + odbiciOrPrimanja;
+    String pok = pref_pok + getWhereSQL(odbiciOrPrimanja,"and", dlgGetKnjig.getKNJCORG()) + rmiParam;
+    if (!"".equals(getOjWith())) {
+      pok = pok + " UNION " + pref_pok + getWhereSQL(odbiciOrPrimanja,"and", getOjWith()) + rmiParam;
+    }
     
-//System.out.println("POK - " + pok);
+System.out.println("POK - " + pok);
     
     QueryDataSet tidamtidamtidam = ut.getNewQueryDataSet(pok);
     tidamtidamtidam.first();
@@ -333,16 +348,24 @@ public class frmID extends raUpitLite {
           +" AND kumulradarh.rbrobr = odbiciarh.rbrobr"
           +" AND kumulradarh.cradnik = odbiciarh.cradnik";
 
-      String idBporsql = "SELECT "+_odbtab+".cradnik, "+_odbtab+".obriznos, "+_odbtab+".ckey as copcine from "+_odbtab+", "+_radtab
+      String idBporsql_prefix = "SELECT "+_odbtab+".cradnik, "+_odbtab+".obriznos, "+_odbtab+".ckey as copcine from "+_odbtab+", "+_radtab
         + " WHERE "+_join+" AND ("
         + raOdbici.getInstance().getOdbiciWhereQuery(raOdbici.POREZ_param,_odbtab)
-        + " OR " + raOdbici.getInstance().getOdbiciWhereQuery(raOdbici.RAZPOREZA_param,_odbtab)+ ") "
-        + getWhereSQL(_radtab,"AND");
-      String idBprirsql = "SELECT "+_odbtab+".cradnik, "+_odbtab+".obriznos, "+_odbtab+".ckey as copcine from "+_odbtab+", "+_radtab
+        + " OR " + raOdbici.getInstance().getOdbiciWhereQuery(raOdbici.RAZPOREZA_param,_odbtab)+ ") ";
+      String idBporsql = idBporsql_prefix + getWhereSQL(_radtab,"AND", dlgGetKnjig.getKNJCORG());
+      if (!"".equals(getOjWith())) {
+        idBporsql = idBporsql + " UNION " + idBporsql_prefix + getWhereSQL(_radtab,"AND", getOjWith());
+      }
+      
+      String idBprirsql_prefix = "SELECT "+_odbtab+".cradnik, "+_odbtab+".obriznos, "+_odbtab+".ckey as copcine from "+_odbtab+", "+_radtab
 	      + " WHERE "+_join+" AND ("
 	      + raOdbici.getInstance().getOdbiciWhereQuery(raOdbici.PRIREZ_param,_odbtab)
-          + " OR " + raOdbici.getInstance().getOdbiciWhereQuery(raOdbici.RAZPRIREZA_param,_odbtab)+ ") "
-	      + getWhereSQL(_radtab,"AND");
+          + " OR " + raOdbici.getInstance().getOdbiciWhereQuery(raOdbici.RAZPRIREZA_param,_odbtab)+ ") ";
+      String idBprirsql = idBprirsql_prefix + getWhereSQL(_radtab,"AND", dlgGetKnjig.getKNJCORG());
+      if (!"".equals(getOjWith())) {
+        idBprirsql = idBprirsql + " UNION " + idBprirsql_prefix + getWhereSQL(_radtab,"AND", getOjWith());
+      }
+      
       System.out.println(idBporsql);
       System.out.println(idBprirsql);
       QueryDataSet idBporqds = Util.getNewQueryDataSet(idBporsql);
@@ -487,19 +510,24 @@ public class frmID extends raUpitLite {
     - prema plaæi koja se odnosi na razdoblje do 31. prosinca 2002. */
     return NULA;
   }
-
+//Zakomentiraj ovu metodu da nadjes mjesta gdje ne uzima u obzir OjWith (razlike poreza)
   private String getWhereSQL(String table, String what) {
+    return getWhereSQL(table, what, dlgGetKnjig.getKNJCORG());
+  }
+  
+  
+  private String getWhereSQL(String table, String what, String knjig) {
     String neki = " "+what+" ";
     table = new java.util.StringTokenizer(table,",").nextToken();
     if (this.getRepMode() == 'A'){
 //      System.out.println("godina : " + godina);
 //      System.out.println("mjesec : " + mjesec);
 //      System.out.println("\nNeki prije  : " + neki);
-      neki = neki.concat(raPlObrRange.getInQueryIsp(godina, mjesec, table.trim())) + " and ";
+      neki = neki.concat(raPlObrRange.getInQueryIsp(godina, mjesec, godina, mjesec, table.trim(), knjig)) + " and ";
 //      System.out.println("\nNeki poslje : " + neki);
     }
     return neki.concat(" (corg in ").concat(
-        hr.restart.zapod.OrgStr.getOrgStr().getInQuery(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig())+")");
+        hr.restart.zapod.OrgStr.getOrgStr().getInQuery(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(knjig))+")");
   }
 
   private String odbiciWh(short[] id){
