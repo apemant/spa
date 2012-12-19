@@ -391,7 +391,7 @@ public class frmPartneri extends raMatPodaci {
     });
     
     
-    jlCTEL.setText("Telemarketer");
+    jlCTEL.setText(frmParam.getParam("zapod", "teleserv", "Telemarketer", "Caption telemarketera na formi partnera"));
     jlrCTEL.setColNames(new String[] {"IME"});
     jlrCTEL.setRaDataSet(Telemark.getDataModule().getQueryDataSet());
     jlrCTEL.setDataSet(getRaQueryDataSet());
