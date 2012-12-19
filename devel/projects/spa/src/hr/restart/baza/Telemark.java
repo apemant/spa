@@ -32,10 +32,10 @@ public class Telemark extends KreirDrop implements DataModule {
   QueryDataSet tel = new raDataSet();
   QueryDataSet telaktiv = new raDataSet();
 
-  Column telLOKK = new Column();
-  Column telAKTIV = new Column();
-  Column telCTEL = new Column();
-  Column telIME = new Column();
+//  Column telLOKK = new Column();
+//  Column telAKTIV = new Column();
+//  Column telCTEL = new Column();
+//  Column telIME = new Column();
 
   public static Telemark getDataModule() {
     if (Telemarkclass == null) {
@@ -63,64 +63,65 @@ public class Telemark extends KreirDrop implements DataModule {
   }
 
   private void jbInit() throws Exception {
-    telLOKK.setCaption("Lokk");
-    telLOKK.setColumnName("LOKK");
-    telLOKK.setDataType(com.borland.dx.dataset.Variant.STRING);
-    telLOKK.setPrecision(1);
-    telLOKK.setTableName("TELEMARK");
-    telLOKK.setServerColumnName("LOKK");
-    telLOKK.setSqlType(1);
-    telLOKK.setVisible(com.borland.jb.util.TriStateProperty.FALSE);
-    telLOKK.setDefault("N");
-    telAKTIV.setCaption("Aktiv");
-    telAKTIV.setColumnName("AKTIV");
-    telAKTIV.setDataType(com.borland.dx.dataset.Variant.STRING);
-    telAKTIV.setPrecision(1);
-    telAKTIV.setTableName("TELEMARK");
-    telAKTIV.setServerColumnName("AKTIV");
-    telAKTIV.setSqlType(1);
-    telAKTIV.setVisible(com.borland.jb.util.TriStateProperty.FALSE);
-    telAKTIV.setDefault("D");
-    telCTEL.setCaption("Sifra");
-    telCTEL.setColumnName("CTEL");
-    telCTEL.setDataType(com.borland.dx.dataset.Variant.INT);
-    telCTEL.setRowId(true);
-    telCTEL.setTableName("TELEMARK");
-    telCTEL.setServerColumnName("CTEL");
-    telCTEL.setSqlType(4);
-    telCTEL.setWidth(6);
-    telIME.setCaption("Ime i prezime");
-    telIME.setColumnName("IME");
-    telIME.setDataType(com.borland.dx.dataset.Variant.STRING);
-    telIME.setPrecision(50);
-    telIME.setTableName("TELEMARK");
-    telIME.setServerColumnName("IME");
-    telIME.setSqlType(1);
-    telIME.setWidth(30);
-    tel.setResolver(dm.getQresolver());
-    tel.setQuery(new QueryDescriptor(dm.getDatabase1(),"select * from Telemark", null, true, Load.ALL));
-    setColumns(new Column[] {telLOKK, telAKTIV, telCTEL, telIME});
+    initModule();
+//    telLOKK.setCaption("Lokk");
+//    telLOKK.setColumnName("LOKK");
+//    telLOKK.setDataType(com.borland.dx.dataset.Variant.STRING);
+//    telLOKK.setPrecision(1);
+//    telLOKK.setTableName("TELEMARK");
+//    telLOKK.setServerColumnName("LOKK");
+//    telLOKK.setSqlType(1);
+//    telLOKK.setVisible(com.borland.jb.util.TriStateProperty.FALSE);
+//    telLOKK.setDefault("N");
+//    telAKTIV.setCaption("Aktiv");
+//    telAKTIV.setColumnName("AKTIV");
+//    telAKTIV.setDataType(com.borland.dx.dataset.Variant.STRING);
+//    telAKTIV.setPrecision(1);
+//    telAKTIV.setTableName("TELEMARK");
+//    telAKTIV.setServerColumnName("AKTIV");
+//    telAKTIV.setSqlType(1);
+//    telAKTIV.setVisible(com.borland.jb.util.TriStateProperty.FALSE);
+//    telAKTIV.setDefault("D");
+//    telCTEL.setCaption("Sifra");
+//    telCTEL.setColumnName("CTEL");
+//    telCTEL.setDataType(com.borland.dx.dataset.Variant.INT);
+//    telCTEL.setRowId(true);
+//    telCTEL.setTableName("TELEMARK");
+//    telCTEL.setServerColumnName("CTEL");
+//    telCTEL.setSqlType(4);
+//    telCTEL.setWidth(6);
+//    telIME.setCaption("Ime i prezime");
+//    telIME.setColumnName("IME");
+//    telIME.setDataType(com.borland.dx.dataset.Variant.STRING);
+//    telIME.setPrecision(50);
+//    telIME.setTableName("TELEMARK");
+//    telIME.setServerColumnName("IME");
+//    telIME.setSqlType(1);
+//    telIME.setWidth(30);
+//    tel.setResolver(dm.getQresolver());
+//    tel.setQuery(new QueryDescriptor(dm.getDatabase1(),"select * from Telemark", null, true, Load.ALL));
+//    setColumns(new Column[] {telLOKK, telAKTIV, telCTEL, telIME});
 
     createFilteredDataSet(telaktiv, "aktiv='D'");
   }
 
-  public void setall() {
-
-    ddl.create("Telemark")
-       .addChar("lokk", 1, "N")
-       .addChar("aktiv", 1, "D")
-       .addInteger("ctel", 6, true)
-       .addChar("ime", 50)
-       .addPrimaryKey("ctel");
-
-
-    Naziv = "Telemark";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
-  }
+//  public void setall() {
+//
+//    ddl.create("Telemark")
+//       .addChar("lokk", 1, "N")
+//       .addChar("aktiv", 1, "D")
+//       .addInteger("ctel", 6, true)
+//       .addChar("ime", 50)
+//       .addPrimaryKey("ctel");
+//
+//
+//    Naziv = "Telemark";
+//
+//    SqlDefTabela = ddl.getCreateTableString();
+//
+//    String[] idx = new String[] {};
+//    String[] uidx = new String[] {};
+//    DefIndex = ddl.getIndices(idx, uidx);
+//    NaziviIdx = ddl.getIndexNames(idx, uidx);
+//  }
 }

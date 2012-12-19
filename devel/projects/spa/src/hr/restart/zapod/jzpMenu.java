@@ -269,7 +269,7 @@ public class jzpMenu extends javax.swing.JMenu {
 
     });
     
-    jzpMenuTele.setText("Telemarketeri");
+    jzpMenuTele.setText("Telemarketeri / serviseri");
 
     jzpMenuTele.addActionListener(new java.awt.event.ActionListener() {
 
@@ -627,7 +627,7 @@ public class jzpMenu extends javax.swing.JMenu {
 
 //  SF.showFrame(fagenti);
 
-  SF.showFrame("hr.restart.zapod.frmTelemark",15,"Telemarketeri");
+  SF.showFrame("hr.restart.zapod.frmTelemark",15,"Telemarketeri / serviseri");
 
   }
 

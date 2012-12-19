@@ -20,6 +20,7 @@ package hr.restart.zapod;
 import hr.restart.baza.Telehist;
 import hr.restart.baza.Telemark;
 import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.swing.JraTextField;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raSifraNaziv;
@@ -27,7 +28,10 @@ import hr.restart.util.raSifraNaziv;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JLabel;
+
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
 
 /**
  * Title:        Robno poslovanje
@@ -40,6 +44,7 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class frmTelemark extends raSifraNaziv {
   hr.restart.baza.dM dm;
+  JraTextField jrEMADR;
   raNavAction rnvSifKup = new raNavAction("Kupci",raImages.IMGOPEN,KeyEvent.VK_F12){
     public void actionPerformed(ActionEvent e) {
       handleTelemarketer();
@@ -62,7 +67,8 @@ public class frmTelemark extends raSifraNaziv {
     this.setRaText("Telemarketer");
     this.jlNaziv.setText("Ime i prezime");
     raDataIntegrity.installFor(this, true);
-    
+    jrEMADR.setColumnName("EMADR");
+    jrEMADR.setDataSet(getRaDataSet());
     
     this.addOption(rnvSifKup,5);
   }
@@ -74,5 +80,10 @@ public class frmTelemark extends raSifraNaziv {
     hr.restart.util.startFrame.getStartFrame().centerFrame(fpt,0,"Kupci telemarketera " + getRaQueryDataSet().getString("IME"));
     fpt.show();
   }
-  
+  public void defaultAdd2Panel(int width, int heigh) {
+    jrEMADR = new JraTextField();
+    super.defaultAdd2Panel(555, 100);
+    jp.add(new JLabel("E-Mail"), new XYConstraints(15, 63, -1, -1));
+    jp.add(jrEMADR, new XYConstraints(150, 63, 390, -1));
+  }
 }

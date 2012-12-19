@@ -122,6 +122,7 @@ NAZAGENT;text;50;;;Ime i prezime;30
 ZAPORKA;text;30;;;Zaporka;*
 POSTOPROV;numeric;10,2;;;Provizija
 VRSTAPROV;char;1;;F;Vrsta provizije
+EMADR;char;60;;;E-mail;15
 
 $VTCparHist
 CPAR;int;6;pkey;;Partner
@@ -1590,4 +1591,11 @@ NAZART;char;50;;;Naziv;20
 JM;char;3;;;Jm
 KOEFKOL;numeric;17,3;;0;Koeficijent kolièine
 KOEFZC;numeric;17,3;;0;Koeficijent cijene
+
+$Telemark
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CTEL;int;6;pkey;;Sifra;6
+IME;char;50;;;Ime i prezime;30
+EMADR;char;60;;;E-mail;15
 

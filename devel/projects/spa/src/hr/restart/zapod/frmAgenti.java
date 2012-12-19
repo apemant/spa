@@ -95,6 +95,7 @@ public class frmAgenti extends raMatPodaci {
   JLabel jlVr = new JLabel();
   raComboBox rcbVr = new raComboBox();
 
+  JraTextField jrEMADR = new JraTextField();
   dlgTotalAgent dtp = new dlgTotalAgent();
 
   public frmAgenti() {
@@ -155,6 +156,9 @@ public class frmAgenti extends raMatPodaci {
       {" Prema naplaæenim raèunima", "N"}
     });
 
+    jrEMADR.setColumnName("EMADR");
+    jrEMADR.setDataSet(getRaQueryDataSet());
+
     jcbAktivan.setHorizontalAlignment(SwingConstants.RIGHT);
 
     jcbAktivan.setHorizontalTextPosition(SwingConstants.LEADING);
@@ -175,7 +179,7 @@ public class frmAgenti extends raMatPodaci {
 
     xYLayout1.setWidth(570);
 
-    xYLayout1.setHeight(101);
+    xYLayout1.setHeight(126);
 
     jlAgent.setText("Agent");
 
@@ -195,6 +199,10 @@ public class frmAgenti extends raMatPodaci {
 /*    jp.add(jlVr, new XYConstraints(275, 55, -1, -1)); */
     jp.add(rcbVr, new XYConstraints(255, 55, 300, -1));
 
+    jp.add(new JLabel("E-Mail"), new XYConstraints(15, 80, -1, -1));
+    jp.add(jrEMADR, new XYConstraints(150, 80, 405, -1));
+    
+    
     this.addOption(new raNavAction("Promet", raImages.IMGMOVIE, KeyEvent.VK_F7) {
       public void actionPerformed(ActionEvent e) {
         showPromet();
