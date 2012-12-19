@@ -223,8 +223,8 @@ public class frmSpecKred extends frmIzvjestajiPL {
   public void prepareIspis()
   {
     String table = getTableName();
-    String sIspZbir = plUtil.getPlUtil().getSpecKredStr(table, where)+this.getWhereQuery("radnici");
-    String sIspPoj =  plUtil.getPlUtil().getSpecKredStr(table, where)+this.getWhereQuery("radnici");
+    String sIspZbir = plUtil.getPlUtil().getSpecKredStr(table, where)+this.getWhereQuery("radnici")+getExclOvrha();
+    String sIspPoj =  plUtil.getPlUtil().getSpecKredStr(table, where)+this.getWhereQuery("radnici")+getExclOvrha();
 
     if(qdsZB.isOpen())
       qdsZB.close();
@@ -260,6 +260,13 @@ System.out.println("sIspPoj :: " + sIspPoj);
     }
   }
 
+  private String getExclOvrha() {
+    String in = raIzvjestaji.getOdbiciWhQueryIzv(new short[] {10005,10});
+    if ("".equals(in)) return "";
+    String r = " AND NOT ("+in+")";
+    System.out.println("ExclOvrha::"+r);
+    return r;
+  }
   public static BigDecimal getSuma()
   {
     return suma;

@@ -358,6 +358,7 @@ public class frmRekObr extends frmIzvjestajiPL{
       return "";
     }
   }
+
   private String getOdbiciTableName() {
     String tableName = "";
     if (this.getRepMode() == 'A') tableName = " odbiciarh";
@@ -426,7 +427,8 @@ public class frmRekObr extends frmIzvjestajiPL{
           odbWh3+ uvjetRadnik3;
 
       OVRHA = "select sum(obriznos) as obriznos from " + getOdbiciTableName() +
-            getWhereSQL(getOdbiciTableName()) +
+          (isArhMode()?" where 0=0 "+getBetweenAhrQuery(getOdbiciTableName()):"") +  
+//          getWhereSQLZA(getOdbiciTableName()) +
             odbWhOvrha+ uvjetRadnikOvrha;
       
 System.out.println("ID1 = "+ID1);
@@ -472,8 +474,8 @@ System.out.println("OVRHA = "+OVRHA);
         qds.setBigDecimal("OL33", ol_3);
       
       if(bOVRHA != null) {
-        qds.setBigDecimal("NETO2", qds.getBigDecimal("NETO2").add(bOVRHA));
-        qds.setBigDecimal("NETOPK", qds.getBigDecimal("NETOPK").add(bOVRHA));
+//        qds.setBigDecimal("NETO2", qds.getBigDecimal("NETO2").add(bOVRHA));
+//        qds.setBigDecimal("NETOPK", qds.getBigDecimal("NETOPK").add(bOVRHA));
         qds.setBigDecimal("NARUKE", qds.getBigDecimal("NARUKE").add(bOVRHA));
         qds.setBigDecimal("KREDITI", qds.getBigDecimal("KREDITI").subtract(bOVRHA));
       }

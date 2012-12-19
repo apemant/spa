@@ -232,7 +232,7 @@ public class raIzvjestaji {
     return "SELECT " + colName + " FROM " + tabName + " where CIZV = "+cizv+" AND cgrizv = "+cgrizv;
   }
 
-  private static String getWhQueryIzv(short cizv, short cgrizv, String tabName, String colName) {
+  public static String getWhQueryIzv(short cizv, short cgrizv, String tabName, String colName) {
     String ret = colName + " in (";
     String qry = getWhQueryGrupe(cizv,cgrizv,tabName,colName);
     QueryDataSet qds = Util.getNewQueryDataSet(qry);
