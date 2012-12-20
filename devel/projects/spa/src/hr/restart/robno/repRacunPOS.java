@@ -127,7 +127,9 @@ public class repRacunPOS extends mxReport {
      
      lD.raLocate(dm.getLogotipovi(), "CORG", pcorg);
      
-     String kh = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
+     
+     
+     String kh = getNazivSplit(dm.getLogotipovi().getString("NAZIVLOG"))+
      "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+
      "<#OIB "+dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>"+ getPhones();
      
@@ -140,7 +142,7 @@ public class repRacunPOS extends mxReport {
      String ph = kh;
      if (!sks.getString("CORG").equals(OrgStr.getKNJCORG(false)) &&
          lD.raLocate(dm.getLogotipovi(), "CORG", sks.getString("CORG"))) {
-       ph = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
+       ph = getNazivSplit(dm.getLogotipovi().getString("NAZIVLOG"))+
        "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+
        " "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ 
        (dm.getLogotipovi().getString("OIB").length()== 0 ? "" : "<#OIB "+
@@ -207,6 +209,18 @@ public class repRacunPOS extends mxReport {
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
     );
+  }
+  
+  private String getNazivSplit(String naziv) {
+    if (naziv.indexOf('|') <= 0) return    
+      "<#"+naziv+"|"+width+"|center#><$newline$>";
+    
+    String[] lines = new VarStr(naziv).split('|');
+    String ret = "";
+    for (int i = 0; i < lines.length; i++)
+      ret = ret + "<#"+lines[i]+"|"+width+"|center#><$newline$>";
+    
+    return ret;
   }
   
   private String getFisk() {
@@ -539,6 +553,12 @@ public class repRacunPOS extends mxReport {
     String footing = "";
     if (!sadrzaj.equals("")){
       footing = "<#"+sadrzaj+"|"+width+"|center#><$newline$>";
+    }
+    if (!presBlag.isFiskPDV()) {
+      
+      footing = "<#PDV nije obraèunat sukladno èlanku 22.|"+width+"|center#><$newline$>" +
+                "<#stavak 1. zakona o PDV-u|"+width+"|center#><$newline$><$newline$>" + footing;
+      
     }
     return footing;
   }
