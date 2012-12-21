@@ -16,6 +16,10 @@ public class repRacPOS extends repRacunPOS {
     this.setDataSet(frmMasterBlagajna.getAlterDetail());
     
     String vc = frmMasterBlagajna.getRacDestination();
+    if (vc == null || vc.length() == 0) {
+      frmMasterBlagajna.setRacDestination();
+      vc = frmMasterBlagajna.getRacDestination();
+    }
     lD.raLocate(dm.getMxPrinterRM(), "CRM", vc);
     mxRM rm = new mxRM();
     rm.init(dm.getMxPrinterRM());
