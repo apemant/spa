@@ -1740,13 +1740,12 @@ public class frmMasterBlagajna extends raMasterDetail {
     
     DataRow usr = ld.raLookup(dM.getDataModule().getUseri(),"CUSER", ms.getString("CUSER"));
     String oibu = usr.getString("OIB");
-    
-    Timestamp datvri = new Timestamp(System.currentTimeMillis());
+
     
     return presBlag.getFis().createRacun(
         oibf, //oib firme (Rest Art) NE PREPISUJ!!
         presBlag.isFiskPDV(), //da li je obveznik pdv-a 
-        datvri, // datum i vrijeme kreiranja racuna
+        ms.getTimestamp("DATDOK"), // datum i vrijeme kreiranja racuna
         "N", // oznaka slijednosti
         ms.getInt("FBR"), // broj racuna 
         "P1", // oznaka poslovne jedinice
