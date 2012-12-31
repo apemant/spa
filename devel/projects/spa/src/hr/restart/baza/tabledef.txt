@@ -1082,7 +1082,7 @@ PRAB;numeric;10,2;;0;Posto popusta;8
 IRAB;numeric;15,2;;0;Popust;14
 PZT;numeric;15,7;;0;Posto zavisnih troškova;8
 IZT;numeric;15,2;;0;Troškovi;14
-NC;numeric;15,4;;0;Nabavna cijena;12
+NC;numeric;15,2;;0;Nabavna cijena;12
 PMAR;numeric;10,2;;0;Posto RuC;8
 MAR;numeric;15,2;;0;Jed. RuC;14
 VC;numeric;15,2;;0;Cijena bez poreza;12
@@ -1317,9 +1317,9 @@ MARIZ;numeric;15,2;;0;Marža vrijednosti izlaza
 PORIZ;numeric;15,2;;0;Porez vrijednosti izlaza
 VIZ;numeric;15,2;;0;Vrijednost izlaza
 KOL;numeric;15,3;;0;Kolièina
-ZC;numeric;15,4;;0;Cijena
+ZC;numeric;15,2;;0;Cijena
 VRI;numeric;15,2;;0;Vrijednost
-NC;numeric;15,4;;0;Nabavna cijena
+NC;numeric;15,2;;0;Nabavna cijena
 VC;numeric;15,2;;0;Cijena bez poreza
 MC;numeric;15,2;;0;Cijena s porezom
 DATZK;date;;;;Datum zadnje kalkulacije;*
