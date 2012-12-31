@@ -106,8 +106,33 @@ public class repIzlazni implements raReportData {
     //dm.getVTText().refresh();    
   }
   
+  public static boolean isReportValute() {
+
+    String descriptor = hr.restart.util.reports.dlgRunReport
+            .getCurrentDlgRunReport().getCurrentDescriptor().getName();
+
+    return (descriptor.equals("hr.restart.robno.repPredracuniV")
+            || descriptor.equals("hr.restart.robno.repRacuniV")
+            || descriptor.equals("hr.restart.robno.repPredracuni2V")
+            || descriptor.equals("hr.restart.robno.repRacuni2V")
+            || descriptor.equals("hr.restart.robno.repRac2V")
+            || descriptor.equals("hr.restart.robno.repRacV")
+            || descriptor.equals("hr.restart.robno.repPonudaV")
+            || descriptor.equals("hr.restart.robno.repPonuda2V") 
+            || descriptor.equals("hr.restart.robno.repNarDobV")
+            || descriptor.equals("hr.restart.robno.repOdobrenjaV")
+            || descriptor.equals("hr.restart.robno.repTerecenjaV")
+            || descriptor.equals("hr.restart.robno.repOdobrenjaPV")
+            || descriptor.equals("hr.restart.robno.repInvoice")
+            || descriptor.equals("hr.restart.robno.repOffer")
+            || descriptor.equals("hr.restart.robno.repProformaInvoice")
+            || descriptor.equals("hr.restart.robno.repPovratnicaOdobrenjeV")
+            );
+
+  }
+  
   protected void setCurrentDataset(){
-    if (raIzlazTemplate.isReportValute())
+    if (isReportValute())
       ds = reportsQuerysCollector.getRQCModule().getValuteQueryDataSet();
     else ds = reportsQuerysCollector.getRQCModule().getQueryDataSet();
     ds.setSort(new SortDescriptor(new String[] {"BRDOK", "RBR"}));
@@ -1071,7 +1096,7 @@ public BigDecimal getIPRODSP() {
   public String getSLOVIMA() { /** @todo razlika kod deviznog */
 //    if (ds.getString("OZNVAL").equals(""))
     return ut.numToLet(ds.getBigDecimal("UIRAC").doubleValue(),
-                       raIzlazTemplate.isReportValute() ? ds.getString("OZNVAL") : null);
+                       isReportValute() ? ds.getString("OZNVAL") : null);
 //    return ut.numToLet(ds.getBigDecimal("UIRAC").doubleValue(),ds.getString("OZNVAL"));
   }
   public int getLogoPotvrda() {
@@ -2016,16 +2041,21 @@ public BigDecimal getIPRODSP() {
     if (prefn.length() > 0) prefn = prefn + "\n";
     
     
-    DataSet ds = dokidod.getDataModule().getTempSet(
-        Condition.equal("BRRAC", "LABEL"));
-    ds.open();
-    if (ds.rowCount() == 0) labdod = "";
-    else {
-      ds.setSort(new SortDescriptor(new String[] {"RBS"}));
-      VarStr buf = new VarStr();
-      for (ds.first(); ds.inBounds(); ds.next())
-        buf.append(ds.getString("VAL")).append('\n');
-      labdod = buf.toString();
+    try {
+      DataSet ds = dokidod.getDataModule().getTempSet(
+          Condition.equal("BRRAC", "LABEL"));
+      ds.open();
+      if (ds.rowCount() == 0) labdod = "";
+      else {
+        ds.setSort(new SortDescriptor(new String[] {"RBS"}));
+        VarStr buf = new VarStr();
+        for (ds.first(); ds.inBounds(); ds.next())
+          buf.append(ds.getString("VAL")).append('\n');
+        labdod = buf.toString();
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 

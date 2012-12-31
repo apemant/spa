@@ -96,14 +96,14 @@ public class repNarDobSource extends repIzlazni {
     if (ds.getRow() == 0){
       slovima = Aus.zero2;
     }
-    if (raIzlazTemplate.isReportValute()) {
+    if (isReportValute()) {
       slovima = slovima.add(ds.getBigDecimal("IPRODBP"));
     } else {
       slovima = slovima.add(ds.getBigDecimal("INAB"));
     }
     
     return ut.numToLet(slovima.doubleValue(),
-        (raIzlazTemplate.isReportValute() ? ds.getString("OZNVAL") : null));
+        (isReportValute() ? ds.getString("OZNVAL") : null));
   }
   
   public String getSLOVIMApop() {
@@ -115,7 +115,7 @@ public class repNarDobSource extends repIzlazni {
   }
   
   public BigDecimal getNC() {
-    if (raIzlazTemplate.isReportValute()) {
+    if (isReportValute()) {
       return ds.getBigDecimal("FVC");
     }
     return super.getNC();
@@ -130,14 +130,14 @@ public class repNarDobSource extends repIzlazni {
   }
   
   public BigDecimal getINAB() {
-    if (raIzlazTemplate.isReportValute()) {
+    if (isReportValute()) {
       return ds.getBigDecimal("IPRODBP");
     }
     return super.getINAB();
   }
   
   public double getINABreal() {
-    if (raIzlazTemplate.isReportValute()) {
+    if (isReportValute()) {
       return ds.getBigDecimal("IPRODBP").doubleValue();
     }
     return super.getINABreal();

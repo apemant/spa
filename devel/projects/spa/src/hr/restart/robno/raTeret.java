@@ -24,11 +24,13 @@ public class raTeret extends raIzlazTemplate {
   }
   public void MyaddIspisMaster(){
     raMaster.getRepRunner().addReport("hr.restart.robno.repTerecenja", "hr.restart.robno.repIzlazni", "Terecenja", "Ispis tereæenja");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repTerecenjaV", "hr.restart.robno.repIzlazni", "Terecenja", "Ispis tereæenja u valuti");
 //    raMaster.getRepRunner().addReport("hr.restart.robno.repTerecenja", "Ispis svih tere\u0107enja", 2);
   }
 
   public void MyaddIspisDetail(){
     raDetail.getRepRunner().addReport("hr.restart.robno.repTerecenja", "hr.restart.robno.repIzlazni", "Terecenja", "Ispis tereæenja");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repTerecenjaV", "hr.restart.robno.repIzlazni", "Terecenja", "Ispis tereæenja u valuti");
 //    raDetail.getRepRunner().addReport("hr.restart.robno.repTerecenja", "Ispis tere\u0107enja", 2);
   }
 
