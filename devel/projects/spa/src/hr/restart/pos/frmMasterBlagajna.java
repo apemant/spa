@@ -1708,6 +1708,7 @@ public class frmMasterBlagajna extends raMasterDetail {
 //  public RacunType rtype = null;
   
   public static RacunType getRacType(DataSet ms) {
+        
     lookupData ld = lookupData.getlookupData();
     dM dm = dM.getDataModule();
     
@@ -1748,7 +1749,7 @@ public class frmMasterBlagajna extends raMasterDetail {
         ms.getTimestamp("DATDOK"), // datum i vrijeme kreiranja racuna
         "N", // oznaka slijednosti
         ms.getInt("FBR"), // broj racuna 
-        "P1", // oznaka poslovne jedinice
+        presBlag.getFiskPP(), // oznaka poslovne jedinice
         1, // oznaka naplatnog mjesta
         new BigDecimal(25), //stopa pdv-a 
         osnpdv, //osnovica za pdv
@@ -1768,26 +1769,31 @@ public class frmMasterBlagajna extends raMasterDetail {
   public static void fisk(DataSet ms) {
     if (presBlag.isFiskal() && (!ms.getString("FOK").equals("D") || ms.getString("JIR").length() == 0)) {
       
-      if (!ms.getString("FOK").equals("D")) {
-        String cOpis = "FISK-GRC"+ms.getString("GOD");
-        if (presBlag.isFiskSep())
-          cOpis = "FISK-"+ms.getString("CPRODMJ")+"-GRC"+ms.getString("GOD");
+      try {
+        if (!ms.getString("FOK").equals("D")) {
+          String cOpis = "FISK-GRC"+ms.getString("GOD");
+          if (presBlag.isFiskSep())
+            cOpis = "FISK-"+presBlag.getFiskPP()+"-GRC"+ms.getString("GOD");
+          
+          ms.setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
+        }
         
-        ms.setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
+   
+  Timestamp datvri = new Timestamp(System.currentTimeMillis());
+  RacunZahtjev zahtj = presBlag.getFis().createRacunZahtjev(
+          presBlag.getFis().createZaglavlje(datvri, null), 
+          getRacType(ms));
+        
+        String jir = presBlag.getFis().fiskaliziraj(zahtj);
+        if (jir != null && jir.length() > 0 && !jir.startsWith("ZKI") && !jir.startsWith("false"))
+          ms.setString("JIR", jir);
+        else ms.setString("JIR", "");
+        ms.setString("FOK", "D");
+        ms.saveChanges();
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
-      
-     
-    Timestamp datvri = new Timestamp(System.currentTimeMillis());
-    RacunZahtjev zahtj = presBlag.getFis().createRacunZahtjev(
-        presBlag.getFis().createZaglavlje(datvri, null), 
-        getRacType(ms));
-      
-      String jir = presBlag.getFis().fiskaliziraj(zahtj);
-      if (jir != null && jir.length() > 0 && !jir.startsWith("ZKI") && !jir.startsWith("false"))
-        ms.setString("JIR", jir);
-      else ms.setString("JIR", "");
-      ms.setString("FOK", "D");
-      ms.saveChanges();
 
     }
   }

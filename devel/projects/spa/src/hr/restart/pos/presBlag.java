@@ -451,8 +451,10 @@ public class presBlag extends PreSelect {
     }
     return fisksep == 1;
   }
-  
-  
+    
+  public static String getFiskPP() {
+    return frmParam.getParam("robno", "fiskPP", "", "Oznaka poslovnog prostora (lokalno)", true);
+  }
   
   public static boolean isSmjena() {
     if (smjena < 0) {
