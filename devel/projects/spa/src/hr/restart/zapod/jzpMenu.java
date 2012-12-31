@@ -73,6 +73,8 @@ public class jzpMenu extends javax.swing.JMenu {
   JMenuItem jzpMenuTec = new JMenuItem();
 
   JMenuItem jzpMenuKor = new JMenuItem();
+  
+  JMenuItem jzpPP = new JMenuItem();
 
 //novi
 
@@ -316,6 +318,14 @@ public class jzpMenu extends javax.swing.JMenu {
       }
 
     });
+    
+    jzpPP.setText("Prijava posl. prostora");
+    jzpPP.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        SF.showFrame("hr.restart.util.raFiskPoslovni", jzpPP.getText());
+      }
+    });
+    
 
 //
 
@@ -545,7 +555,7 @@ public class jzpMenu extends javax.swing.JMenu {
     this.addSeparator();
 
     this.add(jzpMenuKor);
-
+    this.add(jzpPP);
     this.add(jmSifarnici);
 
   }
