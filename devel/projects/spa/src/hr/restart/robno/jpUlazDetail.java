@@ -963,7 +963,9 @@ public class jpUlazDetail extends JPanel {
           calcFromINAB();
         }
       } else {
-        frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
+        Aus.set(frm.getDetailSet(), "IDOB_VAL", "DC_VAL");
+        Aus.mul(frm.getDetailSet(), "IDOB_VAL", kol);
+        //frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
         frm.getDetailSet().setBigDecimal("IDOB",    util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
         calcFromIDOB();
       }
@@ -980,21 +982,29 @@ public class jpUlazDetail extends JPanel {
       calcFromIDOB();
     }
     else if (mode==2) {   // Dobavljaceva cijena u valuti
-      frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
+      Aus.set(frm.getDetailSet(), "IDOB_VAL", "DC_VAL");
+      Aus.mul(frm.getDetailSet(), "IDOB_VAL", kol);
+      //frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
       frm.getDetailSet().setBigDecimal("IDOB",   util.multiValue   (frm.getDetailSet().getBigDecimal("IDOB_VAL"), 
           frm.getMasterSet().getBigDecimal("TECAJ").divide(jedval, 9, BigDecimal.ROUND_HALF_UP)));
       frm.getDetailSet().setBigDecimal("DC",      util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
       calcFromIDOB();
     }
     else if (mode==3) {   // Dobavljacev iznos
-      frm.getDetailSet().setBigDecimal("IDOB_VAL",  util.divideValue   (frm.getDetailSet().getBigDecimal("IDOB").multiply(jedval), frm.getMasterSet().getBigDecimal("TECAJ")));
+      Aus.set(frm.getDetailSet(), "IDOB_VAL", "IDOB");
+      Aus.mul(frm.getDetailSet(), "IDOB_VAL", jedval);
+      Aus.div(frm.getDetailSet(), "IDOB_VAL", frm.getMasterSet().getBigDecimal("TECAJ"));
+      //frm.getDetailSet().setBigDecimal("IDOB_VAL",  util.divideValue   (frm.getDetailSet().getBigDecimal("IDOB").multiply(jedval), frm.getMasterSet().getBigDecimal("TECAJ")));
       frm.getDetailSet().setBigDecimal("DC_VAL",    util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
       frm.getDetailSet().setBigDecimal("DC",        util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
       calcFromIDOB();
     }
     else if (mode==4) {   // Dobavljaceva cijena
       frm.getDetailSet().setBigDecimal("IDOB",      util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
-      frm.getDetailSet().setBigDecimal("IDOB_VAL",  util.divideValue   (frm.getDetailSet().getBigDecimal("IDOB").multiply(jedval), frm.getMasterSet().getBigDecimal("TECAJ")));
+      Aus.set(frm.getDetailSet(), "IDOB_VAL", "IDOB");
+      Aus.mul(frm.getDetailSet(), "IDOB_VAL", jedval);
+      Aus.div(frm.getDetailSet(), "IDOB_VAL", frm.getMasterSet().getBigDecimal("TECAJ"));
+      //frm.getDetailSet().setBigDecimal("IDOB_VAL",  util.divideValue   (frm.getDetailSet().getBigDecimal("IDOB").multiply(jedval), frm.getMasterSet().getBigDecimal("TECAJ")));
       frm.getDetailSet().setBigDecimal("DC_VAL",    util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
       calcFromIDOB();
     }
