@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.pos;
 
+import hr.apis_it.fin._2012.types.f73.PorezType;
 import hr.apis_it.fin._2012.types.f73.RacunType;
 import hr.apis_it.fin._2012.types.f73.RacunZahtjev;
 import hr.restart.baza.Artikli;
@@ -1715,55 +1716,111 @@ public class frmMasterBlagajna extends raMasterDetail {
     DataSet ds = Stpos.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ms));
     ds.open();
 
-    BigDecimal osnpdv = Aus.zero2;
+    //BigDecimal osnpdv = Aus.zero2;
     BigDecimal osnpnp = Aus.zero2;
-    BigDecimal izpdv = Aus.zero2;
+    //BigDecimal izpdv = Aus.zero2;
     BigDecimal izpnp = Aus.zero2;
     BigDecimal tot = Aus.zero2;
     BigDecimal povn = Aus.zero2;
+    BigDecimal povs = new BigDecimal("0.5");
+    
+    BigDecimal pdv25 = new BigDecimal("25").setScale(2);
+    
+    HashMap izmap = new HashMap();
+    HashMap osnmap = new HashMap();
+    
   
     for (ds.first(); ds.inBounds(); ds.next()) {
-      BigDecimal osn = ds.getBigDecimal("NETO").subtract(ds.getBigDecimal("POR1")).subtract(ds.getBigDecimal("POR2"));
-      if (ds.getBigDecimal("POR1").signum() != 0) osnpdv = osnpdv.add(osn);
-      if (ds.getBigDecimal("POR2").signum() != 0) osnpnp = osnpnp.add(osn);
-      izpdv = izpdv.add(ds.getBigDecimal("POR1"));
-      izpnp = izpnp.add(ds.getBigDecimal("POR2"));
+      BigDecimal por1 = ds.getBigDecimal("POR1");
+      BigDecimal por2 = ds.getBigDecimal("POR2");
+      BigDecimal osn = ds.getBigDecimal("NETO").subtract(por1).subtract(por2);
+      ld.raLocate(dm.getArtikli(), new String[]{"CART"}, new String[] {String.valueOf(ds.getInt("CART"))});
+      if ("D".equals(dm.getArtikli().getString("POV"))) {
+        BigDecimal povni = povs.multiply(ds.getBigDecimal("KOL")).
+          setScale(2, BigDecimal.ROUND_HALF_UP);
+        povn = povn.add(povni);
+        osn = osn.subtract(povni);
+      }
+      
+      if (por1.signum() != 0) {
+        BigDecimal post = ds.getBigDecimal("PPOR1").setScale(2);
+        BigDecimal osnpdv = (BigDecimal) osnmap.get(post);
+        BigDecimal izpdv = (BigDecimal) izmap.get(post);
+        osnmap.put(post, osn.add(osnpdv != null ? osnpdv : Aus.zero0));
+        izmap.put(post, por1.add(izpdv != null ? izpdv : Aus.zero0));
+      }
+      
+      if (por2.signum() != 0) osnpnp = osnpnp.add(osn);
+      izpnp = izpnp.add(por2);
       tot = tot.add(ds.getBigDecimal("NETO"));
       
-      ld.raLocate(dm.getArtikli(), new String[]{"CART"}, new String[] {String.valueOf(ds.getInt("CART"))});
-      if ("D".equals(dm.getArtikli().getString("POV")))
-        povn = povn.add(povn.multiply(ds.getBigDecimal("KOL")).
-                  setScale(2, BigDecimal.ROUND_HALF_UP));
+      
     }
+    
+    System.out.println(tot);
+    System.out.println(osnmap);
+    System.out.println(izmap);
+    System.out.println(osnpnp + " " + izpnp);
+    System.out.println(povn);
+    System.out.println(osnmap.get(pdv25));
+    System.out.println(izmap.get(pdv25));
     
     ld.raLocate(dm.getLogotipovi(), "CORG", OrgStr.getKNJCORG(false));
     String oibf = dm.getLogotipovi().getString("OIB");
     
     DataRow usr = ld.raLookup(dM.getDataModule().getUseri(),"CUSER", ms.getString("CUSER"));
     String oibu = usr.getString("OIB");
-
     
-    return presBlag.getFis().createRacun(
+    if (!presBlag.isUserOriented()) {
+      DataRow blag = ld.raLookup(dM.getDataModule().getBlagajnici(), "CBLAGAJNIK", ms.getString("CBLAGAJNIK"));
+      if (blag != null && blag.getString("OIB").length() > 0) oibu = blag.getString("OIB");
+    }
+    
+    String nacpl = ms.getString("CNACPL");
+    if (nacpl.length() == 0 || nacpl.equalsIgnoreCase("G"))
+      nacpl = "G";
+    else if (nacpl.equalsIgnoreCase("C") || nacpl.equalsIgnoreCase("È"))
+      nacpl = "C";
+    else if (nacpl.equalsIgnoreCase("K"))
+      nacpl = "K";
+    else nacpl = "O";
+
+    RacunType rac = presBlag.getFis().createRacun(
         oibf, //oib firme (Rest Art) NE PREPISUJ!!
         presBlag.isFiskPDV(), //da li je obveznik pdv-a 
         ms.getTimestamp("DATDOK"), // datum i vrijeme kreiranja racuna
-        "N", // oznaka slijednosti
+        presBlag.isFiskSep() ? "N" : "P", // oznaka slijednosti
         ms.getInt("FBR"), // broj racuna 
         presBlag.getFiskPP(), // oznaka poslovne jedinice
-        1, // oznaka naplatnog mjesta
+        presBlag.getFiskNap(), // oznaka naplatnog mjesta
         new BigDecimal(25), //stopa pdv-a 
-        osnpdv, //osnovica za pdv
-        izpdv, //iznos pdv-a
+        (BigDecimal) osnmap.get(pdv25), //osnovica za pdv
+        (BigDecimal) izmap.get(pdv25), //iznos pdv-a
         new BigDecimal(3), //stopa pnp-a
         osnpnp, //osnovica za pnp
         izpnp, //iznos pnp 
         null, //naziv naknade - defaults to 'Povradna naknada' 
         povn, //iznos naknade
         tot, //ukupan iznos racuna
-        "G",//nacin placanja
+        nacpl,//nacin placanja
         oibu,//oib prodavatelja (Ja) NE PREPISUJ!!
         false //da li je naknadna dostava
      );
+    
+    if (izmap.size() > 1) {
+      for (Iterator i = izmap.keySet().iterator(); i.hasNext(); ) {
+        BigDecimal post = (BigDecimal) i.next();
+        if (post.compareTo(pdv25) == 0) continue;
+        PorezType por = presBlag.getFis().getFisFactory().createPorezType();
+        por.setStopa(post);
+        por.setOsnovica((BigDecimal) osnmap.get(post));
+        por.setIznos((BigDecimal) izmap.get(post));
+        rac.getPdv().getPorez().add(por);
+        System.out.println(por);
+      }
+    }
+    
+    return rac;
   }
   
   public static void fisk(DataSet ms) {
