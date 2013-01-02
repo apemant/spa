@@ -562,6 +562,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repOdobrenjaV", "ODB", "D", ""},
       {"hr.restart.robno.repOdobrenjaPV", "ODB", "D", ""},
       {"hr.restart.robno.repTerecenja", "TER", "D", ""},
+      {"hr.restart.robno.repTerecenjaV", "TER", "D", ""},
       {"hr.restart.robno.repPovratnicaOdobrenje", "POD", "D", ""},
       {"hr.restart.robno.repPovratnicaOdobrenjeNoc", "OTP", "D", ""},
       {"hr.restart.robno.repPovratnicaOdobrenjePnP", "POD", "D", ""},
