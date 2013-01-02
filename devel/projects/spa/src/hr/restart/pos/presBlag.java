@@ -456,6 +456,12 @@ public class presBlag extends PreSelect {
     return frmParam.getParam("robno", "fiskPP", "", "Oznaka poslovnog prostora (lokalno)", true);
   }
   
+  public static int getFiskNap() {
+    String ur = frmParam.getParam("robno", "fiskNap", "", "Oznaka naplatnog ureðaja (lokalno)", true);
+    if (ur == null || ur.length() == 0) return 1;
+    return Aus.getNumber(ur);
+  }
+  
   public static boolean isSmjena() {
     if (smjena < 0) {
       smjena = frmParam.getParam("pos", "posSmjena", "N",
