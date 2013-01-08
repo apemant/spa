@@ -19,14 +19,17 @@ package hr.restart.pl;
 
 import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.reports.raReportData;
 import hr.restart.util.reports.raReportDescriptor;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class repIspList implements raReportData {// implements sg.com.elixir.reportwriter.datasource.IDataProvider {
   hr.restart.baza.dM dm= hr.restart.baza.dM.getDataModule();
@@ -331,6 +334,45 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
       return "";
   }
 
+  public String getVIRMANINFO() {
+    return 
+        "DRŽAVNI PRORAÈUN REPUBLIKE HRVATSKE    RAÈUN: 1001005-1863000160 \n" +
+        "DOPRINOS MIO I.STUP                    PNB:   (68) 8109-"+rpm.getLogoOIB()+"\n"+
+        "\n"+
+        "DRŽAVNI PRORAÈUN REPUBLIKE HRVATSKE    RAÈUN: 1001005-1700036001 \n" +
+        "DOPRINOS MIO II.STUP                   PNB:   (68) 2003-"+rpm.getLogoOIB()+"\n"+
+        "\n"+
+        "POREZ I PRIREZ NA DOHODAK              RAÈUN: "+raVirPlMnWorker.getZiroOpc(_getCOpcine())+" \n" +
+    		printMjestoPorez(39)+                  "PNB:   (68) 1406-"+rpm.getLogoOIB()+"\n"+
+        "\n"+
+    		
+        "";
+  }
+
+
+
+  private String _getCOpcine() {
+    QueryDataSet opset = Aus.q("select copcine from radnicipl where cradnik='"+getRadnik()+"'");
+    opset.first();
+    return opset.getString("COPCINE");
+  }
+  private String printMjestoPorez(int w) {
+    String mj;
+    QueryDataSet opset = Aus.q("select opcine.nazivop from opcine, radnicipl WHERE radnicipl.copcine = opcine.copcine and cradnik='"+getRadnik()+"'");
+    if (opset.getRowCount()>0) {
+      opset.first();
+      mj = opset.getString("NAZIVOP");
+    } else {
+      mj="";
+    }
+    if (w>mj.length()) {
+      char[] cont = new char[w-mj.length()];
+      Arrays.fill(cont, ' ');
+      return mj+new String(cont);
+    } else {
+      return mj.substring(0, w);
+    }
+  }
   public String getPor1txt() {
     return fil.getPor1txt(radnici);
   }
