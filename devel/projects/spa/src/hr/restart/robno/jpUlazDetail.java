@@ -956,6 +956,8 @@ public class jpUlazDetail extends JPanel {
     boolean pzt = !frm.getMasterSet().getString("CSHZT").equals("YES");
     BigDecimal kol = frm.getDetailSet().getBigDecimal("KOL");
     BigDecimal jedval = Tecajevi.getJedVal(frm.getMasterSet().getString("OZNVAL"));
+    BigDecimal tecaj = frm.getMasterSet().getBigDecimal("TECAJ");
+    if (tecaj.signum() == 0) tecaj = Aus.one0;
     if (mode==0) {        // Kolicina
       if (frm.vrDok.equals("PRE")) {
         if (kol.signum() != 0) {
@@ -977,7 +979,7 @@ public class jpUlazDetail extends JPanel {
       }
       frm.getDetailSet().setBigDecimal("DC_VAL",  util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
       frm.getDetailSet().setBigDecimal("IDOB",    util.multiValue   (frm.getDetailSet().getBigDecimal("IDOB_VAL"), 
-          frm.getMasterSet().getBigDecimal("TECAJ").divide(jedval, 9, BigDecimal.ROUND_HALF_UP)));
+          tecaj.divide(jedval, 9, BigDecimal.ROUND_HALF_UP)));
       frm.getDetailSet().setBigDecimal("DC",      util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
       calcFromIDOB();
     }
@@ -986,14 +988,14 @@ public class jpUlazDetail extends JPanel {
       Aus.mul(frm.getDetailSet(), "IDOB_VAL", kol);
       //frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
       frm.getDetailSet().setBigDecimal("IDOB",   util.multiValue   (frm.getDetailSet().getBigDecimal("IDOB_VAL"), 
-          frm.getMasterSet().getBigDecimal("TECAJ").divide(jedval, 9, BigDecimal.ROUND_HALF_UP)));
+          tecaj.divide(jedval, 9, BigDecimal.ROUND_HALF_UP)));
       frm.getDetailSet().setBigDecimal("DC",      util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
       calcFromIDOB();
     }
     else if (mode==3) {   // Dobavljacev iznos
       Aus.set(frm.getDetailSet(), "IDOB_VAL", "IDOB");
       Aus.mul(frm.getDetailSet(), "IDOB_VAL", jedval);
-      Aus.div(frm.getDetailSet(), "IDOB_VAL", frm.getMasterSet().getBigDecimal("TECAJ"));
+      Aus.div(frm.getDetailSet(), "IDOB_VAL", tecaj);
       //frm.getDetailSet().setBigDecimal("IDOB_VAL",  util.divideValue   (frm.getDetailSet().getBigDecimal("IDOB").multiply(jedval), frm.getMasterSet().getBigDecimal("TECAJ")));
       frm.getDetailSet().setBigDecimal("DC_VAL",    util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
       frm.getDetailSet().setBigDecimal("DC",        util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
@@ -1003,7 +1005,7 @@ public class jpUlazDetail extends JPanel {
       frm.getDetailSet().setBigDecimal("IDOB",      util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
       Aus.set(frm.getDetailSet(), "IDOB_VAL", "IDOB");
       Aus.mul(frm.getDetailSet(), "IDOB_VAL", jedval);
-      Aus.div(frm.getDetailSet(), "IDOB_VAL", frm.getMasterSet().getBigDecimal("TECAJ"));
+      Aus.div(frm.getDetailSet(), "IDOB_VAL", tecaj);
       //frm.getDetailSet().setBigDecimal("IDOB_VAL",  util.divideValue   (frm.getDetailSet().getBigDecimal("IDOB").multiply(jedval), frm.getMasterSet().getBigDecimal("TECAJ")));
       frm.getDetailSet().setBigDecimal("DC_VAL",    util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
       calcFromIDOB();
