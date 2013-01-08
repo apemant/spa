@@ -23,6 +23,8 @@ import hr.restart.baza.Partneri;
 import hr.restart.baza.RN;
 import hr.restart.baza.RN_znacsub;
 import hr.restart.baza.dM;
+import hr.restart.gk.gkStatusColorModifier;
+import hr.restart.rn.ServisMailer;
 import hr.restart.rn.raSubjektColumnModifier;
 import hr.restart.sisfun.Asql;
 import hr.restart.sisfun.frmParam;
@@ -34,6 +36,7 @@ import hr.restart.swing.JraFrame;
 import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.KeyAction;
+import hr.restart.swing.raStatusColorModifier;
 import hr.restart.swing.raTableColumnModifier;
 import hr.restart.swing.raTableModifier;
 import hr.restart.swing.raTableValueModifier;
@@ -56,6 +59,7 @@ import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.raKnjigChangeListener;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -202,7 +206,7 @@ public class frmServis extends frmRadniNalog {
   };
   JlrNavField jlrNazVlasnik = new JlrNavField();
 
-  raNavAction potob, hist, makerac, chgdat;
+  raNavAction potob, hist, makerac, chgdat, mailstat;
 
   JraButton jbSelVlasnik = new JraButton();
   JraButton jbSelSubjekt = new JraButton();
@@ -536,6 +540,7 @@ public class frmServis extends frmRadniNalog {
     hist.setEnabled(getMasterSet().rowCount() > 0);
     chgdat.setEnabled(getMasterSet().rowCount() > 0 && 
         (raUser.getInstance().isSuper() || raUser.getInstance().isTest()));
+    mailstat.setEnabled(getMasterSet().rowCount() > 0);
   }
 
   /*private void removeSubjektFilter() {
@@ -867,12 +872,15 @@ public class frmServis extends frmRadniNalog {
   }
   
   public void AfterAfterSaveMaster(char mode) {
-    super.AfterAfterSaveMaster(mode);
+    if (frmParam.getParam("rn", "servisStavkeGo", "D","Ulazi li nakon snimanja zaglavlja servisnog RN u stavke").equalsIgnoreCase("D")) {
+      super.AfterAfterSaveMaster(mode);
+    }
     if (doMark) {
       doMark = false;
       dM.getSynchronizer().markAsDirty("RN_znacsub");
     }
     if (img != null) saveImage();
+    ServisMailer.sendMailRN(getMasterSet());
   }
 
   public void AfterDeleteDetail() {
@@ -1556,7 +1564,7 @@ public class frmServis extends frmRadniNalog {
 
     this.setJPanelMaster(jpMasterMain);
     this.setJPanelDetail(det);
-
+    raMaster.getJpTableView().addTableModifier(new raStatusColorModifier("STATUS","P",Color.GREEN.brighter().brighter(),Color.GREEN.darker().darker()));
     this.raMaster.addKeyAction(new raKeyAction(KeyEvent.VK_F2, "Unos i izbor vlasnika") {
       public void keyAction() {
         if (jbSelVlasnik.isEnabled() && isKupac()) {
@@ -1575,7 +1583,13 @@ public class frmServis extends frmRadniNalog {
       }
     });
     
-    this.raMaster.addOption(chgdat = new hr.restart.util.raNavAction("Promjena datuma", raImages.IMGCOMPOSEMAIL, KeyEvent.VK_UNDEFINED) {
+    this.raMaster.addOption(mailstat = new hr.restart.util.raNavAction("Obavijesti e-mailom", raImages.IMGSENDMAIL, KeyEvent.VK_UNDEFINED) {
+      public void actionPerformed(java.awt.event.ActionEvent ev) {
+        ServisMailer.sendMailRN(getMasterSet(), true);
+      }
+    },4);
+    
+    this.raMaster.addOption(chgdat = new hr.restart.util.raNavAction("Promjena datuma", raImages.IMGTABLE, KeyEvent.VK_UNDEFINED) {
       public void actionPerformed(java.awt.event.ActionEvent ev) {
         changeDatum();
       }
@@ -1590,6 +1604,7 @@ public class frmServis extends frmRadniNalog {
     this.raMaster.addOption(potob = new hr.restart.util.raNavAction("Potvrda / zatvaranje", raImages.IMGIMPORT, KeyEvent.VK_F7) {
         public void actionPerformed(java.awt.event.ActionEvent ev) {
           Obradi();
+          ServisMailer.sendMailRN(getMasterSet());
         }
       },4);
     
