@@ -285,7 +285,7 @@ System.out.println("kumulorgStr::::: "+kumulorgStr);
 //    System.out.println("rmiParam - " + rmiParam);
     if (rmiParam.equals("")) return NULA;
     String odbiciOrPrimanja = odbiciTabela?getOdbiciTableName():getPrimanjaTableName();
-    String pref_pok = "select "+getKumulradTableName()+".cradnik, " + colName + " as "+ colName + " from " + odbiciOrPrimanja;
+    String pref_pok = "select "+((this.getRepMode() == 'A')?"kumulradarh.cradnik":"radnici.cradnik")+", " + colName + " as "+ colName + " from " + odbiciOrPrimanja;
     String pok = pref_pok + getWhereSQL(odbiciOrPrimanja,"and", dlgGetKnjig.getKNJCORG()) + rmiParam;
     if (!"".equals(getOjWith())) {
       pok = pok + " UNION " + pref_pok + getWhereSQL(odbiciOrPrimanja,"and", getOjWith()) + rmiParam;
