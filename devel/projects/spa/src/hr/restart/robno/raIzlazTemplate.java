@@ -17,7 +17,11 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.apis_it.fin._2012.types.f73.PorezType;
+import hr.apis_it.fin._2012.types.f73.RacunType;
+import hr.apis_it.fin._2012.types.f73.RacunZahtjev;
 import hr.restart.baza.*;
+import hr.restart.pos.presBlag;
 import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raSaldaKonti;
@@ -56,6 +60,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
@@ -344,6 +349,13 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         keyActionShowKartica();
       }
 	};
+	
+	raNavAction rnvFisk = new raNavAction("Zakljuèavanje / fiskalizacija",
+        raImages.IMGSENDMAIL, java.awt.event.KeyEvent.VK_F7, java.awt.event.KeyEvent.SHIFT_MASK) {
+      public void actionPerformed(ActionEvent e) {
+        keyFisk();
+      }
+    };
     
     raNavAction rnvAkcija = new raNavAction("Akcija da/ne",
         raImages.IMGTIP, java.awt.event.KeyEvent.VK_F8) {
@@ -377,6 +389,184 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
     void checkAkcijaPrefix() {
       akcijaPrefix = frmParam.getParam("robno", "akcijaPrefiks", "",
           "Prefiks naziva artikla za artikle na akciji (prazno za onemogucavanje)");
+    }
+    
+    
+    public static RacunType getRacType(DataSet ms) {
+      
+      lookupData ld = lookupData.getlookupData();
+      dM dm = dM.getDataModule();
+            
+      DataSet ds = stdoki.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ms));
+      ds.open();
+
+      //BigDecimal osnpdv = Aus.zero2;
+      BigDecimal osnpnp = Aus.zero2;
+      //BigDecimal izpdv = Aus.zero2;
+      BigDecimal izpnp = Aus.zero2;
+      BigDecimal tot = Aus.zero2;
+      BigDecimal povn = Aus.zero2;
+      //BigDecimal povs = new BigDecimal("0.5");
+      
+      BigDecimal pdv25 = new BigDecimal("25").setScale(2);
+      
+      HashMap izmap = new HashMap();
+      HashMap osnmap = new HashMap();
+      
+    
+      for (ds.first(); ds.inBounds(); ds.next()) {
+        BigDecimal por1 = ds.getBigDecimal("POR1");
+        BigDecimal por2 = ds.getBigDecimal("POR2");
+        BigDecimal osn = ds.getBigDecimal("IPRODBP");
+        ld.raLocate(dm.getArtikli(), new String[]{"CART"}, new String[] {String.valueOf(ds.getInt("CART"))});
+        /*if ("D".equals(dm.getArtikli().getString("POV"))) {
+          BigDecimal povni = povs.multiply(ds.getBigDecimal("KOL")).
+            setScale(2, BigDecimal.ROUND_HALF_UP);
+          povn = povn.add(povni);
+          osn = osn.subtract(povni);
+        }*/
+        
+        if (por1.signum() != 0) {
+          BigDecimal post = ds.getBigDecimal("PPOR1").setScale(2);
+          BigDecimal osnpdv = (BigDecimal) osnmap.get(post);
+          BigDecimal izpdv = (BigDecimal) izmap.get(post);
+          osnmap.put(post, osn.add(osnpdv != null ? osnpdv : Aus.zero0));
+          izmap.put(post, por1.add(izpdv != null ? izpdv : Aus.zero0));
+        }
+        
+        if (por2.signum() != 0) osnpnp = osnpnp.add(osn);
+        izpnp = izpnp.add(por2);
+        tot = tot.add(ds.getBigDecimal("IPRODSP"));
+      }
+      
+      System.out.println(tot);
+      System.out.println(osnmap);
+      System.out.println(izmap);
+      System.out.println(osnpnp + " " + izpnp);
+      System.out.println(povn);
+      System.out.println(osnmap.get(pdv25));
+      System.out.println(izmap.get(pdv25));
+      
+      ld.raLocate(dm.getLogotipovi(), "CORG", OrgStr.getKNJCORG(false));
+      String oibf = dm.getLogotipovi().getString("OIB");
+      
+      DataRow usr = ld.raLookup(dM.getDataModule().getUseri(),"CUSER", ms.getString("CUSER"));
+      String oibu = usr.getString("OIB");
+      
+      /*if (!presBlag.isUserOriented()) {
+        DataRow blag = ld.raLookup(dM.getDataModule().getBlagajnici(), "CBLAGAJNIK", ms.getString("CBLAGAJNIK"));
+        if (blag != null && blag.getString("OIB").length() > 0) oibu = blag.getString("OIB");
+      }*/
+      
+      String nacpl = ms.getString("CNACPL");
+      if (nacpl.length() == 0 || nacpl.equalsIgnoreCase("G"))
+        nacpl = "G";
+      else if (nacpl.equalsIgnoreCase("C") || nacpl.equalsIgnoreCase("È"))
+        nacpl = "C";
+      else if (nacpl.equalsIgnoreCase("K"))
+        nacpl = "K";
+      else nacpl = "O";
+
+      RacunType rac = presBlag.getFis().createRacun(
+          oibf, //oib firme (Rest Art) NE PREPISUJ!!
+          presBlag.isFiskPDV(), //da li je obveznik pdv-a 
+          ms.getTimestamp("DATDOK"), // datum i vrijeme kreiranja racuna
+          presBlag.isFiskSep() ? "N" : "P", // oznaka slijednosti
+          ms.getInt("FBR"), // broj racuna 
+          ms.getString("FPP"), // oznaka poslovne jedinice
+          ms.getInt("FNU"), // oznaka naplatnog mjesta
+          new BigDecimal(25), //stopa pdv-a 
+          (BigDecimal) osnmap.get(pdv25), //osnovica za pdv
+          (BigDecimal) izmap.get(pdv25), //iznos pdv-a
+          new BigDecimal(3), //stopa pnp-a
+          osnpnp, //osnovica za pnp
+          izpnp, //iznos pnp 
+          null, //naziv naknade - defaults to 'Povradna naknada' 
+          povn, //iznos naknade
+          tot, //ukupan iznos racuna
+          nacpl,//nacin placanja
+          oibu,//oib prodavatelja (Ja) NE PREPISUJ!!
+          false //da li je naknadna dostava
+       );
+      
+      if (izmap.size() > 1 || (izmap.size() == 1 && izmap.containsKey(pdv25))) {
+        for (Iterator i = izmap.keySet().iterator(); i.hasNext(); ) {
+          BigDecimal post = (BigDecimal) i.next();
+          if (post.compareTo(pdv25) == 0) continue;
+          PorezType por = presBlag.getFis().getFisFactory().createPorezType();
+          por.setStopa(post);
+          por.setOsnovica((BigDecimal) osnmap.get(post));
+          por.setIznos((BigDecimal) izmap.get(post));
+          if (rac.getPdv() == null)
+            rac.setPdv(presBlag.getFis().getFisFactory().createPdvType());
+
+          rac.getPdv().getPorez().add(por);
+          System.out.println(por);
+        }
+      }
+      
+      return rac;
+    }
+    
+    
+    public static boolean fisk(DataSet ms) {
+      if (presBlag.isFiskal() && (!ms.getString("FOK").equals("D") || ms.getString("JIR").length() == 0)) {
+        
+        try {
+          
+          Timestamp datvri = new Timestamp(System.currentTimeMillis());
+          RacunZahtjev zahtj = presBlag.getFis().createRacunZahtjev(
+            presBlag.getFis().createZaglavlje(datvri, null), 
+            getRacType(ms));
+          
+          String jir = presBlag.getFis().fiskaliziraj(zahtj);
+          if (jir != null && jir.length() > 0 && !jir.startsWith("ZKI") && !jir.startsWith("false"))
+            ms.setString("JIR", jir);
+          else ms.setString("JIR", "");
+          ms.saveChanges();
+          return ms.getString("JIR").length() > 0;
+        } catch (Exception e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+      return false;
+    }
+    
+    
+    public void keyFisk() {
+      if (getMasterSet().rowCount() == 0) return;
+      
+      if (getMasterSet().getString("FOK").equals("D")) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument je veæ zakljuèan!", "Greška", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      
+      if (what_kind_of_dokument.equalsIgnoreCase("GOT") || what_kind_of_dokument.equalsIgnoreCase("GRN")) {
+        if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li fiskalizirati raèun?", "Fiskalizacija", 
+            JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+         String cOpis = "FISK-"+presBlag.getFiskPP()+"-2-"+getMasterSet().getString("GOD");
+         getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
+         getMasterSet().setString("FPP", presBlag.getFiskPP());
+         getMasterSet().setString("FOK", "D");
+         getMasterSet().setInt("FNU", 2);
+         getMasterSet().saveChanges();
+         boolean succ = fisk(getMasterSet());
+         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + getMasterSet().getInt("FBR") + "-" + 
+             getMasterSet().getString("FPP") + "-" + getMasterSet().getInt("FNU") + 
+             (succ ? " fiskaliziran!" : " zakljuèan!"), "Greška", JOptionPane.INFORMATION_MESSAGE);
+      } else if (what_kind_of_dokument.equalsIgnoreCase("ROT") || what_kind_of_dokument.equalsIgnoreCase("RAC") ||
+          what_kind_of_dokument.equalsIgnoreCase("IZD")) {
+        String cOpis = "FISK-"+presBlag.getFiskPP()+"-1-"+getMasterSet().getString("GOD");
+        getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
+        getMasterSet().setString("FPP", presBlag.getFiskPP());
+        getMasterSet().setString("FOK", "D");
+        getMasterSet().setInt("FNU", 1);
+        getMasterSet().saveChanges();
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + getMasterSet().getInt("FBR") + "-" + getMasterSet().getString("FPP") + "-" + getMasterSet().getInt("FNU") + " zakljuèan!", "Greška", JOptionPane.INFORMATION_MESSAGE);
+      } else {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument se ne može fiskalizirati!", "Greška", JOptionPane.ERROR_MESSAGE);
+      }
     }
     
     public void akcijaToggle() {
@@ -2268,6 +2458,13 @@ ST.prn(radninal);
 
 			return false;
 		}
+		if (isFisk()) {
+          setUserCheckMsg(
+                  "Korisnik ne može promijeniti dokument jer je zakljuèan / fiskaliziran !",
+                  false);
+
+          return false;
+        }
 		if (isPrenesen()) {
 			setUserCheckMsg(
 					"Korisnik ne može promijeniti dokument jer je prenesen u ili iz druge baze !",
@@ -4088,6 +4285,10 @@ System.out.println("findCjenik::else :: "+sql);
 		return getMasterSet().getString("STATKNJ").equalsIgnoreCase("K")
 				|| getMasterSet().getString("STATKNJ").equalsIgnoreCase("P");
 	}
+	
+	public boolean isFisk() {
+      return getMasterSet().getString("FOK").equalsIgnoreCase("D");
+    }
 
 	/**
 	 * Status = T zna\u010Di da je dokument prenešen u centralnu bazu
@@ -4550,7 +4751,8 @@ System.out.println("findCjenik::else :: "+sql);
 
 	public boolean ValidacijaLimit(java.math.BigDecimal oldvalue,
 			java.math.BigDecimal newvalue) {
-		//if (checkLimit) {
+		if (checkLimit) {
+
 			lD.raLocate(dm.getPartneri(), new String[] { "CPAR" },
 					new String[] { String
 							.valueOf(getMasterSet().getInt("CPAR")) });
@@ -4577,7 +4779,7 @@ System.out.println("findCjenik::else :: "+sql);
 					return false;
 				}
 			}
-		//}
+		}
 		return true;
 	}
 
