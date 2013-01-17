@@ -151,7 +151,7 @@ public class frmID extends raUpitLite {
       jraMjesec.selectAll();
   }
 
-  private String getOjWith() {
+  public static String getOjWith() {
     return frmParam.getParam("pl", "ojwithID"+dlgGetKnjig.getKNJCORG(), "", "Sa kojim još knjigovodstvom da zbroji ID za knjigov. "+dlgGetKnjig.getKNJCORG());
   }
   public void okPress() {
