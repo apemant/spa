@@ -55,6 +55,11 @@ public class repFISBIH extends mxReport {
   }
   public void print() {
     super.print();
+    try {
+      Thread.sleep(Integer.parseInt(frmParam.getParam("robno", "FISBIHwait", "3000", "Koliko milisekundi da èeka prije obrade odgovora FISBIH ispisa")));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     handleResponse();
   }
   public void handleResponse() {

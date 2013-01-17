@@ -1557,7 +1557,10 @@ SwingUtilities.invokeLater(new Runnable(){
 			jraDATPRD.setHorizontalAlignment(SwingConstants.CENTER);
 			jraFBR.setColumnName("FBR");
 			jlFBR.setText("Broj fiskalnog RN");
-			jlFBR.setEnabled(repFISBIH.isFISBIH());
+			System.err.println("jraFBR.setVisible");
+			boolean v = repFISBIH.isFISBIH()&&frmParam.getParam("robno", "FBRenabled", "N", "Omoguciti rucni unos fiskalnog broja na dokumentima").equalsIgnoreCase("D");
+			jraFBR.setVisible(v);
+			jlFBR.setVisible(v);
 
 			add(jlIZDOK, new XYConstraints(15, 15, -1, -1));
 			add(jraBRDOKIZ, new XYConstraints(130, 15, 110, -1));

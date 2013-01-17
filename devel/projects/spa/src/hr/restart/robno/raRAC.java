@@ -236,7 +236,13 @@ final public class raRAC extends raIzlazTemplate {
         raMaster.getRepRunner().addReport("hr.restart.robno.repInvoice",
                 "hr.restart.robno.repIzlazni","ProformaInvoice","Invoice");
         
-        if (repFISBIH.isFISBIH()) raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+//        if (repFISBIH.isFISBIH()) raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+        if (repFISBIH.isFISBIH()) {
+          if (getMasterSet().getInt("FBR")>0) {
+            raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHDupli","Ispis DUPLIKATA FISKALNOG ra\u010Duna");
+            raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRekRN","REKLAMIRANJE FISKALNOG ra\u010Duna");
+          } else raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+        }
         
     }
 

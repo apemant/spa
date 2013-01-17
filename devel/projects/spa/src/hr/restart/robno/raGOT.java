@@ -52,7 +52,12 @@ public class raGOT extends raIzlazTemplate  {
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxRacun","Matrièni ispis raèuna");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxRacunPop","Matrièni ispis raèuna s više popusta");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna Pos printer");
-    if (repFISBIH.isFISBIH()) raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+    if (repFISBIH.isFISBIH()) {
+      if (getMasterSet().getInt("FBR")>0) {
+        raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHDupli","Ispis DUPLIKATA FISKALNOG ra\u010Duna");
+        raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRekRN","REKLAMIRANJE FISKALNOG ra\u010Duna");
+      } else raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+    }
     isMasterInitIspis = true;
   }
 

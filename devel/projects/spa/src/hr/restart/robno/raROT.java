@@ -250,9 +250,14 @@ public class raROT extends raIzlazTemplate  {
       raDetail.addOption(rnvDetailVeza, 5, true);
     }
   }
-  
+  public void Funkcija_ispisa_master(){
+    if (repFISBIH.isFISBIH()) {//talasamo samo kad treba
+      raMaster.getRepRunner().clearAllCustomReports();
+      isMasterInitIspis = false;
+    }
+    super.Funkcija_ispisa_master();
+  }
  public void MyaddIspisMaster(){
-
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuni","hr.restart.robno.repIzlazni","Racuni",ReportValuteTester.titleROT1R);
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniV","hr.restart.robno.repIzlazni","Racuni",ReportValuteTester.titleROT1RV);
      //TODO e sad ovaj ispis da li ga dopustiti za sve raèune, ili samo za one koji imaju sheme popusta (tzv. popusti na popust)???
@@ -303,7 +308,14 @@ public class raROT extends raIzlazTemplate  {
      //test
      
      //test
-     if (repFISBIH.isFISBIH()) raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+//     if (repFISBIH.isFISBIH()) raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+     if (repFISBIH.isFISBIH()) {
+System.err.println("getMasterSet().getInt(FBR) = "+getMasterSet().getInt("FBR"));
+       if (getMasterSet().getInt("FBR")>0) {
+         raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHDupli","Ispis DUPLIKATA FISKALNOG ra\u010Duna");
+         raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRekRN","REKLAMIRANJE FISKALNOG ra\u010Duna");
+       } else raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+     }
  }
 
  public void MyaddIspisDetail(){

@@ -95,7 +95,12 @@ public class raGRN extends raIzlazTemplate  {
     raMaster.getRepRunner().addReport("hr.restart.robno.repGrnRac2","hr.restart.robno.repIzlazni","GrnRac2","Raèun 2 red");
     raMaster.getRepRunner().addReport("hr.restart.robno.repRacRnalKupac","hr.restart.robno.repIzlazni","RacRnalKupac",ReportValuteTester.titleRACFROMRNAL);
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna");
-    if (repFISBIH.isFISBIH()) raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+    if (repFISBIH.isFISBIH()) {
+      if (getMasterSet().getInt("FBR")>0) {
+        raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHDupli","Ispis DUPLIKATA FISKALNOG ra\u010Duna");
+        raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRekRN","REKLAMIRANJE FISKALNOG ra\u010Duna");
+      } else raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+    }
   }
   public void ConfigViewOnTable(){
 //    this.setVisibleColsMaster(new int[] {4,5,6});

@@ -1973,7 +1973,8 @@ public BigDecimal getIPRODSP() {
   public String getJIR() {
     try {
       if (repFISBIH.isFISBIH() && (ds.hasColumn("FBR") != null) && (ds.getInt("FBR") > 0)) {
-        return Valid.getValid().maskZeroInteger(new Integer(ds.getInt("FBR")), 6);
+        //return Valid.getValid().maskZeroInteger(new Integer(ds.getInt("FBR")), 6);
+        return ds.getInt("FBR")+"";
       } else if (ds.hasColumn("JIR") != null) {
         return ds.getString("JIR").trim();
       }

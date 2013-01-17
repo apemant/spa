@@ -52,10 +52,10 @@ public class repFISBIHRN extends repFISBIH {
     String row = "Q,"+getLogickiBroj()+",______,_,__;1;Br.RN-fakture "+getBrojRac(ds);
     addLine(row);
     //pocetak
-    row = "K,"+getLogickiBroj()+",______,_,__;;;;"+getIBK(ds)+";"+getNazPar(ds)+";;"+getAdrPar(ds)+";"+getGradPar(ds)+";";
+    row = "K,"+getLogickiBroj()+",______,_,__;"+getFBR()+";;;"+getIBK(ds)+";"+getNazPar(ds)+";;"+getAdrPar(ds)+";"+getGradPar(ds)+";";
     addLine(row);
     //stavka
-    row = "S,"+getLogickiBroj()+",______,_,__;Stavke po fakturi-racunu;"+getIznos(ds)+";1.000;1;1;"+getPoreskaGrupa(ds)+";0;10001;0;;;";
+    row = "S,"+getLogickiBroj()+",______,_,__;Stavke po fakturi-racunu;"+getIznos(ds)+";"+getKolicina(ds)+";1;1;"+getPoreskaGrupa(ds)+";0;10001;0;;;";
     addLine(row);
     //kraj racuna @todo razraditi vise nacina placanja
     row = "T,"+getLogickiBroj()+",______,_,__;"+getNacinPlacanja(ds);
@@ -63,6 +63,9 @@ public class repFISBIHRN extends repFISBIH {
     row = "G,"+getLogickiBroj()+",______,_,__;LastReceiptNumber";
     addLine(row);
     parFound = false;
+  }
+  public String getFBR() {
+    return "";
   }
   public String getIznos(QueryDataSet ds2) {
     BigDecimal iznos = Aus.zero2;
@@ -165,7 +168,7 @@ public class repFISBIHRN extends repFISBIH {
   }
 
   public String getKolicina(QueryDataSet ds2) {
-    return ds2.getBigDecimal("KOL")+"";
+    return "1.000";//ds2.getBigDecimal("KOL")+"";
   }
 
   public String getCijena(QueryDataSet ds2) {

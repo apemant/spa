@@ -77,7 +77,9 @@ Posljednjih pet mjera možete sami definirati u programu PGM.
     // TODO Auto-generated method stub
     return ds2.getBigDecimal("PPOPUST1").add(ds2.getBigDecimal("PPOPUST2"))+"";
   }
-  
+  public String getKolicina(QueryDataSet ds2) {
+    return ds2.getBigDecimal("KOL")+"";
+  }
   protected void handleResponse(String sLRN) {
     try {
       master.setInt("FBR", Integer.parseInt(sLRN));
