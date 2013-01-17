@@ -213,7 +213,7 @@ public class frmDNR extends raUpitLite {
 //                  " AND radnicipl.cvro = kumulorgarh.cvro"+
 //                  " AND radnicipl.corg = kumulorgarh.corg"+
                   " and kumulorgarh.datumispl between '"+ fieldSet.getTimestamp("DATISPLOD") + "' and '" + ut.getLastSecondOfDay(fieldSet.getTimestamp("DATISPLDO")) + "'" +
-                  " and (kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulradarh.corg")+")";
+                  " and (kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulradarh.corg")+" OR kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(frmID.getOjWith()),"kumulradarh.corg")+")";
     String nadoprc = " and kumulradarh.cradnik between '"+ fieldSet.getInt("CRADNIKOD") + "' and '" + fieldSet.getInt("CRADNIKDO") + "'";
     if (!jlrCradnikOd.getText().equals("")) return qstr.concat(nadoprc);
     qstr+=" ORDER BY radnici.ime, radnici.prezime, radnici.cradnik, kumulorgarh.godobr, kumulorgarh.mjobr, kumulorgarh.rbrobr";

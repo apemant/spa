@@ -23,6 +23,7 @@ import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.sysoutTEST;
+import hr.restart.zapod.dlgGetKnjig;
 
 import java.math.BigDecimal;
 
@@ -176,7 +177,7 @@ public class frmPK extends frmDNR{
     nextStep("Dohvat sumarnih podataka o djelatnicima..");
     repSet = Util.getNewQueryDataSet(getRepQdsString());
     if (repSet.getRowCount() == 0 && !jlrCradnikOd.getText().equals("")) {
-      String qstr = "select CAST (0 as numeric(4)) as godobr, CAST (0 as numeric(4)) as mjobr, CAST (0 as numeric(4)) as rbrobr,"+
+      String qstr = "select CAST ("+Util.getUtil().getYear(fieldSet.getTimestamp("DATISPLOD"))+" as numeric(4)) as godobr, CAST (0 as numeric(4)) as mjobr, CAST (0 as numeric(4)) as rbrobr,"+
       " CAST (null as TIMESTAMP) as datumispl, CAST (0 as numeric(17,2)) as bruto, CAST (0 as numeric(17,2)) as doprinosi,"+
       " CAST (0 as numeric(17,2)) as iskneop, CAST (0 as numeric(17,2)) as porosn,"+
       " CAST (0 as numeric(17,2)) as por1, CAST (0 as numeric(17,2)) as por2, CAST (0 as numeric(17,2)) as por3,"+
@@ -211,7 +212,7 @@ public class frmPK extends frmDNR{
       mjIspl = vl.maskString(ut.getMonth(repSet.getTimestamp("DATUMISPL")),'0',2);
 //System.out.println("Engaging multiple HartAttacks for "+repSet.getShort("GODOBR")+"-"+repSet.getShort("MJOBR")+"-"+repSet.getShort("RBROBR")+" / "+repSet.getString("CRADNIK"));
       nextStep("Priprema PK za radnika "+repSet.getString("CRADNIK")+", obrada "+repSet.getShort("GODOBR")+"-"+repSet.getShort("MJOBR")+"-"+repSet.getShort("RBROBR"));
-			java.math.BigDecimal osig_ =  getHartAttack(
+			java.math.BigDecimal osig_ =  (getGodPK(repSetPK) > 2011?Aus.zero2:getHartAttack(
           repSet.getShort("GODOBR"),
           repSet.getShort("MJOBR"),
           repSet.getShort("RBROBR"),
@@ -225,14 +226,15 @@ public class frmPK extends frmDNR{
           repSet.getShort("GODOBR"),
           repSet.getShort("MJOBR"),
           repSet.getShort("RBROBR"),
-          repSet.getString("CRADNIK"),odbiciWh(raIzvjestaji.ID_3_3)));
+          repSet.getString("CRADNIK"),odbiciWh(raIzvjestaji.ID_3_3)))
+          );
 //System.out.println("done EmHAtt!");
 //      System.out.println("god " +repSet.getShort("GODOBR") + " mj " + repSet.getShort("MJOBR") + " rbr " + repSet.getShort("RBROBR") + " radnik " + repSet.getString("CRADNIK") + " osig " + osig_ + " mj ispl " + mjIspl);
 
-      if (!lookupData.getlookupData().raLocate(repSetPK,new String[] {"MJISPL","CRADNIK"},new String[] {mjIspl, repSet.getString("CRADNIK")})){
+      if (!lookupData.getlookupData().raLocate(repSetPK,new String[] {"MJISPL","CRADNIK"},new String[] {mjIspl, cleanCRADNIK(repSet.getString("CRADNIK"))})){
         repSetPK.insertRow(false);
         repSetPK.setString("MJISPL",mjIspl);
-        repSetPK.setString("CRADNIK",repSet.getString("CRADNIK"));
+        repSetPK.setString("CRADNIK",cleanCRADNIK(repSet.getString("CRADNIK")));
         repSetPK.setString("IME",repSet.getString("IME"));
         repSetPK.setString("PREZIME",repSet.getString("PREZIME"));
         repSetPK.setString("JMBG",repSet.getString("JMBG"));
@@ -252,7 +254,7 @@ public class frmPK extends frmDNR{
         //IP
         repSetPK.setString("COPCINE", repSet.getString("COPCINE"));
         repSetPK.setBigDecimal("NETOPK", repSet.getBigDecimal("NETOPK"));
-        repSetPK.setBigDecimal("HARACH", Harach.getHaracMj(getGodPK(repSet)+mjIspl, repSet.getString("CRADNIK"), null)[1]);
+        repSetPK.setBigDecimal("HARACH", (getGodPK(repSetPK) > 2011?Aus.zero2:Harach.getHaracMj(getGodPK(repSet)+mjIspl, repSet.getString("CRADNIK"), null)[1]));
       } else {
         repSetPK.setBigDecimal("BRUTO",repSetPK.getBigDecimal("BRUTO").add(repSet.getBigDecimal("BRUTO")));
         repSetPK.setBigDecimal("DOPRINOSI",repSetPK.getBigDecimal("DOPRINOSI").add(repSet.getBigDecimal("DOPRINOSI")));
@@ -272,9 +274,33 @@ public class frmPK extends frmDNR{
 //    sysoutTEST syst = new sysoutTEST(false);
 //    syst.prn(repSet);
 //    syst.prn(repSetPK);
+    //*hack-fix iskneop*
+    for (repSetPK.first(); repSetPK.inBounds(); repSetPK.next()) {
+      BigDecimal dohodak = repSetPK.getBigDecimal("BRUTO").subtract(repSetPK.getBigDecimal("DOPRINOSI")).subtract(repSetPK.getBigDecimal("OSIG")); 
+      if (dohodak.subtract(repSetPK.getBigDecimal("ISKNEOP")).signum() < 0) {
+        repSetPK.setBigDecimal("ISKNEOP", dohodak);
+        repSetPK.setBigDecimal("POROSN", Aus.zero2);
+        repSetPK.post();
+      }
+    }
+    
     setBrojRadnikaPK();
     brRad = getBrojRadnika();
   }
+  private String cleanCRADNIK(String cradnik) {
+    if (frmID.getOjWith().trim().equals("")) return cradnik;
+    String ow = "@"+dlgGetKnjig.getKNJCORG().trim();
+    String ret = null;
+//    System.out.println("ow.length() = "+ow.length());
+//    System.out.println(cradnik+".endsWith("+ow+") : "+cradnik.endsWith(ow));
+    if (cradnik.endsWith(ow)) {
+//      System.err.println("I'm IN!");
+      ret = cradnik.substring(0, cradnik.length()-ow.length());
+    } else ret = cradnik;
+//    System.out.println("cleanCRADNIK in "+cradnik+" out "+ret);
+    return ret;
+  }
+
   public void setBrojRadnikaPK() {
     try {
       String a1 = "SELECT count(distinct cradnik) as br FROM Kumulradarh, Kumulorgarh"
@@ -304,7 +330,8 @@ System.out.println(a);
    * @return
    */
   public short getGodPK(ReadRow repSet) {
-    return Short.parseShort(ut.getYear(repSet.getTimestamp("DATUMISPL")));
+//    return Short.parseShort(ut.getYear(repSet.getTimestamp("DATUMISPL")));
+    return Short.parseShort(ut.getYear(fieldSet.getTimestamp("DATISPLOD")));
   }
 
   public DataSet getRepSet(){
