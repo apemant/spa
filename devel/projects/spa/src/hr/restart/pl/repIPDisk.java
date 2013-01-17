@@ -88,8 +88,10 @@ public class repIPDisk extends repDisk {
     try {
       dumpHead();
       dumpDetail();
-      hr.porezna_uprava.e_porezna.obrasci.ip.v3_0.Generator.delimiter = separator;
-      new hr.porezna_uprava.e_porezna.obrasci.ip.v3_0.Generator("ip_head.csv", "ip_det.csv", new FileOutputStream(mxReport.TMPPRINTFILE));
+//      hr.porezna_uprava.e_porezna.obrasci.ip.v3_0.Generator.delimiter = separator;
+//      new hr.porezna_uprava.e_porezna.obrasci.ip.v3_0.Generator("ip_head.csv", "ip_det.csv", new FileOutputStream(mxReport.TMPPRINTFILE));
+      hr.porezna_uprava.e_porezna.obrasci.ip.v4_0.Generator.delimiter = separator;
+      new hr.porezna_uprava.e_porezna.obrasci.ip.v4_0.Generator("ip_head.csv", "ip_det.csv", new FileOutputStream(mxReport.TMPPRINTFILE));
     } catch (Exception e) {
       e.printStackTrace();
     }
