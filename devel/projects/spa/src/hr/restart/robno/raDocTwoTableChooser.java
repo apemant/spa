@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.baza.Condition;
 import hr.restart.baza.KreirDrop;
 import hr.restart.baza.Pos;
+import hr.restart.baza.Sklad;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
@@ -304,10 +305,13 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
       DataSet arts = vl.getDataAndClear();*/
       
       if (!arh) {
-        stanje = Stanje.getDataModule().getTempSet(
-            Condition.whereAllEqual(new String[] {"CSKL", "GOD"}, qdsRight).
-            and(Condition.in("CART", arts)));
+      	lookupData.getlookupData().raLocate(dm.getSklad(), "CSKL",	qdsRight.getString("CSKL"));
+      	DataSet samec = Sklad.getDataModule().getTempSet(Condition.equal("CORG", dm.getSklad()));
+      	Condition sc = Condition.in("CSKL", samec);
+      	
+        stanje = Stanje.getDataModule().getTempSet(Condition.equal("GOD", qdsRight).and(sc).and(Condition.in("CART", arts)));
         stanje.open();
+        System.out.println(stanje.getOriginalQueryString());
       }
       obrada();
       
@@ -591,6 +595,7 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
     						  + qds.getBigDecimal("KOL");						
     			//System.out.println("Errors: "+errors);
     		}
+    		detail.setString("CSKLART", stanje.getString("CSKL"));
     	}
     	else {
     	     
