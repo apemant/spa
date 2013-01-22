@@ -1083,7 +1083,17 @@ System.out.println(StavkeSet.getInt("CARt"));
 			} else {
 			  
 			  if (!rIT.getMasterSet().getString("VRDOK").equals("PON"))
-				ZaglavljeSetTmp.setString("STATIRA", "P");
+			  	ZaglavljeSetTmp.setString("STATIRA", "P");
+			  
+			  if (rIT.getMasterSet().getString("VRDOK").equals("IZD") &&
+			  		ZaglavljeSetTmp.getString("VRDOK").equals("POS")) {
+			  	for (findStavkeSet.first(); findStavkeSet.inBounds(); findStavkeSet.next())
+			  		if (!findStavkeSet.getString("STATUS").equals("P")) {
+			  			if (findStavkeSet.getString("CSKLART").equals(rIT.getMasterSet().getString("CSKL")))
+			  				findStavkeSet.setString("STATUS", "P");
+			  			else ZaglavljeSetTmp.setString("STATIRA", "N");
+			  		}
+			  }
 				
 				if ((ZaglavljeSetTmp.getString("VRDOK").equals("OTP") &&
 				    "RAC GRN".indexOf(rIT.what_kind_of_dokument) >= 0) ||
@@ -1256,6 +1266,9 @@ System.out.println(StavkeSet.getInt("CARt"));
 					if (selected.equals("RN")) {
 						prenosStavkiRadnogNaloga();
 					} else {
+						if (selected.equals("POS") && rIT.what_kind_of_dokument.equals("IZD") &&
+								!rIT.getMasterSet().getString("CSKL").equals(findStavkeSet.getString("CSKLART")))
+							continue;
 						StavkeSet.insertRow(true);
 						hr.restart.baza.dM
 								.copyColumns(findStavkeSet, StavkeSet);
