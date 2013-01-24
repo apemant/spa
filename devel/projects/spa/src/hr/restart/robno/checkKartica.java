@@ -31,6 +31,7 @@ import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raProcess;
 import hr.restart.util.raTransaction;
+import hr.restart.util.sysoutTEST;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -260,7 +261,7 @@ public class checkKartica {
   Set knjHead;
 
   private String getHeaderKey(DataSet ds) {
-    if (ds.hasColumn("CSKLUL") != null && ds.getString("CSKLUL").trim().length() > 0) 
+  	if (ds.getString("VRDOK").equals("MES") || ds.getString("VRDOK").equals("MEU") || ds.getString("VRDOK").equals("MEI")) 
       return buffer.clear().
         append(ds.getString("CSKLUL")).append('-').
         append(ds.getString("CSKLIZ")).append('-').
@@ -273,7 +274,7 @@ public class checkKartica {
   }
   
   private String getRowKey(DataSet ds) {
-    if (ds.hasColumn("CSKLUL") != null && ds.getString("CSKLUL").trim().length() > 0) 
+    if (ds.getString("VRDOK").equals("MES") || ds.getString("VRDOK").equals("MEU") || ds.getString("VRDOK").equals("MEI")) 
       return buffer.clear().
         append(ds.getString("CSKLUL")).append('-').
         append(ds.getString("CSKLIZ")).append('-').
@@ -292,7 +293,7 @@ public class checkKartica {
     for (ds.first(); ds.inBounds(); ds.next()) {
       headerMap.put(key = getHeaderKey(ds), new Timestamp(ds.getTimestamp(sysdat).getTime()));
       if ((ds.hasColumn("STATKNJ") != null && ds.getString("STATKNJ").equals("K")) ||
-      		(ds.hasColumn("STATKNJ") == null && (ds.getString("STATKNJU").equals("K") || ds.getString("STATKNJI").equals("K"))))
+      		(ds.hasColumn("STATKNJU") != null && (ds.getString("STATKNJU").equals("K") || ds.getString("STATKNJI").equals("K"))))
       	knjHead.add(key);
     }
   }
@@ -582,8 +583,7 @@ public class checkKartica {
 	      karticatmp.setBigDecimal("MC_GOOD", kartica.getBigDecimal("MC"));
 	      karticatmp.setBigDecimal("ZC_GOOD", kartica.getBigDecimal("ZC"));
 	    }
-	    
-	    boolean knj = knjHead.contains(getRowKey(kartica));
+	    boolean knj = knjHead.contains(getHeaderKey(kartica));
 	    
 		karticatmp.setBigDecimal("KOL_TRENUTNO", karticatmp.getBigDecimal(
 				"KOL_TRENUTNO").subtract(kartica.getBigDecimal("KOL")));
