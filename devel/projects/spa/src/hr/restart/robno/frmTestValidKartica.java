@@ -36,6 +36,11 @@ import hr.restart.util.raProcess;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -57,7 +62,8 @@ public class frmTestValidKartica extends hr.restart.util.raUpit {
   private JraTextField godina = new JraTextField();
   private checkKartica ck = new checkKartica();
   private JraButton popravi = new JraButton();
-  private JraCheckBox sysdat = new JraCheckBox(); 
+  private JraCheckBox sysdat = new JraCheckBox();
+  private JraCheckBox fixmes = new JraCheckBox(); 
 
   rapancart rpcart = new rapancart() {
     public void nextTofocus(){
@@ -98,6 +104,8 @@ public class frmTestValidKartica extends hr.restart.util.raUpit {
       }
     });
     sysdat.setText(" Poredak po sistemskom datumu ");
+    fixmes.setText(" Popravi ulaze na meðuskladišnicama ");
+    
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(popravi,false);
     this.setJPan(jp);
     this.getTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
@@ -114,6 +122,7 @@ public class frmTestValidKartica extends hr.restart.util.raUpit {
     jp.add(new JLabel("Godina "),new XYConstraints(15,115,-1,-1));
     jp.add(godina,new XYConstraints(150,115,100,-1));
     jp.add(sysdat,new XYConstraints(260,115,-1,-1));
+    jp.add(fixmes,new XYConstraints(260,140,-1,-1));
     jp.add(popravi,new XYConstraints(515,115,90,22));
   }
 
@@ -131,6 +140,21 @@ public class frmTestValidKartica extends hr.restart.util.raUpit {
 //      }.start();
   	
 //
+      if (fixmes.isSelected() && ck.mcskl.size() > 0) {
+         ArrayList map = new ArrayList(ck.mcskl.entrySet());
+         Collections.sort(map, new Comparator() {
+           public int compare(Object o1, Object o2) {
+             return ((Timestamp) ((Map.Entry) o1).getValue()).compareTo((Timestamp) ((Map.Entry) o2).getValue());
+           }
+         });
+         ArrayList skl = new ArrayList();
+         for (int i = 0; i < map.size(); i++) skl.add(((Map.Entry) map.get(i)).getKey());
+           
+         VarStr mes = new VarStr();
+         mes.append("\nPromijenjeni ulazi na skladištima: " + VarStr.join(new ArrayList(skl), ", "));
+         JOptionPane.showMessageDialog(this.getWindow(), "Promijenjeni ulazi na skladištima: " + VarStr.join(new ArrayList(skl), ", "), 
+             "Popravak kartica", JOptionPane.INFORMATION_MESSAGE);
+      }
 
   }
 
@@ -151,11 +175,13 @@ public class frmTestValidKartica extends hr.restart.util.raUpit {
     if (rpcart.getCART().trim().length() == 0 && !svi) {
       rcc.EnabDisabAll(rpcskl,true);
       rcc.setLabelLaF(sysdat, true);
+      rcc.setLabelLaF(fixmes, true);
       rpcskl.setCSKL("");
       rpcskl.defFocus();
     } else {      
       this.getJPTV().clearDataSet();
       rcc.setLabelLaF(sysdat, true);
+      rcc.setLabelLaF(fixmes, true);
       rpcart.EnabDisab(true);
       rpcart.setCART();
       this.rcc.setLabelLaF(godina,true);
@@ -324,6 +350,18 @@ public class frmTestValidKartica extends hr.restart.util.raUpit {
       mes.append(Aus.getNum(fixCells, "neispravan iznos", 
           "neispravna iznosa", "neispravnih iznosa"));
       mes.append(fixRows == 1 ? " na stavci\n" : " na stavkama\n");
+      if (fixmes.isSelected() && ck.mcskl.size() > 0) {
+        ArrayList map = new ArrayList(ck.mcskl.entrySet());
+        Collections.sort(map, new Comparator() {
+          public int compare(Object o1, Object o2) {
+            return ((Timestamp) ((Map.Entry) o1).getValue()).compareTo((Timestamp) ((Map.Entry) o2).getValue());
+          }
+        });
+        ArrayList skl = new ArrayList();
+        for (int i = 0; i < map.size(); i++) skl.add(((Map.Entry) map.get(i)).getKey());
+        
+        mes.append("\nPromijenjeni ulazi na skladištima: " + VarStr.join(new ArrayList(skl), ", "));
+      }
       raMultiLineMessage ml = new raMultiLineMessage(mes.toString(), SwingConstants.LEADING);
       JOptionPane.showMessageDialog(this.getWindow(), ml, "Popravak kartica", 
           JOptionPane.INFORMATION_MESSAGE);
@@ -342,6 +380,7 @@ public class frmTestValidKartica extends hr.restart.util.raUpit {
   
   public void okPress() {
     ck.setSysdat(sysdat.isSelected());
+    ck.setFixMes(fixmes.isSelected());
 
     if (svi) {
       sviArtikli();
