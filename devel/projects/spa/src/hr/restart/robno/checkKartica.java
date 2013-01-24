@@ -256,6 +256,8 @@ public class checkKartica {
   
   Map ulazHead, izlazHead, mesHead;
   Map ulazRows, izlazRows, mesRows;
+  
+  Set knjHead;
 
   private String getHeaderKey(DataSet ds) {
     if (ds.hasColumn("CSKLUL") != null && ds.getString("CSKLUL").trim().length() > 0) 
@@ -286,12 +288,18 @@ public class checkKartica {
   }
   
   private void fillHeaderMap(DataSet ds, Map headerMap) {
-    for (ds.first(); ds.inBounds(); ds.next())
-      headerMap.put(getHeaderKey(ds), new Timestamp(ds.getTimestamp(sysdat).getTime()));
+  	String key;
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      headerMap.put(key = getHeaderKey(ds), new Timestamp(ds.getTimestamp(sysdat).getTime()));
+      if ((ds.hasColumn("STATKNJ") != null && ds.getString("STATKNJ").equals("K")) ||
+      		(ds.hasColumn("STATKNJ") == null && (ds.getString("STATKNJU").equals("K") || ds.getString("STATKNJI").equals("K"))))
+      	knjHead.add(key);
+    }
   }
   
   private void prepareHeaderForSingle() {
     QueryDataSet ds;
+    knjHead = new HashSet();
     raProcess.setMessage("Dohvat zaglavlja dokumenata na kartici ...", true);
     ds = Doku.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK STATKNJ " + sysdat,
        cCskl.and(cGod).and(cUl).and(Condition.in("BRDOK", getBrdokList(ulazi))));
@@ -311,6 +319,7 @@ public class checkKartica {
   
   public void prepareDataCache() {
     QueryDataSet ds;
+    knjHead = new HashSet();
     raProcess.setMessage("Dohvat zaglavlja ulaznih dokumenata ...", true);
     ds = Doku.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK STATKNJ " + sysdat, cCskl.and(cGod).and(cUl));
     raProcess.openScratchDataSet(ds);
@@ -574,12 +583,15 @@ public class checkKartica {
 	      karticatmp.setBigDecimal("ZC_GOOD", kartica.getBigDecimal("ZC"));
 	    }
 	    
+	    boolean knj = knjHead.contains(getRowKey(kartica));
+	    
 		karticatmp.setBigDecimal("KOL_TRENUTNO", karticatmp.getBigDecimal(
 				"KOL_TRENUTNO").subtract(kartica.getBigDecimal("KOL")));
 		
 		maxMinus = maxMinus.min(karticatmp.getBigDecimal("KOL_TRENUTNO"));
 
-		karticatmp.setBigDecimal("IZAD_TRENUTNO", karticatmp.getBigDecimal(
+		if (knj) Aus.sub(karticatmp, "IZAD_TRENUTNO", kartica, "IZAD");
+		else karticatmp.setBigDecimal("IZAD_TRENUTNO", karticatmp.getBigDecimal(
 				"IZAD_TRENUTNO").subtract(
 				kartica.getBigDecimal("KOL").multiply(
 						karticatmp.getBigDecimal("ZC_GOOD"))));
@@ -589,7 +601,10 @@ public class checkKartica {
 		kartica.setBigDecimal("IZAD_TRENUTNO", karticatmp
 				.getBigDecimal("IZAD_TRENUTNO"));
 
-		if (vrzal.equalsIgnoreCase("N")) {
+		if (knj) {
+			kartica.setBigDecimal("NC_GOOD", kartica.getBigDecimal("NC"));
+			kartica.setBigDecimal("ZC_GOOD", kartica.getBigDecimal("ZC"));
+		} else if (vrzal.equalsIgnoreCase("N")) {
 			kartica.setBigDecimal("NC_GOOD", karticatmp
 					.getBigDecimal("ZC_GOOD"));
 		} else {
@@ -598,11 +613,17 @@ public class checkKartica {
 		}
 /*System.out.println("U izlazima !!! "+karticatmp
 					.getBigDecimal("ZC_GOOD"));*/		
-		kartica.setBigDecimal("VC_GOOD", karticatmp.getBigDecimal("VC_GOOD"));
-		kartica.setBigDecimal("MC_GOOD", karticatmp.getBigDecimal("MC_GOOD"));
-		kartica.setBigDecimal("ZC_GOOD", karticatmp.getBigDecimal("ZC_GOOD"));
+		if (knj) {
+			kartica.setBigDecimal("VC_GOOD", kartica.getBigDecimal("VC"));
+			kartica.setBigDecimal("MC_GOOD", kartica.getBigDecimal("MC"));
+		} else {
+			kartica.setBigDecimal("VC_GOOD", karticatmp.getBigDecimal("VC_GOOD"));
+			kartica.setBigDecimal("MC_GOOD", karticatmp.getBigDecimal("MC_GOOD"));
+			kartica.setBigDecimal("ZC_GOOD", karticatmp.getBigDecimal("ZC_GOOD"));
+		}
 
-		karticatmp.setBigDecimal("INAB_TRENUTNO", (karticatmp
+		if (knj) Aus.sub(karticatmp, "INAB_TRENUTNO", kartica, "INAB");
+		else karticatmp.setBigDecimal("INAB_TRENUTNO", (karticatmp
 				.getBigDecimal("INAB_TRENUTNO").subtract(kartica.getBigDecimal(
 				"KOL").multiply(kartica.getBigDecimal("NC_GOOD")))).setScale(2,
 				BigDecimal.ROUND_HALF_UP));
@@ -620,33 +641,42 @@ public class checkKartica {
 		 * karticatmp.setBigDecimal("ZC_GOOD",kartica.getBigDecimal("MC"));
 		 * kartica.setBigDecimal("ZC_GOOD",kartica.getBigDecimal("MC")); }
 		 */
-		kartica.setBigDecimal("INAB_GOOD", (kartica.getBigDecimal("KOL")
-				.multiply(kartica.getBigDecimal("NC_GOOD"))).setScale(2,
-				BigDecimal.ROUND_HALF_UP));
-		kartica.setBigDecimal("IBP_GOOD", (kartica.getBigDecimal("KOL")
-				.multiply(kartica.getBigDecimal("VC_GOOD"))).setScale(2,
-				BigDecimal.ROUND_HALF_UP));
-		kartica.setBigDecimal("ISP_GOOD", (kartica.getBigDecimal("KOL")
-				.multiply(kartica.getBigDecimal("MC_GOOD"))).setScale(2,
-				BigDecimal.ROUND_HALF_UP));
-		kartica.setBigDecimal("IZAD_GOOD", (kartica.getBigDecimal("KOL")
-				.multiply(kartica.getBigDecimal("ZC_GOOD"))).setScale(2,
-				BigDecimal.ROUND_HALF_UP));
-		if (vrzal.equalsIgnoreCase("N")) {
-			kartica.setBigDecimal("IMAR_GOOD", Aus.zero2);
-			kartica.setBigDecimal("IPOR_GOOD", Aus.zero2);
-		} else if (vrzal.equalsIgnoreCase("V")) {
-			kartica.setBigDecimal("IMAR_GOOD", kartica
-					.getBigDecimal("IBP_GOOD").subtract(
-							kartica.getBigDecimal("INAB_GOOD")));
-			kartica.setBigDecimal("IPOR_GOOD", Aus.zero2);
-		} else if (vrzal.equalsIgnoreCase("M")) {
-			kartica.setBigDecimal("IMAR_GOOD", kartica
-					.getBigDecimal("IBP_GOOD").subtract(
-							kartica.getBigDecimal("INAB_GOOD")));
-			kartica.setBigDecimal("IPOR_GOOD", kartica
-					.getBigDecimal("ISP_GOOD").subtract(
-							kartica.getBigDecimal("IBP_GOOD")));
+		if (knj) {
+			Aus.set(kartica, "INAB_GOOD", "INAB");
+			Aus.set(kartica, "IBP_GOOD", "IBP");
+			Aus.set(kartica, "ISP_GOOD", "ISP");
+			Aus.set(kartica, "IZAD_GOOD", "IZAD");
+			Aus.set(kartica, "IMAR_GOOD", "IMAR");
+			Aus.set(kartica, "IPOR_GOOD", "IPOR");
+		} else {
+			kartica.setBigDecimal("INAB_GOOD", (kartica.getBigDecimal("KOL")
+					.multiply(kartica.getBigDecimal("NC_GOOD"))).setScale(2,
+					BigDecimal.ROUND_HALF_UP));
+			kartica.setBigDecimal("IBP_GOOD", (kartica.getBigDecimal("KOL")
+					.multiply(kartica.getBigDecimal("VC_GOOD"))).setScale(2,
+					BigDecimal.ROUND_HALF_UP));
+			kartica.setBigDecimal("ISP_GOOD", (kartica.getBigDecimal("KOL")
+					.multiply(kartica.getBigDecimal("MC_GOOD"))).setScale(2,
+					BigDecimal.ROUND_HALF_UP));
+			kartica.setBigDecimal("IZAD_GOOD", (kartica.getBigDecimal("KOL")
+					.multiply(kartica.getBigDecimal("ZC_GOOD"))).setScale(2,
+					BigDecimal.ROUND_HALF_UP));
+			if (vrzal.equalsIgnoreCase("N")) {
+				kartica.setBigDecimal("IMAR_GOOD", Aus.zero2);
+				kartica.setBigDecimal("IPOR_GOOD", Aus.zero2);
+			} else if (vrzal.equalsIgnoreCase("V")) {
+				kartica.setBigDecimal("IMAR_GOOD", kartica
+						.getBigDecimal("IBP_GOOD").subtract(
+								kartica.getBigDecimal("INAB_GOOD")));
+				kartica.setBigDecimal("IPOR_GOOD", Aus.zero2);
+			} else if (vrzal.equalsIgnoreCase("M")) {
+				kartica.setBigDecimal("IMAR_GOOD", kartica
+						.getBigDecimal("IBP_GOOD").subtract(
+								kartica.getBigDecimal("INAB_GOOD")));
+				kartica.setBigDecimal("IPOR_GOOD", kartica
+						.getBigDecimal("ISP_GOOD").subtract(
+								kartica.getBigDecimal("IBP_GOOD")));
+			}
 		}
 	}
 
