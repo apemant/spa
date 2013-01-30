@@ -329,9 +329,22 @@ public class Aus {
     int b, e;
     while ((b = br.indexOf('[')) >= 0 && (e = br.indexOf(']')) > b+1) {
       String rep = "";
-      if (ds.hasColumn(br.mid(b + 1, e)) != null) {
-        ds.getVariant(br.mid(b + 1, e), v);
+      String part = br.mid(b + 1, e);
+      String mod = null;
+      int split = part.indexOf(':');
+      if (split > 0) {
+        mod = part.substring(split + 1);
+        part = part.substring(0, split);
+      }
+      if (ds.hasColumn(part) != null) {
+        ds.getVariant(part, v);
         rep = v.toString();
+        if (mod != null && mod.startsWith("0")) 
+          rep = new VarStr(rep).paddLeft(Aus.getNumber(mod) - rep.length(), '0').toString();
+        else if (mod != null && Aus.getNumber(mod) > 0)
+          rep = new VarStr(rep).leftJustify(Aus.getNumber(mod)).toString();
+        else if (mod != null && Aus.getNumber(mod) < 0)
+          rep = new VarStr(rep).rightJustify(-Aus.getNumber(mod)).toString();
       }
       br.replace(b, e + 1, rep);
     }
