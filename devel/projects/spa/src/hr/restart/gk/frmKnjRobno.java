@@ -1052,6 +1052,22 @@ System.out.println("**** DEVIZNI ANLAGE");
                         prepare4approval(vrdok, (String) alOrgstr.get(cnt),
                                 (String) alOrgstr.get(cnt), uis, statira);
                     }
+                    for (globSheme.first(); globSheme.inBounds(); globSheme.next()) {
+                    	if (globSheme.getString("VRDOK").equals(vrdok)) {
+                    		raGlob cg = new raGlob(globSheme.getString("CSKL"));
+                    		sqlsheme = "SELECT * FROM Shkonta WHERE VRDOK = '"
+                          + vrdok + "' and cskl='" + globSheme.getString("CSKL")
+                          + "' order by stavka";
+                    		boolean statira = handleshema(sqlsheme);
+                    		
+                    		for (int cnt = 0; cnt < alOrgstr.size(); cnt++) {
+                    			if (cg.matches((String) alOrgstr.get(cnt)))
+                    				prepare4approval(vrdok, (String) alOrgstr.get(cnt),
+                                (String) alOrgstr.get(cnt), uis, statira);		
+                    		}
+                    	}
+                    }
+                    
                 } else {
                     for (int cnt = 0; cnt < alSkladista.size(); cnt++) {
                         sqlsheme = "SELECT * FROM Shkonta WHERE VRDOK = '"
@@ -1060,6 +1076,22 @@ System.out.println("**** DEVIZNI ANLAGE");
                         boolean statira = handleshema(sqlsheme);
                         prepare4approval(vrdok, (String) alSkladista.get(cnt),
                                 (String) alSkladista.get(cnt), uis, statira);
+                    }
+                    
+                    for (globSheme.first(); globSheme.inBounds(); globSheme.next()) {
+                    	if (globSheme.getString("VRDOK").equals(vrdok)) {
+                    		raGlob cg = new raGlob(globSheme.getString("CSKL"));
+                    		sqlsheme = "SELECT * FROM Shkonta WHERE VRDOK = '"
+                          + vrdok + "' and cskl='" + globSheme.getString("CSKL")
+                          + "' order by stavka";
+                    		boolean statira = handleshema(sqlsheme);
+                    		
+                    		for (int cnt = 0; cnt < alSkladista.size(); cnt++) {
+                    			if (cg.matches((String) alSkladista.get(cnt)))
+                    				prepare4approval(vrdok, (String) alSkladista.get(cnt),
+                                (String) alSkladista.get(cnt), uis, statira);		
+                    		}
+                    	}
                     }
                 }
             }
