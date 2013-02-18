@@ -529,6 +529,44 @@ public class frmNivelacija extends raMasterDetail {
 
   }
   
+  void fixDiff() {
+    QueryDataSet all = Aus.q("select stanje.cart, artikli.cart1, " +
+        "artikli.bc, artikli.nazart, artikli.jm, artikli.cpor, stanje.vc, stanje.mc, stanje.kol "+ 
+        "from stanje,artikli where stanje.cart = artikli.cart and " +
+        "stanje.cskl = '" + this.getMasterSet().getString("CSKL") + "' and " +
+        "stanje.god = '" + this.getMasterSet().getString("GOD") + "'");
+    
+    int count = 0, crbr = 0;
+    DataSet cartds = Stdoku.getDataModule().getTempSet(
+        Condition.whereAllEqual(Util.mkey, getMasterSet()));
+    cartds.open();
+    HashSet carts = new HashSet();
+    for (cartds.first(); cartds.inBounds(); cartds.next()) {
+      carts.add(new Integer(cartds.getInt("CART")));
+      if (cartds.getShort("RBR") > count)
+        count = cartds.getShort("RBR");
+    }
+    
+    raDetail.getJpTableView().enableEvents(false);
+    QueryDataSet st = Stanje.getDataModule().getTempSet(
+        Condition.whereAllEqual(new String[] {"CSKL", "GOD"}, getMasterSet()));
+    st.open();
+    
+    raProcess.setMessage("Rekalkulacija matematike stanja ...", false);
+    
+    for (all.first(); all.inBounds(); all.next()) {
+      if (carts.contains(new Integer(all.getInt("CART")))) {
+        System.out.println(all.getInt("CART") + " postoji, preskocen..");
+        continue;
+      }
+      
+      ld.raLocate(st, "CART", all.getInt("CART")+"");
+      
+      
+      
+    }
+  }
+  
   void fixPorezAll(boolean mpc) {
     QueryDataSet all = Aus.q("select stanje.cart, artikli.cart1, " +
     	"artikli.bc, artikli.nazart, artikli.jm, artikli.cpor, stanje.vc, stanje.mc, stanje.kol "+ 
