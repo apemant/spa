@@ -432,11 +432,17 @@ public class frmNivelacija extends raMasterDetail {
       }
     }, 4, false);
 
-    raDetail.addOption(new raNavAction("Promjena poreza", raImages.IMGMOVIE, KeyEvent.VK_F8) {
+    raDetail.addOption(new raNavAction("Promjena poreza", raImages.IMGMOVIE, KeyEvent.VK_F8, KeyEvent.SHIFT_MASK) {
       public void actionPerformed(ActionEvent e) {
         changePorez();
       }
     }, 5, false);
+    
+    raDetail.addOption(new raNavAction("Poravnavanje stanja", raImages.IMGPROPERTIES, KeyEvent.VK_F8) {
+      public void actionPerformed(ActionEvent e) {
+        changeMath();
+      }
+    }, 6, false);
 
 //    raDetail.addKeyAction(new raKeyAction(java.awt.event.KeyEvent.VK_F7) {
 //      public void keyAction() {
@@ -509,7 +515,36 @@ public class frmNivelacija extends raMasterDetail {
 //    ds.setInt("BRDOK",Broj.intValue());
 //  }
   
+  private void changeMath() {
+  	ld.raLocate(dm.getSklad(), "CSKL", getMasterSet().getString("CSKL"));
+  	if (!dm.getSklad().getString("VRZAL").equals("M")) {
+  		JOptionPane.showMessageDialog(raDetail.getWindow(), "Pogrešna vrsta zalihe skladišta!", "Skladište", 
+  				JOptionPane.WARNING_MESSAGE);
+  		return;
+  	}
+  	
+  	int opt = JOptionPane.showConfirmDialog(raDetail.getWindow(),
+        "Poravnati matematiku stanja na svim artiklima?", "Poravnavanje",
+        JOptionPane.OK_CANCEL_OPTION);
+  	if (opt != JOptionPane.OK_OPTION) return;
+  	
+  	raProcess.runChild(raDetail.getWindow(), new Runnable() {
+      public void run() {
+        raProcess.setMessage("Dohvat artikala ...", false);
+        fixDiff();
+      }
+    });
+  	
+  }
+  
   private void changePorez() {
+  	ld.raLocate(dm.getSklad(), "CSKL", getMasterSet().getString("CSKL"));
+  	if (!dm.getSklad().getString("VRZAL").equals("M")) {
+  		JOptionPane.showMessageDialog(raDetail.getWindow(), "Pogrešna vrsta zalihe skladišta!", "Skladište", 
+  				JOptionPane.WARNING_MESSAGE);
+  		return;
+  	}
+  	
     int opt = JOptionPane.showConfirmDialog(raDetail.getWindow(),
         "Zadržati iznos cijene s porezom?", "Naèin promjene",
         JOptionPane.YES_NO_CANCEL_OPTION);
@@ -554,6 +589,8 @@ public class frmNivelacija extends raMasterDetail {
     
     raProcess.setMessage("Rekalkulacija matematike stanja ...", false);
     
+    BigDecimal min = new BigDecimal(1).movePointLeft(2);
+    
     for (all.first(); all.inBounds(); all.next()) {
       if (carts.contains(new Integer(all.getInt("CART")))) {
         System.out.println(all.getInt("CART") + " postoji, preskocen..");
@@ -562,9 +599,52 @@ public class frmNivelacija extends raMasterDetail {
       
       ld.raLocate(st, "CART", all.getInt("CART")+"");
       
+      BigDecimal diff = st.getBigDecimal("ZC").multiply(st.getBigDecimal("KOL"))
+      									.setScale(2, BigDecimal.ROUND_HALF_UP).subtract(st.getBigDecimal("VRI"));
       
+      if (diff.abs().compareTo(min) <= 0) continue;
+      
+      ld.raLocate(dm.getPorezi(), "CPOR", all.getString("CPOR"));
+      BigDecimal ukpor = dm.getPorezi().getBigDecimal("UKUPOR");
+      BigDecimal realpor = ukpor.movePointLeft(2).add(Aus.one0);
+      BigDecimal mc = all.getBigDecimal("MC");
+      BigDecimal vc = all.getBigDecimal("VC");
+      BigDecimal kol = all.getBigDecimal("KOL");
+      BigDecimal nmc = mc;
+      BigDecimal nvc = vc;
+      
+//    popuni odgovaraju\u0107a polja u tablici stdoku
+      fillHeader(crbr == 0);
+      if (crbr == 0) crbr = getDetailSet().getShort("RBR");
+      else {
+        getDetailSet().setShort("RBR", (short) ++crbr);
+        getDetailSet().setInt("RBSID", crbr);
+      }
+      Aut.getAut().copyArtFields(this.getDetailSet(), all);
+      getDetailSet().setBigDecimal("SVC", vc);
+      getDetailSet().setBigDecimal("SMC", mc);
+      getDetailSet().setBigDecimal("SKOL", kol);
+      getDetailSet().setBigDecimal("VC", nvc);
+      getDetailSet().setBigDecimal("MC", nmc);
+      
+      getDetailSet().setBigDecimal("PORAV", diff);
+      getDetailSet().setBigDecimal("DIOPORMAR", diff.divide(realpor, 2, BigDecimal.ROUND_HALF_UP));
+      getDetailSet().setBigDecimal("DIOPORPOR", diff.subtract(getDetailSet().getBigDecimal("DIOPORMAR")));
+     
+      rut.updateStanje(ma.nul, ma.nul, ma.nul, ma.nul, ma.nul,
+          ma.nul, ma.nul, ma.nul,
+          'N', true, 'N', st, getDetailSet());
+// rut.updateStanje(oldpormar, oldporpor, oldporav, 'N', true, 'N');
+
+      getDetailSet().post();
       
     }
+    
+    raProcess.setMessage("Spremanje promjene ...", false);
+    raTransaction.saveChangesInTransaction(
+        new QueryDataSet[] {getDetailSet(), st});
+    raDetail.getJpTableView().enableEvents(true);
+    raDetail.jeprazno();
   }
   
   void fixPorezAll(boolean mpc) {
