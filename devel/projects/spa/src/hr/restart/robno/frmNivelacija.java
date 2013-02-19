@@ -613,6 +613,10 @@ public class frmNivelacija extends raMasterDetail {
       BigDecimal nmc = mc;
       BigDecimal nvc = vc;
       
+      ++count;
+
+      this.getDetailSet().insertRow(false);
+      
 //    popuni odgovaraju\u0107a polja u tablici stdoku
       fillHeader(crbr == 0);
       if (crbr == 0) crbr = getDetailSet().getShort("RBR");
