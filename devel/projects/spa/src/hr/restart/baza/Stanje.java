@@ -16,20 +16,21 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
+import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
+
 import java.util.ResourceBundle;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Stanje extends KreirDrop implements DataModule {
 
   ResourceBundle dmRes = ResourceBundle.getBundle("hr.restart.baza.dmRes");
   private static Stanje Stanjeclass;
-  dM dm  = dM.getDataModule();
   QueryDataSet stanje = new QueryDataSet();
-  Column stanjeLOKK = new Column();
+  /*Column stanjeLOKK = new Column();
   Column stanjeAKTIV = new Column();
   Column stanjeGOD = new Column();
   Column stanjeCSKL = new Column();
@@ -67,7 +68,7 @@ public class Stanje extends KreirDrop implements DataModule {
   Column stanjeKOLSKLADPS = new Column();
   Column stanjeKOLSKLADUL = new Column();
   Column stanjeKOLSKLADIZ = new Column();
-  Column stanjeKOLSKLAD = new Column();
+  Column stanjeKOLSKLAD = new Column();*/
 
   public static Stanje getDataModule() {
     if (Stanjeclass == null) {
@@ -89,7 +90,7 @@ public class Stanje extends KreirDrop implements DataModule {
     }
   }
   private void jbInit() throws Exception {
-    stanjeDATZK.setCaption("Datum zadnje kalkulacije");
+    /*stanjeDATZK.setCaption("Datum zadnje kalkulacije");
     stanjeDATZK.setColumnName("DATZK");
     stanjeDATZK.setDataType(com.borland.dx.dataset.Variant.TIMESTAMP);
     stanjeDATZK.setDisplayMask("dd-MM-yyyy");
@@ -474,9 +475,22 @@ public class Stanje extends KreirDrop implements DataModule {
  setColumns(new Column[] {stanjeLOKK, stanjeAKTIV, stanjeGOD, stanjeCSKL, stanjeCART, stanjeKOLPS, stanjeKOLUL, stanjeKOLIZ, stanjeKOLREZ, stanjeNABPS, stanjeMARPS, stanjePORPS,
         stanjeVPS, stanjeNABUL, stanjeMARUL, stanjePORUL, stanjeVUL, stanjeNABIZ, stanjeMARIZ, stanjePORIZ, stanjeVIZ, stanjeKOL, stanjeZC, stanjeVRI, stanjeNC, stanjeVC,
         stanjeMC, stanjeDATZK, stanjeSKAL, stanjeTKAL, stanjeITKAL, stanjeSITKAL, stanjeBSIZ, stanjeSBSIZ, stanjeKOLMAT, stanjeKOLSKLAD, stanjeKOLSKLADUL, stanjeKOLSKLADIZ, stanjeKOLSKLADPS});
+*/  
+    initModule();
+  }
+  
+  protected void modifyColumn(Column c) {
+    if (c.getColumnName().equals("NC") || c.getColumnName().equals("ZC")) {
+      int scale = Aus.getNumber(frmParam.getParam("robno", "skladDec", 
+          "2", "Broj decimala za skladišne cijene (2-4)").trim());
+      c.setScale(scale);
+      c.setPrecision(c.getPrecision() - 2 + scale);
+      if (scale > 0 && scale < 8)
+        c.setDisplayMask("###,###,##0."+hr.restart.util.Aus.string(scale, '0'));
+    }
   }
 
-  public void setall(){
+  //public void setall(){
 
 /*    SqlDefTabela = "create table Stanje " +
       "(lokk char(1) CHARACTER SET WIN1250 default 'N', " + //Status zauzetosti
@@ -508,7 +522,7 @@ public class Stanje extends KreirDrop implements DataModule {
       "mc     numeric(12,2) ," + // Prodajna cijena s porezom
       "Primary Key (god,cskl,cart))" ; */
 
-    ddl.create("stanje")
+ /*   ddl.create("stanje")
        .addChar("lokk", 1, "N")
        .addChar("aktiv", 1, "D")
        .addChar("god", 4, true)
@@ -557,7 +571,7 @@ public class Stanje extends KreirDrop implements DataModule {
     String[] idx = new String[] {"cart"};
     String[] uidx = new String[] {};
     DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
+    NaziviIdx = ddl.getIndexNames(idx, uidx);*/
 
 /*
     NaziviIdx=new String[]{"ilokkstanje", "iaktivstanje", "igodstanje", "icsklstanje",
@@ -573,5 +587,5 @@ public class Stanje extends KreirDrop implements DataModule {
                             CommonTable.SqlDefIndex+NaziviIdx[7] +" on Stanje (zc)" ,
                             CommonTable.SqlDefIndex+NaziviIdx[8] +" on Stanje (vri)" };
     */
-    }
+//    }
 }

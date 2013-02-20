@@ -26,7 +26,6 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 public class stdoki extends KreirDrop implements DataModule {
 
   private static stdoki stdokiclass;
-  dM dm  = dM.getDataModule();
   QueryDataSet stdoki = new QueryDataSet();
   QueryDataSet stGOT = new QueryDataSet();
   QueryDataSet stPON = new QueryDataSet();
@@ -869,6 +868,14 @@ public class stdoki extends KreirDrop implements DataModule {
         c.getColumnName().equals("FMC") || c.getColumnName().equals("FMCPRP")) {
       int scale = Aus.getNumber(frmParam.getParam("robno", "cijenaDec", 
           "2", "Broj decimala za cijenu na izlazu (2-4)").trim());
+      c.setScale(scale);
+      c.setPrecision(c.getPrecision() - 2 + scale);
+      if (scale > 0 && scale < 8)
+        c.setDisplayMask("###,###,##0."+hr.restart.util.Aus.string(scale, '0'));
+    }
+    if (c.getColumnName().equals("NC") || c.getColumnName().equals("ZC")) {
+      int scale = Aus.getNumber(frmParam.getParam("robno", "skladDec", 
+          "2", "Broj decimala za skladišne cijene (2-4)").trim());
       c.setScale(scale);
       c.setPrecision(c.getPrecision() - 2 + scale);
       if (scale > 0 && scale < 8)

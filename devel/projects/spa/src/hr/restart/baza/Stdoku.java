@@ -21,12 +21,10 @@ import hr.restart.util.Aus;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Stdoku extends KreirDrop implements DataModule {
   private static Stdoku stdokuclass;
-  dM dm  = dM.getDataModule();
   QueryDataSet stdoku = new QueryDataSet();
   QueryDataSet stdokuPST = new QueryDataSet();
   QueryDataSet stdokuPRI = new QueryDataSet();
@@ -137,6 +135,14 @@ public class Stdoku extends KreirDrop implements DataModule {
     if (c.getColumnName().equals("DC_VAL") || c.getColumnName().equals("IDOB_VAL")) {
       int scale = Aus.getNumber(frmParam.getParam("robno", "ulazValDec", 
           "2", "Broj decimala za valutne iznose na ulazu (2-4)").trim());
+      c.setScale(scale);
+      c.setPrecision(c.getPrecision() - 2 + scale);
+      if (scale > 0 && scale < 8)
+        c.setDisplayMask("###,###,##0."+hr.restart.util.Aus.string(scale, '0'));
+    }
+    if (c.getColumnName().equals("DC") || c.getColumnName().equals("NC") || c.getColumnName().equals("ZC")) {
+      int scale = Aus.getNumber(frmParam.getParam("robno", "skladDec", 
+          "2", "Broj decimala za skladišne cijene (2-4)").trim());
       c.setScale(scale);
       c.setPrecision(c.getPrecision() - 2 + scale);
       if (scale > 0 && scale < 8)

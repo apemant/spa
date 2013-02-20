@@ -16,6 +16,9 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
+import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
+
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
 import com.borland.dx.sql.dataset.Load;
@@ -102,6 +105,18 @@ public class Stmeskla extends KreirDrop implements DataModule {
       e.printStackTrace();
     }
   }
+  
+  protected void modifyColumn(Column c) {
+    if (c.getColumnName().equals("NC") || c.getColumnName().equals("ZC") || c.getColumnName().equals("ZCUL")) {
+      int scale = Aus.getNumber(frmParam.getParam("robno", "skladDec", 
+          "2", "Broj decimala za skladišne cijene (2-4)").trim());
+      c.setScale(scale);
+      c.setPrecision(c.getPrecision() - 2 + scale);
+      if (scale > 0 && scale < 8)
+        c.setDisplayMask("###,###,##0."+hr.restart.util.Aus.string(scale, '0'));
+    }
+  }
+  
   private void jbInit() throws Exception {
     initModule();
     
