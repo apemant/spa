@@ -689,6 +689,8 @@ CSMJENA;int;6;;;Smjena
 FBR;int;6;;;Broj raè
 JIR;char;40;;;JIR
 FOK;char;1;;N;Fiskaliziran;*
+FPP;char;20;;;Poslovni prostor
+FNU;int;6;;;Broj naplatnog ureðaja
 IDX=brdok
 
 $Stpos
@@ -836,6 +838,8 @@ UIU;numeric;15,2;;0;Uèešæe;8
 FBR;int;6;;;Broj fiskalizacije
 JIR;char;40;;;JIR
 FOK;char;1;;N;Fiskalizitan;*
+FPP;char;20;;;Poslovni prostor
+FNU;int;6;;;Broj naplatnog ureðaja
 IDX=cpar
 
 $stdoki
@@ -1058,6 +1062,7 @@ DATUPL;date;;;;Datum dospijeæa;10
 DEVIZN;numeric;15,2;;0;Devizni iznos;8
 UIPRPOR2;numeric;15,2;;0;Iznos pretporeza 2
 RANDMAN;numeric;17,6;;0;Randman
+UIPRPOR3;numeric;15,2;;0;Iznos pretporeza 3
 
 
 $Stdoku
@@ -1095,7 +1100,7 @@ IMAR;numeric;15,2;;0;RuC;14
 IBP;numeric;15,2;;0;Iznos bez poreza;14
 IPOR;numeric;15,2;;0;Porez;14
 ISP;numeric;15,2;;0;Iznos s porezom;14
-ZC;numeric;15,4;;0;Cijena;12
+ZC;numeric;15,2;;0;Cijena;12
 IZAD;numeric;15,2;;0;Zaduženje;14
 KOLFLH;numeric;15,3;;0;Kolièina FLH;*
 SKOL;numeric;15,3;;0;Stara kolièina;10
@@ -1293,6 +1298,33 @@ KOL2;numeric;15,3;;0;Poleta
 PPOP;numeric;10,2;;0;Posto popusta
 FC;numeric;17,2;;0;Fakturna cijena
 IDX=cart
+
+$Meskla
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSKLIZ;char;12;pkey;;Izlazno skladište
+CSKLUL;char;12;pkey;;Ulazno skladište
+VRDOK;char;3;pkey;;Vrsta
+CUSER;char;15;;;Operater
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj;7
+UI;char;1;;;ui;*
+SYSDAT;date;;;;Sysdat;*
+DATDOK;date;;;;Datum;10
+OZNVAL;char;3;;;Oznaka valute
+TECAJ;numeric;15,6;;0;Teèaj
+BRNAL;char;8;;;Nalog
+DATKNJ;date;;;;Datum knjiženja;10
+STATUS;char;1;;N;Status;*
+STATKNJI;char;1;;N;Stat. knj. iz;*
+STATKNJU;char;1;;N;Stat knj. ul.;*
+OPIS;char;50;;;Opis;15
+PARAM;char;8;;;Parametri
+STAT_KPR;char;1;;N;Stat KPR
+BRNALU;char;8;;;Nalog ulaz
+DATKNJU;date;;;;Datum knjiženja ul;10
+CPAR;int;6;;;Partner
+
 
 $Stanje
 LOKK;char;1;;N;LOKK;*
