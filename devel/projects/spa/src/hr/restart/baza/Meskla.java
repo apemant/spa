@@ -16,9 +16,7 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 /**
@@ -39,7 +37,7 @@ public class Meskla extends KreirDrop implements DataModule {
   QueryDataSet MesklaMEU = new raDataSet();
   QueryDataSet MesklaMEI = new raDataSet();
 
-  Column mesklaLOKK = new Column();
+  /*Column mesklaLOKK = new Column();
   Column mesklaAKTIV = new Column();
   Column mesklaCSKLIZ = new Column();
   Column mesklaCSKLUL = new Column();
@@ -61,7 +59,7 @@ public class Meskla extends KreirDrop implements DataModule {
   Column mesklaSTATKNJU = new Column();
   Column mesklaOPIS = new Column();
   Column mesklaPARAM = new Column();
-  Column mesklaSTAT_KPR = new Column();
+  Column mesklaSTAT_KPR = new Column();*/
 
 
   public static Meskla getDataModule() {
@@ -93,7 +91,7 @@ public class Meskla extends KreirDrop implements DataModule {
     }
   }
   private void jbInit() throws Exception {
-    mesklaPARAM.setCaption("Parametri");
+    /*mesklaPARAM.setCaption("Parametri");
     mesklaPARAM.setColumnName("PARAM");
     mesklaPARAM.setDataType(com.borland.dx.dataset.Variant.STRING);
     mesklaPARAM.setPrecision(8);
@@ -295,13 +293,15 @@ public class Meskla extends KreirDrop implements DataModule {
     Meskla.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(), "select * from meskla", null, true, Load.ALL));
  setColumns(new Column[] {mesklaLOKK, mesklaAKTIV, mesklaCSKLIZ, mesklaCSKLUL, mesklaVRDOK, mesklaCUSER, mesklaGOD, mesklaBRDOK, mesklaUI, mesklaSYSDAT,
         mesklaDATDOK, mesklaOZNVAL, mesklaTECAJ, mesklaBRNAL, mesklaDATKNJ, mesklaSTATUS, mesklaSTATKNJI, mesklaSTATKNJU, mesklaOPIS, mesklaPARAM, mesklaSTAT_KPR,mesklaBRNALU, mesklaDATKNJU});
-
+*/
+    initModule();
+    
     createFilteredDataSet(MesklaMES, "vrdok = 'MES'");
     createFilteredDataSet(MesklaMEU, "vrdok = 'MEU'");
     createFilteredDataSet(MesklaMEI, "vrdok = 'MEI'");
   }
 
-  public void setall(){
+  //public void setall(){
 
    /* SqlDefTabela =  "create table Meskla " +
         "(lokk char(1) CHARACTER SET WIN1250 default 'N', " + //Status zauzetosti
@@ -323,7 +323,7 @@ public class Meskla extends KreirDrop implements DataModule {
         "statknju char(1) CHARACTER SET WIN1250 default 'N' ," + // Status knjiženja (N/P/D) ulaz
         "Primary Key (cskliz,csklul,vrdok,god,brdok))" ;*/
 
-    ddl.create("meskla")
+    /*ddl.create("meskla")
        .addChar("lokk", 1, "N")
        .addChar("aktiv", 1, "D")
        .addChar("cskliz", 12, true)
@@ -351,13 +351,13 @@ public class Meskla extends KreirDrop implements DataModule {
 
     Naziv="Meskla";
 
-    SqlDefTabela = ddl.getCreateTableString();
+    SqlDefTabela = ddl.getCreateTableString();*/
 
-    String[] idx = new String[] {/*"brdok"*/};
-    String[] uidx = new String[] {};
+//    String[] idx = new String[] {/*"brdok"*/};
+/*    String[] uidx = new String[] {};
     DefIndex = ddl.getIndices(idx, uidx);
     NaziviIdx = ddl.getIndexNames(idx, uidx);
-
+*/
 /*
     NaziviIdx=new String[]{"ilokkMeskla","iaktivMeskla","icsklulMeskla","icsklizMeskla",
                            "ivrdokMeskla","ibrdokMeskla","ipkMeskla"};
@@ -370,5 +370,5 @@ public class Meskla extends KreirDrop implements DataModule {
                             CommonTable.SqlDefIndex+NaziviIdx[5] +" on Meskla (brdok)" ,
                             CommonTable.SqlDefUniqueIndex+NaziviIdx[6] +" on Meskla (csklul,cskliz,vrdok,god,brdok)" };
 */
-  }
+//  }
 }
