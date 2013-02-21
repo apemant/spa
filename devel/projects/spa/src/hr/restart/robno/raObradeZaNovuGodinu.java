@@ -106,9 +106,12 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
   JraCheckBox jcbPrijelazBezObrade = new JraCheckBox("Prijelaz bez obrade");
   
   BigDecimal zero = new BigDecimal(0).setScale(2);
+  
+  protected static raObradeZaNovuGodinu inst; 
 
   public raObradeZaNovuGodinu() {
     try {
+      inst = this;
       jbInit();
     }
     catch (Exception ex) {
@@ -237,7 +240,9 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
       insertIntoDoku(qdsStanjeArtikli, broj);
       rbr = 0;
       do {
-        insertIntoStDoku(qdsStanjeArtikli, broj);
+        if (qdsStanjeArtikli.getBigDecimal("KOL").compareTo(_Main.nul) != 0 ||         
+            isRazlikaPoZaokruzenju() || isPrijenosStanjaNula())
+          insertIntoStDoku(qdsStanjeArtikli);
       } while (qdsStanjeArtikli.next());
     }
   }
@@ -257,15 +262,16 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
 
   raControlDocs rCD = new raControlDocs();   // dodao /.V radi provjera datuma i kalkulacija i bla bla
 
-  public void insertIntoStDoku(QueryDataSet qdsStanjeArtikli, Integer broj) {  
+  // pretpostavlja da je dummyDoku podešen
+  public void insertIntoStDoku(QueryDataSet qdsStanjeArtikli) {  
     
     String vrzal = qdsStanjeArtikli.getString("VRZAL");
     /**
      * Ne pušta u poèetno stanje artikle kojih nema na skladištu
      */
-    if (qdsStanjeArtikli.getBigDecimal("KOL").compareTo(_Main.nul) != 0 || 
+    /*if (qdsStanjeArtikli.getBigDecimal("KOL").compareTo(_Main.nul) != 0 || 
         (qdsStanjeArtikli.getBigDecimal("KOL").compareTo(_Main.nul) == 0 && 
-            isRazlikaPoZaokruzenju())){
+            isRazlikaPoZaokruzenju())){*/
       
       //Brojaè RBR-a stavki
       ++rbr;
@@ -276,8 +282,8 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
       //Polja koja se prepisuju
       dummyStDoku.setString("CSKL", qdsStanjeArtikli.getString("CSKL"));
       dummyStDoku.setString("VRDOK", "PST");
-      dummyStDoku.setString("GOD", fieldSet.getString("GODINA"));//Nova godina
-      dummyStDoku.setInt("BRDOK", broj.intValue());
+      dummyStDoku.setString("GOD", dummyDoku.getString("GOD"));//Nova godina
+      dummyStDoku.setInt("BRDOK", dummyDoku.getInt("BRDOK"));
       dummyStDoku.setShort("RBR", (short)rbr);
       dummyStDoku.setInt("RBSID", rbr);
       dummyStDoku.setInt("CART", qdsStanjeArtikli.getInt("CART"));
@@ -320,42 +326,53 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
       dummyStDoku.setBigDecimal("IMAR" , _Main.nul);
       dummyStDoku.setBigDecimal("IPOR" , _Main.nul);
       
+      dummyStDoku.setBigDecimal("INAB", qdsStanjeArtikli.getBigDecimal("NABUL").subtract(qdsStanjeArtikli.getBigDecimal("NABIZ")));
       // provjera metode voðenja skladišta!!
       
       if (vrzal.equals("N")) { //-skladište se vodi po metodi prosjeèna nabavna cijena
-        
-        dummyStDoku.setBigDecimal("INAB", qdsStanjeArtikli.getBigDecimal("NABUL").subtract(qdsStanjeArtikli.getBigDecimal("NABIZ")));
         checkeq(dummyStDoku, "INAB", "IZAD");  
         checkmul(dummyStDoku, "INAB", "NC");
-        
         //dummyStDoku.setBigDecimal("INAB" , qdsStanjeArtikli.getBigDecimal("NC").multiply(qdsStanjeArtikli.getBigDecimal("KOL"))); //-nabavni iznos
         
       } else if (vrzal.equals("V")) { //-skladište se vodi po metodi zadnja prodajna cijena bez poreza
         
-        dummyStDoku.setBigDecimal("INAB" , qdsStanjeArtikli.getBigDecimal("NC").multiply(qdsStanjeArtikli.getBigDecimal("KOL"))); //-nabavni iznos
+        //dummyStDoku.setBigDecimal("INAB" , qdsStanjeArtikli.getBigDecimal("NC").multiply(qdsStanjeArtikli.getBigDecimal("KOL"))); //-nabavni iznos
         
-        dummyStDoku.setBigDecimal("IBP" , qdsStanjeArtikli.getBigDecimal("VC").multiply(qdsStanjeArtikli.getBigDecimal("KOL")));  //-iznos bez poreza
+        //dummyStDoku.setBigDecimal("IBP" , qdsStanjeArtikli.getBigDecimal("VC").multiply(qdsStanjeArtikli.getBigDecimal("KOL")));  //-iznos bez poreza
         
-        dummyStDoku.setBigDecimal("IMAR" , dummyStDoku.getBigDecimal("IBP").
-            subtract(dummyStDoku.getBigDecimal("INAB")));  //-iznos marže (IBP-INAB)
+        dummyStDoku.setBigDecimal("IMAR", qdsStanjeArtikli.getBigDecimal("MARUL").subtract(qdsStanjeArtikli.getBigDecimal("MARIZ")));
+        dummyStDoku.setBigDecimal("IBP" , dummyStDoku.getBigDecimal("INAB").add(dummyStDoku.getBigDecimal("IMAR")));
+
+        checkmul(dummyStDoku, "IBP", "VC");
+        
+//        dummyStDoku.setBigDecimal("IMAR" , dummyStDoku.getBigDecimal("IBP").
+//            subtract(dummyStDoku.getBigDecimal("INAB")));  //-iznos marže (IBP-INAB)
         
       } else { //-skladište se vodi po metodi zadnja prodajna cijena s porezom
         
-        dummyStDoku.setBigDecimal("INAB" , qdsStanjeArtikli.getBigDecimal("NC").multiply(qdsStanjeArtikli.getBigDecimal("KOL"))); //-nabavni iznos
-        dummyStDoku.setBigDecimal("IBP" , qdsStanjeArtikli.getBigDecimal("VC").multiply(qdsStanjeArtikli.getBigDecimal("KOL")));  //-iznos bez poreza
-        dummyStDoku.setBigDecimal("ISP" , qdsStanjeArtikli.getBigDecimal("MC").multiply(qdsStanjeArtikli.getBigDecimal("KOL")));  //-iznos s porezom
+        dummyStDoku.setBigDecimal("IMAR", qdsStanjeArtikli.getBigDecimal("MARUL").subtract(qdsStanjeArtikli.getBigDecimal("MARIZ")));
+        dummyStDoku.setBigDecimal("IPOR", qdsStanjeArtikli.getBigDecimal("PORUL").subtract(qdsStanjeArtikli.getBigDecimal("PORIZ")));
+        
+        dummyStDoku.setBigDecimal("IBP" , dummyStDoku.getBigDecimal("INAB").add(dummyStDoku.getBigDecimal("IMAR")));
+        dummyStDoku.setBigDecimal("ISP" , dummyStDoku.getBigDecimal("IBP").add(dummyStDoku.getBigDecimal("IPOR")));
+        
+        //dummyStDoku.setBigDecimal("INAB" , qdsStanjeArtikli.getBigDecimal("NC").multiply(qdsStanjeArtikli.getBigDecimal("KOL"))); //-nabavni iznos
+        //dummyStDoku.setBigDecimal("IBP" , qdsStanjeArtikli.getBigDecimal("VC").multiply(qdsStanjeArtikli.getBigDecimal("KOL")));  //-iznos bez poreza
+        //dummyStDoku.setBigDecimal("ISP" , qdsStanjeArtikli.getBigDecimal("MC").multiply(qdsStanjeArtikli.getBigDecimal("KOL")));  //-iznos s porezom
         checkeq(dummyStDoku, "IZAD", "ISP");
-        dummyStDoku.setBigDecimal("IMAR" , dummyStDoku.getBigDecimal("IBP").
-            subtract(dummyStDoku.getBigDecimal("INAB")));  //-iznos marže (IBP-INAB)
-        dummyStDoku.setBigDecimal("IPOR" , dummyStDoku.getBigDecimal("ISP").
-            subtract(dummyStDoku.getBigDecimal("IBP")));  //-iznos poreza (ISP -IBP)
+        checkmul(dummyStDoku, "IBP", "VC");
+        checkmul(dummyStDoku, "ISP", "MC");
+//      dummyStDoku.setBigDecimal("IMAR" , dummyStDoku.getBigDecimal("IBP").
+//            subtract(dummyStDoku.getBigDecimal("INAB")));  //-iznos marže (IBP-INAB)
+//        dummyStDoku.setBigDecimal("IPOR" , dummyStDoku.getBigDecimal("ISP").
+//            subtract(dummyStDoku.getBigDecimal("IBP")));  //-iznos poreza (ISP -IBP)
         
         /**
          * U sluèaju razlièitih poreza, punim polja POR1 ili POR2 ili POR3
          * Nisam siguran koliko je relevantno i zašto puniti poreze (mogao bi biti dostatan ukupan iznos poreza)
          * u poèetnom stanju. Za sada ovako.
          */
-        if (lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", String.valueOf(qdsStanjeArtikli.getInt("CART"))) && 
+        /*if (lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", String.valueOf(qdsStanjeArtikli.getInt("CART"))) && 
             lookupData.getlookupData().raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"))) {
           dummyStDoku.setBigDecimal("POR1", qdsStanjeArtikli.getBigDecimal("VC").multiply(dm.getPorezi().getBigDecimal("POR1").divide(new BigDecimal("100.00"), 2, BigDecimal.ROUND_HALF_UP)));
           dummyStDoku.setBigDecimal("POR2", qdsStanjeArtikli.getBigDecimal("VC").multiply(dm.getPorezi().getBigDecimal("POR2").divide(new BigDecimal("100.00"), 2, BigDecimal.ROUND_HALF_UP)));
@@ -364,7 +381,7 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
           dummyStDoku.setBigDecimal("POR1", _Main.nul);
           dummyStDoku.setBigDecimal("POR2", _Main.nul);
           dummyStDoku.setBigDecimal("POR3", _Main.nul);
-        }
+        }*/
       }
       
       /**
@@ -387,7 +404,7 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
       } else {
 //        System.out.println("Provjera INAB+IMAR+IPOR = IZAD - OK!");
       }
-    }
+//    }
     
     /*
      dummyStDoku.setBigDecimal("INAB" , qdsStanjeArtikli.getBigDecimal("NC").multiply(qdsStanjeArtikli.getBigDecimal("KOL"))); //-nabavni iznos
@@ -553,19 +570,19 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
       qdsStanje.first();
 //      int i=1;
       do {
-        insetrIntoStanje(qdsStanje);
+        insetrIntoStanje(qdsStanje, fieldSet.getString("GODINA"));
       } while (qdsStanje.next());
       qdsStanje.close();
     }
   }
 
-  public void insetrIntoStanje(QueryDataSet stanje) {
+  public void insetrIntoStanje(QueryDataSet stanje, String god) {
     String vrzal = stanje.getString("VRZAL");
     
     dummyStanje.insertRow(false);
 
     // ----------------- kljucevi -----------------
-    dummyStanje.setString("GOD", fieldSet.getString("GODINA"));//-Nova godina
+    dummyStanje.setString("GOD", god);//-Nova godina
     dummyStanje.setString("CSKL", stanje.getString("CSKL"));
     dummyStanje.setInt("CART", stanje.getInt("CART"));
 
@@ -639,9 +656,12 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
        * MARPS = MARUL
        */
       
-      dummyStanje.setBigDecimal("NABPS", stanje.getBigDecimal("KOL").multiply(stanje.getBigDecimal("NC"))); //-nabavni iznos poèetnog stanja
-      dummyStanje.setBigDecimal("MARPS", stanje.getBigDecimal("VC").multiply(stanje.getBigDecimal("KOL")).
-			 							 subtract(stanje.getBigDecimal("NC").multiply(stanje.getBigDecimal("KOL")))); //-iznos marže poèetnog stanja
+      dummyStanje.setBigDecimal("NABPS", stanje.getBigDecimal("NABUL").subtract(stanje.getBigDecimal("NABIZ")));
+      dummyStanje.setBigDecimal("MARPS", stanje.getBigDecimal("MARUL").subtract(stanje.getBigDecimal("MARIZ")));
+      
+      //dummyStanje.setBigDecimal("NABPS", stanje.getBigDecimal("KOL").multiply(stanje.getBigDecimal("NC"))); //-nabavni iznos poèetnog stanja
+      //dummyStanje.setBigDecimal("MARPS", stanje.getBigDecimal("VC").multiply(stanje.getBigDecimal("KOL")).
+		//	 							 subtract(stanje.getBigDecimal("NC").multiply(stanje.getBigDecimal("KOL")))); //-iznos marže poèetnog stanja
 
       dummyStanje.setBigDecimal("NABUL", dummyStanje.getBigDecimal("NABPS")); //-nabavni iznos ulaza
       dummyStanje.setBigDecimal("MARUL", dummyStanje.getBigDecimal("MARPS")); //-iznos marže ulaza
@@ -663,17 +683,19 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
        * PORPS = PORUL
        */
       
-      dummyStanje.setBigDecimal("NABPS", stanje.getBigDecimal("KOL").multiply(stanje.getBigDecimal("NC"))); //-nabavni iznos poèetnog stanja
+      dummyStanje.setBigDecimal("NABPS", stanje.getBigDecimal("NABUL").subtract(stanje.getBigDecimal("NABIZ")));
+      dummyStanje.setBigDecimal("MARPS", stanje.getBigDecimal("MARUL").subtract(stanje.getBigDecimal("MARIZ")));
+      dummyStanje.setBigDecimal("PORPS", stanje.getBigDecimal("PORUL").subtract(stanje.getBigDecimal("PORIZ")));
+      
+      /*dummyStanje.setBigDecimal("NABPS", stanje.getBigDecimal("KOL").multiply(stanje.getBigDecimal("NC"))); //-nabavni iznos poèetnog stanja
       dummyStanje.setBigDecimal("MARPS", stanje.getBigDecimal("VC").multiply(stanje.getBigDecimal("KOL")).
 			 							 subtract(stanje.getBigDecimal("NC").multiply(stanje.getBigDecimal("KOL")))); //-iznos marže poèetnog stanja
       dummyStanje.setBigDecimal("PORPS", stanje.getBigDecimal("MC").multiply(stanje.getBigDecimal("KOL")).
 			 							 subtract(stanje.getBigDecimal("VC").multiply(stanje.getBigDecimal("KOL")))); //-iznos poreza poèetnog stanja
-
-      dummyStanje.setBigDecimal("NABUL", stanje.getBigDecimal("KOL").multiply(stanje.getBigDecimal("NC"))); //-nabavni iznos ulaza
-      dummyStanje.setBigDecimal("MARUL", stanje.getBigDecimal("VC").multiply(stanje.getBigDecimal("KOL")).
-			 							 subtract(stanje.getBigDecimal("NC").multiply(stanje.getBigDecimal("KOL")))); //-iznos marže ulaza
-      dummyStanje.setBigDecimal("PORUL", stanje.getBigDecimal("MC").multiply(stanje.getBigDecimal("KOL")).
-			 							 subtract(stanje.getBigDecimal("VC").multiply(stanje.getBigDecimal("KOL")))); //-iznos poreza ulaza
+*/
+      dummyStanje.setBigDecimal("NABUL", dummyStanje.getBigDecimal("NABPS")); //-nabavni iznos ulaza
+      dummyStanje.setBigDecimal("MARUL", dummyStanje.getBigDecimal("MARPS")); //-iznos marže ulaza
+      dummyStanje.setBigDecimal("PORUL", dummyStanje.getBigDecimal("PORPS")); //-iznos poreza ulaza
     
     }
 

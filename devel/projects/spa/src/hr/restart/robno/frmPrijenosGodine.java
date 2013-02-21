@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.lookupData;
+import hr.restart.util.raLoader;
 
 import java.math.BigDecimal;
 
@@ -51,6 +52,21 @@ public class frmPrijenosGodine extends raObradeZaNovuGodinu {
         jeldobro = false;
       }
     }
+  }
+  
+  public static void updateSklad(String cskl, String god) {
+    raLoader.load("hr.restart.robno.frmPrijenosGodine");
+    
+    frmPrijenosGodine fpg = (frmPrijenosGodine) frmPrijenosGodine.inst;
+    fpg.updateSingle(cskl, god);    
+  }
+  
+  private void updateSingle(String cskl, String god) {
+    dummyDoku = ut.getNewQueryDataSet("select * from doku where god='" + god + "' AND cskl='" + cskl + "' AND vrdok='PST'");
+    dummyStDoku = ut.getNewQueryDataSet("select * from stdoku where god='" + god + "' AND cskl='" + cskl + "' AND vrdok='PST'");
+    dummyStanje = ut.getNewQueryDataSet("select * from stanje where god='" + god + "' AND cskl='" + cskl + "'");
+    
+
   }
 
   public void afterOKPress(){
@@ -150,13 +166,46 @@ public class frmPrijenosGodine extends raObradeZaNovuGodinu {
     updateSklad = ss.getStringObradeDvijeGodineUpdateSklad(fieldSet.getString("CORG"),fieldSet.getString("GODINA"));
     updateKnjigod = ss.getStringObradeDvijeGodineUpdateKnjigod(fieldSet.getString("CORG"), fieldSet.getString("GODINA"));
   }
+  
+  
+  private void updateSklad(String cskl, String god, boolean isNull) {
+    rbr = 0;
+    for (dummyStDoku.first(); dummyStDoku.inBounds(); dummyStDoku.next()) 
+      if (dummyStDoku.getShort("RBR") > rbr)
+        rbr = dummyStDoku.getShort("RBR");
+    
+    QueryDataSet old = ss.getObradeRadDvijeGodineSetDokuStdokuPocetnoStanje(cskl, god, isNull);
+    for (old.first(); old.inBounds(); old.next()) {
+      if (!lookupData.getlookupData().raLocate(dummyStanje, "CART", Integer.toString(old.getInt("CART")))) {
+        insertIntoStDoku(old);
+        insetrIntoStanje(old, dummyDoku.getString("GOD"));
+        continue;
+      }
+      BigDecimal tKol = old.getBigDecimal("KOL");
+      
+    }
+  }
 
   private void checkPrometStaraGodina(String skladiste){
+    
+    rbr = 0;
+    for (dummyStDoku.first(); dummyStDoku.inBounds(); dummyStDoku.next()) 
+      if (dummyStDoku.getString("CSKL").equals(skladiste) && dummyStDoku.getShort("RBR") > rbr)
+        rbr = dummyStDoku.getShort("RBR");
+    
     QueryDataSet provjeraOld = ss.getObradeRadDvijeGodineSetDokuStdokuPocetnoStanje(skladiste, skladistaSet.getString("GODINA"), isPrijenosStanjaNula());
     provjeraOld.first();
     
     do{
 
+      /**
+       * Lociram stavku pomoæu dijela kljuèa CSKL, jer je dummyDoku veæ filtriran  dataset
+       * sa podacima zaglavlja ulaznog dokumenta PST iz tekuæe godine 
+       */
+      lookupData.getlookupData().raLocate(dummyDoku,
+                                          new String[] {"CSKL"},
+                                          new String[] {provjeraOld.getString("CSKL")});
+      
       /**
        * Lociram stavku pomoæu dijela kljuèa CSKL i CART, jer je dummyStanje veæ filtriran dataset sa
        * podacima stanja iz tekuæe godine. vidi setDummysFull()
@@ -166,13 +215,7 @@ public class frmPrijenosGodine extends raObradeZaNovuGodinu {
                                               new String[] {provjeraOld.getString("CSKL"),
                                               String.valueOf(provjeraOld.getInt("CART"))})){
         
-        /**
-         * Lociram stavku pomoæu dijela kljuèa CSKL, jer je dummyDoku veæ filtriran  dataset
-         * sa podacima zaglavlja ulaznog dokumenta PST iz tekuæe godine 
-         */
-        lookupData.getlookupData().raLocate(dummyDoku,
-                                            new String[] {"CSKL"},
-                                            new String[] {provjeraOld.getString("CSKL")});
+        
 
         /**
          * Pronalazim promet u prošloj godini na naèin da provjerava kolièinu poèetnog stanja (KOLPS) u datasetu
@@ -418,7 +461,7 @@ public class frmPrijenosGodine extends raObradeZaNovuGodinu {
              * Nisam siguran koliko je relevantno i zašto puniti poreze (mogao bi biti dostatan ukupan iznos poreza)
              * u poèetnom stanju. Za sada ovako.
              */
-            if (lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", String.valueOf(provjeraOld.getInt("CART"))) && 
+           /* if (lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", String.valueOf(provjeraOld.getInt("CART"))) && 
                 lookupData.getlookupData().raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"))) {
               dummyStDoku.setBigDecimal("POR1", provjeraOld.getBigDecimal("VC").multiply(dm.getPorezi().getBigDecimal("POR1").divide(new BigDecimal("100.00"), 2, BigDecimal.ROUND_HALF_UP)));
               dummyStDoku.setBigDecimal("POR2", provjeraOld.getBigDecimal("VC").multiply(dm.getPorezi().getBigDecimal("POR2").divide(new BigDecimal("100.00"), 2, BigDecimal.ROUND_HALF_UP)));
@@ -427,7 +470,7 @@ public class frmPrijenosGodine extends raObradeZaNovuGodinu {
               dummyStDoku.setBigDecimal("POR1", _Main.nul);
               dummyStDoku.setBigDecimal("POR2", _Main.nul);
               dummyStDoku.setBigDecimal("POR3", _Main.nul);
-            }
+            }*/
           }
           
           BigDecimal sumnmp = dummyStDoku.getBigDecimal("INAB").add(dummyStDoku.getBigDecimal("IMAR").add(dummyStDoku.getBigDecimal("IPOR")));
@@ -453,9 +496,9 @@ public class frmPrijenosGodine extends raObradeZaNovuGodinu {
 //          }
         }
       } else /* if (provjeraOld.getBigDecimal("KOL").compareTo(_Main.nul) != 0 || isPrijenosStanjaNula()) */ {
-        Integer nStavka = new Integer(Rbr.getRbr().vrati_rbr("stdoku",provjeraOld.getString("CSKL"),"PST",fieldSet.getString("GODINA"),dummyDoku.getInt("BRDOK")));
-        insertIntoStDoku(provjeraOld, nStavka);
-        insetrIntoStanje(provjeraOld);
+        //Integer nStavka = new Integer(Rbr.getRbr().vrati_rbr("stdoku",provjeraOld.getString("CSKL"),"PST",fieldSet.getString("GODINA"),dummyDoku.getInt("BRDOK")));
+        insertIntoStDoku(provjeraOld);
+        insetrIntoStanje(provjeraOld, dummyDoku.getString("GOD"));
       }
     } while (provjeraOld.next());
   }
