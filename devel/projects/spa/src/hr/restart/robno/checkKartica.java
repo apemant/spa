@@ -120,6 +120,9 @@ public class checkKartica {
 		Column cskliz = dm.getStmeskla().getColumn("CSKLIZ").cloneColumn();
 		Column god = dm.getStmeskla().getColumn("GOD").cloneColumn();
 		Column vrdok = dm.getStmeskla().getColumn("VRDOK").cloneColumn();
+		Column rvrdok = dm.getStmeskla().getColumn("VRDOK").cloneColumn();
+		rvrdok.setColumnName("VD");
+		rvrdok.setVisible(com.borland.jb.util.TriStateProperty.FALSE);
 		Column brdok = dm.getStmeskla().getColumn("BRDOK").cloneColumn();
 		Column rbr = dm.getStmeskla().getColumn("RBR").cloneColumn();
 		Column datdok = dm.getMeskla().getColumn("DATDOK").cloneColumn();
@@ -127,6 +130,7 @@ public class checkKartica {
 		Column kol_trenutno = dm.getStmeskla().getColumn("KOL").cloneColumn();
 		kol_trenutno.setColumnName("KOL_TRENUTNO");
 		kol_trenutno.setCaption("Suma kol.");
+		
 		/*
 		 * Column vri_trenutno = dm.getStdoku().getColumn("IZAD").cloneColumn();
 		 * vri_trenutno.setColumnName("VRI_TRENUTNO");
@@ -196,7 +200,7 @@ public class checkKartica {
 				izadraz_trenutno, nc, nc_good, inab, inab_good, vc, vc_good,
 				imar, imar_good, ibp, ibp_good, mc, mc_good, ipor, ipor_good,
 				isp, isp_good, zc, zc_good, izadraz, izadraz_good, tkal, opis,
-				svc, smc });
+				svc, smc, rvrdok });
 		kartica.open();
 		karticatmp = new StorageDataSet();
 		karticatmp.setColumns(kartica.cloneColumns());
@@ -687,14 +691,16 @@ public class checkKartica {
 
 		kartica.setBigDecimal("VC_GOOD", kartica.getBigDecimal("VC"));
 		kartica.setBigDecimal("MC_GOOD", kartica.getBigDecimal("MC"));
+		kartica.setBigDecimal("KOL_TRENUTNO", karticatmp
+            .getBigDecimal("KOL_TRENUTNO"));
 
 		if (vrzal.equalsIgnoreCase("N")) {
 			kartica.setBigDecimal("IMAR_GOOD", Aus.zero2);
 			kartica.setBigDecimal("IPOR_GOOD", Aus.zero2);
 		} else if (vrzal.equalsIgnoreCase("V")) {
-			tmpBD = kartica.getBigDecimal("KOL").multiply(
+			tmpBD = kartica.getBigDecimal("KOL_TRENUTNO").multiply(
 					kartica.getBigDecimal("SVC"));
-			tmpBD1 = kartica.getBigDecimal("KOL").multiply(
+			tmpBD1 = kartica.getBigDecimal("KOL_TRENUTNO").multiply(
 					kartica.getBigDecimal("VC"));
 			kartica.setBigDecimal("IMAR_GOOD", tmpBD1.subtract(tmpBD));
 			kartica.setBigDecimal("IPOR_GOOD", Aus.zero2);
@@ -706,7 +712,7 @@ public class checkKartica {
 			//      kartica.setBigDecimal("IMAR_GOOD",tmpBD1.subtract(tmpBD));
 			tmpBD = kartica.getBigDecimal("VC").subtract(
 					kartica.getBigDecimal("SVC"));
-			tmpBD1 = kartica.getBigDecimal("KOL").multiply(tmpBD);
+			tmpBD1 = kartica.getBigDecimal("KOL_TRENUTNO").multiply(tmpBD);
 			kartica.setBigDecimal("IMAR_GOOD", tmpBD1);
 			//      tmpBD=
 			// kartica.getBigDecimal("KOL").multiply(kartica.getBigDecimal("SMC"));
@@ -715,7 +721,7 @@ public class checkKartica {
 			//      kartica.setBigDecimal("IPOR_GOOD",tmpBD1.subtract(tmpBD).subtract(kartica.getBigDecimal("IMAR_GOOD")));
 			tmpBD = kartica.getBigDecimal("MC").subtract(
 					kartica.getBigDecimal("SMC"));
-			tmpBD1 = kartica.getBigDecimal("KOL").multiply(tmpBD);
+			tmpBD1 = kartica.getBigDecimal("KOL_TRENUTNO").multiply(tmpBD);
 			kartica.setBigDecimal("IPOR_GOOD", tmpBD1.subtract(kartica
 					.getBigDecimal("IMAR_GOOD")));
 		}
@@ -964,9 +970,10 @@ public class checkKartica {
 		orgKartica.setString("CSKL", cloneKartica.getString("CSKL"));
 		orgKartica.setString("GOD", cloneKartica.getString("GOD"));
 		orgKartica.setString("VRDOK", cloneKartica.getString("VRDOK"));
+		orgKartica.setString("VD", cloneKartica.getString("VD"));
 		orgKartica.setInt("BRDOK", cloneKartica.getInt("BRDOK"));
 		orgKartica.setShort("RBR", cloneKartica.getShort("RBR"));
-		orgKartica.setTimestamp("DATDOK", cloneKartica.getTimestamp("DATDOK"));
+		orgKartica.setTimestamp("DATDOK", new Timestamp(cloneKartica.getTimestamp("DATDOK").getTime()));
 		orgKartica.setBigDecimal("KOL", cloneKartica.getBigDecimal("KOL"));
 		orgKartica.setBigDecimal("NC", cloneKartica.getBigDecimal("NC"));
 		orgKartica.setBigDecimal("INAB", cloneKartica.getBigDecimal("INAB"));
@@ -1028,10 +1035,11 @@ public class checkKartica {
 			karticatmp.setString("CSKL", ds.getString("CSKL"));
 		}
 		karticatmp.setString("GOD", ds.getString("GOD"));
+		karticatmp.setString("VD", ds.getString("VRDOK"));
 		karticatmp.setString("VRDOK", "DPR");
 		karticatmp.setInt("BRDOK", ds.getInt("BRDOK"));
 		karticatmp.setShort("RBR", ds.getShort("RBR"));
-		karticatmp.setTimestamp("DATDOK", new Timestamp(datum.getTime() + 1));
+		karticatmp.setTimestamp("DATDOK", new Timestamp(datum.getTime() - 1));
 		karticatmp.setBigDecimal("KOL", ds.getBigDecimal("SKOL"));
 
 		karticatmp.setBigDecimal("SVC", ds.getBigDecimal("SVC"));
@@ -1060,12 +1068,28 @@ public class checkKartica {
       }
       stav.put(getRowKey(ds), new Integer(ds.getRow()));
       
+            if (ds.hasColumn("PORAV") != null) {
+              if (ds.getBigDecimal("PORAV").doubleValue() != 0
+                      || ds.getBigDecimal("DIOPORPOR").doubleValue() != 0
+                      || ds.getBigDecimal("DIOPORMAR").doubleValue() != 0) {
+                  insertNivelacija(ds, (Timestamp) zag.get(key));
+              }
+          }   
+            
+            int add = 0;
+            if (TypeDoc.getTypeDoc().isDocStmeskla(ds.getString("VRDOK"))) {
+              if ((kartica.getString("VRDOK").equalsIgnoreCase("MES") && kartica
+                      .getString("CSKLIZ").equalsIgnoreCase(cskl))
+                      || kartica.getString("VRDOK").equalsIgnoreCase("MEI")) add = 1;
+            } else if (TypeDoc.getTypeDoc().isDocStdoki(kartica.getString("VRDOK"))) add = 1;
+      
+      
 			karticatmp.insertRow(false);
 			karticatmp.setString("GOD", ds.getString("GOD"));
 			karticatmp.setString("VRDOK", ds.getString("VRDOK"));
 			karticatmp.setInt("BRDOK", ds.getInt("BRDOK"));
 			karticatmp.setShort("RBR", ds.getShort("RBR"));
-			karticatmp.setTimestamp("DATDOK", (Timestamp) zag.get(key));
+			karticatmp.setTimestamp("DATDOK", new Timestamp(((Timestamp) zag.get(key)).getTime() + add));
 			karticatmp.setBigDecimal("KOL", ds.getBigDecimal("KOL"));
 
 			if (TypeDoc.getTypeDoc().isDocStmeskla(ds.getString("VRDOK"))) {
@@ -1136,14 +1160,6 @@ public class checkKartica {
 							"stdoku"));
 				}
 			}
-
-			if (ds.hasColumn("PORAV") != null) {
-				if (ds.getBigDecimal("PORAV").doubleValue() != 0
-						|| ds.getBigDecimal("DIOPORPOR").doubleValue() != 0
-						|| ds.getBigDecimal("DIOPORMAR").doubleValue() != 0) {
-					insertNivelacija(ds, (Timestamp) zag.get(key));
-				}
-			}      
 		}
 	}
 
@@ -1172,6 +1188,11 @@ public class checkKartica {
             subtract(kartica.getBigDecimal("MC_GOOD")).abs());
         ++erroneousCells;
 			}
+		} else {
+		  if (kartica.getBigDecimal("KOL").compareTo(kartica.getBigDecimal("KOL_TRENUTNO")) != 0) {
+		    buffer.append(" KOL,");
+		    ++erroneousCells;
+		  }
 		}
 
 		if (kartica.getBigDecimal("INAB").compareTo(
@@ -1245,6 +1266,22 @@ public class checkKartica {
 					continue;
 				}
 				if (kartica.getString("VRDOK").equalsIgnoreCase("DPR")) {
+				  kartica.setString("VRDOK", kartica.getString("VD"));
+				  
+				  String key = getRowKey(kartica);
+		          if (!ulazRows.containsKey(key)) {
+		            fatal.addError("Ne mogu pronaæi stavku ulaza "+key);
+		            System.err.println("Weird BUG, can't locate stdoku "+kartica);
+		            continue;
+		          }
+		          ulazi.goToRow(((Integer) ulazRows.get(key)).intValue());
+		          
+		          ulazi.setBigDecimal("SKOL", kartica.getBigDecimal("KOL_TRENUTNO"));
+		          ulazi.setBigDecimal("DIOPORMAR", kartica.getBigDecimal("IMAR_GOOD"));
+		          ulazi.setBigDecimal("DIOPORPOR", kartica.getBigDecimal("IPOR_GOOD"));
+		          ulazi.setBigDecimal("PORAV", kartica.getBigDecimal("IZAD_GOOD"));
+		          ulazi.post();
+				  
 				} else if (TypeDoc.getTypeDoc().isDocStmeskla(
 						kartica.getString("VRDOK"))) {
           String key = getRowKey(kartica);
