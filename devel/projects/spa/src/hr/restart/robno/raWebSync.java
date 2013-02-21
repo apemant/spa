@@ -129,8 +129,7 @@ public class raWebSync {
     if (dM.getDataModule().getKnjigod().getString("STATRADA").equals("D"))
       god = Valid.getValid().findYear();
     
-    DataSet ds = Stanje.getDataModule().getTempSet(getSkladCond().
-        and(Condition.in("CART", carts.toArray())).and(Condition.equal("GOD", god)));
+    DataSet ds = Stanje.getDataModule().getTempSet(getSkladCond().and(Condition.equal("GOD", god)));
     ds.open();
     System.out.println("updating all "+ ds.rowCount());
     for (ds.first(); ds.inBounds(); ds.next()) {
