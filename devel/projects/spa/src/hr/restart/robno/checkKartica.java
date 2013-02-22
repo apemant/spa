@@ -1269,6 +1269,7 @@ public class checkKartica {
 				  kartica.setString("VRDOK", kartica.getString("VD"));
 				  
 				  String key = getRowKey(kartica);
+				  kartica.setString("VRDOK", "DPR");
 		          if (!ulazRows.containsKey(key)) {
 		            fatal.addError("Ne mogu pronaæi stavku ulaza "+key);
 		            System.err.println("Weird BUG, can't locate stdoku "+kartica);
