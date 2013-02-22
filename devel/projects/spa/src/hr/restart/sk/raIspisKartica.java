@@ -22,12 +22,14 @@ import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.raSelectTableModifier;
 import hr.restart.util.Aus;
+import hr.restart.util.Util;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raProcess;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,6 +72,20 @@ public class raIspisKartica {
   private String konto = null;
   public static String dokformat;
   public boolean outrange = true;
+  public int plus = 0;
+  
+  public Timestamp poc;
+  {
+    Calendar c = Calendar.getInstance();
+    c.set(c.YEAR, 2012);
+    c.set(c.MONTH, c.OCTOBER);
+    c.set(c.DATE, 1);
+    c.set(c.HOUR_OF_DAY, 0);
+    c.set(c.MINUTE, 0);
+    c.set(c.SECOND, 0);
+    c.set(c.MILLISECOND, 0);
+    poc = new Timestamp(c.getTime().getTime());
+  }
   
   raSelectTableModifier stm = null;
   
@@ -100,7 +116,8 @@ public class raIspisKartica {
     if (dokformat == null) findFormat(param);
     opis.append(dokformat);
     if (skstavke.hasColumn("OPIS")!=null) opis.replaceAll("$O", skstavke.getString("OPIS"));
-    if (skstavke.hasColumn("BROJDOK")!=null) opis.replaceAll("$B", skstavke.getString("BROJDOK"));
+    if (skstavke.hasColumn("ORIGBROJ")!=null) opis.replaceAll("$B", skstavke.getString("ORIGBROJ"));
+    else if (skstavke.hasColumn("REALBROJ")!=null) opis.replaceAll("$B", skstavke.getString("BROJDOK"));
     if (skstavke.hasColumn("EXTBRDOK")!=null) opis.replaceAll("$E", skstavke.getString("EXTBRDOK"));
     if (skstavke.hasColumn("BROJIZV")!=null) { 
       opis.replaceAll("$I", (skstavke.getInt("BROJIZV") == 0)?"":(""+skstavke.getInt("BROJIZV")));
@@ -320,6 +337,7 @@ public class raIspisKartica {
     String vrdok;
     BigDecimal id, ip, saldo, tsaldo;
     for (ds.first(); ds.inBounds(); ds.next()) {
+      if (plus > 0 && !ds.getTimestamp("DATDOK").after(poc)) continue;
       cpar = ds.getInt("CPAR");
       vrdok = ds.getString("VRDOK");
       id = ds.getBigDecimal("ID");
@@ -348,13 +366,19 @@ public class raIspisKartica {
       }
 
       totals.setBigDecimal("SALDO", totals.getBigDecimal("SALDO").add(tsaldo));
-      if (!ds.getTimestamp("DATDOSP").after(dto))
-        totals.setBigDecimal("DOSPSALDO", totals.getBigDecimal("DOSPSALDO").add(tsaldo));
+      
+      if (plus == 0) {
+        if (!ds.getTimestamp("DATDOSP").after(dto))
+          totals.setBigDecimal("DOSPSALDO", totals.getBigDecimal("DOSPSALDO").add(tsaldo));
 //      if (mode == IOS) {
 //        if (vrdok.equals("IRN") || vrdok.equals("IPL") || vrdok.equals("OKK"))
 //          ds.setBigDecimal("ID", saldo);
 //        else ds.setBigDecimal("IP", saldo);
 //      }
+      } else {
+         if (!Util.getUtil().addDays(ds.getTimestamp("DATDOK"), 30-plus).after(dto))
+           totals.setBigDecimal("DOSPSALDO", totals.getBigDecimal("DOSPSALDO").add(tsaldo));
+      }
 
       if (vrdok.equals("IRN") || vrdok.equals("URN"))
         totals.setBigDecimal("SALDOKRN", totals.getBigDecimal("SALDOKRN").add(saldo));
