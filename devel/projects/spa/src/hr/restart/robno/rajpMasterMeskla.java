@@ -59,11 +59,15 @@ public class rajpMasterMeskla extends JPanel {
   JLabel jLabel3 = new JLabel();
   JLabel jLabel4 = new JLabel();
   JLabel jLabel5 = new JLabel("Opis");
+  JLabel jLabel6 = new JLabel("Partner");
 
   JlrNavField jtfCSKLIZ = new JlrNavField();
   JlrNavField jtfNAZIZ = new JlrNavField();
   JlrNavField jtfCSKLUL = new JlrNavField();
   JlrNavField jtfNAZUL = new JlrNavField();
+  
+  JlrNavField jtfCPAR = new JlrNavField();
+  JlrNavField jtfNAZPAR = new JlrNavField();
 
   private JraTextField jtfOPIS = new JraTextField();
   JraTextField jtfDATDOK = new JraTextField();
@@ -118,7 +122,16 @@ public class rajpMasterMeskla extends JPanel {
     jtfNAZUL.setColumnName("NAZSKL");
     jtfNAZUL.setSearchMode(1);
     jtfNAZUL.setNavProperties(jtfCSKLUL);
-
+    
+    jtfCPAR.setColumnName("CPAR");
+    jtfCPAR.setVisCols(new int[]{0,1,2});
+    jtfCPAR.setColNames(new String[] {"NAZPAR"});
+    jtfCPAR.setRaDataSet(dm.getPartneri());
+    jtfCPAR.setTextFields(new javax.swing.text.JTextComponent[] {jtfNAZPAR});
+    jtfNAZPAR.setColumnName("NAZPAR");
+    jtfNAZPAR.setSearchMode(1);
+    jtfNAZPAR.setNavProperties(jtfCPAR);
+    
     //////////////////////////
 
     this.setPreferredSize(new Dimension(647,250));
@@ -141,7 +154,10 @@ public class rajpMasterMeskla extends JPanel {
     jPanelCentral.add(jtfDATDOK, new XYConstraints(150, 75, 100, -1));
     jPanelCentral.add(jLabel5, new XYConstraints(15,105, -1, -1));
     jPanelCentral.add(jtfOPIS,new XYConstraints(150,105,455,-1));
-    jPanelCentral.add(jpgetval, new XYConstraints(0, 130, 0, 0));
+    jPanelCentral.add(jLabel6,new XYConstraints(15, 135, -1, -1));
+    jPanelCentral.add(jtfCPAR,new XYConstraints(150, 135, 100, -1));
+    jPanelCentral.add(jtfNAZPAR,new XYConstraints(260, 135, 345, -1));
+    jPanelCentral.add(jpgetval, new XYConstraints(0, 160, 0, 0));
   }
 
 /*  public void MYafterGet_Val(){
@@ -158,5 +174,6 @@ public class rajpMasterMeskla extends JPanel {
     jtfCSKLUL.setDataSet(ds);
     jpgetval.setRaDataSet(ds);
     jtfOPIS.setDataSet(ds);
+    jtfCPAR.setDataSet(ds);
   }
 }
