@@ -25,6 +25,8 @@ import hr.restart.baza.dokidod;
 import hr.restart.baza.stdoki;
 import hr.restart.baza.vtrabat;
 import hr.restart.baza.zirorn;
+import hr.restart.pos.frmMasterBlagajna;
+import hr.restart.pos.presBlag;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.util.Aus;
@@ -71,7 +73,7 @@ public class repIzlazni implements raReportData {
   
   private String specGroup;
   private String specText, matText, radText;
-  private String specForm;
+  private String specForm, fiskForm;
   
   protected BigDecimal dineto, diprodbp, diprodsp;
   
@@ -87,6 +89,8 @@ public class repIzlazni implements raReportData {
   }
 
   protected repIzlazni(boolean init) {
+    fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR:06]-[FPP]-[FNU:02]",
+        "Format fiskalnog broja izlaznog dokumenta na ispisu");
     if (init) {
       setCurrentDataset();
       ds.open();
@@ -480,6 +484,10 @@ public class repIzlazni implements raReportData {
   public String SgetSYSDAT() {
     return rdu.dataFormatter(getSYSDAT());
   }
+  
+  public String SgetSYSTIME() {
+    return getSYSDAT().toString().substring(11,19);
+  }
 
   public String getDatumIsp(){
     return rdu.dataFormatter(vl.getToday());
@@ -490,6 +498,10 @@ public class repIzlazni implements raReportData {
   }
   public String SgetDATDOK() {
     return rdu.dataFormatter(getDATDOK());
+  }
+  
+  public String SgetDATTIME() {
+    return getDATDOK().toString().substring(11,19);
   }
 
   public int getPJ() {
@@ -1011,6 +1023,13 @@ public BigDecimal getIPRODSP() {
     return ru.getSomething(colname,dm.getFranka(),"NAZFRA").getString();
   }
   public String getFormatBroj(){
+    if (ds.getString("FOK").equals("D"))
+      return Aus.formatBroj(ds, fiskForm);
+    
+    return getOldFormatBroj();
+  }
+  
+  public String getOldFormatBroj() {
     if (specForm == null || specForm.length() == 0)
       return ru.getFormatBroj();
     if (specForm.equalsIgnoreCase("pnbz2")) {
@@ -1021,6 +1040,10 @@ public BigDecimal getIPRODSP() {
     return Aus.formatBroj(ds, specForm);
   }
   
+  public String getZKI() {
+    return presBlag.getFis().generateZKI(raIzlazTemplate.getRacType(ds));
+  }
+    
   public String getFormatBrojTri(){
     return Valid.getValid().maskZeroInteger(new Integer(getBRDOK()),6) + 
             "/" + getGOD().substring(2);
@@ -2030,7 +2053,7 @@ public BigDecimal getIPRODSP() {
     prefn = frmParam.getParam("robno", "prefixPar", "",
         "Prefiks ispred imena partnera");
     specForm = frmParam.getParam("robno", "specForm", "",
-        "Custom format broja izlaznog dokumenta na ispisu");
+      "Custom format broja izlaznog dokumenta na ispisu");
     ispTecaj = frmParam.getParam("robno", "ispTecaj", "N",
       "Ispis teèaja zajedno s iznosom u valuti (D,N)").equalsIgnoreCase("D");
     prefv = frmParam.getParam("robno", "prefVal", "N",
