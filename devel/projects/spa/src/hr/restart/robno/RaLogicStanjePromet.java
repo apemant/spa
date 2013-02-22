@@ -46,7 +46,7 @@ public class RaLogicStanjePromet {
   private QueryDataSet povratImovine = null;
   private QueryDataSet povratTmp = null;
   
-  public QueryDataSet datasetZaEkran(String cskl, String cart, String grupa, String cartFiltering, boolean kol0, Timestamp dodat, boolean podgrupe, String partArtikl, String partCart1) {
+  public QueryDataSet datasetZaEkran(String cskl, String cart, String grupa, String cartFiltering, boolean kol0, Timestamp dodat, boolean podgrupe, String partArtikl, String partCart1, boolean all) {
     cached = false;
     QueryDataSet ulaz = getUlazData(makeCondition("DOKU","STDOKU","CSKL",cskl,cart,dodat));
     QueryDataSet por = getPorData(makeCondition("DOKU","STDOKU","CSKL",cskl,cart,dodat));
@@ -157,8 +157,8 @@ public class RaLogicStanjePromet {
     
     DataSet art = Aus.q("SELECT cart,vrart FROM artikli");
     HashSet nost = new HashSet();
-    for (art.first(); art.inBounds(); art.next())
-      if (!raVart.isStanje(art)) 
+    for (art.first(); art.inBounds(); art.next())      
+      if (raVart.isUsluga(art) || (!all && !raVart.isStanje(art))) 
         nost.add(new Integer(art.getInt("CART")));
     
     System.out.println(nost);
@@ -168,10 +168,15 @@ public class RaLogicStanjePromet {
       if (ld.raLocate(povratImovine,
           new String[] {"CART","CSKL"},
           new String[] {povratTmp.getInt("CART")+"",povratTmp.getString("CSKL")})){
-        povratImovine.setBigDecimal("ZC", povratTmp.getBigDecimal("ZC"));
-        povratImovine.setBigDecimal("NC", povratTmp.getBigDecimal("NC"));
-        povratImovine.setBigDecimal("VC", povratTmp.getBigDecimal("VC"));
-        povratImovine.setBigDecimal("MC", povratTmp.getBigDecimal("MC"));
+        
+        if (povratTmp.getBigDecimal("ZC").signum() > 0)
+          povratImovine.setBigDecimal("ZC", povratTmp.getBigDecimal("ZC"));
+        if (povratTmp.getBigDecimal("NC").signum() > 0)
+          povratImovine.setBigDecimal("NC", povratTmp.getBigDecimal("NC"));
+        if (povratTmp.getBigDecimal("VC").signum() > 0)
+          povratImovine.setBigDecimal("VC", povratTmp.getBigDecimal("VC"));
+        if (povratTmp.getBigDecimal("MC").signum() > 0)
+          povratImovine.setBigDecimal("MC", povratTmp.getBigDecimal("MC"));
         povratImovine.setBigDecimal("KOL", povratImovine.getBigDecimal("KOL").add(povratTmp.getBigDecimal("KOL")));
         povratImovine.setBigDecimal("VRI", povratImovine.getBigDecimal("VRI").add(povratTmp.getBigDecimal("VRI")));
         povratImovine.setBigDecimal("NAB", povratImovine.getBigDecimal("NAB").add(povratTmp.getBigDecimal("NAB")));

@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
+import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraRadioButton;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
@@ -99,6 +100,8 @@ public class UpStanjeRobno extends raUpitFat {
     }
   };
   
+  JraCheckBox jcbAll = new JraCheckBox();
+  
   //MISC
   String defSKL = raUser.getInstance().getDefSklad();
   boolean podgrupe = false;
@@ -146,6 +149,10 @@ public class UpStanjeRobno extends raUpitFat {
     rpcart.setMode(new String("DOH"));
     rpcart.setSearchable(false);
     jPanel3.setLayout(localXYLayout);
+    
+    jcbAll.setText(" Prikazati i artikle troškova ");
+    jcbAll.setHorizontalTextPosition(SwingConstants.TRAILING);
+    jcbAll.setSelected(false);
 
     localXYLayout.setWidth(655);
     localXYLayout.setHeight(135);
@@ -182,6 +189,7 @@ public class UpStanjeRobno extends raUpitFat {
     jPanel3.add(jtfStanjeNaDan,     new XYConstraints(500, 75, 104, -1));
     jPanel3.add(jlStanje, new XYConstraints(15, 75, -1, -1));
     jPanel3.add(jtbKolicinaNula,    new XYConstraints(500,100,104,21));
+    jPanel3.add(jcbAll,    new XYConstraints(150,100,300,-1));
 
     this.setJPan(jp);
     
@@ -260,7 +268,7 @@ public class UpStanjeRobno extends raUpitFat {
     
     if (jrbSaStanja.isSelected()) {
       handleReports();
-      mainData = rlss.datasetZaEkran(rpcskl.getCSKL(), rpcart.findCART("stanje"), rpcart.getCGRART(), podgrupe, tds.getString("GODINA"), kol0(),parart,parcart1);
+      mainData = rlss.datasetZaEkran(rpcskl.getCSKL(), rpcart.findCART("stanje"), rpcart.getCGRART(), podgrupe, tds.getString("GODINA"), kol0(),parart,parcart1,jcbAll.isSelected());
 
       if (mainData == null)
         setNoDataAndReturnImmediately();
@@ -271,7 +279,7 @@ public class UpStanjeRobno extends raUpitFat {
       setDataSetAndSums(mainData, new String[]{"NAB", "MAR", "POR", "VRI"});
     } else {
       handleReports();
-      mainData = rlsp.datasetZaEkran(rpcskl.getCSKL(), rpcart.getCART(), rpcart.getCGRART(), rpcart.findCART("stanje"), /*tds.getString("GODINA"),*/ kol0(), tds.getTimestamp("NADAN"), podgrupe, parart, parcart1);
+      mainData = rlsp.datasetZaEkran(rpcskl.getCSKL(), rpcart.getCART(), rpcart.getCGRART(), rpcart.findCART("stanje"), /*tds.getString("GODINA"),*/ kol0(), tds.getTimestamp("NADAN"), podgrupe, parart, parcart1, jcbAll.isSelected());
       if (mainData == null)
         setNoDataAndReturnImmediately();
       

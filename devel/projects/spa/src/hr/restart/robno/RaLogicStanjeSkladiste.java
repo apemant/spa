@@ -43,7 +43,7 @@ public class RaLogicStanjeSkladiste {
   lookupData ld = lookupData.getlookupData();
   
 
-  public QueryDataSet datasetZaEkran(String cskl, String cart, String grupa, boolean podGrupe, String god, boolean kol0, String partArtikl, String partCart1) {
+  public QueryDataSet datasetZaEkran(String cskl, String cart, String grupa, boolean podGrupe, String god, boolean kol0, String partArtikl, String partCart1, boolean all) {
     Stopwatch st = Stopwatch.start("artikli stanje");
     QueryDataSet data = ut.getNewQueryDataSet(queryString(cskl, cart, god, kol0));
 
@@ -96,8 +96,10 @@ public class RaLogicStanjeSkladiste {
     dm.getArtikli().open();
     Artikli.getDataModule().fixSort();
     do {
-      mainDataSet.insertRow(false);
       ld.raLocate(dm.getArtikli(), "CART", data.getInt("CART") + "");
+      if (raVart.isUsluga(dm.getArtikli()) || (!all && !raVart.isStanje(dm.getArtikli()))) continue;
+      
+      mainDataSet.insertRow(false);
       mainDataSet.setString("CSKL", data.getString("CSKL"));
       mainDataSet.setInt("CART", data.getInt("CART"));
       mainDataSet.setString("CART1", dm.getArtikli().getString("CART1"));
