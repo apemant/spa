@@ -142,6 +142,10 @@ public class repMeskla implements raReportData {
   }
 
   public double getNABVRI(){
+    if (ds.getString("VRDOK").equalsIgnoreCase("MEI"))
+      return ds.getBigDecimal("INABIZ").doubleValue();
+    if (ds.getString("VRDOK").equalsIgnoreCase("MEU"))
+      return ds.getBigDecimal("INABUL").doubleValue();
      return (ds.getBigDecimal("KOL").multiply(ds.getBigDecimal("NC"))).doubleValue();
   }
 
