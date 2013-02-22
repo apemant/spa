@@ -17,16 +17,21 @@
 ****************************************************************************/
 package hr.restart.pos;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Pos;
 import hr.restart.robno.raPOS;
 import hr.restart.robno.repFISBIH;
 import hr.restart.util.PreSelect;
 import hr.restart.util.raLoader;
+import hr.restart.util.raProcess;
 
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+
+import com.borland.dx.dataset.DataSet;
 
 /**
  * <p>Title: Robno poslovanje</p>
@@ -192,7 +197,23 @@ public class jposMenu extends JMenu {
     SF.showFrame("hr.restart.robno.FISBIHIzvjestaji", jmFISBIH.getText());
   }
 
+  long lastTrans = 0;
   public void jmBlagajna_actionPerformed(ActionEvent e) {
+    
+    if (lastTrans == 0 || System.currentTimeMillis() > lastTrans + 1000 * 60 * 60 * 8)
+    raProcess.runChild(SF, "Fiskalizacija", "Fiskalizacija nepotpuno zakljuèenih raèuna...", new Runnable() {    
+      public void run() {
+        lastTrans = System.currentTimeMillis();
+        DataSet ms = Pos.getDataModule().getTempSet(Condition.equal("FOK", "D").and(Condition.emptyString("JIR").orNull()));
+        ms.open();
+        System.out.println("Fiskalizacija " + ms.rowCount() + " crvenih raèuna...");
+        if (ms.rowCount() == 0) return;
+        for (ms.first(); ms.inBounds(); ms.next()) {
+          frmMasterBlagajna.fisk(ms);
+        }
+      }
+    });
+    
     PreSelect.showPreselect("hr.restart.pos.presBlag", "hr.restart.pos.frmMasterBlagajna",
                             jmBlagajna.getText(), false);
 //    SF.showFrame("hr.restart.robno.dlgBeforePOS", res.getString("dlgBeforePOS_title"));
