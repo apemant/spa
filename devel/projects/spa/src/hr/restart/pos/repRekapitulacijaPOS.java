@@ -22,12 +22,15 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
+import hr.restart.util.reports.mxRM;
 import hr.restart.util.reports.mxReport;
 import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
+import java.util.StringTokenizer;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 
@@ -69,7 +72,7 @@ public class repRekapitulacijaPOS extends mxReport {
     
     lD.raLocate(dm.getLogotipovi(), "CORG", pcorg);
     
-    String kh = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
+    String kh = getNazivSplit(dm.getLogotipovi().getString("NAZIVLOG"))+
     "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+
     "<#OIB "+dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>"+ getPhones();
     
@@ -80,7 +83,7 @@ public class repRekapitulacijaPOS extends mxReport {
     String ph = kh;
     if (!sks.getString("CORG").equals(OrgStr.getKNJCORG(false)) &&
         lD.raLocate(dm.getLogotipovi(), "CORG", sks.getString("CORG"))) {
-      ph = "<#"+dm.getLogotipovi().getString("NAZIVLOG")+"|"+width+"|center#><$newline$>"+
+      ph = getNazivSplit(dm.getLogotipovi().getString("NAZIVLOG"))+
       "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+
       " "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ 
       (dm.getLogotipovi().getString("OIB").length()== 0 ? "" : "<#OIB "+
@@ -106,7 +109,13 @@ public class repRekapitulacijaPOS extends mxReport {
       header = ph + kh;
     if (th.equals("2") && !kh.equals(ph))
       header = kh + ph;
-
+    
+    String vc = hr.restart.sisfun.frmParam.getParam(
+        "sisfun", "printerRMcmnd", "1", "Radno mjesto", true);
+    lD.raLocate(dm.getMxPrinterRM(), "CRM", vc);
+    mxRM rm = new mxRM();
+    rm.init(dm.getMxPrinterRM());
+    setRM(rm);
     
     
     this.setPgHeader("<$newline$>"+header+"<$newline$>"+getDoubleLineLength()+"<$newline$>"+
@@ -131,7 +140,7 @@ public class repRekapitulacijaPOS extends mxReport {
     this.setPgFooter(footer()+
                      "<$newline$><$newline$><$newline$>"+
                      "<$newline$><$newline$><$newline$>"+
-                     "\u001B\u0064\u0000"
+                     getLastEscapeString()
 
                      /*"=========================================<$newline$>"/*+
                      "<#UKUPNO|20|left#> <%sum(IRATA|20|right)%><$newline$>"+ // IRATA se stalno zbraja!!!!????
@@ -146,6 +155,18 @@ public class repRekapitulacijaPOS extends mxReport {
 //    syst.prn(this.getDataSet());
   }
   
+  private String getNazivSplit(String naziv) {
+    if (naziv.indexOf('|') <= 0) return    
+      "<#"+naziv+"|"+width+"|center#><$newline$>";
+    
+    String[] lines = new VarStr(naziv).split('|');
+    String ret = "";
+    for (int i = 0; i < lines.length; i++)
+      ret = ret + "<#"+lines[i]+"|"+width+"|center#><$newline$>";
+    
+    return ret;
+  }
+  
   private String getPhones(){
     if (dm.getLogotipovi().getString("TEL1").equals("")) return "";
     String phoneString = "<#Tel. ";
@@ -157,6 +178,31 @@ public class repRekapitulacijaPOS extends mxReport {
       else
         phoneString += ", "+dm.getLogotipovi().getString("TEL2");
    return phoneString+"|"+width+"|center#><$newline$>"; 
+  }
+  
+  private String getLastEscapeString() {
+    int crm = dm.getMxPrinterRM().getInt("CRM");//jebiga
+    String str = frmParam.getParam("sisfun", "endPOSRM"+crm, "\\u001B\\u0064\\u0000", 
+        "Sekvenca koja dolazi na kraju ispisa POS racuna za rm "+crm);
+    return getParamStr(str);
+  }
+  
+  private String getParamStr(String str) {
+    //String str = frmParam.getParam("sisfun", "endPOSRM"+crm, "\\u001B\\u0064\\u0000", "Sekvenca koja dolazi na kraju ispisa POS racuna za rm "+crm);
+  //String str = "\\u0041\\u004e\\u0044\\u0052\\u0045\\u004a";
+        try {
+          StringTokenizer tok = new StringTokenizer(str,"\\u");
+          char[] ret = new char[tok.countTokens()];
+          int i=0;
+          while (tok.hasMoreTokens()) {
+            ret[i] = (char)Integer.parseInt(tok.nextToken(), 16);
+            i++;
+          }
+          return new String(ret);
+        } catch (NumberFormatException e) {
+          e.printStackTrace();
+          return "";
+        }
   }
 
   private void makeLittleZaglavlje(){
@@ -177,11 +223,26 @@ public class repRekapitulacijaPOS extends mxReport {
     
     DataSet por = irrpos.getPorezi();
     if (por.rowCount() > 0) {
-      z1+="<$newline$>";
+      
+      por.setSort(new SortDescriptor(new String[] {"NAZIV"}));
+      z1 += "<$newline$><$newline$><#P R E G L E D  P O R E Z A|"+width+"|center#><$newline$>"+
+        "<#NAZIV|6|left#> <#STOPA|8|right#> <#OSNOVICA|12|right#> <#POREZ|"+(width-29)+"|right#><$newline$>"+
+        getDoubleLineLength()+"<$newline$>";
+
+      for (por.first(); por.inBounds(); por.next()) {    
+          z1 += "<#"+por.getString("NAZIV")+"|6|left#> <#"+Aus.formatBigDecimal(por.getBigDecimal("STOPA"))+"%|8|right#> <#"+
+          Aus.formatBigDecimal(por.getBigDecimal("OSNOVICA"))+"|12|right#> <#"+
+          Aus.formatBigDecimal(por.getBigDecimal("IZNOS"))+"|"+(width-29)+"|right#>"+ "<$newline$>";
+      }      
+      
+      if (irrpos.izpov.signum() > 0) {
+        z1 += "<$newline$>POVRATNA NAKNADA<#" + Aus.formatBigDecimal(irrpos.izpov) + "|" + (width - 16) + "|right#><$newline$>";
+      }
+      /*z1+="<$newline$>";
       for (por.first(); por.inBounds(); por.next())
         z1+="<$newline$><#"+por.getString("NAZIV")+"|10|left#> <#"+
         sgq.format(por.getBigDecimal("IZNOS"),2)+"|"+
-            (width-11)+"|right#>";
+            (width-11)+"|right#>";*/
     }
     
     QueryDataSet grs = irrpos.getGrupeArt();
