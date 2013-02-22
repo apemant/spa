@@ -10,6 +10,8 @@
  ******************************************************************************/
 package hr.restart.pos;
 
+import java.util.HashMap;
+
 import hr.restart.baza.Condition;
 import hr.restart.baza.Sklad;
 import hr.restart.baza.Smjene;
@@ -330,12 +332,12 @@ public class presBlag extends PreSelect {
       jp.add(jraStol, new XYConstraints(415, 70, 100, 21));
       
     }
-    if (isFiskal()) {
+    //if (isFiskal()) {
       jcbAktiv.setText(" Samo raèuni ");
       jcbAktiv.setHorizontalTextPosition(SwingConstants.LEADING);
       jcbAktiv.setHorizontalAlignment(SwingConstants.TRAILING);
       jp.add(jcbAktiv, new XYConstraints(350, 120, 165, -1));
-    }
+    //}
     
     int yc = 20;
     int yp = 45;
@@ -380,7 +382,7 @@ public class presBlag extends PreSelect {
   }
 
   public String refineSQLFilter(String orig) {
-    if (!stolovi || !jcbAktiv.isSelected()) return orig;
+    if (!jcbAktiv.isSelected() || !isFiskal(getSelRow().getString("CSKL"))) return orig;
     return orig + " AND pos.fok='D'";
   }
   
@@ -418,6 +420,15 @@ public class presBlag extends PreSelect {
   
   private static int smjena = -1;
   
+  
+  public static boolean isFiskal(String cskl) {
+    if (isSkladOriented()) {
+      return frmParam.getParam("robno", "fiskalizacija"+cskl, "N",
+        "Radi li se fiskalizacija "+cskl+" (D,N)").equalsIgnoreCase("D");
+    }
+    return isFiskal();
+  }
+  
   private static int fiskal = -1;
   
   public static boolean isFiskal() {
@@ -451,13 +462,36 @@ public class presBlag extends PreSelect {
     }
     return fisksep == 1;
   }
+  
+  public static String getFiskPP(String cskl) {
+    if (isSkladOriented()) {
+      return frmParam.getParam("robno", "fiskPP"+cskl, "", "Oznaka poslovnog prostora " + cskl + " (lokalno)", true);
+    }
+    return getFiskPP();
+  }
     
   public static String getFiskPP() {
     return frmParam.getParam("robno", "fiskPP", "", "Oznaka poslovnog prostora (lokalno)", true);
   }
   
+  public static int getFiskNapG() {
+    String ur = frmParam.getParam("robno", "fiskNapG", "2", "Oznaka naplatnog ureðaja za gotovinu (lokalno)", true);
+    if (ur == null || ur.length() == 0) return 1;
+    return Aus.getNumber(ur);
+  }
+  
+  public static int getFiskNap(String cskl) {
+    if (isSkladOriented()) {
+      String ur = frmParam.getParam("robno", "fiskNap"+cskl, "1", "Oznaka naplatnog ureðaja " + cskl + " (lokalno)", true);
+      if (ur == null || ur.length() == 0) return 1;
+      return Aus.getNumber(ur);
+    }
+    return getFiskNap();
+  }
+  
   public static int getFiskNap() {
-    String ur = frmParam.getParam("robno", "fiskNap", "", "Oznaka naplatnog ureðaja (lokalno)", true);
+    
+    String ur = frmParam.getParam("robno", "fiskNap", "1", "Oznaka naplatnog ureðaja (lokalno)", true);
     if (ur == null || ur.length() == 0) return 1;
     return Aus.getNumber(ur);
   }
@@ -500,7 +534,29 @@ public class presBlag extends PreSelect {
   
   static FisUtil fis = null;
   
-  public static FisUtil getFis() {
+  static HashMap fisks = new HashMap();
+  
+  
+  public static FisUtil getFis(String cskl) {
+    if (isSkladOriented()) {
+      FisUtil f = (FisUtil) fisks.get(cskl);
+      if (f == null) {
+        try {
+          f = new FisUtil(frmParam.getParam("sisfun", "fiskey"+cskl, "", "Keystore za fiskalizaciju "+cskl),
+              frmParam.getParam("sisfun", "fispass"+cskl, "1restart2", "Password za fiskalizaciju " + cskl), null);
+          fisks.put(cskl, f);
+        } catch (Exception e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+      return f;
+    }
+    return getFis();
+  }
+  
+  
+  public static FisUtil getFis() {    
     if (fis == null) {
       try {
         fis = new FisUtil(frmParam.getParam("sisfun", "fiskey", "", "Keystore za fiskalizaciju"),
