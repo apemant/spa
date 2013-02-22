@@ -700,6 +700,23 @@ public class SecondChooser extends JraDialog {
 								"\n-  kolièina za razdužiti: " +
 								formatKol(realrow);
 					}
+				} else if ((selected.equals("POS") || selected.equals("RAC") || selected.equals("GRN")) &&
+                    !raVart.isUsluga(dm.getArtikli())) {
+				  returnValue = false;
+                  
+                  errorSet.insertRow(false);
+                  dM.copyColumns(realrow, errorSet, 
+                      new String[] {"CART", "CART1", "BC", "NAZART", "KOL"});
+                  errorSet.setString("OPIS", "Pogrešni artikl na razduženju za skladište " + realrow.getString("CSKL"));
+                  errorSet.setBigDecimal("KOLS", Aus.zero3);
+                  errorSet.post();
+                  
+                  if (errors == null)
+                      errors = "Greške kod prijenosa!";
+                  
+                  if (++errnum <= 5)
+                  errors = errors + "\nArtikl " + realrow.getInt("CART") +
+                          " (" + realrow.getString("NAZART") + ") - nema na stanju";
 				}
 			}
 			if (errors != null) {
