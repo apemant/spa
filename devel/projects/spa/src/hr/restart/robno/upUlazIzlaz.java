@@ -181,6 +181,7 @@ public class upUlazIzlaz extends raUpitFat {
         (Column) dm.getDoki().getColumn("DATDOSP").clone(),
       (Column) dm.getDoki().getColumn("VRDOK").clone(),
         (Column) dm.getDoki().getColumn("BRDOK").clone(),
+        dM.createStringColumn("FBR", "Fiskalni broj", 50),
         (Column) dm.getDoki().getColumn("CVRTR").clone(),
         (Column) dm.getStdoki().getColumn("INAB").clone(),
         (Column) dm.getStdoki().getColumn("IMAR").clone(),
@@ -232,8 +233,8 @@ public class upUlazIzlaz extends raUpitFat {
     String vrzal = csklEnab ? dm.getSklad().getString("VRZAL") : "";*/
     String rinab = raIzlazTemplate.isNabDirect() ? "RINAB" : "INAB";
     if (tds.getString("ULIZ").trim().equals("I")) {
-      qStr="SELECT max(DOKI.CPAR) as CPAR, max(DOKI.DATDOK) as DATDOK, max(DOKI.DATDOSP) as DATDOSP, max(DOKI.VRDOK) as VRDOK, " +
-      		"max(DOKI.CSKL) as CSKL, max(DOKI.BRDOK) as BRDOK, max(DOKI.CVRTR) as CVRTR, "+
+      qStr="SELECT max(DOKI.CPAR) as CPAR, max(DOKI.DATDOK) as DATDOK, max(DOKI.DATDOSP) as DATDOSP, max(DOKI.VRDOK) as VRDOK, max(DOKI.CSKL) as CSKL, " +
+      		"max(DOKI.BRDOK) as BRDOK, max(DOKI.CVRTR) as CVRTR, max(doki.fbr) as fbr, max(doki.fpp) as fpp, max(doki.fnu) as fnu,"+
       	   "sum(STDOKI.INAB) as INAB, "+findIRAZ("M")+", sum(STDOKI.UIRAB) as UIRAB, "+
            "sum(STDOKI.IPRODBP) as IPRODBP,  (sum(STDOKI.POR1)+sum(STDOKI.POR2)+sum(STDOKI.POR3)) as POREZ, "+
            "sum(STDOKI.IPRODSP) as IPRODSP, "+
@@ -294,6 +295,8 @@ public class upUlazIzlaz extends raUpitFat {
           "UIRAB","ZARADA","INAB","IMAR","IPOR","IRAZ"};
         izdok.empty();
         
+        String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR:06]-[FPP]-[FNU:02]",
+          "Format fiskalnog broja izlaznog dokumenta na ispisu");
         
         for (vl.RezSet.first(); vl.RezSet.inBounds(); vl.RezSet.next()) {
           izdok.insertRow(false);
@@ -304,6 +307,9 @@ public class upUlazIzlaz extends raUpitFat {
             izdok.setString("NAZPAR", pc.getNameNotNull(cpar));
             if (pc.getData(cpar) != null)
               izdok.setString("OIB", pc.getData(cpar).getOIB());
+          }
+          if (vl.RezSet.getString("FPP").length() > 0) {
+            izdok.setString("FBR", Aus.formatBroj(vl.RezSet, fiskForm));
           }
           izdok.setTimestamp("DATDOK",hr.restart.util.Util.getUtil().clearTime(vl.RezSet.getTimestamp("DATDOK")));
           if (!vl.RezSet.isNull("DATDOK"))
@@ -676,7 +682,7 @@ public class upUlazIzlaz extends raUpitFat {
   String findMesklaUlaz() {
     if (!getCpar().equals("")) return "";
     if (tds.getString("VRDOK").trim().equals("MES") || tds.getString("VRDOK").trim().equals("MEU") || tds.getString("VRDOK").trim().equals("")) {
-      return "UNION SELECT 0 as CPAR, max(MESKLA.DATDOK) as DATDOK, max(MESKLA.BRDOK) as BRDOK, max(MESKLA.VRDOK) as VRDOK, max(MESKLA.CSKLUL) as CSKL, sum(STMESKLA.INABUL-STMESKLA.INABUL) as UIPRPOR, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IDOB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IRAB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IZT, sum(STMESKLA.INABUL) as INAB, sum(STMESKLA.IMARUL) as IMAR, sum(STMESKLA.IPORUL) as IPOR, sum(STMESKLA.ZADRAZUL) as IZAD "+
+      return "UNION SELECT NULL as CPAR, max(MESKLA.DATDOK) as DATDOK, max(MESKLA.BRDOK) as BRDOK, max(MESKLA.VRDOK) as VRDOK, max(MESKLA.CSKLUL) as CSKL, sum(STMESKLA.INABUL-STMESKLA.INABUL) as UIPRPOR, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IDOB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IRAB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IZT, sum(STMESKLA.INABUL) as INAB, sum(STMESKLA.IMARUL) as IMAR, sum(STMESKLA.IPORUL) as IPOR, sum(STMESKLA.ZADRAZUL) as IZAD "+
         "from STMESKLA,MESKLA "+
         "where MESKLA.CSKLUL=STMESKLA.CSKLUL AND MESKLA.CSKLIZ=STMESKLA.CSKLIZ AND MESKLA.VRDOK=STMESKLA.VRDOK AND MESKLA.GOD=STMESKLA.GOD AND MESKLA.BRDOK=STMESKLA.BRDOK "+
         "AND MESKLA.VRDOK in ('MES','MEU') "+
@@ -694,10 +700,11 @@ public class upUlazIzlaz extends raUpitFat {
     }
     return "";
   }
+  // CAST('' as CHAR(12))
   String findMesklaIzlaz() {
     if (!getCpar().equals("")) return "";
     if ((tds.getString("VRDOK").trim().equals("MES")) || tds.getString("VRDOK").trim().equals("MEI") || (tds.getString("VRDOK").trim().equals(""))) {
-      return "UNION SELECT 0 as CPAR, max(MESKLA.DATDOK) as DATDOK, max(MESKLA.DATDOK) as DATDOSP, max(MESKLA.VRDOK) as VRDOK, max(MESKLA.CSKLIZ) as CSKL, max(MESKLA.BRDOK) as BRDOK, CAST('' as CHAR(12)) as CVRTR, sum(STMESKLA.INABIZ) as INAB, sum(STMESKLA.IMARIZ) as IMAR, sum(STMESKLA.IPORIZ) as IPOR, sum(STMESKLA.ZADRAZIZ) as IRAZ,  sum(STMESKLA.INABUL-STMESKLA.INABUL) as UIRAB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IPRODBP, sum(STMESKLA.INABUL-STMESKLA.INABUL) as POREZ, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IPRODSP,  sum(STMESKLA.INABUL-STMESKLA.INABUL) as ZARADA "+
+      return "UNION SELECT NULL as CPAR, max(MESKLA.DATDOK) as DATDOK, max(MESKLA.DATDOK) as DATDOSP, max(MESKLA.VRDOK) as VRDOK, max(MESKLA.CSKLIZ) as CSKL, max(MESKLA.BRDOK) as BRDOK, NULL as CVRTR, NULL as FBR, NULL as FPP, NULL as FNU, sum(STMESKLA.INABIZ) as INAB, sum(STMESKLA.IMARIZ) as IMAR, sum(STMESKLA.IPORIZ) as IPOR, sum(STMESKLA.ZADRAZIZ) as IRAZ,  sum(STMESKLA.INABUL-STMESKLA.INABUL) as UIRAB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IPRODBP, sum(STMESKLA.INABUL-STMESKLA.INABUL) as POREZ, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IPRODSP,  sum(STMESKLA.INABUL-STMESKLA.INABUL) as ZARADA "+
        "from STMESKLA,MESKLA "+
         "where MESKLA.CSKLIZ=STMESKLA.CSKLIZ AND MESKLA.CSKLUL=STMESKLA.CSKLUL AND MESKLA.VRDOK=STMESKLA.VRDOK AND MESKLA.GOD=STMESKLA.GOD AND MESKLA.BRDOK=STMESKLA.BRDOK "+
         "AND MESKLA.VRDOK in ('MES','MEI') "+
