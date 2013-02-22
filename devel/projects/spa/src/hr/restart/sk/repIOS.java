@@ -53,6 +53,9 @@ public class repIOS implements raReportData { //sg.com.elixir.reportwriter.datas
     try {
       String prov = dlgRunReport.getCurrentDlgRunReport().getCurrentDescriptor().getName();
       rik.outrange = !prov.equals("hr.restart.sk.repDospDan");
+      rik.plus = 0;
+      if (prov.equals("hr.restart.sk.repDospDan7")) rik.plus = 7;
+      if (prov.equals("hr.restart.sk.repDospDan30")) rik.plus = 30;
       ds = rik.getDataSet();
     } finally {
       rik.outrange = true;

@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.sk;
 
+import hr.restart.util.Util;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
 
@@ -30,13 +31,17 @@ public class repOpomena extends repIOS {
   
   public repOpomena() {
     index = new ArrayList();
-    
-    
-    
+
     for (int i = 0; i < ds.getRowCount(); i++) {
       ds.goToRow(i);
-      if (!ds.getTimestamp("DATDOSP").after(rik.getLastDay()))
-        index.add(new Integer(i));
+      if (rik.plus == 0) {
+        if (!ds.getTimestamp("DATDOSP").after(rik.getLastDay()))
+          index.add(new Integer(i));
+      } else {
+        if (!ds.getTimestamp("DATDOK").before(rik.poc) &&
+            !Util.getUtil().addDays(ds.getTimestamp("DATDOK"), 30-rik.plus).after(rik.getLastDay()))
+          index.add(new Integer(i));
+      }
     }
   }
   
