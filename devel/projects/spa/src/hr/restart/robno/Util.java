@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
 import hr.restart.util.SanityException;
 import hr.restart.util.SeqLockedException;
 import hr.restart.util.Valid;
@@ -139,6 +140,9 @@ public class Util {
   }
   
   public String getSeqString(DataSet ds) {
+    
+    
+    
     boolean cskl = frmParam.getParam("robno", "seqCskl", "D",
         "Ima li svako skladište zaseban brojaè (D,N)").equalsIgnoreCase("D");
     if (!cskl) return OrgStr.getKNJCORG(false) +
@@ -659,9 +663,12 @@ public class Util {
     
     // ukoliko je stanje na nuli, pretpostavimo da stavka ulaza definira NC:
     if (qds.getBigDecimal("NC").signum() == 0 && 
-        dds.getBigDecimal("KOL").signum() != 0)
-      qds.setBigDecimal("NC", divideValue(dds.getBigDecimal("INAB"),
-          dds.getBigDecimal("KOL")));
+        dds.getBigDecimal("KOL").signum() != 0) {
+      Aus.set(qds, "NC", dds, "INAB");
+      Aus.div(qds, "NC", dds.getBigDecimal("KOL"));
+    }
+      //qds.setBigDecimal("NC", divideValue(dds.getBigDecimal("INAB"),
+      //    dds.getBigDecimal("KOL")));
       
     if (mode=='B') {
 //      System.out.println("VC: "+dds.getBigDecimal("SVC"));
@@ -694,7 +701,12 @@ public class Util {
  */
   java.math.BigDecimal findNC(com.borland.dx.sql.dataset.QueryDataSet qds) {
     if (qds.getBigDecimal("KOL").signum() != 0) {
-      return this.divideValue(this.negateValue(qds.getBigDecimal("NABUL"), qds.getBigDecimal("NABIZ")),qds.getBigDecimal("KOL"));
+      int scale = qds.getColumn("NC").getScale();
+      if (scale < 2) scale = 2;
+      if (scale > 6) scale = 6;
+      return qds.getBigDecimal("NABUL").subtract(qds.getBigDecimal("NABIZ")).divide(qds.getBigDecimal("KOL"), scale, BigDecimal.ROUND_HALF_UP);
+      
+      //return this.divideValue(this.negateValue(qds.getBigDecimal("NABUL"), qds.getBigDecimal("NABIZ")),qds.getBigDecimal("KOL"));
     }
     return (this.nul);
   }
