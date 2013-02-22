@@ -279,7 +279,7 @@ public class raIspisUraIra extends raFrame {
     System.out.println("ROWS: "+uraira.getRowCount());
     getRepRunner().clearAllReports();
     if (jrbUraira1.isSelected()) {
-      getRepRunner().addJasper("hr.restart.sk.repURA09", "hr.restart.sk.repURANew",
+      getRepRunner().addJasper("hr.restart.sk.repURA25", "hr.restart.sk.repURANew",
           "ura25.jrxml", "Ispis knjige URA 25%");
       getRepRunner().addJasper("hr.restart.sk.repURA09", "hr.restart.sk.repURANew",
           "ura09.jrxml", "Ispis knjige URA 23%");
@@ -301,7 +301,7 @@ public class raIspisUraIra extends raFrame {
       });
 //      getRepRunner().addReport("hr.restart.sk.repURADod", "Ispis knjige URA sa dodatnim kolonama", 5);
     } else {
-      getRepRunner().addJasper("hr.restart.sk.repIRA10", "hr.restart.sk.repIRA",
+      getRepRunner().addJasper("hr.restart.sk.repIRA25", "hr.restart.sk.repIRA",
           "ira25.jrxml", "Ispis knjige IRA 25%");
       getRepRunner().addJasper("hr.restart.sk.repIRA10", "hr.restart.sk.repIRA",
           "ira10.jrxml", "Ispis knjige IRA 23%");
@@ -499,12 +499,12 @@ public class raIspisUraIra extends raFrame {
       frmTableDataView view = new frmTableDataView(true, false, false);
       view.setDataSet(uraira);
       view.setCustomReport(jrbUraira1.isSelected() ? 
-          raReportDescriptor.create("hr.restart.sk.repURA09", 
-              "hr.restart.sk.repURANew", "ura09.jrxml", 
-              "Ispis knjige URA 2009", true) :
-          raReportDescriptor.create("hr.restart.sk.repIRA09", 
-              "hr.restart.sk.repIRA", "ira09.jrxml", 
-              "Ispis knjige IRA 2009", true));
+          raReportDescriptor.create("hr.restart.sk.repURA25", 
+              "hr.restart.sk.repURANew", "ura25.jrxml", 
+              "Ispis knjige URA 25%", true) :
+          raReportDescriptor.create("hr.restart.sk.repIRA25", 
+              "hr.restart.sk.repIRA", "ira25.jrxml", 
+              "Ispis knjige IRA 25%", true));
       List sumc = new ArrayList();
       for (int i = 10; i < uraira.getColumnCount(); i++)
         sumc.add(uraira.getColumn(i).getColumnName());
