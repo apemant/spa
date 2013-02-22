@@ -124,6 +124,7 @@ public class raGOT extends raIzlazTemplate  {
     stozbrojiti_detail(new String[] {"IPRODSP"});
     raDetail.addOption(rnvNacinPlac,4);
     raDetail.addOption(rnvKartica, 5, false);
+    raMaster.addOption(rnvFisk, 5, false);
     defNacpl = hr.restart.sisfun.frmParam.getParam("robno","gotNacPl");
 
   }

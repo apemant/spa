@@ -156,6 +156,7 @@ public class raIZD extends raIzlazTemplate  {
     MP.BindComp();
     DP.BindComp();
     ConfigViewOnTable();
+    //raMaster.addOption(rnvFisk, 5, false);
   }
 	public void ConfigViewOnTable() {
 	    setVisibleColsMaster(new int[] {4,5,12,13,29});
@@ -717,12 +718,12 @@ System.out.println("asdad");
   public void defaultIzdFinancPart(){
 	getDetailSet().setBigDecimal("UPZT",Nula);
 	getDetailSet().setBigDecimal("UIZT",Nula);
-	getDetailSet().setBigDecimal("IPRODBP",getDetailSet().getBigDecimal("INAB"));
-	getDetailSet().setBigDecimal("UIRAB",getDetailSet().getBigDecimal("INAB"));
+	getDetailSet().setBigDecimal("IPRODBP",Nula);
+	getDetailSet().setBigDecimal("UIRAB",Nula);
 	getDetailSet().setBigDecimal("POR1",Nula);
 	getDetailSet().setBigDecimal("POR2",Nula);
 	getDetailSet().setBigDecimal("POR3",Nula);
-	getDetailSet().setBigDecimal("IPRODSP",getDetailSet().getBigDecimal("INAB"));
+	getDetailSet().setBigDecimal("IPRODSP",Nula);
 /*			
 			getDetailSet().getBigDecimal("UIZT").
 			add(getDetailSet().getBigDecimal("UIRAB")).

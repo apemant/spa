@@ -67,6 +67,7 @@ public class raGRN extends raIzlazTemplate  {
     isOJ=true;
     isMaloprodajnaKalkulacija = true;
     addButtons(true,true);
+    raMaster.addOption(rnvFisk, 5, false);
 //    raMaster.addOption(rnvDellAll,3);
     raDetail.addOption(rnvDellAllStav,3);
     raDetail.addOption(rnvKartica, 5);

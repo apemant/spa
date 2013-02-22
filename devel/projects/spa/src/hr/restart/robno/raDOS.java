@@ -21,6 +21,7 @@ import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.db.raPreparedStatement;
 import hr.restart.swing.JraTable2;
+import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raTableModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
@@ -30,6 +31,7 @@ import java.awt.Color;
 import java.math.BigDecimal;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import com.borland.dx.dataset.DataSet;
@@ -300,6 +302,47 @@ ST.prn(AST.gettrenSTANJE());
 	  }
 	  public boolean ValidacijaStanje() {
 	  	return true;
+	  }
+	  
+	  public boolean ValidacijaLimit(java.math.BigDecimal oldvalue,
+          java.math.BigDecimal newvalue) {
+      //if (checkLimit) {
+          lD.raLocate(dm.getPartneri(), new String[] { "CPAR" },
+                  new String[] { String
+                          .valueOf(getMasterSet().getInt("CPAR")) });
+          if (dm.getPartneri().getString("STATUS").equalsIgnoreCase("C")) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Partneru je zabranjeno fakturiranje!", "Greška", JOptionPane.ERROR_MESSAGE);
+            return false;
+          }
+
+          java.math.BigDecimal limit = dm.getPartneri().getBigDecimal(
+                  "LIMKRED");
+          if (limit.doubleValue() != 0 && dm.getPartneri().getString("STATUS").equalsIgnoreCase("B")) {
+              java.math.BigDecimal saldo = getSaldo();
+              if (!checkLimit(limit, saldo, oldvalue, newvalue)) {
+                  javax.swing.JOptionPane.showMessageDialog(null,
+                          new raMultiLineMessage("Saldo dugovanja partnera "
+                                  + dm.getPartneri().getString("NAZPAR")
+                                  + " iznosi "
+                                  + calculateSaldo(saldo, oldvalue, newvalue)
+                                          .setScale(2) + " kuna i prelazi "
+                                  + "limit kreditiranja koji iznosi "
+                                  + dm.getPartneri().getBigDecimal("LIMKRED")
+                                  + " kuna.!", JLabel.CENTER, 80), "Greška",
+                          javax.swing.JOptionPane.ERROR_MESSAGE);
+                  return false;
+              }
+          }
+      //}
+      return true;
+	 }
+	  
+	  private BigDecimal calculateSaldo(java.math.BigDecimal saldo,
+          java.math.BigDecimal oldvalue, java.math.BigDecimal newvalue) {
+
+      saldo = saldo.subtract(oldvalue);
+      saldo = saldo.add(newvalue);
+      return saldo;
 	  }
 
 	  public boolean DodatnaValidacijaDetail() {
