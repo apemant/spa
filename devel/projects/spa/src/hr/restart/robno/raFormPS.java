@@ -154,7 +154,7 @@ public class raFormPS extends raObradeZaNovuGodinu{
 
       rbr = 0;
       do {
-        insertIntoStDoku(qdsDokuStdoku, broj);
+        insertIntoStDoku(qdsDokuStdoku);
       } while (qdsDokuStdoku.next());
     }
 //    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
