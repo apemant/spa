@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.swing.raMultiLineMessage;
+import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLoader;
 
@@ -66,7 +67,9 @@ public class frmPrijenosGodine extends raObradeZaNovuGodinu {
     dummyStDoku = ut.getNewQueryDataSet("select * from stdoku where god='" + god + "' AND cskl='" + cskl + "' AND vrdok='PST'");
     dummyStanje = ut.getNewQueryDataSet("select * from stanje where god='" + god + "' AND cskl='" + cskl + "'");
     
-
+    updateSklad(cskl, Integer.toString(Integer.parseInt(god) - 1), true);
+    
+    saveDataInMyneTransaction(false, true, true, false);
   }
 
   public void afterOKPress(){
@@ -181,7 +184,69 @@ public class frmPrijenosGodine extends raObradeZaNovuGodinu {
         insetrIntoStanje(old, dummyDoku.getString("GOD"));
         continue;
       }
+      
+      System.out.println(old);
+      
       BigDecimal tKol = old.getBigDecimal("KOL");
+      BigDecimal tVri = old.getBigDecimal("VRI");
+      BigDecimal tNab = old.getBigDecimal("NABUL").subtract(old.getBigDecimal("NABIZ"));
+      BigDecimal tMar = old.getBigDecimal("MARUL").subtract(old.getBigDecimal("MARIZ"));
+      BigDecimal tPor = old.getBigDecimal("PORUL").subtract(old.getBigDecimal("PORIZ"));
+      
+      if (dummyStanje.getBigDecimal("KOLPS").compareTo(tKol) == 0 &&
+          dummyStanje.getBigDecimal("VPS").compareTo(tVri) == 0 &&
+          dummyStanje.getBigDecimal("NABPS").compareTo(tNab) == 0 &&
+          dummyStanje.getBigDecimal("MARPS").compareTo(tMar) == 0 &&
+          dummyStanje.getBigDecimal("PORPS").compareTo(tPor) == 0) continue;
+      
+      Aus.set(dummyStanje, "NC", old);
+      Aus.set(dummyStanje, "VC", old);
+      Aus.set(dummyStanje, "MC", old);
+      Aus.set(dummyStanje, "ZC", old);
+
+      Aus.sub(dummyStanje, "KOLUL", "KOLPS");
+      Aus.set(dummyStanje, "KOLPS", tKol);
+      Aus.add(dummyStanje, "KOLUL", "KOLPS");
+      Aus.sub(dummyStanje, "KOL", "KOLUL", "KOLIZ");
+      
+      Aus.sub(dummyStanje, "NABUL", "NABPS");
+      Aus.set(dummyStanje, "NABPS", tNab);
+      Aus.add(dummyStanje, "NABUL", "NABPS");
+      
+      Aus.sub(dummyStanje, "MARUL", "MARPS");
+      Aus.set(dummyStanje, "MARPS", tMar);
+      Aus.add(dummyStanje, "MARUL", "MARPS");
+      
+      Aus.sub(dummyStanje, "PORUL", "PORPS");
+      Aus.set(dummyStanje, "PORPS", tPor);
+      Aus.add(dummyStanje, "PORUL", "PORPS");
+      
+      Aus.sub(dummyStanje, "VUL", "VPS");
+      Aus.set(dummyStanje, "VPS", tVri);
+      Aus.add(dummyStanje, "VUL", "VPS");
+      Aus.sub(dummyStanje, "VRI", "VUL", "VIZ");
+      
+      
+      if (!lookupData.getlookupData().raLocate(dummyStDoku, "CART",  Integer.toString(old.getInt("CART")))) {
+        insertIntoStDoku(old);
+        continue;
+      }
+      
+      System.out.println("before prom " + dummyStDoku);
+      
+      Aus.set(dummyStDoku, "KOL", old);
+      
+      Aus.set(dummyStDoku, "NC", old);
+      Aus.set(dummyStDoku, "VC", old);
+      Aus.set(dummyStDoku, "MC", old);
+      Aus.set(dummyStDoku, "ZC", old);
+
+      Aus.set(dummyStDoku, "IZAD", tVri);
+      Aus.set(dummyStDoku, "INAB", tNab);
+      Aus.set(dummyStDoku, "IMAR", tMar);
+      Aus.set(dummyStDoku, "IPOR", tPor);
+      
+      System.out.println("after prom " + dummyStDoku);
       
     }
   }
