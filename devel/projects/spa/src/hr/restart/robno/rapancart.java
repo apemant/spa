@@ -1058,7 +1058,7 @@ System.out.println("layheight="+lay.getHeight());
 //      vl.execSQL("select VRART from artikli where cart="+_cart);
 //      vl.RezSet.open();
 //      return (dm.getArtikli().getString("VRART").equals("U"));
-      return !raVart.isStanje(jrfVRART.getText());
+      return raVart.isUsluga(jrfVRART.getText());
       /*return ("U".equalsIgnoreCase(jrfVRART.getText()) ||
           "T".equalsIgnoreCase(jrfVRART.getText()));*/ // usluga i tranzit se jednako ponašaju
 //      return (jrfCART.getRaDataSet().getString("VRART").equalsIgnoreCase("U"));
