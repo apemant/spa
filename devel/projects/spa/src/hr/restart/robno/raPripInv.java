@@ -392,7 +392,7 @@ public class raPripInv extends raUpitLite {
       
       DataSet promet = new RaLogicStanjePromet().datasetZaEkran(
           fieldSet.getString("CSKL"), "", "", "",  true, 
-          fieldSet.getTimestamp("DATUM"), true, "", "");
+          fieldSet.getTimestamp("DATUM"), true, "", "", false);
       QueryDataSet inv = Inventura.getDataModule().getTempSet(Condition.nil);
       inv.open();
       String[] cc = {"CSKL", "CART", "CART1", "BC", "NAZART", "JM", "ZC"};
