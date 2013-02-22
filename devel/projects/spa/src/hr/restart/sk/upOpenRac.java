@@ -20,6 +20,7 @@ package hr.restart.sk;
 import hr.restart.baza.Agenti;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Partneri;
+import hr.restart.baza.Skstavke;
 import hr.restart.baza.dM;
 import hr.restart.robno.raDateUtil;
 import hr.restart.sisfun.frmParam;
@@ -61,6 +62,7 @@ import javax.swing.event.ChangeListener;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataRow;
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.MetaDataUpdate;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -133,6 +135,7 @@ public class upOpenRac extends raUpitLite {
   
   JraCheckBox jcbUpl = new JraCheckBox();
   JraCheckBox jcbKum = new JraCheckBox();
+  JraCheckBox jcbNon = new JraCheckBox();
 
 //  JraButton jbSelZup = new JraButton();
 //  JlrNavField jlrZup = new JlrNavField() {
@@ -149,6 +152,8 @@ public class upOpenRac extends raUpitLite {
   
   int dkAdd = 0;
   boolean dospPer;
+  
+  public static DataSet cs; 
   
   raButtonGroup bg = new raButtonGroup(SwingConstants.TRAILING, SwingConstants.LEFT);
   JraRadioButton jrbDosp = new JraRadioButton();
@@ -281,6 +286,10 @@ public class upOpenRac extends raUpitLite {
   public boolean isKum() {
     return jcbKum.isSelected() && !dospPer;
   }
+  
+  public boolean isNon() {
+    return jcbNon.isSelected();
+  }
 
   public void okPress() {
     dospPer = jrbDosp.isSelected();
@@ -296,12 +305,12 @@ public class upOpenRac extends raUpitLite {
     if ("$NAZPAR".equals(getSortColumn())) {
       sort = getOrderBy();
       select = "skstavke.cpar,partneri.nazpar,skstavke.saldo,skstavke.datdosp," +
-      		"skstavke.vrdok,skstavke.id,skstavke.ip,skstavke.cskstavke," +
+      		"skstavke.vrdok,skstavke.brojdok,skstavke.id,skstavke.ip,skstavke.cskstavke," +
       		"skstavke.tecaj,skstavke.oznval,skstavke.datumknj FROM skstavke,partneri " +
             "WHERE partneri.cpar=skstavke.cpar AND ";
     } else {
       sort = " ORDER BY cpar";
-      select = "cpar,saldo,datdosp,vrdok,id,ip,cskstavke,tecaj,oznval,datumknj FROM skstavke WHERE ";
+      select = "cpar,saldo,datdosp,vrdok,brojdok,id,ip,cskstavke,tecaj,oznval,datumknj FROM skstavke WHERE ";
     }
 
     String vrd = jpp.isKupci() ? "('IRN','UPL','OKK')" : "('URN','IPL','OKD')";
@@ -314,11 +323,18 @@ public class upOpenRac extends raUpitLite {
     openScratchDataSet(ds);
     if (ds.rowCount() == 0) setNoDataAndReturnImmediately();
     ds.getColumn("CSKSTAVKE").setRowId(true);
-    raProcess.setMessage("Popravak salda raèuna...", false);
     
-    Condition remDoc = Aus.getKnjigCond().and(Aus.getVrdokCond(jpp.isKupci())).
-        and(Condition.where(datumCol, Condition.AFTER, dan));
-    raSaldaKonti.updateOutOfRangeSaldo(ds, remDoc);
+    if (!isNon()) {
+      raProcess.setMessage("Popravak salda raèuna...", false);
+      
+      Condition remDoc = Aus.getKnjigCond().and(Aus.getVrdokCond(jpp.isKupci())).
+          and(Condition.where(datumCol, Condition.AFTER, dan));
+      raSaldaKonti.updateOutOfRangeSaldo(ds, remDoc);
+    }
+    
+    cs = Skstavke.getDataModule().getScopedSet("CPAR BROJDOK DATDOSP SALDO STAVKA");
+    cs.open();
+    String[] cc = {"CPAR", "BROJDOK", "DATDOSP", "SALDO"};
     
     repQDS.empty();
     repQDS.setSort(null);
@@ -360,6 +376,9 @@ public class upOpenRac extends raUpitLite {
           repQDS.setBigDecimal("NDOSP", repQDS.getBigDecimal("NDOSP").add(sal));
         } else {
           int kas = raDateUtil.getraDateUtil().DateDifference(dosp, dan);
+          cs.insertRow(false);
+          dM.copyColumns(ds, cs, cc);
+          cs.setShort("STAVKA", (short) kas);
           dispatchPeriods(sal, kas);
         }
       }
@@ -487,6 +506,7 @@ public class upOpenRac extends raUpitLite {
       dM.createIntColumn("CPAR", "Partner"),
       dM.createIntColumn("NAZPAR", "Partner"),
       dM.createStringColumn("BROJKONTA", "Konto", 8),
+      dM.createStringColumn("CGRPAR", "Grupa", 10),
       dM.createShortColumn("CZUP", "Županija"),
       dM.createIntColumn("PBR", "Poštanski broj"),
       dM.createTimestampColumn("DATUM", "Na dan"),
@@ -502,7 +522,7 @@ public class upOpenRac extends raUpitLite {
 
     pan.setLayout(lay);
     lay.setWidth(585);
-    lay.setHeight(235 + dkAdd);
+    lay.setHeight(260 + dkAdd);
 
 //    jlMjesto.setText("Mjesto");
 //    jlZup.setText("Županija");
@@ -532,6 +552,10 @@ public class upOpenRac extends raUpitLite {
     jcbKum.setText(" Kumulativni prikaz perioda ");
     jcbKum.setHorizontalAlignment(JLabel.LEADING);
     jcbKum.setHorizontalTextPosition(JLabel.TRAILING);
+    
+    jcbNon.setText(" Prikaz trenutaènog salda raèuna i uplata bez obzira na period ");
+    jcbNon.setHorizontalAlignment(JLabel.LEADING);
+    jcbNon.setHorizontalTextPosition(JLabel.TRAILING);
 
 /*    jlrZup.setColumnName("CZUP");
     jlrZup.setDataSet(fields);
@@ -591,7 +615,8 @@ public class upOpenRac extends raUpitLite {
     pan.add(jraP3, new XYConstraints(420, 170 + dkAdd, 60, -1));
     pan.add(jraP4, new XYConstraints(485, 170 + dkAdd, 60, -1));
     pan.add(jcbUpl, new XYConstraints(15, 195 + dkAdd, -1, -1));
-    pan.add(jcbKum, new XYConstraints(290, 195 + dkAdd, -1, -1));
+    pan.add(jcbKum, new XYConstraints(290, 195 + dkAdd, -1, -1));    
+    pan.add(jcbNon, new XYConstraints(15, 220 + dkAdd, -1, -1));
     
     jcbUpl.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
@@ -599,6 +624,8 @@ public class upOpenRac extends raUpitLite {
       }
     });
     jcbUpl.setSelected();
+    
+
 
     FocusListener checker = new FocusAdapter() {
       public void focusLost(FocusEvent e) {
