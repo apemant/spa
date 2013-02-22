@@ -293,7 +293,7 @@ public class ispRekapNew extends raUpitLite {
             porezSet.setString("NAZIV", "PDV");
           }
           Aus.add(porezSet, "PROMET", qdsp, "NETO");
-          porezSet.setBigDecimal("STOPA", new BigDecimal(23));
+          porezSet.setBigDecimal("STOPA", new BigDecimal(25));
           Aus.add(porezSet, "IZNOS", qdsp, "POR1");
           Aus.add(porezSet, "OSNOVICA", qdsp, "NETO");
           Aus.sub(porezSet, "OSNOVICA", qdsp, "POR1");
