@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Sklad;
 import hr.restart.baza.Vrdokum;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
@@ -30,6 +31,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitFat;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -272,7 +274,9 @@ public class raOtpisIzvjestaj extends raUpitFat {
   public QueryDataSet findDataSetForIspis(String oznaka, boolean corg) { //String cskl, String corg) {
     String dodatak = "";
     if (corg) {
-      dodatak = "doki.cskl in (";
+      dodatak = Condition.in("CSKL", Sklad.getDataModule().getTempSet(Condition.in("CORG", 
+          OrgStr.getOrgStr().getOrgstrAndKnjig(oznaka)))).qualified("doki").toString();
+      /*dodatak = "doki.cskl in (";
       QueryDataSet qds = Util.getUtil().getSkladFromCorg(); 
       
       for (;;){
@@ -284,7 +288,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
         break; 
        }
       }
-      
+*/      
 
     } else {
       dodatak = "doki.cskl='" + oznaka + "'";
@@ -433,12 +437,15 @@ public class raOtpisIzvjestaj extends raUpitFat {
   String[] ccols = {"CART"};
   String[] acols = {"CART1", "BC", "NAZART", "JM"};
   void updateList(DataSet dest, DataSet izlaz, DataSet mes, DataSet otpis) {
-    if (!jcbNula.isSelected() && (otpis == null || otpis.getBigDecimal("KOL_OTPIS").signum() == 0)) return;
+    if (!jcbNula.isSelected() && (otpis == null || otpis.getBigDecimal("KOL_OTPIS").signum() == 0)) {
+      return;
+    }      
     dest.insertRow(false);
     if (izlaz != null)
       dM.copyColumns(izlaz, dest, ccols);
     else dM.copyColumns(otpis, dest, ccols);
-    BigDecimal zc = (BigDecimal) zcs.get(new Integer(dest.getInt("CART"))); 
+    BigDecimal zc = (BigDecimal) zcs.get(new Integer(dest.getInt("CART")));
+    if (zc == null) zc = Aus.zero0;
     dest.setBigDecimal("ZC", zc);
     int znacdec = 3;
     if (lD.raLocate(dm.getArtikli(), "CART", 
