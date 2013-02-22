@@ -53,6 +53,7 @@ import com.borland.jbcl.layout.XYLayout;
 public class raImportRac {
   
   DateFormat df = new SimpleDateFormat("d.M.yyyy. H:m:s");
+  DateFormat df2 = new SimpleDateFormat("d.M.yyyy H:m:s");
   lookupData ld = lookupData.getlookupData();
   Valid vl = Valid.getValid();
   Util ut = Util.getUtil();
@@ -385,9 +386,16 @@ public class raImportRac {
   void setDate(DataSet ds, String col, Element el, String child) {
     try {
       String temp = el.getChildText(child);
+      ds.setTimestamp(col, new Timestamp(df2.parse(temp).getTime()));
+      return;
+    } catch (Exception e) {
+      
+    }
+    try {
+      String temp = el.getChildText(child);
       ds.setTimestamp(col, new Timestamp(df.parse(temp).getTime()));
     } catch (Exception e) {
-      //
+      
     }
   }
   
