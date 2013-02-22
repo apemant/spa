@@ -542,26 +542,38 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         return;
       }
       
+      int nap = presBlag.getFiskNap();
+      int napg = presBlag.getFiskNapG();
+      String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR:06]-[FPP]-[FNU:02]",
+        "Format fiskalnog broja izlaznog dokumenta na ispisu");
+      
       if (what_kind_of_dokument.equalsIgnoreCase("GOT") || what_kind_of_dokument.equalsIgnoreCase("GRN")) {
         if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li fiskalizirati raèun?", "Fiskalizacija", 
             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
-         String cOpis = "FISK-"+presBlag.getFiskPP()+"-2-"+getMasterSet().getString("GOD");
+          String cOpis = "FISK-"+presBlag.getFiskPP()+"-" + napg + "-"+getMasterSet().getString("GOD");
+          if (!presBlag.isFiskSep())
+            cOpis = "FISK-"+presBlag.getFiskPP()+"-"+getMasterSet().getString("GOD");
          getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
          getMasterSet().setString("FPP", presBlag.getFiskPP());
          getMasterSet().setString("FOK", "D");
-         getMasterSet().setInt("FNU", 2);
+         getMasterSet().setInt("FNU", napg);
+         getMasterSet().setString("PNBZ2", Aus.formatBroj(getMasterSet(), fiskForm));
          getMasterSet().saveChanges();
          boolean succ = fisk(getMasterSet());
          JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + getMasterSet().getInt("FBR") + "-" + 
              getMasterSet().getString("FPP") + "-" + getMasterSet().getInt("FNU") + 
              (succ ? " fiskaliziran!" : " zakljuèan!"), "Greška", JOptionPane.INFORMATION_MESSAGE);
       } else if (what_kind_of_dokument.equalsIgnoreCase("ROT") || what_kind_of_dokument.equalsIgnoreCase("RAC") ||
-          what_kind_of_dokument.equalsIgnoreCase("IZD")) {
-        String cOpis = "FISK-"+presBlag.getFiskPP()+"-1-"+getMasterSet().getString("GOD");
+          what_kind_of_dokument.equalsIgnoreCase("IZD") || what_kind_of_dokument.equalsIgnoreCase("POD") ||
+          what_kind_of_dokument.equalsIgnoreCase("TER") || what_kind_of_dokument.equalsIgnoreCase("ODB")) {
+        String cOpis = "FISK-"+presBlag.getFiskPP()+"-" + nap + "-"+getMasterSet().getString("GOD");
+        if (!presBlag.isFiskSep())
+          cOpis = "FISK-"+presBlag.getFiskPP()+"-"+getMasterSet().getString("GOD");
         getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
         getMasterSet().setString("FPP", presBlag.getFiskPP());
         getMasterSet().setString("FOK", "D");
-        getMasterSet().setInt("FNU", 1);
+        getMasterSet().setInt("FNU", nap);
+        getMasterSet().setString("PNBZ2", Aus.formatBroj(getMasterSet(), fiskForm));
         getMasterSet().saveChanges();
         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + getMasterSet().getInt("FBR") + "-" + getMasterSet().getString("FPP") + "-" + getMasterSet().getInt("FNU") + " zakljuèan!", "Greška", JOptionPane.INFORMATION_MESSAGE);
       } else {
@@ -2465,6 +2477,7 @@ ST.prn(radninal);
 
           return false;
         }
+
 		if (isPrenesen()) {
 			setUserCheckMsg(
 					"Korisnik ne može promijeniti dokument jer je prenesen u ili iz druge baze !",
