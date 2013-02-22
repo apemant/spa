@@ -226,10 +226,10 @@ public class raFiskPoslovni extends raUpitLite {
   public void okPress() {    
     isOk = false;
     try {
-      isOk = presBlag.getFis().fiskaliziraj(
-          presBlag.getFis().createPoslovniProstorZahtjev(
-              presBlag.getFis().createZaglavlje(ds.getTimestamp("DATUM"), null),
-              presBlag.getFis().createPoslovniProstor(
+      isOk = presBlag.getFis(jtCORG.getText()).fiskaliziraj(
+          presBlag.getFis(jtCORG.getText()).createPoslovniProstorZahtjev(
+              presBlag.getFis(jtCORG.getText()).createZaglavlje(ds.getTimestamp("DATUM"), null),
+              presBlag.getFis(jtCORG.getText()).createPoslovniProstor(
                   ds.getString("OIB"), ds.getString("OZNAKA"),
                   ds.getString("ULICA"), ds.getString("BROJ"),
                   isNull("BROJDOD"), jlrPBR.getText(), 
@@ -248,14 +248,16 @@ public class raFiskPoslovni extends raUpitLite {
   public void afterOKPress() {
     if (isOk) {
       JOptionPane.showMessageDialog(jp, "Prijava poslovnog prostora upješna!", "Fiskalizacija", JOptionPane.INFORMATION_MESSAGE);
-      if (lookupData.getlookupData().raLocate(dm.getParametri(),
-          new String[] {"APP","PARAM"},new String[] {"robno", "fiskPP"})) {
-        if (dm.getParametri().getString("VRIJEDNOST").length() == 0) {
-          dm.getParametri().setString("VRIJEDNOST", ds.getString("OZNAKA"));
-          dm.getParametri().saveChanges();
+      if (!presBlag.isSkladOriented()) {
+        if (lookupData.getlookupData().raLocate(dm.getParametri(),
+            new String[] {"APP","PARAM"},new String[] {"robno", "fiskPP"})) {
+          if (dm.getParametri().getString("VRIJEDNOST").length() == 0) {
+            dm.getParametri().setString("VRIJEDNOST", ds.getString("OZNAKA"));
+            dm.getParametri().saveChanges();
+          }
         }
+        IntParam.setTag("robno.fiskPP", ds.getString("OZNAKA"));
       }
-      IntParam.setTag("robno.fiskPP", ds.getString("OZNAKA"));
     } else {
       JOptionPane.showMessageDialog(jp, "Prijava poslovnog prostora NIJE upješna!", "Fiskalizacija", JOptionPane.ERROR_MESSAGE);
     }
@@ -279,6 +281,7 @@ public class raFiskPoslovni extends raUpitLite {
   }
   
   public void jtCORG_after_lookUp() {
+    if (jraOznaka.getText().length() > 0) return;
     if (ld.raLocate(dm.getLogotipovi(), "CORG", jtCORG.getText())) {
       ds.setString("OIB", dm.getLogotipovi().getString("OIB"));
       ds.setInt("PBR", dm.getLogotipovi().getInt("PBR"));
