@@ -238,7 +238,7 @@ public class frmDugPot extends raFrame {
     		if (miz.signum() != 0 && sal.abs().compareTo(miz) < 0) continue;
     		if ((pData = pCache.getData(ip.intValue())) == null) continue;
             if (cpar != 0 && cpar != ip.intValue()) continue;
-            if (cpar == 0 && !pres.checkPartner(pData.getAgent(), pData.getZup(), pData.getPbr())) continue;
+            if (cpar == 0 && !pres.checkPartner(pData.getAgent(), pData.getZup(), pData.getPbr(), pData.getGrupa())) continue;
     	}
       BigDecimal saldo = sal.multiply(mulVal).setScale(2, BigDecimal.ROUND_HALF_UP);
       ZbirData zd = (ZbirData) zbirMap.get(ip);
@@ -484,7 +484,7 @@ public class frmDugPot extends raFrame {
     rik.setQuery(qstr);*/
         
     int year = Aus.getNumber(Util.getUtil().getYear(dto)) - 1;
-    Timestamp dto120 = ut.getLastSecondOfDay(Aus.createTimestamp(year, 9, 2));
+    Timestamp dto120 = ut.getLastSecondOfDay(Aus.createTimestamp(year, 11, 1));
     qstr = "SELECT cpar, corg, vrdok, cskl, stavka, brojdok, datdok, datdosp, "+
     "id, ip, saldo, ziro, tecaj, oznval, cskstavke, EXTBRDOK, OPIS, BROJIZV FROM skstavke WHERE " + presq +
     " AND pokriveno != 'X' AND "+Aus.getCurrGKDatumCond(datumCol, dto)+ 
@@ -564,10 +564,12 @@ public class frmDugPot extends raFrame {
     this.getRepRunner().addReport("hr.restart.sk.repIOSint","hr.restart.sk.repIOS","IOSint", "Skraæeni ispis otvorenih stavki"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repDosp","hr.restart.sk.repKarticaDosp","Dosp", "Ispis dospjelih raèuna partnera"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repDospDan","hr.restart.sk.repKarticaDosp","Dosp", "Ispis dospjelih raèuna partnera otvorenih do danas"/*, 42*/);
+    this.getRepRunner().addReport("hr.restart.sk.repDospDan7","hr.restart.sk.repKarticaDosp","Dosp", "Ispis dospjelih raèuna u sljedeæih 7 dana"/*, 42*/);
+    this.getRepRunner().addReport("hr.restart.sk.repDospDan30","hr.restart.sk.repKarticaDosp","Dosp", "Ispis dospjelih raèuna u sljedeæih 30 dana"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repPnP","hr.restart.sk.repOpomena","PodsjetnikNaPlacanje", "Ispis podsjetnika za plaæanje oznaèenog partnera"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repOpomena","hr.restart.sk.repOpomena","Opomena", "Ispis opomene oznaèenog partnera"/*, 42*/);
     this.getRepRunner().addReport("hr.restart.sk.repOpomenaPT","hr.restart.sk.repOpomena","OpomenaPT", "Ispis opomene pred tužbu oznaèenog partnera"/*, 42*/);
-    this.getRepRunner().addReport("hr.restart.sk.repTamara","hr.restart.sk.repKarticaTamara","Dosp", "Ispis neplaæenih raèuna dospjelih 120 dana prije nove godine"/*, 42*/);
+    this.getRepRunner().addReport("hr.restart.sk.repTamara","hr.restart.sk.repKarticaTamara","Dosp", "Ispis neplaæenih raèuna dospjelih 60 dana prije nove godine"/*, 42*/);
 //    this.getRepRunner().addReport("hr.restart.sk.repKartica", "Grupni ispis kartica ozna\u010Denih partnera", 42);
 
     jp.installSelectionTracker("CPAR");
