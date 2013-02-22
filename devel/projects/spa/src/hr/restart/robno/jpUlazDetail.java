@@ -961,14 +961,16 @@ public class jpUlazDetail extends JPanel {
     if (mode==0) {        // Kolicina
       if (frm.vrDok.equals("PRE")) {
         if (kol.signum() != 0) {
-          frm.getDetailSet().setBigDecimal("NC", util.divideValue(frm.getDetailSet().getBigDecimal("INAB"), kol));
+          Aus.div(frm.getDetailSet(), "NC", "INAB", "KOL");
+          //frm.getDetailSet().setBigDecimal("NC", util.divideValue(frm.getDetailSet().getBigDecimal("INAB"), kol));
           calcFromINAB();
         }
       } else {
         Aus.set(frm.getDetailSet(), "IDOB_VAL", "DC_VAL");
         Aus.mul(frm.getDetailSet(), "IDOB_VAL", kol);
+        Aus.mul(frm.getDetailSet(), "IDOB", "DC", "KOL");
         //frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
-        frm.getDetailSet().setBigDecimal("IDOB",    util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
+        //frm.getDetailSet().setBigDecimal("IDOB",    util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
         calcFromIDOB();
       }
     }
@@ -977,10 +979,12 @@ public class jpUlazDetail extends JPanel {
         frm.getDetailSet().setBigDecimal("IDOB_VAL", _Main.nul);
         return;
       }
-      frm.getDetailSet().setBigDecimal("DC_VAL",  util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
+      Aus.div(frm.getDetailSet(), "DC_VAL", "IDOB_VAL", "KOL");
+      //frm.getDetailSet().setBigDecimal("DC_VAL",  util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
       frm.getDetailSet().setBigDecimal("IDOB",    util.multiValue   (frm.getDetailSet().getBigDecimal("IDOB_VAL"), 
           tecaj.divide(jedval, 9, BigDecimal.ROUND_HALF_UP)));
-      frm.getDetailSet().setBigDecimal("DC",      util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
+      Aus.div(frm.getDetailSet(), "DC", "IDOB", "KOL");
+      //frm.getDetailSet().setBigDecimal("DC",      util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
       calcFromIDOB();
     }
     else if (mode==2) {   // Dobavljaceva cijena u valuti
@@ -989,7 +993,9 @@ public class jpUlazDetail extends JPanel {
       //frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
       frm.getDetailSet().setBigDecimal("IDOB",   util.multiValue   (frm.getDetailSet().getBigDecimal("IDOB_VAL"), 
           tecaj.divide(jedval, 9, BigDecimal.ROUND_HALF_UP)));
-      frm.getDetailSet().setBigDecimal("DC",      util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
+      if (kol.signum() == 0) frm.getDetailSet().setBigDecimal("DC", Aus.zero2);
+      else Aus.div(frm.getDetailSet(), "DC", "IDOB", "KOL");
+      //frm.getDetailSet().setBigDecimal("DC",      util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
       calcFromIDOB();
     }
     else if (mode==3) {   // Dobavljacev iznos
@@ -997,17 +1003,27 @@ public class jpUlazDetail extends JPanel {
       Aus.mul(frm.getDetailSet(), "IDOB_VAL", jedval);
       Aus.div(frm.getDetailSet(), "IDOB_VAL", tecaj);
       //frm.getDetailSet().setBigDecimal("IDOB_VAL",  util.divideValue   (frm.getDetailSet().getBigDecimal("IDOB").multiply(jedval), frm.getMasterSet().getBigDecimal("TECAJ")));
-      frm.getDetailSet().setBigDecimal("DC_VAL",    util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
-      frm.getDetailSet().setBigDecimal("DC",        util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
+      if (kol.signum() == 0) {
+        frm.getDetailSet().setBigDecimal("DC_VAL", Aus.zero2);
+        frm.getDetailSet().setBigDecimal("DC", Aus.zero2);
+      } else {
+        Aus.div(frm.getDetailSet(), "DC_VAL", "IDOB_VAL", "KOL");
+        Aus.div(frm.getDetailSet(), "DC", "IDOB", "KOL");
+      }
+      //frm.getDetailSet().setBigDecimal("DC_VAL",    util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
+      //frm.getDetailSet().setBigDecimal("DC",        util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
       calcFromIDOB();
     }
     else if (mode==4) {   // Dobavljaceva cijena
-      frm.getDetailSet().setBigDecimal("IDOB",      util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
+      Aus.mul(frm.getDetailSet(), "IDOB", "DC", "KOL");
+      //frm.getDetailSet().setBigDecimal("IDOB",      util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
       Aus.set(frm.getDetailSet(), "IDOB_VAL", "IDOB");
       Aus.mul(frm.getDetailSet(), "IDOB_VAL", jedval);
       Aus.div(frm.getDetailSet(), "IDOB_VAL", tecaj);
       //frm.getDetailSet().setBigDecimal("IDOB_VAL",  util.divideValue   (frm.getDetailSet().getBigDecimal("IDOB").multiply(jedval), frm.getMasterSet().getBigDecimal("TECAJ")));
-      frm.getDetailSet().setBigDecimal("DC_VAL",    util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
+      if (kol.signum() == 0) frm.getDetailSet().setBigDecimal("DC_VAL", Aus.zero2);
+      else Aus.div(frm.getDetailSet(), "DC_VAL", "IDOB_VAL", "KOL");
+      //frm.getDetailSet().setBigDecimal("DC_VAL",    util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
       calcFromIDOB();
     }
     else if (mode==5) {   // Rabat u postotku
@@ -1071,7 +1087,8 @@ public class jpUlazDetail extends JPanel {
   void calcFromINAB() {
     BigDecimal kol = frm.getDetailSet().getBigDecimal("KOL");
     if (kol.signum() == 0) return;
-    frm.getDetailSet().setBigDecimal("NC", frm.getDetailSet().getBigDecimal("INAB").divide(kol, 2, BigDecimal.ROUND_HALF_UP));
+    Aus.div(frm.getDetailSet(), "NC", "INAB", "KOL");
+    //frm.getDetailSet().setBigDecimal("NC", frm.getDetailSet().getBigDecimal("INAB").divide(kol, 2, BigDecimal.ROUND_HALF_UP));
     if ("D".equalsIgnoreCase(hr.restart.sisfun.frmParam.getParam("robno","kalkchVC","D"))) {
       frm.getDetailSet().setBigDecimal("MAR",     util.findIznos    (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("PMAR")));
       frm.getDetailSet().setBigDecimal("VC",      util.sumValue     (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
