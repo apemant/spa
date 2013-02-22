@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.pos;
 
+import hr.apis_it.fin._2012.types.f73.PdvType;
 import hr.apis_it.fin._2012.types.f73.PorezType;
 import hr.apis_it.fin._2012.types.f73.RacunType;
 import hr.apis_it.fin._2012.types.f73.RacunZahtjev;
@@ -965,7 +966,7 @@ public class frmMasterBlagajna extends raMasterDetail {
       jpStol.add(upper);
       jpStol.add(dlgStol.getOkPanel(), BorderLayout.SOUTH);
       dlgStol.getOkPanel().setEnterEnabled(true);
-      if (!presBlag.isFiskal()) {
+      if (false) {
         raMaster.addOption(navZatvori, 4);
         if (raUser.getInstance().isSuper()) {
           raMaster.addOption(navPonisti, 5);
@@ -977,7 +978,7 @@ public class frmMasterBlagajna extends raMasterDetail {
         }
       },6,false);
       
-      if (!presBlag.isFiskal()) raMaster.getJpTableView().addTableModifier(msc);
+      if (false) raMaster.getJpTableView().addTableModifier(msc);
     } else {
       if (presBlag.isSkladOriented()) {
         this.raMaster.addOption(new raNavAction("Naplata",raImages.IMGEXPORT2,KeyEvent.VK_F7) {
@@ -1379,7 +1380,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     }*/
     if (getDetailSet().getRowCount()>0) {
       if (!checkRate()) return;
-      if (presBlag.isFiskal() && !getMasterSet().getString("FOK").equals("D")) {
+      if (presBlag.isFiskal(getMasterSet().getString("CSKL")) && !getMasterSet().getString("FOK").equals("D")) {
         if (JOptionPane.showConfirmDialog(raDetail, "Želite li ispisati predraèun?", "Ispis", JOptionPane.OK_CANCEL_OPTION) 
             == JOptionPane.OK_OPTION) {
           justPrintGRC();
@@ -1722,7 +1723,8 @@ public class frmMasterBlagajna extends raMasterDetail {
     BigDecimal izpnp = Aus.zero2;
     BigDecimal tot = Aus.zero2;
     BigDecimal povn = Aus.zero2;
-    BigDecimal povs = new BigDecimal("0.5");
+    BigDecimal povs = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
+      "Iznos povratne naknade"));
     
     BigDecimal pdv25 = new BigDecimal("25").setScale(2);
     
@@ -1766,6 +1768,9 @@ public class frmMasterBlagajna extends raMasterDetail {
     System.out.println(izmap.get(pdv25));
     
     ld.raLocate(dm.getLogotipovi(), "CORG", OrgStr.getKNJCORG(false));
+    if (presBlag.isSkladOriented())
+      ld.raLocate(dm.getLogotipovi(), "CORG", ms.getString("CSKL"));
+    
     String oibf = dm.getLogotipovi().getString("OIB");
     
     DataRow usr = ld.raLookup(dM.getDataModule().getUseri(),"CUSER", ms.getString("CUSER"));
@@ -1785,14 +1790,14 @@ public class frmMasterBlagajna extends raMasterDetail {
       nacpl = "K";
     else nacpl = "O";
 
-    RacunType rac = presBlag.getFis().createRacun(
+    RacunType rac = presBlag.getFis(ms.getString("CSKL")).createRacun(
         oibf, //oib firme (Rest Art) NE PREPISUJ!!
         presBlag.isFiskPDV(), //da li je obveznik pdv-a 
         ms.getTimestamp("DATDOK"), // datum i vrijeme kreiranja racuna
         presBlag.isFiskSep() ? "N" : "P", // oznaka slijednosti
         ms.getInt("FBR"), // broj racuna 
-        presBlag.getFiskPP(), // oznaka poslovne jedinice
-        presBlag.getFiskNap(), // oznaka naplatnog mjesta
+        presBlag.getFiskPP(ms.getString("CSKL")), // oznaka poslovne jedinice
+        presBlag.getFiskNap(ms.getString("CSKL")), // oznaka naplatnog mjesta
         new BigDecimal(25), //stopa pdv-a 
         (BigDecimal) osnmap.get(pdv25), //osnovica za pdv
         (BigDecimal) izmap.get(pdv25), //iznos pdv-a
@@ -1807,14 +1812,17 @@ public class frmMasterBlagajna extends raMasterDetail {
         false //da li je naknadna dostava
      );
     
-    if (izmap.size() > 1) {
+    if (izmap.size() > 1 || (izmap.size() == 1 && izmap.containsKey(pdv25))) {
       for (Iterator i = izmap.keySet().iterator(); i.hasNext(); ) {
         BigDecimal post = (BigDecimal) i.next();
         if (post.compareTo(pdv25) == 0) continue;
-        PorezType por = presBlag.getFis().getFisFactory().createPorezType();
+        PorezType por = presBlag.getFis(ms.getString("CSKL")).getFisFactory().createPorezType();
         por.setStopa(post);
         por.setOsnovica((BigDecimal) osnmap.get(post));
         por.setIznos((BigDecimal) izmap.get(post));
+        if (rac.getPdv() == null)
+          rac.setPdv(presBlag.getFis(ms.getString("CSKL")).getFisFactory().createPdvType());
+
         rac.getPdv().getPorez().add(por);
         System.out.println(por);
       }
@@ -1824,28 +1832,29 @@ public class frmMasterBlagajna extends raMasterDetail {
   }
   
   public static void fisk(DataSet ms) {
-    if (presBlag.isFiskal() && (!ms.getString("FOK").equals("D") || ms.getString("JIR").length() == 0)) {
+    if (presBlag.isFiskal(ms.getString("CSKL")) && (!ms.getString("FOK").equals("D") || ms.getString("JIR").length() == 0)) {
       
       try {
         if (!ms.getString("FOK").equals("D")) {
           String cOpis = "FISK-GRC"+ms.getString("GOD");
           if (presBlag.isFiskSep())
-            cOpis = "FISK-"+presBlag.getFiskPP()+"-GRC"+ms.getString("GOD");
+            cOpis = "FISK-"+presBlag.getFiskPP(ms.getString("CSKL"))+"-GRC"+ms.getString("GOD");
           
           ms.setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
+          ms.setString("FOK", "D");
+          ms.saveChanges();
         }
         
    
   Timestamp datvri = new Timestamp(System.currentTimeMillis());
-  RacunZahtjev zahtj = presBlag.getFis().createRacunZahtjev(
-          presBlag.getFis().createZaglavlje(datvri, null), 
+  RacunZahtjev zahtj = presBlag.getFis(ms.getString("CSKL")).createRacunZahtjev(
+          presBlag.getFis(ms.getString("CSKL")).createZaglavlje(datvri, null), 
           getRacType(ms));
         
-        String jir = presBlag.getFis().fiskaliziraj(zahtj);
+        String jir = presBlag.getFis(ms.getString("CSKL")).fiskaliziraj(zahtj);
         if (jir != null && jir.length() > 0 && !jir.startsWith("ZKI") && !jir.startsWith("false"))
           ms.setString("JIR", jir);
         else ms.setString("JIR", "");
-        ms.setString("FOK", "D");
         ms.saveChanges();
       } catch (Exception e) {
         // TODO Auto-generated catch block
