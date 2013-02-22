@@ -328,6 +328,7 @@ final public class raRAC extends raIzlazTemplate {
         }
         DP.resizeDP();
         raMaster.addOption(rnvNacinPlac, 6);
+        raMaster.addOption(rnvFisk, 6, false);
         
         if (frmParam.getParam("robno", "racTrans", "N", 
           "Dodati opciju prijevoza na RAC (D,N)").equals("D")) {
@@ -336,7 +337,7 @@ final public class raRAC extends raIzlazTemplate {
               addTrans();            
             }
           }, 6, false);
-        
+          
           initTrans();
         }
         

@@ -90,6 +90,7 @@ public class raPODkup extends raIzlazTemplate {
     master_titel = "Povratnice";
     detail_titel_mno = "Stavke povratnice";
     detail_titel_jed = "Stavke povratnice";
+    raMaster.addOption(rnvFisk, 5, false);
     setMasterSet(dm.getZagPodKup());
     setDetailSet(dm.getStPodKup());
     MP.BindComp();

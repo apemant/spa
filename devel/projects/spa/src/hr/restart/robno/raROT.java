@@ -25,6 +25,7 @@ import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.raColors;
+import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raStatusColorModifier;
 import hr.restart.swing.raTableColumnModifier;
 import hr.restart.swing.raTableModifier;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import com.borland.dx.dataset.Column;
@@ -166,6 +168,7 @@ public class raROT extends raIzlazTemplate  {
 ////
     setPreSel((jpPreselectDoc) presROT.getPres());
     addButtons(true,true);
+    raMaster.addOption(rnvFisk, 5, false);
     master_titel = "Ra\u010Duni - otpremnice";
     detail_titel_mno = "Stavke ra\u010Duna - otpremnice";
     detail_titel_jed = "Stavka ra\u010Duna - otpremnice";
@@ -622,11 +625,52 @@ System.err.println("getMasterSet().getInt(FBR) = "+getMasterSet().getInt("FBR"))
       setDetailObr(true, new QueryDataSet[] {ulaz, AST.gettrenSTANJE()});
     }
   }
+  
+  public boolean ValidacijaLimit(java.math.BigDecimal oldvalue,
+      java.math.BigDecimal newvalue) {
+  //if (checkLimit) {
+      lD.raLocate(dm.getPartneri(), new String[] { "CPAR" },
+              new String[] { String
+                      .valueOf(getMasterSet().getInt("CPAR")) });
+      if (dm.getPartneri().getString("STATUS").equalsIgnoreCase("C")) {
+        javax.swing.JOptionPane.showMessageDialog(null, "Partneru je zabranjeno fakturiranje!", "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+
+      java.math.BigDecimal limit = dm.getPartneri().getBigDecimal(
+              "LIMKRED");
+      if (limit.doubleValue() != 0 && dm.getPartneri().getString("STATUS").equalsIgnoreCase("B")) {
+          java.math.BigDecimal saldo = getSaldo();
+          if (!checkLimit(limit, saldo, oldvalue, newvalue)) {
+              javax.swing.JOptionPane.showMessageDialog(null,
+                      new raMultiLineMessage("Saldo dugovanja partnera "
+                              + dm.getPartneri().getString("NAZPAR")
+                              + " iznosi "
+                              + calculateSaldo(saldo, oldvalue, newvalue)
+                                      .setScale(2) + " kuna i prelazi "
+                              + "limit kreditiranja koji iznosi "
+                              + dm.getPartneri().getBigDecimal("LIMKRED")
+                              + " kuna.!", JLabel.CENTER, 80), "Greška",
+                      javax.swing.JOptionPane.ERROR_MESSAGE);
+              return false;
+          }
+      }
+  //}
+  return true;
+  }
+  
+  private BigDecimal calculateSaldo(java.math.BigDecimal saldo,
+      java.math.BigDecimal oldvalue, java.math.BigDecimal newvalue) {
+
+  saldo = saldo.subtract(oldvalue);
+  saldo = saldo.add(newvalue);
+  return saldo;
+  }
  
  public boolean DodatnaValidacijaDetail() {
 
    if (val.isEmpty(DP.jtfKOL)) return false;
-   if (val.isEmpty(DP.jraFC)) return false;
+   if (DP.jraFC.getText().length()==0 && val.isEmpty(DP.jraFC)) return false;
    if (manjeNula()) return false;
    return true;
  }

@@ -43,6 +43,7 @@ public class raTeret extends raIzlazTemplate {
     raDetail.addOption(rnvKartica, 4, false);
     setMasterSet(dm.getZagTer());
     setDetailSet(dm.getStTer());
+    raMaster.addOption(rnvFisk, 5, false);
     MP.BindComp();
     DP.BindComp();
 

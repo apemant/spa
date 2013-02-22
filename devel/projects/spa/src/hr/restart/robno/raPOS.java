@@ -121,7 +121,8 @@ public class raPOS extends raIzlazTemplate  {
   
   public void keyActionMaster() {
    frmPos2POS.razdMP(getPreSelect().getSelRow(), getMasterSet(), getDetailSet());
-     if (frmPos2POS.getFrmpos().errors==null){
+     if (frmPos2POS.getFrmpos().errors==null || frmParam.getParam("pos", "POScheck", "D",
+            "Provjeriti artikle kod prijenosa GRC->POS (D,N)").equals("N")){
        if (frmPos2POS.getFrmpos().isCancelPress()) return;
        frmPos2POS.getFrmpos().saveAll();
        //raMaster.getJpTableView().fireTableDataChanged();

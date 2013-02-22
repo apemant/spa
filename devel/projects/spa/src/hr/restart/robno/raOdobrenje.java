@@ -49,6 +49,7 @@ public class raOdobrenje extends raIzlazTemplate {
     raDetail.addOption(rnvKartica, 4, false);
     setMasterSet(dm.getZagOdb());
     setDetailSet(dm.getStOdb());
+    raMaster.addOption(rnvFisk, 5, false);
     MP.BindComp();
     DP.BindComp();
 
