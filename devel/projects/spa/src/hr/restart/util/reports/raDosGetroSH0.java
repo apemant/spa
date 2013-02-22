@@ -37,7 +37,7 @@ public class raDosGetroSH0 extends raReportSection {
      "", "", "7280", "1040", "2300", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", 
      "", "", ""};
   public raReportElement LabelMjestoDatum;
-  private String[] LabelMjestoDatumProps = new String[] {"Mjesto/Datum", "", "5700", "1040", "1500", 
+  private String[] LabelMjestoDatumProps = new String[] {"Mjesto/Datum usluge", "", "5700", "1040", "1500", 
      "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement LabelDatum_isporuke;
   private String[] LabelDatum_isporukeProps = new String[] {"Datum isporuke", "", "5700", "1260", 

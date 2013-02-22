@@ -73,7 +73,7 @@ public class raRacRnalSection_Header0 extends raReportSection {
      "", "", "7280", "1260", "2300", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", 
      "", "", ""};
   public raReportElement LabelMjestoDatum;
-  private String[] LabelMjestoDatumProps = new String[] {"Mjesto/Datum", "", "5360", "1260", "1840", 
+  private String[] LabelMjestoDatumProps = new String[] {"Mjesto/Datum usluge", "", "5360", "1260", "1840", 
      "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextMJ;
   private String[] TextMJProps = new String[] {"MJ", "", "", "", "", "", "", "", "640", "1380", 

@@ -63,7 +63,7 @@ public class raSectionHeader0TF extends raReportSection {
   private String[] LabelBrojProps = new String[] {"Broj", "", "5460", "700", "1740", "220", "", "", 
      "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement LabelMjestoDatum;
-  private String[] LabelMjestoDatumProps = new String[] {"Mjesto/Datum", "", "5460", "1040", "1740", 
+  private String[] LabelMjestoDatumProps = new String[] {"Mjesto/Datum usluge", "", "5200", "1040", "2000", 
      "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextLogoMjestoZarez;
   private String[] TextLogoMjestoZarezProps = new String[] {"LogoMjestoZarez", "", "", "", "", "", 
