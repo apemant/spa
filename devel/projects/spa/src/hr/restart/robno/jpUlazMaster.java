@@ -160,8 +160,10 @@ public class jpUlazMaster extends JPanel {
   JLabel jlPrpor = new JLabel("Pretporez");
   JLabel jlPrp1 = new JLabel("Stopa 25%");
   JLabel jlPrp2 = new JLabel("Stopa 10%");
+  JLabel jlPrp3 = new JLabel("Stopa 5%");
   JraTextField jtfUIPRPOR = new JraTextField();
   JraTextField jtfUIPRPOR2 = new JraTextField();
+  JraTextField jtfUIPRPOR3 = new JraTextField();
   rajpBrDok jpBRDOK = new rajpBrDok();
 //  ButtonGroup buttonGroup1 = new ButtonGroup();
 //  private JraButton jbULDOK = new JraButton();
@@ -285,6 +287,7 @@ public class jpUlazMaster extends JPanel {
     
     jlPrp1.setHorizontalAlignment(SwingConstants.CENTER);
     jlPrp2.setHorizontalAlignment(SwingConstants.CENTER);
+    jlPrp3.setHorizontalAlignment(SwingConstants.CENTER);
 //    jrbLinearniZT.setSelected(true);
 //    jrbLinearniZT.setText(res.getString("jrbLinearniZT_text"));
 
@@ -335,6 +338,7 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
     jtfDATDOSP.setColumnName("DATDOSP");
     jtfUIPRPOR.setColumnName("UIPRPOR");
     jtfUIPRPOR2.setColumnName("UIPRPOR2");
+    jtfUIPRPOR3.setColumnName("UIPRPOR3");
     jtabs.addChangeListener(new javax.swing.event.ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         jtabs_stateChanged(e);
@@ -385,9 +389,11 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
     
     jpZT.add(jtfUIPRPOR, new XYConstraints(505, 160, 100, -1));
     jpZT.add(jtfUIPRPOR2, new XYConstraints(400, 160, 100, -1));
-    jpZT.add(jlPrpor, new XYConstraints(300, 160, -1, -1));
+    jpZT.add(jtfUIPRPOR3, new XYConstraints(295, 160, 100, -1));
+    jpZT.add(jlPrpor, new XYConstraints(195, 160, -1, -1));
     jpZT.add(jlPrp1, new XYConstraints(505, 142, 100, -1));
     jpZT.add(jlPrp2, new XYConstraints(400, 142, 100, -1));
+    jpZT.add(jlPrp3, new XYConstraints(295, 142, 100, -1));
 //    jpZT.add(jrbShemaZT, new XYConstraints(10, 60, -1, -1));
 //    jpZT.add(jlCSHZT, new XYConstraints(27, 85, -1, -1));
 //    jpZT.add(jrfCSHZT, new XYConstraints(135, 85, 100, -1));
@@ -573,6 +579,7 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
       rcc.EnabDisabAll(jpZT, false);
       rcc.setLabelLaF(jtfUIPRPOR, true);
       rcc.setLabelLaF(jtfUIPRPOR2, true);
+      rcc.setLabelLaF(jtfUIPRPOR3, true);
       enabdisabUIPRPOR();
     }
     jcbZT.setSelected(frm.getMasterSet().getString("CSHZT").equals("YES"));
@@ -622,6 +629,7 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
     jtfDATDOSP.setDataSet(qds);
     jtfUIPRPOR.setDataSet(qds);
     jtfUIPRPOR2.setDataSet(qds);
+    jtfUIPRPOR3.setDataSet(qds);
     jpBRDOK.setDataSet(qds);
   }
 //  String getCSHZT() {
@@ -666,9 +674,11 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
         		frm.getMasterSet().setBigDecimal("UIPRPOR",Aus.zero2);
         	    rcc.setLabelLaF(jtfUIPRPOR, false);
         	    rcc.setLabelLaF(jtfUIPRPOR2, false);
+        	    rcc.setLabelLaF(jtfUIPRPOR3, false);
         	} else {
         	    rcc.setLabelLaF(jtfUIPRPOR, true);
         	    rcc.setLabelLaF(jtfUIPRPOR2, true);
+        	    rcc.setLabelLaF(jtfUIPRPOR3, true);
         	}
         }
   }
