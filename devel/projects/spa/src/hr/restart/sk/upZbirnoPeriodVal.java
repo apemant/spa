@@ -485,6 +485,7 @@ public class upZbirnoPeriodVal extends raUpitLite {
       dM.createIntColumn("NAZPAR", "Partner"),
       dM.createShortColumn("CZUP", "Županija"),
       dM.createStringColumn("BROJKONTA", "Konto", 8),
+      dM.createStringColumn("CGRPAR", "Grupa", 10),
       dM.createIntColumn("PBR", "Poštanski broj"),
       dM.createStringColumn("VRDAT", "Vrsta datuma", 8),
       dM.createTimestampColumn("DATUMOD", "Poèetni datum"),

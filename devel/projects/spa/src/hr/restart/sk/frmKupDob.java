@@ -211,7 +211,7 @@ public class frmKupDob extends raFrame {
     for (docs.first(); docs.inBounds(); docs.next()) {
       if ((pData = pCache.getData(docs.getInt("CPAR"))) != null) {
         if ((cpar == 0 || cpar == docs.getInt("CPAR")) && 
-            pres.checkPartner(pData.getAgent(), pData.getZup(), pData.getPbr())) {
+            pres.checkPartner(pData.getAgent(), pData.getZup(), pData.getPbr(), pData.getGrupa())) {
           Integer cp = new Integer(docs.getInt("CPAR"));
           ZbirData zd = (ZbirData) zbirMap.get(cp);
           if (zd == null) zbirMap.put(cp, zd = new ZbirData());

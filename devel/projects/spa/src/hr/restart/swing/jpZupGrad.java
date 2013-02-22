@@ -48,7 +48,8 @@ public class jpZupGrad extends JPanel {
     public void this_itemStateChanged() {
       if (getSelectedIndex() == 0) agentSelected();
       else if (getSelectedIndex() == 1) zupSelected();
-      else mjSelected();
+      else if (getSelectedIndex() == 2) mjSelected();
+      else grSelected();
     }
   };
 
@@ -71,6 +72,26 @@ public class jpZupGrad extends JPanel {
     }
   };
   JraButton zbut = new JraButton();
+  
+  public JlrNavField gr = new JlrNavField() {
+    /*public boolean isFocusTraversable() {
+      return !skipme;
+    }*/
+    public void after_lookUp() {
+      afterLookUp(isLastLookSuccessfull());
+    }
+  };
+
+  public JlrNavField grn = new JlrNavField() {
+    /*public boolean isFocusTraversable() {
+      if (skipme) return (skipme = false);
+      return true;
+    }*/
+    public void after_lookUp() {
+      afterLookUp(isLastLookSuccessfull());
+    }
+  };
+  JraButton gbut = new JraButton();
   
   public JlrNavField agent = new JlrNavField() {
     /*public boolean isFocusTraversable() {
@@ -148,6 +169,19 @@ public class jpZupGrad extends JPanel {
     zupn.setNavProperties(zup);
     zupn.setSearchMode(1);
     
+    gr.setColumnName("CGRPAR");
+    gr.setNavColumnName("CGPART");
+    gr.setColNames(new String[] {"NAZIV"});
+    gr.setTextFields(new JTextComponent[] {grn});
+    gr.setVisCols(new int[] {0, 1});
+    gr.setSearchMode(0);
+    gr.setRaDataSet(dM.getDataModule().getGruppart());
+    gr.setNavButton(gbut);
+
+    grn.setColumnName("NAZIV");
+    grn.setNavProperties(gr);
+    grn.setSearchMode(1);
+    
     agent.setColumnName("CAGENT");
     agent.setColNames(new String[] {"NAZAGENT"});
     agent.setTextFields(new JTextComponent[] {nagent});
@@ -175,7 +209,8 @@ public class jpZupGrad extends JPanel {
     rcb.setRaItems(new String[][] {
       {"Agent", "A"},
       {"Županija", "Z"},
-      {"Grad", "G"}
+      {"Grad", "G"},
+      {"Grupa", "P"}
     });
     rcb.setSelectedIndex(0);
     zupSelected();
@@ -184,6 +219,9 @@ public class jpZupGrad extends JPanel {
     this.add(zup, new XYConstraints(150, 0, wz, -1));
     this.add(zupn, new XYConstraints(155 + wz, 0, wnaz, -1));
     this.add(zbut, new XYConstraints(160 + wz + wnaz, 0, 21, 21));
+    this.add(gr, new XYConstraints(150, 0, wz, -1));
+    this.add(grn, new XYConstraints(155 + wz, 0, wnaz, -1));
+    this.add(gbut, new XYConstraints(160 + wz + wnaz, 0, 21, 21));
     this.add(agent, new XYConstraints(150, 0, wz, -1));
     this.add(nagent, new XYConstraints(155 + wz, 0, wnaz, -1));
     this.add(abut, new XYConstraints(160 + wz + wnaz, 0, 21, 21));
@@ -200,12 +238,14 @@ public class jpZupGrad extends JPanel {
     zup.setDataSet(ds);
     pbr.setDataSet(ds);
     agent.setDataSet(ds);
+    gr.setDataSet(ds);
   }
 
   public boolean Validacija() {
     return (zupmj == 0 && !Valid.getValid().isEmpty(agent)) ||
            (zupmj == 1 && !Valid.getValid().isEmpty(zup)) ||
-           (zupmj == 2 && !Valid.getValid().isEmpty(pbr));
+           (zupmj == 2 && !Valid.getValid().isEmpty(pbr)) ||
+           (zupmj == 3 && !Valid.getValid().isEmpty(gr));
   }
 
   public void init() {
@@ -215,9 +255,12 @@ public class jpZupGrad extends JPanel {
     pbr.forceFocLost();
     agent.setText("");
     agent.forceFocLost();
+    gr.setText("");
+    gr.forceFocLost();
     if (rcb.getSelectedIndex() == 0) agentSelected();
     else if (rcb.getSelectedIndex() == 1) zupSelected();
-    else mjSelected();
+    else if (rcb.getSelectedIndex() == 2) mjSelected();
+    else grSelected();
   }
   
   public boolean isAgent() {
@@ -232,6 +275,10 @@ public class jpZupGrad extends JPanel {
     return zupmj == 2;
   }
   
+  public boolean isGrupa() {
+    return zupmj == 3;
+  }
+  
   public String getAgent() {
     return isAgent() && agent.getText() != null && agent.getText().length() > 0 ? 
         nagent.getText() : null;
@@ -244,18 +291,24 @@ public class jpZupGrad extends JPanel {
   public String getZupanija() {
     return isZup() && zup.getText() != null && zup.getText().length() > 0 ? zupn.getText() : null;
   }
+  
+  public String getGrupa() {
+    return isGrupa() && gr.getText() != null && gr.getText().length() > 0 ? grn.getText() : null;
+  }
 
   public boolean checkPartner(ReadRow par) {
-    return checkPartner(par.getInt("CAGENT"), par.getShort("CZUP"), par.getInt("PBR")); 
+    return checkPartner(par.getInt("CAGENT"), par.getShort("CZUP"), par.getInt("PBR"), par.getString("CGRPAR")); 
   }
   
-  public boolean checkPartner(int pAgent, short pZup, int pPbr) {
+  public boolean checkPartner(int pAgent, short pZup, int pPbr, String pGr) {
     return (zupmj == 0 && (agent.getText() == null || agent.getText().length() == 0 ||
             agent.getDataSet().getInt("CAGENT") == pAgent)) ||
             (zupmj == 1 && (zup.getText() == null || zup.getText().length() == 0 ||
             zup.getDataSet().getShort("CZUP") == pZup)) ||
             (zupmj == 2 && (pbr.getText() == null || pbr.getText().length() == 0 ||
-            pbr.getDataSet().getInt("PBR") == pPbr));
+            pbr.getDataSet().getInt("PBR") == pPbr)) ||
+            (zupmj == 3 && (gr.getText() == null || gr.getText().length() == 0 ||
+            gr.getDataSet().getString("CGRPAR").equals(pGr)));
   }
 
   public void focusCombo() {
@@ -265,7 +318,8 @@ public class jpZupGrad extends JPanel {
   public void focusNav() {
     if (zupmj == 0) agent.requestFocus(); 
     else if (zupmj == 1) zup.requestFocus();
-    else pbr.requestFocus();
+    else if (zupmj == 2) pbr.requestFocus();
+    else gr.requestFocus();
   }
   
   private void setZupEnabled(boolean enab) {
@@ -294,12 +348,22 @@ public class jpZupGrad extends JPanel {
     abut.setVisible(enab);
     abut.setEnabled(enab);    
   }
+  
+  private void setGrupaEnabled(boolean enab) {
+    gr.setEnabled(enab);
+    gr.setVisible(enab);
+    grn.setEnabled(enab);
+    grn.setVisible(enab);
+    gbut.setVisible(enab);
+    gbut.setEnabled(enab);    
+  }
 
   private void agentSelected() {
     zupmj = 0;
     setAgentEnabled(true);
     setZupEnabled(false);
     setMjEnabled(false);
+    setGrupaEnabled(false);
   }
 
   private void zupSelected() {
@@ -307,6 +371,7 @@ public class jpZupGrad extends JPanel {
     setAgentEnabled(false);
     setZupEnabled(true);
     setMjEnabled(false);
+    setGrupaEnabled(false);
   }
 
   private void mjSelected() {
@@ -314,6 +379,15 @@ public class jpZupGrad extends JPanel {
     setAgentEnabled(false);
     setZupEnabled(false);
     setMjEnabled(true);
+    setGrupaEnabled(false);
+  }
+  
+  private void grSelected() {
+    zupmj = 3;
+    setAgentEnabled(false);
+    setZupEnabled(false);
+    setMjEnabled(false);
+    setGrupaEnabled(true);
   }
 
   public void afterLookUp(boolean succ) {}

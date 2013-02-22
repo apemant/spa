@@ -72,6 +72,7 @@ public class presZbirno extends presCommonSk {
   Column MJESTO;
   Column ZUP;
   Column AGENT;
+  Column CGR;
   Column MIZ;
 
   public presZbirno() {
@@ -126,8 +127,8 @@ public class presZbirno extends presCommonSk {
     return jpzg.checkPartner(par);
   }
   
-  public boolean checkPartner(int agent, short zup, int pbr) {
-    return jpzg.checkPartner(agent, zup, pbr);
+  public boolean checkPartner(int agent, short zup, int pbr, String gr) {
+    return jpzg.checkPartner(agent, zup, pbr, gr);
   }
 
   public String getGodina() {
@@ -146,9 +147,10 @@ public class presZbirno extends presCommonSk {
     GOD = (Column) dm.getDoku().getColumn("GOD").clone();
     MJESTO = (Column) dm.getPartneri().getColumn("PBR").clone();
     AGENT = (Column) dm.getPartneri().getColumn("CAGENT").clone();
+    CGR = (Column) dm.getPartneri().getColumn("CGRPAR").clone();
     ZUP = (Column) dm.getZupanije().getColumn("CZUP").clone();
     MIZ = dM.createBigDecimalColumn("MINIZNOS", 2);    
-    gmsz.setColumns(new Column[] {GOD, MJESTO, ZUP, MIZ, AGENT});
+    gmsz.setColumns(new Column[] {GOD, MJESTO, ZUP, MIZ, AGENT, CGR});
 
 //    jraMjesto.setColumnName("MJ");
 //    jraMjesto.setDataSet(gmsz);
@@ -199,6 +201,10 @@ public class presZbirno extends presCommonSk {
    
    public boolean isAgent() {
      return jpzg.isAgent();
+   }
+   
+   public boolean isGrupa() {
+     return jpzg.isGrupa();
    }
    
    public boolean applySQLFilter() {

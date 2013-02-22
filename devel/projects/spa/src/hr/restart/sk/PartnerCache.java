@@ -80,12 +80,13 @@ public class PartnerCache {
     private String naziv;
     private String mb;
     private String oib;
+    private String grupa;
     private short zup;
     private int pbr;
     private int agent;
     public Data() {
       naziv = "Nepoznat partner";
-      mb = oib = "";
+      mb = oib = grupa = "";
       pbr = agent = -1;
       zup = -1;
     }
@@ -96,6 +97,7 @@ public class PartnerCache {
       zup = ds.getShort("CZUP");
       pbr = ds.getInt("PBR");
       agent = ds.getInt("CAGENT");
+      grupa = ds.getString("CGRPAR");
     }
     
     public String getName() {
@@ -120,6 +122,10 @@ public class PartnerCache {
     
     public String getOIB() {
       return oib;
+    }
+    
+    public String getGrupa() {
+      return grupa;
     }
   }
 }
