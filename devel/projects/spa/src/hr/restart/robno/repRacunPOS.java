@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 /**
@@ -208,7 +209,7 @@ public class repRacunPOS extends mxReport {
          "<$newline$>"+
 //         "<$newline$>"+
          getBlagajnaOperater(prodMjesto,user)+"<$newline$>"+
-         (presBlag.isFiskal() && master.getString("FOK").equals("D") ? getFisk() : "") +
+         (presBlag.isFiskal(master.getString("CSKL")) && master.getString("FOK").equals("D") ? getFisk() : "") +
          "<$newline$><$newline$><$newline$>"+
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
@@ -230,7 +231,7 @@ public class repRacunPOS extends mxReport {
   private String getFisk() {
     System.out.println("fisk string");
     //System.out.println(frmMasterBlagajna.getInstance().rtype);
-    return "ZKI: " + presBlag.getFis().generateZKI(frmMasterBlagajna.getInstance().getRacType(master)) + "<$newline$>" +
+    return "ZKI: " + presBlag.getFis(master.getString("CSKL")).generateZKI(frmMasterBlagajna.getInstance().getRacType(master)) + "<$newline$>" +
       "JIR: " + master.getString("JIR") + "<$newline$><$newline$>";
   }
   
@@ -450,6 +451,8 @@ public class repRacunPOS extends mxReport {
         }
       }
     } while (ds.next());
+    
+    qds.setSort(new SortDescriptor(new String[] {"NAZPOR"}));
 //    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
 //    syst.prn(qds);
     return qds;
@@ -471,25 +474,28 @@ public class repRacunPOS extends mxReport {
             ((!dr.getString("MJ").equals(""))?((dr.getInt("PBR")==0)? "       "+dr.getString("MJ"):dr.getString("MJ")):"")+
             getJMBG(dr);
 
-        kupac += "<$newline$><$newline$><#RAÈUN R-1 br. " + getBRDOK() + "|"+((width-2)/2)+"|left#><$newline$>";
+        kupac += "<$newline$><$newline$><#RAÈUN R-1 br. " + getBRDOK() + "-" + presBlag.getFiskPP(master.getString("CSKL")) + 
+          "-" + presBlag.getFiskNap(master.getString("CSKL")) + "|"+(width-2)+"|left#><$newline$>";
             //"\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
         return kupac;
       } System.out.println("Kupac je (ako ga ima) null!!!");
     }
 //    porezString = "";
     
-    String ractex = "<$newline$><#RAÈUN br. ";
-    if (presBlag.isFiskal() && !master.getString("FOK").equals("D"))
-      ractex = "<$newline$><#PREDRAÈUN br. ";
+    String ractex = "<$newline$><#RAÈUN br. " + getBRDOK() + "-" + presBlag.getFiskPP(master.getString("CSKL")) + 
+    "-" + presBlag.getFiskNap(master.getString("CSKL")) + "|"+(width-2)+"|left#><$newline$>";
+    if (presBlag.isFiskal(master.getString("CSKL")) && !master.getString("FOK").equals("D"))
+      ractex = "<$newline$><#PREDRAÈUN br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
     
-    return ractex + getBRDOK() + "|"+((width-2)/2)+"|left#><$newline$>";
+    return ractex;
 //        "\u001B\u0045<#"+ru.getFormatBroj()+"|20|center#>\u001B\u0046<$newline$>";
         //"\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
   }
   
   public String getBRDOK() {
-    if (presBlag.isFiskal() && master.getString("FOK").equals("D")) {
-      return master.getInt("FBR") + "-" + presBlag.getFiskPP() + "-" + presBlag.getFiskNap();
+    if (presBlag.isFiskal(master.getString("CSKL")) && master.getString("FOK").equals("D")) {
+      return master.getInt("FBR") + "-" + presBlag.getFiskPP(master.getString("CSKL")) + 
+            "-" + presBlag.getFiskNap(master.getString("CSKL"));
     }
     if (specForm == null || specForm.length() == 0)
       return Integer.toString(getDataSet().getInt("BRDOK"));
@@ -538,6 +544,10 @@ public class repRacunPOS extends mxReport {
     if (!blop.equalsIgnoreCase("0")){
       DataRow usr = lD.raLookup(hr.restart.baza.dM.getDataModule().getUseri(),"CUSER", user);
       String operater = usr.getString("NAZIV");
+      if (!presBlag.isUserOriented()) {
+        usr = lD.raLookup(hr.restart.baza.dM.getDataModule().getBlagajnici(),"CBLAGAJNIK", master.getString("CBLAGAJNIK"));
+        operater = usr.getString("NAZBLAG");
+      }
       if (blop.equalsIgnoreCase("1")){
         return "BLAGAJNA: "+blag+"<$newline$>"+
                "OPERATER: "+operater+"<$newline$>";
