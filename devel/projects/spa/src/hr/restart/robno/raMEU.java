@@ -36,7 +36,7 @@ public class raMEU extends raMEI {
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC2,istina);
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraPMAR,istina);
 //          jraFC.setEditable(false);
-          hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraINETO,false);
+          hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraINETO,istina);
       }
       public void addRest(){
         add4MEU();

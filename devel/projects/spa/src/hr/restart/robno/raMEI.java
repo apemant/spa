@@ -28,6 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.beans.PropertyChangeEvent;
+import java.math.BigDecimal;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -590,6 +591,23 @@ public class raMEI extends hr.restart.util.raMasterDetail{
       findajPorez();
       findVrZaliha();
     }
+    if (how.equals("INETO") && rKM.stavka.kol.signum() != 0) {
+      if (rKM.stanjeul.sVrSklad.equalsIgnoreCase("N")) {
+        rKM.stavka.nc = rKM.stavka.zadrazul.divide(rKM.stavka.kol, 4, BigDecimal.ROUND_HALF_UP);
+        if ("D".equalsIgnoreCase(hr.restart.sisfun.frmParam.getParam("robno","kalkchVC","D"))) {
+          how = "PMAR";
+        }
+        else {
+          how = "PMARA";
+        }
+      } else if (rKM.stanjeul.sVrSklad.equalsIgnoreCase("V")) {
+        rKM.stavka.vc = rKM.stavka.zadrazul.divide(rKM.stavka.kol, BigDecimal.ROUND_HALF_UP);
+        how = "VC";
+      } else if (rKM.stanjeul.sVrSklad.equalsIgnoreCase("M")) {
+        rKM.stavka.mc = rKM.stavka.zadrazul.divide(rKM.stavka.kol, BigDecimal.ROUND_HALF_UP);
+        how = "MC";
+      }
+    }
     rKM.kalkPrice(how);
     rKM.Kalkulacija();
     ponistavanjeDijela();
@@ -666,7 +684,11 @@ public class raMEI extends hr.restart.util.raMasterDetail{
   JLabel jlKOL = new JLabel();
   JLabel jlFC = new JLabel();
   JLabel jlIznos = new JLabel();
-  JraTextField jraINETO = new JraTextField();
+  JraTextField jraINETO = new JraTextField() {
+    public void valueChanged() {
+      kalk("INETO");
+    }
+  };
   JTextField focusField = new JTextField();
 
 /////
