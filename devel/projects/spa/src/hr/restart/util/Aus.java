@@ -161,6 +161,10 @@ public class Aus {
     ds.setBigDecimal(dest, zero0);
   }
   
+  public static void set(ReadWriteRow ds, String dest, BigDecimal num) {
+    ds.setBigDecimal(dest, num);
+  }
+  
   public static void set(ReadWriteRow ds, String dest, String src) {
     ds.setBigDecimal(dest, ds.getBigDecimal(src));
   }
