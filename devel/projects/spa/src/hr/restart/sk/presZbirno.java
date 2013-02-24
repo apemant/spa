@@ -122,6 +122,10 @@ public class presZbirno extends presCommonSk {
   public String getAgent() {
     return jpzg.getAgent();
   }
+  
+  public String getGrupa() {
+    return jpzg.getGrupa();
+  }
 
   public boolean checkPartner(ReadRow par) {
     return jpzg.checkPartner(par);
