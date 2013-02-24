@@ -21,6 +21,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraKeyListener;
+import hr.restart.swing.raExtendedTable;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
@@ -53,6 +54,7 @@ import javax.swing.SwingUtilities;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.MetaDataUpdate;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jb.util.TriStateProperty;
 
 /**
  * <p>Title: </p>
@@ -361,9 +363,13 @@ public class frmDugPot extends raFrame {
       zbir.setBigDecimal("NEDOSP", zd.nedosp);
       zbir.setBigDecimal("UPL", zd.upl);
       zbir.setBigDecimal("SALDO", zd.saldo);
+      if (pres.getGrupa() != null) zbir.setString("CGPART", pres.getGrupa());
     }
     zbir.post();
     zbir.first();
+    if (pres.getGrupa() != null) {
+    	((raExtendedTable) jp.getMpTable()).addToGroup("CGPART", true, new String[] {"#", "NAZIV"}, dm.getGruppart(), true);
+    }
     jp.enableEvents(true);
     pCache.dispose();
     pCache = null;
@@ -420,11 +426,13 @@ public class frmDugPot extends raFrame {
       dM.createBigDecimalColumn("DOSP", "Dospjeli", 2),
       dM.createBigDecimalColumn("NEDOSP", "Nedospjeli", 2),
       dM.createBigDecimalColumn("UPL", "Uplate", 2),
-      dM.createBigDecimalColumn("SALDO", "Saldo", 2)
+      dM.createBigDecimalColumn("SALDO", "Saldo", 2),
+  		(Column) dm.getPartneri().getColumn("CGPART").clone()
     });
     zbir.getColumn("CPAR").setWidth(7);
     zbir.getColumn("NAZAGENT").setCaption("Agent");
     zbir.getColumn("NAZAGENT").setWidth(20);
+    zbir.getColumn("CGPART").setVisible(TriStateProperty.FALSE);
     zbir.setLocale(Aus.hr);
     zbir.open();
     jp.setDataSet(zbir);
