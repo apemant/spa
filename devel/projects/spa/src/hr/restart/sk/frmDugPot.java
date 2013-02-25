@@ -363,7 +363,7 @@ public class frmDugPot extends raFrame {
       zbir.setBigDecimal("NEDOSP", zd.nedosp);
       zbir.setBigDecimal("UPL", zd.upl);
       zbir.setBigDecimal("SALDO", zd.saldo);
-      if (pres.getGrupa() != null) zbir.setString("CGPART", pres.getGrupa());
+      if (pres.getGrupa() != null) zbir.setString("CGPART", pres.gmsz.getString("CGRPAR"));
     }
     zbir.post();
     zbir.first();
@@ -427,7 +427,7 @@ public class frmDugPot extends raFrame {
       dM.createBigDecimalColumn("NEDOSP", "Nedospjeli", 2),
       dM.createBigDecimalColumn("UPL", "Uplate", 2),
       dM.createBigDecimalColumn("SALDO", "Saldo", 2),
-  		(Column) dm.getPartneri().getColumn("CGPART").clone()
+  	  dM.createStringColumn("CGPART", "Grupa", 20)
     });
     zbir.getColumn("CPAR").setWidth(7);
     zbir.getColumn("NAZAGENT").setCaption("Agent");
