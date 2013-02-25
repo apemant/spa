@@ -1071,7 +1071,7 @@ public class checkKartica {
             if (ds.hasColumn("PORAV") != null) {
               if (ds.getBigDecimal("PORAV").doubleValue() != 0
                       || ds.getBigDecimal("DIOPORPOR").doubleValue() != 0
-                      || ds.getBigDecimal("DIOPORMAR").doubleValue() != 0) {
+                      || ds.getBigDecimal("DIOPORMAR").doubleValue() != 0 || "PRK KAL POR".indexOf(ds.getString("VRDOK"))>=0) {
                   insertNivelacija(ds, (Timestamp) zag.get(key));
               }
           }   
