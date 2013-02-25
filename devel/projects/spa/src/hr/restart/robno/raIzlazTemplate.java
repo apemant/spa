@@ -4300,7 +4300,10 @@ System.out.println("findCjenik::else :: "+sql);
 	}
 	
 	public boolean isFisk() {
-      return getMasterSet().getString("FOK").equalsIgnoreCase("D");
+      return getMasterSet().getString("FOK").equalsIgnoreCase("D") && 
+         (getMasterSet().getString("JIR").length() > 0 || 
+          getMasterSet().getString("VRDOK").equals("GOT") ||
+          getMasterSet().getString("VRDOK").equals("GRN"));
     }
 
 	/**
