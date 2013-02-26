@@ -116,8 +116,7 @@ public class raIspisKartica {
     if (dokformat == null) findFormat(param);
     opis.append(dokformat);
     if (skstavke.hasColumn("OPIS")!=null) opis.replaceAll("$O", skstavke.getString("OPIS"));
-    if (skstavke.hasColumn("ORIGBROJ")!=null) opis.replaceAll("$B", skstavke.getString("ORIGBROJ"));
-    else if (skstavke.hasColumn("REALBROJ")!=null) opis.replaceAll("$B", skstavke.getString("BROJDOK"));
+    if (skstavke.hasColumn("BROJDOK")!=null) opis.replaceAll("$B", skstavke.getString("BROJDOK"));
     if (skstavke.hasColumn("EXTBRDOK")!=null) opis.replaceAll("$E", skstavke.getString("EXTBRDOK"));
     if (skstavke.hasColumn("BROJIZV")!=null) { 
       opis.replaceAll("$I", (skstavke.getInt("BROJIZV") == 0)?"":(""+skstavke.getInt("BROJIZV")));
