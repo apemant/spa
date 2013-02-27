@@ -515,7 +515,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[POREZ PO STOPI OD 10 I 22%
+					<text><![CDATA[IZNOS POREZA
 IZNOS U KUNAMA I LIPAMA]]></text>
 				</staticText>
 				<staticText>
@@ -980,7 +980,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[ZA KOJE SU IZDANI RAČUNI, NEZARAČUNANE po stopi od 10%]]></text>
+					<text><![CDATA[ZA KOJE SU IZDANI RAČUNI, NEZARAČUNANE po stopi od 5 i 10%]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement x="260" y="351" width="128" height="11" forecolor="#000000"/>
@@ -1228,7 +1228,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[PRETPOREZ U PRIMLJENIM RAČUNIMA po stopi od 10%]]></text>
+					<text><![CDATA[PRETPOREZ U PRIMLJENIM RAČUNIMA po stopi od 5 i 10%]]></text>
 				</staticText>
 				<staticText>
 					<reportElement mode="Opaque" x="18" y="469" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
@@ -1372,7 +1372,7 @@ IZNOS U KUNAMA I LIPAMA]]></text>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[PLAĆENI PRETPOREZ NA USLUGE INOZEMNIH PODUZETNIKA po stopi od 10%]]></text>
+					<text><![CDATA[PLAĆENI PRETPOREZ NA USLUGE INOZEMNIH PODUZETNIKA po stopi od 5 i 10%]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement x="260" y="532" width="128" height="11" forecolor="#000000"/>

@@ -115,7 +115,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("II1p");
     }
   };
-  JLabel jlII1 = new JLabel(" 1. Za koje su izdani ra\u010Duni po stopi 10%");
+  JLabel jlII1 = new JLabel(" 1. Za koje su izdani ra\u010Duni po stopi 5% i 10%");
   JraTextField II2v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("II2v");
@@ -126,7 +126,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("II2p");
     }
   };
-  JLabel jlII2 = new JLabel(" 2. Za koje su izdani ra\u010Duni po stopi 22%");
+  JLabel jlII2 = new JLabel(" 2. Za koje su izdani ra\u010Duni po stopi 22% i 23%");
   JraTextField II3v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("II3v");
@@ -137,7 +137,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("II3p");
     }
   };
-  JLabel jlII3 = new JLabel(" 3. Za koje su izdani ra\u010Duni po stopi 23%");
+  JLabel jlII3 = new JLabel(" 3. Za koje su izdani ra\u010Duni po stopi 25%");
   JraTextField II4v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("II4v");
@@ -174,7 +174,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("III1p");
     }
   };
-  JLabel jlIII1 = new JLabel(" 1. Pretporez u primljenim ra\u010Dunima po stopi 10%");
+  JLabel jlIII1 = new JLabel(" 1. Pretporez u prim. ra\u010D. po stopi 5% i 10%");
   JraTextField III2v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("III2v");
@@ -185,7 +185,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("III2p");
     }
   };
-  JLabel jlIII2 = new JLabel(" 2. Pretporez u primljenim ra\u010Dunima po stopi 22%");
+  JLabel jlIII2 = new JLabel(" 2. Pretporez u prim. ra\u010D. po stopi 22% i 23%");
   
   JraTextField III3v = new JraTextField(){
     public void valueChanged() {
@@ -197,7 +197,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("III3p");
     }
   };
-  JLabel jlIII3 = new JLabel(" 3. Pretporez u primljenim ra\u010Dunima po stopi 23%");
+  JLabel jlIII3 = new JLabel(" 3. Pretporez u prim. ra\u010D. po stopi 25%");
   JraTextField III4v = new JraTextField(){
     public void valueChanged() {
       frpdv.focusLostEv("III4v");
@@ -219,7 +219,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("III5p");
     }
   };
-  JLabel jlIII5 = new JLabel(" 5. Pla\u0107eni pretporez na usl. ino. poduzetnika 10%");
+  JLabel jlIII5 = new JLabel(" 5. Pla\u0107eni pretporez na usl. ino. pod. 5% i 10%");
   
   JraTextField III6v = new JraTextField(){
     public void valueChanged() {
@@ -231,7 +231,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("III6p");
     }
   };
-  JLabel jlIII6 = new JLabel(" 6. Pla\u0107eni pretporez na usl. ino. poduzetnika 22%");
+  JLabel jlIII6 = new JLabel(" 6. Pla\u0107eni pretporez na usl. ino. pod. 22% i 23%");
   
   JraTextField III7v = new JraTextField(){
     public void valueChanged() {
@@ -243,7 +243,7 @@ public class raJpanelPdv extends JPanel {
       frpdv.focusLostEv("III7p");
     }
   };
-  JLabel jlIII7 = new JLabel(" 7. Pla\u0107eni pretporez na usl. ino. poduzetnika 23%");
+  JLabel jlIII7 = new JLabel(" 7. Pla\u0107eni pretporez na usl. ino. pod. 25%");
   
   JraTextField III8p = new JraTextField(){
     public void valueChanged() {
