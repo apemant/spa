@@ -1,0 +1,2873 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="pdvk" pageWidth="594" pageHeight="841" columnWidth="538" leftMargin="28" rightMargin="28" topMargin="14" bottomMargin="28">
+	<field name="II3p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[II3p]]></fieldDescription>
+	</field>
+	<field name="POV" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[POV]]></fieldDescription>
+	</field>
+	<field name="SIFDJEL" class="java.lang.String">
+		<fieldDescription><![CDATA[SIFDJEL]]></fieldDescription>
+	</field>
+	<field name="VII3" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII3]]></fieldDescription>
+	</field>
+	<field name="IIv" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[IIv]]></fieldDescription>
+	</field>
+	<field name="V" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[V]]></fieldDescription>
+	</field>
+	<field name="DOLABEL" class="java.lang.String">
+		<fieldDescription><![CDATA[DOLABEL]]></fieldDescription>
+	</field>
+	<field name="II2p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[II2p]]></fieldDescription>
+	</field>
+	<field name="III3p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III3p]]></fieldDescription>
+	</field>
+	<field name="I" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[I]]></fieldDescription>
+	</field>
+	<field name="IV" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[IV]]></fieldDescription>
+	</field>
+	<field name="UKUPNO" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[UKUPNO]]></fieldDescription>
+	</field>
+	<field name="DODAN" class="java.lang.String">
+		<fieldDescription><![CDATA[DODAN]]></fieldDescription>
+	</field>
+	<field name="II1p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[II1p]]></fieldDescription>
+	</field>
+	<field name="VII14" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII14]]></fieldDescription>
+	</field>
+	<field name="III8" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III8]]></fieldDescription>
+	</field>
+	<field name="NAPOMENA" class="java.lang.String">
+		<fieldDescription><![CDATA[NAPOMENA]]></fieldDescription>
+	</field>
+	<field name="MB" class="java.lang.String">
+		<fieldDescription><![CDATA[MB]]></fieldDescription>
+	</field>
+	<field name="VII16" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII16]]></fieldDescription>
+	</field>
+	<field name="VI" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VI]]></fieldDescription>
+	</field>
+	<field name="GODLABEL" class="java.lang.String">
+		<fieldDescription><![CDATA[GODLABEL]]></fieldDescription>
+	</field>
+	<field name="III5v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III5v]]></fieldDescription>
+	</field>
+	<field name="NAZIV" class="java.lang.String">
+		<fieldDescription><![CDATA[NAZIV]]></fieldDescription>
+	</field>
+	<field name="III6v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III6v]]></fieldDescription>
+	</field>
+	<field name="II3v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[II3v]]></fieldDescription>
+	</field>
+	<field name="IIp" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[IIp]]></fieldDescription>
+	</field>
+	<field name="III7p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III7p]]></fieldDescription>
+	</field>
+	<field name="III3v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III3v]]></fieldDescription>
+	</field>
+	<field name="GOD" class="java.lang.String">
+		<fieldDescription><![CDATA[GOD]]></fieldDescription>
+	</field>
+	<field name="II5p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[II5p]]></fieldDescription>
+	</field>
+	<field name="VII15" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII15]]></fieldDescription>
+	</field>
+	<field name="III2v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III2v]]></fieldDescription>
+	</field>
+	<field name="VII17" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII17]]></fieldDescription>
+	</field>
+	<field name="III5p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III5p]]></fieldDescription>
+	</field>
+	<field name="III4p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III4p]]></fieldDescription>
+	</field>
+	<field name="III4" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III4]]></fieldDescription>
+	</field>
+	<field name="II4p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[II4p]]></fieldDescription>
+	</field>
+	<field name="VII12" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII12]]></fieldDescription>
+	</field>
+	<field name="ADRESA" class="java.lang.String">
+		<fieldDescription><![CDATA[ADRESA]]></fieldDescription>
+	</field>
+	<field name="ODLABEL" class="java.lang.String">
+		<fieldDescription><![CDATA[ODLABEL]]></fieldDescription>
+	</field>
+	<field name="PORISP" class="java.lang.String">
+		<fieldDescription><![CDATA[PORISP]]></fieldDescription>
+	</field>
+	<field name="VII13" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII13]]></fieldDescription>
+	</field>
+	<field name="I3" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[I3]]></fieldDescription>
+	</field>
+	<field name="ODDAN" class="java.lang.String">
+		<fieldDescription><![CDATA[ODDAN]]></fieldDescription>
+	</field>
+	<field name="RowCount" class="java.lang.Integer">
+		<fieldDescription><![CDATA[RowCount]]></fieldDescription>
+	</field>
+	<field name="RAZDOBLJE" class="java.lang.String">
+		<fieldDescription><![CDATA[RAZDOBLJE]]></fieldDescription>
+	</field>
+	<field name="IIIp" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[IIIp]]></fieldDescription>
+	</field>
+	<field name="I1" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[I1]]></fieldDescription>
+	</field>
+	<field name="PRED" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[PRED]]></fieldDescription>
+	</field>
+	<field name="II2v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[II2v]]></fieldDescription>
+	</field>
+	<field name="VII1" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII1]]></fieldDescription>
+	</field>
+	<field name="DOMJ" class="java.lang.String">
+		<fieldDescription><![CDATA[DOMJ]]></fieldDescription>
+	</field>
+	<field name="III7v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III7v]]></fieldDescription>
+	</field>
+	<field name="III1p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III1p]]></fieldDescription>
+	</field>
+	<field name="VII2" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII2]]></fieldDescription>
+	</field>
+	<field name="I23" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[I23]]></fieldDescription>
+	</field>
+	<field name="II5v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[II5v]]></fieldDescription>
+	</field>
+	<field name="III2p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III2p]]></fieldDescription>
+	</field>
+	<field name="ODMJ" class="java.lang.String">
+		<fieldDescription><![CDATA[ODMJ]]></fieldDescription>
+	</field>
+	<field name="III6p" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III6p]]></fieldDescription>
+	</field>
+	<field name="I21" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[I21]]></fieldDescription>
+	</field>
+	<field name="II1v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[II1v]]></fieldDescription>
+	</field>
+	<field name="III1v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III1v]]></fieldDescription>
+	</field>
+	<field name="I22" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[I22]]></fieldDescription>
+	</field>
+	<field name="I2" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[I2]]></fieldDescription>
+	</field>
+	<field name="II4v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[II4v]]></fieldDescription>
+	</field>
+	<field name="IIIv" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[IIIv]]></fieldDescription>
+	</field>
+	<field name="III4v" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[III4v]]></fieldDescription>
+	</field>
+	<field name="VII11" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII11]]></fieldDescription>
+	</field>
+	<field name="VII" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII]]></fieldDescription>
+	</field>
+	<field name="UST" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[UST]]></fieldDescription>
+	</field>
+	<field name="OIB" class="java.lang.String">
+		<fieldDescription><![CDATA[OIB]]></fieldDescription>
+	</field>
+	<field name="I24" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[I24]]></fieldDescription>
+	</field>
+	<field name="VII4" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII4]]></fieldDescription>
+	</field>
+	<field name="VII5" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII5]]></fieldDescription>
+	</field>
+	<field name="VII_KONTR" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[VII_KONTR]]></fieldDescription>
+	</field>
+	<field name="VII_PREST" class="java.lang.String">
+		<fieldDescription><![CDATA[VII_PREST]]></fieldDescription>
+	</field>
+	<group name="Section0">
+		<groupExpression><![CDATA[$F{NAZIV}]]></groupExpression>
+		<groupHeader>
+			<band height="719" splitType="Prevent">
+				<rectangle>
+					<reportElement mode="Opaque" x="0" y="32" width="288" height="62" forecolor="#000000" backcolor="#FFFFFF"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Opaque" x="294" y="32" width="242" height="38" forecolor="#000000" backcolor="#FFFFFF"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement positionType="Float" x="484" y="0" width="52" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="13" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PDV-K]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="428" y="3" width="55" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OBRAZAC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="15" width="288" height="15" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[POREZNI OBVEZNIK (NAZIV/IME I PREZIME I ADRESA: MJESTO, ULICA I BROJ)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="294" y="15" width="242" height="15" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[NADLEŽNA ISPOSTAVA POREZNE UPRAVE]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="297" y="23" width="235" height="32" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Top">
+						<font fontName="Arial" size="12" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{PORISP}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="3" y="23" width="282" height="32" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Top">
+						<font fontName="Arial" size="12" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{NAZIV}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="573" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III7p}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="294" y="72" width="242" height="34" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="13" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PRIJAVA POREZA NA DODANU VRIJEDNOST ZA RAZDOBLJE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="96" width="169" height="20" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[BROJČANA OZNAKA (ŠIFRA) DJELATNOSTI PREMA NACIONALNOJ KLASIFIKACIJI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="171" y="96" width="117" height="20" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OIB]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="310" y="116" width="20" height="12" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{ODLABEL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="332" y="116" width="20" height="12" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{ODDAN}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="355" y="116" width="20" height="12" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{ODMJ}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="381" y="116" width="20" height="12" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{DOLABEL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="403" y="116" width="20" height="12" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{DODAN}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="426" y="116" width="20" height="12" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{DOMJ}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="452" y="116" width="30" height="12" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{GODLABEL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="485" y="116" width="34" height="12" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{GOD}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="354" y="117" width="1" height="12" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="373" y="117" width="1" height="12" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="350" y="117" width="1" height="12" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="521" y="117" width="1" height="12" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="402" y="117" width="1" height="12" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="444" y="117" width="1" height="12" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="421" y="117" width="1" height="12" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="483" y="117" width="1" height="12" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="425" y="117" width="1" height="12" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="331" y="117" width="1" height="12" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="171" y="117" width="117" height="11" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="4">
+						<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{OIB}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="0" y="117" width="169" height="11" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="4">
+						<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{SIFDJEL}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="331" y="128" width="19" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="354" y="128" width="19" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="402" y="128" width="19" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="425" y="128" width="19" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="483" y="128" width="38" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement mode="Opaque" x="398" y="134" width="138" height="18" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="134" width="249" height="18" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="255" y="134" width="138" height="18" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="254" y="135" width="150" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[VRIJEDNOST ISPORUKE
+IZNOS U KUNAMA I LIPAMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="392" y="135" width="144" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[POREZ PO STOPI OD 10 I 22%
+IZNOS U KUNAMA I LIPAMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="139" width="249" height="8" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OPIS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="154" width="537" height="19" forecolor="#000000" backcolor="#EBEBEB"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="155" width="252" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OBRAČUN POREZA U OBAVLJENIM ISPORUKAMA DOBARA I USLUGA U OBRAČUNSKOM RAZDOBLJU ISPORUKE - UKUPNO (I + II)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="157" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="393" y="157" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="159" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{UKUPNO}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="175" width="537" height="149" forecolor="#000000" backcolor="#EBEBEB"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="178" width="13" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[I.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="23" y="178" width="233" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[ISPORUKE KOJE NE PODLJEŽU OPOREZIVANJU, KOJE SU OSLOBOĐENE I PO STOPI OD 0% - UKUPNO (1.+2.+3.)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="178" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="393" y="178" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="180" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{I}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="198" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="198" width="179" height="9" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[KOJE NE PODLJEŽU OPOREZIVANJU]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="200" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="393" y="200" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="202" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{I1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="202" width="15" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="206" width="173" height="10" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[(čl. 2. u svezi s čl. 5. i čl. 8. st. 8. Zakona)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="218" width="506" height="82" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="220" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="393" y="220" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="220" width="16" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="220" width="198" height="10" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OSLOBOĐENE POREZA - UKUPNO (2.1+2.2)]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="222" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{I2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="57" y="235" width="466" height="63" forecolor="#000000" backcolor="#E1E1E1"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="237" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="393" y="237" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="59" y="239" width="22" height="12" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2.1.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="239" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{I21}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="80" y="240" width="177" height="11" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[IZVOZNE - s pravom na odbitak]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="267" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="393" y="267" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="59" y="270" width="22" height="12" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2.3.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="269" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{I23}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="80" y="270" width="177" height="12" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[TUZEMNE - bez prava na odbitak]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="282" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="393" y="282" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="284" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{I24}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="59" y="285" width="22" height="12" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2.4.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="80" y="285" width="176" height="11" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OSTALO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="302" width="506" height="17" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="303" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="393" y="303" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="304" width="15" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[3.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="305" width="198" height="12" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[ISPORUKE PO STOPI 0%    (čl. 10a. Zakona)]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="305" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{I3}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="326" width="537" height="102" forecolor="#000000" backcolor="#EBEBEB"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="330" width="32" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="12" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[II.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="331" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="331" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="23" y="333" width="233" height="10" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OPOREZIVE ISPORUKE - UKUPNO (1.+2.+3.+4.+5.)]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="333" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IIv}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="333" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IIp}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="347" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="349" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="349" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="349" width="226" height="16" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[ZA KOJE SU IZDANI RAČUNI, NEZARAČUNANE po stopi od 10%]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="351" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{II1v}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="351" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{II1p}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="351" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="367" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="369" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="369" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="369" width="226" height="16" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[ZA KOJE SU IZDANI RAČUNI, NEZARAČUNANE po stopi od 22 i 23%]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="371" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{II2v}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="371" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{II2p}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="371" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="407" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="409" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="409" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="411" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{II5v}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="411" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{II5p}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="410" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[4.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="412" width="227" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[NAKNADNO OSLOB. IZVOZA U OKVIRU OSOBNOG PUTN. PROMETA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="430" width="537" height="179" forecolor="#000000" backcolor="#EBEBEB"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="23" y="430" width="234" height="20" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OBRAČUNANI PRETPOREZ U PRIMLJENIM ISPORUKAMA DOBARA I USLUGA - UKUPNO (1.+2.+3.+4.+5.+6.+7.+8.)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="433" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="433" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="433" width="32" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="12" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[III.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="435" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IIIv}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="435" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IIIp}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="449" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="451" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="451" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="453" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III1v}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="453" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III1p}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="453" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="455" width="211" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PRETPOREZ U PRIMLJENIM RAČUNIMA po stopi od 10%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="469" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="471" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="471" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="473" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III2v}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="473" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III2p}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="473" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="475" width="212" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PRETPOREZ U PRIMLJENIM RAČUNIMA po stopi od 22 i 23%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="509" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="510" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="510" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="512" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III4v}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="512" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III4p}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="513" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[4.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="515" width="213" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PLAĆENI PRETPOREZ PRI UVOZU]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="529" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="530" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="530" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="531" width="213" height="16" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PLAĆENI PRETPOREZ NA USLUGE INOZEMNIH PODUZETNIKA po stopi od 10%]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="532" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III5v}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="532" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III5p}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="533" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[5.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="549" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="550" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="550" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="552" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III6p}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="552" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III6v}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="34" y="551" width="212" height="16" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PLAĆENI PRETPOREZ NA USLUGE INOZEMNIH PODUZETNIKA po stopi od 22 i 23%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="553" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[6.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="589" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="260" y="590" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="590" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="592" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III8}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="593" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[8.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="595" width="212" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[ISPRAVCI PRETPOREZA PREMA ČL. 20. ST. 5. ZAKONA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="612" width="537" height="19" forecolor="#000000" backcolor="#EBEBEB"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="23" y="612" width="234" height="21" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[UKUPNA POREZNA OBVEZA ZA POREZNO RAZDOBLJE:
+ZA UPLATU (II.-III.) ILI ZA POVRAT (III.-II.)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="614" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="260" y="614" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="615" width="32" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="12" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[IV.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="616" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IV}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="634" width="537" height="19" forecolor="#000000" backcolor="#EBEBEB"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="23" y="634" width="239" height="19" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[UPLAĆENO DO DANA PODNOŠENJA OVE PRIJAVE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="636" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="260" y="636" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="637" width="32" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="12" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[V.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="638" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{V}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="656" width="537" height="19" forecolor="#000000" backcolor="#EBEBEB"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="658" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="260" y="658" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="659" width="32" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="12" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[VI.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="660" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VI}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="23" y="657" width="234" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[UKUPNO RAZLIKA: ZA UPLATU / ZA POVRAT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="315" y="692" width="15" height="19" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[
+Kn]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="525" y="692" width="13" height="19" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[
+Kn]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="99" y="692" width="15" height="19" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[
+Kn]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Opaque" x="217" y="693" width="14" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Opaque" x="427" y="693" width="14" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Opaque" x="1" y="693" width="14" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="231" y="701" width="82" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[
+PREDUJAM]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="441" y="701" width="82" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[
+USTUP POVRATA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="15" y="701" width="82" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[
+ZA POVRAT]]></text>
+				</staticText>
+				<line>
+					<reportElement x="232" y="707" width="81" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="442" y="707" width="81" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="16" y="707" width="81" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="387" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="391" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[3.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="389" width="226" height="16" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[ZA KOJE SU IZDANI RAČUNI, NEZARAČUNANE po stopi od 25%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="389" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="389" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="391" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{II3v}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="391" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{II3p}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="489" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="493" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[3.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="495" width="212" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PRETPOREZ U PRIMLJENIM RAČUNIMA po stopi od 25%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="491" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="491" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="493" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III3v}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="493" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III3p}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="18" y="569" width="506" height="18" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="573" width="15" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[7.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="34" y="571" width="212" height="16" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PLAĆENI PRETPOREZ NA USLUGE INOZEMNIH PODUZETNIKA po stopi od 25%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="571" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="393" y="571" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="573" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III7v}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="3" y="58" width="282" height="33" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Top">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{ADRESA}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="573" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{III7p}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="22" y="695" width="72" height="11" forecolor="#000000">
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{POV}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="238" y="695" width="72" height="11" forecolor="#000000">
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{PRED}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="449" y="695" width="72" height="11" forecolor="#000000">
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{UST}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="427" y="693" width="14" height="15" forecolor="#000000">
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{UST}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="693" width="14" height="15" forecolor="#000000">
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{POV}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="217" y="693" width="14" height="15" forecolor="#000000">
+						<printWhenExpression><![CDATA[new java.lang.Boolean($F{PRED}.compareTo( new java.math.BigDecimal(0) ) != 0)]]></printWhenExpression>
+					</reportElement>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="59" y="254" width="22" height="12" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2.2.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="80" y="254" width="177" height="12" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[ISPORUKE DOBARA - bez prava na odbitak pretporeza]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="260" y="252" width="128" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="260" y="254" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{I22}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="393" y="252" width="128" height="15" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Dialog" size="11" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[X   X   X   X   X]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<group name="Section1" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{NAZIV}]]></groupExpression>
+		<groupHeader>
+			<band height="677" splitType="Prevent">
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="30" y="276" width="498" height="19" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="484" y="0" width="52" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="13" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PDV-K]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="0" y="15" width="249" height="25" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="255" y="15" width="282" height="25" forecolor="#000000" backcolor="#DCDCDC"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="255" y="18" width="149" height="20" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[VRIJEDNOST ISPORUKE
+IZNOS U KUNAMA I LIPAMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="22" width="249" height="10" forecolor="#000000"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OPIS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="2" y="46" width="32" height="15" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="12" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[VII.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="47" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="50" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="30" y="65" width="498" height="135" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="34" y="47" width="216" height="12" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OSTALI PODACI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="66" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="34" y="69" width="16" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="69" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="49" y="71" width="160" height="10" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[ZA ISPRAVAK PRETPOREZA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="61" y="84" width="466" height="109" forecolor="#000000" backcolor="#E1E1E1"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="86" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="84" y="87" width="176" height="16" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[NABAVA NEKRETNINA - ISPORUČITELJ (PRODAVATELJ) NEKRETNINA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="63" y="89" width="22" height="12" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.1.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="89" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII11}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="104" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="84" y="106" width="176" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PRODAJA NEKRETNINA - PRIMATELJ (KUPAC) NEKRETNINA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="63" y="107" width="22" height="12" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.2.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="107" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII12}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="122" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="84" y="123" width="176" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[NABAVA OSOBNIH VOZILA  ( TRGOVINA AUTOMOBILIMA NIJE PRIMARNA DJELATNOST)]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="126" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII13}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="63" y="125" width="22" height="12" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.3.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="140" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="84" y="142" width="176" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PRODAJA OSOBNIH VOZILA  ( TRGOVINA AUTOMOBILIMA NIJE PRIMARNA DJELATNOST)]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="144" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII14}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="63" y="143" width="22" height="12" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.4.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="158" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="63" y="160" width="22" height="12" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.5.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="161" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII15}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="176" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="179" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII16}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="63" y="179" width="22" height="12" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.6.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="84" y="162" width="176" height="8" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[NABAVA OSTALE DUGOTRAJNE MIROVINE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="84" y="181" width="176" height="8" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[PRODAJA OSTALE DUGOTRAJNE IMOVINE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="30" y="216" width="498" height="19" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="217" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="44" y="217" width="220" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OTUĐENJE/STJECANJE GOSPODARSKE CJELINE ILI POGONA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="33" y="219" width="16" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="220" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="30" y="236" width="498" height="19" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="237" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="45" y="237" width="210" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[NABAVA DOBARA I USLUGA ZA REPREZENTACIJU]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="33" y="239" width="16" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[3.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="240" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII3}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="0" y="528" width="537" height="147" forecolor="#000000" backcolor="#EBEBEB"/>
+					<box topPadding="1" leftPadding="4">
+						<pen lineWidth="0.5" lineStyle="Solid" lineColor="#D7D7D7"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[
+NAPOMENA:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" mode="Opaque" x="69" y="538" width="463" height="130" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Top">
+						<font fontName="Arial" size="9" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{NAPOMENA}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="387" y="458" width="144" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="425" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="293" y="439" width="94" height="21" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[POTPIS SLUŽBENIKA
+POREZNE UPRAVE]]></text>
+				</staticText>
+				<line>
+					<reportElement x="513" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="100" y="401" width="172" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="485" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="396" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="435" y="436" width="28" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="288" y="462" width="247" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="534" y="419" width="1" height="44" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="472" y="436" width="56" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="288" y="376" width="87" height="19" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[POREZNI ZASTUPNIK
+(NAZIV/IME I PREZIME, OIB)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="383" width="80" height="19" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OBRAČUN SASTAVIO
+(IME, PREZIME I POTPIS)]]></text>
+				</staticText>
+				<line>
+					<reportElement x="449" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="463" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="375" y="394" width="160" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="288" y="397" width="87" height="19" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[POTPIS I PEČAT
+POREZNOG ZASTUPNIKA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="472" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="435" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="287" y="419" width="1" height="44" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="287" y="419" width="248" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="291" y="425" width="100" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[NADNEVAK PRIMITKA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="529" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="411" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="397" y="436" width="29" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="376" y="413" width="160" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="101" y="429" width="172" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="3" y="411" width="80" height="19" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[KONTAKT
+(TEL./FAX/MAIL)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="3" y="438" width="93" height="18" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[POTPIS I PEČAT
+POREZNOG OBVEZNIKA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="101" y="454" width="172" height="1" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="500" y="425" width="1" height="10" forecolor="#000000"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="30" y="256" width="498" height="19" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="257" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="33" y="259" width="16" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[4.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="45" y="257" width="210" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[NABAVA OSOBNIH VOZILA I DRUGIH SREDSTAVA ZA OSOBNI PRIJEVOZ TE DOBARA I USLUGA POVEZANIH S TIM DOBRIMA]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="260" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII4}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="33" y="279" width="16" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[5.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="45" y="277" width="210" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OSNOVICA ZA OBRAČUN VLASTITE POTROŠNJE ZA OSOBNA VOZILA NABAVLJENA DO 31.12.2009.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="277" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="428" y="3" width="55" height="13" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OBRAZAC]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="280" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII5}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="30" y="296" width="498" height="19" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="297" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="33" y="299" width="16" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="45" y="297" width="210" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[KONTROLNI ZBROJ (1.+2.+3.+4.+5.)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="30" y="316" width="498" height="19" forecolor="#000000" backcolor="#D7D7D7"/>
+					<box topPadding="1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="300" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{VII_KONTR}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="45" y="317" width="210" height="17" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="7" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[POČETAK ILI PRESTANAK OBAVLJANJA DJELATNOSTI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" mode="Opaque" x="264" y="317" width="128" height="17" forecolor="#000000" backcolor="#FFFFFF"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Serif" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="33" y="319" width="16" height="15" forecolor="#000000"/>
+					<box topPadding="1" leftPadding="2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="264" y="320" width="128" height="11" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{VII_PREST}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<title>
+		<band/>
+	</title>
+	<pageHeader>
+		<band splitType="Prevent"/>
+	</pageHeader>
+	<columnHeader>
+		<band/>
+	</columnHeader>
+	<detail>
+		<band splitType="Prevent"/>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="32" splitType="Prevent">
+			<staticText>
+				<reportElement positionType="Float" x="1" y="22" width="250" height="8" forecolor="#808080"/>
+				<box topPadding="1" leftPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="5" isBold="false" pdfEncoding="Cp1250"/>
+				</textElement>
+				<text><![CDATA[(c) REST@RT Sustav poslovnih aplikacija (SPA)]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>
