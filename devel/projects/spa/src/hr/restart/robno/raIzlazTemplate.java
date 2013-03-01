@@ -1118,8 +1118,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 			if (!extrasave()) return false;			
 		} else if (mode == 'I') {
 			getMasterSet().setString("CUSER", cuser);
-			getMasterSet().setString("PNBZ2",
-                pnb.getPozivNaBroj(getMasterSet()));
+			if (getMasterSet().getString("FOK").equals("N"))
+			  getMasterSet().setString("PNBZ2", pnb.getPozivNaBroj(getMasterSet()));
 		}
 		if (mode != 'B') 
 			SanityCheck.basicDoki(getMasterSet());
