@@ -18,6 +18,7 @@
 package hr.restart.pl;
 
 import hr.restart.baza.Orgpl;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.util.Aus;
 import hr.restart.util.FileHandler;
@@ -484,8 +485,11 @@ public class frmRS extends raUpitLite {
       String qry = "SELECT max("+getTableName()+".GODINA),max("
                  +getTableName()+".MJESEC),max("+getTableName()+".VRSTAUPL) from "
                  +getTableName()+" WHERE "+getTableName()+".IDENTIFIKATOR = '"+IND+"' " +
+                 (frmParam.getParam("pl", "corginopt", "D", "Optimizirati in query u frmIzvjestajiPL (D/N").equalsIgnoreCase("D")
+                     ?"":
                  		"AND EXISTS (SELECT * FROM radnici WHERE radnici.cradnik="+getTableName()+".cradnik and radnici.corg in "
-                 		    +OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "radnici.corg")+")";
+                 		    +OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "radnici.corg")+")"
+                 	);
       System.out.println("qry focLost : " + qry);
       QueryDataSet qds = Util.getNewQueryDataSet(qry);
       short godrs = qds.getShort(0);
