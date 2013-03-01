@@ -358,6 +358,7 @@ public class frmDugPot extends raFrame {
       zbir.insertRow(false);
       zbir.setInt("CPAR", ip.intValue());
       zbir.setString("NAZPAR", pCache.getName(ip.intValue()));
+      zbir.setString("OIB", (isMBinOIB()?pCache.getData(ip.intValue()).getMB():pCache.getData(ip.intValue()).getOIB()));
       zbir.setBigDecimal("RAC", zd.rac);
       zbir.setBigDecimal("DOSP", zd.dosp);
       zbir.setBigDecimal("NEDOSP", zd.nedosp);
@@ -373,6 +374,10 @@ public class frmDugPot extends raFrame {
     jp.enableEvents(true);
     pCache.dispose();
     pCache = null;
+  }
+
+  private boolean isMBinOIB() {
+    return frmParam.getParam("sk", "MBinOIB", "N", "Da li se u OIB polje na pregledu otv. prometa ubacuje MB (D/N)").equalsIgnoreCase("D");
   }
 
   public void beforeShow() {
@@ -421,6 +426,7 @@ public class frmDugPot extends raFrame {
     zbir.setColumns(new Column[] {
       (Column) dm.getPartneri().getColumn("CPAR").clone(),
       (Column) dm.getPartneri().getColumn("NAZPAR").clone(),
+      (Column) dm.getPartneri().getColumn("OIB").clone(),
       (Column) dm.getAgenti().getColumn("NAZAGENT").clone(),
       dM.createBigDecimalColumn("RAC", "Raèuni", 2),
       dM.createBigDecimalColumn("DOSP", "Dospjeli", 2),
