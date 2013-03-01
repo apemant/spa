@@ -18,6 +18,7 @@
 package hr.restart.sk;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,12 +27,21 @@ import com.borland.dx.dataset.DataSet;
 
 public class PartnerCache {
   Map cache = null;
+  static int nazwidth = 150;
   
-  public PartnerCache() {
+  public PartnerCache(int _nazwidth) {
+    nazwidth = _nazwidth;
     createCache(dM.getDataModule().getPartneri());
+  }
+  public PartnerCache() {
+    this(150);
   }
   
   public PartnerCache(boolean kup) {
+    this(kup, 150);
+  }
+  public PartnerCache(boolean kup, int _nazwidth) {
+    nazwidth = _nazwidth;
     createCache(kup ? dM.getDataModule().getPartneriKup() : 
       dM.getDataModule().getPartneriDob());
   }
@@ -91,7 +101,10 @@ public class PartnerCache {
       zup = -1;
     }
     public Data(DataSet ds) {
-      naziv = ds.getString("NAZPAR");
+      String pripicuk = frmParam.getParam("sk", "nazparext","N","Prikazati naziv partnera zajedno sa adresom i telefonom (D/N)").equalsIgnoreCase("D")?
+          "; "+ds.getString("ADR")+"; "+ds.getString("MJ")+/*"; "+ds.getString("MB")+*/"; "+ds.getString("TEL"):"";
+      naziv = ds.getString("NAZPAR")+pripicuk;
+      if (naziv.length()>nazwidth) naziv = naziv.substring(0,nazwidth);
       mb = ds.getString("MB");
       oib = ds.getString("OIB");
       zup = ds.getShort("CZUP");
