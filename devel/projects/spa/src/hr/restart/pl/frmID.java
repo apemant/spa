@@ -370,6 +370,10 @@ System.out.println("POK - " + pok);
       System.out.println(idBprirsql);
       QueryDataSet idBporqds = Util.getNewQueryDataSet(idBporsql);
       QueryDataSet idBprirqds = Util.getNewQueryDataSet(idBprirsql);
+      idBporqds.setRowId("CRADNIK", true);
+      idBprirqds.setRowId("CRADNIK", true);
+//      idBporqds.open();
+//      idBprirqds.open();
 //      sysoutTEST syst = new sysoutTEST(false);
 //      syst.prn(temporary);
       try {
@@ -393,6 +397,7 @@ System.out.println("POK - " + pok);
         //ugurati pravi copcine u razliku poreza 
         if (raz) {
           String rzsql = "SELECT copcine from "+_radtab+" where "+_radtab+".cradnik = '"+idBporqds.getString("CRADNIK")+"' "+getWhereSQL(_radtab,"AND");
+System.err.println(rzsql);
           QueryDataSet rzopcset = Aus.q(rzsql);
           if (rzopcset.getRowCount() > 0) {
             rzopcset.first();
@@ -420,6 +425,7 @@ System.out.println("POK - " + pok);
         boolean raz = idBprirqds.getString("CRADNIK").trim().equals(idBprirqds.getString("COPCINE").trim());//razlika prireza
         if (raz) {//malo kopipejsta nije na odmet
           String rzsql = "SELECT copcine from "+_radtab+" where "+_radtab+".cradnik = '"+idBprirqds.getString("CRADNIK")+"' "+getWhereSQL(_radtab,"AND");
+System.err.println(rzsql);
           QueryDataSet rzopcset = Aus.q(rzsql);
           if (rzopcset.getRowCount() > 0) {
             rzopcset.first();
@@ -457,6 +463,7 @@ System.out.println("POK - " + pok);
 //      syst.prn(repSetStrB);
     }
     catch (Exception ex) {
+      ex.printStackTrace();
 //      System.out.println("BLEEEEEEEEE..... exepshn :)");
     }
 
