@@ -16,6 +16,7 @@ import com.borland.jbcl.layout.XYLayout;
 import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.robno.Util;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.jpCpar;
@@ -126,12 +127,27 @@ public class upOdjava extends raUpitLite {
   }
 
 	public void okPress() {
+		
+		boolean pop = frmParam.getParam("pos", "popKom" + jpc.getCpar(), "N", 
+					"Oduzeti popust sa POS-a za komisiju " + jpc.getCpar() + " (D,N)").equalsIgnoreCase("D");
+		
+		String dod = pop ? ", stdoki.veza " : "";
+		
 		String cskl = pj.getDataValue() + "05" + pj.getDataValue();
-		String q = "SELECT stdoki.cart1, stdoki.kol, stdoki.nc, stdoki.inab from doki,stdoki "+
+		String q = "SELECT stdoki.cart1, stdoki.kol, stdoki.nc, stdoki.inab" + dod + " from doki,stdoki "+
 		"WHERE " + Util.getUtil().getDoc("doki", "stdoki") + " and stdoki.vrdok='IZD' and  " +
 		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(Condition.equal("CSKL", cskl)).qualified("doki");
 		System.out.println(q);
 		DataSet ds = Aus.q(q);
+		
+		DataSet dsp = null;
+		if (pop) {
+			String qp = "SELECT stdoki.uprab,stdoki.id_stavka from doki,stdoki "+
+				"WHERE " + Util.getUtil().getDoc("doki", "stdoki") + " and stdoki.vrdok='POS' and  " +
+				Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(Condition.equal("CSKL", cskl)).qualified("doki");
+			System.out.println(qp);
+			dsp = Aus.q(qp);
+		}
 		
 		ds.setSort(new SortDescriptor(new String[] {"CART1"}));
     
@@ -158,6 +174,8 @@ public class upOdjava extends raUpitLite {
   			res.setString("NAZART", dm.getArtikli().getString("NAZART"));
   			res.setString("JM", dm.getArtikli().getString("JM"));
     	} else if (!res.getString("CART1").equals(cart)) continue;
+    	if (pop && ld.raLocate(dsp, "ID_STAVKA", ds.getString("VEZA")))
+    		Aus.mul(ds, "INAB", Aus.one0.subtract(dsp.getBigDecimal("UPRAB").movePointLeft(2)));
     	Aus.add(res, "KOL", ds);
     	Aus.add(res, "INAB", ds);
     	if (res.getBigDecimal("KOL").signum() != 0)
