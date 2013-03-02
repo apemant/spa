@@ -386,7 +386,7 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
     VarStr q = new VarStr(
         "SELECT d.cart, d.cart1, d.bc, d.jm, d.nazart, " +
         "d.kol, d.rezkol, d.ipopust1+d.ipopust2 as uirab, " +
-        "(d.ipopust1+d.ipopust2)/d.iznos*100 as uprab, " +
+        "(d.ipopust1+d.ipopust2)/d.ukupno*100 as uprab, " +
         "(d.iznos-d.por1-d.por2-d.por3)/d.kol as fc, " +
         "(d.iznos-d.por1-d.por2-d.por3) as ineto, " +
         "(d.neto-d.por1-d.por2-d.por3)/d.kol as fvc, " +
