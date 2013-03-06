@@ -92,7 +92,7 @@
 						<font fontName="Arial" size="7" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
 					<text><![CDATA[
-10%]]></text>
+5 i 10%]]></text>
 				</staticText>
 				<staticText>
 					<reportElement positionType="Float" x="766" y="50" width="38" height="18" forecolor="#000000"/>
@@ -137,7 +137,7 @@ UKUPNO]]></text>
 						<font fontName="Arial" size="7" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
 					<text><![CDATA[
-10%]]></text>
+5 i 10%]]></text>
 				</staticText>
 				<staticText>
 					<reportElement positionType="Float" x="389" y="47" width="46" height="22" forecolor="#000000"/>

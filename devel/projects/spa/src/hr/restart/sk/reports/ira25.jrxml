@@ -534,7 +534,7 @@ ISPORUKE]]></text>
 						<font fontName="Arial" size="7" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
 					<text><![CDATA[
-10%]]></text>
+5 i 10%]]></text>
 				</staticText>
 				<line>
 					<reportElement positionType="Float" x="475" y="23" width="1" height="58" forecolor="#000000"/>
