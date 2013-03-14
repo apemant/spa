@@ -26,7 +26,8 @@ package hr.restart.robno;
  * @version 1.0
  */
 
-public class presPRD extends jpPreselectDoc {
+//public class presPOD extends jpPreselectDoc {
+public class presPRD extends presPON {
   static presPRD presprd;
 
   public void defaultMatDocAllowed(){
@@ -40,6 +41,7 @@ public class presPRD extends jpPreselectDoc {
 
   public presPRD() {
     super('N', 'D');
+    addSQL = " and (param='' or param is null or param like 'P%')";
     presprd=this;
   }
   public static jpPreselectDoc getPres() {
