@@ -9,6 +9,7 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 import hr.restart.baza.dM;
 import hr.restart.pos.frmMasterBlagajna;
+import hr.restart.pos.presBlag;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.reports.raReportData;
@@ -26,7 +27,7 @@ public class repPosJas implements raReportData {
   
   BigDecimal pov;
   
-  String oib, ph, kh, god, boper, hvala, title, kuplab, kupac;
+  String oib, ph, kh, god, boper, hvala, title, kuplab, kupac, specForm;
   
   public repPosJas() {
     frmMasterBlagajna fmb = frmMasterBlagajna.getInstance();
@@ -73,6 +74,9 @@ public class repPosJas implements raReportData {
     oib = frmParam.getParam("robno", "oibMode", "MB", 
           "Staviti matièni broj (MB) ili OIB?");
     
+    specForm = frmParam.getParam("pos", "formatBroj", "",
+    "Format broja raèuna na POS-u");
+    
     getNacinPlacanja();
     calculatePorez(getRekapitulacija(ds));
     
@@ -94,6 +98,17 @@ public class repPosJas implements raReportData {
               getJMBG(dr);
         } System.out.println("Kupac je (ako ga ima) null!!!");
       }    
+  }
+  
+  private String getBRDOK() {
+    if (presBlag.isFiskal(master.getString("CSKL")) && master.getString("FOK").equals("D")) {
+      return master.getInt("FBR") + "-" + presBlag.getFiskPP(master.getString("CSKL")) + 
+            "-" + presBlag.getFiskNap(master.getString("CSKL"));
+    }
+    if (specForm == null || specForm.length() == 0)
+      return Integer.toString(master.getInt("BRDOK"));
+
+    return Aus.formatBroj(master, specForm);
   }
 
   private String getJMBG(DataRow dr) {
@@ -244,10 +259,12 @@ public class repPosJas implements raReportData {
                "OPERATER: "+operater;
       } else if (blop.equalsIgnoreCase("2")) {
         return blag+", "+operater;
-      } else {
+      } else if (blop.equalsIgnoreCase("3")) {
         //return "Poslužio: "+operater+"<$newline$>"+
         //"Broj stola: " + getStol() + "<$newline$>";
         return "Stol: " + getStol() + "   Poslužio: " + operater;
+      } else if (blop.equalsIgnoreCase("4")) {
+        return "OPERATER: "+operater+"<$newline$>";
       }
     }
     return "";
