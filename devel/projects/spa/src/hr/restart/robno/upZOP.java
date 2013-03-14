@@ -149,8 +149,20 @@ public class upZOP extends raUpit {
     		"sum(stdoki.iprodsp) as iprodsp, sum(stdoki.iraz) as iraz, " +
     		"sum(stdoki.iraz)-sum(stdoki.iprodsp) as uirab FROM doki,stdoki " +
     		"WHERE "+rut.getDoc("doki", "stdoki") + " AND doki.god = '"+
-    		tds.getString("GOD")+"' and brzap="+tds.getInt("RBR")+
-    		" GROUP BY doki.vrdok, doki.brdok");
+    		tds.getString("GOD")+"' and doki.brzap="+tds.getInt("RBR")+
+    		" AND doki.vrdok='GOT' and doki.cskl='"+ rpcskl.getCSKL() + "'" +  
+    		" GROUP BY doki.vrdok, doki.brdok" +
+    		
+    		" UNION ALL "+
+    		
+    		"SELECT doki.vrdok, doki.brdok, MAX(doki.datdok) as datdok, " +
+            "sum(stdoki.iprodsp) as iprodsp, sum(stdoki.fmcprp*stdoki.kol) as iraz, " +
+            "(sum(stdoki.fmcprp*stdoki.kol)-sum(stdoki.iprodsp)) as uirab FROM doki,stdoki " +
+            "WHERE "+rut.getDoc("doki", "stdoki") + " AND doki.god = '"+
+            tds.getString("GOD")+"' and doki.brzap="+tds.getInt("RBR")+
+            " AND doki.vrdok='GRN' and stdoki.csklart='"+ rpcskl.getCSKL() + "'" +  
+            " GROUP BY doki.vrdok, doki.brdok"
+    );
     all.setSort(new SortDescriptor(new String[] {"BRDOK"}));
     System.out.println(q);
     
