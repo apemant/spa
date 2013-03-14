@@ -518,6 +518,16 @@ public class dlgRunReport {
     	  }
       }
       
+      if (ds.hasColumn("VRDOK") != null && ds.getString("VRDOK").equalsIgnoreCase("PRD")){
+        if (ds.hasColumn("PARAM")!= null) {
+            if (ds.getString("PARAM").equalsIgnoreCase("K")) 
+                financ = false;
+//          System.out.println(ds.getString("PARAM"));
+        } else {
+            System.out.println("Ne postoji PARAM u ds-u");
+        }
+    }
+      
       if (ds.hasColumn("CSKL") != null && ds.getString("CSKL").length() > 0 && (financ ||
          lookupData.getlookupData().raLocate(dM.getDataModule().getSklad(), "CSKL",
             ds.getString("CSKL"))))
