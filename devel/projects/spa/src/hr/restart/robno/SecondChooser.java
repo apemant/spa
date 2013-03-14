@@ -137,6 +137,8 @@ public class SecondChooser extends JraDialog {
 	private boolean isMultipleDocs = false;
 	
 	private boolean allowMinus = false;
+	
+	private boolean storno = false;
 
 	OKpanel okpanel = new OKpanel() {
 		public void jBOK_actionPerformed() {
@@ -149,7 +151,14 @@ public class SecondChooser extends JraDialog {
 	};
 
 	public void setSelected(String odabrano) {
-		selected = odabrano;
+	  if (odabrano.equals("SRT")) {
+	    odabrano = "ROT";
+	    storno = true;
+	  } else if (odabrano.equals("SPD")) {
+        odabrano = "PRD";
+        storno = true;
+      } else storno = false;
+	  selected = odabrano;
 	}
 
 	public void okSelect() {
@@ -314,6 +323,10 @@ public class SecondChooser extends JraDialog {
 		if (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("PON")) {
 		  if (rIT.isOJ) rIT.getMasterSet().setString("PARAM", "OJ");
 		  else if (rIT.isMaloprodajnaKalkulacija) rIT.getMasterSet().setString("PARAM", "K");
+		}
+		
+		if (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("PRD") && rIT.isMaloprodajnaKalkulacija) {
+		  rIT.getMasterSet().setString("PARAM", "K");
 		}
         
 		if (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("NKU") &&
@@ -599,6 +612,14 @@ public class SecondChooser extends JraDialog {
         expanded.getBigDecimal("KOL").add(art.getBigDecimal("KOL")));
     expanded.post();
   }
+  
+  void negate(DataSet ds) {
+    String[] neg = {"KOL", "UIRAB", "UIZT", "INETO","IPRODBP","POR1","POR2","POR3",
+        "IPRODSP","INAB","IMAR","IBP","IPOR","ISP", "IRAZ","UIPOR","KOL1","KOL2","RINAB"};
+    
+    for (int i = 0; i < neg.length; i++)
+      ds.setBigDecimal(neg[i], ds.getBigDecimal(neg[i]).negate());
+  }
 
 	boolean getNextRealRow() {
     if (needNorm) {
@@ -607,14 +628,17 @@ public class SecondChooser extends JraDialog {
       expanded.next();
     } else {
       if (!StavkeSet.inBounds()) return false;
+      if (storno) negate(StavkeSet);
       dM.copyColumns(StavkeSet, realrow);
       if (first) {
           first = false;
           return true;
       }
       if (!StavkeSet.next()) return false;
+      if (storno) negate(StavkeSet);
       dM.copyColumns(StavkeSet, realrow);
     }
+       
 		return true;
 	}
 
