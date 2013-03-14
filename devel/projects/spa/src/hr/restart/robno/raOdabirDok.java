@@ -119,6 +119,10 @@ public class raOdabirDok extends JraDialog {
       return "ROT";
     }else if (opis.equals("Razduženje blagajne")){
       return "POS";
+    }else if (opis.equals("Storno ROT")){
+      return "SRT";
+    }else if (opis.equals("Storno PRD")){
+      return "SPD";
     }else if (opis.equals("Raèun")){
       return "RAC";
     }else if (opis.equals("Gotovinski raèun")){
@@ -169,7 +173,7 @@ public class raOdabirDok extends JraDialog {
         odabrano = "POS";
      }
     else if (vrsta_dok.equals("PRD")) {
-       zaodabrati = new String[] {"Narudžba","Ponuda"};
+       zaodabrati = new String[] {"Narudžba","Ponuda", "Storno PRD"};
        odabrano = "NKU";
     }
     else if (vrsta_dok.equals("RAC")) {
@@ -182,7 +186,7 @@ public class raOdabirDok extends JraDialog {
     	}
     }
     else if (vrsta_dok.equals("ROT")) {
-      zaodabrati = new String[] {"Narudžba","Ponuda","Predra\u010Dun","Dostavnica","Raèun - otpremnica"};
+      zaodabrati = new String[] {"Narudžba","Ponuda","Raèun za predujam","Dostavnica","Raèun - otpremnica", "Storno ROT"};
       odabrano = "NKU";
     }
     else if (vrsta_dok.equals("POD")) {
@@ -192,15 +196,15 @@ public class raOdabirDok extends JraDialog {
     else if (vrsta_dok.equals("GRN")) {
     	odabrano=hr.restart.sisfun.frmParam.getParam("robno","selDokOnRAC", "OTP", "Dokument za dohvat na RACu");
     	if (odabrano.equalsIgnoreCase("RN")) {
-    		zaodabrati = new String[] {"Radni nalog","Ponuda","Radni nalog po izdatnici"};
+    		zaodabrati = new String[] {"Radni nalog","Ponuda","Radni nalog po izdatnici", "Raèun za predujam"};
     	}
     	else {
-    		zaodabrati = new String[] {"Ponuda","Radni nalog","Radni nalog po izdatnici"};
+    		zaodabrati = new String[] {"Ponuda","Radni nalog","Radni nalog po izdatnici", "Raèun za predujam"};
     		odabrano = "PON";
     	}
     }
     else if (vrsta_dok.equals("GOT")) {
-      zaodabrati = new String[] {"Ponuda"};
+      zaodabrati = new String[] {"Ponuda", "Raèun za predujam"};
       odabrano = "PON";
     }
 
