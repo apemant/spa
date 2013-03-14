@@ -474,16 +474,14 @@ public class repRacunPOS extends mxReport {
             ((!dr.getString("MJ").equals(""))?((dr.getInt("PBR")==0)? "       "+dr.getString("MJ"):dr.getString("MJ")):"")+
             getJMBG(dr);
 
-        kupac += "<$newline$><$newline$><#RAÈUN R-1 br. " + getBRDOK() + "-" + presBlag.getFiskPP(master.getString("CSKL")) + 
-          "-" + presBlag.getFiskNap(master.getString("CSKL")) + "|"+(width-2)+"|left#><$newline$>";
+        kupac += "<$newline$><$newline$><#RAÈUN R-1 br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
             //"\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
         return kupac;
       } System.out.println("Kupac je (ako ga ima) null!!!");
     }
 //    porezString = "";
     
-    String ractex = "<$newline$><#RAÈUN br. " + getBRDOK() + "-" + presBlag.getFiskPP(master.getString("CSKL")) + 
-    "-" + presBlag.getFiskNap(master.getString("CSKL")) + "|"+(width-2)+"|left#><$newline$>";
+    String ractex = "<$newline$><#RAÈUN br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
     if (presBlag.isFiskal(master.getString("CSKL")) && !master.getString("FOK").equals("D"))
       ractex = "<$newline$><#PREDRAÈUN br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
     
