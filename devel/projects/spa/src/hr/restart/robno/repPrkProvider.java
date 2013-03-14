@@ -43,7 +43,7 @@ public class repPrkProvider implements raReportData { //implements sg.com.elixir
   
   String lastDok = "";
   
-  private static boolean isMC;
+  static boolean isMC;
 
   public repPrkProvider() {
     ds = reportsQuerysCollector.getRQCModule().getQueryDataSet();
@@ -172,6 +172,9 @@ public class repPrkProvider implements raReportData { //implements sg.com.elixir
   }
   public BigDecimal getKOL() {
     return ds.getBigDecimal("KOL");
+  }
+  public BigDecimal getSKOL() {
+    return ds.getBigDecimal("SKOL");
   }
   public BigDecimal getDC() {
     return ds.getBigDecimal("DC");
