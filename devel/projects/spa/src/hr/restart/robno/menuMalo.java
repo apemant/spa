@@ -39,6 +39,7 @@ public class menuMalo extends JMenu {
 
   hr.restart.util.startFrame SF;
   JMenuItem jmPON = new JMenuItem();
+  JMenuItem jmPRD = new JMenuItem();
   JMenuItem jmGOT = new JMenuItem();
   JMenuItem jmGRN = new JMenuItem();
   JMenuItem jmOTP = new JMenuItem();
@@ -62,6 +63,12 @@ public class menuMalo extends JMenu {
     jmPON.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmPON_actionPerformed(e);
+      }
+    });
+    jmPRD.setText("Raèuni za predujam");
+    jmPRD.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmPRD_actionPerformed(e);
       }
     });
     jmGOT.setText("Gotovinski raèuni - otpremnice");
@@ -89,6 +96,7 @@ public class menuMalo extends JMenu {
       }
     });
     this.add(jmPON);
+    this.add(jmPRD);
     this.add(jmGOT);
     this.add(jmGRN);
     this.add(jmOTP);
@@ -97,6 +105,10 @@ public class menuMalo extends JMenu {
   void jmPON_actionPerformed(ActionEvent e) {
     raPONkup rapon = (raPONkup)raLoader.load("hr.restart.robno.raPONkup");
     presPONkup.getPres().showJpSelectDoc("PON", rapon, true, jmPON.getText());
+  }
+  void jmPRD_actionPerformed(ActionEvent e) {
+    hr.restart.robno.raPRDkup raprd = (hr.restart.robno.raPRDkup)raLoader.load("hr.restart.robno.raPRDkup");
+    hr.restart.robno.presPRDkup.getPres().showJpSelectDoc("PRD", raprd, true, jmPRD.getText());
   }
   void jmGOT_actionPerformed(ActionEvent e) {
     hr.restart.robno.raGOT ragot = (hr.restart.robno.raGOT)raLoader.load("hr.restart.robno.raGOT");
