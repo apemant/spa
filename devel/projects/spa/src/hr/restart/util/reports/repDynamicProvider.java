@@ -516,14 +516,14 @@ public class repDynamicProvider implements IDataProvider {
       name.setTop(ng * 300);
       name.setLeft(20);
       name.setHeight(300);
-      name.setWidth(max * 120);
+      name.setWidth(200 + max * 120);
       name.setControlSource("GroupCaption" + i);
       raReportElement value = head.addModel(ep.TEXT, def.getDefaults());
       value.setFontSize(9);
       value.setTop(ng * 300);
-      value.setLeft(max * 120 + 100);
+      value.setLeft(max * 120 + 300);
       value.setHeight(300);
-      value.setWidth(10000 - max * 120 - 200);
+      value.setWidth(10000 - max * 120 - 400);
       value.setControlSource("GroupValue" + i);
       ++ng;
     }
