@@ -144,8 +144,8 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
     raMaster.getRepRunner().addReport("hr.restart.robno.repPrkKal","hr.restart.robno.repPrkProvider","PriKalkFakeInab","Primka - kalkulacija, nabavna");
     raDetail.getRepRunner().addReport("hr.restart.robno.repPrkKal","hr.restart.robno.repPrkProvider","PriKalkFakeInab","Primka - kalkulacija, nabavna");
 
-    raMaster.getRepRunner().addReport("hr.restart.robno.repPrkNiv","hr.restart.robno.repPrkProvider","Nivel","Poravnanje - nivelacija");
-    raDetail.getRepRunner().addReport("hr.restart.robno.repPrkNiv","hr.restart.robno.repPrkProvider","Nivel","Poravnanje - nivelacija");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repPrkNiv","hr.restart.robno.repPrkNivProvider","Nivel","Poravnanje - nivelacija");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repPrkNiv","hr.restart.robno.repPrkNivProvider","Nivel","Poravnanje - nivelacija");
     
 //    raMaster.getRepRunner().addReport("hr.restart.robno.repNivel", "Formatirani ispis", 2);
     
