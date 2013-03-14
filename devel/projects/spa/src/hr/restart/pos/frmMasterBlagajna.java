@@ -48,6 +48,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.swing.raColors;
 import hr.restart.swing.raExtendedTable;
 import hr.restart.swing.raOptionDialog;
+import hr.restart.swing.raSelectTableModifier;
 import hr.restart.swing.raStatusColorModifier;
 import hr.restart.swing.raTableModifier;
 import hr.restart.swing.raTextMask;
@@ -940,6 +941,8 @@ public class frmMasterBlagajna extends raMasterDetail {
 
     this.setMasterDeleteMode(DELDETAIL);
     //raDetail.setFastDelAll(true);
+    
+    raMaster.installSelectionTracker("BRDOK");
 
     this.setDetailSet(dm.getStpos());
 
@@ -2034,8 +2037,15 @@ public class frmMasterBlagajna extends raMasterDetail {
 
   public void Funkcija_ispisa_master(){
 
+    if (raMaster.getSelectionTracker() != null && raMaster.getSelectionTracker().countSelected() > 1) {
+      Integer[] brdoks = (Integer[]) raMaster.getSelectionTracker().getSelection();
+      for (int i = 0; i < brdoks.length; i++) {
+        ld.raLocate(getMasterSet(), "BRDOK", brdoks[i].toString());
+        justPrintGRC();
+      }
+    } else
 //    reportsQuerysCollector.getRQCModule().ReSql(PrepSql("GRC"),"GRC");
-    super.Funkcija_ispisa_master();
+      super.Funkcija_ispisa_master();
   }
 
 /*  public void Funkcija_ispisa_master(){
