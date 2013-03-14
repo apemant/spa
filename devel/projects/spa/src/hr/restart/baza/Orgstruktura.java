@@ -25,13 +25,13 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 
 public class Orgstruktura  extends KreirDrop implements DataModule {
-  ResourceBundle dmRes = ResourceBundle.getBundle("hr.restart.baza.dmRes");
+  //ResourceBundle dmRes = ResourceBundle.getBundle("hr.restart.baza.dmRes");
   private static Orgstruktura Orgstrukturaclass;
-  dM dm  = dM.getDataModule();
+  //dM dm  = dM.getDataModule();
   QueryDataSet orgstruktura = new raDataSet();
   QueryDataSet orgstrukturaaktiv = new raDataSet();
   QueryDataSet knjig = new raDataSet();
-  Column orgsLOKK = new Column();
+  /*Column orgsLOKK = new Column();
   Column orgsAKTIV = new Column();
   Column orgsCORG = new Column();
   Column orgsNAZIV = new Column();
@@ -41,7 +41,7 @@ public class Orgstruktura  extends KreirDrop implements DataModule {
   Column orgsHPBROJ = new Column();
   Column orgsZIRO = new Column();
   Column orgsPRIPADNOST = new Column();
-  Column orgsNALOG = new Column();
+  Column orgsNALOG = new Column();*/
   public static Orgstruktura getDataModule() {
     if (Orgstrukturaclass == null) {
       Orgstrukturaclass = new Orgstruktura();
@@ -72,7 +72,7 @@ public class Orgstruktura  extends KreirDrop implements DataModule {
   }
   private void jbInit() throws Exception {
 
-
+/*
     orgsNALOG.setCaption(dmRes.getString("orgsNALOG_caption"));
     orgsNALOG.setColumnName("NALOG");
     orgsNALOG.setDataType(com.borland.dx.dataset.Variant.STRING);
@@ -156,13 +156,15 @@ public class Orgstruktura  extends KreirDrop implements DataModule {
     orgstruktura.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(), "SELECT * " +
       "FROM ORGSTRUKTURA", null, true, Load.ALL));
  setColumns(new Column[] {orgsLOKK, orgsAKTIV, orgsCORG, orgsNAZIV, orgsMJESTO, orgsADRESA,
-                                          orgsHPBROJ, orgsZIRO, orgsPRIPADNOST, orgsNALOG});
+                                          orgsHPBROJ, orgsZIRO, orgsPRIPADNOST, orgsNALOG});*/
 
+    initModule();
+    
     createFilteredDataSet(orgstrukturaaktiv, "aktiv = 'D'");
     createFilteredDataSet(knjig, "aktiv = 'D' AND corg = pripadnost");
   }
 
-  public void setall(){
+//  public void setall(){
 
     /*SqlDefTabela = "create table Orgstruktura " +
       "(lokk char(1) CHARACTER SET WIN1250 default 'N'," +
@@ -177,7 +179,7 @@ public class Orgstruktura  extends KreirDrop implements DataModule {
       "nalog CHAR(1) CHARACTER SET WIN1250,"+
       "Primary Key (corg))";*/
 
-    ddl.create("orgstruktura")
+/*    ddl.create("orgstruktura")
        .addChar("lokk", 1, "N")
        .addChar("aktiv", 1, "D")
        .addChar("corg", 12, true)
@@ -198,12 +200,12 @@ public class Orgstruktura  extends KreirDrop implements DataModule {
     String[] uidx = new String[] {};
     DefIndex = ddl.getIndices(idx, uidx);
     NaziviIdx = ddl.getIndexNames(idx, uidx);
-
+*/
     /*
     NaziviIdx=new String[]{"ilokkorgstruktura","iaktivorgstruktura","icorg"};
 
     DefIndex= new String[] {CommonTable.SqlDefIndex+NaziviIdx[0] +" on Orgstruktura (lokk)" ,
                             CommonTable.SqlDefIndex+NaziviIdx[1] +" on Orgstruktura (aktiv)" ,
                             CommonTable.SqlDefUniqueIndex+NaziviIdx[2] +" on Orgstruktura (corg)"} ;*/
-  }
+  //}
 }

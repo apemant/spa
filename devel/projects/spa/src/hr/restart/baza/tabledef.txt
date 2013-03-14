@@ -1631,3 +1631,18 @@ CTEL;int;6;pkey;;Sifra;6
 IME;char;50;;;Ime i prezime;30
 EMADR;char;60;;;E-mail;15
 
+$Orgstruktura
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CORG;char;12;pkey;;Oznaka;5
+NAZIV;char;100;;;Naziv;30
+MJESTO;char;30;;;Mjesto;15
+ADRESA;char;50;;;Adresa;15
+HPBROJ;char;5;;;Poštanski broj
+ZIRO;char;40;;;Žiro raèun;15
+PRIPADNOST;char;12;;;Pripadnost
+NALOG;char;1;;0;Nalog
+FISK;char;1;;;Fiskalizacija
+FPP;char;30;;;Šifra PP
+FPATH;char;50;;;Keystore
+FKEY;char;30;;;Password
