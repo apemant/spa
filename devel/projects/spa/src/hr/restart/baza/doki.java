@@ -43,6 +43,7 @@ public class doki extends KreirDrop implements DataModule {
   QueryDataSet zagPOV = new raDataSet();
   QueryDataSet zagNAR = new raDataSet();
   QueryDataSet zagPRD = new raDataSet();
+  QueryDataSet zagPRDkup = new raDataSet();
   QueryDataSet zagRAC = new raDataSet();
   QueryDataSet zagROT = new raDataSet();
   QueryDataSet zagOTP = new raDataSet();
@@ -824,6 +825,7 @@ public class doki extends KreirDrop implements DataModule {
     createFilteredDataSet(zagPOV, "1=0");
     createFilteredDataSet(zagNAR, "1=0");
     createFilteredDataSet(zagPRD, "1=0");
+    createFilteredDataSet(zagPRDkup, "1=0");
     createFilteredDataSet(zagRAC, "1=0");
     createFilteredDataSet(zagROT, "1=0");
     createFilteredDataSet(zagOTP, "1=0");
@@ -878,6 +880,10 @@ public class doki extends KreirDrop implements DataModule {
 
   public com.borland.dx.sql.dataset.QueryDataSet getZagPrd() {
     return zagPRD;
+  }
+  
+  public com.borland.dx.sql.dataset.QueryDataSet getZagPrdKup() {
+    return zagPRDkup;
   }
 
   public com.borland.dx.sql.dataset.QueryDataSet getZagRac() {

@@ -34,6 +34,7 @@ public class stdoki extends KreirDrop implements DataModule {
   QueryDataSet stPOV = new QueryDataSet();
   QueryDataSet stNAR = new QueryDataSet();
   QueryDataSet stPRD = new QueryDataSet();
+  QueryDataSet stPRDkup = new QueryDataSet();
   QueryDataSet stRAC = new QueryDataSet();
   QueryDataSet stROT = new QueryDataSet();
   QueryDataSet stOTP = new QueryDataSet();
@@ -150,6 +151,10 @@ public class stdoki extends KreirDrop implements DataModule {
 
   public com.borland.dx.sql.dataset.QueryDataSet getStPrd() {
     return stPRD;
+  }
+  
+  public com.borland.dx.sql.dataset.QueryDataSet getStPrdKup() {
+    return stPRDkup;
   }
 
   public com.borland.dx.sql.dataset.QueryDataSet getStRac() {
@@ -890,6 +895,7 @@ public class stdoki extends KreirDrop implements DataModule {
     createFilteredDataSet(stPONOJ, "1=0");
     createFilteredDataSet(stNAR, "1=0");
     createFilteredDataSet(stPRD, "1=0");
+    createFilteredDataSet(stPRDkup, "1=0");
     createFilteredDataSet(stRAC, "1=0");
     createFilteredDataSet(stROT, "1=0");
     createFilteredDataSet(stOTP, "1=0");

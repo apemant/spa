@@ -1410,6 +1410,10 @@ public class dM implements DataModule {
   public com.borland.dx.sql.dataset.QueryDataSet getZagPrd() {
     return doki.getDataModule().getZagPrd();
   }
+  
+  public com.borland.dx.sql.dataset.QueryDataSet getZagPrdKup() {
+    return doki.getDataModule().getZagPrdKup();
+  }
 
   public com.borland.dx.sql.dataset.QueryDataSet getZagRac() {
     return doki.getDataModule().getZagRac();
@@ -1504,6 +1508,10 @@ public class dM implements DataModule {
 
   public com.borland.dx.sql.dataset.QueryDataSet getStPrd() {
     return stdoki.getDataModule().getStPrd();
+  }
+  
+  public com.borland.dx.sql.dataset.QueryDataSet getStPrdKup() {
+    return stdoki.getDataModule().getStPrdKup();
   }
 
   public com.borland.dx.sql.dataset.QueryDataSet getStRac() {
