@@ -109,6 +109,14 @@ class rajpIzlazMPTemplate extends JPanel {
 	public rajpIzlazMPTemplate(String what_kind_of_dokument, raIzlazTemplate FDI) {
 		fDI = FDI;
 		try {
+		  
+		    gotpar = "D".equalsIgnoreCase(
+	          frmParam.getParam("robno", "gotPar", "N",
+	          "Gotovinski raèuni za partnere (D,N)"));
+		    
+		    gotpar = gotpar && ("GOT|GRN|PRD".indexOf(what_kind_of_dokument) >= 0);
+		    if (what_kind_of_dokument.equals("PRD") && !fDI.bPonudaZaKupca) gotpar = false;
+		  
 			version = TypeDoc.getTypeDoc().numberPanel(what_kind_of_dokument);
 			int version = TypeDoc.getTypeDoc().numberPanel(
 					what_kind_of_dokument);
@@ -191,9 +199,7 @@ class rajpIzlazMPTemplate extends JPanel {
 
 	private void jbInit(int version) throws Exception {
 
-	  gotpar = "D".equalsIgnoreCase(
-	      frmParam.getParam("robno", "gotPar", "N",
-          "Gotovinski raèuni za partnere (D,N)"));
+	  
 
 		setLayout(borderLayout2);
 		rajpBrDok.addBorder();
@@ -761,7 +767,7 @@ SwingUtilities.invokeLater(new Runnable(){
 				}
 			});
 
-			if (version == 0 || version == 3) {
+			if ((version == 0 || version == 3) && !gotpar) {
 
 				add(jlCPAR, new XYConstraints(15, 15, -1, -1));
 				add(jrfCPAR, new XYConstraints(150, 15, 100, -1));

@@ -1390,6 +1390,13 @@ ST.prn(radninal);
 			MP.panelBasicExt.jtfPJOPIS.setText("");
 		}
 		vttextzag = null;
+		
+		if (MP.gotpar) {
+  		  MP.panelBasic.jrbPartner.setSelected(true);
+          MP.panelBasic.partnerSelected(true);
+          MP.panelBasic.jrbKupac.setSelected(false);
+          MP.panelBasic.kupacSelected(false);
+		}
 
 		// Dodao ab.f: resetirati zapamcenog partnera jer u suprotnom ne azurira
 		// posto rabata kad se unesu dva racuna s istim partnerom zaredom.
@@ -1407,6 +1414,21 @@ ST.prn(radninal);
 		MP.EnabSetup();
 		if (isStavkeExist())
 			MP.EnabDisabifStavkeExist();
+		
+		if (MP.gotpar) {
+  		  if (getMasterSet().getInt("CPAR") != 0) {
+            MP.panelBasic.jrbPartner.setSelected(true);
+            MP.panelBasic.partnerSelected(true);
+            MP.panelBasic.jrbKupac.setSelected(false);
+            MP.panelBasic.kupacSelected(false);
+          } else { //if (getMasterSet().getInt("CKUPAC") != 0) {
+            MP.panelBasic.jrbPartner.setSelected(false);
+            MP.panelBasic.partnerSelected(false);
+            MP.panelBasic.jrbKupac.setSelected(true);
+            MP.panelBasic.kupacSelected(true);
+          }
+		}
+		
 		oldCPAR = getMasterSet().getInt("CPAR");
 		MP.EnabDisabforChange(false);
 		SetFocusIzmjenaExtends();
@@ -1414,7 +1436,7 @@ ST.prn(radninal);
 	}
 
 	public boolean LocalValidacijaMaster() {
-		if (val.isEmpty(MP.panelBasic.jrfCPAR))
+		if (!MP.gotpar && val.isEmpty(MP.panelBasic.jrfCPAR))
 			return false;
 		return true;
 	}
@@ -4156,6 +4178,8 @@ System.out.println("findCjenik::else :: "+sql);
 	}
 
 	public void prepareQuery(String odabrano) {
+	  if (odabrano.equals("SRT")) odabrano = "ROT";
+	  if (odabrano.equals("SPD")) odabrano = "PRD";
         System.out.println("Odabrano "+odabrano);
         String year = val.findYear(pressel.getSelRow().
             getTimestamp("DATDOK-to"));
@@ -4210,7 +4234,10 @@ System.out.println("findCjenik::else :: "+sql);
 				upit = "statira='N' and god = '"
 						+ year + "' and vrdok= '" + odabrano.toUpperCase() + "'" + dodatak
 						+ " and cskl in (" + vs + ")"; // samo
-
+			} else if (getMasterSet().getString("VRDOK").equalsIgnoreCase("PRD") && 
+			    bPonudaZaKupca && "PON|PRD".indexOf(odabrano) >= 0) {
+			  upit = yc+" vrdok= '" + odabrano + "'" + dodatak + " and statira='N' and cskl in ('"
+                + pressel.getSelRow().getString("CSKL") + "')"; // samo
 			} else if (TD.isDocFinanc(getMasterSet().getString("VRDOK"))
 					&& !TD.isDocSklad(getMasterSet().getString("VRDOK"))) {
 				upit = aSS.getS4raCatchDoc(yc, pressel.getSelRow()
@@ -4222,6 +4249,8 @@ System.out.println("findCjenik::else :: "+sql);
 
             qDS = doki.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK DATDOK CPAR UIRAC BRDOKIZ BRNARIZ", upit);
             qDS.open();
+            
+            System.out.println(upit);
 		}
 	}
 
