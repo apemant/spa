@@ -69,7 +69,6 @@ public class repGrnRac2Template extends repIzlazOrigTemplate {
 
   public repGrnRac2Template() {
     this.ReportTemplate.setDefault(ep.RECORD_SOURCE, "JDOrepGrnRac2");
-    this.ReportTemplate.setDefault(ep.RECORD_SOURCE, "JDOrepGotRac");
 //    this.addReportModifier(new ReportModifier(){
 //      public void modify(){
 //        System.out.println("reportsQuerysCollector.getRQCModule().getQueryDataSet().getInt(\"CKUPAC\") = "+reportsQuerysCollector.getRQCModule().getQueryDataSet().getInt("CKUPAC"));
