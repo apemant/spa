@@ -181,8 +181,8 @@ public class frmFormKPR extends raUpitLite {
       raProcess.fail();
     }
 
-    if (hr.restart.sisfun.frmParam.getParam("robno","sumGotKPR","P","Ispis GOT racuna u KPR (P - pojedinacno D - sumirano po danu)").equalsIgnoreCase("D")){
-      fillDummySumGot(dejtaSet, rbr, knjigodina);
+    if (hr.restart.sisfun.frmParam.getParam("robno","sumGotKPR","P","Ispis GOT/GRN racuna u KPR (P - pojedinacno D - sumirano po danu)").equalsIgnoreCase("D")){
+      fillDummySumGot(dejtaSet, rbr, knjigodina, tipkpr);
     } else {
       fillDummy(dejtaSet, rbr, knjigodina, tipkpr, false);
     }
@@ -272,7 +272,7 @@ public class frmFormKPR extends raUpitLite {
   private boolean brisired;
 
 
-  private void fillDummySumGot(QueryDataSet data, int rb, String god){
+  private void fillDummySumGot(QueryDataSet data, int rb, String god, String tip) {
     brisired = false;
 //    System.out.println("Formiranje KPR s racunima po danu");
 
@@ -281,93 +281,113 @@ public class frmFormKPR extends raUpitLite {
     dummyKPR = hr.restart.baza.KPR.getDataModule().getTempSet("1=0");
     dummyKPR.open();
     data.first();
-    QueryDataSet tmp = checkKprForGots(data.getTimestamp("DATDOK"),rb-1);
+    
+    
+    /*QueryDataSet tmp = checkKprForGots(data.getTimestamp("DATDOK"),rb-1);
 
     if (!tmp.isEmpty()){
-//      System.out.println("uguzivan got");
+     System.out.println("uguzivan got");
       rbr -= 1;
       brisired = true;
-      deleteGOT = "DELETE FROM KPR WHERE cskl='"+tds.getString("CSKL")+"' and rbr="+rbr+" and god='"+god+"'";
+      deleteGOT = "DELETE FROM KPR WHERE cskl='"+tds.getString("CSKL")+"' and rbr="+rbr+" and god='"+god+"'";      
       tmp.copyTo(dummyKPR);
+    }*/
+    
+    dummyGOT = null;
+    
+    int brzap = 0;
+    if ("C".equals(tip)) {
+      QueryDataSet lastNum = Aus.q("select max(brzap) as LAST_NUMBER from doki " +
+            "where god='"+god+"' and cskl = '"+tds.getString("CSKL")+
+            "' and vrdok='GOT'");
+      QueryDataSet lastGrn = Aus.q("SELECT MAX(brzap) as LAST_NUMBER from doki "+
+          "where god='" + god + "' and vrdok='GRN'");
+      
+      
+      brzap = lastNum.getInt("LAST_NUMBER")+1;
+      if (brzap == 0) brzap = 1;
+      if (lastGrn.getInt("LAST_NUMBER") + 1 > brzap)
+        brzap = lastGrn.getInt("LAST_NUMBER")+1;
+      
+      Condition dat = Condition.between("DATDOK", ut.getYearBegin(god), tds.getTimestamp("zavDatum"));
+      
+      dummyGOT = Aus.q("SELECT * FROM doki WHERE god='"+god+"' and (vrdok='GRN' or (cskl = '"+
+                    tds.getString("CSKL")+"' and vrdok='GOT')) " +
+                    "and (brzap is null or brzap = 0) and "+dat);
+
+      dummyGOT.setSort(new SortDescriptor(new String[] {"DATDOK"}));
     }
+    
+    boolean zbd = data.getColumn("SUMZAD").getDataType() == Variant.BIGDECIMAL;
+    boolean rbd = data.getColumn("SUMRAZ").getDataType() == Variant.BIGDECIMAL;
+    
+    Timestamp oldt = new Timestamp(data.getTimestamp("DATDOK").getTime());
+    
+    BigDecimal sumzad, sumraz;
+    BigDecimal pop = Aus.zero2;
 
     do {
       
-      BigDecimal sumzad, sumraz;
-      
-      try {
-        sumzad = data.getBigDecimal("SUMZAD");
-      } catch (Exception e) {
-        sumzad = new BigDecimal(data.getDouble("SUMZAD"));
-      }
-      
-      try {
-        sumraz = data.getBigDecimal("SUMRAZ");
-      } catch (Exception e) {
-        sumraz = new BigDecimal(data.getDouble("SUMRAZ"));
-      }
+      sumzad = zbd ? data.getBigDecimal("SUMZAD") 
+          : new BigDecimal(data.getDouble("SUMZAD"));
+ 
+      sumraz = rbd ? data.getBigDecimal("SUMRAZ") 
+          : new BigDecimal(data.getDouble("SUMRAZ"));
       
       if (sumraz.compareTo(new java.math.BigDecimal("0.00")) != 0 ||
           sumzad.compareTo(new java.math.BigDecimal("0.00"))!=0){
-        if(data.getString("VRDOK").equals("GOT")){
-          if(lookupData.getlookupData().raLocate(dummyKPR, "DATUM", ut.getLastSecondOfDay(data.getTimestamp("DATDOK")).toString())){
-            try{
-              dummyKPR.setBigDecimal("ZAD", dummyKPR.getBigDecimal("ZAD").add(sumzad)); //new java.math.BigDecimal(data.getDouble("SUMZAD")));
-            } catch(Exception ex1){
-              try{
-                dummyKPR.setBigDecimal("ZAD", dummyKPR.getBigDecimal("ZAD").add(new java.math.BigDecimal(data.getDouble("SUMZAD"))));
-              } catch(Exception ex2){
-              }
-            }
+        
+        Timestamp dat = data.getTimestamp("DATDOK");
+        String vd = data.getString("VRDOK");
+        
+        if ("C".equals(tip) && !ut.sameDay(oldt, dat)) {
+          if (pop.signum() != 0) {
+            fillZap(god, oldt, brzap++, rb++, pop);
+            pop = Aus.zero0;
+          }
+          oldt = new Timestamp(dat.getTime());
+        }
+        
+        
+        if(vd.equals("GOT") || vd.equals("GRN") || vd.equals("USL")){
+          if(lookupData.getlookupData().raLocate(dummyKPR, "DATUM", ut.getLastSecondOfDay(dat).toString())){
+
+            dummyKPR.setBigDecimal("ZAD", dummyKPR.getBigDecimal("ZAD").add(sumzad)); //new java.math.BigDecimal(data.getDouble("SUMZAD")));
             dummyKPR.setBigDecimal("RAZ", dummyKPR.getBigDecimal("RAZ").add(sumraz));
           } else{
             dummyKPR.insertRow(false);
 //            dummyKPR.setInt("RBR", rb++);
             dummyKPR.setString("GOD", god);
             dummyKPR.setString("OPIS", "Gotovinski raèuni");
-            dummyKPR.setTimestamp("DATUM", ut.getLastSecondOfDay(data.getTimestamp("DATDOK")));
-            try{
-              dummyKPR.setBigDecimal("ZAD", data.getBigDecimal("SUMZAD")); //new java.math.BigDecimal(data.getDouble("SUMZAD")));
-            } catch(Exception ex1){
-              try{
-                dummyKPR.setBigDecimal("ZAD", new java.math.BigDecimal(data.getDouble("SUMZAD")));
-              } catch(Exception ex2){
-              }
-            }
-            try {
-            dummyKPR.setBigDecimal("RAZ", data.getBigDecimal("SUMRAZ"));
-            } catch (Exception e) {
-              dummyKPR.setBigDecimal("RAZ", new BigDecimal(data.getDouble("SUMRAZ")));
-            }
+            dummyKPR.setTimestamp("DATUM", ut.getLastSecondOfDay(dat));
+            dummyKPR.setBigDecimal("ZAD", sumzad); //new java.math.BigDecimal(data.getDouble("SUMZAD")));
+            dummyKPR.setBigDecimal("RAZ", sumraz);
             dummyKPR.setString("CSKL", tds.getString("CSKL"));
             dummyKPR.setString("KLJUC", "GOT");
           }
+          
+        } else if ("POP".equals(vd)) {
+          pop = pop.add(sumraz);
         } else{
           dummyKPR.insertRow(false);
 //          dummyKPR.setInt("RBR", rb++);
           dummyKPR.setString("GOD", god);
-          dummyKPR.setString("OPIS", nazivDok(data, data.getString("VRDOK")));
-          dummyKPR.setTimestamp("DATUM", data.getTimestamp("DATDOK"));
-          try{
-            dummyKPR.setBigDecimal("ZAD", data.getBigDecimal("SUMZAD")); //new java.math.BigDecimal(data.getDouble("SUMZAD")));
-          } catch(Exception ex1){
-            try{
-              dummyKPR.setBigDecimal("ZAD", new java.math.BigDecimal(data.getDouble("SUMZAD")));
-            } catch(Exception ex2){}
-          }
-          try {
-          dummyKPR.setBigDecimal("RAZ", data.getBigDecimal("SUMRAZ"));
-          } catch (Exception e) {
-            dummyKPR.setBigDecimal("RAZ",new BigDecimal(data.getDouble("SUMRAZ")));
-          }
+          dummyKPR.setString("OPIS", nazivDok(data, vd));
+          dummyKPR.setTimestamp("DATUM", dat);
+          dummyKPR.setBigDecimal("ZAD", sumzad);
+          dummyKPR.setBigDecimal("RAZ", sumraz);
           dummyKPR.setString("CSKL", tds.getString("CSKL"));
           dummyKPR.setString("KLJUC", getKey(data));
         }
       }
     } while (data.next());
+    
+    if (pop.signum() != 0) {
+      fillZap(god, oldt, brzap++, rb++, pop);
+    }
 
     dummyKPR.close();
-    dummyKPR.setSort(new SortDescriptor(new String[] {"DATUM"}));
+    dummyKPR.setSort(new SortDescriptor(new String[] {"DATUM", "KLJUC"}));
     dummyKPR.open();
     dummyKPR.first();
 
@@ -480,11 +500,11 @@ public class frmFormKPR extends raUpitLite {
     dummyKPR.insertRow(false);
     dummyKPR.setInt("RBR", rbr);
     dummyKPR.setString("GOD", god);
-    dummyKPR.setString("OPIS", "Zapisnik o danim popustima br. " 
+    dummyKPR.setString("OPIS", "Zapisnik o poravnanju br. " 
         + brzap + "/" + god);
-    dummyKPR.setTimestamp("DATUM", dat);
-    dummyKPR.setBigDecimal("ZAD", Aus.zero2);
-    dummyKPR.setBigDecimal("RAZ", pop);
+    dummyKPR.setTimestamp("DATUM", ut.getLastSecondOfDay(dat));
+    dummyKPR.setBigDecimal("ZAD", pop.negate());
+    dummyKPR.setBigDecimal("RAZ", Aus.zero2);
     dummyKPR.setString("CSKL", tds.getString("CSKL"));
     dummyKPR.setString("KLJUC", "ZOP-" + tds.getString("CSKL") +
         "/" + god + "-" + dummyKPR.getInt("RBR"));
