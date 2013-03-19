@@ -129,7 +129,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Arial" size="8"/>
 					</textElement>
-					<text><![CDATA[Datum dopreme]]></text>
+					<text><![CDATA[Datum otpreme]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="69" y="106" width="200" height="23"/>
