@@ -836,7 +836,7 @@
           <Model Name="Label95">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label95</Property>
-               <Property Name="Caption">Količina</Property>
+               <Property Name="Caption">Stara količina</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">7900</Property>
                <Property Name="Top">100</Property>
@@ -1328,7 +1328,7 @@
           <Model Name="Text117">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text117</Property>
-               <Property Name="Control Source">KOL</Property>
+               <Property Name="Control Source">SKOL</Property>
                <Property Name="Running Sum">No</Property>
                <Property Name="Locale">Template Locale</Property>
                <Property Name="Format">Number|false|1|309|3|3|true|3|false</Property>
