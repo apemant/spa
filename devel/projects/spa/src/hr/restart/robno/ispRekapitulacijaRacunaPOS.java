@@ -714,7 +714,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     Condition akt = presBlag.stolovi && !presBlag.isUserOriented() ? 
         Condition.equal("AKTIV", "N") : Condition.none;
     akt = akt.and(Condition.equal("RDOK", "arh").andNotNull().not());
-    if (presBlag.isFiskal() && jcbPoSmjenama.isSelected())
+    if (jcbPoSmjenama.isSelected())
       akt = akt.and(Condition.equal("FOK", "D"));
     
     if (stolovi && tds.getString("STOL").length() > 0)
