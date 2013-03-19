@@ -23,8 +23,10 @@ import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.raButtonGroup;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
+import hr.restart.util.raComboBox;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raMatPodaci;
 
@@ -33,6 +35,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
 
 import com.borland.jbcl.layout.XYConstraints;
@@ -146,9 +149,22 @@ public class frmOrgStr extends raMatPodaci {
   JLabel jlOJ = new JLabel();
 
   JLabel jladresa = new JLabel();
+  
+  
+  raComboBox rcbFisk = new raComboBox() {
+    public void this_itemStateChanged() {
+      super.this_itemStateChanged();
+      fiskChanged();
+    }
+  };
 
-
-
+  JraTextField jraFPP = new JraTextField();
+  raComboBox rcbFNU = new raComboBox();
+  
+  JraTextField jraStore = new JraTextField();
+  JraTextField jraPass = new JraTextField();
+  
+  JraCheckBox jcbPDV = new JraCheckBox();
 
 
   public frmOrgStr() {
@@ -269,7 +285,41 @@ public class frmOrgStr extends raMatPodaci {
 
     xYLayout3.setWidth(580);
 
-    xYLayout3.setHeight(201);
+    xYLayout3.setHeight(331);
+    
+    
+    rcbFisk.setRaColumn("FISK");
+    rcbFisk.setRaDataSet(getRaQueryDataSet());
+    rcbFisk.setRaItems(new String[][] {
+        {"Nedefinirano / naslijeðeno s više razine","X"},
+        {"Iskljuèeno na ovoj jedinici","N"},
+        {"Ukljuèeno kao zasebni poslovni prostor","D"}
+      });
+    
+    jraFPP.setDataSet(getRaQueryDataSet());
+    jraFPP.setColumnName("FPP");
+    
+    rcbFNU.setRaColumn("FPOJED");
+    rcbFNU.setRaDataSet(getRaQueryDataSet());
+    rcbFNU.setRaItems(new String[][] {
+        {"Brojaè na razini poslovnog prostora","D"},
+        {"Brojaè na razini naplatnog ureðaja","N"},
+        {"Razdvojeni malo- i veleprodajni raèuni","G"}
+      });
+    
+    jraStore.setDataSet(getRaQueryDataSet());
+    jraStore.setColumnName("FPATH");
+    jraPass.setDataSet(getRaQueryDataSet());
+    jraPass.setColumnName("FKEY");
+    
+    jcbPDV.setSelectedDataValue("D");
+    jcbPDV.setUnselectedDataValue("N");
+    jcbPDV.setDataSet(getRaQueryDataSet());
+    jcbPDV.setColumnName("FPDV");
+    jcbPDV.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbPDV.setHorizontalAlignment(SwingConstants.TRAILING);
+    jcbPDV.setText(" Obveznik je u sustavu PDV-a ");
+
 
     jLCorgPrip.setText(zpRes.getString("jLCorgPrip_text"));
 
@@ -350,6 +400,21 @@ public class frmOrgStr extends raMatPodaci {
     jp.add(jdbZIRO, new XYConstraints(150, 155, 390, -1));
 
     jp.add(jLZiroOrg, new XYConstraints(15, 155, -1, -1));
+    
+    jp.add(new JLabel("Fiskalizacija"), new XYConstraints(15, 200, -1, -1));
+    jp.add(rcbFisk, new XYConstraints(150, 200, 300, -1));
+    jp.add(new JLabel("Poslovni prostor"), new XYConstraints(15, 230, -1, -1));
+    jp.add(jraFPP, new XYConstraints(150, 230, 100, -1));
+    jp.add(rcbFNU, new XYConstraints(260, 230, 280, -1));
+    
+    jp.add(new JLabel("Keystore datoteka"), new XYConstraints(15, 260, -1, -1));
+    jp.add(jraStore, new XYConstraints(150, 260, 150, -1));
+    
+    jp.add(new JLabel("Šifra"), new XYConstraints(330, 260, -1, -1));
+    jp.add(jraPass, new XYConstraints(390, 260, 150, -1));
+    
+    jp.add(jcbPDV, new XYConstraints(150, 290, 390, -1));
+    
 
     this.setRaDetailPanel(jp);
 
@@ -417,6 +482,7 @@ public class frmOrgStr extends raMatPodaci {
     if (mode=='N') {
 
 //      jlrNFPRIPADNOST.setFocusLostOnShow(false);
+      rcbFisk.this_itemStateChanged();
 
       clearJlrNFPRIPADNOST();
 
@@ -431,6 +497,8 @@ public class frmOrgStr extends raMatPodaci {
     }
 
     else {//if (mode=='I'){
+      
+      rcbFisk.this_itemStateChanged();
 
 //      jlrNFPRIPADNOST.setFocusLostOnShow(true);
 
@@ -564,6 +632,23 @@ public class frmOrgStr extends raMatPodaci {
 
     }
 
+  }
+  
+  void fiskChanged() {
+    if (rcbFisk.getSelectedIndex() == 2) {
+      rCC.setLabelLaF(jraFPP, true);
+      rCC.setLabelLaF(rcbFNU, true);
+      rCC.setLabelLaF(jraStore, true);
+      rCC.setLabelLaF(jraPass, true);
+    } else {
+      jraFPP.setText("");
+      jraStore.setText("");
+      jraPass.setText("");
+      rCC.setLabelLaF(jraFPP, false);
+      rCC.setLabelLaF(rcbFNU, false);
+      rCC.setLabelLaF(jraStore, false);
+      rCC.setLabelLaF(jraPass, false);
+    }
   }
 
   void setCurrentKnjig() {

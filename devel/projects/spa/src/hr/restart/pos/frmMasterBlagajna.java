@@ -1014,7 +1014,7 @@ public class frmMasterBlagajna extends raMasterDetail {
       }
     }
     
-    if (presBlag.isFiskal()) raMaster.getJpTableView().addTableModifier(fsc);
+    /*if (presBlag.isFiskal()) */ raMaster.getJpTableView().addTableModifier(fsc);
     
     raDetail.getNavBar().removeStandardOption(raNavBar.ACTION_TOGGLE_TABLE);
 
@@ -1383,7 +1383,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     }*/
     if (getDetailSet().getRowCount()>0) {
       if (!checkRate()) return;
-      if (presBlag.isFiskal(getMasterSet().getString("CSKL")) && !getMasterSet().getString("FOK").equals("D")) {
+      if (presBlag.isFiskal(getMasterSet()) && !getMasterSet().getString("FOK").equals("D")) {
         if (JOptionPane.showConfirmDialog(raDetail, "Želite li ispisati predraèun?", "Ispis", JOptionPane.OK_CANCEL_OPTION) 
             == JOptionPane.OK_OPTION) {
           justPrintGRC();
@@ -1789,18 +1789,20 @@ public class frmMasterBlagajna extends raMasterDetail {
       nacpl = "G";
     else if (nacpl.equalsIgnoreCase("C") || nacpl.equalsIgnoreCase("È"))
       nacpl = "C";
-    else if (nacpl.equalsIgnoreCase("K"))
+    else if (nacpl.equalsIgnoreCase("K") || nacpl.startsWith("K"))
       nacpl = "K";
     else nacpl = "O";
 
-    RacunType rac = presBlag.getFis(ms.getString("CSKL")).createRacun(
+    RacunType rac = presBlag.getFis(ms).createRacun(
         oibf, //oib firme (Rest Art) NE PREPISUJ!!
-        presBlag.isFiskPDV(), //da li je obveznik pdv-a 
+        presBlag.isFiskPDV(ms), //da li je obveznik pdv-a 
         ms.getTimestamp("DATDOK"), // datum i vrijeme kreiranja racuna
-        presBlag.isFiskSep() ? "N" : "P", // oznaka slijednosti
+        presBlag.isFiskSep(ms) ? "N" : "P", // oznaka slijednosti
         ms.getInt("FBR"), // broj racuna 
-        presBlag.getFiskPP(ms.getString("CSKL")), // oznaka poslovne jedinice
-        presBlag.getFiskNap(ms.getString("CSKL")), // oznaka naplatnog mjesta
+        ms.getString("FPP"), // oznaka poslovne jedinice
+        ms.getInt("FNU"), // oznaka naplatnog mjesta
+//        presBlag.getFiskPP(ms), // oznaka poslovne jedinice
+//        presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms), // oznaka naplatnog mjesta
         new BigDecimal(25), //stopa pdv-a 
         (BigDecimal) osnmap.get(pdv25), //osnovica za pdv
         (BigDecimal) izmap.get(pdv25), //iznos pdv-a
@@ -1819,12 +1821,12 @@ public class frmMasterBlagajna extends raMasterDetail {
       for (Iterator i = izmap.keySet().iterator(); i.hasNext(); ) {
         BigDecimal post = (BigDecimal) i.next();
         if (post.compareTo(pdv25) == 0) continue;
-        PorezType por = presBlag.getFis(ms.getString("CSKL")).getFisFactory().createPorezType();
+        PorezType por = presBlag.getFis(ms).getFisFactory().createPorezType();
         por.setStopa(post);
         por.setOsnovica((BigDecimal) osnmap.get(post));
         por.setIznos((BigDecimal) izmap.get(post));
         if (rac.getPdv() == null)
-          rac.setPdv(presBlag.getFis(ms.getString("CSKL")).getFisFactory().createPdvType());
+          rac.setPdv(presBlag.getFis(ms).getFisFactory().createPdvType());
 
         rac.getPdv().getPorez().add(por);
         System.out.println(por);
@@ -1835,26 +1837,25 @@ public class frmMasterBlagajna extends raMasterDetail {
   }
   
   public static void fisk(DataSet ms) {
-    if (presBlag.isFiskal(ms.getString("CSKL")) && (!ms.getString("FOK").equals("D") || ms.getString("JIR").length() == 0)) {
+    if (presBlag.isFiskal(ms) && (!ms.getString("FOK").equals("D") || ms.getString("JIR").length() == 0)) {
       
       try {
         if (!ms.getString("FOK").equals("D")) {
-          String cOpis = "FISK-GRC"+ms.getString("GOD");
-          if (presBlag.isFiskSep())
-            cOpis = "FISK-"+presBlag.getFiskPP(ms.getString("CSKL"))+"-GRC"+ms.getString("GOD");
-          
+          String cOpis = presBlag.getSeqOpis(ms);          
           ms.setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
           ms.setString("FOK", "D");
+          ms.setString("FPP", presBlag.getFiskPP(ms));
+          ms.setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
           ms.saveChanges();
         }
         
    
   Timestamp datvri = new Timestamp(System.currentTimeMillis());
-  RacunZahtjev zahtj = presBlag.getFis(ms.getString("CSKL")).createRacunZahtjev(
-          presBlag.getFis(ms.getString("CSKL")).createZaglavlje(datvri, null), 
+  RacunZahtjev zahtj = presBlag.getFis("GRC", ms.getString("CSKL")).createRacunZahtjev(
+          presBlag.getFis("GRC", ms.getString("CSKL")).createZaglavlje(datvri, null), 
           getRacType(ms));
         
-        String jir = presBlag.getFis(ms.getString("CSKL")).fiskaliziraj(zahtj);
+        String jir = presBlag.getFis("GRC", ms.getString("CSKL")).fiskaliziraj(zahtj);
         if (jir != null && jir.length() > 0 && !jir.startsWith("ZKI") && !jir.startsWith("false"))
           ms.setString("JIR", jir);
         else ms.setString("JIR", "");

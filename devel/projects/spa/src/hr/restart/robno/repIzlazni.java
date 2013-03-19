@@ -1041,7 +1041,7 @@ public BigDecimal getIPRODSP() {
   }
   
   public String getZKI() {
-    return presBlag.getFis().generateZKI(raIzlazTemplate.getRacType(ds));
+    return presBlag.getFis(ds).generateZKI(raIzlazTemplate.getRacType(ds));
   }
     
   public String getFormatBrojTri(){

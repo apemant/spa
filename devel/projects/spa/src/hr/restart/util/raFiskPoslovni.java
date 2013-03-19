@@ -68,7 +68,7 @@ public class raFiskPoslovni extends raUpitLite {
   
   public void componentShow() {
     jtCORG.requestFocusLater();
-    ds.setString("OZNAKA", presBlag.getFiskPP());
+    //ds.setString("OZNAKA", presBlag.getFiskPP());
   }
   
   //createPoslovniProstor("53204444499", "PP1", "Medjimurska", "21", null, 
@@ -226,10 +226,10 @@ public class raFiskPoslovni extends raUpitLite {
   public void okPress() {    
     isOk = false;
     try {
-      isOk = presBlag.getFis(jtCORG.getText()).fiskaliziraj(
-          presBlag.getFis(jtCORG.getText()).createPoslovniProstorZahtjev(
-              presBlag.getFis(jtCORG.getText()).createZaglavlje(ds.getTimestamp("DATUM"), null),
-              presBlag.getFis(jtCORG.getText()).createPoslovniProstor(
+      isOk = presBlag.getFis("RAC", jtCORG.getText()).fiskaliziraj(
+          presBlag.getFis("RAC", jtCORG.getText()).createPoslovniProstorZahtjev(
+              presBlag.getFis("RAC", jtCORG.getText()).createZaglavlje(ds.getTimestamp("DATUM"), null),
+              presBlag.getFis("RAC", jtCORG.getText()).createPoslovniProstor(
                   ds.getString("OIB"), ds.getString("OZNAKA"),
                   ds.getString("ULICA"), ds.getString("BROJ"),
                   isNull("BROJDOD"), jlrPBR.getText(), 
@@ -248,7 +248,7 @@ public class raFiskPoslovni extends raUpitLite {
   public void afterOKPress() {
     if (isOk) {
       JOptionPane.showMessageDialog(jp, "Prijava poslovnog prostora upješna!", "Fiskalizacija", JOptionPane.INFORMATION_MESSAGE);
-      if (!presBlag.isSkladOriented()) {
+      /*if (!presBlag.isSkladOriented()) {
         if (lookupData.getlookupData().raLocate(dm.getParametri(),
             new String[] {"APP","PARAM"},new String[] {"robno", "fiskPP"})) {
           if (dm.getParametri().getString("VRIJEDNOST").length() == 0) {
@@ -257,7 +257,7 @@ public class raFiskPoslovni extends raUpitLite {
           }
         }
         IntParam.setTag("robno.fiskPP", ds.getString("OZNAKA"));
-      }
+      }*/
     } else {
       JOptionPane.showMessageDialog(jp, "Prijava poslovnog prostora NIJE upješna!", "Fiskalizacija", JOptionPane.ERROR_MESSAGE);
     }
@@ -282,6 +282,7 @@ public class raFiskPoslovni extends raUpitLite {
   
   public void jtCORG_after_lookUp() {
     if (jraOznaka.getText().length() > 0) return;
+    ds.setString("OZNAKA", presBlag.findOJ("RAC", jtCORG.getText()).getString("FPP"));
     if (ld.raLocate(dm.getLogotipovi(), "CORG", jtCORG.getText())) {
       ds.setString("OIB", dm.getLogotipovi().getString("OIB"));
       ds.setInt("PBR", dm.getLogotipovi().getInt("PBR"));
@@ -292,8 +293,9 @@ public class raFiskPoslovni extends raUpitLite {
         ds.setString("ULICA", new VarStr(adr).chop(parts[parts.length - 1].length() + 1).toString());
         ds.setString("BROJ", parts[parts.length - 1]);
       } else ds.setString("ULICA", adr);
-    } else if (ld.raLocate(dm.getOrgstruktura(), "CORG", jtCORG.getText())) {
-      
-    }
+    } 
+    /*if (ld.raLocate(dm.getOrgstruktura(), "CORG", jtCORG.getText())) {
+      ds.setString("OZNAKA", dm.getOrgstruktura().getString("))
+    }*/
   }
 }

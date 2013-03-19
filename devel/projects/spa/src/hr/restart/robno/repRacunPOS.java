@@ -182,7 +182,7 @@ public class repRacunPOS extends mxReport {
      this.setPgHeader(
          (cash ? "\u0007" : "")+header+
 //         "<#"+prodMjesto+"|"+width+"|center#><$newline$>"+
-         "<$newline$>Nadnevak: "+raDateUtil.getraDateUtil().dataFormatter(master.getTimestamp("DATDOK"))+"  "+getRazlikaWidthBlank()+"Vrijeme: " + master.getTimestamp("DATDOK").toString().substring(11,19) +   "<$newline$>"+ 
+         "<$newline$>Datum: "+raDateUtil.getraDateUtil().dataFormatter(master.getTimestamp("DATDOK"))+"  "+getRazlikaWidthBlank()+"Vrijeme: " + master.getTimestamp("DATDOK").toString().substring(11,19) +   "<$newline$>"+ 
          jeliR1(master.getInt("BRDOK"), master.getInt("CKUPAC"))+
          (oneRow ? "<$newline$>" : doubleLineSep+"<$newline$>")+ getDetailHeader() +
          doubleLineSep+getManualDetail());
@@ -209,7 +209,7 @@ public class repRacunPOS extends mxReport {
          "<$newline$>"+
 //         "<$newline$>"+
          getBlagajnaOperater(prodMjesto,user)+"<$newline$>"+
-         (presBlag.isFiskal(master.getString("CSKL")) && master.getString("FOK").equals("D") ? getFisk() : "") +
+         (presBlag.isFiskal(master) && master.getString("FOK").equals("D") ? getFisk() : "") +
          "<$newline$><$newline$><$newline$>"+
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
@@ -231,7 +231,7 @@ public class repRacunPOS extends mxReport {
   private String getFisk() {
     System.out.println("fisk string");
     //System.out.println(frmMasterBlagajna.getInstance().rtype);
-    return "ZKI: " + presBlag.getFis(master.getString("CSKL")).generateZKI(frmMasterBlagajna.getInstance().getRacType(master)) + "<$newline$>" +
+    return "ZKI: " + presBlag.getFis("GRC", master.getString("CSKL")).generateZKI(frmMasterBlagajna.getInstance().getRacType(master)) + "<$newline$>" +
       "JIR: " + master.getString("JIR") + "<$newline$><$newline$>";
   }
   
@@ -482,7 +482,7 @@ public class repRacunPOS extends mxReport {
 //    porezString = "";
     
     String ractex = "<$newline$><#RAÈUN br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
-    if (presBlag.isFiskal(master.getString("CSKL")) && !master.getString("FOK").equals("D"))
+    if (presBlag.isFiskal(master) && !master.getString("FOK").equals("D"))
       ractex = "<$newline$><#PREDRAÈUN br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
     
     return ractex;
@@ -491,9 +491,8 @@ public class repRacunPOS extends mxReport {
   }
   
   public String getBRDOK() {
-    if (presBlag.isFiskal(master.getString("CSKL")) && master.getString("FOK").equals("D")) {
-      return master.getInt("FBR") + "-" + presBlag.getFiskPP(master.getString("CSKL")) + 
-            "-" + presBlag.getFiskNap(master.getString("CSKL"));
+    if (presBlag.isFiskal(master) && master.getString("FOK").equals("D")) {
+      return master.getInt("FBR") + "-" + master.getString("FPP") + "-" + master.getInt("FNU");
     }
     if (specForm == null || specForm.length() == 0)
       return Integer.toString(getDataSet().getInt("BRDOK"));
@@ -573,7 +572,7 @@ public class repRacunPOS extends mxReport {
     if (!sadrzaj.equals("")){
       footing = "<#"+sadrzaj+"|"+width+"|center#><$newline$>";
     }
-    if (!presBlag.isFiskPDV()) {
+    if (!presBlag.isFiskPDV(master)) {
       
       footing = "<#PDV nije obraèunat sukladno èlanku 22.|"+width+"|center#><$newline$>" +
                 "<#stavak 1. zakona o PDV-u|"+width+"|center#><$newline$><$newline$>" + footing;

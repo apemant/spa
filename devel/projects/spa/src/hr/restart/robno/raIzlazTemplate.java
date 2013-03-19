@@ -463,15 +463,15 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         nacpl = "G";
       else if (nacpl.equalsIgnoreCase("C") || nacpl.equalsIgnoreCase("È"))
         nacpl = "C";
-      else if (nacpl.equalsIgnoreCase("K"))
+      else if (nacpl.equalsIgnoreCase("K") || nacpl.startsWith("K"))
         nacpl = "K";
       else nacpl = "O";
 
-      RacunType rac = presBlag.getFis().createRacun(
+      RacunType rac = presBlag.getFis(ms).createRacun(
           oibf, //oib firme (Rest Art) NE PREPISUJ!!
-          presBlag.isFiskPDV(), //da li je obveznik pdv-a 
+          presBlag.isFiskPDV(ms), //da li je obveznik pdv-a 
           ms.getTimestamp("DATDOK"), // datum i vrijeme kreiranja racuna
-          presBlag.isFiskSep() ? "N" : "P", // oznaka slijednosti
+          presBlag.isFiskSep(ms) ? "N" : "P", // oznaka slijednosti
           ms.getInt("FBR"), // broj racuna 
           ms.getString("FPP"), // oznaka poslovne jedinice
           ms.getInt("FNU"), // oznaka naplatnog mjesta
@@ -493,12 +493,12 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         for (Iterator i = izmap.keySet().iterator(); i.hasNext(); ) {
           BigDecimal post = (BigDecimal) i.next();
           if (post.compareTo(pdv25) == 0) continue;
-          PorezType por = presBlag.getFis().getFisFactory().createPorezType();
+          PorezType por = presBlag.getFis(ms).getFisFactory().createPorezType();
           por.setStopa(post);
           por.setOsnovica((BigDecimal) osnmap.get(post));
           por.setIznos((BigDecimal) izmap.get(post));
           if (rac.getPdv() == null)
-            rac.setPdv(presBlag.getFis().getFisFactory().createPdvType());
+            rac.setPdv(presBlag.getFis(ms).getFisFactory().createPdvType());
 
           rac.getPdv().getPorez().add(por);
           System.out.println(por);
@@ -510,16 +510,16 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
     
     
     public static boolean fisk(DataSet ms) {
-      if (presBlag.isFiskal() && (!ms.getString("FOK").equals("D") || ms.getString("JIR").length() == 0)) {
+      if (presBlag.isFiskal(ms) && (!ms.getString("FOK").equals("D") || ms.getString("JIR").length() == 0)) {
         
         try {
           
           Timestamp datvri = new Timestamp(System.currentTimeMillis());
-          RacunZahtjev zahtj = presBlag.getFis().createRacunZahtjev(
-            presBlag.getFis().createZaglavlje(datvri, null), 
+          RacunZahtjev zahtj = presBlag.getFis(ms).createRacunZahtjev(
+            presBlag.getFis(ms).createZaglavlje(datvri, null), 
             getRacType(ms));
           
-          String jir = presBlag.getFis().fiskaliziraj(zahtj);
+          String jir = presBlag.getFis(ms).fiskaliziraj(zahtj);
           if (jir != null && jir.length() > 0 && !jir.startsWith("ZKI") && !jir.startsWith("false"))
             ms.setString("JIR", jir);
           else ms.setString("JIR", "");
@@ -535,47 +535,50 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
     
     
     public void keyFisk() {
-      if (getMasterSet().rowCount() == 0) return;
+      DataSet ms = getMasterSet();
+      if (ms.rowCount() == 0) return;
       
-      if (getMasterSet().getString("FOK").equals("D")) {
+      if (ms.getString("FOK").equals("D")) {
         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument je veæ zakljuèan!", "Greška", JOptionPane.ERROR_MESSAGE);
         return;
       }
       
-      int nap = presBlag.getFiskNap();
-      int napg = presBlag.getFiskNapG();
-      String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR:06]-[FPP]-[FNU:02]",
+      if (presBlag.isFiskal(ms)) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Nije ukljuèena fiskalizacija pripadajuæeg poslovnog prostora!", 
+            "Greška", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      
+      /*int nap = presBlag.getFiskNap();
+      int napg = presBlag.getFiskNapG();*/
+      String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
         "Format fiskalnog broja izlaznog dokumenta na ispisu");
       
       if (what_kind_of_dokument.equalsIgnoreCase("GOT") || what_kind_of_dokument.equalsIgnoreCase("GRN")) {
         if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li fiskalizirati raèun?", "Fiskalizacija", 
             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
-          String cOpis = "FISK-"+presBlag.getFiskPP()+"-" + napg + "-"+getMasterSet().getString("GOD");
-          if (!presBlag.isFiskSep())
-            cOpis = "FISK-"+presBlag.getFiskPP()+"-"+getMasterSet().getString("GOD");
+          String cOpis = presBlag.getSeqOpis(ms);
          getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
-         getMasterSet().setString("FPP", presBlag.getFiskPP());
+         getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
          getMasterSet().setString("FOK", "D");
-         getMasterSet().setInt("FNU", napg);
-         getMasterSet().setString("PNBZ2", Aus.formatBroj(getMasterSet(), fiskForm));
+         getMasterSet().setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
+         getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
          getMasterSet().saveChanges();
-         boolean succ = fisk(getMasterSet());
-         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + getMasterSet().getInt("FBR") + "-" + 
-             getMasterSet().getString("FPP") + "-" + getMasterSet().getInt("FNU") + 
+         boolean succ = fisk(ms);
+         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + ms.getString("PNBZ2") + 
              (succ ? " fiskaliziran!" : " zakljuèan!"), "Greška", JOptionPane.INFORMATION_MESSAGE);
       } else if (what_kind_of_dokument.equalsIgnoreCase("ROT") || what_kind_of_dokument.equalsIgnoreCase("RAC") ||
           what_kind_of_dokument.equalsIgnoreCase("IZD") || what_kind_of_dokument.equalsIgnoreCase("POD") ||
           what_kind_of_dokument.equalsIgnoreCase("TER") || what_kind_of_dokument.equalsIgnoreCase("ODB")) {
-        String cOpis = "FISK-"+presBlag.getFiskPP()+"-" + nap + "-"+getMasterSet().getString("GOD");
-        if (!presBlag.isFiskSep())
-          cOpis = "FISK-"+presBlag.getFiskPP()+"-"+getMasterSet().getString("GOD");
+        
+        String cOpis = presBlag.getSeqOpis(ms);
         getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
-        getMasterSet().setString("FPP", presBlag.getFiskPP());
+        getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
         getMasterSet().setString("FOK", "D");
-        getMasterSet().setInt("FNU", nap);
-        getMasterSet().setString("PNBZ2", Aus.formatBroj(getMasterSet(), fiskForm));
+        getMasterSet().setInt("FNU", presBlag.getFiskNap(ms));
+        getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
         getMasterSet().saveChanges();
-        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + getMasterSet().getInt("FBR") + "-" + getMasterSet().getString("FPP") + "-" + getMasterSet().getInt("FNU") + " zakljuèan!", "Greška", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + ms.getString("PNBZ2") + " zakljuèan!", "Greška", JOptionPane.INFORMATION_MESSAGE);
       } else {
         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument se ne može fiskalizirati!", "Greška", JOptionPane.ERROR_MESSAGE);
       }

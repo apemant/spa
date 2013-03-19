@@ -101,9 +101,8 @@ public class repPosJas implements raReportData {
   }
   
   private String getBRDOK() {
-    if (presBlag.isFiskal(master.getString("CSKL")) && master.getString("FOK").equals("D")) {
-      return master.getInt("FBR") + "-" + presBlag.getFiskPP(master.getString("CSKL")) + 
-            "-" + presBlag.getFiskNap(master.getString("CSKL"));
+    if (presBlag.isFiskal(master) && master.getString("FOK").equals("D")) {
+      return master.getInt("FBR") + "-" + master.getString("FPP") + "-" + master.getInt("FNU");
     }
     if (specForm == null || specForm.length() == 0)
       return Integer.toString(master.getInt("BRDOK"));

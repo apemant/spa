@@ -13,9 +13,11 @@ package hr.restart.pos;
 import java.util.HashMap;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Orgstruktura;
 import hr.restart.baza.Sklad;
 import hr.restart.baza.Smjene;
 import hr.restart.baza.dM;
+import hr.restart.robno.TypeDoc;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraButton;
@@ -37,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
 
+import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
@@ -69,6 +72,7 @@ public class presBlag extends PreSelect {
   public static String blagajnik;
   public static String stol;
   public static boolean stolovi = false;
+  
   raCommonClass rcc = raCommonClass.getraCommonClass();
   Valid vl = Valid.getValid();
   dM dm = dM.getDataModule();
@@ -382,7 +386,7 @@ public class presBlag extends PreSelect {
   }
 
   public String refineSQLFilter(String orig) {
-    if (!jcbAktiv.isSelected() || !isFiskal(getSelRow().getString("CSKL"))) return orig;
+    if (!jcbAktiv.isSelected() || !isFiskal("GRC", getSelRow().getString("CSKL"))) return orig;
     return orig + " AND pos.fok='D'";
   }
   
@@ -394,6 +398,39 @@ public class presBlag extends PreSelect {
 
     jrfCSKL.setRaDataSet(Sklad.getDataModule().getFilteredDataSet(
         Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(corg))));
+  }
+  
+  static DataSet myskl = Sklad.getDataModule().copyDataSet();
+  static DataSet myorg = Orgstruktura.getDataModule().copyDataSet();
+  
+  public static DataSet findOJ(String vrdok, String cskl) {
+    boolean sklad = TypeDoc.getTypeDoc().isCsklSklad(vrdok) || (isSkladOriented() && vrdok.equalsIgnoreCase("GRC"));
+    String corg = cskl;
+    if (sklad) {
+      lookupData.getlookupData().raLocate(myskl, "CSKL", cskl);
+      corg = myskl.getString("CORG");
+    }
+    lookupData.getlookupData().raLocate(myorg, "CORG", corg);
+    while (myorg.getString("FISK").equalsIgnoreCase("X") && 
+        !myorg.getString("PRIPADNOST").equals(myorg.getString("CORG")) &&
+        !myorg.getString("CORG").equals(corg))
+      lookupData.getlookupData().raLocate(myorg, "CORG", corg = myorg.getString("PRIPADNOST"));
+      
+    if (myorg.getString("FISK").equals("D") && myorg.getString("FPATH").trim().length() == 0) {
+      DataRow dr = lookupData.getlookupData().raLookup(myorg, "CORG", myorg.getString("PRIPADNOST"));
+      while (dr.getString("FPATH").trim().length() == 0 && !dr.getString("CORG").equals(dr.getString("PRIPADNOST")))
+        dr = lookupData.getlookupData().raLookup(myorg, "CORG", dr.getString("PRIPADNOST"));
+      
+      myorg.setString("FPATH", dr.getString("FPATH"));
+      myorg.setString("FKEY", dr.getString("FKEY"));
+    }
+    
+    System.out.println(myorg);
+    return myorg;
+  }
+  
+  public static DataSet findOJ(DataSet ms) {
+    return findOJ(ms.getString("VRDOK"), ms.getString("CSKL"));
   }
   
   private static int skladOriented = -1;
@@ -421,7 +458,17 @@ public class presBlag extends PreSelect {
   private static int smjena = -1;
   
   
-  public static boolean isFiskal(String cskl) {
+  public static boolean isFiskal(DataSet ms) {
+    return isFiskal(ms.getString("VRDOK"), ms.getString("CSKL"));
+  }
+  
+  public static boolean isFiskal(String vrdok, String cskl) {
+    findOJ(vrdok, cskl);
+    return myorg.getString("FISK").equalsIgnoreCase("D");
+  }
+  
+  
+  /*public static boolean isFiskal(String cskl) {
     if (isSkladOriented()) {
       return frmParam.getParam("robno", "fiskalizacija"+cskl, "N",
         "Radi li se fiskalizacija "+cskl+" (D,N)").equalsIgnoreCase("D");
@@ -450,8 +497,59 @@ public class presBlag extends PreSelect {
     }
     return fiskpdv == 1;
   }
+  */
   
   
+  public static boolean isFiskPDV(DataSet ms) {
+    findOJ(ms);
+    return myorg.getString("FPDV").equalsIgnoreCase("D");
+  }
+  
+  
+  public static boolean isFiskSep(DataSet ms) {
+    findOJ(ms);
+    return !myorg.getString("FNU").equalsIgnoreCase("D");
+  }
+  
+  public static boolean isFiskGot(DataSet ms) {
+    findOJ(ms);
+    return myorg.getString("FNU").equalsIgnoreCase("G");
+  }
+  
+  public static String getFiskPP(DataSet ms) {
+    findOJ(ms);
+    return myorg.getString("FPP");
+  }
+  
+  public static int getFiskNap(DataSet ms) {
+    findOJ(ms);
+    String ur = frmParam.getParam("robno", "fiskNap-"+myorg.getString("FPP"), "1", 
+        "Oznaka naplatnog ureðaja PP " + myorg.getString("FPP") + " (lokalno)", true);
+    if (ur == null || ur.length() == 0) return 1;
+    return Aus.getNumber(ur);
+  }
+  
+  public static int getFiskNapG(DataSet ms) {
+    findOJ(ms);
+    String ur = frmParam.getParam("robno", "fiskNapG-"+myorg.getString("FPP"), "2", 
+        "Oznaka naplatnog ureðaja za gotovinu PP " + myorg.getString("FPP") + " (lokalno)", true);
+    if (ur == null || ur.length() == 0) return 1;
+    return Aus.getNumber(ur);
+  }
+  
+  public static String getSeqOpis(DataSet ms) {
+    findOJ(ms);
+    if (myorg.getString("FNU").equals("D")) 
+      return "FISK-" + myorg.getString("FPP") + "-" + ms.getString("GOD");
+    
+    if (!myorg.getString("FNU").equals("G") || "GRC|GOT|GRN".indexOf(ms.getString("VRDOK")) < 0) 
+      return "FISK-" + myorg.getString("FPP") + "-" + getFiskNap(ms) + "-" + ms.getString("GOD"); 
+    
+    return "FISK-" + myorg.getString("FPP") + "-" + getFiskNapG(ms) + "-" + ms.getString("GOD");
+  }
+  
+  
+  /*
   private static int fisksep = -1;
   
   public static boolean isFiskSep() {
@@ -494,7 +592,7 @@ public class presBlag extends PreSelect {
     String ur = frmParam.getParam("robno", "fiskNap", "1", "Oznaka naplatnog ureðaja (lokalno)", true);
     if (ur == null || ur.length() == 0) return 1;
     return Aus.getNumber(ur);
-  }
+  }*/
   
   public static boolean isSmjena() {
     if (smjena < 0) {
@@ -537,7 +635,28 @@ public class presBlag extends PreSelect {
   static HashMap fisks = new HashMap();
   
   
-  public static FisUtil getFis(String cskl) {
+  public static FisUtil getFis(DataSet ms) {
+    return getFis(ms.getString("VRDOK"), ms.getString("CSKL"));
+  }
+  
+  public static FisUtil getFis(String vrdok, String cskl) {
+    FisUtil f = (FisUtil) fisks.get(cskl);
+    if (f != null) return f;
+    
+    findOJ(vrdok, cskl);
+    
+    try {
+      f = new FisUtil(Aus.findFileAnywhere(myorg.getString("FPATH")).getPath(), myorg.getString("FKEY"), null);
+      fisks.put(cskl, f);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return f;
+  }
+  
+  
+  /*public static FisUtil getFis(String cskl) {
     if (isSkladOriented()) {
       FisUtil f = (FisUtil) fisks.get(cskl);
       if (f == null) {
@@ -567,7 +686,7 @@ public class presBlag extends PreSelect {
       }
     }
     return fis;
-  }
+  }*/
 
   private void setProd_mjLookup() {
     String cskl = jrfCSKL.getDataSet().getString(jrfCSKL.getColumnName());
