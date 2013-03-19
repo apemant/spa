@@ -1646,3 +1646,5 @@ FISK;char;1;;;Fiskalizacija
 FPP;char;30;;;Šifra PP
 FPATH;char;50;;;Keystore
 FKEY;char;30;;;Password
+FPOJED;char;1;;N;Brojaè po fnu 
+FPDV;char;1;;D;Sustav PDV-a
