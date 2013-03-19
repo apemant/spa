@@ -104,6 +104,10 @@ public class repNivel implements sg.com.elixir.reportwriter.datasource.IDataProv
   public BigDecimal getKOL(){
      return ds.getBigDecimal("SKOL");
   }
+  
+  public BigDecimal getSKOL(){
+    return ds.getBigDecimal("SKOL");
+ }
 
   public BigDecimal getSTARACIJENA(){
     if (isMC) return ds.getBigDecimal("SMC");
