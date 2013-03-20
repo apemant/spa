@@ -210,10 +210,57 @@ public class raCustomSection implements raElixirProperties, raElixirPropertyValu
     sig.setWidth(5000);
     sig.setHeight(160);
   }
-
+  
   public static void ensureSignature(IModel footer) {
     ensureSignature(new raReportSection(footer));
   }
+  
+  public static void addFisk(raReportSection ps) {
+    long max = 0;
+    
+    for (int i = ps.model.getModelCount() - 1; i >= 0; i--)
+      if (Aus.getNumber(ps.model.getModel(i).getPropertyValue(TOP)) +
+          Aus.getNumber(ps.model.getModel(i).getPropertyValue(HEIGHT)) > max)
+        max = Aus.getNumber(ps.model.getModel(i).getPropertyValue(TOP)) +
+        Aus.getNumber(ps.model.getModel(i).getPropertyValue(HEIGHT));
+        
+/*
+    for (int i = 0; i < ps.getModelCount(); i++) {
+      System.out.println(ps.getModel(i));
+      if (ps.getModel(i).isVisible() && ps.getModel(i).getTop() + ps.getModel(i).getHeight() > max)
+        max = ps.getModel(i).getTop() + ps.getModel(i).getHeight();
+    } */
+    
+    System.out.println("addFisk " + max);
+    
+    raReportElement fisk = ps.addModel(TEXT);
+    fisk.setControlSource("FISKRED");
+    fisk.setFont("Lucida Bright");
+    fisk.setFontSize(7);
+    fisk.setTop(max + 40);
+    fisk.setHeight(320);
+    fisk.setLeft(0);
+    fisk.setWidth(10480);
+    fisk.setProperty(WRAP, YES);
+    fisk.setProperty(GROW, YES);
+    fisk.setProperty(SHRINK, YES);
+    
+    String nf = frmParam.getParam("sisfun", "globalFont", "", "Ime fonta koji zamjenjuje Lucida Bright");
+    if (nf != null && nf.length() > 0)
+      fisk.setFont(nf);
+
+    ps.setHeight(max + 360);
+    
+    //Aus.dumpModel(ps.model, 2);
+  }
+  
+  public static void addFisk(Class source, IModel sect) {
+    Method[] meth = source.getMethods();
+    //Aus.dumpModel(sect, 0);
+    for (int i = 0; i < meth.length; i++)
+      if (meth[i].getName().equals("getFISKRED"))
+        addFisk(new raReportSection(sect));
+  }  
 
   private static String getTextElement(String text, Class source) {
     String[] gets = source == null ? new String[0] : findGetters(source);

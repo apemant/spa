@@ -580,13 +580,14 @@ public class dlgRunReport {
 
   private void setReportTemplate(raReportDescriptor rd) {
     if (rd.isJasper()) return;
-    
+       
     if (rd.isJavaTemplate()) rt.setReportTemplate(rd.getJavaTemplate().getReportTemplate());
     else {
       rt.setReportTemplate(getSystemResourceAsStream(
         convert2path(rd.getTemplate(), ".template")));
       if (runner.getTemplateModifier() != null)
         runner.getTemplateModifier().modify(rd.getName(), rt.getReportTemplate());
+
       raCustomSection.globalChangeFont(rt.getReportTemplate());
     }
     // custom report section: header i footer izlaznih ili internih ispisa,
@@ -607,6 +608,17 @@ public class dlgRunReport {
       String corg = findReportCorg(!rd.isExtended() ? rd.getProvider() :
         raElixirDataProvider.getInstance().getReportData());
       System.out.println(corg);
+      
+   // dohvati klasu data source-a radi gettera koji se mogu ubacivati
+      // u custom sectione po principu public String getNAME() =>  $NAME
+      Class dsource;
+      try {
+        dsource = rd.isExtended() ? Class.forName(rd.getDataSource()) : rd.getProvider().getClass();
+        raCustomSection.addFisk(dsource, rt.getReportTemplate().getModel(raElixirProperties.SECTION_FOOTER + 1));
+        
+      } catch (Exception e) {
+        dsource = null;
+      }
 
       // modificiraj report header i footer ako treba
       if (rd.isCustomIzlaz()) {
@@ -624,15 +636,6 @@ public class dlgRunReport {
           raCustomSection.moveSection(rt.getReportTemplate().getModel(raElixirProperties.SECTION_FOOTER + 1),
               rt.getReportTemplate().getModel(raElixirProperties.SECTION_FOOTER + 0));
         }
-      }
-
-      // dohvati klasu data source-a radi gettera koji se mogu ubacivati
-      // u custom sectione po principu public String getNAME() =>  $NAME
-      Class dsource;
-      try {
-        dsource = rd.isExtended() ? Class.forName(rd.getDataSource()) : rd.getProvider().getClass();
-      } catch (Exception e) {
-        dsource = null;
       }
 
       // modificiraj ostale dijelove iz liste promjenjivih ako ih uopce ima
