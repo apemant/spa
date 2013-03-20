@@ -404,7 +404,8 @@ public class presBlag extends PreSelect {
   static DataSet myorg = Orgstruktura.getDataModule().copyDataSet();
   
   public static DataSet findOJ(String vrdok, String cskl) {
-    boolean sklad = TypeDoc.getTypeDoc().isCsklSklad(vrdok) || (isSkladOriented() && vrdok.equalsIgnoreCase("GRC"));
+    boolean sklad = TypeDoc.getTypeDoc().isCsklSklad(vrdok) || vrdok.equalsIgnoreCase("PRD") || 
+          (isSkladOriented() && vrdok.equalsIgnoreCase("GRC"));
     String corg = cskl;
     if (sklad) {
       lookupData.getlookupData().raLocate(myskl, "CSKL", cskl);

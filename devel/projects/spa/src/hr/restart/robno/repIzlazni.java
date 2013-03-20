@@ -1037,7 +1037,9 @@ public BigDecimal getIPRODSP() {
         "       Operater: " + getUSER() + "        Interni broj: " + getOldFormatBroj();
         
     System.out.println(first);
-    if ("GOT|GRN".indexOf(getVRDOK()) < 0) return first;
+    if ("GOT|GRN|PRD".indexOf(getVRDOK()) < 0 ) return first;
+    
+    if (getVRDOK().equals("PRD") && (ds.hasColumn("PARAM") == null || !ds.getString("PARAM").equals("K"))) return first;
     
     return first + "\nZKI: " + getZKI() + "    JIR: " + getJIR();
   }

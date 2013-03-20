@@ -542,7 +542,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
       "Format fiskalnog broja izlaznog dokumenta na ispisu");
     
-      if (what_kind_of_dokument.equalsIgnoreCase("GOT") || what_kind_of_dokument.equalsIgnoreCase("GRN")) {
+      if (what_kind_of_dokument.equalsIgnoreCase("GOT") || what_kind_of_dokument.equalsIgnoreCase("GRN") ||
+          (what_kind_of_dokument.equalsIgnoreCase("PRD") && ms.getString("PARAM").equals("K"))) {
         if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li fiskalizirati odabrane raèune?", "Fiskalizacija", 
             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
          int count = 0;
@@ -562,7 +563,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
          JOptionPane.showMessageDialog(raMaster.getWindow(), "Fiskalizirano " + count + " raèuna.", "Greška", JOptionPane.INFORMATION_MESSAGE);
       } else if (what_kind_of_dokument.equalsIgnoreCase("ROT") || what_kind_of_dokument.equalsIgnoreCase("RAC") ||
           what_kind_of_dokument.equalsIgnoreCase("IZD") || what_kind_of_dokument.equalsIgnoreCase("POD") ||
-          what_kind_of_dokument.equalsIgnoreCase("TER") || what_kind_of_dokument.equalsIgnoreCase("ODB")) {
+          what_kind_of_dokument.equalsIgnoreCase("TER") || what_kind_of_dokument.equalsIgnoreCase("ODB") ||
+          (what_kind_of_dokument.equalsIgnoreCase("PRD") && !ms.getString("PARAM").equals("K"))) {
         
         if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li zakljuèiti odabrane raèune?", "Fiskalizacija", 
             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
@@ -614,7 +616,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
         "Format fiskalnog broja izlaznog dokumenta na ispisu");
       
-      if (what_kind_of_dokument.equalsIgnoreCase("GOT") || what_kind_of_dokument.equalsIgnoreCase("GRN")) {
+      if (what_kind_of_dokument.equalsIgnoreCase("GOT") || what_kind_of_dokument.equalsIgnoreCase("GRN") ||
+          (what_kind_of_dokument.equalsIgnoreCase("PRD") && ms.getString("PARAM").equals("K"))) {
         if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li fiskalizirati raèun?", "Fiskalizacija", 
             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
           String cOpis = presBlag.getSeqOpis(ms);
@@ -630,7 +633,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
              (succ ? " fiskaliziran!" : " zakljuèan!"), "Fiskalizacija", JOptionPane.INFORMATION_MESSAGE);
       } else if (what_kind_of_dokument.equalsIgnoreCase("ROT") || what_kind_of_dokument.equalsIgnoreCase("RAC") ||
           what_kind_of_dokument.equalsIgnoreCase("IZD") || what_kind_of_dokument.equalsIgnoreCase("POD") ||
-          what_kind_of_dokument.equalsIgnoreCase("TER") || what_kind_of_dokument.equalsIgnoreCase("ODB")) {
+          what_kind_of_dokument.equalsIgnoreCase("TER") || what_kind_of_dokument.equalsIgnoreCase("ODB") ||
+          (what_kind_of_dokument.equalsIgnoreCase("PRD") && !ms.getString("PARAM").equals("K"))) {
         
         String cOpis = presBlag.getSeqOpis(ms);
         getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
