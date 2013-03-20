@@ -49,6 +49,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -533,19 +534,78 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       return false;
     }
     
+    void multiFisk() {
+      DataSet ms = getMasterSet();
+      Object[] brdoks = raMaster.getSelectionTracker().getSelection();
+      Arrays.sort(brdoks);
+      
+      String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
+      "Format fiskalnog broja izlaznog dokumenta na ispisu");
+    
+      if (what_kind_of_dokument.equalsIgnoreCase("GOT") || what_kind_of_dokument.equalsIgnoreCase("GRN")) {
+        if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li fiskalizirati odabrane raèune?", "Fiskalizacija", 
+            JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+         int count = 0;
+         for (int i = 0; i < brdoks.length; i++) {
+           if (!lD.raLocate(ms, "BRDOK", brdoks[i].toString()) || ms.getString("FOK").equals("D")) continue;
+           String cOpis = presBlag.getSeqOpis(ms);
+           getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
+           getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
+           getMasterSet().setString("FOK", "D");
+           getMasterSet().setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
+           getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
+           getMasterSet().saveChanges();
+           boolean succ = fisk(ms);
+           if (succ) ++ count;
+         }
+         raMaster.getJpTableView().fireTableDataChanged();
+         JOptionPane.showMessageDialog(raMaster.getWindow(), "Fiskalizirano " + count + " raèuna.", "Greška", JOptionPane.INFORMATION_MESSAGE);
+      } else if (what_kind_of_dokument.equalsIgnoreCase("ROT") || what_kind_of_dokument.equalsIgnoreCase("RAC") ||
+          what_kind_of_dokument.equalsIgnoreCase("IZD") || what_kind_of_dokument.equalsIgnoreCase("POD") ||
+          what_kind_of_dokument.equalsIgnoreCase("TER") || what_kind_of_dokument.equalsIgnoreCase("ODB")) {
+        
+        if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li zakljuèiti odabrane raèune?", "Fiskalizacija", 
+            JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+        
+        int count = 0;
+        for (int i = 0; i < brdoks.length; i++) {
+          if (!lD.raLocate(ms, "BRDOK", brdoks[i].toString()) || ms.getString("FOK").equals("D")) continue;
+          
+          String cOpis = presBlag.getSeqOpis(ms);
+          getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
+          getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
+          getMasterSet().setString("FOK", "D");
+          getMasterSet().setInt("FNU", presBlag.getFiskNap(ms));
+          getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
+          getMasterSet().saveChanges();
+          ++count;
+        }
+        raMaster.getJpTableView().fireTableDataChanged();
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Zakljuèano " + count + " raèuna.", "Greška", JOptionPane.INFORMATION_MESSAGE);
+      } else {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument se ne može fiskalizirati!", "Greška", JOptionPane.ERROR_MESSAGE);
+      }
+      
+    }
+    
     
     public void keyFisk() {
       DataSet ms = getMasterSet();
       if (ms.rowCount() == 0) return;
       
-      if (ms.getString("FOK").equals("D")) {
-        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument je veæ zakljuèan!", "Greška", JOptionPane.ERROR_MESSAGE);
+      if (!presBlag.isFiskal(ms)) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Nije ukljuèena fiskalizacija pripadajuæeg poslovnog prostora!", 
+            "Greška", JOptionPane.ERROR_MESSAGE);
         return;
       }
       
-      if (presBlag.isFiskal(ms)) {
-        JOptionPane.showMessageDialog(raMaster.getWindow(), "Nije ukljuèena fiskalizacija pripadajuæeg poslovnog prostora!", 
-            "Greška", JOptionPane.ERROR_MESSAGE);
+      if (raMaster.getSelectionTracker().countSelected() > 0) {
+        multiFisk();
+        return;
+      }
+      
+      if (ms.getString("FOK").equals("D")) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument je veæ zakljuèan!", "Greška", JOptionPane.ERROR_MESSAGE);
         return;
       }
       
@@ -565,8 +625,9 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
          getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
          getMasterSet().saveChanges();
          boolean succ = fisk(ms);
+         raMaster.getJpTableView().fireTableDataChanged();
          JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + ms.getString("PNBZ2") + 
-             (succ ? " fiskaliziran!" : " zakljuèan!"), "Greška", JOptionPane.INFORMATION_MESSAGE);
+             (succ ? " fiskaliziran!" : " zakljuèan!"), "Fiskalizacija", JOptionPane.INFORMATION_MESSAGE);
       } else if (what_kind_of_dokument.equalsIgnoreCase("ROT") || what_kind_of_dokument.equalsIgnoreCase("RAC") ||
           what_kind_of_dokument.equalsIgnoreCase("IZD") || what_kind_of_dokument.equalsIgnoreCase("POD") ||
           what_kind_of_dokument.equalsIgnoreCase("TER") || what_kind_of_dokument.equalsIgnoreCase("ODB")) {
@@ -578,7 +639,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         getMasterSet().setInt("FNU", presBlag.getFiskNap(ms));
         getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
         getMasterSet().saveChanges();
-        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + ms.getString("PNBZ2") + " zakljuèan!", "Greška", JOptionPane.INFORMATION_MESSAGE);
+        raMaster.getJpTableView().fireTableDataChanged();
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + ms.getString("PNBZ2") + " zakljuèan!", "Fiskalizacija", JOptionPane.INFORMATION_MESSAGE);
       } else {
         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument se ne može fiskalizirati!", "Greška", JOptionPane.ERROR_MESSAGE);
       }
