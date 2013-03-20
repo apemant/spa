@@ -483,6 +483,10 @@ public class frmOrgStr extends raMatPodaci {
 
 //      jlrNFPRIPADNOST.setFocusLostOnShow(false);
       rcbFisk.this_itemStateChanged();
+      
+      rcbFNU.this_itemStateChanged();
+      
+      jcbPDV.setSelected(true);
 
       clearJlrNFPRIPADNOST();
 
@@ -499,6 +503,7 @@ public class frmOrgStr extends raMatPodaci {
     else {//if (mode=='I'){
       
       rcbFisk.this_itemStateChanged();
+      rcbFNU.this_itemStateChanged();
 
 //      jlrNFPRIPADNOST.setFocusLostOnShow(true);
 
