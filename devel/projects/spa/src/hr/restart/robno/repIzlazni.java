@@ -1029,6 +1029,19 @@ public BigDecimal getIPRODSP() {
     return getOldFormatBroj();
   }
   
+  public String getFISKRED() {
+    System.out.println("getFISKRED");
+    if (!ds.getString("FOK").equals("D")) return "";
+    
+    String first = "Datum i vrijeme izrade: " + SgetSYSDAT() + "  u " + SgetSYSTIME() +
+        "       Operater: " + getUSER() + "        Interni broj: " + getOldFormatBroj();
+        
+    System.out.println(first);
+    if ("GOT|GRN".indexOf(getVRDOK()) < 0) return first;
+    
+    return first + "\nZKI: " + getZKI() + "    JIR: " + getJIR();
+  }
+  
   public String getOldFormatBroj() {
     if (specForm == null || specForm.length() == 0)
       return ru.getFormatBroj();
@@ -1041,7 +1054,11 @@ public BigDecimal getIPRODSP() {
   }
   
   public String getZKI() {
-    return presBlag.getFis(ds).generateZKI(raIzlazTemplate.getRacType(ds));
+    try {
+      return presBlag.getFis(ds).generateZKI(raIzlazTemplate.getRacType(ds));
+    } catch (Exception e) {
+      return "";
+    }
   }
     
   public String getFormatBrojTri(){
