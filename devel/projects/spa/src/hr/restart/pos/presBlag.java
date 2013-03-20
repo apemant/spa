@@ -508,12 +508,12 @@ public class presBlag extends PreSelect {
   
   public static boolean isFiskSep(DataSet ms) {
     findOJ(ms);
-    return !myorg.getString("FNU").equalsIgnoreCase("D");
+    return !myorg.getString("FPOJED").equalsIgnoreCase("D");
   }
   
   public static boolean isFiskGot(DataSet ms) {
     findOJ(ms);
-    return myorg.getString("FNU").equalsIgnoreCase("G");
+    return myorg.getString("FPOJED").equalsIgnoreCase("G");
   }
   
   public static String getFiskPP(DataSet ms) {
@@ -539,10 +539,10 @@ public class presBlag extends PreSelect {
   
   public static String getSeqOpis(DataSet ms) {
     findOJ(ms);
-    if (myorg.getString("FNU").equals("D")) 
+    if (myorg.getString("FPOJED").equals("D")) 
       return "FISK-" + myorg.getString("FPP") + "-" + ms.getString("GOD");
     
-    if (!myorg.getString("FNU").equals("G") || "GRC|GOT|GRN".indexOf(ms.getString("VRDOK")) < 0) 
+    if (!myorg.getString("FPOJED").equals("G") || "GRC|GOT|GRN".indexOf(ms.getString("VRDOK")) < 0) 
       return "FISK-" + myorg.getString("FPP") + "-" + getFiskNap(ms) + "-" + ms.getString("GOD"); 
     
     return "FISK-" + myorg.getString("FPP") + "-" + getFiskNapG(ms) + "-" + ms.getString("GOD");
