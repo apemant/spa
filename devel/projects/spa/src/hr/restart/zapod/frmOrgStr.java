@@ -305,9 +305,9 @@ public class frmOrgStr extends raMatPodaci {
     rcbFNU.setRaColumn("FPOJED");
     rcbFNU.setRaDataSet(getRaQueryDataSet());
     rcbFNU.setRaItems(new String[][] {
-        {"Brojaè na razini poslovnog prostora","D"},
-        {"Brojaè na razini naplatnog ureðaja","N"},
-        {"Razdvojeni malo- i veleprodajni raèuni","G"}
+        {"Brojaè po poslovnom prostoru","D"},
+        {"Brojaè po naplatnom ureðaju","N"},
+        {"Razdvojeni gotovinski raèuni","G"}
       });
     
     jraCert.setDataSet(getRaQueryDataSet());
@@ -409,8 +409,8 @@ public class frmOrgStr extends raMatPodaci {
     jp.add(new JLabel("Fiskalizacija"), new XYConstraints(15, 200, -1, -1));
     jp.add(rcbFisk, new XYConstraints(150, 200, 300, -1));
     jp.add(new JLabel("Poslovni prostor"), new XYConstraints(15, 230, -1, -1));
-    jp.add(jraFPP, new XYConstraints(150, 230, 100, -1));
-    jp.add(rcbFNU, new XYConstraints(260, 230, 280, -1));
+    jp.add(jraFPP, new XYConstraints(150, 230, 150, -1));
+    jp.add(rcbFNU, new XYConstraints(310, 230, 230, -1));
     
     jp.add(new JLabel("Šifra certifikata"), new XYConstraints(15, 260, -1, -1));
     jp.add(jraCert, new XYConstraints(150, 260, 150, -1));
@@ -666,6 +666,7 @@ public class frmOrgStr extends raMatPodaci {
     if (rcbFisk.getSelectedIndex() == 2) {
       rCC.setLabelLaF(jraFPP, true);
       rCC.setLabelLaF(rcbFNU, true);
+      rCC.setLabelLaF(jraCert, true);
       rCC.setLabelLaF(jraStore, true);
       rCC.setLabelLaF(jraPass, true);
     } else {
@@ -675,6 +676,7 @@ public class frmOrgStr extends raMatPodaci {
       jraPass.setText("");
       rCC.setLabelLaF(jraFPP, false);
       rCC.setLabelLaF(rcbFNU, false);
+      rCC.setLabelLaF(jraCert, false);
       rCC.setLabelLaF(jraStore, false);
       rCC.setLabelLaF(jraPass, false);
     }
