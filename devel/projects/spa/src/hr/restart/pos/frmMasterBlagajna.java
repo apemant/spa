@@ -1791,6 +1791,8 @@ public class frmMasterBlagajna extends raMasterDetail {
       nacpl = "C";
     else if (nacpl.equalsIgnoreCase("K") || nacpl.startsWith("K"))
       nacpl = "K";
+    else if (nacpl.equalsIgnoreCase("T") || nacpl.startsWith("V"))
+      nacpl = "T";
     else nacpl = "O";
 
     RacunType rac = presBlag.getFis(ms).createRacun(
