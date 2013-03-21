@@ -22,6 +22,7 @@ package hr.restart.zapod;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
+import hr.restart.swing.JraKeyListener;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raButtonGroup;
 import hr.restart.util.JlrNavField;
@@ -34,6 +35,7 @@ import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
@@ -160,7 +162,8 @@ public class frmOrgStr extends raMatPodaci {
 
   JraTextField jraFPP = new JraTextField();
   raComboBox rcbFNU = new raComboBox();
-  
+
+  JraTextField jraCert = new JraTextField();
   JraTextField jraStore = new JraTextField();
   JraTextField jraPass = new JraTextField();
   
@@ -293,7 +296,7 @@ public class frmOrgStr extends raMatPodaci {
     rcbFisk.setRaItems(new String[][] {
         {"Nedefinirano / naslijeðeno s više razine","X"},
         {"Iskljuèeno na ovoj jedinici","N"},
-        {"Ukljuèeno kao zasebni poslovni prostor","D"}
+        {"Ukljuèeno kao poslovni prostor","D"}
       });
     
     jraFPP.setDataSet(getRaQueryDataSet());
@@ -307,6 +310,8 @@ public class frmOrgStr extends raMatPodaci {
         {"Razdvojeni malo- i veleprodajni raèuni","G"}
       });
     
+    jraCert.setDataSet(getRaQueryDataSet());
+    jraCert.setColumnName("CCERT");
     jraStore.setDataSet(getRaQueryDataSet());
     jraStore.setColumnName("FPATH");
     jraPass.setDataSet(getRaQueryDataSet());
@@ -407,13 +412,15 @@ public class frmOrgStr extends raMatPodaci {
     jp.add(jraFPP, new XYConstraints(150, 230, 100, -1));
     jp.add(rcbFNU, new XYConstraints(260, 230, 280, -1));
     
-    jp.add(new JLabel("Keystore datoteka"), new XYConstraints(15, 260, -1, -1));
-    jp.add(jraStore, new XYConstraints(150, 260, 150, -1));
+    jp.add(new JLabel("Šifra certifikata"), new XYConstraints(15, 260, -1, -1));
+    jp.add(jraCert, new XYConstraints(150, 260, 150, -1));
+    jp.add(new JLabel("Keystore datoteka"), new XYConstraints(15, 290, -1, -1));
+    jp.add(jraStore, new XYConstraints(150, 290, 150, -1));
     
-    jp.add(new JLabel("Šifra"), new XYConstraints(330, 260, -1, -1));
-    jp.add(jraPass, new XYConstraints(390, 260, 150, -1));
+    jp.add(new JLabel("Šifra"), new XYConstraints(330, 290, -1, -1));
+    jp.add(jraPass, new XYConstraints(390, 290, 150, -1));
     
-    jp.add(jcbPDV, new XYConstraints(150, 290, 390, -1));
+    jp.add(jcbPDV, new XYConstraints(310, 260, 230, -1));
     
 
     this.setRaDetailPanel(jp);
@@ -454,6 +461,22 @@ public class frmOrgStr extends raMatPodaci {
 
     if (vl.isEmpty(jlrNFPRIPADNOST)) return false;
 
+   
+    if (rcbFisk.getSelectedIndex() == 2) {
+      boolean cert = getRaQueryDataSet().getString("CCERT").trim().length() > 0;
+      boolean store = getRaQueryDataSet().getString("FPATH").trim().length() > 0;
+      boolean key = getRaQueryDataSet().getString("FKEY").trim().length() > 0;
+      
+      if (store != key || cert != store) {
+        if (!cert) jraCert.requestFocus();
+        else if (!store) jraStore.requestFocus();
+        else jraPass.requestFocus();
+        JOptionPane.showMessageDialog(this, "Moraju biti unešena sva tri podatka, ili nijedan (za naslijeðivanje)!", 
+            "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+    }
+    
     if (!addZiroUI()) return false;
 
     return true;
@@ -647,6 +670,7 @@ public class frmOrgStr extends raMatPodaci {
       rCC.setLabelLaF(jraPass, true);
     } else {
       jraFPP.setText("");
+      jraCert.setText("");
       jraStore.setText("");
       jraPass.setText("");
       rCC.setLabelLaF(jraFPP, false);
