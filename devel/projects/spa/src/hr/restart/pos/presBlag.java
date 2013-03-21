@@ -417,11 +417,12 @@ public class presBlag extends PreSelect {
         !myorg.getString("CORG").equals(corg))
       lookupData.getlookupData().raLocate(myorg, "CORG", corg = myorg.getString("PRIPADNOST"));
       
-    if (myorg.getString("FISK").equals("D") && myorg.getString("FPATH").trim().length() == 0) {
+    if (myorg.getString("FISK").equals("D") && myorg.getString("CCERT").trim().length() == 0) {
       DataRow dr = lookupData.getlookupData().raLookup(myorg, "CORG", myorg.getString("PRIPADNOST"));
-      while (dr.getString("FPATH").trim().length() == 0 && !dr.getString("CORG").equals(dr.getString("PRIPADNOST")))
+      while (dr.getString("CCERT").trim().length() == 0 && !dr.getString("CORG").equals(dr.getString("PRIPADNOST")))
         dr = lookupData.getlookupData().raLookup(myorg, "CORG", dr.getString("PRIPADNOST"));
       
+      myorg.setString("CCERT", dr.getString("CCERT"));
       myorg.setString("FPATH", dr.getString("FPATH"));
       myorg.setString("FKEY", dr.getString("FKEY"));
     }
@@ -541,12 +542,12 @@ public class presBlag extends PreSelect {
   public static String getSeqOpis(DataSet ms) {
     findOJ(ms);
     if (myorg.getString("FPOJED").equals("D")) 
-      return "FISK-" + myorg.getString("FPP") + "-" + ms.getString("GOD");
+      return "FISK-" + myorg.getString("CCERT") + "-" + myorg.getString("FPP") + "-" + ms.getString("GOD");
     
     if (!myorg.getString("FPOJED").equals("G") || "GRC|GOT|GRN".indexOf(ms.getString("VRDOK")) < 0) 
-      return "FISK-" + myorg.getString("FPP") + "-" + getFiskNap(ms) + "-" + ms.getString("GOD"); 
+      return "FISK-" + myorg.getString("CCERT") + "-"  + myorg.getString("FPP") + "-" + getFiskNap(ms) + "-" + ms.getString("GOD"); 
     
-    return "FISK-" + myorg.getString("FPP") + "-" + getFiskNapG(ms) + "-" + ms.getString("GOD");
+    return "FISK-" + myorg.getString("CCERT") + "-" + myorg.getString("FPP") + "-" + getFiskNapG(ms) + "-" + ms.getString("GOD");
   }
   
   
