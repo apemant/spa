@@ -954,19 +954,21 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     jtfZavBroj.setColumnName("zavBroj");
     jtfZavBroj.setDataSet(tds);
     
-    jlrStol.setColumnName("STOL");
-    jlrStol.setNavColumnName("ID");
-    jlrStol.setVisCols(new int[]{0,1});
-    jlrStol.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazStol});
-    jlrStol.setColNames(new String[] {"NAME"});
-    jlrStol.setDataSet(tds);
-    jlrStol.setRaDataSet(Aus.q("SELECT ID,NAME FROM places"));
-    jlrStol.setSearchMode(0);
-    jlrStol.setNavButton(jbSelStol);
-    
-    jlrNazStol.setColumnName("NAME");
-    jlrNazStol.setNavProperties(jlrStol);
-    jlrNazStol.setSearchMode(1);
+    if (frmParam.getParam("pos", "tinaStol", "N", "Stolovi iz Tinapos na rekapitulaciji (D,N)").equalsIgnoreCase("D")) {
+      jlrStol.setColumnName("STOL");
+      jlrStol.setNavColumnName("ID");
+      jlrStol.setVisCols(new int[]{0,1});
+      jlrStol.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazStol});
+      jlrStol.setColNames(new String[] {"NAME"});
+      jlrStol.setDataSet(tds);
+      jlrStol.setRaDataSet(Aus.q("SELECT ID,NAME FROM places"));
+      jlrStol.setSearchMode(0);
+      jlrStol.setNavButton(jbSelStol);
+      
+      jlrNazStol.setColumnName("NAME");
+      jlrNazStol.setNavProperties(jlrStol);
+      jlrNazStol.setSearchMode(1);
+    }
     
 
     jrfCSKL.setColumnName("CSKL");
