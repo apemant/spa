@@ -473,7 +473,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       RacunType rac = presBlag.getFis(ms).createRacun(
           oibf, //oib firme (Rest Art) NE PREPISUJ!!
           presBlag.isFiskPDV(ms), //da li je obveznik pdv-a 
-          ms.getTimestamp("DATDOK"), // datum i vrijeme kreiranja racuna
+          ms.getTimestamp("SYSDAT"), // datum i vrijeme kreiranja racuna
           presBlag.isFiskSep(ms) ? "N" : "P", // oznaka slijednosti
           ms.getInt("FBR"), // broj racuna 
           ms.getString("FPP"), // oznaka poslovne jedinice
@@ -543,11 +543,22 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       
       String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
       "Format fiskalnog broja izlaznog dokumenta na ispisu");
+      
+      String resetSysdat = frmParam.getParam("robno", "fiskDatum", "N",
+  		"Postaviti datum kreiranja kod fiskalizacije (D,N,A)");
     
       if (what_kind_of_dokument.equalsIgnoreCase("GOT") || what_kind_of_dokument.equalsIgnoreCase("GRN") ||
           (what_kind_of_dokument.equalsIgnoreCase("PRD") && ms.getString("PARAM").equals("K"))) {
         if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li fiskalizirati odabrane raèune?", "Fiskalizacija", 
             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+        
+        if (resetSysdat.equalsIgnoreCase("A")) {
+       	 int response = JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li postaviti datum kreiranja raèuna (na sada)?", 
+       			 "Fiskalizacija", JOptionPane.YES_NO_CANCEL_OPTION);
+       	 if (response == JOptionPane.CANCEL_OPTION) return;
+       	 if (response == JOptionPane.YES_OPTION) resetSysdat = "D";
+        }
+        
          int count = 0;
          for (int i = 0; i < brdoks.length; i++) {
            if (!lD.raLocate(ms, "BRDOK", brdoks[i].toString()) || ms.getString("FOK").equals("D")) continue;
@@ -557,6 +568,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
            getMasterSet().setString("FOK", "D");
            getMasterSet().setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
            getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
+           if (resetSysdat.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
            getMasterSet().saveChanges();
            boolean succ = fisk(ms);
            if (succ) ++ count;
@@ -571,6 +583,13 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li zakljuèiti odabrane raèune?", "Fiskalizacija", 
             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
         
+        if (resetSysdat.equalsIgnoreCase("A")) {
+       	  int response = JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li postaviti datum kreiranja raèuna (na sada)?", 
+       			 "Zakljuèivanje", JOptionPane.YES_NO_CANCEL_OPTION);
+       	  if (response == JOptionPane.CANCEL_OPTION) return;
+       	  if (response == JOptionPane.YES_OPTION) resetSysdat = "D";
+        }
+        
         int count = 0;
         for (int i = 0; i < brdoks.length; i++) {
           if (!lD.raLocate(ms, "BRDOK", brdoks[i].toString()) || ms.getString("FOK").equals("D")) continue;
@@ -581,6 +600,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
           getMasterSet().setString("FOK", "D");
           getMasterSet().setInt("FNU", presBlag.getFiskNap(ms));
           getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
+          if (resetSysdat.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
           getMasterSet().saveChanges();
           ++count;
         }
@@ -618,16 +638,28 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
         "Format fiskalnog broja izlaznog dokumenta na ispisu");
       
+      String resetSysdat = frmParam.getParam("robno", "fiskDatum", "N",
+      		"Postaviti datum kreiranja kod fiskalizacije (D,N,A)");
+      
       if (what_kind_of_dokument.equalsIgnoreCase("GOT") || what_kind_of_dokument.equalsIgnoreCase("GRN") ||
           (what_kind_of_dokument.equalsIgnoreCase("PRD") && ms.getString("PARAM").equals("K"))) {
         if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li fiskalizirati raèun?", "Fiskalizacija", 
             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
-          String cOpis = presBlag.getSeqOpis(ms);
+        
+         if (resetSysdat.equalsIgnoreCase("A")) {
+        	 int response = JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li postaviti datum kreiranja raèuna (na sada)?", 
+        			 "Fiskalizacija", JOptionPane.YES_NO_CANCEL_OPTION);
+        	 if (response == JOptionPane.CANCEL_OPTION) return;
+        	 if (response == JOptionPane.YES_OPTION) resetSysdat = "D";
+         }
+        
+         String cOpis = presBlag.getSeqOpis(ms);
          getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
          getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
          getMasterSet().setString("FOK", "D");
          getMasterSet().setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
          getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
+         if (resetSysdat.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
          getMasterSet().saveChanges();
          boolean succ = fisk(ms);
          raMaster.getJpTableView().fireTableDataChanged();
@@ -637,6 +669,16 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
           what_kind_of_dokument.equalsIgnoreCase("IZD") || what_kind_of_dokument.equalsIgnoreCase("POD") ||
           what_kind_of_dokument.equalsIgnoreCase("TER") || what_kind_of_dokument.equalsIgnoreCase("ODB") ||
           (what_kind_of_dokument.equalsIgnoreCase("PRD") && !ms.getString("PARAM").equals("K"))) {
+      	
+      	if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li zakljuèiti raèun?", "Zakljuèivanje", 
+            JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+      	
+        if (resetSysdat.equalsIgnoreCase("A")) {
+       	  int response = JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li postaviti datum kreiranja raèuna (na sada)?", 
+       			 "Zakljuèivanje", JOptionPane.YES_NO_CANCEL_OPTION);
+       	  if (response == JOptionPane.CANCEL_OPTION) return;
+       	  if (response == JOptionPane.YES_OPTION) resetSysdat = "D";
+        }
         
         String cOpis = presBlag.getSeqOpis(ms);
         getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
@@ -644,6 +686,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         getMasterSet().setString("FOK", "D");
         getMasterSet().setInt("FNU", presBlag.getFiskNap(ms));
         getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
+        if (resetSysdat.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
         getMasterSet().saveChanges();
         raMaster.getJpTableView().fireTableDataChanged();
         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + ms.getString("PNBZ2") + " zakljuèan!", "Fiskalizacija", JOptionPane.INFORMATION_MESSAGE);
