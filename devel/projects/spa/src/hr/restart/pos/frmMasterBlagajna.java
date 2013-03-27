@@ -1848,6 +1848,7 @@ public class frmMasterBlagajna extends raMasterDetail {
           ms.setString("FOK", "D");
           ms.setString("FPP", presBlag.getFiskPP(ms));
           ms.setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
+          ms.setTimestamp("DATDOK", Valid.getValid().getToday());
           ms.saveChanges();
         }
         
