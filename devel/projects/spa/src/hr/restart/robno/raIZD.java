@@ -146,6 +146,7 @@ public class raIZD extends raIzlazTemplate  {
   public raIZD() {
 
     setPreSel((jpPreselectDoc) presIZD.getPres());
+    raMaster.addOption(rnvFisk, 5, false);
     master_titel = "Izdatnice";
     detail_titel_mno = "Stavke izdatnice";
     detail_titel_jed = "Stavka izdatnice";
