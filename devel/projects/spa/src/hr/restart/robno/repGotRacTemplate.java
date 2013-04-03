@@ -87,7 +87,7 @@ public class repGotRacTemplate extends repIzlazOrigTemplate {
     this.ReportTemplate.setDefault(ep.RECORD_SOURCE, "JDOrepGotRac");
     this.addReportModifier(new ReportModifier(){
       public void modify(){
-        if (reportsQuerysCollector.getRQCModule().getQueryDataSet().getInt("CKUPAC") == 0){
+        if (reportsQuerysCollector.getRQCModule().getQueryDataSet().getInt("CKUPAC") == 0 && reportsQuerysCollector.getRQCModule().getQueryDataSet().getInt("CPAR") == 0){
 //          System.out.println("ukidam R-1");
           sh.LabelObrazac.setCaption("");
           sh.LabelR1.setCaption("");
