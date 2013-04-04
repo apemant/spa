@@ -225,7 +225,7 @@ public class repMxGRN extends mxReport {
   }
 
   private String getDatumVrijeme() {
-    String dtmvr = "Nadnevak: "+
+    String dtmvr = "Datum: "+
                    raDateUtil.getraDateUtil().dataFormatter(ds.getTimestamp("DATDOK"))+
                    "    "+getRazlikaWudthBlank()+"Vrijeme: " + ds.getTimestamp("DATDOK").toString().substring(11,19) +
                    "<$newline$><$newline$>";
