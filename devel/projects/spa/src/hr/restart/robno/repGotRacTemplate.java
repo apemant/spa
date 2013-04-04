@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.reports.ReportModifier;
 import hr.restart.util.reports.raGRSectionFooterLines;
 import hr.restart.util.reports.raGRSectionFooterMCLines;
@@ -92,7 +93,10 @@ public class repGotRacTemplate extends repIzlazOrigTemplate {
           sh.LabelObrazac.setCaption("");
           sh.LabelR1.setCaption("");
         } else {
-          sh.LabelR1.setCaption("R-1");
+          String knjig = hr.restart.zapod.OrgStr.getKNJCORG(false);
+          String r1 = frmParam.getParam("robno", "izlazObr"+knjig,
+              "R-1", "Vrsta obrasca ispisa raèuna za knjigovodstvo "+knjig);
+          sh.LabelR1.setCaption(r1);
         }
       }
     });
