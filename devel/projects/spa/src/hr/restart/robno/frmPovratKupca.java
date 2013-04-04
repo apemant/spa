@@ -87,6 +87,7 @@ public class frmPovratKupca extends raIzlazTemplate {
 //    this.setNaslovDetail("Artikli povratnice");
 //    this.setVisibleColsDetail(new int[] {4,Aut.getAut().getCARTdependable(5,6,7),8,11,33,34});
 //    this.setDetailKey(key);
+    raMaster.addOption(rnvFisk, 5, false);
 
     master_titel = "Povratnice kupca";
     detail_titel_mno = "Stavke povratnice kupca";
