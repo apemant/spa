@@ -89,7 +89,7 @@ public class repIzlazni implements raReportData {
   }
 
   protected repIzlazni(boolean init) {
-    fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR:06]-[FPP]-[FNU:02]",
+    fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
         "Format fiskalnog broja izlaznog dokumenta na ispisu");
     if (init) {
       setCurrentDataset();
@@ -644,6 +644,18 @@ public class repIzlazni implements raReportData {
       return "";
     }
   }
+  
+  public String getCCUSER(){
+    try {
+      if(lookupData.getlookupData().raLocate(dm.getUseri(), "CUSER", ds.getString("CUSER"))){
+        return dm.getUseri().getString("CCERT");
+      } else{
+        return "";
+      }
+    } catch (RuntimeException e) {
+      return "";
+    }
+  }
 
   public String getAGENT(){
     if(lookupData.getlookupData().raLocate(dm.getAgenti(), "CAGENT", ds.getInt("CAGENT")+"")){
@@ -1033,8 +1045,11 @@ public BigDecimal getIPRODSP() {
     System.out.println("getFISKRED");
     if (!ds.getString("FOK").equals("D")) return "";
     
+    String user = getCCUSER();
+    if (user == null || user.length() == 0) user = getUSER();
+    
     String first = "Datum i vrijeme izrade: " + SgetSYSDAT() + "  u " + SgetSYSTIME() +
-        "       Operater: " + getUSER() + "        Interni broj: " + getOldFormatBroj();
+        "       Operater: " + user + "        Interni broj: " + getOldFormatBroj();
         
     System.out.println(first);
     if ("GOT|GRN|PRD".indexOf(getVRDOK()) < 0 ) return first;
@@ -1547,6 +1562,7 @@ public BigDecimal getIPRODSP() {
   }
 
   public String getNAZKUPCA() {
+    if (isPar()) return getNAZPARL();
          String ime = getIME();
          String pre = getPREZIME();
          return ime + " " + pre;
