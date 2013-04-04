@@ -295,7 +295,7 @@ public class upUlazIzlaz extends raUpitFat {
           "UIRAB","ZARADA","INAB","IMAR","IPOR","IRAZ"};
         izdok.empty();
         
-        String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR:06]-[FPP]-[FNU:02]",
+        String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
           "Format fiskalnog broja izlaznog dokumenta na ispisu");
         
         for (vl.RezSet.first(); vl.RezSet.inBounds(); vl.RezSet.next()) {
