@@ -1155,6 +1155,7 @@ public boolean  doWithSave(char mode) {
     }
     else if (mode=='I') {
       rcc.setLabelLaF(jtfCART, false);
+      rcbVRART.this_itemStateChanged();
 
 //      if (util.chkIsDeleteable("STANJE", "CART", String.valueOf(getRaQueryDataSet().getInt("CART")), util.MOD_NUM)==false && util.chkIsDeleteable("STPOS", "CART", String.valueOf(getRaQueryDataSet().getInt("CART")), util.MOD_NUM)==false) {
 //        rcc.setLabelLaF(jtfCART1, false);
