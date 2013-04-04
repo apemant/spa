@@ -1404,6 +1404,7 @@ OGRANICEN;char;1;;G;OGRANICEN
 CSMJENA;int;6;;;Smjena
 ROLA;char;20;;;Pos role
 OIB;char;20;;;Oib
+CCERT;char;20;;;Šifra ispisa
 
 $Blagajnici
 LOKK;char;1;;N;Status zauzetosti;*
