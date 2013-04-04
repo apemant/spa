@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.pos.presBlag;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
@@ -65,6 +66,7 @@ public class repMxRacun extends mxReport {
   int brRedRekap = 0;
   int brRedRekPl = 3;
   String oib;
+  String fiskForm, specForm;
   String parametar = hr.restart.sisfun.frmParam.getParam("robno","GOTcijena","VC");
   ArrayList nacinPlacanja,rata,datumNaplate ;
   dM dm = dM.getDataModule();
@@ -91,6 +93,12 @@ public class repMxRacun extends mxReport {
     
     oib = frmParam.getParam("robno", "oibMode", "MB", 
     "Staviti matièni broj (MB) ili OIB?");
+    
+    fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
+      "Format fiskalnog broja izlaznog dokumenta na ispisu");
+    
+    specForm = frmParam.getParam("robno", "specForm", "",
+        "Custom format broja izlaznog dokumenta na ispisu");
 
     mxRM matIsp = new mxRM();
     try {
@@ -311,6 +319,11 @@ public class repMxRacun extends mxReport {
     ds.open();
     ds.first();
     String vrati = /*"RAÈUN"*/racunString+" br.  "+ds.getString("VRDOK")+"-"+ds.getString("CSKL")+"/"+ds.getString("GOD")+"-"+ds.getInt("BRDOK");
+    
+    if (ds.getString("FOK").equalsIgnoreCase("D")) {
+      vrati = racunString+" br.  " + Aus.formatBroj(ds, fiskForm);
+    }
+    
     return "<$Reset$><$DoubleWidthON$>"+formatStr(vrati, vrati.length()+(40-vrati.length())/2)+"<$DoubleWidthOFF$>"+"<$CondensedON$>"+"<$newline$>"+"<$newline$>";
   }
 
@@ -487,8 +500,61 @@ public class repMxRacun extends mxReport {
               "  "+  datumNaplate.get(i).toString()+"\n";
     }
     np += "\n"+"SLOVIMA: " +getSLOVIMA();
+    
+    if (ds.getString("FOK").equalsIgnoreCase("D")) {
+      brRedRekPl = brRedRekPl+ 2;
+      np += "\n\n" + "Datum i vrijeme izrade: " + rdu.dataFormatter(ds.getTimestamp("SYSDAT")) +
+           " u  " + ds.getTimestamp("SYSDAT").toString().substring(11,19) + "    Operater: " + 
+             getUSER() + "    Interni broj: " + getOldFormatBroj();
+      if ("GOT|GRN".indexOf(ds.getString("VRDOK")) >= 0) {
+        brRedRekPl = brRedRekPl+ 2;
+        np += "\nZKI: " + getZKI() + "  JIR: " + getJIR();
+      }
+    }
+    
     brRedRekPl = brRedRekPl+ rata.size();
     return np;
+  }
+  
+  protected String getZKI() {
+    try {
+      return presBlag.getFis(ds).generateZKI(raIzlazTemplate.getRacType(ds));
+    } catch (Exception e) {
+      return "";
+    }
+  }
+  
+  protected String getJIR() {
+    try {
+      if (repFISBIH.isFISBIH() && (ds.hasColumn("FBR") != null) && (ds.getInt("FBR") > 0)) {
+        //return Valid.getValid().maskZeroInteger(new Integer(ds.getInt("FBR")), 6);
+        return ds.getInt("FBR")+"";
+      } else if (ds.hasColumn("JIR") != null) {
+        return ds.getString("JIR").trim();
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return "";
+  }
+  
+  protected String getUSER(){
+    if(lookupData.getlookupData().raLocate(dm.getUseri(), "CUSER", ds.getString("CUSER"))){
+      return dm.getUseri().getString("NAZIV");
+    } else{
+      return "";
+    }
+  }
+  
+  protected String getOldFormatBroj() {
+    if (specForm == null || specForm.length() == 0)
+      return repUtil.getFormatBroj(ds);
+    if (specForm.equalsIgnoreCase("pnbz2")) {
+      if (ds.getString("PNBZ2").trim().length()>0)
+        return ds.getString("PNBZ2");
+      return repUtil.getFormatBroj(ds);
+    }
+    return Aus.formatBroj(ds, specForm);
   }
 
   private String getNapomenaOpis(){
