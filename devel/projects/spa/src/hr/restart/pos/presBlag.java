@@ -413,8 +413,7 @@ public class presBlag extends PreSelect {
     }
     lookupData.getlookupData().raLocate(myorg, "CORG", corg);
     while (myorg.getString("FISK").equalsIgnoreCase("X") && 
-        !myorg.getString("PRIPADNOST").equals(myorg.getString("CORG")) &&
-        !myorg.getString("CORG").equals(corg))
+        !myorg.getString("PRIPADNOST").equals(myorg.getString("CORG")))
       lookupData.getlookupData().raLocate(myorg, "CORG", corg = myorg.getString("PRIPADNOST"));
       
     if (myorg.getString("FISK").equals("D") && myorg.getString("CCERT").trim().length() == 0) {
