@@ -64,7 +64,7 @@ public class raRPSectionHeaderROT extends raReportSection {
   private String[] LabelBrojProps = new String[] {"Broj", "", "5700", "700", "1500", "220", "", "", 
      "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement LabelMjestoDatum;
-  private String[] LabelMjestoDatumProps = new String[] {"Mjesto/Datum usluge", "", "5200", "1040", "2000", 
+  private String[] LabelMjestoDatumProps = new String[] {"Mjesto/datum izdavanja", "", "5200", "1040", "2000", 
      "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextSgetDATDOK;
   private String[] TextSgetDATDOKProps = new String[] {"SgetDATDOK", "", "hr_HR", 

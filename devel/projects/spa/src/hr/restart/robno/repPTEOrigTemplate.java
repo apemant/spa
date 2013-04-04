@@ -92,7 +92,7 @@ public abstract class repPTEOrigTemplate extends raReportTemplate {
   private String[] TextMJProps = new String[] {"MJ", "", "", "", "", "", "", "", "640", "1380", 
      "4360", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", ""};
   public raReportElement LabelMjesto;
-  private String[] LabelMjestoProps = new String[] {"Mjesto", "", "5440", "1460", "1760", "220", "", 
+  private String[] LabelMjestoProps = new String[] {"Mjesto/datum izdavanja", "", "5440", "1460", "1760", "220", "", 
      "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextLogoMjestoZarez;
   private String[] TextLogoMjestoZarezProps = new String[] {"LogoMjestoZarez", "", "", "", "", "", 

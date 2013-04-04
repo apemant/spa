@@ -518,6 +518,8 @@ public class raReportDescriptor {
       {"hr.restart.robno.repPonuda2VKup", "PON", "D", ""},
       {"hr.restart.robno.repOffer", "OFF", "F", ""},
       {"hr.restart.robno.repUpitPonuda", "UZP", "D", ""},
+      {"hr.restart.robno.repPredracuniKup", "PRD", "D", ""},
+      {"hr.restart.robno.repPredracuni2Kup", "PRD", "D", ""},
       {"hr.restart.robno.repPredracuni", "PRD", "D", ""},
       {"hr.restart.robno.repPredracuni2", "PRD", "D", ""},
       {"hr.restart.robno.repPredracuniV", "PRD", "D", ""},

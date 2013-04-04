@@ -66,7 +66,7 @@ public class raGRSectionHeaderWin extends raReportSection {
      "", "640", "1380", "4360", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", 
      ""};
   public raReportElement LabelMjestoDatum;
-  private String[] LabelMjestoDatumProps = new String[] {"Mjesto/Datum usluge", "", "5760", "1480", "", 
+  private String[] LabelMjestoDatumProps = new String[] {"Mjesto/datum izdavanja", "", "5760", "1480", "", 
      "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextLogoMjestoZarez;
   private String[] TextLogoMjestoZarezProps = new String[] {"LogoMjestoZarez", "", "", "", "", "", 

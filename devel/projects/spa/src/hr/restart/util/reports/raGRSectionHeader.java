@@ -29,7 +29,7 @@ public class raGRSectionHeader extends raReportSection {
   private String[] LabelProdajno_mjestoProps = new String[] {"Prodajno mjesto", "", "60", "60",
      "1580", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", ""};
   public raReportElement LabelMjesto;
-  private String[] LabelMjestoProps = new String[] {"Mjesto", "", "6220", "60", "1580", "220", "",
+  private String[] LabelMjestoProps = new String[] {"Mjesto/datum izdavanja", "", "6220", "60", "1580", "220", "",
      "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextCSKL;
   private String[] TextCSKLProps = new String[] {"CSKL", "", "", "", "", "", "", "", "1560", "60",

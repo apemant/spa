@@ -55,7 +55,7 @@ public class raRPSectionHeader extends raReportSection {
      "", "", "7280", "1040", "2300", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "",
      "", ""};
   public raReportElement LabelMjesto;
-  private String[] LabelMjestoProps = new String[] {"Mjesto", "", "5760", "1040", "1440", "220", "",
+  private String[] LabelMjestoProps = new String[] {"Mjesto/datum izdavanja", "", "5760", "1040", "1440", "220", "",
      "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement Line1;
   private String[] Line1Props = new String[] {"", "", "10760", "620", "0", "340", "", "", ""};
