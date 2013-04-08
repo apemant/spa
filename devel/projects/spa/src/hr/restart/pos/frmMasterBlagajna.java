@@ -715,7 +715,7 @@ public class frmMasterBlagajna extends raMasterDetail {
         javax.swing.JOptionPane.showMessageDialog(raMaster,"Nemate prava na brisanje dokumenta !","Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
   		return false;
   	}
-    return (getMasterSet().getString("STATUS").compareTo("N")==0);
+    return (getMasterSet().getString("STATUS").equalsIgnoreCase("N") && !getMasterSet().getString("FOK").equalsIgnoreCase("D"));
   }
   public boolean DeleteCheckDetail() {
   	if (raUser.getInstance().isSuper() || presBlag.isSuper) {
@@ -1772,9 +1772,11 @@ public class frmMasterBlagajna extends raMasterDetail {
     
     ld.raLocate(dm.getLogotipovi(), "CORG", OrgStr.getKNJCORG(false));
     if (presBlag.isSkladOriented())
-      ld.raLocate(dm.getLogotipovi(), "CORG", ms.getString("CSKL"));
+      if (!ld.raLocate(dm.getLogotipovi(), "CORG", ms.getString("CSKL")))
+        ld.raLocate(dm.getLogotipovi(), "CORG", OrgStr.getKNJCORG(false));
     
     String oibf = dm.getLogotipovi().getString("OIB");
+    System.out.println(dm.getLogotipovi());
     
     DataRow usr = ld.raLookup(dM.getDataModule().getUseri(),"CUSER", ms.getString("CUSER"));
     String oibu = usr.getString("OIB");
@@ -1848,7 +1850,10 @@ public class frmMasterBlagajna extends raMasterDetail {
           ms.setString("FOK", "D");
           ms.setString("FPP", presBlag.getFiskPP(ms));
           ms.setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
-          ms.setTimestamp("DATDOK", Valid.getValid().getToday());
+          String resetSysdat = frmParam.getParam("robno", "fiskDatumGRC", "N",
+            "Postaviti datum kod fiskalizacije GRC (D,N)");
+          if (resetSysdat.equals("D"))
+            ms.setTimestamp("DATDOK", Valid.getValid().getToday());
           ms.saveChanges();
         }
         
