@@ -57,7 +57,7 @@ public class raPRD extends raIzlazTemplate  {
     detail_titel_jed = "Stavka ra\u010Duna za predujam";
     setMasterSet(dm.getZagPrd());
     setDetailSet(dm.getStPrd());
-    
+    raMaster.addOption(rnvFisk, 5, false);
     raDetail.addOption(rnvKartica,4, false);
 //    set_kum_detail(false);
     MP.BindComp();
