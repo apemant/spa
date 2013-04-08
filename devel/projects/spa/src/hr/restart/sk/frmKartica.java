@@ -268,7 +268,7 @@ public class frmKartica extends raMatPodaci {
           and(Condition.equal("CPAR", cpar)).and(raSaldaKonti.isDirect() ? 
               pres.jpk.getCondition() : Condition.none).and(Aus.getVrdokCond(kupci)) + 
           /*(raSaldaKonti.isSimple() ? " AND pokriveno='N'" : " AND pvpok='N'")*/
-         " AND pokriveno!='X' ORDER BY cpar, datdok";
+         " AND pokriveno!='X' ORDER BY cpar, datdosp";
     System.out.println(qstr);
     raIspisKartica.getInstance(raIspisKartica.IOS).setParams(0, 1, kupci, false, dfrom, dto);
     raIspisKartica.getInstance(raIspisKartica.IOS).setKonto(pres.getKonto());
