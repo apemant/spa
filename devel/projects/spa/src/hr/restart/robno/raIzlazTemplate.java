@@ -460,7 +460,14 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       }*/
       
       String nacpl = ms.getString("CNACPL");
-      if (nacpl.length() == 0 || nacpl.equalsIgnoreCase("G"))
+      DataSet rate = Rate.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ms));
+      rate.open();
+      if (rate.getRowCount() == 1)
+        nacpl = rate.getString("CNACPL");
+      else if (rate.getRowCount() > 1)
+        nacpl = "O";
+      
+      if (nacpl.length() == 0 || nacpl.equalsIgnoreCase("G") || nacpl.equalsIgnoreCase("N"))
         nacpl = "G";
       else if (nacpl.equalsIgnoreCase("C") || nacpl.equalsIgnoreCase("È"))
         nacpl = "C";
