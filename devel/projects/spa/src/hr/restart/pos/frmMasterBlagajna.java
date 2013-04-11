@@ -24,6 +24,7 @@ import hr.apis_it.fin._2012.types.f73.RacunZahtjev;
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Pos;
+import hr.restart.baza.Rate;
 import hr.restart.baza.Refresher;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.Stpos;
@@ -1717,7 +1718,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     lookupData ld = lookupData.getlookupData();
     dM dm = dM.getDataModule();
     
-    DataSet ds = Stpos.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ms));
+    DataSet ds = Stpos.getDataModule().getTempSet(Condition.whereAllEqual(key, ms));
     ds.open();
 
     //BigDecimal osnpdv = Aus.zero2;
@@ -1787,7 +1788,14 @@ public class frmMasterBlagajna extends raMasterDetail {
     }
     
     String nacpl = ms.getString("CNACPL");
-    if (nacpl.length() == 0 || nacpl.equalsIgnoreCase("G"))
+    DataSet rate = Rate.getDataModule().getTempSet(Condition.whereAllEqual(key, ms));
+    rate.open();
+    if (rate.getRowCount() == 1)
+      nacpl = rate.getString("CNACPL");
+    else if (rate.getRowCount() > 1)
+      nacpl = "O";
+    
+    if (nacpl.length() == 0 || nacpl.equalsIgnoreCase("G") || nacpl.equalsIgnoreCase("N"))
       nacpl = "G";
     else if (nacpl.equalsIgnoreCase("C") || nacpl.equalsIgnoreCase("È"))
       nacpl = "C";
