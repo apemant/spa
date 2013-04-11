@@ -524,6 +524,11 @@ public class presBlag extends PreSelect {
   
   public static int getFiskNap(DataSet ms) {
     findOJ(ms);
+    if (ms.getString("VRDOK").equals("IZD")) {
+      String io = frmParam.getParam("robno", "fiskNapI-"+myorg.getString("FPP"), "", 
+          "Oznaka naplatnog ureðaja za izdatnice PP " + myorg.getString("FPP") + " (lokalno)", true);
+      if (io != null && io.length() > 0) Aus.getNumber(io);
+    }
     String ur = frmParam.getParam("robno", "fiskNap-"+myorg.getString("FPP"), "1", 
         "Oznaka naplatnog ureðaja PP " + myorg.getString("FPP") + " (lokalno)", true);
     if (ur == null || ur.length() == 0) return 1;
@@ -544,7 +549,7 @@ public class presBlag extends PreSelect {
       return "FISK-" + myorg.getString("CCERT") + "-" + myorg.getString("FPP") + "-" + ms.getString("GOD");
     
     if (!myorg.getString("FPOJED").equals("G") || "GRC|GOT|GRN".indexOf(ms.getString("VRDOK")) < 0) 
-      return "FISK-" + myorg.getString("CCERT") + "-"  + myorg.getString("FPP") + "-" + getFiskNap(ms) + "-" + ms.getString("GOD"); 
+      return "FISK-" + myorg.getString("CCERT") + "-"  + myorg.getString("FPP") + "-" + getFiskNap(ms) + "-" + ms.getString("GOD");
     
     return "FISK-" + myorg.getString("CCERT") + "-" + myorg.getString("FPP") + "-" + getFiskNapG(ms) + "-" + ms.getString("GOD");
   }
