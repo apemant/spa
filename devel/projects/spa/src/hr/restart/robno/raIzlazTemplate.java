@@ -4297,10 +4297,24 @@ System.out.println("findCjenik::else :: "+sql);
 		}
 		return dodatakic;
 	}
+	
+	public static String checkStorno(String vrdok) {
+	  if (vrdok.equals("SRT")) return "ROT";
+	  if (vrdok.equals("SPD")) return "PRD";
+	  if (vrdok.equals("SRC")) return "RAC";
+	  if (vrdok.equals("SGT")) return "GOT";
+	  if (vrdok.equals("SGR")) return "GRN";
+	  return vrdok;
+	}
 
 	public void prepareQuery(String odabrano) {
-	  if (odabrano.equals("SRT")) odabrano = "ROT";
+	  odabrano = checkStorno(odabrano);
+	  /*if (odabrano.equals("SRT")) odabrano = "ROT";
 	  if (odabrano.equals("SPD")) odabrano = "PRD";
+	  if (odabrano.equals("SRC")) odabrano = "RAC";
+	  if (odabrano.equals("SGT")) odabrano = "GOT";
+	  if (odabrano.equals("SGR")) odabrano = "GRN";*/
+	  
         System.out.println("Odabrano "+odabrano);
         String year = val.findYear(pressel.getSelRow().
             getTimestamp("DATDOK-to"));

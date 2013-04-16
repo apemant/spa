@@ -123,6 +123,12 @@ public class raOdabirDok extends JraDialog {
       return "SRT";
     }else if (opis.equals("Storno PRD")){
       return "SPD";
+    }else if (opis.equals("Storno RAC")){
+      return "SRC";
+    }else if (opis.equals("Storno GOT")){
+      return "SGT";
+    }else if (opis.equals("Storno GRN")){
+      return "SGR";
     }else if (opis.equals("Raèun")){
       return "RAC";
     }else if (opis.equals("Gotovinski raèun")){
@@ -179,10 +185,10 @@ public class raOdabirDok extends JraDialog {
     else if (vrsta_dok.equals("RAC")) {
     	odabrano=hr.restart.sisfun.frmParam.getParam("robno","selDokOnRAC", "OTP", "Dokument za dohvat na RACu");
     	if (odabrano.equalsIgnoreCase("RN")) {
-      	  zaodabrati = new String[] {"Radni nalog","Otpremnica","Radni nalog po izdatnici","Ponuda","Raèun","Revers","Dostavnica"};
+      	  zaodabrati = new String[] {"Radni nalog","Otpremnica","Radni nalog po izdatnici","Ponuda","Raèun","Revers","Dostavnica", "Storno RAC"};
     	}
     	else {
-    	  zaodabrati = new String[] {"Otpremnica","Radni nalog","Radni nalog po izdatnici","Ponuda","Raèun","Revers","Dostavnica"};
+    	  zaodabrati = new String[] {"Otpremnica","Radni nalog","Radni nalog po izdatnici","Ponuda","Raèun","Revers","Dostavnica", "Storno RAC"};
     	}
     }
     else if (vrsta_dok.equals("ROT")) {
@@ -196,15 +202,15 @@ public class raOdabirDok extends JraDialog {
     else if (vrsta_dok.equals("GRN")) {
     	odabrano=hr.restart.sisfun.frmParam.getParam("robno","selDokOnRAC", "OTP", "Dokument za dohvat na RACu");
     	if (odabrano.equalsIgnoreCase("RN")) {
-    		zaodabrati = new String[] {"Radni nalog","Ponuda","Radni nalog po izdatnici", "Raèun za predujam"};
+    		zaodabrati = new String[] {"Radni nalog","Ponuda","Radni nalog po izdatnici", "Raèun za predujam", "Storno GRN"};
     	}
     	else {
-    		zaodabrati = new String[] {"Ponuda","Radni nalog","Radni nalog po izdatnici", "Raèun za predujam"};
+    		zaodabrati = new String[] {"Ponuda","Radni nalog","Radni nalog po izdatnici", "Raèun za predujam", "Storno GRN"};
     		odabrano = "PON";
     	}
     }
     else if (vrsta_dok.equals("GOT")) {
-      zaodabrati = new String[] {"Ponuda", "Raèun za predujam"};
+      zaodabrati = new String[] {"Ponuda", "Raèun za predujam", "Storno GOT"};
       odabrano = "PON";
     }
 

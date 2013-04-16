@@ -151,14 +151,16 @@ public class SecondChooser extends JraDialog {
 	};
 
 	public void setSelected(String odabrano) {
-	  if (odabrano.equals("SRT")) {
+	  selected = raIzlazTemplate.checkStorno(odabrano);
+	  storno = !selected.equals(odabrano);
+/*	  if (odabrano.equals("SRT")) {
 	    odabrano = "ROT";
 	    storno = true;
 	  } else if (odabrano.equals("SPD")) {
         odabrano = "PRD";
         storno = true;
       } else storno = false;
-	  selected = odabrano;
+	  selected = odabrano;*/
 	}
 
 	public void okSelect() {
