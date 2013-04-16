@@ -2152,9 +2152,9 @@ public class frmMasterBlagajna extends raMasterDetail {
   void showTotalArt() {
   	if (getMasterSet().getRowCount() == 0) return;
   	
-  	VarStr q = new VarStr(getMasterSet().getOriginalQueryString().toLowerCase());
-    q.replace("* from pos", "stpos.cskl, stpos.cart1, stpos.nazart, stpos.kol, stpos.mc, stpos.neto from pos,stpos");
-    q.replace(" where ", " where " + Util.getUtil().getDoc("pos", "stpos") + " and ");
+  	VarStr q = new VarStr(getMasterSet().getOriginalQueryString().toUpperCase());
+    q.replace("* FROM POS", "stpos.cskl, stpos.cart1, stpos.nazart, stpos.kol, stpos.mc, stpos.neto from pos,stpos");
+    q.replace(" WHERE ", " where " + Util.getUtil().getDoc("pos", "stpos") + " and ");
     DataSet ds = Aus.q(q.toString());
     ds.setSort(new SortDescriptor(new String[] {"CART1"}));
     
@@ -2207,9 +2207,9 @@ public class frmMasterBlagajna extends raMasterDetail {
     try {
       totalSet.enableDataSetEvents(false);
       totalTab.stopFire();
-      VarStr q = new VarStr(getMasterSet().getOriginalQueryString().toLowerCase());
-      q.replace("* from pos", "rate.cskl, rate.cnacpl, rate.cbanka, rate.irata from pos,rate");
-      q.replace(" where ", " where " + Util.getUtil().getDoc("pos", "rate") + " and ");
+      VarStr q = new VarStr(getMasterSet().getOriginalQueryString().toUpperCase());
+      q.replace("* FROM POS", "rate.cskl, rate.cnacpl, rate.cbanka, rate.irata from pos,rate");
+      q.replace(" WHERE ", " where " + Util.getUtil().getDoc("pos", "rate") + " and ");
       DataSet ds = Aus.q(q.toString());
       ds.setSort(new SortDescriptor(new String[] {"CNACPL", "CBANKA"}));
       String cnacpl = "", cbanka = "";
