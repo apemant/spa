@@ -202,7 +202,7 @@ public class presKartica extends presCommonSk {
   }
   
   protected void afterPartner(boolean succ) {
-    if (succ) jraDatumfrom.requestFocus();
+    //if (succ) jraDatumfrom.requestFocus();
   }
 
   public Condition getPresCondition() {
