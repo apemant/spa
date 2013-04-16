@@ -154,6 +154,7 @@ public class raIZD extends raIzlazTemplate  {
     zamraciDetail(dm.getStIzd());    
     setMasterSet(dm.getZagIzd());
     setDetailSet(dm.getStIzd());
+    setMasterDeleteMode(DELDETAIL);
     MP.BindComp();
     DP.BindComp();
     ConfigViewOnTable();

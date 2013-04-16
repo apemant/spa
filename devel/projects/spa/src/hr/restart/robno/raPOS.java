@@ -87,12 +87,12 @@ public class raPOS extends raIzlazTemplate  {
     detail_titel_jed = "Stavka razduženja maloprodaje";
     setMasterSet(dm.getZagPos());
     setDetailSet(dm.getStDokiPos());
-    raDetail.addOption(rnvDellAllStav, 3);
+    setMasterDeleteMode(DELDETAIL);
     this.raMaster.addOption(new raNavAction("Pregled materijala", raImages.IMGMOVIE, KeyEvent.VK_F8) {
       public void actionPerformed(java.awt.event.ActionEvent ev) {
         showRequirementsMaster();
       }
-    },4,false);
+    },3,false);
     MP.BindComp();
     DP.BindComp();
   }
