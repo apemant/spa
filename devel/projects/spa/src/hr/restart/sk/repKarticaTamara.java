@@ -163,7 +163,7 @@ public class repKarticaTamara implements raReportData {
   public String getPeriod()
   {
     int year = Aus.getNumber(Util.getUtil().getYear(rik.getLastDay())) - 1;
-    return "\ndospjeli 120 dana prije kraja "+year+". godine";
+    return "\ndospjeli 60 dana prije kraja "+year+". godine";
   }
 
   public String getGlobPartner()
