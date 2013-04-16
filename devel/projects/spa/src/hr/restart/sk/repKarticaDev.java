@@ -20,6 +20,7 @@ package hr.restart.sk;
 import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.robno.repUtil;
+import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
 
@@ -100,16 +101,19 @@ public class repKarticaDev implements raReportData {
   
   public double getDEVID()
   {
+    if (raSaldaKonti.isDomVal(ds)) return 0;
     return ds.getBigDecimal("PVID").doubleValue();
   }
 
   public double getDEVIP()
   {
+    if (raSaldaKonti.isDomVal(ds)) return 0;
     return ds.getBigDecimal("PVIP").doubleValue();
   }
 
   public double getDEVSALDO()
   {
+    if (raSaldaKonti.isDomVal(ds)) return 0;
     return ds.getBigDecimal("PVID").signum() != 0 
     ? ds.getBigDecimal("PVSALDO").doubleValue()
     : ds.getBigDecimal("PVSALDO").negate().doubleValue();
