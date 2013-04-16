@@ -68,6 +68,7 @@ public class raFiskPoslovni extends raUpitLite {
   
   public void componentShow() {
     jtCORG.requestFocusLater();
+    ds.setString("OZNAKA", "");
     //ds.setString("OZNAKA", presBlag.getFiskPP());
   }
   
@@ -87,7 +88,7 @@ public class raFiskPoslovni extends raUpitLite {
         dM.createStringColumn("MJ", "Mjesto", 50),
         dM.createStringColumn("OPCINA", "Opæina", 50),
         dM.createStringColumn("OSTALO", "Ostalo", 50),
-        dM.createStringColumn("RADVRI", "Radno vrijeme", 50),
+        dM.createStringColumn("RADVRI", "Radno vrijeme", 100),
         dM.createTimestampColumn("DATUM", "Datum poèetka primjene")
     });
     ds.open();
