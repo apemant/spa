@@ -51,6 +51,9 @@ public class repFISBIHRN extends repFISBIH {
     //footer
     String row = "Q,"+getLogickiBroj()+",______,_,__;1;Br.RN-fakture "+getBrojRac(ds);
     addLine(row);
+    //depozit
+    row = get_I_line();
+    addLine(row);
     //pocetak
     row = "K,"+getLogickiBroj()+",______,_,__;"+getFBR()+";;;"+getIBK(ds)+";"+getNazPar(ds)+";;"+getAdrPar(ds)+";"+getGradPar(ds)+";";
     addLine(row);
@@ -60,9 +63,16 @@ public class repFISBIHRN extends repFISBIH {
     //kraj racuna @todo razraditi vise nacina placanja
     row = "T,"+getLogickiBroj()+",______,_,__;"+getNacinPlacanja(ds);
     addLine(row);
-    row = "G,"+getLogickiBroj()+",______,_,__;LastReceiptNumber";
+    row = get_G_line();
     addLine(row);
     parFound = false;
+  }
+  public String get_G_line() {
+    return "G,"+getLogickiBroj()+",______,_,__;LastReceiptNumber";
+  }
+  
+  public String get_I_line() {
+    return "";
   }
   public String getFBR() {
     return "";
@@ -75,6 +85,7 @@ public class repFISBIHRN extends repFISBIH {
     return iznos+"";
   }
   public void addLine(String row) {
+    if (row == null || "".equals(row.trim())) return;
     filelines.insertRow(false);
     filelines.setString("LINE", row);    
     filelines.post();
