@@ -28,6 +28,7 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraDialog;
 import hr.restart.util.FileHandler;
 import hr.restart.util.IntParam;
+import hr.restart.util.raDbaseCreator;
 import hr.restart.util.raImages;
 import hr.restart.util.raSkinDialog;
 import hr.restart.util.raSwitchDialog;
@@ -45,6 +46,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BorderFactory;
@@ -108,11 +110,12 @@ public class dlgExit extends JWindow {
     jpContent.setBorder(BorderFactory.
       createMatteBorder(0,2,2,2,panelBorderColor));
       //createBevelBorder(javax.swing.border.BevelBorder.RAISED, Color.white, hr.restart.help.raAbstractShortcutContainer.listSelectionBackground));
-    labels = new JLabel[4];
+    labels = new JLabel[5];
     labels[0] = getLabel(raImages.IMGDLGXBACK, "Povratak", 0, "Zatvara ovu poruku bez akcije");
     labels[1] = getLabel(raImages.IMGDLGXUSER, "Korisnik", 1, "Promjena korisnika");
     labels[2] = getLabel(raImages.IMGDLGXKNJIG, "Knjigovodstvo", 2, "Promjena knjigovodstva");
-    labels[3] = getLabel(raImages.IMGDLGXEXIT, "Izlaz", 3, "Izlaz iz cijelog sustava");
+    labels[3] = getLabel(raImages.IMGDLGXBKP, "Kopija!", 3, "Kopija podataka");
+    labels[4] = getLabel(raImages.IMGDLGXEXIT, "Izlaz", 4, "Izlaz iz cijelog sustava");
     for (int i=0; i<labels.length; i++) jpContent.add(labels[i]);
     jlTitle.setBackground(selBackground);
     jlTitle.setOpaque(true);
@@ -261,7 +264,7 @@ public class dlgExit extends JWindow {
       startFrame.changeUser();
     } else if (res == 2) {
       hr.restart.zapod.dlgGetKnjig.showDlgGetKnjig();
-    } else if (res == 3) {
+    } else if (res == 4) {
       try {
         if (start.exiting()) System.exit(0);
       }
@@ -273,6 +276,32 @@ public class dlgExit extends JWindow {
         } catch (Exception ex2) {
           System.exit(0);
         }
+      }
+    } else if (res == 3) { //backup
+      try {
+        File bdir = new File(System.getProperty("user.dir")+File.separator+"backups");
+        String sufix = ".zip";
+        String bfname = "raBackup-"+new java.sql.Timestamp(System.currentTimeMillis()).toString().substring(0,10);
+        int a = 1;
+        File bfile = null;
+        String orgsufix = sufix;
+        while ((bfile = new File(bdir, bfname+sufix)).exists()) {
+          sufix = "_"+a+orgsufix;
+          a++;
+          if (a > 99) break;
+        }
+        if (!bdir.isDirectory()) bdir.delete();
+        if (!bdir.exists()) bdir.mkdirs();
+        String retVal = raDbaseCreator.dumpTo(bfile);
+        System.err.println(retVal);
+        System.err.println(bfile);
+        if (retVal != null) throw new Exception(retVal);
+        String msg = "Sigurnosna kopija je uspješno napravljena u \n"+bfile.getAbsolutePath()+"\n Izaæi iz programa?";
+        if (JOptionPane.showConfirmDialog(null, msg, "Kopija", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+          exitClicked(4);
+        }
+      } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "***** Sigurnosna kopija nije uspjela - zovite podršku! ***** \n"+e.getMessage());
       }
     } else if (res == 99) {
       final boolean orgSFMain = startFrame.SFMain;
@@ -288,12 +317,12 @@ public class dlgExit extends JWindow {
   }
   private void selectLeft() {
     setSelected(labels[cursorPosition], false);
-    cursorPosition = cursorPosition>0?cursorPosition-1:3;
+    cursorPosition = cursorPosition>0?cursorPosition-1:4;
     setSelected(labels[cursorPosition], true);
   }
   private void selectRight() {
     setSelected(labels[cursorPosition], false);
-    cursorPosition = cursorPosition<3?cursorPosition+1:0;
+    cursorPosition = cursorPosition<4?cursorPosition+1:0;
     setSelected(labels[cursorPosition], true);
   }
 
