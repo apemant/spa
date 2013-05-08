@@ -246,9 +246,14 @@ System.out.println("Usao u nenormalno");
               return false;
         }
         */
-        String cstav = dev?"2":"1";
-        String cskl = frmParam.getParam("pl", "csklPromBL","1","Koja vrsta sheme sadrži konta za promet blagajne");
-        StorageDataSet promet = getKnjizenje().getNewStavka(getKnjizenje().getBrojKonta("BL",cskl,cstav),izvjestaji.getString("KNJIG"));
+        String cbl = izvjestaji.getInt("CBLAG")+"";
+        String dritokonto = frmParam.getParam("blpn", "kontoPromBL"+cbl,"","Konto za promet blagajne "+cbl).trim();
+        if (dritokonto.equals("")) {
+          String cstav = dev?"2":"1";
+          String cskl = frmParam.getParam("pl", "csklPromBL","1","Koja vrsta sheme sadrži konta za promet blagajne");
+          dritokonto = getKnjizenje().getBrojKonta("BL",cskl,cstav);
+        } 
+        StorageDataSet promet = getKnjizenje().getNewStavka(dritokonto,izvjestaji.getString("KNJIG"));
         getKnjizenje().setID(ukid);
         getKnjizenje().setIP(ukip);
         promet.setString("OPIS","Promet ".concat(opisIzvj).concat(empty50).substring(0,50));
