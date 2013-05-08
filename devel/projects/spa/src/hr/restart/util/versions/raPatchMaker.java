@@ -47,7 +47,7 @@ public class raPatchMaker {
     String cvsPath;
     String classesPath;
     String encoding;
-    String[] otherFilesFilter = {".template",".sav", "tabledef.txt",".jrxml"};
+    String[] otherFilesFilter = {".template",".sav", "tabledef.txt",".jrxml",".png",".gif",".jpg"};
     String jarscript;
     String makescript;
     String tmpclassesPath = "tmp_makepatch";
