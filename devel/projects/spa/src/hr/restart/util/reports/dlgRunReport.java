@@ -758,8 +758,8 @@ public class dlgRunReport {
     }
   }
   void enableDlg() {
-    rCC.EnabDisabAll(dlg.getContentPane(),true);
     busy = false;
+    if (dlg!=null) rCC.EnabDisabAll(dlg.getContentPane(),true);
   }
   void disableDlg() {
     busy = true;
@@ -777,6 +777,7 @@ public class dlgRunReport {
     mxR.makeReport();
     if (mode == 0) {
       mxR.print();
+      exitReport();
     } else if (mode == 1) {
       prw.jpw.removeAll();
       prw.jpw.add(mxViewer.getViever(),BorderLayout.CENTER);
