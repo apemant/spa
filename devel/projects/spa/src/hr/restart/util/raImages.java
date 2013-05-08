@@ -111,6 +111,7 @@ public abstract class raImages {
       {"imgDlgXBack",picResPath+"/dlgx_back.png"},
       {"imgDlgXUser",picResPath+"/dlgx_user.png"},
       {"imgDlgXKnjig",picResPath+"/dlgx_knjig.png"},
+      {"imgDlgXBkp",picResPath+"/dlgx_bkp.png"},
       {"imgPogodak",picResPath+"/pogodak.gif"},
       {"imgSticker",picResPath+"/sticker.gif"}
     };
@@ -189,6 +190,7 @@ public abstract class raImages {
   public static String IMGCOPYCURR      = "imgCopyCurr";
   public static String IMGDLGXEXIT      = "imgDlgXExit";
   public static String IMGDLGXBACK      = "imgDlgXBack";
+  public static String IMGDLGXBKP       = "imgDlgXBkp";
   public static String IMGDLGXKNJIG      = "imgDlgXKnjig";
   public static String IMGDLGXUSER      = "imgDlgXUser";
   public static String IMGPOGODAK       = "imgPogodak";
