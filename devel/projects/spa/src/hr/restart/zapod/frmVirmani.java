@@ -25,6 +25,7 @@ import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.lookupFrame;
 import hr.restart.util.raCommonClass;
@@ -49,6 +50,7 @@ import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.TableDataSet;
+import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
 import com.borland.jbcl.layout.XYConstraints;
@@ -849,8 +851,12 @@ public class frmVirmani extends raMatPodaci {
           getRepRunner().removeReport("hr.restart.zapod.repIspVirNew2");
           getRepRunner().removeReport("hr.restart.zapod.repVirman");
           getRepRunner().removeReport("hr.restart.zapod.repVirmani");
+          getRepRunner().removeReport("hr.restart.zapod.repVir3A");
+          getRepRunner().removeReport("hr.restart.zapod.repVir3Ai");
 
-          getRepRunner().addReport("hr.restart.zapod.repDiskZap", "Disketa za FINU");
+          getRepRunner().addReport("hr.restart.zapod.repDiskZap", "Datoteka za e-plaæanje");
+          getRepRunner().addJasper("hr.restart.zapod.repVir3A", "hr.restart.zapod.rep3Virman", "HUB3A.jrxml", "Ispis odabranog HUB 3A");
+          getRepRunner().addJasper("hr.restart.zapod.repVir3Ai", "hr.restart.zapod.rep3Virmani", "HUB3A.jrxml", "Ispis svih HUB 3A");
           /*getRepRunner().addReport("hr.restart.zapod.repIspVir", "Ispis virmana (stari obrazac)");
           getRepRunner().addReport("hr.restart.zapod.repIspVir2", "Ispis svih virmana (stari obrazac)");*/
           getRepRunner().addReport("hr.restart.zapod.repIspVirNewSmall", "Ispis virmana (HUB 1)");
@@ -984,4 +990,33 @@ public class frmVirmani extends raMatPodaci {
       return false;
     }
   }
+
+  public DataSet get3DataSet() {
+    StorageDataSet vir3set = new StorageDataSet();
+    Column[] rqdCols = getRaQueryDataSet().getColumns();
+    for (int i = 0; i < rqdCols.length; i++) {
+      for (int j = 1; j < 4; j++) {
+        vir3set.addColumn(dM.createColumn(rqdCols[i].getColumnName()+"_"+j, rqdCols[i].getCaption(), rqdCols[i].getDefault(), rqdCols[i].getDataType(), rqdCols[i].getSqlType(), rqdCols[i].getPrecision(), rqdCols[i].getScale()));
+      }
+    }
+    vir3set.open();
+    System.out.println(VarStr.join(vir3set.getColumnNames(vir3set.getColumnCount())," # "));
+    String[] cnms = getRaQueryDataSet().getColumnNames(getRaQueryDataSet().getColumnCount());
+    int x = 4;
+    for (getRaQueryDataSet().first(); getRaQueryDataSet().inBounds(); getRaQueryDataSet().next()) {
+      if (x>3) {
+        vir3set.post();
+        vir3set.insertRow(false);
+        x = 1;
+      }
+      for (int i = 0; i < cnms.length; i++) {
+        Variant v = new Variant();
+        getRaQueryDataSet().getVariant(cnms[i], v);
+        vir3set.setVariant(cnms[i]+"_"+x, v);
+      }
+      x++;
+    }
+    return vir3set;
+  }
+  
 }
