@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.startFrame;
 
 import java.awt.AWTEvent;
@@ -277,6 +278,9 @@ public class _Main extends hr.restart.util.startFrame {
     jmPrometi.add(hr.restart.robno._Main.getMesklaMenu(this));
     jmPrometi.add(hr.restart.robno._Main.getNarMenu(this));
     jmPrometi.add(hr.restart.robno._Main.getKonsigMenu(this));
+    if (frmParam.getParam("robno", "distron","N", "Koristiti modul distribucije D/N").equals("D")) {
+      jmMain.add(new hr.restart.distrib.menuDistrib(this)); //ai 2013
+    }
     this.setRaJMenuBar(jmMain);
   }
   void jmDelAll_actionPerformed(ActionEvent e) {
