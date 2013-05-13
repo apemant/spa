@@ -590,10 +590,10 @@ public class dM implements DataModule {
     c.setDataType(type);
     c.setSqlType(sqltype);
     c.setPrecision(width);
-    c.setWidth(width);
+    if (width > 0) c.setWidth(width);
     if (type == Variant.STRING && width > 30)
       c.setWidth(30);
-    if (def.length() > 0)
+    if (def != null && def.length() > 0)
       c.setDefault(def);
     if (scale != -1) {
       c.setScale(scale);

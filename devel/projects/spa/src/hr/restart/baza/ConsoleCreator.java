@@ -850,6 +850,8 @@ public class ConsoleCreator {
             "hr.restart.baza.Repxdata", "hr.restart.baza.dokidod",
             "hr.restart.baza.Exphead", "hr.restart.baza.Expdata",
             "hr.restart.baza.Rabshema", "hr.restart.baza.Rnser",
-            "hr.restart.baza.Rnus"
+            "hr.restart.baza.Rnus",
+            "hr.restart.baza.Distlist","hr.restart.baza.StDistlist",
+            "hr.restart.baza.Distart","hr.restart.baza.Distkal","hr.restart.baza.StDistkal"
       };
 }

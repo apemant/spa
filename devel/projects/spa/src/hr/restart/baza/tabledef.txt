@@ -1650,3 +1650,76 @@ FKEY;char;30;;;Password
 FPOJED;char;1;;N;Brojaè po fnu 
 FPDV;char;1;;D;Sustav PDV-a
 CCERT;char;12;;;Šifra certifikata
+
+#Distribucija:
+$Distart
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktivan
+CDISTART;int;6;pkey;;Oznaka;15
+CPAR;int;6;yes;;Partner;15
+PJ;int;6;;;Poslovna jedinica;4
+NAZIV;char;50;;;Naziv;15
+MJ;char;30;;;Mjesto;15
+ADR;char;40;;;Adresa;15
+PBR;int;6;;;Poštanski broj;15
+TEL;char;20;;;Telefon;15
+TELFAX;char;20;;;Fax;15
+EMADR;char;60;;;E-mail;50
+SIFDIST;char;5;;;Oznaka distributera
+KOLUL;numeric;15,3;;0;Kol.naruèeno
+KOLIZ;numeric;15,3;;0;Kol.izdano
+KOL;numeric;15,3;;0;Kol.za distribuciju
+CGRART;char;10;;;Grupa;5
+CARTIZDANJA;int;6;yes;;Artikl izdanja
+DATZISP;timestamp;;;;Datum prošle isporuke
+DATIST;timestamp;;;;Datum isteka
+CDISTKAL;int;6;yes;;Kalendar;15
+
+$Distkal
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktivan
+CDISTKAL;int;6;pkey;;Oznaka;15
+OPIS;char;50;;;Opis;15
+CINHERITDISTKAL;int;6;;;Oznaka;15
+CGRART;char;10;;;Grupa;5
+
+$StDistkal
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktivan
+CDISTKAL;int;6;pkey;;Oznaka;15
+DATISP;timestamp;;pkey;;Datum isporuke
+BROJ;int;6;;;Broj;15
+FLAGADD;char;1;;D;Dodaj/Obriši
+
+$Distlist
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CUSER;char;15;;;Operater
+CSKL;char;12;pkey;;Skladište
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj;3
+SYSDAT;date;;;;Datum;*
+SIFDIST;char;5;;;Distributer
+DATUM;date;;;;Datum;12
+
+$StDistlist
+CSKL;char;12;pkey;;Skladište
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj;3
+RBR;short;2;pkey;;Rbr;4
+CDISTART;int;6;;;Oznaka;15
+CPAR;int;6;yes;;Partner;15
+NAZIV;char;50;;;Naziv;15
+MJ;char;30;;;Mjesto;15
+ADR;char;40;;;Adresa;15
+PBR;int;6;;;Poštanski broj;15
+TEL;char;20;;;Telefon;15
+TELFAX;char;20;;;Fax;15
+EMADR;char;60;;;E-mail;15
+SIFDIST;char;5;;;Oznaka distributera
+KOL;numeric;15,3;;0;Kol.za distribuciju
+PROMJENE;char;20;;;Promjene;15
+VEZA;char;50;;;Veza;*
+ID_STAVKA;char;50;;;ID stavka;*
+
+#END Distribucija
