@@ -225,7 +225,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{SIFRAOPISAPLACANJA_1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="440" y="68" width="142" height="13" forecolor="#000000"/>
+				<reportElement x="440" y="66" width="142" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -233,7 +233,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{BROJRACUNAPRIMATELJA_1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="177" y="68" width="236" height="13" forecolor="#000000"/>
+				<reportElement x="174" y="66" width="236" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
@@ -249,7 +249,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{MODELODOBRENJA_1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="457" y="91" width="124" height="13" forecolor="#000000"/>
+				<reportElement x="457" y="90" width="124" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -257,7 +257,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{POZIVNABROJODOBRENJA_1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="440" y="91" width="18" height="13" forecolor="#000000"/>
+				<reportElement x="440" y="90" width="18" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -273,7 +273,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{PRIMATELJ_1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="264" y="9" width="149" height="13" forecolor="#000000"/>
+				<reportElement x="261" y="9" width="149" height="13" forecolor="#000000"/>
 				<box topPadding="1" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
@@ -281,7 +281,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{IZNOS_1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="177" y="25" width="236" height="13" forecolor="#000000"/>
+				<reportElement x="174" y="25" width="236" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
@@ -313,7 +313,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{PLATITELJ_1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="224" y="89" width="194" height="13" forecolor="#000000"/>
+				<reportElement x="224" y="88" width="194" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -409,7 +409,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{BROJRACUNAPRIMATELJA_2}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="177" y="347" width="236" height="13" forecolor="#000000"/>
+				<reportElement x="174" y="347" width="236" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
@@ -449,7 +449,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{PRIMATELJ_2}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="264" y="288" width="149" height="13" forecolor="#000000"/>
+				<reportElement x="261" y="288" width="149" height="13" forecolor="#000000"/>
 				<box topPadding="1" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
@@ -457,7 +457,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{IZNOS_2}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="177" y="304" width="236" height="13" forecolor="#000000"/>
+				<reportElement x="174" y="304" width="236" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
@@ -577,7 +577,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{SIFRAOPISAPLACANJA_3}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="440" y="631" width="142" height="13" forecolor="#000000"/>
+				<reportElement x="440" y="629" width="142" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -585,7 +585,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{BROJRACUNAPRIMATELJA_3}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="177" y="631" width="236" height="13" forecolor="#000000"/>
+				<reportElement x="174" y="629" width="236" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
@@ -601,7 +601,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{MODELODOBRENJA_3}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="457" y="654" width="124" height="13" forecolor="#000000"/>
+				<reportElement x="457" y="653" width="124" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -609,7 +609,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{POZIVNABROJODOBRENJA_3}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="440" y="654" width="18" height="13" forecolor="#000000"/>
+				<reportElement x="440" y="653" width="18" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
@@ -625,7 +625,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{PRIMATELJ_3}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="264" y="572" width="149" height="13" forecolor="#000000"/>
+				<reportElement x="261" y="572" width="149" height="13" forecolor="#000000"/>
 				<box topPadding="1" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="true" pdfEncoding="Cp1250"/>
@@ -633,7 +633,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{IZNOS_3}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="177" y="588" width="236" height="13" forecolor="#000000"/>
+				<reportElement x="174" y="588" width="236" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
@@ -665,7 +665,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{PLATITELJ_3}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="224" y="652" width="194" height="13" forecolor="#000000"/>
+				<reportElement x="224" y="651" width="194" height="13" forecolor="#000000"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false" pdfEncoding="Cp1250"/>
