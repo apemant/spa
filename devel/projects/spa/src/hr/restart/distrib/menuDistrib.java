@@ -3,6 +3,7 @@ package hr.restart.distrib;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import hr.restart.util.PreSelect;
 import hr.restart.util.startFrame;
 
 import javax.swing.JMenu;
@@ -70,7 +71,8 @@ public class menuDistrib extends JMenu {
   }
 
   protected void jmDistKal_actionPerformed(ActionEvent e) {
-    // TODO Auto-generated method stub
+    
+    PreSelect.showPreselect("hr.restart.distrib.presDistkal", "hr.restart.distrib.frmDistkal", "Distribucijski kalendari");
     
   }
 
