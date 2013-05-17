@@ -1055,6 +1055,8 @@ private void testPrintRanges() {
           }//else endswith(FROMSUFIX)
         }//endsWith(TOSUFIX)
       }//for
+//      System.err.println("AddQuery ::: "+addQuery);
+      if (addQuery.length()<5) addQuery = "1 = 1 AND "; 
       addQuery = addQuery.substring(0,addQuery.length()-5);
       lastFilterQuery = refineSQLFilter(addQuery.concat(getUserQuery()));
       String newQuery = orgQuery.concat(lastFilterQuery);
