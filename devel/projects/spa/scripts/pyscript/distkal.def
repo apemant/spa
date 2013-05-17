@@ -1,0 +1,25 @@
+#pause
+#masterdetail
+$Distkal, distrib
+preselect:
+	layout:
+	Grupa: CGRART+NAZGRART+Grupart 75+275
+	focus: CGRART
+master:
+	key: CDISTKAL
+	dataset: Distkal
+	visible: 1,2,3
+	layout:
+	  Oznaka, cdistkal: CDISTKAL 75
+	  Opis, opis: OPIS 350
+	  Naslijeđen od, cinhdistkal: CINHERITDISTKAL+OPIS+Distkal 75+275
+	check: CDISTKAL,OPIS
+detail:
+   key: CDISTKAL, DATISP
+	dataset: StDistkal
+	visible: 2,3
+	layout:
+		Datum, datisp: DATISP 120
+		Broj, broj: BROJ 120
+		Dodaj/Obriši, flagadd: FLAGADD 10
+	check: DATISP, BROJ
