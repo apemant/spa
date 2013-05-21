@@ -1546,7 +1546,7 @@ public class raJPTableView extends JPanel {
 
   void processSelectAction(KeyEvent e) {
     if (selMod != null && !e.isConsumed() && raQueryDataSet != null &&
-        raQueryDataSet.rowCount() > 0 && mpTable.isShowing()) {
+        raQueryDataSet.rowCount() > 0 && mpTable.isShowing() && mpTable.isEnabled()) {
       if (((e.getKeyCode() == e.VK_ENTER && !raSelectTableModifier.space)
           || e.getKeyCode() == e.VK_SPACE) && 
           validateSelection(raQueryDataSet)) {
