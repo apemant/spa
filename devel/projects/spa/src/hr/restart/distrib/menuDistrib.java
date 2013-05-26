@@ -81,8 +81,7 @@ public class menuDistrib extends JMenu {
   }
 
   protected void jmDistList_actionPerformed(ActionEvent e) {
-    // TODO Auto-generated method stub
-    
+  	PreSelect.showPreselect("hr.restart.distrib.presDistList", "hr.restart.distrib.frmDistList", "Distribucijske liste");
   }
 
   protected void jmDistArt_actionPerformed(ActionEvent e) {
