@@ -1,11 +1,24 @@
 package hr.restart.distrib;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.sql.Timestamp;
+
+import javax.swing.JOptionPane;
+
+import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.sql.dataset.QueryDataSet;
+
+import hr.restart.baza.Condition;
 import hr.restart.baza.Distkal;
 import hr.restart.baza.StDistkal;
 import hr.restart.baza.dM;
+import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
+import hr.restart.util.raImages;
 import hr.restart.util.raMasterDetail;
+import hr.restart.util.raNavAction;
 
 
 public class frmDistkal extends raMasterDetail {
@@ -15,6 +28,15 @@ public class frmDistkal extends raMasterDetail {
 
   jpDistkalMaster jpMaster;
   jpDistkalDetail jpDetail;
+  
+  
+  raNavAction navRECALC = new raNavAction("Reklakulacija brojeva",raImages.IMGMOVIE,KeyEvent.VK_F7) {
+    public void actionPerformed(ActionEvent e) {
+    	if (JOptionPane.showConfirmDialog(raDetail.getWindow(), "Rekalkulirati brojeve iza ovog datuma?",
+    			"Rekalkulacija", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
+    		recalc();
+    }
+  };
 
 
   public frmDistkal() {
@@ -56,6 +78,23 @@ public class frmDistkal extends raMasterDetail {
       jpDetail.jcbFlagadd.setSelectedIndex(getDetailSet().getString("FLAGADD").equals("D")?0:1);
     }
   }
+  
+  void recalc() {
+  	Timestamp chg = Util.getUtil().getLastSecondOfDay(getDetailSet().getTimestamp("DATISP"));
+  	
+  	QueryDataSet ds = StDistkal.getDataModule().getTempSet(Condition.equal("CDISTKAL", getMasterSet()));
+  	ds.open();
+  	ds.setSort(new SortDescriptor(new String[] {"DATISP"}));
+  	
+  	int broj = 0;
+  	for (ds.first(); ds.inBounds(); ds.next()) {
+  		if (ds.getTimestamp("DATISP").before(chg)) broj = ds.getInt("BROJ");
+  		else ds.setInt("BROJ", ++broj);
+  	}
+  	ds.saveChanges();
+  	getDetailSet().refresh();
+    getDetailSet().last();
+  }
 
   public boolean ValidacijaDetail(char mode) {
     getDetailSet().setString("FLAGADD",jpDetail.jcbFlagadd.getSelectedIndex()==0?"D":"N");
@@ -76,6 +115,7 @@ public class frmDistkal extends raMasterDetail {
     this.setNaslovMaster("Distribucijski kalendar"); /**@todo: Naslov mastera */
     this.setVisibleColsMaster(new int[] {1, 2, 3});
     this.setMasterKey(new String[] {"CDISTKAL"});
+    this.setMasterDeleteMode(DELDETAIL);
     jpMaster = new jpDistkalMaster(this);
     this.setJPanelMaster(jpMaster);
 
@@ -85,5 +125,6 @@ public class frmDistkal extends raMasterDetail {
     this.setDetailKey(new String[] {"CDISTKAL", "DATISP"});
     jpDetail = new jpDistkalDetail(this);
     this.setJPanelDetail(jpDetail);
+    raDetail.addOption(navRECALC, 4, false);
   }
 }

@@ -2,6 +2,9 @@ package hr.restart.distrib;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.HashSet;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -16,6 +19,7 @@ import hr.restart.util.*;
 public class jpDistkalMaster extends JPanel {
   raCommonClass rcc = raCommonClass.getraCommonClass();
   dM dm = dM.getDataModule();
+  Valid vl = Valid.getValid();
 
   StorageDataSet aaset;
   frmDistkal fDistkal;
@@ -53,7 +57,7 @@ public class jpDistkalMaster extends JPanel {
       "svaki treæi u mjesecu",
       "svaki èetvrti u mjesecu"
       });
-  String[] oDan = {"radni dan","dan","ponedjeljak","utorak","srijeda","èetvrtak","petak","subota","nedjelja"};
+  String[] oDan = {"dan","radni dan","ponedjeljak","utorak","srijeda","èetvrtak","petak","subota","nedjelja"};
   JraComboBox jcbDan = new JraComboBox(oDan);
   JLabel JlBroj = new JLabel("Poèetni broj");
   JraTextField jraBroj = new JraTextField();
@@ -158,11 +162,84 @@ public class jpDistkalMaster extends JPanel {
       JOptionPane.showMessageDialog(getTopLevelAncestor(), "Prvo morate dodati kalendar da bi generirali datume", "Greška", JOptionPane.ERROR_MESSAGE);
       return;
     }
+    
+    if (vl.isEmpty(jraDatumfrom) || vl.isEmpty(jraDatumto) || vl.isEmpty(jraBroj)) return;
+    
+    QueryDataSet old = StDistkal.getDataModule().getTempSet(Condition.equal("CDISTKAL", fDistkal.getMasterSet()));
+    old.open();
+    
+    HashSet dats = new HashSet();
+    for (old.first(); old.inBounds(); old.next()) {
+    	dats.add(old.getTimestamp("DATISP").toString().substring(0, 10));
+    }
+    
     int svaki = jcbSvaki.getSelectedIndex();
     int dan = jcbDan.getSelectedIndex();
     int add = jcbFLAGADD.getSelectedIndex();
-    JOptionPane.showMessageDialog(getTopLevelAncestor(), "Dodati svaki:"+svaki+" dan:"+dan+" add:"+add+
-        " od: "+aaset.getTimestamp("DATUMFROM")+" do:"+aaset.getTimestamp("DATUMTO")+" od broja:"+aaset.getInt("BROJ"));
+    
+    Timestamp from = Util.getUtil().getFirstSecondOfDay(aaset.getTimestamp("DATUMFROM"));
+    Timestamp to = Util.getUtil().getLastSecondOfDay(aaset.getTimestamp("DATUMTO"));
+    
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(from);
+    
+
+    // String[] oDan = {"dan","radni dan","ponedjeljak","utorak","srijeda","èetvrtak","petak","subota","nedjelja"};
+    
+    // "svaki", "svaki drugi",  "svaki prvi u mjesecu",  "svaki drugi u mjesecu",     "svaki treæi u mjesecu",    "svaki èetvrti u mjesecu"
+    
+    boolean even = false;
+    for (cal.setTime(from); !cal.getTime().after(to); cal.set(cal.DATE, cal.get(cal.DATE) + 1)) {	
+    	
+    	int dw = cal.get(cal.DAY_OF_WEEK);
+    	int md = cal.get(cal.DAY_OF_MONTH);
+    	
+    	if (svaki == 0 || svaki == 1) {
+    		if (dan == 1 && (dw == cal.SUNDAY || dw == cal.SATURDAY)) continue;
+    		if (dan == 2 && dw != cal.MONDAY ||
+    			dan == 3 && dw != cal.TUESDAY ||
+    			dan == 4 && dw != cal.WEDNESDAY ||
+    			dan == 5 && dw != cal.THURSDAY ||
+    			dan == 6 && dw != cal.FRIDAY ||
+    			dan == 7 && dw != cal.SATURDAY ||
+    			dan == 8 && dw != cal.SUNDAY) continue;
+    		even = !even;
+    		if (svaki == 1 && !even) continue;
+    	} else if (svaki == 2) {
+    		if (md != 1) continue;
+    	} else if (svaki == 3) {
+    		if (md != 2) continue;
+    	} else if (svaki == 4) {
+    		if (md != 3) continue;
+    	} else if (svaki == 5) {
+    		if (md != 4) continue;
+    	} 
+    	
+    	Timestamp dat = new Timestamp(cal.getTime().getTime());
+    	if (dats.contains(dat.toString().substring(0, 10))) continue;
+    	
+    	old.insertRow(false);
+    	old.setInt("CDISTKAL", fDistkal.getMasterSet().getInt("CDISTKAL"));
+    	old.setTimestamp("DATISP", dat);
+    	old.setString("FLAGADD", add == 0 ? "D" : "N");
+    }
+    
+    int broj = aaset.getInt("BROJ");
+    int pocbr = broj;
+    old.setSort(new SortDescriptor(new String[] {"DATISP"}));
+    for (old.first(); old.inBounds(); old.next()) {
+    	old.setInt("BROJ", broj++);
+    }
+    
+    old.saveChanges();
+    fDistkal.getDetailSet().refresh();
+    fDistkal.getDetailSet().last();
+    JOptionPane.showMessageDialog(fDistkal.raMaster.getWindow(), "Dodani brojevi od " + pocbr + ". do " + (broj-1) + ".",
+    		"Generiranje gotovo", JOptionPane.INFORMATION_MESSAGE);
+    
+    
+    /*JOptionPane.showMessageDialog(getTopLevelAncestor(), "Dodati svaki:"+svaki+" dan:"+dan+" add:"+add+
+        " od: "+aaset.getTimestamp("DATUMFROM")+" do:"+aaset.getTimestamp("DATUMTO")+" od broja:"+aaset.getInt("BROJ"));*/
   }
 
   public void initAA() {
