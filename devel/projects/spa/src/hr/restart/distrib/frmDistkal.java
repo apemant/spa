@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.HashSet;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -150,7 +151,11 @@ public class frmDistkal extends raMasterDetail {
       return false;
     return true;
   }
-
+  
+  public boolean isNewDetailNeeded() {
+    return false;
+ }
+  
   public boolean notUnique() {
     return false;
 //    return vl.notUnique(jpDetail.jraDatisp); //ne radi sa datumom
@@ -162,6 +167,7 @@ public class frmDistkal extends raMasterDetail {
     this.setVisibleColsMaster(new int[] {1, 2, 3});
     this.setMasterKey(new String[] {"CDISTKAL"});
     this.setMasterDeleteMode(DELDETAIL);
+    
     jpMaster = new jpDistkalMaster(this);
     this.setJPanelMaster(jpMaster);
 
@@ -182,118 +188,75 @@ public class frmDistkal extends raMasterDetail {
       "svaki treæi u mjesecu",
       "svaki èetvrti u mjesecu"
       };
-  String[] oDan = {"radni dan","dan","ponedjeljak","utorak","srijeda","èetvrtak","petak","subota","nedjelja"};
+  String[] oDan = {"dan","radni dan","ponedjeljak","utorak","srijeda","èetvrtak","petak","subota","nedjelja"};
   public void autoAdd(int svaki, int dan,
-      int flag, long dod, long ddo, int broj) {
-    getDetailSet().open();
-    getDetailSet().deleteAllRows();
+      int flag, Timestamp from, Timestamp to, int broj) {
+    
+    QueryDataSet old = StDistkal.getDataModule().getTempSet(Condition.equal("CDISTKAL", getMasterSet()));
+    old.open();
+    
+    HashSet dats = new HashSet();
+    for (old.first(); old.inBounds(); old.next()) {
+        dats.add(old.getTimestamp("DATISP").toString().substring(0, 10));
+    }
+    
+    
+    from = Util.getUtil().getFirstSecondOfDay(from);
+    to = Util.getUtil().getLastSecondOfDay(to);
+    
     Calendar cal = Calendar.getInstance();
-    cal.setTimeInMillis(dod);
-    int _br = broj;
-    while (cal.getTimeInMillis() <= ddo) {
-      if (isDateInRange(cal, svaki, dan)) {
-        getDetailSet().insertRow(false);
-        getDetailSet().setInt("CDISTKAL", getMasterSet().getInt("CDISTKAL"));
-        getDetailSet().setTimestamp("DATISP", new Timestamp(cal.getTimeInMillis()));
-        getDetailSet().setString("FLAGADD", flag==0?"D":"N");
-        getDetailSet().setInt("BROJ", _br);
-        getDetailSet().post();
-        _br++;
-      }
-      cal.add(Calendar.DATE, 1);
+    cal.setTime(from);
+    
+    boolean even = false;
+    for (cal.setTime(from); !cal.getTime().after(to); cal.set(cal.DATE, cal.get(cal.DATE) + 1)) {   
+        
+        int dw = cal.get(cal.DAY_OF_WEEK);
+        int md = cal.get(cal.DAY_OF_MONTH);
+        
+        if (svaki == 0 || svaki == 1) {
+            if (dan == 1 && (dw == cal.SUNDAY || dw == cal.SATURDAY)) continue;
+            if (dan == 2 && dw != cal.MONDAY ||
+                dan == 3 && dw != cal.TUESDAY ||
+                dan == 4 && dw != cal.WEDNESDAY ||
+                dan == 5 && dw != cal.THURSDAY ||
+                dan == 6 && dw != cal.FRIDAY ||
+                dan == 7 && dw != cal.SATURDAY ||
+                dan == 8 && dw != cal.SUNDAY) continue;
+            even = !even;
+            if (svaki == 1 && !even) continue;
+        } else if (svaki == 2) {
+            if (md != 1) continue;
+        } else if (svaki == 3) {
+            if (md != 2) continue;
+        } else if (svaki == 4) {
+            if (md != 3) continue;
+        } else if (svaki == 5) {
+            if (md != 4) continue;
+        } 
+        
+        Timestamp dat = new Timestamp(cal.getTime().getTime());
+        if (dats.contains(dat.toString().substring(0, 10))) continue;
+        
+        old.insertRow(false);
+        old.setInt("CDISTKAL", getMasterSet().getInt("CDISTKAL"));
+        old.setTimestamp("DATISP", dat);
+        old.setString("FLAGADD", flag == 0 ? "D" : "N");
     }
-    getDetailSet().saveChanges();
-    JOptionPane.showMessageDialog(jpMaster.getTopLevelAncestor(), "Datumi uspješno generirani!");
-  }
-  
-  private boolean isDateInRange(Calendar cal, int svaki, int dan) {
-    switch (svaki) {
-    case 0: //svaki
-      return isSvaki(cal, dan);
-
-    case 1: 
-      return isSvakiDrugi(cal, dan);
-      
-    case 2: 
-      return isSvakiPrviUM(cal, dan);
-      
-    case 3: 
-      return isSvakiDrugiUM(cal, dan);
-      
-    case 4: 
-      return isSvakiTreciUM(cal, dan);
-
-    case 5: 
-      return isSvakiCetvrtiUM(cal, dan);
-
-    default:
-      break;
+    
+    int pocbr = broj;
+    old.setSort(new SortDescriptor(new String[] {"DATISP"}));
+    for (old.first(); old.inBounds(); old.next()) {
+        old.setInt("BROJ", broj++);
     }
-    return false;
+    
+    old.saveChanges();
+    getDetailSet().refresh();
+    getDetailSet().last();
+    JOptionPane.showMessageDialog(raMaster.getWindow(), "Dodani brojevi od " + pocbr + ". do " + (broj-1) + ".",
+            "Generiranje gotovo", JOptionPane.INFORMATION_MESSAGE);
+
   }
-
-  private boolean isSvakiCetvrtiUM(Calendar cal, int dan) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  private boolean isSvakiTreciUM(Calendar cal, int dan) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  private boolean isSvakiDrugiUM(Calendar cal, int dan) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  private boolean isSvakiPrviUM(Calendar cal, int dan) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  private boolean isSvakiDrugi(Calendar cal, int dan) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  private boolean isSvaki(Calendar cal, int dan) {
-    int dow = cal.get(Calendar.DAY_OF_WEEK);
-    switch (dan) {
-    case 0: //svaki radni dan
-      return !((dow == Calendar.SATURDAY) || (dow == Calendar.SUNDAY));
-      
-    case 1: //svaki dan
-      return true;
-      
-    case 2: 
-      return dow == Calendar.MONDAY;
-      
-    case 3: 
-      return dow == Calendar.TUESDAY;
-
-    case 4: 
-      return dow == Calendar.WEDNESDAY;
-
-    case 5: 
-      return dow == Calendar.THURSDAY;
-      
-    case 6: 
-      return dow == Calendar.FRIDAY;
-      
-    case 7: 
-      return dow == Calendar.SATURDAY;
-
-    case 8: 
-      return dow == Calendar.SUNDAY;
-      
-
-    default:
-      break;
-    }
-    return false;
-  }
-  
+    
   private StorageDataSet _aaset;
   public StorageDataSet getAaSet() {
     if (_aaset == null) {

@@ -191,6 +191,8 @@ public class frmDistList extends raMasterDetail {
   		});
   		diff.open();
   		diff.getColumn("OPIS").setWidth(90);
+  		addDiff(diff, "POPIS PROMJENA", "","");
+  		addDiff(diff, "", "", "");
   		
   		HashSet newc = new HashSet();
   		HashSet oldc = new HashSet();
@@ -363,7 +365,7 @@ public class frmDistList extends raMasterDetail {
   	}
   	
   	if (st.rowCount() == 0) {
-      JOptionPane.showMessageDialog(raMaster.getWindow(), "Pogrešan artikl za distribuciju!", "Greška", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(raMaster.getWindow(), "Ne postoji grupa artikla za distribuciju!", "Greška", JOptionPane.ERROR_MESSAGE);
   	} else {
     	st.saveChanges();
     	refilterDetailSet();
