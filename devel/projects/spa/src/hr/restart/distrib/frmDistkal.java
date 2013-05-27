@@ -1,15 +1,20 @@
 package hr.restart.distrib;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
+import com.borland.dx.sql.dataset.QueryDataSet;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.Distkal;
 import hr.restart.baza.StDistkal;
 import hr.restart.baza.dM;
@@ -17,6 +22,7 @@ import hr.restart.robno.raDateUtil;
 import hr.restart.robno.rdUtil;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.raTableModifier;
+import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raImages;

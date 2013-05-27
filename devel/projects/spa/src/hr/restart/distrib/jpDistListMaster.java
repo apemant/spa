@@ -3,6 +3,7 @@ package hr.restart.distrib;
 import java.awt.BorderLayout;
 
 import hr.restart.baza.dM;
+import hr.restart.robno.rapancart;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
@@ -40,6 +41,12 @@ public class jpDistListMaster extends JPanel {
 	JLabel jlDatum = new JLabel();
   JraTextField jtfDATUM = new JraTextField();
   
+  rapancart rpc = new rapancart() {
+  	public boolean isMyAfterLookup() {
+  		 return false;
+  	}
+  };
+  
   
   public jpDistListMaster(frmDistList md) {
     try {
@@ -58,8 +65,8 @@ public class jpDistListMaster extends JPanel {
   }
 
   private void jbInit() throws Exception {
-    lay.setHeight(136);
-    lay.setWidth(575);
+    lay.setHeight(230);
+    lay.setWidth(655);
     jpDetail.setLayout(lay);
 
     jlDatum.setText("Datum distribucije");
@@ -93,19 +100,28 @@ public class jpDistListMaster extends JPanel {
     jlrNazDist.setSearchMode(1);
     
     
+    
     jpDetail.add(jlCSKL, new XYConstraints(15, 45, -1, -1));
     jpDetail.add(jrfCSKL, new XYConstraints(150, 45, 100, -1));
-    jpDetail.add(jrfNAZSKL, new XYConstraints(260, 45, 275, -1));
-    jpDetail.add(jbCSKL, new XYConstraints(539, 45, 21, 21));
+    jpDetail.add(jrfNAZSKL, new XYConstraints(260, 45, 345, -1));
+    jpDetail.add(jbCSKL, new XYConstraints(609, 45, 21, 21));
     jpDetail.add(jlDist, new XYConstraints(15, 70, -1, -1));
     jpDetail.add(jlrDist, new XYConstraints(150, 70, 100, -1));
-    jpDetail.add(jlrNazDist, new XYConstraints(260, 70, 275, -1));
-    jpDetail.add(jbDist, new XYConstraints(539, 70, 21, 21));
+    jpDetail.add(jlrNazDist, new XYConstraints(260, 70, 345, -1));
+    jpDetail.add(jbDist, new XYConstraints(609, 70, 21, 21));
     jpDetail.add(jlDatum, new XYConstraints(15, 95, -1, -1));
     jpDetail.add(jtfDATUM, new XYConstraints(150, 95, 100, -1));
+    jpDetail.add(rpc, new XYConstraints(0, 130, -1, -1));
     
     BindComponents(fdl.getMasterSet());
     
     this.add(jpDetail, BorderLayout.CENTER);
 	}
+  
+  public void initRpc() {
+  	rpc.setFocusCycleRoot(false);
+    rpc.setMode("DOH");
+    rpc.setDefParam();
+    rpc.InitRaPanCart();
+  }
 }

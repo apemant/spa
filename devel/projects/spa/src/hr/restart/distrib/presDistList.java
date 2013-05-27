@@ -60,7 +60,9 @@ public class presDistList extends PreSelect {
 	
 	public void SetFokus() {
     if (firstTime) resetDefaults();
-    jrfCSKL.requestFocus();
+    if (jrfCSKL.getText().length() == 0)
+    	jrfCSKL.requestFocus();
+    else jlrDist.requestFocus();
 	}
 	
 	public boolean Validacija() {
