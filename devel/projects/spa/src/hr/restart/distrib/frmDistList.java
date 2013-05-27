@@ -373,7 +373,7 @@ public class frmDistList extends raMasterDetail {
       JOptionPane.showMessageDialog(raMaster.getWindow(), "Ne postoji grupa artikla za distribuciju!", "Greška", JOptionPane.ERROR_MESSAGE);
   	} else {
     	st.saveChanges();
-    	refilterDetailSet();
+    	getDetailSet().refresh();
   	}
   }
   
