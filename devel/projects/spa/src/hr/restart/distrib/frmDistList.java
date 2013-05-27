@@ -95,6 +95,11 @@ public class frmDistList extends raMasterDetail {
   }
   
   public boolean DeleteCheckMaster() {
+    if (getMasterSet().getString("STATUS").equals("D")) {
+      JOptionPane.showMessageDialog(raMaster.getWindow(), "Distribucijska lista je obraðena!",
+          "Brisanje liste", JOptionPane.INFORMATION_MESSAGE);
+      return false;
+    }
   	seq = "DIST-" + getMasterSet().getString("GOD") + "-" + getMasterSet().getString("CSKL");
   	brdok = getMasterSet().getInt("BRDOK");
   	return Util.getUtil().checkSeq(seq, Integer.toString(getMasterSet().getInt("BRDOK")));
@@ -307,7 +312,7 @@ public class frmDistList extends raMasterDetail {
   	getMasterSet().setString("STATUS", obr ? "N" : "D");
   	if (raTransaction.saveChangesInTransaction(new QueryDataSet[] {getMasterSet(), dist})) {
   		JOptionPane.showMessageDialog(raMaster.getWindow(), obr ? "Distribucija poništena!" : "Distribucija obraðena!", 
-  				"Ažuriranje distribudije", JOptionPane.INFORMATION_MESSAGE);
+  				"Ažuriranje distribucije", JOptionPane.INFORMATION_MESSAGE);
   		raMaster.getJpTableView().fireTableDataChanged();
   	} else {
   		JOptionPane.showMessageDialog(raMaster.getWindow(), "Greška kod ažuriranja distribucije!", "Greška", JOptionPane.ERROR_MESSAGE);
