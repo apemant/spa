@@ -114,6 +114,10 @@ public class frmDistkal extends raMasterDetail {
     return true;
   }
 
+  public void AfterAfterSaveMaster(char mode) {
+    // ništa
+  }
+  
   public void SetFokusDetail(char mode) {
     if (mode == 'N') {
       jpDetail.jraDatisp.requestFocus();
