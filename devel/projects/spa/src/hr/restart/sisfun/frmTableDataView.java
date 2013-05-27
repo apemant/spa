@@ -673,7 +673,7 @@ public class frmTableDataView extends JraFrame {
     });
   }
 
-  private void print() {
+  public void print() {
     jp.getNavBar().getColBean().setRaJdbTable(jp.getMpTable());
     printer.setInterTitle(getClass().getName());
     printer.setColB(jp.getNavBar().getColBean());
