@@ -40,6 +40,17 @@ public class jpDistkalMaster extends JPanel {
     }
   };
 
+  JLabel jlCgrart = new JLabel();
+  JraButton jbSelCgrart = new JraButton();
+  JlrNavField jlrNazgrart = new JlrNavField() {
+    public void after_lookUp() {
+    }
+  };
+  JlrNavField jlrCgrart = new JlrNavField() {
+    public void after_lookUp() {
+    }
+  };
+  
   JPanel jpAutoAdd = new JPanel();
   XYLayout aalay = new XYLayout();
   
@@ -55,6 +66,8 @@ public class jpDistkalMaster extends JPanel {
   JLabel jlAkcija = new JLabel("Akcija");
   JraComboBox jcbFLAGADD = new JraComboBox(new String[] {"Dodaj","Izuzmi"});
   JButton jbGen = new JButton("Generiraj datume");
+  
+  
   
   public jpDistkalMaster(frmDistkal md) {
     try {
@@ -73,6 +86,7 @@ public class jpDistkalMaster extends JPanel {
     jraDatumfrom.setDataSet(fDistkal.getAaSet());
     jraDatumto.setDataSet(fDistkal.getAaSet());
     jraBroj.setDataSet(fDistkal.getAaSet());
+    jlrCgrart.setDataSet(ds);
 
   }
 
@@ -101,6 +115,22 @@ public class jpDistkalMaster extends JPanel {
     jlrOpis.setNavProperties(jlrCinheritdistkal);
     jlrOpis.setSearchMode(1);
 
+    jbSelCgrart.setText("...");
+    jlCgrart.setText("Grupa");
+
+    jlrCgrart.setColumnName("CGRART");
+    jlrCgrart.setColNames(new String[] {"NAZGRART"});
+    jlrCgrart.setTextFields(new JTextComponent[] {jlrNazgrart});
+    jlrCgrart.setVisCols(new int[] {0, 1}); /**@todo: Dodati visible cols za lookup frame */
+    jlrCgrart.setSearchMode(0);
+    jlrCgrart.setRaDataSet(dm.getGrupart());
+    jlrCgrart.setNavButton(jbSelCgrart);
+
+    jlrNazgrart.setColumnName("NAZGRART");
+    jlrNazgrart.setNavProperties(jlrCgrart);
+    jlrNazgrart.setSearchMode(1);
+    
+    
     jpDetail.add(jbSelCinheritdistkal, new XYConstraints(510, 70, 21, 21));
     jpDetail.add(jlCdistkal, new XYConstraints(15, 20, -1, -1));
     jpDetail.add(jlCinhdistkal, new XYConstraints(15, 70, -1, -1));
@@ -110,6 +140,10 @@ public class jpDistkalMaster extends JPanel {
     jpDetail.add(jraCdistkal, new XYConstraints(150, 20, 75, -1));
     jpDetail.add(jraOpis, new XYConstraints(150, 45, 355, -1));
     
+    jpDetail.add(jbSelCgrart, new XYConstraints(510, 95, 21, 21));
+    jpDetail.add(jlCgrart, new XYConstraints(15, 95, -1, -1));
+    jpDetail.add(jlrCgrart, new XYConstraints(150, 95, 75, -1));
+    jpDetail.add(jlrNazgrart, new XYConstraints(230, 95, 275, -1));
 
     jraDatumfrom.setColumnName("DATUMFROM");
     jraDatumto.setColumnName("DATUMTO");
@@ -140,7 +174,7 @@ public class jpDistkalMaster extends JPanel {
     jpAutoAdd.add(jlAkcija, new XYConstraints(300, 65, -1, -1));
     jpAutoAdd.add(jcbFLAGADD, new XYConstraints(350, 65, 145, -1));
     jpAutoAdd.add(jbGen, new XYConstraints(350, 95, 145, -1));
-    jpDetail.add(jpAutoAdd, new XYConstraints(5, 100, 531, 155));
+    jpDetail.add(jpAutoAdd, new XYConstraints(5, 125, 531, 155));
 
     BindComponents(fDistkal.getMasterSet());
     
