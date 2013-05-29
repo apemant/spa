@@ -89,6 +89,7 @@ public class repBlagIzvUplatnice implements sg.com.elixir.reportwriter.datasourc
     return oznaka;
   }
   public String getBROJKONTA() {
+    if (!ds.getString("BROJKONTA").trim().equals("")) return ds.getString("BROJKONTA");
     String stavka = ds.getString("STAVKA");
     String cskl = ds.getString("CSKL");
 //    System.out.println("stavka : " + stavka);
