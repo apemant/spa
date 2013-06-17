@@ -1701,6 +1701,8 @@ BRDOK;int;6;pkey;;Broj;3
 SYSDAT;date;;;;Datum;*
 SIFDIST;char;5;;;Distributer
 DATUM;date;;;;Datum;12
+CART;int;6;;;Artikl
+STATUS;char;1;;N;Status
 
 $StDistlist
 CSKL;char;12;pkey;;Skladište
