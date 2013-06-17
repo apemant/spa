@@ -140,6 +140,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 
   public void componentShow() {
     tds.open();
+    tds.setString("VRDOK", "GRC");
     tds.setTimestamp("pocDatum", vl.getToday());
     tds.setTimestamp("zavDatum", vl.getToday());
     tds.setInt("POCBROJ",0);
@@ -220,7 +221,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 
     boolean isPdv = frmParam.getParam("pos", "pdvRekap", "N",
         "Ispis poreza na rekapitulaciji uplata (D,N)").equalsIgnoreCase("D");
-
+    
     porezSet.open();
     porezSet.empty();
     
@@ -335,8 +336,12 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     if (qds.isEmpty()) setNoDataAndReturnImmediately();
     
     isOk = true;
+    
+    String brdok = "brdok";
+    if (presBlag.isFiskal("GRC", tds.getString("CSKL")))
+      brdok = "fbr";
 
-    String upitString2 = "SELECT min(pos.brdok) as mindok, max(pos.brdok) as maxdok, min(pos.datdok) as mindat, max(pos.datdok) as maxdat "+
+    String upitString2 = "SELECT min(pos." + brdok + ") as mindok, max(pos." + brdok + ") as maxdok, min(pos.datdok) as mindat, max(pos.datdok) as maxdat "+
                          "FROM pos, rate "+
                          "WHERE pos.cskl = rate.cskl "+
                          "AND pos.vrdok = rate.vrdok "+
@@ -460,12 +465,18 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   }
 
   public String getPrviBroj(){
-    if (jrbDatum.isSelected()) return tds.getString("CSKL")+"-"+ vl.maskZeroInteger(Integer.decode(minDok+""),6);
+    if (jrbDatum.isSelected()) return 
+      presBlag.isFiskal(tds) 
+      ? minDok + "-" + presBlag.getFiskPP(tds) + "-" + presBlag.getFiskNapG(tds)
+      : tds.getString("CSKL")+"-"+ vl.maskZeroInteger(Integer.decode(minDok+""),6);
     return tds.getString("CSKL")+"-"+ vl.maskZeroInteger(Integer.decode(tds.getInt("POCBROJ")+""),6);
   }
 
   public String getZadnjiBroj(){
-    if (jrbDatum.isSelected()) return tds.getString("CSKL")+"-"+ vl.maskZeroInteger(Integer.decode(maxDok+""),6);
+    if (jrbDatum.isSelected()) return
+      presBlag.isFiskal(tds) 
+      ? maxDok + "-" + presBlag.getFiskPP(tds) + "-" + presBlag.getFiskNapG(tds)
+      : tds.getString("CSKL")+"-"+ vl.maskZeroInteger(Integer.decode(maxDok+""),6);
     return tds.getString("CSKL")+"-"+ vl.maskZeroInteger(Integer.decode(tds.getInt("ZAVBROJ")+""),6);
   }
 
@@ -896,7 +907,8 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 
 //    finalSet.open();
 
-    tds.setColumns(new Column[] {dm.createStringColumn("CSKL","Skladište",10),
+    tds.setColumns(new Column[] {dm.createStringColumn("VRDOK","VD",3),
+                                 dm.createStringColumn("CSKL","Skladište",10),
                                  dm.createStringColumn("CPRODMJ","Prodajno mjesto",10),
                                  dm.createStringColumn("CBLAGAJNIK","Blagajnik",10),
                                  dm.createStringColumn("CUSER","Korisnik",15),
