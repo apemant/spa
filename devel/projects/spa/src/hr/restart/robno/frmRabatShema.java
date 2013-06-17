@@ -284,7 +284,7 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
   
   public void AfterDeleteDetail() {
     if (raWebSync.active && raWebSync.isWeb(delCart)) {
-      raWebSync.updatePopust(getMasterSet().getString("CPAR"), Integer.toString(delCart), Aus.zero0);
+      raWebSync.updatePopust(Integer.toString(getMasterSet().getInt("CPAR")), Integer.toString(delCart), Aus.zero0);
     }
   }
   
@@ -309,9 +309,14 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
       multiply(Aus.one0.subtract(r2.movePointLeft(2))).
       multiply(Aus.one0.subtract(r3.movePointLeft(2)));
       
-      raWebSync.updatePopust(getMasterSet().getString("CPAR"), Integer.toString(delCart),
+      raWebSync.updatePopust(Integer.toString(getMasterSet().getInt("CPAR")), Integer.toString(delCart),
           Aus.one0.subtract(uk).movePointRight(2).setScale(2, BigDecimal.ROUND_HALF_UP));
     }
+  }
+  
+  public boolean Validacija(char mode) {
+    delCart = getDetailSet().getInt("CART");
+    return true;
   }
   
   public void SetFokusIzmjena() {
