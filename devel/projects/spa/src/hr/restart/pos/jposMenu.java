@@ -185,6 +185,9 @@ public class jposMenu extends JMenu {
     	this.add(jmKPR);
     	this.addSeparator();
       this.add(jmZbroj);
+    } else {
+      jmZakljucak.setText("Zakljuèak blagajne");
+      this.add(jmZakljucak);
     }
     if (repFISBIH.isFISBIH()) {
       addSeparator();
