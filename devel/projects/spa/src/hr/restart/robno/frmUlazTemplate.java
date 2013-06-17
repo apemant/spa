@@ -494,9 +494,9 @@ public class frmUlazTemplate extends raMasterDetail {
 		oldMC = getDetailSet().getBigDecimal("SMC");
 		oldCART = getDetailSet().getInt("CART");
 		//		return isFind;
-		if (!isFind)
-			return false;
-		else
+		//if (!isFind)
+		//	return false;
+		//else
 			return localDodatniDetailCheck();
 
 	}
@@ -1012,6 +1012,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	}
 
 	public boolean isUpdateOrDeletePossible() {
+	  if (!isFind) return true;
 		stanjeSet.refresh();
 		return rCD.testKalkulacije(getDetailSet(), stanjeSet);
 	}
