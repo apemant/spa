@@ -236,7 +236,7 @@ public class jpDetBlagajna extends JPanel {
     jLabel2.setForeground(Color.black);
     jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
     jLabel2.setText("jLabel2");
-    jLabel2.setColumnName("BRDOK");
+    jLabel2.setColumnName("FBR");
     xYLayout1.setWidth(750);
     xYLayout1.setHeight(193);
     jPanel2.setLayout(xYLayout3);
