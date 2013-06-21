@@ -69,7 +69,9 @@ public class repIRA implements raReportData {
   public String getBROJDOK() {
     return ds.getInt("RBS") == 0 ? "" : ds.getString("BROJDOK");
   }
-
+  public String getEXTBRDOK() {
+    return ds.getInt("RBS") == 0 ? "" : ds.getString("EXTBRDOK");
+  }
   public String getDATUM() {
     return ds.getInt("RBS") == 0 ? "" : rui.rdu.dataFormatter(ds.getTimestamp("DATDOK"));
   }
