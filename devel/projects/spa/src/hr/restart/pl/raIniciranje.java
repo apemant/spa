@@ -273,6 +273,14 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
           Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(oj4))
           .and(Condition.equal("AKTIV", "D"))
         );
+    return cpOFR(rpl, ds.getString("CORG"), oj4);
+    
+  }
+  public static boolean cpOFR(String cradnik, String oj, String oj4) {
+    QueryDataSet rpl = Radnicipl.getDataModule().getTempSet(Condition.equal("CRADNIK", cradnik));
+    return cpOFR(rpl, oj, oj4);
+  }
+  public static boolean cpOFR(QueryDataSet rpl, String oj, String oj4) {
     rpl.open();
     QueryDataSet erpl = Radnicipl.getDataModule().getTempSet(Condition.nil);
     QueryDataSet erad = Radnici.getDataModule().getTempSet(Condition.nil);
@@ -286,7 +294,7 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
       rpl.copyTo(erpl);
       erpl.setString("CRADNIK", newcrad);
       erpl.setString("PARAMETRI", orgcrad);
-      erpl.setString("CORG", ds.getString("CORG"));
+      erpl.setString("CORG", oj);
       erpl.post();
       //radnici
       QueryDataSet radnik = Radnici.getDataModule().getTempSet(Condition.equal("CRADNIK", orgcrad));
@@ -294,11 +302,11 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
       erad.insertRow(false);
       radnik.copyTo(erad);
       erad.setString("CRADNIK", newcrad);
-      erad.setString("CORG", ds.getString("CORG"));
+      erad.setString("CORG", oj);
       erad.post();
       //odbici
       QueryDataSet odbici = Aus.q("SELECT * FROM Odbici where ckey='"+orgcrad+"' and EXISTS (select * from vrsteodb " +
-      		"WHERE odbici.cvrodb = vrsteodb.cvrodb and nivoodb like 'RA%')");
+          "WHERE odbici.cvrodb = vrsteodb.cvrodb and nivoodb like 'RA%')");
       odbici.open();
       for (odbici.first(); odbici.inBounds(); odbici.next()) {
         eodb.insertRow(false);
