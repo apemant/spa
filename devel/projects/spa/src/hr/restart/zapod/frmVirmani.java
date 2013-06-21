@@ -18,6 +18,7 @@
 package hr.restart.zapod;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raDelayWindow;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
@@ -36,6 +37,7 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
@@ -363,14 +365,14 @@ public class frmVirmani extends raMatPodaci {
    * @param p2 Na teret racuna
    * @param p3 Svrha doznake
    * @param p4 U korist racuna
-   * @param p5 Broj racuna na teret
+   * @param p5 Broj racuna na teret ili IBAN
    * @param p6 Nacin izvrs
    * @param p7 Poziv na broj (zaduz.) 1
    * @param p8 Poziv na broj (zaduz.) 2
    * @param p9 Sifra 1
    * @param p10 Sifra 2
    * @param p11 Sifra 3
-   * @param p12 Broj racuna u korist
+   * @param p12 Broj racuna u korist ili IBAN
    * @param p13 Poziv na broj (odobr.) 1
    * @param p14 Poziv na broj (odobr.) 2
    * @param p15 Iznos
@@ -843,6 +845,7 @@ public class frmVirmani extends raMatPodaci {
 
         try {
           getRepRunner().removeReport("hr.restart.zapod.repDiskZap");
+          getRepRunner().removeReport("hr.restart.zapod.repDiskZapUN");
           /*getRepRunner().removeReport("hr.restart.zapod.repIspVir");
           getRepRunner().removeReport("hr.restart.zapod.repIspVir2");*/
           getRepRunner().removeReport("hr.restart.zapod.repIspVirNewSmall");
@@ -854,8 +857,9 @@ public class frmVirmani extends raMatPodaci {
           getRepRunner().removeReport("hr.restart.zapod.repVir3A");
           getRepRunner().removeReport("hr.restart.zapod.repVir3Ai");
 
-          getRepRunner().addReport("hr.restart.zapod.repDiskZap", "Datoteka za e-plaæanje");
-          getRepRunner().addJasper("hr.restart.zapod.repVir3A", "hr.restart.zapod.rep3Virman", "HUB3A.jrxml", "Ispis odabranog HUB 3A");
+          getRepRunner().addReport("hr.restart.zapod.repDiskZapUN", "Datoteka za e-plaæanje (IBAN)");
+          getRepRunner().addReport("hr.restart.zapod.repDiskZap", "Stara datoteka za e-plaæanje");
+//          getRepRunner().addJasper("hr.restart.zapod.repVir3A", "hr.restart.zapod.rep3Virman", "HUB3A.jrxml", "Ispis odabranog HUB 3A");
           getRepRunner().addJasper("hr.restart.zapod.repVir3Ai", "hr.restart.zapod.rep3Virmani", "HUB3A.jrxml", "Ispis svih HUB 3A");
           /*getRepRunner().addReport("hr.restart.zapod.repIspVir", "Ispis virmana (stari obrazac)");
           getRepRunner().addReport("hr.restart.zapod.repIspVir2", "Ispis svih virmana (stari obrazac)");*/
@@ -996,7 +1000,11 @@ public class frmVirmani extends raMatPodaci {
     Column[] rqdCols = getRaQueryDataSet().getColumns();
     for (int i = 0; i < rqdCols.length; i++) {
       for (int j = 1; j < 4; j++) {
-        vir3set.addColumn(dM.createColumn(rqdCols[i].getColumnName()+"_"+j, rqdCols[i].getCaption(), rqdCols[i].getDefault(), rqdCols[i].getDataType(), rqdCols[i].getSqlType(), rqdCols[i].getPrecision(), rqdCols[i].getScale()));
+        int phck = 0;
+//        if (rqdCols[i].getColumnName().equalsIgnoreCase("PNBZ1")||rqdCols[i].getColumnName().equalsIgnoreCase("PNBO1")) {
+//          phck = 2;
+//        }
+        vir3set.addColumn(dM.createColumn(rqdCols[i].getColumnName()+"_"+j, rqdCols[i].getCaption(), rqdCols[i].getDefault(), rqdCols[i].getDataType(), rqdCols[i].getSqlType(), rqdCols[i].getPrecision()+phck, rqdCols[i].getScale()));
       }
     }
     vir3set.open();
@@ -1012,6 +1020,13 @@ public class frmVirmani extends raMatPodaci {
       for (int i = 0; i < cnms.length; i++) {
         Variant v = new Variant();
         getRaQueryDataSet().getVariant(cnms[i], v);
+        if (cnms[i].equalsIgnoreCase("PNBZ1")||cnms[i].equalsIgnoreCase("PNBO1")) {
+//          v.setString("HR"+v.getString()); //yhaaack!!
+          v.setString(repDiskZapUN.dodajHR(v.getString()));
+        }
+        if (cnms[i].equalsIgnoreCase("BRRACNT")||cnms[i].equalsIgnoreCase("BRRACUK")) {
+          v.setString(getIBAN_HR(v.getString(), frmParam.getParam("zapod", "niceIBAN", "D", "Prikazati na virmanima IBAN razdvojen na cetvorke").equalsIgnoreCase("D"))); //yhaaack!!
+        }
         vir3set.setVariant(cnms[i]+"_"+x, v);
       }
       x++;
@@ -1019,4 +1034,71 @@ public class frmVirmani extends raMatPodaci {
     return vir3set;
   }
   
+  public static String checkIBAN_HR(String ibanbrr, boolean nice) {
+    String brr = ibanbrr.trim().substring(4);
+    String calcIBAN = getIBAN_HR(brr, false);
+    StringBuffer cleanIBAN = new StringBuffer("HR");
+    char[] ccIBAN = ibanbrr.toCharArray();
+    for (int i = 2; i < ccIBAN.length; i++) {
+      if (Character.isDigit(ccIBAN[i])) cleanIBAN.append(ccIBAN[i]);
+    }
+    if (calcIBAN.equals(cleanIBAN.toString())) {
+      return nice?makeNiceIBAN(calcIBAN):calcIBAN;
+    } else return "KRIVI IBAN!!!";
+  }
+  public static String getIBAN_HR(String brr, boolean nice) {
+    if (brr.trim().toUpperCase().startsWith("HR")) return checkIBAN_HR(brr, nice); //vec je iban
+    String iban = "";
+    StringBuffer bbrr = new StringBuffer(); //H=17, R=27 HR00 = 172700
+    char[] cbrr = brr.toCharArray();
+    for (int i = 0; i < cbrr.length; i++) {
+      if (Character.isDigit(cbrr[i])) bbrr.append(cbrr[i]);
+    }
+    String iban0 = bbrr.toString();
+    bbrr.append("172700");
+    String sD = new BigInteger(bbrr.toString())+"";
+    StringBuffer bD = new StringBuffer(sD);
+    for (int i = 9; i < bD.length(); i=i+8) {
+      bD.insert(i, "-");
+    }
+    StringTokenizer toks = new StringTokenizer(bD.toString(), "-");
+    String sMod = "";
+    while (toks.hasMoreTokens()) {
+      String N = toks.nextToken();
+      int m = new BigInteger(sMod+N).mod(new BigInteger("97")).intValue();
+      sMod = (m<10?"0":"")+m;
+    }
+    int mod = 98-Integer.parseInt(sMod);
+    iban="HR"+(mod<10?"0":"")+mod+iban0;
+    if (nice) {
+      iban = makeNiceIBAN(iban);
+    }
+    return iban;
+  }
+
+  private static String makeNiceIBAN(String iban) {
+    StringBuffer s = new StringBuffer(iban);
+    for (int i = 4; i < s.length(); i=i+5) {
+      s.insert(i, ' ');
+    }
+    iban = s.toString();
+    return iban;
+  }
+
+  public static void main(String[] args) {
+    String[] chks = new String[] {"10010051863000160",
+        "10010051700036001",
+        "2402006-1100033007",
+        "2402006-1031262160",
+        " HR121-00 100 51 - 86 3000160",
+        "HR1210110051863000160"};
+    for (int i = 0; i < chks.length; i++) {
+      System.out.println(chks[i]+" = "+getIBAN_HR(chks[i],true));
+    }
+//        10010051863000160 = HR1210010051863000160
+//        10010051700036001 = HR7610010051700036001
+//        2402006-1100033007 = HR2624020061100033007
+//        2402006-1031262160 = HR9524020061031262160
+
+  }
 }
