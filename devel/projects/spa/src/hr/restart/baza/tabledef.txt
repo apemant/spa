@@ -1651,6 +1651,36 @@ FPOJED;char;1;;N;Brojaè po fnu
 FPDV;char;1;;D;Sustav PDV-a
 CCERT;char;12;;;Šifra certifikata
 
+$Virmani
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+APP;char;10;pkey;;Aplikacija;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+CKEY;char;30;pkey;;Identifikator
+RBR;short;2;pkey;;RBR
+JEDZAV;char;20;;;Jedinica zavoda;15
+NATERET;char;100;;;Na teret raèuna;30
+SVRHA;char;100;;;Svrha doznake;30
+UKORIST;char;100;;;U korist raèuna;30
+BRRACNT;char;30;;;Broj raèuna na teret
+NACIZV;char;4;;;Naèin izvrš
+PNBZ1;char;4;;;Poziv na broj (zaduž.) 1
+PNBZ2;char;30;;;Poziv na broj (zaduž.) 2
+SIF1;char;4;;;Šifra 1
+SIF2;char;4;;;Šifra 2
+SIF3;char;4;;;Šifra 3
+BRRACUK;char;30;;;Broj raèuna u korist
+PNBO1;char;4;;;Poziv na broj (odobr.) 1
+PNBO2;char;30;;;Poziv na broj (odobr.) 2
+IZNOS;numeric;17,2;;0;Iznos;15
+MJESTO;char;30;;;Mjesto
+DATUMIZV;date;;;;Datum izvršenja;10
+DATUMPR;date;;;;Datum predaje;10
+IBANNT;char;30;;;IBAN raèuna na teret
+IBANUK;char;30;;;IBAN raèuna u korist
+IDX=ckey
+IDX=rbr
+
 #Distribucija:
 $Distart
 LOKK;char;1;;N;Lokk;*
@@ -1701,7 +1731,7 @@ BRDOK;int;6;pkey;;Broj;3
 SYSDAT;date;;;;Datum;*
 SIFDIST;char;5;;;Distributer
 DATUM;date;;;;Datum;12
-CART;int;6;;;Artikl
+CART;int;6;;;Artikal
 STATUS;char;1;;N;Status
 
 $StDistlist

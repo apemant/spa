@@ -16,16 +16,36 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
-import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.dx.sql.dataset.QueryDescriptor;
 
 
 
-public class Virmani extends KreirDrop implements DataModule {
+public class Virmani extends KreirDrop {
+  private static Virmani virmaniclass;
+  
+  QueryDataSet virmani = new raDataSet();
+  
+  public static Virmani getDataModule() {
+    if (virmaniclass == null) {
+      virmaniclass = new Virmani();
+    }
+    return virmaniclass;
+  }
 
+  public QueryDataSet getQueryDataSet() {
+    return virmani;
+  }
+
+  public Virmani() {
+    try {
+      modules.put(this.getClass().getName(), this);
+      initModule();
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+  }
+/*
   dM dm  = dM.getDataModule();
   private static Virmani Virmaniclass;
 
@@ -320,4 +340,5 @@ public class Virmani extends KreirDrop implements DataModule {
     DefIndex = ddl.getIndices(idx, uidx);
     NaziviIdx = ddl.getIndexNames(idx, uidx);
   }
+  */
 }
