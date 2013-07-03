@@ -1418,8 +1418,11 @@ ST.prn(radninal);
 
 	// ab.f
 	public void afterSetModeMaster(char oldm, char newm) {
-		if (newm == 'B' && MP.panelBasic != null)
+		if (newm == 'B' && MP.panelBasic != null) {
 			MP.panelBasic.jpgetval.disableDohvat();
+			if (MP.panelBasic.rpku != null)
+			  MP.panelBasic.rpku.setInedit(false);
+		}
 	}
 
 	public void SetFocusMasterBefore() {
@@ -1441,6 +1444,9 @@ ST.prn(radninal);
 		// Kosobe.getDataModule().getTempSet("1=0"));
 		// }
 		setupDod();
+		
+		if (MP.panelBasic != null && MP.panelBasic.rpku != null)
+		  MP.panelBasic.rpku.setInedit(true);
 
 		if (mode == 'N') {
 			pressel.copySelValues();
