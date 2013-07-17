@@ -7,6 +7,7 @@ import hr.restart.baza.dM;
 import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.help.MsgDispatcher;
+import hr.restart.pos.presBlag;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
@@ -155,9 +156,18 @@ public class raWebSync {
   public static void updatePopust(String cpar, String cart, BigDecimal discount) {
     try {
       System.out.println("update popust " + cart + " za " + cpar);
+      
+      DataSet ds = Stanje.getDataModule().getTempSet(getSkladCond().and(Condition.equal("CART", cart)).
+          and(Condition.equal("GOD", Valid.getValid().getKnjigYear("robno"))));
+      ds.open();
+      System.out.println("stanje " + ds);
+      System.out.println("cijena " + ds.getBigDecimal("VC"));
+      BigDecimal disc = ds.getBigDecimal("VC").multiply(discount).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP);
+      System.out.println("popust " + discount + " = " + disc);
+      
       hr.binom.ErpSoap es = new hr.binom.ErpLocator().geterpSoap();
 
-      int resp = es.saveDiscount(apiKey, cpar, cart, discount);
+      int resp = es.saveDiscount(apiKey, cpar, cart, disc);
 
       if (resp < 1) new Exception("Response " + resp).printStackTrace();
     } catch (ServiceException e) {
@@ -211,12 +221,34 @@ public class raWebSync {
     if (nar && cpar > 0)
       dzg.setInt("CPAR", cpar);
     
-    dzg.setTimestamp("DATDOK", new Timestamp(System.currentTimeMillis()));
+    dzg.setTimestamp("DATDOK", new Timestamp(pb.getBillTimestamp().getTime().getTime()));
     dzg.setTimestamp("DVO", dzg.getTimestamp("DATDOK"));
     dzg.setTimestamp("DATDOSP", dzg.getTimestamp("DATDOK"));
     dzg.setString("GOD", hr.restart.util.Util.getUtil().getYear(dzg.getTimestamp("DATDOK")));
     if (nar && cpar == 0)
       dzg.setString("OPIS", "Narucio " + pb.getR1CompanyTitle()); 
+    
+    if (!nar) {
+      dzg.setInt("FBR", pb.getBillNr());
+      dzg.setString("JIR", pb.getJIR());
+      dzg.setString("FPP", presBlag.getFiskPP(dzg));
+      dzg.setInt("FNU", presBlag.getFiskNapG(dzg));
+      dzg.setString("FOK", pb.getJIR() != null && pb.getJIR().length() > 0 ? "D" : "N");
+      
+      if (pb.getOperatorOIB() != null && pb.getOperatorOIB().length() > 0) {
+        if (ld.raLocate(dM.getDataModule().getUseri(), "OIB", pb.getOperatorOIB())) {
+          dzg.setString("CUSER", dM.getDataModule().getUseri().getString("CUSER"));
+        }
+      }
+      
+      if (pb.getR1CompanyOIB() != null && pb.getR1CompanyOIB().length() > 0) {
+        if (ld.raLocate(dM.getDataModule().getKupci(), "OIB", pb.getR1CompanyOIB())) {
+          dzg.setInt("CKUPAC", dM.getDataModule().getKupci().getInt("CKUPAC"));
+        } else if (ld.raLocate(dM.getDataModule().getPartneri(), "OIB", pb.getR1CompanyOIB())) {
+          dzg.setInt("CPAR", dM.getDataModule().getPartneri().getInt("CPAR"));
+        }
+      }
+    }
     
     String[] acc = {"CART", "CART1", "BC", "NAZART", "JM"};
     short rbr = 0;
@@ -237,8 +269,8 @@ public class raWebSync {
       dst.setInt("RBSID", rbr);
       dst.setInt("CART", cart);
       dst.setBigDecimal("KOL", new BigDecimal(count));
-      dst.setBigDecimal("FMC", mc);
-      Aus.set(dst, "FMCPRP", "FMC");
+      dst.setBigDecimal("FC", mc);
+      //Aus.set(dst, "FMCPRP", "FMC");
       
       if (ld.raLocate(dM.getDataModule().getPorezi(), new String[] { "CPOR" },
           new String[] { dM.getDataModule().getArtikli().getString("CPOR") })) {
@@ -274,7 +306,7 @@ public class raWebSync {
         //rKD.stavka.kol = dst.getBigDecimal("KOL");
         //rKD.stavka.fmc = dst.getBigDecimal("FMC");
           
-        rKD.KalkulacijaStavke(nar ? "NKU" : "GOT","KOL",'N',cskl,true);
+        rKD.KalkulacijaStavke(nar ? "NKU" : "GOT","KOL",'N',cskl,false);
         if (!nar) rKD.KalkulacijaStanje("GOT");
         lc.TransferFromClass2DB(dst,rKD.stavka);
         if (!nar) lc.TransferFromClass2DB(sta,rKD.stanje);
