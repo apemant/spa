@@ -17,6 +17,9 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.pos.frmMasterBlagajna;
+import hr.restart.pos.presBlag;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.reports.mxReport;
 
@@ -36,7 +39,7 @@ public class repMxGRN extends mxReport {
   String[] detail = new String[1];
   int width = 40;
   int dbWidth = width/2;
-  String doubleLineSep;
+  String doubleLineSep, specForm;
   hr.restart.robno.sgQuerys sgq = hr.restart.robno.sgQuerys.getSgQuerys();
 
   public repMxGRN() {
@@ -59,6 +62,8 @@ public class repMxGRN extends mxReport {
     ds = reportsQuerysCollector.getRQCModule().getQueryDataSet();
     ds.getColumn("KOL").setDisplayMask("###,###,##0.000");
     ds.open();
+    
+    specForm = frmParam.getParam("pos", "formatBroj", "", "Format broja raèuna na POS-u");
     
 //    sysoutTEST s = new sysoutTEST(false);
 //    s.prn(ds);
@@ -98,7 +103,7 @@ public class repMxGRN extends mxReport {
             findPrintString(ds.getInt("CKUPAC"))+
             "<$newline$>"+
             "\u000E<#"+racunString+"|"+((width-2)/2)+"|center#>\u0014<$newline$>"+ // br."+ds.getInt("BRDOK")+"|39|center#><$newline$>"+//"<#"+getRacunWithR1()+"|39|center#><$newline$>"+
-            "\u000E<#"+getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
+            "\u000E<#"+getBRDOK()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>"+
             doubleLineSep+"<$newline$>"+
             Aut.getAut().getCARTdependable("RBR ŠIFRA   NAZIV<$newline$>",
                                            "RBR OZNAKA        NAZIV<$newline$>",
@@ -137,7 +142,8 @@ public class repMxGRN extends mxReport {
         "<$newline$>"+getPotpis_i_MP(ds.getInt("CKUPAC"))+
         getFooting()+
         getDatumVrijeme() +
-        "<$newline$><$newline$><$newline$>"+
+        "<$newline$>"+ (presBlag.isFiskal(ds) && ds.getString("FOK").equals("D") ? getFisk() : "") +
+        "<$newline$><$newline$>"+
         "<$newline$><$newline$><$newline$>"+
         "<$newline$><$newline$><$newline$>"+
 //        "\u001B\u0069" // epson code
@@ -172,6 +178,31 @@ public class repMxGRN extends mxReport {
 
   public String getFormatBroj(){
     return ru.getFormatBroj();
+  }
+  
+  public String getZKI() {
+    try {
+      return presBlag.getFis(ds).generateZKI(raIzlazTemplate.getRacType(ds));
+    } catch (Exception e) {
+      return "";
+    }
+  }
+  
+  private String getFisk() {
+    System.out.println("fisk string");
+    //System.out.println(frmMasterBlagajna.getInstance().rtype);
+    return "ZKI: " + getZKI() + "<$newline$>" +
+      "JIR: " + ds.getString("JIR") + "<$newline$><$newline$>";
+  }
+  
+  public String getBRDOK() {
+    if (presBlag.isFiskal(ds) && ds.getString("FOK").equals("D")) {
+      return ds.getInt("FBR") + "-" + ds.getString("FPP") + "-" + ds.getInt("FNU");
+    }
+    if (specForm == null || specForm.length() == 0)
+      return Integer.toString(getDataSet().getInt("BRDOK"));
+
+    return Aus.formatBroj(getDataSet(), specForm);
   }
 
   private String getRekPor() {

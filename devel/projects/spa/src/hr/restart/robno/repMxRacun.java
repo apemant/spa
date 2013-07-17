@@ -136,6 +136,9 @@ public class repMxRacun extends mxReport {
     sumaIneto = Aus.zero2;
     sumaMC = Aus.zero2;
     popustMC = Aus.zero2;
+    String knjig = hr.restart.zapod.OrgStr.getKNJCORG(false);
+    String r1 = frmParam.getParam("robno", "izlazObr"+knjig,
+        "R-1", "Vrsta obrasca ispisa raèuna za knjigovodstvo "+knjig);
     getDatum();
     String param = Aut.getAut().getIzlazCART();
 
@@ -202,7 +205,7 @@ public class repMxRacun extends mxReport {
           getPorezRekapitulacija()+getNP()+"<$newline$><$newline$>" + getNapomenaOpis() +addLines()});
     }
 
-    this.setHeader(new String[]{"                                                                                                                                                         "+"<$DoubleWidthON$>"+/*"R-1"+*/"<$DoubleWidthOFF$>"+"<$newline$>"+
+    this.setHeader(new String[]{"                                                                                                                                                         "+"<$DoubleWidthON$>"+r1+/*"R-1"+*/"<$DoubleWidthOFF$>"+"<$newline$>"+
                    "<$Reset$><$CondensedON$>"+getKupac()+getRacun()+getSkladiste()+
                    "----------------------------------------------------------------------------------------------------------------------------------------"+"<$newline$>"+
                    "R.B."+" Šifra               "+" Naziv artikla/usluge                "+"     Kolièina"+"     JM"+"  Popust (%)"+"  Porez (%)"+"        Cijena"+"            Iznos"+"<$newline$>"+
@@ -248,9 +251,13 @@ public class repMxRacun extends mxReport {
     ds.open();
     ds.first();
     String kupacTemp=ds.getInt("CKUPAC")+"";
+    String knjig = hr.restart.zapod.OrgStr.getKNJCORG(false);
+    String r1 = frmParam.getParam("robno", "izlazObr"+knjig,
+        "R-1", "Vrsta obrasca ispisa raèuna za knjigovodstvo "+knjig);
+    
     if(!kupacTemp.equals("0") )
     {
-      racunString = "R-1 RAÈUN";
+      racunString = r1+" RAÈUN";
       brRedKupac = 1;
       ld.raLocate(dm.getKupci(), new String []{"CKUPAC"}, new String []{kupacTemp});
       String firstRow;

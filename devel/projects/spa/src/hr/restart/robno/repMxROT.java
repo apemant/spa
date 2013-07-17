@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
@@ -132,6 +133,9 @@ public class repMxROT extends mxReport {
   {
     getDatum();
     String param = Aut.getAut().getIzlazCART();
+    String knjig = hr.restart.zapod.OrgStr.getKNJCORG(false);
+    String r1 = frmParam.getParam("robno", "izlazObr"+knjig,
+        "R-1", "Vrsta obrasca ispisa raèuna za knjigovodstvo "+knjig);
 
     sumaBP = Aus.zero2;
     sumaSP = Aus.zero2;
@@ -173,7 +177,7 @@ public class repMxROT extends mxReport {
                    "      Grupa      %         Osnovica          Iznos                                                         UKUPNO POREZ   "+formatIznos(sumaSP.add(sumaBP.negate()),14)+"<$newline$>"+
         getPorezRekapitulacija()+getNP()+"<$newline$><$newline$>" + getNapomenaOpis() +addLines()});
 
-    this.setHeader(new String[]{"                                                                                                                                                         "+"<$DoubleWidthON$>"+"R-1"+"<$DoubleWidthOFF$>"+"<$newline$>"+
+    this.setHeader(new String[]{"                                                                                                                                                         "+"<$DoubleWidthON$>"+r1+"<$DoubleWidthOFF$>"+"<$newline$>"+
                    "<$Reset$><$CondensedON$>"+getPartner()+"<$Reset$><$DoubleWidthON$>"+formatStr("RAÈUN-OTPREMNICA br. ",71)+"<$newline$>"+getRacun()+getSkladiste()+
                    "----------------------------------------------------------------------------------------------------------------------------------------"+"<$newline$>"+
                    "R.B."+" Šifra               "+" Naziv artikla/usluge                "+"     Kolièina"+"     JM"+"  Popust (%)"+"  Porez (%)"+"        Cijena"+"            Iznos"+"<$newline$>"+
