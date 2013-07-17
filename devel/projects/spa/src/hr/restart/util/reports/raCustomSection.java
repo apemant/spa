@@ -231,12 +231,17 @@ public class raCustomSection implements raElixirProperties, raElixirPropertyValu
         max = ps.getModel(i).getTop() + ps.getModel(i).getHeight();
     } */
     
+    String fred = frmParam.getParam("robno", "fiskRedSize", "7", "Velièina fonta za elemente fiskalnog raèuna (6-9)");
+    int frs = Aus.getAnyNumber(fred);
+    if (frs < 6) frs = 6;
+    if (frs > 9) frs = 9;
+    
     System.out.println("addFisk " + max);
     
     raReportElement fisk = ps.addModel(TEXT);
     fisk.setControlSource("FISKRED");
     fisk.setFont("Lucida Bright");
-    fisk.setFontSize(7);
+    fisk.setFontSize(frs);
     fisk.setTop(max + 40);
     fisk.setHeight(320);
     fisk.setLeft(0);
