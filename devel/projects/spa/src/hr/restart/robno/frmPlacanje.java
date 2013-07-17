@@ -485,17 +485,17 @@ public class frmPlacanje extends raMatPodaci {
     else if (tmp.compareTo(_Main.nul)==0) {
       insertSingle(master, frmParam.getParam("robno","gotNacPl"));
       qdsRate.saveChanges();
-      return true;
+      return updateMaster(rmd);
     }
     else if (qdsRate.getRowCount()==1 /* && qdsRate.getString("CNACPL").equals(hr.restart.sisfun.frmParam.getParam("robno","gotNacPl"))*/) {
       qdsRate.setBigDecimal("IRATA", master.getBigDecimal("UIRAC"));
       qdsRate.saveChanges();
       master.setString("CNACPL", qdsRate.getString("CNACPL"));
-      return true;
+      return updateMaster(rmd);
     }
     else if (tmp.setScale(2,BigDecimal.ROUND_HALF_UP).compareTo(master.getBigDecimal("UIRAC").setScale(2,BigDecimal.ROUND_HALF_UP))==0) {
-      master.setString("CNACPL", qdsRate.getString("CNACPL"));
-      return true;
+      //master.setString("CNACPL", qdsRate.getString("CNACPL"));
+      return updateMaster(rmd);
     }
     else if (checkAutoNaplata()) {
 //      return true;
@@ -520,7 +520,20 @@ public class frmPlacanje extends raMatPodaci {
       master.setString("CNACPL", qdsRate.getString("CNACPL"));
     rmd.raDetail.requestFocus();
 
+    updateMaster(rmd);
+    
     return justCheckRate(master);
+  }
+  
+  public static boolean updateMaster(raMasterDetail rmd) {
+    DataSet master = rmd.getMasterSet();
+    if (TypeDoc.getTypeDoc().isDocStdoki(master.getString("VRDOK"))) {
+      Valid.getValid().runSQL("UPDATE doki SET cnacpl='" + master.getString("CNACPL") + 
+          "' WHERE " + Condition.whereAllEqual(Util.mkey, master));
+      
+    }
+    
+    return true;
   }
   
   protected static frmPlacanje frmplacanje;
