@@ -16,13 +16,23 @@
 **
 ****************************************************************************/
 package hr.restart.robno;
+import java.awt.event.ActionEvent;
+
 import hr.restart.util.JlrNavField;
+import hr.restart.util.raImages;
+import hr.restart.util.raNavAction;
 
 
 import javax.swing.JOptionPane;
 
 
 public class raPRDkup extends raIzlazTemplate {
+  
+  raNavAction rnvNacinPlac = new raNavAction("Na\u010Din pla\u0107anja",raImages.IMGEXPORT,java.awt.event.KeyEvent.VK_F7) {
+    public void actionPerformed(ActionEvent e) {
+        keyNacinPlac();
+    }
+  };
 
   public void initialiser(){
     what_kind_of_dokument = "PRD";
@@ -54,6 +64,7 @@ public class raPRDkup extends raIzlazTemplate {
     detail_titel_mno = "Stavke ra\u010Duna za predujam";
     detail_titel_jed = "Stavka ra\u010Duna za predujam";
     
+    raDetail.addOption(rnvNacinPlac,4);
     raMaster.addOption(rnvFisk, 5, false);
     setMasterSet(dm.getZagPrdKup());
     setDetailSet(dm.getStPrdKup());
@@ -125,6 +136,10 @@ public class raPRDkup extends raIzlazTemplate {
       JOptionPane.showConfirmDialog(this.raDetail,"Iznos pla\u0107anja je nejednak iznosu ra\u010Duna !","Gre\u0161ka",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
     }
 
+  }
+  
+  public void keyNacinPlac(){
+    frmPlacanje.entryRate(this);
   }
   
   public void ExitPointDetail(char mode){
