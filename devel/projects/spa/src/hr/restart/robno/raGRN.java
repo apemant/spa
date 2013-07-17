@@ -243,6 +243,8 @@ public class raGRN extends raIzlazTemplate  {
     getDetailSet().setString("REZKOL", "D");
   }
   public boolean ValidacijaPrijeIzlazaDetail() {
+    if (!frmPlacanje.checkRate(this)) return false;
+    
   	System.out.println(hr.restart.sisfun.frmParam.getParam
             ("robno","autoOTP","N","Automatska izrada OTP iz RAC-a i GRN-a"));
     if (!frmPlacanje.checkRate(this)) return false;
