@@ -39,8 +39,8 @@ public class menuSklad extends JMenu {
 
   hr.restart.util.startFrame SF;
   JMenuItem jmPRI = new JMenuItem();
-  JMenuItem jmOTP = new JMenuItem();
-  JMenuItem jmIZD = new JMenuItem();
+  public JMenuItem jmOTP = new JMenuItem();
+  public JMenuItem jmIZD = new JMenuItem();
   JMenuItem jmREV = new JMenuItem();
   JMenuItem jmPRV = new JMenuItem();
 
