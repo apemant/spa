@@ -171,13 +171,26 @@ public class repRacunPOS extends mxReport {
        prep = buf.toString();
      }
      
+     String post = frmParam.getParam("pos", "addHeaderAfter", "", 
+           "Dodatni header iza zaglavlja", true);
+     if (post.length() > 0) {
+       String[] parts = new VarStr(post).split('|');
+       VarStr buf = new VarStr();
+       for (int i = 0; i < parts.length; i++)
+         buf.append("<#").append(parts[i]).append('|').
+           append(width).append("|center#><$newline$>");
+       post = buf.toString();
+     }
+     
      String th = frmParam.getParam("pos", "posHeader", "",
          "POS header (1 - poslovnica, knjigovodstvo  2 - obrnuto, ostalo - samo knjigovodstvo)");
-     String header = prep + kh;
+     String header = kh;
      if (th.equals("1") && !kh.equals(ph))
        header = ph + kh;
      if (th.equals("2") && !kh.equals(ph))
        header = kh + ph;
+     
+     header = prep + header + post;
 
      this.setPgHeader(
          (cash ? "\u0007" : "")+header+
@@ -210,7 +223,7 @@ public class repRacunPOS extends mxReport {
 //         "<$newline$>"+
          getBlagajnaOperater(prodMjesto,user)+"<$newline$>"+
          (presBlag.isFiskal(master) && master.getString("FOK").equals("D") ? getFisk() : "") +
-         "<$newline$><$newline$><$newline$>"+
+         "<$newline$><$newline$><$newline$><$newline$><$newline$><$newline$>"+
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
     );
@@ -460,6 +473,10 @@ public class repRacunPOS extends mxReport {
 
   private String jeliR1(int brdok, int ckupac){
     System.out.println("\n\nKUPAC - "+ckupac+"\n\n");
+    String knjig = hr.restart.zapod.OrgStr.getKNJCORG(false);
+    String r1 = frmParam.getParam("robno", "izlazObr"+knjig,
+        "R-1", "Vrsta obrasca ispisa raèuna za knjigovodstvo "+knjig);
+    
     calculatePorez((QueryDataSet)getRekapitulacija(this.getDataSet()));
     if(ckupac != 0){
      /*System.out.println("Refresham...");
@@ -474,7 +491,7 @@ public class repRacunPOS extends mxReport {
             ((!dr.getString("MJ").equals(""))?((dr.getInt("PBR")==0)? "       "+dr.getString("MJ"):dr.getString("MJ")):"")+
             getJMBG(dr);
 
-        kupac += "<$newline$><$newline$><#RAÈUN R-1 br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
+        kupac += "<$newline$><$newline$><#RAÈUN "+r1+" br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
             //"\u000E<#"+ru.getFormatBroj()+"|"+((width-2)/2)+"|center#>\u0014<$newline$>";
         return kupac;
       } System.out.println("Kupac je (ako ga ima) null!!!");
@@ -482,7 +499,8 @@ public class repRacunPOS extends mxReport {
 //    porezString = "";
     
     String ractex = "<$newline$><#RAÈUN br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
-    if (presBlag.isFiskal(master) && !master.getString("FOK").equals("D"))
+    if (presBlag.isFiskal(master) && !master.getString("FOK").equals("D") && 
+        !master.getTimestamp("DATDOK").before(Aus.createTimestamp(2013, 4, 1)))
       ractex = "<$newline$><#PREDRAÈUN br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
     
     return ractex;
