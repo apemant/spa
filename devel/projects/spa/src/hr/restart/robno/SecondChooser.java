@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Partneri;
+import hr.restart.baza.Rate;
 import hr.restart.baza.VTprijenos;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
@@ -127,6 +128,7 @@ public class SecondChooser extends JraDialog {
 	private boolean bpitaozanormativ = false;
     
     private boolean rnlOpis = false;
+    private boolean ponOpis = false;
     
     private boolean transOtp = false;
     private boolean transPnbz = false;
@@ -135,6 +137,8 @@ public class SecondChooser extends JraDialog {
     private boolean copySklad = false;
 
 	private boolean isMultipleDocs = false;
+	
+	private boolean checkCskl = false;
 	
 	private boolean allowMinus = false;
 	
@@ -177,6 +181,8 @@ public class SecondChooser extends JraDialog {
         bprennormativ = false;
         rnlOpis = frmParam.getParam("robno", "rnlTransOpis", "N",
             "Prenijeti opis radnog naloga na raèun (D,N)?").equals("D");
+        ponOpis = frmParam.getParam("robno", "ponTransOpis", "N",
+            "Prenijeti opis ponude na drugi dokument (D,N)?").equals("D");
         
         transOtp = frmParam.getParam("robno", "transBrdokOtp", "D",
             "Prenijeti broj otpremnice na raèun (D,N)").equals("D");
@@ -189,6 +195,9 @@ public class SecondChooser extends JraDialog {
         
         copyDatum = frmParam.getParam("robno", "copyOtpDatum", "N",
         		"Prepisati datum s otpremnice kod prebacivanja u raèun (D,N)").equals("D");
+        
+        checkCskl = frmParam.getParam("robno", "checkCskl", "N",
+                "Provjeriti CSKLART na dokumentu POS (D,N)").equals("D");
         
 		if (DesniSet.getRowCount() > 0) {
 			if (checkZaglavlje()) {
@@ -338,6 +347,9 @@ public class SecondChooser extends JraDialog {
             rIT.getMasterSet().setTimestamp("DATNARIZ", ZaglavljeSet.getTimestamp("DATNARIZ"));
 		}
 		
+		
+		rIT.getMasterSet().setString("CNACPL", ZaglavljeSet.getString("CNACPL"));
+		
         if ((ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS")
         		|| ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("OTP"))
             && (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC") 
@@ -368,6 +380,11 @@ public class SecondChooser extends JraDialog {
      if (fixDOS) {
        dM.copyColumns(ZaglavljeSet, rIT.getMasterSet(), new String[] {"DVO", "DATDOSP"});
      }
+     
+     if (ponOpis && ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("PON")) {
+       rIT.getMasterSet().setString("OPIS", ZaglavljeSet.getString("OPIS"));
+     }
+     
         
 		if (transPnbz && ZaglavljeSet.rowCount() == 1 && ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("PON")
 				&& (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase(
@@ -392,6 +409,37 @@ public class SecondChooser extends JraDialog {
 		if (rIT.raMaster.getMode() != 'I') {
 			rIT.doBeforeSaveMaster(rIT.raMaster.getMode());
 		}
+		
+		// kopiranje rata nakon dodjele broja dokumenta:
+		
+		if ((ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("GOT") ||
+            ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("GRN") ||
+           (ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("PRD") &&
+               ZaglavljeSet.getString("PARAM").equalsIgnoreCase("K")))  &&
+               
+           (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("GOT") ||
+            rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("GRN") ||
+           (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("PRD") &&
+                rIT.getMasterSet().getString("PARAM").equalsIgnoreCase("K")))) {
+         DataSet rate = Rate.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ZaglavljeSet));
+         rate.open();
+         
+         QueryDataSet copy = Rate.getDataModule().getTempSet("1=0");
+         copy.open();
+         
+         for (rate.first(); rate.inBounds(); rate.next()) {
+           copy.insertRow(false);
+           dM.copyColumns(rate, copy);
+           
+           if (storno) copy.setBigDecimal("IRATA", copy.getBigDecimal("IRATA").negate());
+           
+           dM.copyColumns(rIT.getMasterSet(), copy, Util.mkey);
+           copy.setTimestamp("DATDOK", rIT.getMasterSet().getTimestamp("DATDOK"));
+           copy.setTimestamp("DATUM", rIT.getMasterSet().getTimestamp("DATDOK"));
+         }
+         raTransaction.saveChanges(copy);
+       }
+           
 	}
 
 	public boolean checkZaglavlje() {
@@ -1128,7 +1176,7 @@ System.out.println(StavkeSet.getInt("CARt"));
 			  if (!rIT.getMasterSet().getString("VRDOK").equals("PON"))
 			  	ZaglavljeSetTmp.setString("STATIRA", "P");
 			  
-			  if (rIT.getMasterSet().getString("VRDOK").equals("IZD") &&
+			  if (checkCskl && rIT.getMasterSet().getString("VRDOK").equals("IZD") &&
 			  		ZaglavljeSetTmp.getString("VRDOK").equals("POS")) {
 			  	for (findStavkeSet.first(); findStavkeSet.inBounds(); findStavkeSet.next())
 			  		if (!findStavkeSet.getString("STATUS").equals("P")) {
@@ -1309,7 +1357,7 @@ System.out.println(StavkeSet.getInt("CARt"));
 					if (selected.equals("RN")) {
 						prenosStavkiRadnogNaloga();
 					} else {
-						if (selected.equals("POS") && rIT.what_kind_of_dokument.equals("IZD") &&
+						if (checkCskl && selected.equals("POS") && rIT.what_kind_of_dokument.equals("IZD") &&
 								!rIT.getMasterSet().getString("CSKL").equals(findStavkeSet.getString("CSKLART")))
 							continue;
 						StavkeSet.insertRow(true);
