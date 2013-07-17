@@ -213,7 +213,13 @@ public class raTableCopyPopup extends JPopupMenu {
       reset.setEnabled(calc.data.getBigDecimal("RESULT").signum() != 0);
       filtShow.setEnabled(extend && dataset && selectable);
       filtEq.setEnabled(extend && dataset && selectable);
+      filtEq.putValue(Action.NAME, selMulti ?
+          "Filtriraj po oznaèenim vrijednostima" :
+          "Filtriraj po jednakim vrijednostima");
       filtNeq.setEnabled(extend && dataset && selectable);
+      filtNeq.putValue(Action.NAME, selMulti ?
+          "Filtriraj po neoznaèenim vrijednostima" :
+          "Filtriraj po razlièitim vrijednostima");
       filtRemove.setEnabled(extend && dataset && selectable &&
           jt.getDataSet().getRowFilterListener() != null);
       inst.jt.repaint(inst.jt.getCellRect(selRow, selCol, true));
@@ -933,7 +939,63 @@ public class raTableCopyPopup extends JPopupMenu {
       updateFilterChange();
   }
   
+  void setMultiFilter(boolean eq) {    
+    RowFilterListener filter = jt.getDataSet().getRowFilterListener();
+    if (filter != null) jt.getDataSet().removeRowFilterListener(filter);
+
+    raDataFilter nf = null;
+    
+    Variant v = new Variant();
+    HashSet diff = new HashSet();
+    String cname = jt.getRealColumnName(selCol);    
+    raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
+    if (stm.isNatural()) {
+      Integer[] sel = (Integer[]) stm.getSelection();
+      for (int i = 0; i < sel.length; i++) {
+        jt.getDataSet().getVariant(cname, sel[i].intValue(), v);
+        if (diff.add(v.getAsObject())) {
+          DataRow dr = new DataRow(jt.getDataSet());
+          jt.getDataSet().getDataRow(sel[i].intValue(), dr);
+          
+          raDataFilter tf = eq ? raDataFilter.equal(dr, cname) 
+              : raDataFilter.different(dr, cname);
+          nf = nf == null ? tf : eq ? nf.or(tf) : nf.and(tf);
+        }
+      }
+    } else {
+      DataSet ds = stm.getSelectedView();
+      for (ds.first(); ds.inBounds(); ds.next()) {
+        ds.getVariant(cname, v);
+        if (diff.add(v.getAsObject())) {
+          DataRow dr = new DataRow(ds);
+          ds.getDataRow(dr);
+          
+          raDataFilter tf = eq ? raDataFilter.equal(dr, cname) 
+              : raDataFilter.different(dr, cname);
+          nf = nf == null ? tf : eq ? nf.or(tf) : nf.and(tf);
+        }
+      }
+      stm.destroySelectedView();
+    }
+    
+    if (filter instanceof raDataFilter)
+      nf = ((raDataFilter) filter).and(nf);
+    try {
+      jt.getDataSet().addRowFilterListener(nf);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    jt.getDataSet().refilter();
+    updateFilterChange();
+  }
+  
   void setFilter(boolean eq) {
+    raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
+    if (stm != null && stm.countSelected() > 1) {
+      setMultiFilter(eq);
+      return;
+    }
+    
     RowFilterListener filter = jt.getDataSet().getRowFilterListener();
     if (filter != null) jt.getDataSet().removeRowFilterListener(filter);
     String col = jt.getRealColumnName(selCol);
