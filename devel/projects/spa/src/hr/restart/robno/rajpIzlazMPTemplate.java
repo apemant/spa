@@ -122,6 +122,8 @@ class rajpIzlazMPTemplate extends JPanel {
 					what_kind_of_dokument);
 			//      if (version==5 && FDI.bPonudaZaKupca) version=6;
 
+			if (what_kind_of_dokument.equalsIgnoreCase("PRD")  && fDI.bPonudaZaKupca) version = 2;
+			
 			if (version == 3 && fDI.bPonudaZaKupca) {
 				version = 2;
 			}
