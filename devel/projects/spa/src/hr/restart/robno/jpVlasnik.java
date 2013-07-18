@@ -24,17 +24,17 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
-import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 import javax.swing.text.JTextComponent;
 
 import com.borland.dx.dataset.DataSet;
@@ -55,8 +55,15 @@ public class jpVlasnik extends JPanel {
   public StorageDataSet dummySet;
   private boolean updated = false;
   private boolean dbl = false;
+  private boolean card = false;
+  public boolean inedit = false;
 
   private boolean allowedupdated = true;
+  
+  JraTextField bk = new JraTextField();
+  JLabel lab = new JLabel("Kartica");
+  JraButton jbK = new JraButton();
+  JPanel up = new JPanel(new XYLayout(500, 60));
 
   JPanel jpDetail = new JPanel();
 
@@ -129,6 +136,12 @@ public class jpVlasnik extends JPanel {
   }
 
   private int imewidth;
+  
+  public void setInedit(boolean inedit) {
+    this.inedit = inedit;
+    if (jraCkupac instanceof JlrNavField)
+      ((JlrNavField) jraCkupac).setFocusLostOnShow(!inedit);
+  }
 
   private void jbInit() throws Exception {
     if (insets == null) insets = new Insets(0, 0, 0, 0);
@@ -143,7 +156,14 @@ public class jpVlasnik extends JPanel {
     imewidth = 400-15;
     if (fVlasnik==null) {
       imewidth =  400-15-(dbl ? 40 :21)-5; //button i razmak
-      jraCkupac = createNavField();
+      jraCkupac = new JlrNavField() {
+        public void after_lookUp() {
+          aftLook(this);
+        }
+        public void focusLost(FocusEvent e) {
+          if (!inedit) super.focusLost(e);
+        }
+      };
       jraAdr = createNavField();
       jraEmadr = createNavField();
       jraMj = createNavField();
@@ -277,8 +297,40 @@ public class jpVlasnik extends JPanel {
     jpDetail.add(jraJmbg, new XYConstraints(655+left+-10+a, 75*d, 1, 1));
     jraJmbg.setVisible(false);
     
+    this.setLayout(new BorderLayout());
     this.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right));
     this.add(jpDetail, BorderLayout.CENTER);
+    
+    if (dbl) {
+      up.setLayout(new XYLayout(500, 90));
+      up.add(lab, new XYConstraints(15+left+a, 40, -1, h));
+      up.add(bk, new XYConstraints(150+left+a, 40, 250, h));
+      up.add(jbK, new XYConstraints(405+left+a, 40, h, h));
+      this.add(up, BorderLayout.NORTH);
+      
+      bk.addKeyListener(new KeyListener() {
+      
+        public void keyTyped(KeyEvent e) {
+          if (!card) {
+            if (e.getKeyChar() == 'B') card = true;
+          } else if (e.getKeyChar() == ' ') {
+            
+          }
+          if (card) e.consume();
+        }
+      
+        public void keyReleased(KeyEvent e) {
+          if (card) e.consume();
+          
+        }
+      
+        public void keyPressed(KeyEvent e) {
+          if (card) e.consume();
+        }
+      
+      });
+      
+    }
     //test
 /*    jraIme.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
       public void insertUpdate(javax.swing.event.DocumentEvent e) {
