@@ -1289,4 +1289,178 @@ public class raIspisUraIra extends raFrame {
     //set.saveChanges();
     System.out.println(set.getTableName()+" :: dodan prefix "+id+" na "+cnt+" slogova");
   }
+  
+  
+  public static void convertUIcolsEU() {
+    Timestamp rangefrom, rangeto;
+    //01.07.13 na dalje
+    Calendar c = Calendar.getInstance();
+    c.set(2013, 6, 1);
+    rangefrom = new Timestamp(c.getTimeInMillis());
+    c.set(9999, 11,31);
+    rangeto = new Timestamp(c.getTimeInMillis());
+    //backup
+    File ddir = new File("ui13bak");
+    ddir.mkdir();
+    int dcnt;
+    dcnt = StIzvjPDV.getDataModule().dumpTable(ddir);
+    System.out.println("Backupirano "+dcnt+" StIzvjPDV");
+    
+    dcnt = IzvjPDV.getDataModule().dumpTable(ddir);
+    System.out.println("Backupirano "+dcnt+" IzvjPDV");
+
+    dcnt = KoloneknjUI.getDataModule().dumpTable(ddir);
+    System.out.println("Backupirano "+dcnt+" KoloneknjUI");
+    
+    dcnt = Shkonta.getDataModule().dumpTable(ddir);
+    System.out.println("Backupirano "+dcnt+" Shkonta");
+    
+    //OSNOVNI PODACI
+    //izvjpdv.ciz, stizvjpdv.ciz +oldid
+    // ne treba - radi se nova definicija vezana za XML shemu, dok stara ostaje
+//    String cizfilter = "CIZ like 'I%'"; 
+//    QueryDataSet stizvjpdv = StIzvjPDV.getDataModule().getTempSet("CIZ like 'I%' or CIZ like 'V%'");
+//    QueryDataSet izvjpdv = IzvjPDV.getDataModule().getTempSet("CIZ like 'I%' or CIZ like 'V%'");
+//    addIdPrefix(izvjpdv, oldid);
+//    addIdPrefix(stizvjpdv, oldid);
+    
+    //koloneknjui
+    QueryDataSet kolone = KoloneknjUI.getDataModule().getTempSet("ckolone < 1000");
+    kolone.open();
+    for (kolone.first(); kolone.inBounds(); kolone.next()) {
+      kolone.setShort("CKOLONE", (short)(kolone.getShort("CKOLONE")+13000));
+      kolone.post();
+    }
+    
+    //shkonta where app='sk'.polje
+    QueryDataSet shkontask = Shkonta.getDataModule().getTempSet("app = 'sk'");
+    shkontask.open();
+    for (shkontask.first(); shkontask.inBounds(); shkontask.next()) {
+      try {
+        int ckol = new Integer(shkontask.getString("POLJE").trim()).intValue();
+        String vrdok = shkontask.getString("VRDOK");
+        char uraira = ' ';
+        if (vrdok.equals("URN") || vrdok.equals("OKD")) {
+          uraira = 'U';
+        } else if (vrdok.equals("IRN") || vrdok.equals("OKK")) {
+          uraira = 'I';
+        }
+        shkontask.setString("POLJE", convertCkol13(ckol, uraira)+"");
+        shkontask.post();
+      } catch (Exception e) {
+        System.out.println(e);
+      }
+      shkontask.post();
+    }
+    
+    //shkonta.ckolone za ostale
+    QueryDataSet shkontaresto = Shkonta.getDataModule().getTempSet("ckolone!=0 and ckolone is not null and app!='sk'");
+    shkontaresto.open();
+    for (shkontaresto.first(); shkontaresto.inBounds(); shkontaresto.next()) {
+      try {
+        int ckol = (int)shkontaresto.getShort("CKOLONE");
+        char uraira=TypeDoc.getTypeDoc().isDocUlaz(shkontaresto.getString("VRDOK"))?'U':'I';
+        shkontaresto.setShort("CKOLONE", (short)convertCkol13(ckol, uraira));
+        shkontaresto.post();
+      } catch (Exception e) {
+        System.out.println(e);
+      }
+    }
+    
+    //PROMETI
+    //uistavke.ckolone
+    QueryDataSet uistavke = UIstavke.getDataModule().getTempSet(
+        "EXISTS (SELECT * FROM skstavke where uistavke.knjig = skstavke.knjig"
+        +" AND uistavke.cpar = skstavke.cpar AND uistavke.vrdok = skstavke.vrdok"
+        +" AND uistavke.brojdok = skstavke.brojdok and "
+        +Condition.between("DATPRI",rangefrom,rangeto)+")");
+ 
+    processPromet13(uistavke);
+    
+    //skstavkerad.ckolone
+    QueryDataSet skstavkerad = Skstavkerad.getDataModule().getTempSet(Condition.between("DATPRI",rangefrom,rangeto));
+    
+    processPromet13(skstavkerad);
+    
+//    //konverzija izvjpdv i stizvjpdv vec sa prefixom dodati bez prefixa po novom
+//    QueryDataSet izvjpdvnew = IzvjPDV.getDataModule().getTempSet("0=1");
+//    for (izvjpdv.first(); izvjpdv.inBounds(); izvjpdv.next()) {
+//      String ciz = new VarStr(izvjpdv.getString("CIZ")).leftChop(oldid.length()).toString();
+//      if (ciz.startsWith("II.5.")) continue; //nema vise
+//      izvjpdvnew.insertRow(false);
+//      izvjpdv.copyTo(izvjpdvnew);
+//      izvjpdvnew.setString("CIZ", ciz);
+//      if (ciz.equals("II.3.v")) izvjpdvnew.setString("OPIS", "NENAPLAÆENI IZVOZ - vrijednost");
+//      if (ciz.equals("II.3.p")) izvjpdvnew.setString("OPIS", "NENAPLAÆENI IZVOZ - porez");
+//      if (ciz.equals("II.4.v")) izvjpdvnew.setString("OPIS", "NAKNADNO OSLOBOÐENJE IZVOZA U OKVIRU OSOBNOG PUTNIÈKOG PROMETA - vrijednost");
+//      if (ciz.equals("II.4.p")) izvjpdvnew.setString("OPIS", "NAKNADNO OSLOBOÐENJE IZVOZA U OKVIRU OSOBNOG PUTNIÈKOG PROMETA - porez");
+//      
+//      izvjpdvnew.post();
+//    }
+    
+    
+    //kraj
+    raTransaction.saveChangesInTransaction(new QueryDataSet[] {
+//        stizvjpdv,
+//        izvjpdv,
+        kolone,
+        shkontask,
+        shkontaresto,
+        uistavke,
+        skstavkerad
+    });
+    
+    //uloadaj izvjpdv, stizvjpdv, koloneknjui iz uraira06
+    File ldir = new File("uraira13");
+    try {
+      IzvjPDV.getDataModule().insertData(ldir);
+      StIzvjPDV.getDataModule().insertData(ldir);
+      KoloneknjUI.getDataModule().insertData(ldir);
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+  //prebac iz starih u nove kolone za promete od 01.07.2013 i sheme knjizenja
+  //trauma: izdvojiti 5 i 10%  
+  private static int convertCkol13(int ckol, char uraira) {
+    if (uraira == 'U') {
+      switch (ckol) {
+//        case 6: return 6; // 5 i 10% razdvojiti poslije
+//        case 7: return 7;
+        case 8: return 8;
+        case 9: return 8;
+        case 12: return 11; // 5 i 10% -> 5% razdvojiti poslije
+        case 13: return 12; // 5 i 10% -> 5% razdvojiti poslije
+        case 14: return 15;
+        case 15: return 16;
+        case 16: return 15;
+        case 17: return 16;
+      }
+    } else if (uraira == 'I') {
+      switch (ckol) {
+        case 7: return 14;
+        case 8: return 15;
+        case 9: return 14;
+        case 10: return 16;
+        case 11: return 16;
+        case 12: return 17; // 5 i 10% -> 5% razdvojiti poslije
+        case 13: return 18; // 5 i 10% -> 5% razdvojiti poslije
+        case 14: return 21;
+        case 15: return 22;
+        case 16: return 21;
+        case 17: return 22;
+      }      
+    }
+    return ckol;
+  }
+  private static void processPromet13(QueryDataSet set) {
+    set.open();
+    for (set.first(); set.inBounds(); set.next()) {
+      int ckol = (int)set.getShort("CKOLONE");
+      char uraira = set.getString("URAIRA").charAt(0);
+      set.setShort("CKOLONE", (short)convertCkol13(ckol, uraira));
+      set.post();
+    }
+  }
 }
