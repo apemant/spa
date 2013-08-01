@@ -164,7 +164,8 @@ public class repDiskZapUN extends repDisk {
     StringBuffer sb = getNullSB();
     String svota,brNal, zirorac;
 //    String nalogodavatelj, mjesto,  DI, identifikator;
-    String datumizvParsed1 = datumParser(cjelineDS.getTimestamp("DATUMIZV").toString(), 2);
+//    String datumizvParsed1 = datumParser(cjelineDS.getTimestamp("DATUMIZV").toString(), 2);
+    String datumizvParsed1 = datumParser(Valid.getValid().getToday().toString(), 2);
 //    int z = cjelineDS.getString("NATERET").indexOf("\n");
 //    if(z>0)
 //      nalogodavatelj = cjelineDS.getString("NATERET").substring(0,cjelineDS.getString("NATERET").indexOf("\n")).trim();
