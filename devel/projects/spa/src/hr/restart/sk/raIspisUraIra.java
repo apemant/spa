@@ -1430,6 +1430,7 @@ public class raIspisUraIra extends raFrame {
 //        case 7: return 7;
         case 8: return 8;
         case 9: return 8;
+        case 10: return 9;
         case 12: return 11; // 5 i 10% -> 5% razdvojiti poslije
         case 13: return 12; // 5 i 10% -> 5% razdvojiti poslije
         case 14: return 15;
