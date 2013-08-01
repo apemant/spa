@@ -1325,7 +1325,8 @@ public class raIspisUraIra extends raFrame {
 //    addIdPrefix(stizvjpdv, oldid);
     
     //koloneknjui
-    QueryDataSet kolone = KoloneknjUI.getDataModule().getTempSet("ckolone < 1000");
+    QueryDataSet kolone = KoloneknjUI.getDataModule().getTempSet(Condition.between("CKOLONE", 1, 1000));
+        //"ckolone < 1000");
     kolone.open();
     for (kolone.first(); kolone.inBounds(); kolone.next()) {
       kolone.setShort("CKOLONE", (short)(kolone.getShort("CKOLONE")+13000));
