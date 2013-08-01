@@ -23,6 +23,7 @@ import hr.restart.sisfun.raDelayWindow;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raMultiLineMessage;
+import hr.restart.swing.raTableColumnModifier;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
@@ -297,11 +298,33 @@ public class frmVirmani extends raMatPodaci {
     return initStr;
   }
 
-
+public class raTableIBANModifier extends raTableColumnModifier {
+  String col2, col4;
+  public raTableIBANModifier(String col2Modify, String col4data) {
+    super(col2Modify, new String[] {col4data}, null);
+    col2 = col2Modify;
+    col4 = col4data;
+  }
+  public boolean doModify() {
+    if (!super.doModify()) return false;
+    Variant v = new Variant();
+    getRaQueryDataSet().getVariant(col2,getRow(),v);
+    String iban = v.toString();
+    return iban == null || iban.trim().equals("");
+  }
+  public void replaceNames() {
+    Variant v = new Variant();
+    getRaQueryDataSet().getVariant(col4,getRow(),v);
+    String brr = v.getString();
+    setComponentText(getIBAN_HR(brr, true));
+  }
+}
 
 //*** init metoda
 
   private void jbInit() throws Exception {
+    getJpTableView().addTableModifier(new raTableIBANModifier("IBANNT", "BRRACNT"));
+    getJpTableView().addTableModifier(new raTableIBANModifier("IBANUK", "BRRACUK"));
     // velicina, labela, pozicioniranje
     int x= (this.getToolkit().getDefaultToolkit().getScreenSize().width)-655;  // -655
     int y= (this.getToolkit().getDefaultToolkit().getScreenSize().height)-495;
@@ -1047,6 +1070,8 @@ public class frmVirmani extends raMatPodaci {
     } else return "KRIVI IBAN!!!";
   }
   public static String getIBAN_HR(String brr, boolean nice) {
+    if (brr == null) return "";
+    if (brr.trim().length() < 17) return "";
     if (brr.trim().toUpperCase().startsWith("HR")) return checkIBAN_HR(brr, nice); //vec je iban
     String iban = "";
     StringBuffer bbrr = new StringBuffer(); //H=17, R=27 HR00 = 172700
@@ -1091,7 +1116,22 @@ public class frmVirmani extends raMatPodaci {
         "2402006-1100033007",
         "2402006-1031262160",
         " HR121-00 100 51 - 86 3000160",
-        "HR1210110051863000160"};
+        "HR1210110051863000160",
+        "",
+        null,
+        "HR9524020061031262160",
+        "HR9524020061031262160",
+        "HR9524020061031262160",
+        "HR9524020061031262160",
+        "HR8823600001000000013",
+        "HR8823600001000000013",
+        "HR8724840083214226770",
+        "HR7610010051700036001",
+        "HR1210010051863000160",
+        "HR1210010051863000160",
+        "HR1210010051863000160",
+        "HR121001005-863000160",
+        "GLUPOST"};
     for (int i = 0; i < chks.length; i++) {
       System.out.println(chks[i]+" = "+getIBAN_HR(chks[i],true));
     }
@@ -1099,6 +1139,5 @@ public class frmVirmani extends raMatPodaci {
 //        10010051700036001 = HR7610010051700036001
 //        2402006-1100033007 = HR2624020061100033007
 //        2402006-1031262160 = HR9524020061031262160
-
   }
 }
