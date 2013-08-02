@@ -17,9 +17,14 @@
 ****************************************************************************/
 package hr.restart.sk;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.IzvjPDV;
+import hr.restart.baza.StIzvjPDV;
+import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
@@ -27,16 +32,29 @@ import hr.restart.util.raUpitLite;
 import hr.restart.util.sysoutTEST;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TreeSet;
 
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+
+import hr.restart.util.VarStr;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 
@@ -101,16 +119,37 @@ public class frmPDV extends raUpitLite {
 
   boolean calc = false;
   public void okPress() {
-    calc = calcPPDV();
-//    System.out.println("getSQL : " + getSQL());
-    reportSet.enableDataSetEvents(false);
-    StorageDataSet tmpSet = rip.napuniPDVSet(ut.getNewQueryDataSet(getSQL()));
-    String pfx = askVersionPDV();
-    processReportSet(tmpSet, pfx);
-//    sysoutTEST syst = new sysoutTEST(false);
-//    syst.prn(reportSet);
+    if (isEU13()) {
+      killAllReports();
+      try {
+        Class.forName("hr.restart.sk.repPDVDisk");
+        this.addReport("hr.restart.sk.repPDVDisk", "Datoteka PDV za e-poreznu");
+      } catch (Exception e) {
+      }
+      switchPDV13();
+      finalIspis = true;
+    } else {
+      calc = calcPPDV();
+  //    System.out.println("getSQL : " + getSQL());
+      reportSet.enableDataSetEvents(false);
+      StorageDataSet tmpSet = rip.napuniPDVSet(ut.getNewQueryDataSet(getSQL()));
+      String pfx = askVersionPDV();
+      processReportSet(tmpSet, pfx);
+  //    sysoutTEST syst = new sysoutTEST(false);
+  //    syst.prn(reportSet);
+    }
   }
 
+  private boolean isEU13() {
+    Calendar c = Calendar.getInstance();
+    c.set(2013, 5, 1);
+    long time13 = c.getTimeInMillis();
+    if (stds.getTimestamp("DATUMOD").after(Util.getUtil().getLastDayOfMonth(new Timestamp(time13)))) {
+      System.err.println("OP OP OPAAA dolazi EUropaaa");
+      return true;
+    }
+    return false;
+  }
   private String askVersionPDV() {
 //    int answ = JOptionPane.showOptionDialog(this, "Odaberite verziju obrasca za ispis","Obrazac PDV",
 //        JOptionPane.DEFAULT_OPTION, JOptisonPane.QUESTION_MESSAGE,
@@ -492,8 +531,8 @@ public class frmPDV extends raUpitLite {
     // ???
     panelPDV.disableDownwards(false);
     panelPDV_K.disableDownwards(false);
-    stds.setTimestamp("DATUMOD", ut.getFirstDayOfYear());
-    stds.setTimestamp("DATUMDO", vl.getToday());
+    stds.setTimestamp("DATUMOD", ut.getFirstDayOfMonth(ut.addMonths(vl.getToday(), -1)));
+    stds.setTimestamp("DATUMDO", ut.getLastDayOfMonth(ut.addMonths(vl.getToday(), -1)));
     // <TEST>
 //    stds.setTimestamp("DATUMOD", java.sql.Timestamp.valueOf("2002-01-01 00:00:00.0"));
 //    stds.setTimestamp("DATUMDO", java.sql.Timestamp.valueOf("2002-12-31 23:59:59.9"));
@@ -514,7 +553,7 @@ public class frmPDV extends raUpitLite {
   private void jbInit() throws Exception {
     datePanel.setLayout(xYlay);
     mainPanel.setLayout(bLay);
-    xYlay.setWidth(550);
+    xYlay.setWidth(700);
     xYlay.setHeight(50);
     formatReportSet();
     stds.setColumns(new Column[] {
@@ -544,6 +583,11 @@ public class frmPDV extends raUpitLite {
     mainPanel.add(panelPDV, BorderLayout.CENTER);
 //    this.addReport("hr.restart.sk.repPrijavaPDV", "Obrazac PDV", 2);
 //    this.addReport("hr.restart.sk.repPrijavaPDV_K", "Obrazac PDV-K", 2);
+    try {
+      Class.forName("hr.restart.sk.repPDVDisk");
+      this.addReport("hr.restart.sk.repPDVDisk", "Datoteka PDV za e-poreznu");
+    } catch (Exception e) {
+    }
     this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv25.jrxml","Obrazac PDV od 01.03.2012 (25%)");
     this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv10.jrxml","Obrazac PDV 2010");
     this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv09.jrxml","Obrazac PDV 2009");
@@ -672,4 +716,167 @@ public class frmPDV extends raUpitLite {
   }
 
   public void setEnabled(boolean en){}
+  private void switchPDV13() {
+    if (pdvK) {
+      mainPanel.remove(panelPDV_K);
+    } else {
+      mainPanel.remove(panelPDV);
+    }
+    mainPanel.add(getPanelPDV13(), BorderLayout.CENTER);
+  }
+
+  StorageDataSet mapset = null;
+  private Component getPanelPDV13() {
+    try {
+      Object rPDVD = Class.forName("hr.restart.sk.repPDVDisk").newInstance();
+      HashMap data = (HashMap)rPDVD.getClass().getMethod("tijeloData", null).invoke(rPDVD, null);
+      mapset = createMapSet(data);
+      TreeSet keyset = new TreeSet(data.keySet());
+      JPanel panelPDV13 = new JPanel(new GridLayout(0, 1));
+      for (Iterator iterator = keyset.iterator(); iterator.hasNext();) {
+        String ciz = (String) iterator.next();
+        if (!ciz.trim().endsWith("p")) //preskoci p-ove, oni idu s o-ovima 8-)
+          panelPDV13.add(getPanelRow(ciz, data));
+      }
+      sumMapset();
+      return panelPDV13;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  private void sumMapset() {
+    mapset.setBigDecimal("Pod100", sumcols(new String[]{
+        "Pod101",
+        "Pod102",
+        "Pod103",
+        "Pod104",
+        "Pod105",
+        "Pod106",
+        "Pod107",
+        "Pod108",
+        "Pod109",
+        "Pod110"
+        }));
+    mapset.setBigDecimal("Pod200o", sumcols(new String[]{
+        "Pod201o",
+        "Pod202o",
+        "Pod203o",
+        "Pod204o",
+        "Pod205o",
+        "Pod206o",
+        "Pod207o",
+        "Pod208o",
+        "Pod209o",
+        "Pod210o",
+        "Pod211o",
+        "Pod212o",
+        "Pod213o",
+        "Pod214o"
+    }));
+    mapset.setBigDecimal("Pod200p", sumcols(new String[]{
+        "Pod201p",
+        "Pod202p",
+        "Pod203p",
+        "Pod204p",
+        "Pod205p",
+        "Pod206p",
+        "Pod207p",
+        "Pod208p",
+        "Pod209p",
+        "Pod210p",
+        "Pod211p",
+        "Pod212p",
+        "Pod213p",
+        "Pod214p"
+        }));
+    mapset.setBigDecimal("Pod300o", sumcols(new String[]{
+        "Pod301o",
+        "Pod302o",
+        "Pod303o",
+        "Pod304o",
+        "Pod305o",
+        "Pod306o",
+        "Pod307o"
+    }));
+    mapset.setBigDecimal("Pod300p", sumcols(new String[]{
+        "Pod301p",
+        "Pod302p",
+        "Pod303p",
+        "Pod304p",
+        "Pod305p",
+        "Pod306p",
+        "Pod307p"
+        }));
+    mapset.setBigDecimal("Pod400", mapset.getBigDecimal("Pod200p").subtract(mapset.getBigDecimal("Pod300p")));
+    mapset.setBigDecimal("Pod600", mapset.getBigDecimal("Pod400").subtract(mapset.getBigDecimal("Pod500")));
+    
+  }
+
+  private BigDecimal sumcols(String[] cols) {
+    BigDecimal sum = Aus.zero2;
+    for (int i = 0; i < cols.length; i++) {
+      sum = sum.add(mapset.getBigDecimal(cols[i]));
+    }
+    return sum;
+  }
+
+  private StorageDataSet createMapSet(HashMap data) {
+    StorageDataSet mset = new StorageDataSet();
+    for (Iterator iterator = data.keySet().iterator(); iterator.hasNext();) {
+      String ciz = (String) iterator.next();
+      mset.addColumn(dM.createBigDecimalColumn(ciz));
+    }
+    mset.open();
+    mset.insertRow(true);
+    return mset;
+  }
+
+  private JPanel getPanelRow(String ciz, HashMap data) {
+    JPanel panelRow = new JPanel(new BorderLayout());
+    QueryDataSet ipdv = IzvjPDV.getDataModule().getFilteredDataSet(Condition.equal("CIZ", ciz));
+    ipdv.open(); ipdv.first();
+    String jltxt = numbers(ciz) + " " + ipdv.getString("OPIS");
+    JLabel jL = new JLabel(jltxt.length()>70?jltxt.substring(0,70):jltxt);
+    jL.setToolTipText(jltxt);
+    panelRow.add(jL, BorderLayout.CENTER);
+    JPanel panelNum = new JPanel(new GridLayout(1,2));
+    JraTextField jO = new JraTextField();
+    JraTextField jP = new JraTextField();
+    raCommonClass.getraCommonClass().setLabelLaF(jO, false);
+    raCommonClass.getraCommonClass().setLabelLaF(jP, false);
+    if (ciz.endsWith("o")) {//za osnovicu napraviti i porez
+      jO.setDataSet(mapset);
+      jO.setColumnName(ciz);
+      jP.setDataSet(mapset);
+      jP.setColumnName(new VarStr(ciz).chop().toString()+"p");
+      panelNum.add(jO);
+      panelNum.add(jP);
+      mapset.setBigDecimal(jO.getColumnName(), (BigDecimal)data.get(jO.getColumnName()));
+      mapset.setBigDecimal(jP.getColumnName(), (BigDecimal)data.get(jP.getColumnName()));
+    } else {
+      panelNum.add(new JLabel(""));
+      jP.setDataSet(mapset);
+      jP.setColumnName(ciz);
+      panelNum.add(jP);
+      mapset.setBigDecimal(jP.getColumnName(), (BigDecimal)data.get(jP.getColumnName()));
+    }
+    panelRow.add(panelNum, BorderLayout.EAST);
+    return panelRow;
+  }
+
+  private String numbers(String ciz) {
+    char[] in = ciz.toCharArray();
+    StringBuffer out = new StringBuffer();
+    for (int i = 0; i < in.length; i++) {
+      if (Character.isDigit(in[i])) out.append(in[i]);
+    }
+    return out.toString();
+  }
+  public void show() {
+    // TODO Auto-generated method stub
+    super.show();
+    getWindow().setSize(new Dimension(800, 700));
+  }
 }
