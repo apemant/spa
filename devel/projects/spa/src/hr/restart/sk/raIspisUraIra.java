@@ -380,13 +380,13 @@ public class raIspisUraIra extends raFrame {
     }
     cols.add(dM.createBigDecimalColumn("OSTALO", "Ostalo"));
     if (ui.equals("U")) {
+      cols.add(dM.createBigDecimalColumn("OCHECK5", "Greška 5% poreza"));
       cols.add(dM.createBigDecimalColumn("OCHECK10", "Greška 10% poreza"));
-      cols.add(dM.createBigDecimalColumn("OCHECK22", "Greška 23% poreza"));
-      cols.add(dM.createBigDecimalColumn("OCHECK23", "Greška 25% poreza"));
+      cols.add(dM.createBigDecimalColumn("OCHECK25", "Greška 25% poreza"));
     } else {
+      cols.add(dM.createBigDecimalColumn("OCHECK5", "Greška 5% poreza"));
       cols.add(dM.createBigDecimalColumn("OCHECK10", "Greška 10% poreza"));
-      cols.add(dM.createBigDecimalColumn("OCHECK22", "Greška 23% poreza"));
-      cols.add(dM.createBigDecimalColumn("OCHECK23", "Greška 25% poreza"));
+      cols.add(dM.createBigDecimalColumn("OCHECK25", "Greška 25% poreza"));
     }
     cols.add(dM.createBigDecimalColumn("SALDO", "Greška zbroja"));
     uraira.setColumns((Column[]) cols.toArray(new Column[] {}));
@@ -421,54 +421,53 @@ public class raIspisUraIra extends raFrame {
   
   // WARNING:  HARDCODED!!
   private BigDecimal getColValue(DataSet ds, boolean ulaz) {
-    if ((ulaz && ds.getShort("CKOLONE") == 10) ||
+    if ((ulaz && ds.getShort("CKOLONE") == 9) ||
         (!ulaz && ds.getShort("CKOLONE") != 6))
       return ds.getBigDecimal("IP").subtract(ds.getBigDecimal("ID"));
     return ds.getBigDecimal("ID").subtract(ds.getBigDecimal("IP"));
   }
   
   private void findErrors(boolean ulaz) {
-    BigDecimal x10 = new BigDecimal("0.1");
-    BigDecimal x23 = new BigDecimal("0.23");
+    BigDecimal x5 = new BigDecimal("0.05");
+    BigDecimal x10 = new BigDecimal("0.10");
     BigDecimal x25 = new BigDecimal("0.25");
     boolean nem = "D".equalsIgnoreCase(frmParam.getParam("sk", 
         "checkNemoze", "N", "Uraèunati kolonu ne može se odbiti u provjeru (D,N)"));
     for (uraira.first(); uraira.inBounds(); uraira.next()) {
       if (ulaz) {
+        uraira.setBigDecimal("OCHECK5", uraira.getBigDecimal("KOLONA6").
+              multiply(x5).setScale(2, BigDecimal.ROUND_HALF_UP).
+              subtract(uraira.getBigDecimal("KOLONA11")).
+              subtract(nem ? uraira.getBigDecimal("KOLONA12") : Aus.zero2));
         uraira.setBigDecimal("OCHECK10", uraira.getBigDecimal("KOLONA7").
-              multiply(x10).setScale(2, BigDecimal.ROUND_HALF_UP).
-              subtract(uraira.getBigDecimal("KOLONA12")).
-              subtract(nem ? uraira.getBigDecimal("KOLONA13") : Aus.zero2));
-        uraira.setBigDecimal("OCHECK22", uraira.getBigDecimal("KOLONA8").
-            multiply(x23).setScale(2, BigDecimal.ROUND_HALF_UP).
-            subtract(uraira.getBigDecimal("KOLONA14")).
-            subtract(nem ? uraira.getBigDecimal("KOLONA15") : Aus.zero2));
-        uraira.setBigDecimal("OCHECK23", uraira.getBigDecimal("KOLONA9").
+            multiply(x10).setScale(2, BigDecimal.ROUND_HALF_UP).
+            subtract(uraira.getBigDecimal("KOLONA13")).
+            subtract(nem ? uraira.getBigDecimal("KOLONA14") : Aus.zero2));
+        uraira.setBigDecimal("OCHECK25", uraira.getBigDecimal("KOLONA8").
             multiply(x25).setScale(2, BigDecimal.ROUND_HALF_UP).
-            subtract(uraira.getBigDecimal("KOLONA16")).
-            subtract(nem ? uraira.getBigDecimal("KOLONA17") : Aus.zero2));
-        uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA10").
+            subtract(uraira.getBigDecimal("KOLONA15")).
+            subtract(nem ? uraira.getBigDecimal("KOLONA16") : Aus.zero2));
+        uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA9").
             subtract(uraira.getBigDecimal("KOLONA6")).
             subtract(uraira.getBigDecimal("KOLONA7")).
             subtract(uraira.getBigDecimal("KOLONA8")).
-            subtract(uraira.getBigDecimal("KOLONA9")).
+            subtract(uraira.getBigDecimal("KOLONA11")).
             subtract(uraira.getBigDecimal("KOLONA12")).
             subtract(uraira.getBigDecimal("KOLONA13")).
             subtract(uraira.getBigDecimal("KOLONA14")).
             subtract(uraira.getBigDecimal("KOLONA15")).
             subtract(uraira.getBigDecimal("KOLONA16")).
-            subtract(uraira.getBigDecimal("KOLONA17")).
             subtract(uraira.getBigDecimal("OSTALO")));
       } else {
-        uraira.setBigDecimal("OCHECK10", uraira.getBigDecimal("KOLONA12").
+        uraira.setBigDecimal("OCHECK5", uraira.getBigDecimal("KOLONA17").
+            multiply(x5).setScale(2, BigDecimal.ROUND_HALF_UP).
+            subtract(uraira.getBigDecimal("KOLONA18")));
+        uraira.setBigDecimal("OCHECK10", uraira.getBigDecimal("KOLONA19").
             multiply(x10).setScale(2, BigDecimal.ROUND_HALF_UP).
-            subtract(uraira.getBigDecimal("KOLONA13")));
-        uraira.setBigDecimal("OCHECK22", uraira.getBigDecimal("KOLONA14").
-            multiply(x23).setScale(2, BigDecimal.ROUND_HALF_UP).
-            subtract(uraira.getBigDecimal("KOLONA15")));
-        uraira.setBigDecimal("OCHECK23", uraira.getBigDecimal("KOLONA16").
+            subtract(uraira.getBigDecimal("KOLONA20")));
+        uraira.setBigDecimal("OCHECK25", uraira.getBigDecimal("KOLONA21").
             multiply(x25).setScale(2, BigDecimal.ROUND_HALF_UP).
-            subtract(uraira.getBigDecimal("KOLONA17")));
+            subtract(uraira.getBigDecimal("KOLONA22")));
         uraira.setBigDecimal("SALDO", uraira.getBigDecimal("KOLONA6").
             subtract(uraira.getBigDecimal("KOLONA7")).
             subtract(uraira.getBigDecimal("KOLONA8")).
@@ -481,6 +480,11 @@ public class raIspisUraIra extends raFrame {
             subtract(uraira.getBigDecimal("KOLONA15")).
             subtract(uraira.getBigDecimal("KOLONA16")).
             subtract(uraira.getBigDecimal("KOLONA17")).
+            subtract(uraira.getBigDecimal("KOLONA18")).
+            subtract(uraira.getBigDecimal("KOLONA19")).
+            subtract(uraira.getBigDecimal("KOLONA20")).
+            subtract(uraira.getBigDecimal("KOLONA21")).
+            subtract(uraira.getBigDecimal("KOLONA22")).
             subtract(uraira.getBigDecimal("OSTALO")));
       }
     }
@@ -688,7 +692,7 @@ public class raIspisUraIra extends raFrame {
 //      System.out.println(lastpri);
       short ckol = ds.getShort("CKOLONE");      
       if (ckol != 0) {
-        String col = ckol < 25 ? "KOLONA" + ckol : "OSTALO";
+        String col = ckol < 30 ? "KOLONA" + ckol : "OSTALO";
         BigDecimal yval = sumy.containsKey(col) ? (BigDecimal) sumy.get(col) : raSaldaKonti.n0;
         BigDecimal mval = summ.containsKey(col) ? (BigDecimal) summ.get(col) : raSaldaKonti.n0;        
         BigDecimal val = raSaldaKonti.n0;
@@ -1296,9 +1300,9 @@ public class raIspisUraIra extends raFrame {
     //01.07.13 na dalje
     Calendar c = Calendar.getInstance();
     c.set(2013, 6, 1);
-    rangefrom = new Timestamp(c.getTimeInMillis());
+    rangefrom = new Timestamp(c.getTime().getTime());
     c.set(9999, 11,31);
-    rangeto = new Timestamp(c.getTimeInMillis());
+    rangeto = new Timestamp(c.getTime().getTime());
     //backup
     File ddir = new File("ui13bak");
     ddir.mkdir();
