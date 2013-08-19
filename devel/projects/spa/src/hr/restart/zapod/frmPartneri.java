@@ -367,7 +367,8 @@ public class frmPartneri extends raMatPodaci {
     raCDI.setRaItems(new String[][] {
       { "Tuzemni", "D"},
       { "Inozemni","I" },
-      { "Virutalni","V" }
+      { "Unutar EU","E" },
+      { "Virtualni","V" }
     });
     jlULOGA1.setText(res.getString("jlDI_text"));
     jtfDOSP.setDataSet(getRaQueryDataSet());
