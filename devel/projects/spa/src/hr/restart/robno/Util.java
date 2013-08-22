@@ -899,7 +899,7 @@ public class Util {
     if (ds.hasColumn("SYSDAT") != null) {
       if (frmParam.getParam("sisfun", "localTime", "N", "Uzeti lokalno vrijeme za SYSDAT (D,N)").equals("D"))
         ds.setTimestamp("SYSDAT", vl.getToday());
-      ds.setTimestamp("SYSDAT", ut.getCurrentDatabaseTime());
+      else ds.setTimestamp("SYSDAT", ut.getCurrentDatabaseTime());
     }
     ds.setString("GOD",Godina);
     Broj=vl.findSeqInteger(ds);
