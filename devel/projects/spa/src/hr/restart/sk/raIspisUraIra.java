@@ -279,6 +279,8 @@ public class raIspisUraIra extends raFrame {
     System.out.println("ROWS: "+uraira.getRowCount());
     getRepRunner().clearAllReports();
     if (jrbUraira1.isSelected()) {
+      getRepRunner().addJasper("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
+          "uraeu.jrxml", "Ispis knjige URA EU");
       getRepRunner().addJasper("hr.restart.sk.repURA25", "hr.restart.sk.repURANew",
           "ura25.jrxml", "Ispis knjige URA 25%");
       getRepRunner().addJasper("hr.restart.sk.repURA09", "hr.restart.sk.repURANew",
@@ -301,6 +303,10 @@ public class raIspisUraIra extends raFrame {
       });
 //      getRepRunner().addReport("hr.restart.sk.repURADod", "Ispis knjige URA sa dodatnim kolonama", 5);
     } else {
+      getRepRunner().addJasper("hr.restart.sk.repIRAEU2", "hr.restart.sk.repIRA",
+          "iraeu2.jrxml", "Ispis knjige IRA EU - oporezive kolone");
+      getRepRunner().addJasper("hr.restart.sk.repIRAEU1", "hr.restart.sk.repIRA",
+          "iraeu1.jrxml", "Ispis knjige IRA EU - neoporezive kolone");
       getRepRunner().addJasper("hr.restart.sk.repIRA25", "hr.restart.sk.repIRA",
           "ira25.jrxml", "Ispis knjige IRA 25%");
       getRepRunner().addJasper("hr.restart.sk.repIRA10", "hr.restart.sk.repIRA",
@@ -369,7 +375,10 @@ public class raIspisUraIra extends raFrame {
     cols.add(dM.createStringColumn("MB", oib ? "OIB": "MB", 30));
     cols.add(dM.createStringColumn("SORTER", 16));
     tkol.open();
-    for (tkol.first(); tkol.inBounds(); tkol.next()) {
+    for (int i = 6; i <= (ui.equals("U") ? 17 : 22); i++) {
+      cols.add(dM.createBigDecimalColumn("KOLONA" + i, Integer.toString(i)));
+    }
+    /*for (tkol.first(); tkol.inBounds(); tkol.next()) {
       if (tkol.getString("URAIRA").equals(ui) && tkol.getShort("CKOLONE") != 0
           && tkol.getShort("CKOLONE") < 25) {
         cols.add(dM.createBigDecimalColumn("KOLONA" + tkol.getShort("CKOLONE"), 
@@ -377,7 +386,7 @@ public class raIspisUraIra extends raFrame {
 //        cols.add(c = (Column) tkol.getColumn("NAZIVKOLONE").clone());
 //        c.setColumnName("NAZIVKOLONE" + tkol.getShort("CKOLONE"));
       }
-    }
+    }*/
     cols.add(dM.createBigDecimalColumn("OSTALO", "Ostalo"));
     if (ui.equals("U")) {
       cols.add(dM.createBigDecimalColumn("OCHECK5", "Greška 5% poreza"));
@@ -503,12 +512,10 @@ public class raIspisUraIra extends raFrame {
       frmTableDataView view = new frmTableDataView(true, false, false);
       view.setDataSet(uraira);
       view.setCustomReport(jrbUraira1.isSelected() ? 
-          raReportDescriptor.create("hr.restart.sk.repURA25", 
-              "hr.restart.sk.repURANew", "ura25.jrxml", 
-              "Ispis knjige URA 25%", true) :
-          raReportDescriptor.create("hr.restart.sk.repIRA25", 
-              "hr.restart.sk.repIRA", "ira25.jrxml", 
-              "Ispis knjige IRA 25%", true));
+          raReportDescriptor.create("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
+              "uraeu.jrxml", "Ispis knjige URA EU", true) :
+          raReportDescriptor.create("hr.restart.sk.repIRAEU2", "hr.restart.sk.repIRA",
+              "iraeu2.jrxml", "Ispis knjige IRA EU - oporezive kolone", true));
       List sumc = new ArrayList();
       for (int i = 10; i < uraira.getColumnCount(); i++)
         sumc.add(uraira.getColumn(i).getColumnName());
