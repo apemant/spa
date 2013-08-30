@@ -119,6 +119,7 @@ public class frmPDV extends raUpitLite {
 
   boolean calc = false;
   public void okPress() {
+    switchPDV13();
     if (isEU13()) {
       killAllReports();
       try {
@@ -126,9 +127,11 @@ public class frmPDV extends raUpitLite {
         this.addReport("hr.restart.sk.repPDVDisk", "Datoteka PDV za e-poreznu");
       } catch (Exception e) {
       }
-      switchPDV13();
+//      switchPDV13();
       finalIspis = true;
     } else {
+      killAllReports();
+      addPDVreports();
       calc = calcPPDV();
   //    System.out.println("getSQL : " + getSQL());
       reportSet.enableDataSetEvents(false);
@@ -169,7 +172,7 @@ public class frmPDV extends raUpitLite {
         getOKPanel().jBOK.requestFocus();
         rcc.setLabelLaF(jraPoctDat,false);
         rcc.setLabelLaF(jraKrajDat,false);
-        rcc.setLabelLaF(jbSwitchPdv_PdvK, true);
+        rcc.setLabelLaF(jbSwitchPdv_PdvK, !isEU13());//true
         panelPDV.disableDownwards(true);
         panelPDV_K.disableDownwards(true);
         reportSet.enableDataSetEvents(true);
@@ -538,6 +541,11 @@ public class frmPDV extends raUpitLite {
 //    stds.setTimestamp("DATUMDO", java.sql.Timestamp.valueOf("2002-12-31 23:59:59.9"));
     // </TEST>
     finalIspis = false;
+    if (panelPDV13 != null) {
+      mainPanel.remove(panelPDV13);
+      mainPanel.add(panelPDV);
+      pdvK = false;
+    }
     panelPDV.rebindFields();
     panelPDV_K.rebindFields();
   }
@@ -583,11 +591,15 @@ public class frmPDV extends raUpitLite {
     mainPanel.add(panelPDV, BorderLayout.CENTER);
 //    this.addReport("hr.restart.sk.repPrijavaPDV", "Obrazac PDV", 2);
 //    this.addReport("hr.restart.sk.repPrijavaPDV_K", "Obrazac PDV-K", 2);
-    try {
-      Class.forName("hr.restart.sk.repPDVDisk");
-      this.addReport("hr.restart.sk.repPDVDisk", "Datoteka PDV za e-poreznu");
-    } catch (Exception e) {
-    }
+//    try {
+//      Class.forName("hr.restart.sk.repPDVDisk");
+//      this.addReport("hr.restart.sk.repPDVDisk", "Datoteka PDV za e-poreznu");
+//    } catch (Exception e) {
+//    }
+    addPDVreports();
+  }
+
+  private void addPDVreports() {
     this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv25.jrxml","Obrazac PDV od 01.03.2012 (25%)");
     this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv10.jrxml","Obrazac PDV 2010");
     this.addJasper("hr.restart.sk.repPrijavaPDVj","hr.restart.sk.repPrijavaPDV_K","pdv09.jrxml","Obrazac PDV 2009");
@@ -716,23 +728,33 @@ public class frmPDV extends raUpitLite {
   }
 
   public void setEnabled(boolean en){}
+  
   private void switchPDV13() {
+    if (panelPDV13 != null) mainPanel.remove(panelPDV13);
     if (pdvK) {
       mainPanel.remove(panelPDV_K);
     } else {
       mainPanel.remove(panelPDV);
     }
     mainPanel.add(getPanelPDV13(), BorderLayout.CENTER);
+    if (!isEU13()) {//vrati stare panele
+      if (pdvK) {
+        mainPanel.add(panelPDV_K);
+      } else {
+        mainPanel.add(panelPDV);
+      }
+    }
   }
 
   StorageDataSet mapset = null;
+  JPanel panelPDV13 = null;
   private Component getPanelPDV13() {
     try {
       Object rPDVD = Class.forName("hr.restart.sk.repPDVDisk").newInstance();
       HashMap data = (HashMap)rPDVD.getClass().getMethod("tijeloData", null).invoke(rPDVD, null);
       mapset = createMapSet(data);
       TreeSet keyset = new TreeSet(data.keySet());
-      JPanel panelPDV13 = new JPanel(new GridLayout(0, 1));
+      panelPDV13 = new JPanel(new GridLayout(0, 1));
       for (Iterator iterator = keyset.iterator(); iterator.hasNext();) {
         String ciz = (String) iterator.next();
         if (!ciz.trim().endsWith("p")) //preskoci p-ove, oni idu s o-ovima 8-)
