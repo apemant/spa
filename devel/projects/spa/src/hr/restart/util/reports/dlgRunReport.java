@@ -800,6 +800,16 @@ public class dlgRunReport {
       } catch (Exception e) {
         e.printStackTrace();
       }
+    } else if (mode == 3) {
+      StorageDataSet ret = ReportMailDialog.showMailDialog(null, null, null);
+      if (ret != null)
+      try {
+        mxR.renameFile();
+        ReportMailDialog.sendMail(new File(mxR.getFilename()), ret);
+      } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Slanje neuspješno!!! Greška :"+e);
+        e.printStackTrace();
+      }
     }
 //    enableDlg();
   }
