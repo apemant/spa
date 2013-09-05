@@ -121,6 +121,7 @@ public class mxReport {
   }
   
   public void renameFile() {
+    if (new File(filename).equals(new File(TMPPRINTFILE))) return;
     try {
       new File(filename).delete();
     } catch (Exception e) {
