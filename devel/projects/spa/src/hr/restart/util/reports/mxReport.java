@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.util.reports;
 
+import java.io.File;
+
 import bsh.Interpreter;
 import hr.restart.util.Aus;
 import hr.restart.util.FileHandler;
@@ -101,6 +103,7 @@ public class mxReport {
   private String[] footer = {""};
   private String[] detail = {""};
   private String title = "Ispis";
+  private String filename = TMPPRINTFILE;
   private int repLine = 0;
   private int repPage = 0;
   private java.util.Vector vecTags = new java.util.Vector();
@@ -111,6 +114,29 @@ public class mxReport {
 
   public String getTitle() {
     return title;
+  }
+  
+  public void setFilename(String fname) {
+    filename = fname;
+  }
+  
+  public void renameFile() {
+    try {
+      new File(filename).delete();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    try {
+      new File(TMPPRINTFILE).renameTo(new File(filename));
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+    
+  public String getFilename() {
+    return filename;
   }
 
   public String getRepHeader() {
