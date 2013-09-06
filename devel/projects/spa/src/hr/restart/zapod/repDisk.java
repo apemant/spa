@@ -49,6 +49,7 @@ public class repDisk extends mxReport {
   }
   public void setPrint(String filename)
   {
+    setFilename(filename);
     mxRM diskrm = mxRM.getDefaultMxRM();
     diskrm.setPrintCommand(frmParam.getParam("zapod","copycmd","cp # a:\\","komanda za kopiranje file-a na medij za repDisk",true)+filename);//aj da to zasoftkodiramo
     setRM(diskrm);
