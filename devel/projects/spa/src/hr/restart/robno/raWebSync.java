@@ -1,6 +1,5 @@
 package hr.restart.robno;
 
-import hr.binom.PurchaseItemBase;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
@@ -198,9 +197,9 @@ public class raWebSync {
     int cpar = 0;
     if (nar) {
       if (ld.raLocate(dM.getDataModule().getPartneri(), "CPAR", cpars))
-        cpar = dM.getDataModule().getPartneri().getInt("CART");
+        cpar = dM.getDataModule().getPartneri().getInt("CPAR");
       else if (ld.raLocate(dM.getDataModule().getPartneri(), "OIB", pb.getR1CompanyOIB()))
-        cpar = dM.getDataModule().getPartneri().getInt("CART");
+        cpar = dM.getDataModule().getPartneri().getInt("CPAR");
     }
     
     QueryDataSet dzg = doki.getDataModule().getTempSet(Condition.nil);
@@ -254,7 +253,7 @@ public class raWebSync {
     short rbr = 0;
     
     for (int i = 0; i < pb.getItems().length; i++) {
-      PurchaseItemBase pib = pb.getItems()[i];
+      hr.binom.PurchaseItemBase pib = pb.getItems()[i];
       
       int cart = Integer.parseInt(pib.getCode());
       int count = pib.getCount();
