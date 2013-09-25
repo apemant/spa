@@ -45,6 +45,7 @@ import java.util.TreeSet;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
@@ -119,7 +120,7 @@ public class frmPDV extends raUpitLite {
 
   boolean calc = false;
   public void okPress() {
-    switchPDV13();
+//    switchPDV13();
     if (isEU13()) {
       killAllReports();
       try {
@@ -149,10 +150,15 @@ public class frmPDV extends raUpitLite {
     long time13 = c.getTimeInMillis();
     if (stds.getTimestamp("DATUMOD").after(Util.getUtil().getLastDayOfMonth(new Timestamp(time13)))) {
       System.err.println("OP OP OPAAA dolazi EUropaaa");
-      return true;
+      return eu13warn();
     }
     return false;
   }
+  private boolean eu13warn() {
+    JOptionPane.showMessageDialog(getWindow(), "Obrazac PDV i PDV-K za razdoblje nakon 01.07.2013. moguæe je izraditi preko opcije izbornika 'Obrasci za poreznu upravu'");
+    return false;
+  }
+
   private String askVersionPDV() {
 //    int answ = JOptionPane.showOptionDialog(this, "Odaberite verziju obrasca za ispis","Obrazac PDV",
 //        JOptionPane.DEFAULT_OPTION, JOptisonPane.QUESTION_MESSAGE,

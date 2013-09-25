@@ -53,6 +53,7 @@ public class frmSK extends startFrame {
   JMenu jSisAla = new JMenu();
   JMenuItem jmiDefPDV = new JMenuItem();
   JMenuItem jmiPDV = new JMenuItem();
+  JMenuItem jmiPDV2 = new JMenuItem();
   JMenuItem jmiKnjigeUI = new JMenuItem();
   JMenuItem jmiKamate = new JMenuItem();
   JMenuItem jmiZbirPreg = new JMenuItem();
@@ -103,7 +104,8 @@ public class frmSK extends startFrame {
     jmiPokCheck.setText("Provjera konzistentnosti pokrivanja");
     jmiAutoCover.setText("Automatsko pokrivanje po broju i saldu");
     jmiDefPDV.setText("Definicija obrasca PDV");
-    jmiPDV.setText("Obrazac PDV");
+    jmiPDV.setText("Obrazac PDV do 30.06.2013.");
+    jmiPDV2.setText("Obrasci za poreznu upravu");
     jSisAla.setText("Sistemski alati");
     jmUpiti.setText("Upiti");
     jmIzvj.setText("Izvještaji");
@@ -178,6 +180,7 @@ public class frmSK extends startFrame {
     jmIzvj.add(jmiZbirPregPer);
     jmIzvj.add(jmiDugPotr);
     jmIzvj.add(jmiUraIra);
+    jmIzvj.add(jmiPDV2);
     jmIzvj.add(jmiPDV);
     jmIzvj.add(jmiKam);
     jmIzvj.add(jmiVirmaniSK);
@@ -341,6 +344,11 @@ public class frmSK extends startFrame {
         jmiPDV_actionPerformed();
       }
     });
+    jmiPDV2.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiPDV2_actionPerformed();
+      }
+    });
     jmTemeljGK.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiTemeljGK_actionPerformed();
@@ -495,7 +503,11 @@ public class frmSK extends startFrame {
     showFrame("hr.restart.sk.frmDefPDV", "Definicija obrasca PDV");
   }
   public void jmiPDV_actionPerformed() {
+//    showFrame("hr.restart.sk.frmPDV2", "Obrazac PDV");
     showFrame("hr.restart.sk.frmPDV", "Obrazac PDV");
+  }
+  public void jmiPDV2_actionPerformed() {
+    showFrame("hr.restart.sk.frmPDV2", "Obrasci za poreznu upravu");
   }
   public void jmiTemeljGK_actionPerformed() {
     showFrame("hr.restart.sk.frmTemeljGK", "Temeljnica za GK");
