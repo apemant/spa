@@ -375,7 +375,7 @@ public class raIspisUraIra extends raFrame {
     cols.add(dM.createStringColumn("MB", oib ? "OIB": "MB", 30));
     cols.add(dM.createStringColumn("SORTER", 16));
     tkol.open();
-    for (int i = 6; i <= (ui.equals("U") ? 17 : 22); i++) {
+    for (int i = 6; i <= (ui.equals("U") ? 18 : 23); i++) {
       cols.add(dM.createBigDecimalColumn("KOLONA" + i, Integer.toString(i)));
     }
     /*for (tkol.first(); tkol.inBounds(); tkol.next()) {
@@ -550,7 +550,13 @@ public class raIspisUraIra extends raFrame {
         "Ne prikazivati sume na ispisu URA/IRA? (D/N)"));
     Timestamp firstm = ut.getFirstDayOfMonth(dmfrom);
     Timestamp lastm = ut.getLastDayOfMonth(dmto);
+    Calendar c7 = Calendar.getInstance();
+    c7.set(2013, 5, 30);
     Timestamp firsty = ut.getFirstDayOfYear(dmfrom);
+    if (dmfrom.after(new Timestamp(c7.getTimeInMillis())) && ut.getYear(dmfrom).equals("2013")) {
+      c7.set(2013,6,1,0,0,0);
+      firsty = new Timestamp(c7.getTimeInMillis());
+    }
     Timestamp lasty = ut.addDays(firstm, -1);
     setUraIraDataSet(ui);
     DataSet ds;
