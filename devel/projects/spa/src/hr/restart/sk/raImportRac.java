@@ -330,7 +330,7 @@ public class raImportRac {
     }
     if (totalpor.signum() != 0) {
       total = total.add(totalpor);
-      addUi(sk, ui, getKonto("17"), (short) 17, totalpor);
+      addUi(sk, ui, getKonto("22"), (short) 22, totalpor);
     }
     
     if (sk.getBigDecimal("SALDO").compareTo(total) != 0)
