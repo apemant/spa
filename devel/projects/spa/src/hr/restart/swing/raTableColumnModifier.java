@@ -89,7 +89,7 @@ public class raTableColumnModifier extends raTableModifier {
       dsCol = jtab.getDataSetColumn(getColumn());
       if (dsCol == null) return false;
       tableDs = dsCol.getDataSet();
-      dsToSearch.open();
+      if (dsToSearch != null) dsToSearch.open();
       return dsCol.getColumnName().equals(dsColName);
     }
     return false;
@@ -149,12 +149,21 @@ public class raTableColumnModifier extends raTableModifier {
       if (dr.hasColumn(dsColsReplace[i]) != null) {
         dr.getVariant(dsColsReplace[i],shared);
         if (shared.getAsObject() != null)
-          replacement.append(shared.toString()).
+          replacement.append(formatShared(shared, dsColsReplace[i])).
             append(lastVeznik = (i == 0 ? veznik : ostaliVeznici));          
       }
     }
     replacement.chop(lastVeznik.length());
     setComponentText(replacement.toString());
+  }
+  /**
+   * Metoda za last minute format vrijednosti jedne kolone koja ce biti umetnuta u tablicu (dsColsReplace) 
+   * @param sh variant sa vrijednoscu za umetanje
+   * @param colname ime kolone, clana arraya dsColsReplace, iz kojeg dobivamo sh  
+   * @return String koji se umece u table cell, u stvari dio stringa ako dsColsReplace ima vise clanova
+   */
+  public String formatShared(Variant sh, String colname) {
+    return shared.toString();
   }
 /**
  * @return Variante od keyColumnsa napunjene vrijednostima tekuceg reda
@@ -182,7 +191,7 @@ public class raTableColumnModifier extends raTableModifier {
   public int getMaxModifiedTextLength() {
     int ret = 0;
     for (int i = 0; i < dsColsReplace.length; i++) {
-      Column col = dsToSearch.hasColumn(dsColsReplace[i]);
+      Column col = (dsToSearch!=null)?dsToSearch.hasColumn(dsColsReplace[i]):null;
       if (col == null) {
         ret = ret + dsColsReplace[i].length();
       } else {
