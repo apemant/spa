@@ -177,8 +177,18 @@ public abstract class raNavAction extends JLabel implements Action {
   }
   
   public boolean equals(Object obj) {
-    if (obj instanceof hr.restart.util.raNavAction)
+if (obj == null) {
+//  System.err.println("raNavAction.equals::: obj is null");
+  return false;
+}
+    if (obj instanceof hr.restart.util.raNavAction) {
+if (((raNavAction)obj).getIdentifier() == null) {
+//  System.err.println("raNavAction.equals::: identifier is null");
+  return false;
+}
       return (((raNavAction)obj).getIdentifier().equals(identifier));
+    }
+      
     return super.equals(obj);
   }
   public String getIdentifier() {
