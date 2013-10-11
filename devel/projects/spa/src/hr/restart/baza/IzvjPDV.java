@@ -33,6 +33,7 @@ public class IzvjPDV extends KreirDrop implements DataModule {
 
   Column izpCIZ = new Column();
   Column izpOPIS = new Column();
+  Column izpPARAM = new Column();
 
   public static IzvjPDV getDataModule() {
     if (IzvjPDVclass == null) {
@@ -72,9 +73,19 @@ public class IzvjPDV extends KreirDrop implements DataModule {
     izpOPIS.setServerColumnName("OPIS");
     izpOPIS.setSqlType(1);
     izpOPIS.setWidth(30);
+    
+    izpPARAM.setCaption("Parametri");
+    izpPARAM.setColumnName("PARAMETRI");
+    izpPARAM.setDataType(com.borland.dx.dataset.Variant.STRING);
+    izpPARAM.setPrecision(100);
+    izpPARAM.setTableName("IZVJPDV");
+    izpPARAM.setServerColumnName("PARAMETRI");
+    izpPARAM.setSqlType(1);
+    izpPARAM.setWidth(30);
+    
     izp.setResolver(dm.getQresolver());
     izp.setQuery(new QueryDescriptor(dm.getDatabase1(),"select * from IzvjPDV", null, true, Load.ALL));
- setColumns(new Column[] {izpCIZ, izpOPIS});
+ setColumns(new Column[] {izpCIZ, izpOPIS, izpPARAM});
   }
 
   public void setall() {
@@ -82,6 +93,7 @@ public class IzvjPDV extends KreirDrop implements DataModule {
     ddl.create("IzvjPDV")
        .addChar("ciz", 10, true)
        .addChar("opis", 100)
+       .addChar("parametri", 100)
        .addPrimaryKey("ciz");
 
 
