@@ -26,6 +26,7 @@ import hr.restart.baza.dM;
 import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.dlgErrors;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
@@ -294,10 +295,12 @@ public class checkKartica {
   
   private void fillHeaderMap(DataSet ds, Map headerMap) {
   	String key;
+  	boolean fixknj = frmParam.getParam("robno", "fixKnj", "N", 
+  	    "Popraviti i proknjižene iznose u popravku kartice (D,N)?").equalsIgnoreCase("D");
     for (ds.first(); ds.inBounds(); ds.next()) {
       headerMap.put(key = getHeaderKey(ds), new Timestamp(ds.getTimestamp(sysdat).getTime()));
-      if ((ds.hasColumn("STATKNJ") != null && ds.getString("STATKNJ").equals("K")) ||
-      		(ds.hasColumn("STATKNJU") != null && (ds.getString("STATKNJU").equals("K") || ds.getString("STATKNJI").equals("K"))))
+      if (fixknj && ((ds.hasColumn("STATKNJ") != null && ds.getString("STATKNJ").equals("K")) ||
+      		(ds.hasColumn("STATKNJU") != null && (ds.getString("STATKNJU").equals("K") || ds.getString("STATKNJI").equals("K")))))
       	knjHead.add(key);
     }
   }
@@ -481,7 +484,7 @@ public class checkKartica {
     raProcess.setMessage("Dohvat meðuskladišnica ...", false);
     System.out.println(cGod.and(cMeu.or(cMei)));
     ds = Stmeskla.getDataModule().getTempSet("CSKLUL CSKLIZ GOD VRDOK BRDOK RBR CART KOL NC VC MC "+
-          "ZCUL INABUL IMARUL IPORUL ZADRAZUL ZC INABIZ IMARIZ IPORIZ ZADRAZIZ ITKAL RBSID",
+          "ZCUL INABUL IMARUL IPORUL ZADRAZUL ZC INABIZ IMARIZ IPORIZ ZADRAZIZ SKOL SVC SMC DIOPORMAR DIOPORPOR PORAV ITKAL RBSID",
           cGod.and(cMeu.or(cMei)).and(arts));
     raProcess.openScratchDataSet(ds);
     ds.setSort(csort);
@@ -1071,7 +1074,7 @@ public class checkKartica {
             if (ds.hasColumn("PORAV") != null) {
               if (ds.getBigDecimal("PORAV").doubleValue() != 0
                       || ds.getBigDecimal("DIOPORPOR").doubleValue() != 0
-                      || ds.getBigDecimal("DIOPORMAR").doubleValue() != 0 || "PRK KAL POR".indexOf(ds.getString("VRDOK"))>=0) {
+                      || ds.getBigDecimal("DIOPORMAR").doubleValue() != 0 || "PRK KAL POR MES MEU".indexOf(ds.getString("VRDOK"))>=0) {
                   insertNivelacija(ds, (Timestamp) zag.get(key));
               }
           }   
@@ -1267,21 +1270,36 @@ public class checkKartica {
 				}
 				if (kartica.getString("VRDOK").equalsIgnoreCase("DPR")) {
 				  kartica.setString("VRDOK", kartica.getString("VD"));
-				  
 				  String key = getRowKey(kartica);
-				  kartica.setString("VRDOK", "DPR");
-		          if (!ulazRows.containsKey(key)) {
-		            fatal.addError("Ne mogu pronaæi stavku ulaza "+key);
-		            System.err.println("Weird BUG, can't locate stdoku "+kartica);
-		            continue;
-		          }
-		          ulazi.goToRow(((Integer) ulazRows.get(key)).intValue());
-		          
-		          ulazi.setBigDecimal("SKOL", kartica.getBigDecimal("KOL_TRENUTNO"));
-		          ulazi.setBigDecimal("DIOPORMAR", kartica.getBigDecimal("IMAR_GOOD"));
-		          ulazi.setBigDecimal("DIOPORPOR", kartica.getBigDecimal("IPOR_GOOD"));
-		          ulazi.setBigDecimal("PORAV", kartica.getBigDecimal("IZAD_GOOD"));
-		          ulazi.post();
+                  kartica.setString("VRDOK", "DPR");
+                  
+				  if (TypeDoc.getTypeDoc().isDocStmeskla(kartica.getString("VD"))) {
+				    if (!mesRows.containsKey(key)) {
+                      fatal.addError("Ne mogu pronaæi stavku meðuskladišnice "+key);
+                      System.err.println("Weird BUG, can't locate stmeskla "+kartica);
+                      continue;
+                    }
+                    meskla.goToRow(((Integer) mesRows.get(key)).intValue());
+                    
+                    meskla.setBigDecimal("SKOL", kartica.getBigDecimal("KOL_TRENUTNO"));
+                    meskla.setBigDecimal("DIOPORMAR", kartica.getBigDecimal("IMAR_GOOD"));
+                    meskla.setBigDecimal("DIOPORPOR", kartica.getBigDecimal("IPOR_GOOD"));
+                    meskla.setBigDecimal("PORAV", kartica.getBigDecimal("IZAD_GOOD"));
+                    meskla.post();
+				  } else {
+    		          if (!ulazRows.containsKey(key)) {
+    		            fatal.addError("Ne mogu pronaæi stavku ulaza "+key);
+    		            System.err.println("Weird BUG, can't locate stdoku "+kartica);
+    		            continue;
+    		          }
+    		          ulazi.goToRow(((Integer) ulazRows.get(key)).intValue());
+    		          
+    		          ulazi.setBigDecimal("SKOL", kartica.getBigDecimal("KOL_TRENUTNO"));
+    		          ulazi.setBigDecimal("DIOPORMAR", kartica.getBigDecimal("IMAR_GOOD"));
+    		          ulazi.setBigDecimal("DIOPORPOR", kartica.getBigDecimal("IPOR_GOOD"));
+    		          ulazi.setBigDecimal("PORAV", kartica.getBigDecimal("IZAD_GOOD"));
+    		          ulazi.post();
+				  }
 				  
 				} else if (TypeDoc.getTypeDoc().isDocStmeskla(
 						kartica.getString("VRDOK"))) {
