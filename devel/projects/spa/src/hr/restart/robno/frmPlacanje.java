@@ -468,6 +468,8 @@ public class frmPlacanje extends raMatPodaci {
   
   public static boolean checkRate(raMasterDetail rmd) {
     QueryDataSet master = rmd.getMasterSet();
+    boolean autonac = frmParam.getParam("robno", "autoGodPlac", "D", 
+        "Automatsko dodavanje jedne default rate na gotovinskim raèunima").equalsIgnoreCase("D");
     java.math.BigDecimal tmp=hr.restart.robno.Util.getUtil().getNaplac(master);
     hr.restart.baza.Rate tempRate = hr.restart.baza.Rate.getDataModule();
     if (qdsRate==null) qdsRate = tempRate.getTempSet(Condition.nil);
@@ -482,7 +484,7 @@ public class frmPlacanje extends raMatPodaci {
       //hr.restart.robno.Util.getUtil().emptyTable(qdsRate);
       return true;
     }
-    else if (tmp.compareTo(_Main.nul)==0) {
+    else if (tmp.compareTo(_Main.nul)==0 && autonac) {
       insertSingle(master, frmParam.getParam("robno","gotNacPl"));
       qdsRate.saveChanges();
       return updateMaster(rmd);
