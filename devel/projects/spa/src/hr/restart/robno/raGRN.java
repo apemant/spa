@@ -60,7 +60,7 @@ public class raGRN extends raIzlazTemplate  {
 
 
   public void ExitPointDetail(){
-    frmPlacanje.checkRate(this);
+    //frmPlacanje.checkRate(this);
   }
 
   public raGRN() {
@@ -118,7 +118,7 @@ public class raGRN extends raIzlazTemplate  {
   }
 
   public boolean LocalValidacijaMaster(){
-    return true;
+    return isDatumToday();
   }
   public void RestPanelMPSetup(){
 //    MP.setupOneA();

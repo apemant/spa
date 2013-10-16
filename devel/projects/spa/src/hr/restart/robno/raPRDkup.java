@@ -79,7 +79,7 @@ public class raPRDkup extends raIzlazTemplate {
   }
 
   public boolean LocalValidacijaMaster(){
-    return true;
+    return isDatumToday();
   }
 
   public void RestPanelMPSetup(){
@@ -143,7 +143,7 @@ public class raPRDkup extends raIzlazTemplate {
   }
   
   public void ExitPointDetail(char mode){
-    frmPlacanje.checkRate(this);
+    //frmPlacanje.checkRate(this);
   }
   
   public boolean ValidacijaPrijeIzlazaDetail() {
