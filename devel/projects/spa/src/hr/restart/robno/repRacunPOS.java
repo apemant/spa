@@ -127,6 +127,19 @@ public class repRacunPOS extends mxReport {
     setRM(rm);
   }
 
+  private String breakLines(String src, boolean center) {
+    if (!center)
+      return new VarStr(src).append('|').replaceAll("|", "<$newline$>").toString();
+    
+    String[] parts = new VarStr(src).split('|');
+    VarStr buf = new VarStr();
+    for (int i = 0; i < parts.length; i++)
+      if (parts[i].length() == 0) buf.append("<$newline$>");
+      else buf.append("<#").append(parts[i]).append('|').
+        append(width).append("|center#><$newline$>");
+    return buf.toString();
+  }
+  
   private void makeIspis(){
      dm.getLogotipovi().open();
      
@@ -134,7 +147,7 @@ public class repRacunPOS extends mxReport {
      
      
      
-     String kh = getNazivSplit(dm.getLogotipovi().getString("NAZIVLOG"))+
+     String kh = breakLines(dm.getLogotipovi().getString("NAZIVLOG"), true)+
      "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+" "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+
      "<#OIB "+dm.getLogotipovi().getString("OIB")+"|"+width+"|center#><$newline$>"+ getPhones();
      
@@ -147,7 +160,7 @@ public class repRacunPOS extends mxReport {
      String ph = kh;
      if (!sks.getString("CORG").equals(OrgStr.getKNJCORG(false)) &&
          lD.raLocate(dm.getLogotipovi(), "CORG", sks.getString("CORG"))) {
-       ph = getNazivSplit(dm.getLogotipovi().getString("NAZIVLOG"))+
+       ph = breakLines(dm.getLogotipovi().getString("NAZIVLOG"), true)+
        "<#"+dm.getLogotipovi().getString("ADRESA")+ ", " +String.valueOf(dm.getLogotipovi().getInt("PBR"))+
        " "+dm.getLogotipovi().getString("MJESTO") +"|"+width+"|center#><$newline$>"+ 
        (dm.getLogotipovi().getString("OIB").length()== 0 ? "" : "<#OIB "+
@@ -162,25 +175,13 @@ public class repRacunPOS extends mxReport {
      String prep = frmParam.getParam("pos", "addHeader", "",
          "Dodatni header ispred POS raèuna", true);
      
-     if (prep.length() > 0) {
-       String[] parts = new VarStr(prep).split('|');
-       VarStr buf = new VarStr();
-       for (int i = 0; i < parts.length; i++)
-         buf.append("<#").append(parts[i]).append('|').
-           append(width).append("|center#><$newline$>");
-       prep = buf.toString();
-     }
+     if (prep.length() > 0)
+       prep = breakLines(prep, true);
      
      String post = frmParam.getParam("pos", "addHeaderAfter", "", 
            "Dodatni header iza zaglavlja", true);
-     if (post.length() > 0) {
-       String[] parts = new VarStr(post).split('|');
-       VarStr buf = new VarStr();
-       for (int i = 0; i < parts.length; i++)
-         buf.append("<#").append(parts[i]).append('|').
-           append(width).append("|center#><$newline$>");
-       post = buf.toString();
-     }
+     if (post.length() > 0) 
+       post = breakLines(post, true);
      
      String th = frmParam.getParam("pos", "posHeader", "",
          "POS header (1 - poslovnica, knjigovodstvo  2 - obrnuto, ostalo - samo knjigovodstvo)");
@@ -223,13 +224,20 @@ public class repRacunPOS extends mxReport {
 //         "<$newline$>"+
          getBlagajnaOperater(prodMjesto,user)+"<$newline$>"+
          (presBlag.isFiskal(master) && master.getString("FOK").equals("D") ? getFisk() : "") +
-         "<$newline$><$newline$><$newline$><$newline$><$newline$><$newline$>"+
+         getLastPadding() +
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
     );
   }
   
-  private String getNazivSplit(String naziv) {
+  private String getLastPadding() {
+    int num = Aus.getAnyNumber(frmParam.getParam("pos", "paddLines", "6", "Broj praznih linija na kraju POS raèuna"));
+    VarStr padd = new VarStr();
+    for (int i = 0; i < num; i++) padd.append("<$newline$>");
+    return padd.toString();
+  }
+  
+ /* private String getNazivSplit(String naziv) {
     if (naziv.indexOf('|') <= 0) return    
       "<#"+naziv+"|"+width+"|center#><$newline$>";
     
@@ -239,7 +247,7 @@ public class repRacunPOS extends mxReport {
       ret = ret + "<#"+lines[i]+"|"+width+"|center#><$newline$>";
     
     return ret;
-  }
+  }*/
   
   private String getFisk() {
     System.out.println("fisk string");
@@ -590,11 +598,10 @@ public class repRacunPOS extends mxReport {
     if (!sadrzaj.equals("")){
       footing = "<#"+sadrzaj+"|"+width+"|center#><$newline$>";
     }
-    if (!presBlag.isFiskPDV(master)) {
-      
-      footing = "<#PDV nije obraèunat sukladno èlanku 22.|"+width+"|center#><$newline$>" +
-                "<#stavak 1. zakona o PDV-u|"+width+"|center#><$newline$><$newline$>" + footing;
-      
+    if (!presBlag.isFiskPDV(master)) {      
+      footing = breakLines(frmParam.getParam("pos", "noPDV", 
+          "PDV nije obraèunat sukladno èlanku 90|stavak 1. zakona o PDV-u|",
+        "Tekst za osloboðeno od poreza za obrtnike na POS raèunu"), true) + footing;
     }
     return footing;
   }
