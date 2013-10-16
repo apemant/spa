@@ -86,7 +86,7 @@ public class raGOT extends raIzlazTemplate  {
   }
 
   public void ExitPointDetail(){
-    frmPlacanje.checkRate(this);
+    //frmPlacanje.checkRate(this);
   }
 /*
   public boolean checkAccess(){
@@ -130,7 +130,7 @@ public class raGOT extends raIzlazTemplate  {
   }
 
   public boolean LocalValidacijaMaster(){
-    return true;
+    return isDatumToday();
   }
 
   public void RestPanelMPSetup(){
@@ -229,12 +229,12 @@ public class raGOT extends raIzlazTemplate  {
      return isPriceToBig(true);
    }
    public void prepareQuery(String odabrano) {
-
      String ss = "select * from doki where "+
                      "aktiv='D' and god = '"+
                val.findYear(pressel.getSelRow().getTimestamp("DATDOK-to"))
                +"' and cskl='" +pressel.getSelRow().getString("CSKL") +"' "+dodatak+
-                     "and vrdok= '"+odabrano+"' and param like '%K%'" ; //samo trenutno
+                 (odabrano.equals("SGT") ? "and vrdok= 'GOT'" :
+                     "and vrdok= '"+odabrano+"' and param like '%K%'") ; //samo trenutno
       qDS =  hr.restart.util.Util.getNewQueryDataSet(ss,true);
    }
 }
