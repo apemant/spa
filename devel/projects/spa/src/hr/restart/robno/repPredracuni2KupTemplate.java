@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.util.reports.raGRNSectionHeader0;
 import hr.restart.util.reports.raGRSectionFooter2Lines;
+import hr.restart.util.reports.raGRSectionHeaderWin;
 import hr.restart.util.reports.raIzlazDetail2;
 import hr.restart.util.reports.raIzlazSectionHeader2Lines;
 import hr.restart.util.reports.raReportSection;
@@ -34,11 +35,17 @@ import hr.restart.util.reports.raReportSection;
 public class repPredracuni2KupTemplate extends repIzlazOrigTemplate {
 
   /*raGRSectionHeaderWin*/ //raGRNSectionHeader0 sh;
-
+  
   public raReportSection createSectionHeader0() {
-//    sh = new raGRNSectionHeader0(this);
-    raGRNSectionHeader0 sh = new raGRNSectionHeader0(this);
+    raGRSectionHeaderWin sh = new raGRSectionHeaderWin(this);
     sh.LabelR_A_C_U_N.defaultAlterer().setCaption("\nRAÈUN ZA PREDUJAM");
+    return sh;
+  }
+
+//  public raReportSection createSectionHeader0() {
+//    sh = new raGRNSectionHeader0(this);
+//    raGRNSectionHeader0 sh = new raGRNSectionHeader0(this);
+//    sh.LabelR_A_C_U_N.defaultAlterer().setCaption("\nRAÈUN ZA PREDUJAM");
 //    sh.TextTEL.setDefault(ep.CONTROL_SOURCE, "TELKUPCA");
 //    sh.TextMJKUPCA.setDefault(ep.CONTROL_SOURCE, "PbrMjestoKupca");
 //    sh.TextCPAR.setDefault(ep.CONTROL_SOURCE,"CKUPAC");
@@ -50,11 +57,11 @@ public class repPredracuni2KupTemplate extends repIzlazOrigTemplate {
 //      sh.TextFAX.defaultAlterer().setVisible(false);
     }*/
     
-    return sh;
+//    return sh;
 //    return sh;
 //  public raReportSection createSectionHeader0() {
 //    return new raRacSectionHeader(this);
-  }
+//  }
 
   public raReportSection createSectionHeader1() {
     return new raIzlazSectionHeader2Lines(this); // return new raIzlazSectionHeader2(this);

@@ -41,11 +41,16 @@ public class repGrnRacTemplate extends repIzlazOrigTemplate {
   
   raGRSectionHeaderWin sh;
   raIzlazDetailMC ridmc;
-
+  
   public raReportSection createSectionHeader0() {
+    sh = new raGRSectionHeaderWin(this);
+    return sh;
+  }
+
+//  public raReportSection createSectionHeader0() {
 //    sh = new raGRSectionHeaderWin(this);
 //    sh.LabelRACUNOTPREMNICA.defaultAlterer().setCaption("\nR A È U N");
-    raGRNSectionHeader0 sh = new raGRNSectionHeader0(this);
+//    raGRNSectionHeader0 sh = new raGRNSectionHeader0(this);
 //    sh.TextTEL.setDefault(ep.CONTROL_SOURCE, "TELKUPCA");
 //    sh.TextMJKUPCA.setDefault(ep.CONTROL_SOURCE, "PbrMjestoKupca");
 //    sh.TextCPAR.setDefault(ep.CONTROL_SOURCE,"CKUPAC");
@@ -57,9 +62,9 @@ public class repGrnRacTemplate extends repIzlazOrigTemplate {
 //      sh.TextFAX.defaultAlterer().setVisible(false);
     }*/
     
-    return sh;
+//    return sh;
 //    return new raGRNSectionHeader0(this);//sh;
-  }
+//  }
 
   public raReportSection createSectionHeader1() {
     return new raIzlazSectionHeaderLines(this); // return new raIzlazSectionHeader(this);
