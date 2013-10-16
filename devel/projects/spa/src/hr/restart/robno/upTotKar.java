@@ -575,7 +575,8 @@ public class upTotKar extends raUpitFat {
     do {
       if (vNull.getBigDecimal("KOLUL").compareTo(Aus.zero3) == 0 && 
           vNull.getBigDecimal("KOLIZ").compareTo(Aus.zero3) == 0 &&
-          vNull.getBigDecimal("KOLDON").compareTo(Aus.zero3) == 0)
+          vNull.getBigDecimal("SKOL").compareTo(Aus.zero3) == 0 &&
+          vNull.getBigDecimal("SIZN").compareTo(Aus.zero3) == 0)
         vNull.deleteRow();
       else 
         vNull.next();
