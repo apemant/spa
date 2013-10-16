@@ -169,7 +169,7 @@ public class repMxGRN extends mxReport {
                     vl.RezSet.getString("IME")+" "+vl.RezSet.getString("PREZIME")+"<$newline$>"+
                     ((!vl.RezSet.getString("ADR").equals(""))?"       "+vl.RezSet.getString("ADR")+"<$newline$>":"")+
                     ((vl.RezSet.getInt("PBR")!=0)?"       "+vl.RezSet.getInt("PBR")+" ":"")+
-                    ((!vl.RezSet.getString("MJ").equals(""))?"       "+vl.RezSet.getString("MJ")+"<$newline$>":"<$newline$>");
+                    ((!vl.RezSet.getString("MJ").equals(""))?"       "+vl.RezSet.getString("MJ") + "<$newline$>":"<$newline$>") + getJMBG(vl.RezSet);
     }
     return kupacString;
   }
@@ -193,6 +193,23 @@ public class repMxGRN extends mxReport {
     //System.out.println(frmMasterBlagajna.getInstance().rtype);
     return "ZKI: " + getZKI() + "<$newline$>" +
       "JIR: " + ds.getString("JIR") + "<$newline$><$newline$>";
+  }
+  
+  public String getJMBG(DataSet dr) {
+    String result = "";
+    String oib = frmParam.getParam("robno", "oibMode", "MB", 
+      "Staviti matièni broj (MB) ili OIB?");
+    if (!oib.equalsIgnoreCase("MB")) {
+      String br = dr.getString("OIB");
+      if (br.length() == 0) result = "";
+      else result = "       OIB: " + br + "<$newline$>";
+    } 
+    if (oib.equalsIgnoreCase("MB") || result.length() == 0) {
+      String mb = dr.getString("JMBG");
+      if (mb.length() == 0) result = "";
+      else result = "       MB: " + mb + "<$newline$>"; 
+    }   
+    return result;
   }
   
   public String getBRDOK() {
