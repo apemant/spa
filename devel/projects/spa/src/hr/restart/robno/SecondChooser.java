@@ -83,6 +83,7 @@ public class SecondChooser extends JraDialog {
 	private StorageDataSet StavkeSet = new StorageDataSet();
 
 	private QueryDataSet findStavkeSet = new QueryDataSet();
+	private QueryDataSet vtrabat = new QueryDataSet();
 
 	private QueryDataSet ZaglavljeSet = new QueryDataSet();
 
@@ -865,6 +866,9 @@ public class SecondChooser extends JraDialog {
 		if (StavkeSet.getRowCount() == 0)
 			return true;
 		rIT.getDetailSet().refresh();
+		
+		vtrabat = hr.restart.baza.vtrabat.getDataModule().getTempSet("1=0");
+		vtrabat.open();
 
 		initNormExpansion(); // ab.f ekspanzija normativa
 
@@ -1046,33 +1050,33 @@ System.out.println(StavkeSet.getInt("CARt"));
 	public void addRabat(DataSet ds, short rbr) {
 		if (RabatiSetTmp.getRowCount() != 0) {
 			do {
-				dm.getVtrabat().insertRow(true);
+				vtrabat.insertRow(true);
 				if (ds == null) {
-					dm.getVtrabat().setString("CSKL",
+					vtrabat.setString("CSKL",
 							rIT.getDetailSet().getString("CSKL"));
-					dm.getVtrabat().setString("VRDOK",
+					vtrabat.setString("VRDOK",
 							rIT.getDetailSet().getString("VRDOK"));
-					dm.getVtrabat().setString("GOD",
+					vtrabat.setString("GOD",
 							rIT.getDetailSet().getString("GOD"));
-					dm.getVtrabat().setInt("BRDOK",
+					vtrabat.setInt("BRDOK",
 							rIT.getDetailSet().getInt("BRDOK"));
-					dm.getVtrabat().setShort("RBR",(short)
+					vtrabat.setShort("RBR",(short)
 							rIT.getDetailSet().getInt("RBSID"));
 				} else {
-					dm.getVtrabat().setString("CSKL", ds.getString("CSKL"));
-					dm.getVtrabat().setString("VRDOK", ds.getString("VRDOK"));
-					dm.getVtrabat().setString("GOD", ds.getString("GOD"));
-					dm.getVtrabat().setInt("BRDOK", ds.getInt("BRDOK"));
-					dm.getVtrabat().setShort("RBR", rbr);
+					vtrabat.setString("CSKL", ds.getString("CSKL"));
+					vtrabat.setString("VRDOK", ds.getString("VRDOK"));
+					vtrabat.setString("GOD", ds.getString("GOD"));
+					vtrabat.setInt("BRDOK", ds.getInt("BRDOK"));
+					vtrabat.setShort("RBR", rbr);
 				}
-				dm.getVtrabat().setShort("LRBR", RabatiSetTmp.getShort("LRBR"));
-				dm.getVtrabat().setString("CRAB",
+				vtrabat.setShort("LRBR", RabatiSetTmp.getShort("LRBR"));
+				vtrabat.setString("CRAB",
 						RabatiSetTmp.getString("CRAB"));
-				dm.getVtrabat().setBigDecimal("PRAB",
+				vtrabat.setBigDecimal("PRAB",
 						RabatiSetTmp.getBigDecimal("PRAB"));
-				dm.getVtrabat().setBigDecimal("IRAB",
+				vtrabat.setBigDecimal("IRAB",
 						RabatiSetTmp.getBigDecimal("IRAB"));
-				dm.getVtrabat().setString("RABNARAB",
+				vtrabat.setString("RABNARAB",
 						RabatiSetTmp.getString("RABNARAB"));
 
 			} while (RabatiSetTmp.next());
@@ -1803,7 +1807,7 @@ System.out.println(StavkeSet.getInt("CARt"));
 				}
 
 				try {
-					raTransaction.saveChanges(dm.getVtrabat());
+					raTransaction.saveChanges(vtrabat);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 					return false;
