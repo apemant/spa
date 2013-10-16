@@ -421,7 +421,9 @@ public class rajpIzlazDPTemplate extends JPanel {
 
 	public void myKalkul(FocusEvent e) {
 		if (fDI.TD.isDocNegateKol(fDI.getDetailSet().getString("VRDOK"))) {
-			if (fDI.getDetailSet().getBigDecimal("KOL").doubleValue() > 0) {
+		  if (hr.restart.sisfun.frmParam.getParam("robno", "negateKol", "D",
+              "Automatsko prebacivanje kolièine u minus (D/N)").equalsIgnoreCase("D") &&
+              fDI.getDetailSet().getBigDecimal("KOL").doubleValue() > 0) {
 				fDI.getDetailSet().setBigDecimal("KOL",
 						fDI.getDetailSet().getBigDecimal("KOL").negate());
 			}
@@ -431,7 +433,9 @@ public class rajpIzlazDPTemplate extends JPanel {
     
     public void myKalkul(JraTextField tf) {
         if (fDI.TD.isDocNegateKol(fDI.getDetailSet().getString("VRDOK"))) {
-            if (fDI.getDetailSet().getBigDecimal("KOL").doubleValue() > 0) {
+            if (hr.restart.sisfun.frmParam.getParam("robno", "negateKol", "D",
+              "Automatsko prebacivanje kolièine u minus (D/N)").equalsIgnoreCase("D") &&
+              fDI.getDetailSet().getBigDecimal("KOL").doubleValue() > 0) {
                 fDI.getDetailSet().setBigDecimal("KOL",
                         fDI.getDetailSet().getBigDecimal("KOL").negate());
             }
