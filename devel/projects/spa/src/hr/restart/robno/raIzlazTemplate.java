@@ -1571,6 +1571,18 @@ ST.prn(radninal);
 	public boolean ValidacijaMasterExtend() {
 		return true;
 	}
+	
+	public boolean isDatumToday() {
+	  if (frmParam.getParam("robno", "gotToday", "N", 
+	      "Upozorenje da datum nije današnji na gotovinskim raèunima (D,N)").equalsIgnoreCase("D")) {
+	    if (!ut.sameDay(val.getToday(), getMasterSet().getTimestamp("DATDOK"))) {
+	      if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Datum nije današnji! Nastaviti svejedno?", 
+	          "Provjera datuma", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return false;
+	    }
+	  }
+	  
+	  return true;
+	}
 
 	public boolean isKnjigDataOK() {
 
@@ -3461,7 +3473,7 @@ System.out.println("findCjenik::else :: "+sql);
 				getrDR().getDPDataSet().first();
 
 				do {
-					// TODO napuniti vt_.....
+					// TODO napuniti vt_....
 					dm.getVtzavtr().insertRow(true);
 					dm.getVtzavtr().setString("LOKK", "N");
 					dm.getVtzavtr().setString("AKTIV", "D");
@@ -4170,7 +4182,12 @@ System.out.println("findCjenik::else :: "+sql);
           };
       }
   
-      if (prep == null) prepareQuery(odabrano);
+      if (prep == null) {
+        System.out.println("prep je null");
+        prepareQuery(odabrano);
+      } else {
+        System.out.println("prep nijje null, wtf");
+      }
       dcz.setSelected(odabrano);
       dcz.setDataSet(prep == null ? qDS : prep);
       String[] dods = (prep == null ? 
