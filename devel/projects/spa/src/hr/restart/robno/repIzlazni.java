@@ -41,6 +41,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import com.borland.dx.dataset.DataSet;
@@ -82,6 +83,7 @@ public class repIzlazni implements raReportData {
   protected String lastDok = null;
   
   protected String naps = "";
+  protected HashSet allNaps = new HashSet();
   
   public repIzlazni() {
     this(true);
@@ -103,6 +105,7 @@ public class repIzlazni implements raReportData {
       checkSpecGroup();
       lastDok = getFormatBroj();
       naps = "";
+      allNaps.clear();
       dineto = diprodbp = diprodsp = Aus.zero2;
     }
   	setParams();
@@ -1059,6 +1062,14 @@ public BigDecimal getIPRODSP() {
     return first + "\nZKI: " + getZKI() + "    JIR: " + getJIR();
   }
   
+  public int getFBR() {
+    return ds.getInt("FBR");
+  }
+  
+  public int getFNU() {
+    return ds.getInt("FNU");
+  }
+  
   public String getOldFormatBroj() {
     if (specForm == null || specForm.length() == 0)
       return ru.getFormatBroj();
@@ -1180,7 +1191,8 @@ public BigDecimal getIPRODSP() {
     String corg = ds.getString("CSKL");
     
     if (TypeDoc.getTypeDoc().isDocSklad(ds.getString("VRDOK")) || 
-        (ds.getString("VRDOK").equals("PON") && !ds.getString("PARAM").startsWith("OJ"))){
+        (ds.getString("VRDOK").equals("PON") && !ds.getString("PARAM").startsWith("OJ")) ||
+        (ds.getString("VRDOK").equals("PRD") && ds.getString("PARAM").startsWith("K"))) {
         lookupData.getlookupData().raLocate(dm.getSklad(),new String[] {"CSKL"}, new String[] {ds.getString("CSKL")});
         corg = dm.getSklad().getString("CORG");
     }
@@ -1461,6 +1473,18 @@ public BigDecimal getIPRODSP() {
   
   public String getDISP() {
     return Aus.formatBigDecimal(diprodsp);
+  }
+  
+  public String getDKINETO() {
+    return Aus.formatBigDecimal(dineto.multiply(getTECAJ()).divide(raSaldaKonti.getJedVal(getOZNVAL()), 2, BigDecimal.ROUND_HALF_UP));
+  }
+  
+  public String getDKIBP() {
+    return Aus.formatBigDecimal(diprodbp.multiply(getTECAJ()).divide(raSaldaKonti.getJedVal(getOZNVAL()), 2, BigDecimal.ROUND_HALF_UP));
+  }
+  
+  public String getDKISP() {
+    return Aus.formatBigDecimal(diprodsp.multiply(getTECAJ()).divide(raSaldaKonti.getJedVal(getOZNVAL()), 2, BigDecimal.ROUND_HALF_UP));
   }
   
   public String getDVINETO() {
@@ -1897,9 +1921,11 @@ public BigDecimal getIPRODSP() {
       if (dm.getArtikli().getString("CNAP").length() > 0 &&
           lD.raLocate(dm.getNapomene(), "CNAP",
               dm.getArtikli().getString("CNAP"))) {
-        if (naps != null && naps.length() > 0)
-          naps = naps + "\n";
-        naps = naps + dm.getNapomene().getString("NAZNAP");
+        if (allNaps.add(dm.getArtikli().getString("CNAP"))) {
+          if (naps != null && naps.length() > 0)
+            naps = naps + "\n";
+          naps = naps + dm.getNapomene().getString("NAZNAP");
+        }
       }
     }
   }
