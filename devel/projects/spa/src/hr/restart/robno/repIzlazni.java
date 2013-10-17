@@ -1163,9 +1163,12 @@ public BigDecimal getIPRODSP() {
   }
   public String getSLOVIMA() { /** @todo razlika kod deviznog */
 //    if (ds.getString("OZNVAL").equals(""))
+    if (frmParam.getParam("robno", "slovimaVAL", "N", "Ispisati slovima sa valutom na raèunu usprkos svemu").equalsIgnoreCase("D")) {
+      if (!ds.getString("OZNVAL").equals(""))
+      return ut.numToLet(ds.getBigDecimal("UIRAC").doubleValue(),ds.getString("OZNVAL"));
+    }
     return ut.numToLet(ds.getBigDecimal("UIRAC").doubleValue(),
                        isReportValute() ? ds.getString("OZNVAL") : null);
-//    return ut.numToLet(ds.getBigDecimal("UIRAC").doubleValue(),ds.getString("OZNVAL"));
   }
   public int getLogoPotvrda() {
     if (rm.test()) return 1;
