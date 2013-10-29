@@ -550,6 +550,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repNarPop", "NDO", "D", ""},
       {"hr.restart.robno.repNarDobV", "NDO", "D", ""},
       {"hr.restart.robno.repNarDobKol", "NDO", "D", ""},
+      {"hr.restart.robno.repNarDobKolTwo", "NDO", "D", ""},
       {"hr.restart.robno.repRadniNalog", "RNL", "D", ""},
       {"hr.restart.robno.repRadniNalogMask", "RNL", "D", ""},
       {"hr.restart.robno.repObracunRadnogNaloga", "RNL", "D", ""},
