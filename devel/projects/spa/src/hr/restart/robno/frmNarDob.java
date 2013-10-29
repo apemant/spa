@@ -609,6 +609,18 @@ System.out.println("key4del "+ key4del);
   void afterKOL() {
     getDetailSet().setBigDecimal("INAB", rut.multiValue(getDetailSet().getBigDecimal("NC"),
         getDetailSet().getBigDecimal("KOL")));
+    
+    if (getDetailSet().getBigDecimal("KOL1").signum() == 0 && 
+        ld.raLocate(dm.getArtikli(), "CART", Integer.toString(getDetailSet().getInt("CART")))) {
+      
+      if (dm.getArtikli().getBigDecimal("BRJED").signum() != 0) {
+        getDetailSet().setBigDecimal("KOL1", getDetailSet().getBigDecimal("KOL").
+            divide(dm.getArtikli().getBigDecimal("BRJED"), 3, BigDecimal.ROUND_HALF_UP));
+      } else {
+        getDetailSet().setBigDecimal("KOL1", Aus.zero3);
+      }
+    }
+
     afterAll();
   }
 
