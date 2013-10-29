@@ -678,11 +678,13 @@ System.out.println("key4del "+ key4del);
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarPop", "hr.restart.robno.repNarDobSource", "NarPop", "Narudžbe dobavljaèu s popustom");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarDobV", "hr.restart.robno.repNarDobSource", "NarDob", "Narudžbe dobavljaèu u valuti");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarDobKol", "hr.restart.robno.repNarDobSource", "NarDobKol", "Narudžbe dobavljaèu - kolièinska");
+    this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarDobKolTwo", "hr.restart.robno.repNarDobSource", "NarDobKolTwo", "Narudžbe dobavljaèu - dvije kolièine");
     
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repNarDob", "hr.restart.robno.repNarDobSource", "NarDob", "Narudžbe dobavljaèu");
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repNarPop", "hr.restart.robno.repNarDobSource", "NarPop", "Narudžbe dobavljaèu s popustom");
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repNarDobV", "hr.restart.robno.repNarDobSource", "NarDob", "Narudžbe dobavljaèu u valuti");
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repNarDobKol", "hr.restart.robno.repNarDobSource", "NarDobKol", "Narudžbe dobavljaèu - kolièinska");
+    this.raDetail.getRepRunner().addReport("hr.restart.robno.repNarDobKolTwo", "hr.restart.robno.repNarDobSource", "NarDobKolTwo", "Narudžbe dobavljaèu - dvije kolièine");
   }
 	public boolean updateTxt() {
 		if (raDetail.getMode() == 'N') {
