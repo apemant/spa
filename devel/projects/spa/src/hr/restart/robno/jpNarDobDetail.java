@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.JraTextMultyKolField;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raImages;
 
@@ -28,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.beans.PropertyChangeEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -56,7 +58,14 @@ public class jpNarDobDetail extends JPanel {
   JLabel jlaKol = new JLabel();
   JLabel jlaNc = new JLabel();
   
-  JraTextField jraKol = new JraTextField() {
+  
+  
+  JraTextMultyKolField jraKol = new JraTextMultyKolField() {
+    public void propertyChange(PropertyChangeEvent evt) {
+       if (evt.getPropertyName().equalsIgnoreCase("KOL"))
+         frmNarDob.getInstance().afterKOL();
+    }
+            
     public void valueChanged() {
       if (!oldValue.equals(jraKol.getText().toString())) {
           frmNarDob.getInstance().afterKOL();
@@ -290,6 +299,7 @@ public class jpNarDobDetail extends JPanel {
     jraInab.setColumnName("INAB");
     jraInabDOB.setColumnName("IPRODBP");
     jraKol.setColumnName("KOL");
+    jraKol.addPropertyChangeListener(jraKol);
     jraNc.setColumnName("NC");
     jraNcDOB.setColumnName("FVC");
     jraPop.setColumnName("UPRAB");
