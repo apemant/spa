@@ -700,7 +700,7 @@ System.out.println("QS : " + queryString);
                         "stdoki.iprodsp"+caprDobart+" from doki, stdoki, partneri " +dobart +
                         "where  doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok " +
 //                        " AND doki.vrdok != 'PON' AND doki.vrdok != 'NDO' AND doki.vrdok != 'NKU' AND stdoki.vrdok != 'RNL' AND stdoki.vrdok != 'REV' AND stdoki.vrdok != 'PRV' "+
-                        " AND doki.vrdok not in ('PON','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','TRE','ZAH') "+
+                        " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') "+
                         "and partneri.cpar=doki.cpar and doki.datdok between " + dateP + " and " + dateZ + " " + ckupca + pjKupca +
                         "and doki.cskl='" + cskl + "' "+ exInClude;//"' and doki.vrdok in ('ROT','RAC','POD')";
 
@@ -825,7 +825,7 @@ System.out.println("QS : " + queryString);
                         "stdoki.iprodsp"+caprDobart+" from partneri, doki, stdoki" + dobart +
                         "where partneri.cpar=doki.cpar and doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok " +
 //                        " AND doki.vrdok != 'PON' AND doki.vrdok != 'NDO' AND doki.vrdok != 'NKU' AND stdoki.vrdok != 'RNL' AND stdoki.vrdok != 'REV' AND stdoki.vrdok != 'PRV' "+
-                        " AND doki.vrdok not in ('PON','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','TRE','ZAH') "+
+                        " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') "+
                         "and doki.datdok between " + dateP + " and " + dateZ + " " + ckupca + pjKupca +
                         /*"and doki.cskl='" + cskl + "' "+*/exInClude;//"' and doki.vrdok in ('ROT','RAC','POD','TER','ODB')";
 
@@ -965,7 +965,7 @@ System.out.println("QS : " + queryString);
                          "where doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok "+
                          "and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok AND stdoki.cart = artikli.cart "+
 //                         " AND doki.vrdok != 'PON' AND doki.vrdok != 'NDO' AND doki.vrdok != 'NKU' AND stdoki.vrdok != 'RNL' AND stdoki.vrdok != 'REV' AND stdoki.vrdok != 'PRV' "+
-                         " AND doki.vrdok not in ('PON','NDO','NKU','RNL','REV','PRV','OTR','INM','INV','IZD','GOT','GRN','OTP','TRE','ZAH','DOS') "+
+                         " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') "+
                          exInClude+
                          ckupca+
                          pjKupca+
@@ -1198,7 +1198,7 @@ System.out.println("QS : " + queryString);
                          "where doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok "+
                          "and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok AND stdoki.cart = artikli.cart " +
 //                         " AND doki.vrdok != 'PON' AND doki.vrdok != 'NDO' AND doki.vrdok != 'NKU' AND stdoki.vrdok != 'RNL' AND stdoki.vrdok != 'REV' AND stdoki.vrdok != 'PRV' "+
-                        " AND doki.vrdok not in ('PON','NDO','NKU','RNL','REV','PRV','OTR','INM','INV','IZD','GOT','GRN','OTP','TRE','ZAH') "+
+                        " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') "+
                          exInClude+
                          ckupca+
                          artikli+
