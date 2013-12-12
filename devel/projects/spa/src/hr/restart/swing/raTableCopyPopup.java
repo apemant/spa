@@ -29,6 +29,7 @@ import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 import hr.restart.util.raDataFilter;
 import hr.restart.util.raGlob;
+import hr.restart.util.raProcess;
 import hr.restart.util.columnsbean.ColumnsBean;
 
 import java.awt.BorderLayout;
@@ -52,15 +53,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
+
+import bsh.EvalError;
+import bsh.Interpreter;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataRow;
@@ -90,15 +86,17 @@ public class raTableCopyPopup extends JPopupMenu {
   private Action add, addAll, set, setAll, sub, subAll, reset,
       selClear, selAll, selectCol, fastAdd, filtShow, filtEq, filtNeq, 
       filtRemove, search, searchAll, tabCond, keyCond, inCond, 
-      inColCond, copyAll, clearAll, replaceAll, memorize, compare, dups;
+      inColCond, copyAll, clearAll, replaceAll, performAll, performInit, memorize, compare, dups;
   private JMenu calcMenu;
   private JMenu adminMenu;
   
   private Map memo = new HashMap();
   
-  
+  Interpreter bsh = new Interpreter();
   raCalculator calc = raCalculator.getInstance();
   ReplaceDialog repDlg = new ReplaceDialog();
+  PerformDialog perfDlg = new PerformDialog();
+  PerformDialog initDlg = new PerformDialog();
   
   static {
     AWTKeyboard.registerKeyStroke(AWTKeyboard.ESC, new KeyAction() {
@@ -206,6 +204,9 @@ public class raTableCopyPopup extends JPopupMenu {
       replaceAll.putValue(Action.NAME, selMulti ?
           "Zamijeni uzorak teksta u svim oznaèenim redovima" :
           "Zamijeni uzorak teksta u svim redovima");
+      performAll.putValue(Action.NAME, selMulti ?
+          "Izvrši skriptu u svim oznaèenim redovima" :
+          "Izvrši skriptu u svim redovima");
       memorize.setEnabled(jt.getRowCount() > 0);
       compare.setEnabled(memo.size() > 0);
       dups.setEnabled(jt.getRowCount() > 0);
@@ -402,6 +403,36 @@ public class raTableCopyPopup extends JPopupMenu {
         }
       }
     });
+    
+    adminMenu.add(performAll = new AbstractAction("Izvrši skriptu za sve redove") {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          performAll();
+        } catch (RuntimeException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
+    adminMenu.addSeparator();
+    adminMenu.add(performInit = new AbstractAction("Izvrši skriptu za inicijalizaciju varijabli") {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          performInit();
+        } catch (RuntimeException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
+    
+    bsh.eval(
+        "import hr.restart.baza.*;" +
+        "import hr.restart.util.*;" +
+        "import hr.restart.swing.*;" +          
+        "import com.borland.dx.dataset.*;" +
+        "import com.borland.dx.sql.dataset.*;" +
+        "import com.borland.jb.util.*;" +
+        "import java.math.BigDecimal;"
+    );
   }
   
   void selRows(int from, int to) {
@@ -775,29 +806,180 @@ public class raTableCopyPopup extends JPopupMenu {
     jt.fireTableDataChanged();
   }
   
+  void performInit() {
+    if (initDlg.show(jt.getTopLevelAncestor(), 
+        initDlg.pan, "Izvrši skriptu")) {
+      try {
+        bsh = new Interpreter();
+        bsh.eval(
+            "import hr.restart.baza.*;" +
+            "import hr.restart.util.*;" +
+            "import hr.restart.swing.*;" +          
+            "import com.borland.dx.dataset.*;" +
+            "import com.borland.dx.sql.dataset.*;" +
+            "import com.borland.jb.util.*;" +
+            "import java.math.BigDecimal;"
+        );
+        bsh.eval(initDlg.query.getText());
+      } catch (EvalError e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(jt.getTopLevelAncestor(), "Greška: " + e.getMessage(), 
+            "Greška", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+  }
+  
+  void setBshValue(DataSet ds, Column col, String cname) throws EvalError {
+    switch (col.getDataType()) {
+      case Variant.STRING:
+        bsh.set(cname, ds.getString(cname));
+        break;
+      case Variant.INT:
+        bsh.set(cname, ds.getInt(cname));
+        break;
+      case Variant.BIGDECIMAL:
+        bsh.set(cname, ds.getBigDecimal(cname).doubleValue());
+        break;
+      case Variant.TIMESTAMP:
+        bsh.set(cname, ds.getTimestamp(cname));
+        break;
+      case Variant.SHORT:
+        bsh.set(cname, ds.getShort(cname));
+        break;
+      case Variant.LONG:
+        bsh.set(cname, ds.getLong(cname));
+        break;
+      case Variant.DOUBLE:
+        bsh.set(cname, ds.getDouble(cname));
+        break;
+      case Variant.FLOAT:
+        bsh.set(cname, ds.getFloat(cname));
+        break;
+    }
+  }
+  
+  void getBshValue(DataSet ds, Column col, String cname) throws EvalError {
+    Object o = bsh.get(cname);
+    Number n = o instanceof Number ? (Number) o : null;
+    switch (col.getDataType()) {
+      case Variant.STRING:
+        if (!ds.getString(cname).equals(o))
+          ds.setString(cname, (String) o);
+        break;
+      case Variant.INT: 
+        if (ds.getInt(cname) != n.intValue())
+          ds.setInt(cname, n.intValue());
+        break;
+      case Variant.BIGDECIMAL:
+        if (ds.getBigDecimal(cname).doubleValue() != n.doubleValue())
+          ds.setBigDecimal(cname, new BigDecimal(n.doubleValue()).setScale(col.getPrecision(), BigDecimal.ROUND_HALF_UP));
+        break;
+      case Variant.TIMESTAMP:
+        if (!ds.getTimestamp(cname).equals(o))
+          ds.setTimestamp(cname, new Timestamp(((Date) o).getTime()));
+        break;
+      case Variant.SHORT:
+        if (ds.getShort(cname) != n.shortValue())
+          ds.setShort(cname, n.shortValue());
+        break;
+      case Variant.LONG:
+        if (ds.getLong(cname) != n.longValue())
+          ds.setLong(cname, n.longValue());
+        break;
+      case Variant.DOUBLE:
+        if (ds.getDouble(cname) != n.doubleValue())
+          ds.setDouble(cname, n.doubleValue());
+        break;
+      case Variant.FLOAT:
+        if (ds.getFloat(cname) != n.floatValue())
+          ds.setFloat(cname, n.floatValue());
+        break;
+    }
+  }
+  
+  void performAll() {
+    if (perfDlg.show(jt.getTopLevelAncestor(), 
+        perfDlg.pan, "Izvrši skriptu")) {
+      raProcess.runChild(jt.getTopLevelAncestor(), new Runnable() {
+        public void run() {
+          long[] rows = generateList();
+          raProcess.checkClosing();
+          DataSet ds = jt.getDataSet();
+          Column[] cols = ds.getColumns();
+          String[] cnames = new String[cols.length];
+          for (int i = 0; i < cols.length; i++) 
+            cnames[i] = cols[i].getColumnName().toUpperCase();
+
+          int row = ds.getRow();
+          for (int i = 0; i < rows.length; i++) {
+            raProcess.checkClosing();
+            ds.goToInternalRow(rows[i]);
+            try {
+              bsh.set("ds", ds);
+              for (int c = 0; c < cols.length; c++)
+                setBshValue(ds, cols[c], cnames[c]);
+
+              bsh.eval(perfDlg.query.getText());
+              
+              for (int c = 0; c < cols.length; c++)
+                getBshValue(ds, cols[c], cnames[c]);
+                
+            } catch (ClassCastException e) {
+              e.printStackTrace();
+              JOptionPane.showMessageDialog(jt.getTopLevelAncestor(), "Greška: " + e.getMessage(), 
+                  "Greška", JOptionPane.ERROR_MESSAGE);
+              break;
+            } catch (EvalError e) {
+              e.printStackTrace();
+              JOptionPane.showMessageDialog(jt.getTopLevelAncestor(), "Greška: " + e.getMessage(), 
+                  "Greška", JOptionPane.ERROR_MESSAGE);
+              break;
+            } catch (Exception e) {
+              e.printStackTrace();
+              JOptionPane.showMessageDialog(jt.getTopLevelAncestor(), "Greška: " + e.getMessage(), 
+                  "Greška", JOptionPane.ERROR_MESSAGE);
+              break;
+            }
+            ds.post();
+          }
+          ds.goToRow(row);
+          ds.enableDataSetEvents(true);
+          jt.startFire();
+          jt.fireTableDataChanged();          
+        }
+      });
+    }
+  }
+  
   void replaceAll() {
     if (repDlg.show(jt.getTopLevelAncestor(), 
         repDlg.pan, "Zamijeni uzorak teksta")) {
-      raGlob glob = new raGlob(repDlg.orig.getText());
-      VarStr buf = new VarStr();
-      String repl = repDlg.repl.getText();
-      long[] rows = generateList();
-      String col = jt.getRealColumnName(selCol);
-      DataSet ds = jt.getDataSet();
-      int row = ds.getRow();
-      for (int i = 0; i < rows.length; i++) {
-        ds.goToInternalRow(rows[i]);
-        if (glob.matches(ds.getString(col))) {
-          buf.clear().append(glob.morphLastMatch(repl));
-          replaceFields(buf, ds);
-          ds.setString(col, buf.toString());
-          ds.post();
+      raProcess.runChild(jt.getTopLevelAncestor(), new Runnable() {
+        public void run() {
+          raGlob glob = new raGlob(repDlg.orig.getText());
+          VarStr buf = new VarStr();
+          String repl = repDlg.repl.getText();
+          long[] rows = generateList();
+          raProcess.checkClosing();
+          String col = jt.getRealColumnName(selCol);
+          DataSet ds = jt.getDataSet();
+          int row = ds.getRow();
+          for (int i = 0; i < rows.length; i++) {
+            raProcess.checkClosing();
+            ds.goToInternalRow(rows[i]);
+            if (glob.matches(ds.getString(col))) {
+              buf.clear().append(glob.morphLastMatch(repl));
+              replaceFields(buf, ds);
+              ds.setString(col, buf.toString());
+              ds.post();
+            }
+          }
+          ds.goToRow(row);
+          ds.enableDataSetEvents(true);
+          jt.startFire();
+          jt.fireTableDataChanged();
         }
-      }
-      ds.goToRow(row);
-      ds.enableDataSetEvents(true);
-      jt.startFire();
-      jt.fireTableDataChanged();
+      });
     }
   }
   
@@ -1019,6 +1201,28 @@ public class raTableCopyPopup extends JPopupMenu {
     if (filter != null) jt.getDataSet().removeRowFilterListener(filter);
     jt.getDataSet().setSort(jt.getDataSet().getSort());
     updateFilterChange();
+  }
+  
+  class PerformDialog  extends raOptionDialog {
+    public JraPanel pan = new JraPanel(new BorderLayout());
+    public JEditorPane query = new JEditorPane() {
+      public boolean getScrollableTracksViewportWidth() {
+        return true;
+      }
+    };
+    JraScrollPane vp = new JraScrollPane();
+    
+    public PerformDialog() {
+      query.setFont(new JTextArea().getFont());
+
+      Dimension d = new Dimension(72 * query.getFontMetrics(query.getFont()).charWidth(' '),
+                                           6 * query.getFontMetrics(query.getFont()).getHeight());
+
+      vp.setViewportView(query);
+      vp.getViewport().setPreferredSize(d);
+      pan.add(vp);
+      pan.add(okp, BorderLayout.SOUTH);
+    }
   }
   
   class ReplaceDialog extends raOptionDialog {
