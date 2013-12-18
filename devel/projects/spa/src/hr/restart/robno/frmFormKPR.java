@@ -147,6 +147,11 @@ public class frmFormKPR extends raUpitLite {
       rbr = 1;
     }
 */
+    
+    String otpdod = "";
+    if (frmParam.getParam("robno", "kprOtp", "N", "Otpremnice staviti u KPR tek kad se prebace u racune (D,N)?").equalsIgnoreCase("D")) {
+      otpdod = " AND (doki.vrdok!='OTP' OR doki.statira!='N') ";
+    }
 
     int rbr = lastNum.getInt("LAST_NUMBER")+1;
     String tipkpr = frmParam.getParam("robno","indKPR","B",
@@ -188,7 +193,7 @@ public class frmFormKPR extends raUpitLite {
     }
 
     updateDoki = "update doki set stat_kpr='D' where cskl='" + tds.getString("CSKL") + "' "+
-                 "and god = '"+knjigodina+"' and datdok <= '"+ut.getLastSecondOfDay(tds.getTimestamp("zavDatum"))+"' and vrdok not in ('PON','TRE','ZAH')";
+                 "and god = '"+knjigodina+"' and datdok <= '"+ut.getLastSecondOfDay(tds.getTimestamp("zavDatum"))+"' and vrdok not in ('PON','TRE','ZAH') "+ otpdod;
     
     /*updateDokiPOS = "update doki set stat_kpr='D' where cskl='" + hr.restart.zapod.OrgStr.getOrgStr().getKNJCORG() + "' "+
     				"and god = '"+knjigodina+"' and datdok <= '"+ut.getLastSecondOfDay(tds.getTimestamp("zavDatum"))+"'";*/
