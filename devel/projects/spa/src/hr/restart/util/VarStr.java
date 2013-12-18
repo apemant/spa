@@ -1205,6 +1205,22 @@ public class VarStr {
   public String from(int start) {
     return mid(start, count);
   }
+  
+  /**
+   * Vraæa komad teksta od onog što slijedi iza teksta 'from' do sljedeæeg pojavljivanja niza 'to'. 
+   * @param from pocetni niz
+   * @param to zavrsni niz
+   * @return tekst izmeðu toga, ili null ako nije pronaðen from ili to.
+   */
+  
+  public String extract(String from, String to) {
+    int i = indexOf(from);
+    if (i < 0) return null;
+    int e = indexOf(to, i + from.length());
+    if (e < 0) return null;
+    
+    return mid(i + from.length(), e);
+  }
 
   /**
    * Vraca novi String, dio ovog VarStr-a od start do end (duzine end - start).<p>
