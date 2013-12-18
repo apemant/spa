@@ -659,8 +659,7 @@
           <Model Name="Label15">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label15</Property>
-               <Property Name="Caption">
-TOP LISTA KUPACA PO MJESECIMA</Property>
+               <Property Name="Caption">TOP LISTA PO MJESECIMA</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">20</Property>
                <Property Name="Top">440</Property>
