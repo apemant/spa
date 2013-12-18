@@ -17,10 +17,14 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
+
 import com.borland.dx.dataset.DataSet;
 import com.borland.jb.util.TriStateProperty;
 
 public class raOTP extends raIzlazTemplate {
+  
+  boolean checkObr;
 
 	public void zamraciMaster(DataSet ds) {
 	}
@@ -142,7 +146,30 @@ public class raOTP extends raIzlazTemplate {
 		DP.BindComp();
 		DP.jraLOT.setDataSet(getDetailSet());
 		DP.jraPAK.setDataSet(getDetailSet());
+		
+		checkObr = frmParam.getParam("robno", "checkObrOTP", "N", "Zabraniti promjenu prenešenih otpremnica (D,N)?").equals("D");
 	}
+	
+	public boolean isObr() {
+      return !getMasterSet().getString("STATIRA").equalsIgnoreCase("N");
+    }
+	
+	public boolean checkAccess() {
+	  if (!checkObr) return super.checkAccess();
+	  
+	  if (!super.checkAccess()) return false;
+	  
+      if (isObr()) {
+          setUserCheckMsg(
+              "Korisnik ne može promijeniti dokument jer je obraðen !",
+                  false);
+
+          return false;
+      }
+      
+      restoreUserCheckMessage();
+      return true;
+    }
 
 	public void stozbroiti(){
 		stozbrojiti_detail(new String[] { "INAB", "IMAR", "IPOR", "IRAZ" });
