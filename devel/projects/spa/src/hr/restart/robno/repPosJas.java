@@ -65,6 +65,10 @@ public class repPosJas implements raReportData {
     } else if (!th.equals("1") || kh.equals(ph))
       ph = "";
     
+    String post = frmParam.getParam("pos", "addHeaderAfter", "", 
+        "Dodatni header iza zaglavlja", true);
+    if (post.trim().length() > 0) kh = kh + "\n" + post;
+    
     pov = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
       "Iznos povratne naknade"));
     
