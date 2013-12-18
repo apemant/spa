@@ -228,6 +228,10 @@ final public class raRAC extends raIzlazTemplate {
         if (hr.restart.sisfun.frmParam.getParam("robno","IspisGetroROTs","N","Stavke ispisa sadržavaju i ispis za Getro",true).equals("D")){
           raMaster.getRepRunner().addReport("hr.restart.robno.repRacGetro","hr.restart.robno.repRacuniPnP","RacGetroRac","Raèun za Getro");
         }
+        
+        raMaster.getRepRunner().addReport("hr.restart.robno.repRacGroup",
+            "hr.restart.robno.repGroupIzlazni", "RacGroup",
+            ReportValuteTester.titleRAC1R + " po grupama artikala");
 
         raMaster.getRepRunner().addReport("hr.restart.robno.repMxRAC",
                 "Matri\u010Dni ispis ra\u010Duna");
@@ -296,6 +300,10 @@ final public class raRAC extends raIzlazTemplate {
         if (hr.restart.sisfun.frmParam.getParam("robno","IspisGetroROTs","N","Stavke ispisa sadržavaju i ispis za Getro",true).equals("D")){
           raDetail.getRepRunner().addReport("hr.restart.robno.repRacGetro","hr.restart.robno.repRacuniPnP","RacGetroRac","Raèun za Getro");
         }
+        
+        raDetail.getRepRunner().addReport("hr.restart.robno.repRacGroup",
+            "hr.restart.robno.repGroupIzlazni", "RacGroup",
+            ReportValuteTester.titleRAC1R + " po grupama artikala");
         
         raDetail.getRepRunner().addReport("hr.restart.robno.repMxRAC",
                 "Matri\u010Dni ispis ra\u010Duna");
