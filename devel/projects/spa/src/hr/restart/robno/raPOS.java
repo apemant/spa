@@ -243,6 +243,8 @@ public class raPOS extends raIzlazTemplate  {
   static String csklCond = "";
   static boolean vhack, rep;
   static StorageDataSet tds = new StorageDataSet();
+  static String lastCskl = null;
+  static Timestamp lastDate = null;
   public static void zakljucak() {
     frmParam.getParam("robno", "razdCpar", "1", "Šifra partnera za razduženje blagajne");
     frmParam.getParam("robno", "razdTros", "01", "Šifra vrste troška razduženje blagajne");
@@ -258,7 +260,10 @@ public class raPOS extends raIzlazTemplate  {
   				dM.createStringColumn("CSKL", 12),
   		});
   		tds.open();
+  		if (lastCskl != null) tds.setString("CSKL", lastCskl);
   		tds.setTimestamp("DATDOK", Valid.getValid().getToday());
+  		if (lastDate != null) tds.setTimestamp("DATDOK", hr.restart.util.Util.getUtil().addDays(lastDate, 1));
+  			
     JraTextField dat = new JraTextField();
     dat.setColumnName("DATDOK");
     dat.setDataSet(tds);
@@ -312,6 +317,9 @@ public class raPOS extends raIzlazTemplate  {
     
     raInputDialog od = new raInputDialog();
     if (!od.show(null, pan, "Zakljuèak blagajne")) return;
+    
+    lastCskl = tds.getString("CSKL");
+    lastDate = tds.getTimestamp("DATDOK");
     
     Condition cond = Condition.till("DATDOK", tds).and(Condition.from("DATDOK", 
         hr.restart.util.Util.getUtil().getFirstDayOfYear(tds.getTimestamp("DATDOK"))));
