@@ -22,6 +22,7 @@ import hr.restart.baza.Stanje;
 import hr.restart.baza.Stdoku;
 import hr.restart.baza.dM;
 import hr.restart.baza.stdoki;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.*;
@@ -109,7 +110,7 @@ public class frmNivelacija extends raMasterDetail {
   JLabel jlPromjena = new JLabel();
   JraTextField jraPromjena = new JraTextField() {
     public void valueChanged() {
-      PromjenaUpdated();
+      if (isValueChanged()) PromjenaUpdated();
     }
   };
   JPanel jPanel2 = new JPanel();
@@ -786,7 +787,7 @@ public class frmNivelacija extends raMasterDetail {
     if (grart == null) return false;
     else if (grart != "") grart = " and artikli." + grart;
 
-    vl.execSQL("select cart, cart1, bc, nazart, jm, stanje.vc, stanje.mc "+
+    vl.execSQL("select stanje.cart, artikli.cart1, artikli.bc, artikli.nazart, artikli.jm, stanje.vc, stanje.mc "+
                "from stanje,artikli where stanje.cart = artikli.cart and " +
                "cskl = '" + this.getMasterSet().getString("CSKL") + "' and " +
                "god = '" + this.getMasterSet().getString("GOD") +"' "+grart);
@@ -813,6 +814,11 @@ public class frmNivelacija extends raMasterDetail {
       cart = String.valueOf(allArt.getInt("CART"));
       if (!artNotUnique(cart)) {
         // ako artikl pripada odabranoj grupi, promijeni mu cijenu
+        if (ld.raLocate(dm.getStanje(),new String[]{"cskl","god","cart"},new String[]{
+          getMasterSet().getString("CSKL"),getMasterSet().getString("GOD"), cart})) {
+          
+            rCD.unosKalkulacije(getDetailSet(),dm.getStanje());
+            
         ++count;
 
         this.getDetailSet().insertRow(false);
@@ -837,17 +843,15 @@ public class frmNivelacija extends raMasterDetail {
 
         // ažuriraj stanje artikla
         rut.updateStanje(ma.nul, ma.nul, ma.nul, ma.nul, ma.nul,
-                 oldpormar, oldporpor, oldporav,
-                 'N', true, 'N', dm.getStanje(), this.getDetailSet());
+            oldpormar, oldporpor, oldporav,
+            'N', true, 'N', dm.getStanje(), this.getDetailSet());
+        
 //        rut.updateStanje(oldpormar, oldporpor, oldporav, 'N', true, 'N');
 
         this.getDetailSet().post();
 
 
-        if (ld.raLocate(dm.getStanje(),new String[]{"cskl","god","cart"},new String[]{
-          getDetailSet().getString("CSKL"),getDetailSet().getString("GOD"),
-          String.valueOf(getDetailSet().getInt("CART"))})) {
-            rCD.unosKalkulacije(getDetailSet(),dm.getStanje());
+        
         }  else {
           System.out.println("stanje nema "+          getDetailSet().getString("CSKL")+"-"+getDetailSet().getString("GOD")+"-"+
           getDetailSet().getInt("CART"));
@@ -1087,6 +1091,24 @@ public class frmNivelacija extends raMasterDetail {
         and(Condition.equal("CART", art))) > 0;
   }
 
+  boolean updateMC;
+  public boolean checkArtCijene() {
+    updateMC = false;
+    if (frmParam.getParam("robno","dohMcPOS","AR",
+      "Dohvat cijene na POS-u (AR,ST)").trim().equalsIgnoreCase("AR")) {
+      
+      if (ld.raLocate(dm.getArtikli(), "CART", getDetailSet().getInt("CART") + "") &&
+          Aus.comp(dm.getArtikli(), "MC", getDetailSet()) != 0) {
+        int opt = JOptionPane.showConfirmDialog(raDetail.getWindow(),
+                "Cijena s porezom se razlikuje od cijene na artiklu. Ažurirati cijenu na artiklu?",
+                "Promjena cijene", JOptionPane.YES_NO_CANCEL_OPTION);
+        if (opt == JOptionPane.CANCEL_OPTION) return false;
+        if (opt == JOptionPane.YES_OPTION) updateMC = true;
+      }
+    }
+
+    return true;
+  }
 
   /*
    * Metoda koju poziva parent (raMasterDetail) prije snimanja podataka sa
@@ -1189,6 +1211,7 @@ public class frmNivelacija extends raMasterDetail {
         return false;
       }
     }
+    if (!checkArtCijene()) return false;
     //dm.getStanje().refresh();
 
     return true;
@@ -1280,6 +1303,17 @@ public class frmNivelacija extends raMasterDetail {
           and(Condition.equal("CART", oldCart)));
       stanje.open();
       boolean upd = stanje.rowCount() > 0;
+      
+      if (mode != 'B' && updateMC) try {
+        if (ld.raLocate(dm.getArtikli(), "CART", getDetailSet().getInt("CART") + "")) {
+          if (updateMC) Aus.set(dm.getArtikli(), "MC", getDetailSet());
+          if (updateMC) Aus.set(dm.getArtikli(), "VC", getDetailSet());
+          hr.restart.util.raTransaction.saveChanges(dm.getArtikli());
+        }
+      } finally {
+        updateMC = false;
+      }
+      
       /*boolean upd = ld.raLocate(dm.getStanje(), new String[] {"CSKL", "GOD", "CART"},
                                 new String[] {oldCskl, oldGod, String.valueOf(oldCart)});*/
 
