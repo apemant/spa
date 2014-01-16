@@ -87,7 +87,7 @@ public class frmKnjRobno extends frmKnjizenje {
     
     private StorageDataSet globSheme = null;
 
-    private boolean prijenosUQNX = false;
+    private boolean prijenosUQNX = false, pnbzgod = false;
 
     private hr.restart.robno.raMMat mat = new hr.restart.robno.raMMat();
 
@@ -573,9 +573,14 @@ System.out.println("**** DEVIZNI ANLAGE");
 
         //System.out.println("KONTO "+konto+" --- CORG "+corg);
         String opisstavke = getOpisStavke(data);
+        
+        if (data.hasColumn("OPIS") != null)
+          opisstavke = data.getString("OPIS");
+        
         String brojdok = TD.isDocUlaz(data.getString("VRDOK")) ? (data
                 .getString("BRRAC").equalsIgnoreCase("") ? opisstavke : data
-                .getString("BRRAC")) : getPNBZ2Prefix()+data.getString("PNBZ2");
+                .getString("BRRAC")) : getPNBZ2Prefix()+data.getString("PNBZ2") + 
+                (pnbzgod ? "-"+ut.getYear(data.getTimestamp("DATDOK")) : "");
         String ident = null;
         if (data.hasColumn("CPAR") != null) {
             ident = brojdok
@@ -677,7 +682,8 @@ System.out.println("**** DEVIZNI ANLAGE");
                  */
             } else {
                 try {
-                    tmpskstavke.setString("BROJDOK", getPNBZ2Prefix()+data.getString("PNBZ2"));
+                    tmpskstavke.setString("BROJDOK", getPNBZ2Prefix()+data.getString("PNBZ2") + 
+                        (pnbzgod ? "-"+ut.getYear(data.getTimestamp("DATDOK")) : ""));
                     tmpskstavke.setString("IDENT", ident);
                     tmpskstavke.setString("EXTBRDOK", String.valueOf(data
                             .getInt("BRDOK")));
@@ -1000,6 +1006,7 @@ System.out.println("**** DEVIZNI ANLAGE");
         String sqlsheme = null;
         String vrdok = null;
         String appruvalshema = null;
+        pnbzgod = frmParam.getParam("robno", "pnbzGOD", "D", "Dodati godinu na kraj poziva na broj (D,N)").equalsIgnoreCase("D");
 
         for (int i = 0; i < alVrdok.size(); i++) {
             vrdok = (String) alVrdok.get(i);
