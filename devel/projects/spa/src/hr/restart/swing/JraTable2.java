@@ -1353,7 +1353,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
         com.borland.dx.text.VariantFormatter formater = 
           dsCol == null ? null : dsCol.getFormatter();
 
-        if (formater != null && value != null) {
+        if (formater != null && value != null && formater.getPattern() != null && formater.getPattern().length() > 0) {
 
           Variant v1 = new Variant();
 
