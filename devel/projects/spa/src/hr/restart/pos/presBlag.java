@@ -407,10 +407,9 @@ public class presBlag extends PreSelect {
     boolean sklad = TypeDoc.getTypeDoc().isCsklSklad(vrdok) || vrdok.equalsIgnoreCase("PRD") || 
           (isSkladOriented() && vrdok.equalsIgnoreCase("GRC"));
     String corg = cskl;
-    if (sklad) {
-      lookupData.getlookupData().raLocate(myskl, "CSKL", cskl);
-      corg = myskl.getString("CORG");
-    }
+    if (sklad && lookupData.getlookupData().raLocate(myskl, "CSKL", cskl)) 
+        corg = myskl.getString("CORG");
+    
     lookupData.getlookupData().raLocate(myorg, "CORG", corg);
     while (myorg.getString("FISK").equalsIgnoreCase("X") && 
         !myorg.getString("PRIPADNOST").equals(myorg.getString("CORG")))
