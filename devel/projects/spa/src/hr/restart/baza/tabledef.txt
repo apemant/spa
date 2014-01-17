@@ -1297,6 +1297,7 @@ KOL1;numeric;15,3;;0;Pakiranja
 KOL2;numeric;15,3;;0;Poleta
 PPOP;numeric;10,2;;0;Posto popusta
 FC;numeric;17,2;;0;Fakturna cijena
+ID_STAVKA;char;50;;;ID stavka;*
 IDX=cart
 
 $Meskla
@@ -1733,6 +1734,21 @@ SIFDIST;char;5;;;Distributer
 DATUM;date;;;;Datum;12
 CART;int;6;;;Artikal
 STATUS;char;1;;N;Status
+
+$VezaFLH
+IDULAZ;char;50;pkey;;ID stavka ulaza
+IDIZLAZ;char;50;pkey;;ID stavka izlaza
+KOL;numeric;15,3;;0;Kolièina
+NC;numeric;15,2;;0;Cijena nabave
+
+$Funkcije
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CFUNC;char;20;pkey;;Oznaka;15
+OPISFUNC;char;50;;;Naziv;15
+APP;char;10;pkey;;Aplikacija
+SPEC;char;50;;;Definicija
+DATA;char;150;;;Dodatni podaci
 
 $StDistlist
 CSKL;char;12;pkey;;Skladište
