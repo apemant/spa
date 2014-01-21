@@ -1689,8 +1689,17 @@ public class dlgRunReport {
         reportsQuerysCollector rqc = reportsQuerysCollector.getRQCModule();
         boolean spec = rd.isCustomIzlaz() && rqc.caller != null &&
             rqc.caller.raMaster.getSelectionTracker().countSelected() > 1;
-        
-      if (!expAP.equals("JAS") || !alterExport(expAP,"ispis",jpr = getJasperPrint(dlg))) {
+            
+            if (expAP != null && expAP.length() > 0 && rd.getName().equals(raReportDescriptor.DYNAMIC_CLASS)) {
+              try {
+                repDynamicProvider.getInstance().xt.exportToXLS(new File("ispis.xls"));
+                sendAlterFile("ispis", "xls");
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+              
+            } else if (!expAP.equals("JAS") || !alterExport(expAP,"ispis",jpr = getJasperPrint(dlg))) {
+              
         if (spec) {
           if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(dlg, "Spremiti svaki dokument posebno?", "Višestruki dokumenti", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)) spec = false;
           else {
