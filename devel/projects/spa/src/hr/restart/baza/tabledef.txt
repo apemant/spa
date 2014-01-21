@@ -641,7 +641,7 @@ $Sklad
 LOKK;char;1;;N;LOKK;*
 AKTIV;char;1;;D;AKTIV;*
 CSKL;char;12;pkey;;Šifra;8
-NAZSKL;char;50;;;Naziv;20
+NAZSKL;char;250;;;Naziv;20
 CORG;char;12;;;Organizacijska jedinica
 KNJIG;char;12;;;Knjigovodstvo
 GODINA;char;4;;;Godina;3
@@ -1771,3 +1771,93 @@ VEZA;char;50;;;Veza;*
 ID_STAVKA;char;50;;;ID stavka;*
 
 #END Distribucija
+
+$Radplsifre
+CRADNIK;char;6;pkey;;Radnik
+JOS;char;5;;0001;6.1.Stjecatelj;5
+JOP;char;5;;0001;6.2.Primitak;5
+JOB;char;5;;0;7.1.Staž;5
+JOZ;char;5;;0;7.2.Zap.Inv;5
+JOM;char;5;;3;8.Ozn. mjeseca;5
+JRV;char;5;;1;9.Radno vrijeme;5
+JNP;char;5;;19;15.1.Neop.primitak;5
+JNI;char;5;;1;16.1.Naèin isplate;5
+
+$JoppdA
+IDIZV;char;30;pkey;;ID Izvješæa (oznaka-OIB-vrsta)
+DATUM;timestamp;;;;Datum
+OZNIZV;char;5;;;Oznaka izvješæa
+VRSTAIZV;int;6;;;Vrsta izvješæa
+OZNPOD;char;1;;;Oznaka podnositelja
+PORPRIRPL;numeric;17,2;;0;V.1.1.Por.i.prir.na plaæu
+PORPRIRMIR;numeric;17,2;;0;V.1.2.Por.i.prir.na mirovinu
+PORPRIRKAP;numeric;17,2;;0;V.2.Por.i.prir.na kapital
+PORPRIRIMO;numeric;17,2;;0;V.3.Por.i.prir.na imovinu
+PORPRIROS;numeric;17,2;;0;V.4.Por.i.prir.na osiguranje
+PORPRIRDD;numeric;17,2;;0;V.5.Por.i.prir.na drugi dohodak
+MIO1PL;numeric;17,2;;0;VI.1.1.MIO 1.stup na plaæu
+MIO1DD;numeric;17,2;;0;VI.1.2.MIO 1.stup na drugi dohodak
+MIO1POD;numeric;17,2;;0;VI.1.3.MIO 1.stup na poduzetnièku plaæu
+MIO1PP;numeric;17,2;;0;VI.1.4.MIO 1.stup posebni propisi
+MIO1OO;numeric;17,2;;0;VI.1.5.MIO 1.stup odreðene okolnosti
+MIO1STAZ;numeric;17,2;;0;VI.1.6.MIO 1.stup ben.staž
+MIO2PL;numeric;17,2;;0;VI.2.1.MIO 2.stup na plaæu
+MIO2DD;numeric;17,2;;0;VI.2.2.MIO 2.stup na drugi dohodak
+MIO2POD;numeric;17,2;;0;VI.2.3.MIO 2.stup na poduzetnièku plaæu
+MIO2PP;numeric;17,2;;0;VI.2.4.MIO 2.stup posebni propisi
+MIO2STAZ;numeric;17,2;;0;VI.2.5.MIO 2.stup ben.staž
+ZDRPL;numeric;17,2;;0;VI.3.1.Zdravstveno os. iz plaæe
+ZASNRPL;numeric;17,2;;0;VI.3.2.Zaštita na radu iz plaæe
+ZDRPOD;numeric;17,2;;0;VI.3.3.Zdravstveno os. iz poduzetnièke plaæe
+ZASNRPOD;numeric;17,2;;0;VI.3.4.Zaštita na radu iz poduzetnièke plaæe
+ZDRDD;numeric;17,2;;0;VI.3.5.Zdravstveno os. drugi dohodak
+ZDRINO;numeric;17,2;;0;VI.3.6.Zdravstveno os. u inozemstvu
+ZDRPENZ;numeric;17,2;;0;VI.3.7.Zdravstveno os. umirovljenici
+ZDRPP;numeric;17,2;;0;VI.3.8.Zdravstveno os. posebni propisi
+ZASNRPP;numeric;17,2;;0;VI.3.9.Zaštita na radu posebni propisi
+ZASNROO;numeric;17,2;;0;VI.3.10.Zaštita na radu odreðene okolnosti
+ZAP;numeric;17,2;;0;VI.4.1.Zapošljavanje na plaæe
+ZAPOSINV;numeric;17,2;;0;VI.4.2.Zapošljavanje osoba s invaliditetom
+NEOP;numeric;17,2;;0;Neoporezivi primici
+KAMATA;numeric;17,2;;0;Kamata MO2
+
+$JoppdB
+IDIZV;char;30;pkey;;ID Izvješæa (OIB-oznaka-vrsta)
+RBR;int;6;pkey;;1.RBR
+COPCINE;char;5;;;2.Opæina stanovanja
+COPRADA;char;5;;;3.Opæina rada
+OIB;char;20;;;4.OIB
+IMEPREZ;char;100;;;5.Ime i prezime
+JOS;char;5;;;6.1.Oznaka stjecatelja/osiguranika
+JOP;char;5;;;6.2.Oznaka primitka/obveze doprinosa
+JOB;char;1;;;7.1.Oznaka za staž s poveæanim trajanjem
+JOZ;char;5;;;7.2.Obveza dopr.za zapošljavanje invalida
+JOM;char;1;;;8.Oznaka prvog/zadnjeg mj.u osig.po istoj osnovi
+JRV;char;1;;;9.Oznaka punog/nepunog radnog vremena
+SATI;int;6;;;10.Sati rada
+ODJ;timestamp;;;;10.1.Razdoblje obr. od
+DOJ;timestamp;;;;10.2.Razdoblje obr. do
+BRUTO;numeric;17,2;;0;11.Iznos primitka (oporezivi)
+OSNDOP;numeric;17,2;;0;12.Osnovica za doprinose
+MIO1;numeric;17,2;;0;12.1. Doprinos MIO 1.stup
+MIO2;numeric;17,2;;0;12.2. Doprinos MIO 2.stup
+ZDR;numeric;17,2;;0;12.3. Doprinos za zdravstveno osiguranje
+ZASNR;numeric;17,2;;0;12.4. Doprinos za zaštitu na radu
+ZAP;numeric;17,2;;0;12.5. Doprinos za zapošljavanje
+MIO1STAZ;numeric;17,2;;0;12.6. MIO 1-poveæani staž
+MIO2STAZ;numeric;17,2;;0;12.7. MIO 2-poveæani staž
+ZDRINO;numeric;17,2;;0;12.8. Zdravstveno u inozemstvu
+ZAPOSINV;numeric;17,2;;0;12.9. Dopr.za zap.invalida
+IZDATAK;numeric;17,2;;0;13.1. Izdatak
+IZDATAKMIO;numeric;17,2;;0;13.2. Izdatak-uplaæeni dopr.za MIO
+DOHODAK;numeric;17,2;;0;13.3. Dohodak
+ISKNEOP;numeric;17,2;;0;13.4. Osobni odbitak
+POROSN;numeric;17,2;;0;13.5. Porezna osnovica
+POR;numeric;17,2;;0;14.1. Porez
+PRIR;numeric;17,2;;0;14.2. Prirez
+JNP;char;2;;;15.1. Oznaka neoporezivog primitka
+NEOP;numeric;17,2;;0;15.2. Iznos neoporezivog primitka
+JNI;char;1;;;16.1. Oznaka naèina isplate
+NETOPK;numeric;17,2;;0;16.2. Iznos za isplatu
+BRUTOOBR;numeric;17,2;;0;17. Obraèunata plaæa
+
