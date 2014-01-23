@@ -852,6 +852,7 @@ public class ConsoleCreator {
             "hr.restart.baza.Rabshema", "hr.restart.baza.Rnser",
             "hr.restart.baza.Rnus",
             "hr.restart.baza.Distlist","hr.restart.baza.StDistlist",
-            "hr.restart.baza.Distart","hr.restart.baza.Distkal","hr.restart.baza.StDistkal"
+            "hr.restart.baza.Distart","hr.restart.baza.Distkal","hr.restart.baza.StDistkal",
+            "hr.restart.baza.VezaFLH"
       };
 }
