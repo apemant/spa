@@ -286,10 +286,10 @@ public class raKnjizenjeInventure extends raUpitLite {
         dummyStDokU.setBigDecimal("IBP" , qdsUpitNaVisak.getBigDecimal("VC").multiply(qdsUpitNaVisak.getBigDecimal("KOLVIS")));
         dummyStDokU.setBigDecimal("ISP" , qdsUpitNaVisak.getBigDecimal("MC").multiply(qdsUpitNaVisak.getBigDecimal("KOLVIS")));
         dummyStDokU.setBigDecimal("IZAD", qdsUpitNaVisak.getBigDecimal("ZC").multiply(qdsUpitNaVisak.getBigDecimal("KOLVIS")));
-        if(qdsUpitNaVisak.getString("VRZAL").equals("N")) {
+        //if(qdsUpitNaVisak.getString("VRZAL").equals("N")) {
           dummyStDokU.setBigDecimal("IPOR", _Main.nul);
           dummyStDokU.setBigDecimal("IMAR", _Main.nul);
-        }
+        //}
         if(qdsUpitNaVisak.getString("VRZAL").equals("V") || qdsUpitNaVisak.getString("VRZAL").equals("M")) {
           dummyStDokU.setBigDecimal("IPOR", _Main.nul);
           dummyStDokU.setBigDecimal("IMAR", qdsUpitNaVisak.getBigDecimal("KOLVIS").multiply(qdsUpitNaVisak.getBigDecimal("VC").subtract(qdsUpitNaVisak.getBigDecimal("NC"))));
@@ -352,10 +352,10 @@ public class raKnjizenjeInventure extends raUpitLite {
         dummyStDokI.setBigDecimal("INAB", qdsUpitNaManjak.getBigDecimal("NC").multiply(qdsUpitNaManjak.getBigDecimal("KOLMANJ")));
         dummyStDokI.setBigDecimal("ISP", qdsUpitNaManjak.getBigDecimal("MC").multiply(qdsUpitNaManjak.getBigDecimal("KOLMANJ")));
         dummyStDokI.setBigDecimal("IRAZ", qdsUpitNaManjak.getBigDecimal("ZC").multiply(qdsUpitNaManjak.getBigDecimal("KOLMANJ")));
-        if(qdsUpitNaManjak.getString("VRZAL").equals("N")) {
+        //if(qdsUpitNaManjak.getString("VRZAL").equals("N")) {
           dummyStDokI.setBigDecimal("IPOR", _Main.nul);
           dummyStDokI.setBigDecimal("IMAR", _Main.nul);
-        }
+        //}
         if(qdsUpitNaManjak.getString("VRZAL").equals("V") || qdsUpitNaManjak.getString("VRZAL").equals("M")) {
           dummyStDokI.setBigDecimal("IPOR", _Main.nul);
           dummyStDokI.setBigDecimal("IMAR", qdsUpitNaManjak.getBigDecimal("KOLMANJ").multiply(qdsUpitNaManjak.getBigDecimal("VC").subtract(qdsUpitNaManjak.getBigDecimal("NC"))));
