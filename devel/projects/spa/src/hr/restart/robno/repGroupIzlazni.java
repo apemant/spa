@@ -60,14 +60,10 @@ public class repGroupIzlazni extends repIzlazni {
         !lD.raLocate(dm.getGrupart(), "CGRART", dm.getArtikli().getString("CGRART")))
       return "";
     
-    if (!lastgr.equals(dm.getGrupart().getString("NAZGRART"))) ++rbr;
-    lastgr = dm.getGrupart().getString("NAZGRART");
-    
-    return rbr + ". " + lastgr;
+    return dm.getGrupart().getString("NAZGRART");
   }
   
   public String RBRDUMMY() {
     return "";
-  }
-  
+  }  
 }
