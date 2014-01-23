@@ -17,13 +17,128 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import javax.swing.JOptionPane;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
 
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.Variant;
+import com.borland.dx.sql.dataset.QueryDataSet;
+
+import hr.restart.baza.Condition;
+import hr.restart.baza.VTText;
+import hr.restart.baza.doki;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.raUser;
+import hr.restart.swing.JraTable2;
+import hr.restart.swing.raTableModifier;
+import hr.restart.swing.raTableUIModifier;
+import hr.restart.util.raImages;
+import hr.restart.util.raNavAction;
 import hr.restart.util.raTransaction;
 
 public class raPONOJ extends raIzlazTemplate {
+  
+    raNavAction rnvZak = new raNavAction("Zakljuèavanje",
+      raImages.IMGSENDMAIL, java.awt.event.KeyEvent.VK_F7, java.awt.event.KeyEvent.SHIFT_MASK) {
+      public void actionPerformed(ActionEvent e) {
+        keyZak();
+      }
+    };
+    
+    raNavAction rnvCopy = new raNavAction("Kopiranje",
+        raImages.IMGCOPYCURR, java.awt.event.KeyEvent.VK_F2, java.awt.event.KeyEvent.SHIFT_MASK) {
+        public void actionPerformed(ActionEvent e) {
+          keyCopy();
+        }
+      };
+    
+      boolean copyHack = false;
+      DataSet pon = null;
+    
+      void keyCopy() {
+      if (getMasterSet().rowCount() == 0) return;
+      
+      if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Kopirati ponudu " + getMasterSet().getString("PNBZ2") + "?", "Kopiranje", 
+          JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+      
+      pon = doki.getDataModule().openTempSet(Condition.whereAllEqual(util.mkey, getMasterSet()));
+      try {
+        copyHack = true;
+        raMaster.rnvAdd_action();
+      } finally {
+        copyHack = false;
+      }
 
+    }
+    
+    void keyZak() {
+      DataSet ms = getMasterSet();
+      if (ms.rowCount() == 0) return;
+            
+      if (ms.getString("STATKNJ").equalsIgnoreCase("P")) {
+        if (!raUser.getInstance().isSuper()) {
+          JOptionPane.showMessageDialog(raMaster.getWindow(), "Ponuda je veæ zakljuèana!", 
+              "Zakljuèavanje", JOptionPane.INFORMATION_MESSAGE);
+          return;
+        }
+        if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Ponuda je zakljuèana. Želite li je otkljuèati?", "Otkljuèavanje", 
+                JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+        ms.setString("STATKNJ", "N");
+        ms.saveChanges();
+        raMaster.getJpTableView().fireTableDataChanged();
+        return;
+      }
+      
+      if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li zakljuèati ponudu?", "Zakljuèivanje", 
+          JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+      
+      ms.setString("STATKNJ", "P");
+      ms.saveChanges();
+      raMaster.getJpTableView().fireTableDataChanged();
+    }
+    
+    public void afterSetModeMaster(char oldMod,char newMod) {
+      super.afterSetModeMaster(oldMod, newMod);
+      if (copyHack && newMod == 'N') {
+        copyHack = false;
+        doOnFocusNovi(new Runnable() {
+          public void run() {
+            copyStavke(pon, true);
+          }
+        });
+      }
+    }
+    
+    public void afterCopyStavke() {
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          //raMaster.getJpTableView().fireTableDataChanged();
+          raMaster.getOKpanel().jPrekid_actionPerformed();
+        }
+      });
+    }
+    
+    public boolean dodSaveCopyStavke() {
+      try {
+        DataSet vt = VTText.getDataModule().openTempSet(Condition.equal("CKEY", rCD.getKey(pon)));
+        if (vt.rowCount() > 0) {
+          QueryDataSet copy = VTText.getDataModule().openEmptySet();
+          copy.insertRow(false);
+          copy.setString("CKEY", rCD.getKey(getMasterSet()));
+          copy.setString("TEXTFAK", vt.getString("TEXTFAK"));
+          raTransaction.saveChanges(copy);
+        }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        return false;
+      }
+    return true;
+    }
+    
 	public void initialiser() {
 		what_kind_of_dokument = "PON";
 		bPonudaZaKupca = false;
@@ -109,6 +224,7 @@ public class raPONOJ extends raIzlazTemplate {
 		detail_titel_jed = "Stavka ponude";
 		setMasterSet(dm.getZagPonOJ());
 		setDetailSet(dm.getStPonKup());
+		setMasterDeleteMode(DELDETAIL);
 		rCD.setisNeeded(false);
 		MP.BindComp();
 		DP.BindComp();
@@ -118,6 +234,14 @@ public class raPONOJ extends raIzlazTemplate {
         }
 		DP.resizeDP();
 		raDetail.addOption(rnvCopyPon, 6, false);
+		
+		raMaster.addOption(rnvCopy, 4, false);
+		
+		if (frmParam.getParam("robno", "ponZak", "N", "Dodati opciju za zakljuèavanje ponuda (D,N)").equalsIgnoreCase("D")) {
+		
+		  raMaster.addOption(rnvZak, 6, false);
+		  raMaster.getJpTableView().addTableModifier(new ColorModifier());
+		}
 
 		this.setVisibleColsMaster(new int[] { 4, 5, 9 });
 	}
@@ -127,6 +251,10 @@ public class raPONOJ extends raIzlazTemplate {
 	public boolean ValidacijaStanje() {
 		return true;
 	}
+	
+	public boolean checkStavkeDel() {
+      return false;
+    }
 
 	public boolean DodatnaValidacijaDetail() {
 		if (val.isEmpty(DP.jtfKOL))
@@ -247,4 +375,20 @@ public class raPONOJ extends raIzlazTemplate {
 			raTransaction.saveChanges(AST.gettrenSTANJE());
 		}
 	}	
+	
+	public class ColorModifier extends raTableModifier {
+	    Color colorS = Color.green.darker().darker();
+
+	    public boolean doModify() {
+	      Variant v = new Variant();
+          ((JraTable2)getTable()).getDataSet().getVariant("STATKNJ",getRow(),v);
+          return v.getString().equals("P");
+	    }
+	    public void modify() {
+	      
+	      JComponent jRenderComp = (JComponent)renderComponent;
+	          jRenderComp.setForeground(colorS);
+
+	    }
+	}
 }

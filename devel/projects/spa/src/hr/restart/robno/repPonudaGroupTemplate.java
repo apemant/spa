@@ -22,6 +22,7 @@ import hr.restart.util.reports.raIzlazGroupSectionHeader;
 import hr.restart.util.reports.raIzlazSectionFooterLines;
 import hr.restart.util.reports.raIzlazSectionHeaderLines;
 import hr.restart.util.reports.raPONSectionHeader0TF;
+import hr.restart.util.reports.raReportElement;
 import hr.restart.util.reports.raReportSection;
 /**
  * <p>Title: </p>
@@ -47,15 +48,31 @@ public class repPonudaGroupTemplate extends repIzlazGroupOrigTemplate {
 //    return  new raIPSectionHeader(this);*/
     raPONSectionHeader0TF sh = new raPONSectionHeader0TF(this);
     sh.TextCPAR.setDefault(ep.CONTROL_SOURCE, "=(if (> [CPAR] 0) [CPAR] \"\")");
-
-    
+    sh.defaultAltererSect().getView(sh.LabelNacin_placanja, sh.TextNAZNACPL).moveUp(
+        sh.LabelNacin_placanja.defaultAlterer().getTop() - sh.LabelUgovor.defaultAlterer().getTop());
+    sh.defaultAltererSect().removeModels(new raReportElement[] {
+        sh.LabelNarudzba, sh.TextBRNARIZ, sh.TextSgetDATNARIZ,
+        sh.LabelUgovor, sh.TextCUG, sh.TextSgetDATUG,
+        sh.LabelNacin_otpreme, sh.TextNAZNAC, sh.LabelParitet, sh.TextNAZFRA});
+    sh.defaultAltererSect().setHeight(sh.defaultAltererSect().getHeight() - 200);
     return sh;
-    
+
 //    return new raPONSectionHeader0TF(this);
   }
 
   public raReportSection createSectionHeader1() {
-    return new raIzlazSectionHeaderLines(this); // return new raIzlazSectionHeader(this);
+    raIzlazSectionHeaderLines sh = new raIzlazSectionHeaderLines(this); // return new raIzlazSectionHeader(this);
+    long rbrGain = sh.LabelSifra.defaultAlterer().getLeft() - sh.LabelRbr.defaultAlterer().getLeft();
+    long kolGain = sh.LabelKolicina.defaultAlterer().getWidth() * 4 / 10;
+        
+    sh.defaultAltererSect().removeModel(sh.LabelRbr);
+    sh.LabelSifra.defaultAlterer().setLeft(sh.LabelSifra.defaultAlterer().getLeft() - rbrGain);
+    sh.LabelKolicina.defaultAlterer().setWidth(sh.LabelKolicina.defaultAlterer().getWidth() - kolGain);
+    sh.LabelKolicina.defaultAlterer().setLeft(sh.LabelKolicina.defaultAlterer().getLeft() + kolGain);
+    sh.LabelKolicina.defaultAlterer().setCaption("Kol");
+    sh.LabelNaziv.defaultAlterer().setLeft(sh.LabelNaziv.defaultAlterer().getLeft() - rbrGain);
+    sh.LabelNaziv.defaultAlterer().setWidth(sh.LabelNaziv.defaultAlterer().getWidth() + rbrGain + kolGain);
+    return sh;
   }
 
   public raReportSection createSectionHeader2() {
@@ -65,6 +82,16 @@ public class repPonudaGroupTemplate extends repIzlazGroupOrigTemplate {
   public raReportSection createDetail() {
     raIzlazDetail sh = new raIzlazDetail(this);
     sh.TextRBR.defaultAlterer().setControlSource("RBRDUMMY");
+    long rbrGain = sh.TextCART.defaultAlterer().getLeft() - sh.TextRBR.defaultAlterer().getLeft();
+    long kolGain = sh.TextKOL.defaultAlterer().getWidth() * 4 / 10;
+    
+    sh.defaultAltererSect().removeModel(sh.TextRBR);
+    sh.TextCART.defaultAlterer().setLeft(sh.TextCART.defaultAlterer().getLeft() - rbrGain);
+    sh.TextKOL.defaultAlterer().setWidth(sh.TextKOL.defaultAlterer().getWidth() - kolGain);
+    sh.TextKOL.defaultAlterer().setLeft(sh.TextKOL.defaultAlterer().getLeft() + kolGain);
+
+    sh.TextNAZART.defaultAlterer().setLeft(sh.TextNAZART.defaultAlterer().getLeft() - rbrGain);
+    sh.TextNAZART.defaultAlterer().setWidth(sh.TextNAZART.defaultAlterer().getWidth() + rbrGain + kolGain);
     return sh;
   }
   

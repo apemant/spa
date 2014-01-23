@@ -108,6 +108,16 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
 
   public raReportSection createSectionHeader1() {
     raIzlazSectionHeaderLines sh = new raIzlazSectionHeaderLines(this); // return new raIzlazSectionHeader(this);
+    long rbrGain = sh.LabelSifra.defaultAlterer().getLeft() - sh.LabelRbr.defaultAlterer().getLeft();
+    long kolGain = sh.LabelKolicina.defaultAlterer().getWidth() * 4 / 10;
+        
+    sh.defaultAltererSect().removeModel(sh.LabelRbr);
+    sh.LabelSifra.defaultAlterer().setLeft(sh.LabelSifra.defaultAlterer().getLeft() - rbrGain);
+    sh.LabelKolicina.defaultAlterer().setWidth(sh.LabelKolicina.defaultAlterer().getWidth() - kolGain);
+    sh.LabelKolicina.defaultAlterer().setLeft(sh.LabelKolicina.defaultAlterer().getLeft() + kolGain);
+    sh.LabelKolicina.defaultAlterer().setCaption("Kol");
+    sh.LabelNaziv.defaultAlterer().setLeft(sh.LabelNaziv.defaultAlterer().getLeft() - rbrGain);
+    sh.LabelNaziv.defaultAlterer().setWidth(sh.LabelNaziv.defaultAlterer().getWidth() + rbrGain + kolGain);
     return sh;
   }
   
@@ -118,6 +128,16 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
   public raReportSection createDetail() {
     raIzlazDetail sh = new raIzlazDetail(this);
     sh.TextRBR.defaultAlterer().setControlSource("RBRDUMMY");
+    long rbrGain = sh.TextCART.defaultAlterer().getLeft() - sh.TextRBR.defaultAlterer().getLeft();
+    long kolGain = sh.TextKOL.defaultAlterer().getWidth() * 4 / 10;
+    
+    sh.defaultAltererSect().removeModel(sh.TextRBR);
+    sh.TextCART.defaultAlterer().setLeft(sh.TextCART.defaultAlterer().getLeft() - rbrGain);
+    sh.TextKOL.defaultAlterer().setWidth(sh.TextKOL.defaultAlterer().getWidth() - kolGain);
+    sh.TextKOL.defaultAlterer().setLeft(sh.TextKOL.defaultAlterer().getLeft() + kolGain);
+
+    sh.TextNAZART.defaultAlterer().setLeft(sh.TextNAZART.defaultAlterer().getLeft() - rbrGain);
+    sh.TextNAZART.defaultAlterer().setWidth(sh.TextNAZART.defaultAlterer().getWidth() + rbrGain + kolGain);
     return sh;
   }
 
