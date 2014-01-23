@@ -388,6 +388,17 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
         }
         return true;
   }
+  
+  public boolean doBeforeSaveDetail(char mode) {
+
+    if (mode == 'N') {
+        getDetailSet().setString("ID_STAVKA",
+            raControlDocs.getKey(getDetailSet(), new String[] { "cskliz", "csklul",
+                    "vrdok", "god", "brdok", "rbsid" }, "stmeskla"));
+    }
+    
+    return true;
+  }
 
   public boolean doWithSaveDetail(char mode){
     boolean returnValue = true;
