@@ -95,7 +95,10 @@ public class raGRN extends raIzlazTemplate  {
     raMaster.getRepRunner().addReport("hr.restart.robno.repGrnRac","hr.restart.robno.repIzlazni","GrnRac","Raèun 1 red");
     raMaster.getRepRunner().addReport("hr.restart.robno.repGrnRac2","hr.restart.robno.repIzlazni","GrnRac2","Raèun 2 red");
     raMaster.getRepRunner().addReport("hr.restart.robno.repRacRnalKupac","hr.restart.robno.repIzlazni","RacRnalKupac",ReportValuteTester.titleRACFROMRNAL);
+    raMaster.getRepRunner().addReport("hr.restart.robno.repMxRacun","Matrièni ispis raèuna");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repMxRacunPop","Matrièni ispis raèuna s više popusta");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna");
+    
     if (repFISBIH.isFISBIH()) {
       if (getMasterSet().getInt("FBR")>0) {
         raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHDupli","Ispis DUPLIKATA FISKALNOG ra\u010Duna");
@@ -113,6 +116,8 @@ public class raGRN extends raIzlazTemplate  {
     raDetail.getRepRunner().addReport("hr.restart.robno.repGrnRac","hr.restart.robno.repIzlazni","GrnRac","Ra\u010Dun 1 red");
     raDetail.getRepRunner().addReport("hr.restart.robno.repGrnRac2","hr.restart.robno.repIzlazni","GrnRac2","Ra\u010Dun 2 red");
     raDetail.getRepRunner().addReport("hr.restart.robno.repRacRnalKupac","hr.restart.robno.repIzlazni","RacRnalKupac",ReportValuteTester.titleRACFROMRNAL);
+    raDetail.getRepRunner().addReport("hr.restart.robno.repMxRacun","Matrièni ispis raèuna");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repMxRacunPop","Matrièni ispis raèuna s više popusta");
     raDetail.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna");
 //    if (repFISBIH.isFISBIH()) raDetail.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
   }
