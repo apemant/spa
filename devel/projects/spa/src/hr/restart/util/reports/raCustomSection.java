@@ -243,7 +243,7 @@ public class raCustomSection implements raElixirProperties, raElixirPropertyValu
     fisk.setFont("Lucida Bright");
     fisk.setFontSize(frs);
     fisk.setTop(max + 40);
-    fisk.setHeight(320);
+    fisk.setHeight(20);
     fisk.setLeft(0);
     fisk.setWidth(10480);
     fisk.setProperty(WRAP, YES);
@@ -254,7 +254,7 @@ public class raCustomSection implements raElixirProperties, raElixirPropertyValu
     if (nf != null && nf.length() > 0)
       fisk.setFont(nf);
 
-    ps.setHeight(max + 360);
+    ps.setHeight(max + 40);
     
     //Aus.dumpModel(ps.model, 2);
   }
