@@ -538,6 +538,7 @@ public class repRacunPOS extends mxReport {
       if (mb.length() == 0) result = "";
       else result = "<$newline$>       MB: " + mb; 
     }   
+    System.out.println(result);
     return result;
   }
 
@@ -548,14 +549,17 @@ public class repRacunPOS extends mxReport {
     BigDecimal popust = ut.setScale((qds.getBigDecimal("UIPOPUST1").add(qds.getBigDecimal("UIPOPUST2"))),2);
     BigDecimal neto = ut.setScale(qds.getBigDecimal("NETO"),2);
     
+    String val = " " + hr.restart.zapod.Tecajevi.getDomOZNVAL();
+    
     String izn = sgq.format(neto,2);
     if ((qds.getBigDecimal("UIPOPUST1").add(qds.getBigDecimal("UIPOPUST2"))).compareTo(Aus.zero2) == 0)
-      return dw + "<#PLATITI|7|left#>" + nw + Aus.spc(width-(isw ? 38 :19)) + dw + "<#"+izn+"|12|right#>" + nw + "<$newline$>";
+      return dw + "<#PLATITI|7|left#>" + nw + val + Aus.spc(width- val.length() - (isw ? 34 :17)) + dw + "<#"+izn+"|10|right#>" + nw + "<$newline$>";
+    
 
     return
       "<#UKUPNO |26|left#> <#"+sgq.format(ukupno,2)+"|"+(width-26)+"|right#><$newline$>"+
       "<#POPUST |10|left#> <#"+sgq.format(ppop,2)+" %|15|left#> <#"+sgq.format(popust,2)+"|"+(width-26)+"|right#><$newline$>"+
-      dw + "<#PLATITI|7|left#>" + nw + Aus.spc(width-(isw ? 38 :19)) + dw + "<#"+izn+"|12|right#>" + nw + "<$newline$>";
+      dw + "<#PLATITI|7|left#>" + nw + val + Aus.spc(width - val.length() - (isw ? 34 :17)) + dw + "<#"+izn+"|10|right#>" + nw + "<$newline$>";
 //          "<#UKUPNO |26|left#> <#"+qds.getBigDecimal("UKUPNO")+"|15|right#><$newline$>"+
 //          "<#POPUST |26|left#> <#"+qds.getBigDecimal("UIPOPUST1").add(qds.getBigDecimal("UIPOPUST2"))+"|15|right#><$newline$>"+
 //          "<#PLATITI |26|left#> <#"+qds.getBigDecimal("NETO")+"|15|right#><$newline$>"
