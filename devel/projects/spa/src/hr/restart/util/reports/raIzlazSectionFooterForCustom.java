@@ -28,7 +28,7 @@ public class raIzlazSectionFooterForCustom extends raReportSection {
   private String[] thisProps = new String[] {"BRDOK", "After", "", "", "Yes", "Yes", "Yes", "680"};
   public raReportElement TextNAPOMENAOPIS;
   private String[] TextNAPOMENAOPISProps = new String[] {"NAPOMENAOPIS", "", "", "", "", "", "Yes",
-     "Yes", "", "200", "10580", "0", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "",
+     "Yes", "", "0", "10580", "0", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "",
      "", ""};
   
   public raIzlazSectionFooterForCustom(raReportTemplate owner) {
