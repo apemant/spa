@@ -393,17 +393,17 @@ public class rajpIzlazDPTemplate extends JPanel {
 			}
 
 			public void stoakonijesnimio(QueryDataSet vtt) {
-				vtsnimio(vtt);
+				// vtsnimio(vtt);
 				//        vtnijesnimio(vtt);
 			}
 		};
 
 		//    dtx.setUP((java.awt.Frame)fDI.getParent(),fDI.getDetailSet(),fDI.raDetail.getLocation());
 		if (fDI.vttext == null) {
-			dtx.setUP(this.getTopLevelAncestor(), fDI.getDetailSet(),
+			dtx.setUP(fDI.raDetail.getWindow(), fDI.getDetailSet(),
 					fDI.raDetail.getLocation());
 		} else {
-			dtx.setUP(this.getTopLevelAncestor(), fDI.getDetailSet(),
+			dtx.setUP(fDI.raDetail.getWindow(), fDI.getDetailSet(),
 					fDI.raDetail.getLocation(), fDI.vttext);
 		}
 	}
