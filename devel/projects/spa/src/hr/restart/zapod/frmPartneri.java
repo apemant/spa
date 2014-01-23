@@ -716,6 +716,7 @@ public class frmPartneri extends raMatPodaci {
 //      ziroPar.initDS.setString("DEV","N");
 //      ziroPar.initDS.post();
 //      ziroPar.initDS.saveChanges();
+      msg.setText("");
     }
     if (mode == 'N' || mode == 'I') {
       if (raWebSync.active && getRaQueryDataSet().getString("EMADR").length() > 0 &&
