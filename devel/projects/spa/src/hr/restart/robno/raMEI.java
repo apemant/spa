@@ -191,12 +191,12 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     if (val.isEmpty(this.raMM.jtfDATDOK)) {
       return false;
     }
-    if (!isKnjigDataOK()){
+    /*if (!isKnjigDataOK()){
       javax.swing.JOptionPane.showMessageDialog(null,
         "Datum u periodu koji je veæ knjižen !","Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
       this.raMM.jtfDATDOK.requestFocus();
       return false;
-    }
+    }*/
 //    if (mode=='N') {
 //    	getBrojDokumenta(getMasterSet());
 //    }
@@ -411,6 +411,17 @@ public class raMEI extends hr.restart.util.raMasterDetail{
           }
         }
         return true;
+  }
+  
+  public boolean doBeforeSaveDetail(char mode) {
+
+    if (mode == 'N') {
+        getDetailSet().setString("ID_STAVKA",
+            raControlDocs.getKey(getDetailSet(), new String[] { "cskliz", "csklul",
+                    "vrdok", "god", "brdok", "rbsid" }, "stmeskla"));
+    }
+    
+    return true;
   }
 
   public boolean doWithSaveDetail(char mode){
@@ -673,6 +684,7 @@ public class raMEI extends hr.restart.util.raMasterDetail{
   
   JraTextField jraFC = new JraTextField() {
     public void valueChanged() {
+      if (!isValueChanged()) return;
       if ("D".equalsIgnoreCase(hr.restart.sisfun.frmParam.getParam("robno","kalkchVC","D"))) {
         kalkPMAR();
       }
@@ -686,6 +698,7 @@ public class raMEI extends hr.restart.util.raMasterDetail{
   JLabel jlIznos = new JLabel();
   JraTextField jraINETO = new JraTextField() {
     public void valueChanged() {
+      if (!isValueChanged()) return;
       kalk("INETO");
     }
   };
@@ -697,16 +710,19 @@ public class raMEI extends hr.restart.util.raMasterDetail{
   JLabel jlPMAR = new JLabel();
   JraTextField jraFC1 = new JraTextField() {
     public void valueChanged() {
+      if (!isValueChanged()) return;
       kalkVC();
     }
   };
   JraTextField jraFC2 = new JraTextField() {
     public void valueChanged() {
+      if (!isValueChanged()) return;
       kalkMC();
     }
   };
   JraTextField jraPMAR = new JraTextField() {
     public void valueChanged() {
+      if (!isValueChanged()) return;
       kalkPMAR();
     }
   };
