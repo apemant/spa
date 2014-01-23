@@ -1721,8 +1721,8 @@ SwingUtilities.invokeLater(new Runnable(){
 
 			jbAgent.setText("...");
 			jrfAgent.setNavButton(jbAgent);
-			jbOPIS.addMouseListener(new MouseAdapter() {
-				public void mousePressed(MouseEvent e) {
+			jbOPIS.addActionListener(new java.awt.event.ActionListener() {
+		       public void actionPerformed(ActionEvent e) {
 					pressOpis();
 				}
 
@@ -1807,10 +1807,10 @@ SwingUtilities.invokeLater(new Runnable(){
 			dtx.setDodatnaNapomena(true);
 
 			if (fDI.vttextzag == null) {
-				dtx.setUP(this.getTopLevelAncestor(), fDI.getMasterSet(),
+				dtx.setUP(fDI.raMaster.getWindow(), fDI.getMasterSet(),
 						fDI.raDetail.getLocation());
 			} else {
-				dtx.setUP(this.getTopLevelAncestor(), fDI.getMasterSet(),
+				dtx.setUP(fDI.raMaster.getWindow(), fDI.getMasterSet(),
 						fDI.raDetail.getLocation(), fDI.vttextzag);
 			}
 
