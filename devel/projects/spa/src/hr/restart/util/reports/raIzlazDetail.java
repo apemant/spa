@@ -137,7 +137,7 @@ public class raIzlazDetail extends raReportSection {
     TextNAZARText.setLeft(TextNAZART.getLeft());
     boolean wide = frmParam.getParam("robno", "extNazartWide", "N", 
         "Široki dodatni opis artikla (D,N)?").equalsIgnoreCase("D");
-    if (!wide) TextNAZARText.setWidth(TextNAZART.getWidth());
+    if (!wide) TextNAZARText.setWidth(TextNAZART.getWidth() + TextKOL.getWidth() * 3 / 10);
     else TextNAZARText.setWidth(TextINETO.getLeft() - TextNAZARText.getLeft() - 20);
     
     if (frmParam.getParam("robno", "detailBreak", "N",
@@ -151,8 +151,8 @@ public class raIzlazDetail extends raReportSection {
     TextFC.setProperty(ep.FORMAT, "Number|false|1|309|"+decs+"|"+decs+"|true|3|false");
     
     int decskol = Aus.getNumber(frmParam.getParam("robno", "kolDec", 
-        "3", "Broj decimala za kolicinu na izlazu (2-4)").trim());
-    if (decskol < 2) decskol = 2;
+        "3", "Broj decimala za kolicinu na izlazu (0-4)").trim());
+    if (decskol < 0) decskol = 0;
     if (decskol > 4) decskol = 4;
     TextKOL.setProperty(ep.FORMAT, "Number|false|1|309|"+decskol+"|"+decskol+"|true|3|false");
   }
