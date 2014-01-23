@@ -263,10 +263,10 @@ public class raKalkulBDMeskla {
       else {
 /*
         (stavka.vc - stavka.nc)/(stavka.nc/100)
-*/
+*/ 
         initTmp();
         tmpBD    = stavka.vc.subtract(stavka.nc);
-        tmpBD2   = stavka.nc.divide(Sto,2,BigDecimal.ROUND_HALF_UP);
+        tmpBD2   = stavka.nc.divide(Sto,4,BigDecimal.ROUND_HALF_UP);
         stavka.pmar = tmpBD.divide(tmpBD2,2,BigDecimal.ROUND_HALF_UP);
       }
     }
@@ -274,19 +274,19 @@ public class raKalkulBDMeskla {
 //      stavka.vc=stavka.nc+(stavka.pmar*stavka.nc/100);
       initTmp();
       tmpBD    = stavka.pmar.multiply(stavka.nc).setScale(2,BigDecimal.ROUND_HALF_UP);
-      tmpBD2   = tmpBD.divide(Sto,2,BigDecimal.ROUND_HALF_UP);
+      tmpBD2   = tmpBD.divide(Sto,4,BigDecimal.ROUND_HALF_UP);
       stavka.vc = stavka.nc.add(tmpBD2);
 //      stavka.mc=stavka.vc+ (stavka.vc*stavka.postopor/100);
       initTmp();
       tmpBD     = stavka.vc.multiply(stavka.postopor).setScale(2,BigDecimal.ROUND_HALF_UP);
-      tmpBD2    = tmpBD.divide(Sto,2,BigDecimal.ROUND_HALF_UP);
+      tmpBD2    = tmpBD.divide(Sto,4,BigDecimal.ROUND_HALF_UP);
       stavka.mc = stavka.vc.add(tmpBD2);
     }
     else if (how.equals("VC")){
 //      stavka.pmar = (stavka.vc-stavka.nc)/(stavka.nc/100);
       initTmp();
       tmpBD    = stavka.vc.subtract(stavka.nc);
-      tmpBD2   = stavka.nc.divide(Sto,2,BigDecimal.ROUND_HALF_UP);
+      tmpBD2   = stavka.nc.divide(Sto,4,BigDecimal.ROUND_HALF_UP);
       if (tmpBD.doubleValue()!=0) {
         stavka.pmar = tmpBD.divide(tmpBD2,2,BigDecimal.ROUND_HALF_UP);
       }
@@ -296,7 +296,7 @@ public class raKalkulBDMeskla {
 //      stavka.mc=stavka.vc+ (stavka.vc*stavka.postopor/100);
       initTmp();
       tmpBD     = stavka.vc.multiply(stavka.postopor).setScale(2,BigDecimal.ROUND_HALF_UP);
-      tmpBD2    = tmpBD.divide(Sto,2,BigDecimal.ROUND_HALF_UP);
+      tmpBD2    = tmpBD.divide(Sto,4,BigDecimal.ROUND_HALF_UP);
       stavka.mc = stavka.vc.add(tmpBD2);
     }
     else if (how.equals("MC")){
@@ -304,12 +304,12 @@ public class raKalkulBDMeskla {
 //      stavka.vc=stavka.mc-(stavka.mc*stavka.reverzpostopor/100);
       initTmp();
       tmpBD     = stavka.mc.multiply(stavka.reverzpostopor).setScale(2,BigDecimal.ROUND_HALF_UP);
-      tmpBD2    = tmpBD.divide(Sto,2,BigDecimal.ROUND_HALF_UP);
+      tmpBD2    = tmpBD.divide(Sto,4,BigDecimal.ROUND_HALF_UP);
       stavka.vc = stavka.mc.subtract(tmpBD2);
 //      stavka.pmar = (stavka.vc-stavka.nc)/(stavka.nc/100);
       initTmp();
       tmpBD    = stavka.vc.subtract(stavka.nc);
-      tmpBD2   = stavka.nc.divide(Sto,2,BigDecimal.ROUND_HALF_UP);
+      tmpBD2   = stavka.nc.divide(Sto,4,BigDecimal.ROUND_HALF_UP);
       if (tmpBD.doubleValue()!=0) {
          stavka.pmar = tmpBD.divide(tmpBD2,2,BigDecimal.ROUND_HALF_UP);
        }
