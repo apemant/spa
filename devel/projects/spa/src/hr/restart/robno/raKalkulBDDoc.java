@@ -212,7 +212,7 @@ public class raKalkulBDDoc extends raTopCalcUtil {
   }
 
   private void kalkFinancPartRikverc(){
-    if (TD.isDocFinanc(what_kind_of_document)) {
+    if (TD.isDocFinanc(what_kind_of_document) || (raDOS.dosfc && what_kind_of_document.equals("DOS"))) {
       if (stavka.kol.compareTo(Nula)!=0) {
         stavka.ineto= stavka.kol.multiply(stavka.fc).setScale(2, BigDecimal.ROUND_HALF_UP);   // fixed 2 (ab.f)
         stavka.fmc = stavka.iprodsp.divide(stavka.kol,2,BigDecimal.ROUND_HALF_UP);
@@ -295,7 +295,7 @@ public class raKalkulBDDoc extends raTopCalcUtil {
 
   public void kalkFinancPart(){
 
-    if (TD.isDocFinanc(what_kind_of_document)) {
+    if (TD.isDocFinanc(what_kind_of_document) || (raDOS.dosfc && what_kind_of_document.equals("DOS"))) {
 //_NETTO");
       stavka.ineto= stavka.kol.multiply(stavka.fc).setScale(2, BigDecimal.ROUND_HALF_UP);  // fixed 2 (ab.f)
 //_RABAT
