@@ -176,6 +176,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	
 	boolean isMinusAllowed = false;
 	
+	boolean isDospDatdok = false;
+	
 	boolean minKolCheck = false;
 	
 	boolean sigKolCheck = false;
@@ -969,6 +971,9 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	    rezkolst = hr.restart.sisfun.frmParam.getParam("robno",
             "rezkol4Stanje", "O",
             "Kalkulacija stanja kod rezervacije (D/N/O)");
+	    
+	    isDospDatdok = hr.restart.sisfun.frmParam.getParam("robno", "dospDatdok", "D",
+            "Dospjeæe se raèuna od datuma dokumenta (D,N)").equalsIgnoreCase("D");
 	    
 	    isMinusAllowed = frmParam.getParam("robno", "allowMinus", "N",
 	        "Dopustiti odlazak u minus na izlazima (D,N)?").equals("D");
@@ -2788,28 +2793,28 @@ System.out.println("findCjenik::else :: "+sql);
 		jtfDVO_focusLost(null);
 		MP.panelBasic.jpgetval.setTecajDate(getMasterSet().getTimestamp(
 				"DATDOK"));
+		if (isDospDatdok)
+		  getMasterSet().setTimestamp("DATDOSP",
+		      ut.addDays(getMasterSet().getTimestamp("DATDOK"), getMasterSet().getShort("DDOSP")));
+		  
 	}
 
 	public void jtfDVO_focusLost(FocusEvent e) {
-		java.util.Date Datum = new java.util.Date(getMasterSet().getTimestamp(
-				"DVO").getTime());
-		getMasterSet().setTimestamp(
-				"DATDOSP",
-				new java.sql.Timestamp(raDateUtil.getraDateUtil().addDate(
-						Datum, (int) getMasterSet().getShort("DDOSP"))
-						.getTime()));
+	  if (!isDospDatdok)
+        getMasterSet().setTimestamp("DATDOSP",
+            ut.addDays(getMasterSet().getTimestamp("DVO"), getMasterSet().getShort("DDOSP")));
 	}
 
 	public void jtfDDOSP_focusLost(FocusEvent e) {
-		jtfDVO_focusLost(e);
+	  getMasterSet().setTimestamp("DATDOSP",
+          ut.addDays(getMasterSet().getTimestamp(isDospDatdok ? "DATDOK" : "DVO"), getMasterSet().getShort("DDOSP")));
 	}
 
 	public void jtfDATDOSP_focusLost(FocusEvent e) {
 
-		getMasterSet().setShort(
-				"DDOSP",
+		getMasterSet().setShort("DDOSP",
 				(short) Math.round(hr.restart.util.Util.getUtil()
-						.getHourDifference(getMasterSet().getTimestamp("DVO"),
+						.getHourDifference(getMasterSet().getTimestamp(isDospDatdok ? "DATDOK" : "DVO"),
 								getMasterSet().getTimestamp("DATDOSP")) / 24.));
 	}
     
