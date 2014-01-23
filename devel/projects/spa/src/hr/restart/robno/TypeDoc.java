@@ -212,6 +212,12 @@ public class TypeDoc {
     return ("DOS".equalsIgnoreCase(what_kind_of_document));
   }
   
+  public boolean isDocBezveze(String what_kind_of_document){
+    return ("PON".equalsIgnoreCase(what_kind_of_document) ||
+            "NKU".equalsIgnoreCase(what_kind_of_document) ||
+            "NDO".equalsIgnoreCase(what_kind_of_document));
+  }
+  
   public boolean isDocStdoki(String what_kind_of_document){
     return ("RAC".equalsIgnoreCase(what_kind_of_document) ||
             "PRD".equalsIgnoreCase(what_kind_of_document) ||
