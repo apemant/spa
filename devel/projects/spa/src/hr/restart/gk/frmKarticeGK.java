@@ -22,6 +22,7 @@ import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raDateRange;
+import hr.restart.swing.raTableColumnModifier;
 import hr.restart.swing.raTableModifier;
 import hr.restart.swing.raTableRunningSum;
 import hr.restart.swing.raTableUIModifier;
@@ -344,14 +345,14 @@ System.out.println(queryString);
         (Column) hr.restart.baza.dM.getDataModule().getGkstavke().getColumn("RBR").clone(),
         (Column) hr.restart.baza.dM.getDataModule().getGkstavke().getColumn("CORG").clone(),
         (Column) hr.restart.baza.dM.getDataModule().getNalozi().getColumn("CNALOGA").clone(),
-        dm.createIntColumn("CPAR", "Partner"),
         (Column) hr.restart.baza.dM.getDataModule().getGkstavke().getColumn("BROJIZV").clone(),
         dm.createTimestampColumn("DATUMKNJ","Knjiženo"),//(Column) hr.restart.baza.dM.getDataModule().getGkstavke().getColumn("DATUMKNJ").clone(),
         dm.createBigDecimalColumn("ID","Duguje",2),//(Column) hr.restart.baza.dM.getDataModule().getGkstavke().getColumn("ID").clone(),
         dm.createBigDecimalColumn("IP","Potražuje",2),//(Column) hr.restart.baza.dM.getDataModule().getGkstavke().getColumn("IP").clone(),
         (Column) colSaldo.clone(),
         dm.createTimestampColumn("DATDOK","Dokument"),//(Column) hr.restart.baza.dM.getDataModule().getGkstavke().getColumn("DATDOK").clone(),
-        (Column) hr.restart.baza.dM.getDataModule().getGkstavke().getColumn("OPIS").clone()
+        (Column) hr.restart.baza.dM.getDataModule().getGkstavke().getColumn("OPIS").clone(),
+        dm.createIntColumn("CPAR", "Partner")
       });
       if (dev) {
       	outSet.addColumn(dm.createBigDecimalColumn("TECAJ","Tecaj",6));
@@ -562,7 +563,8 @@ System.out.println(queryString);
         izvodNeed = false;
 
       outSet.getColumn("BROJIZV").setVisible(izvodNeed ? 1 : 0);
-      outSet.getColumn("CPAR").setVisible(0);
+      outSet.getColumn("CPAR").setVisible(frmParam.getParam("gk", "gkKarticaPar", "D",
+        "Prikazati partnera na konto karticama (D,N)").equalsIgnoreCase("D") ? 1 : 0);
       outSet.getColumn("RBR").setVisible(0);
       outSet.getColumn("BROJKONTA").setVisible(0);
       outSet.getColumn("SALDO").setVisible(stds.getString("SALDO").equals("D") ? 1 : 0);
@@ -599,7 +601,13 @@ System.out.println(queryString);
       if (modifyOutSet()) {
         outSet.last();
         /*if (!solo) this.getJPTV().setDataSetAndSums(outSet, new String[] {"ID","IP"});
-        else */this.getJPTV().setDataSetAndSums(outSet, new String[] {"ID","IP"});
+         * 
+        else */
+        this.getJPTV().removeAllTableModifiers();
+        if (outSet.getColumn("CPAR").getVisible() == 1)
+            getJPTV().addTableModifier(new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, dm.getPartneri()));
+        this.getJPTV().setDataSetAndSums(outSet, new String[] {"ID","IP"});
+        
       } else {
 //        System.out.println("nema podataka");
         nemaPodatakaZaValutu = true;
