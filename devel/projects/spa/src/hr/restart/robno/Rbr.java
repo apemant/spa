@@ -75,7 +75,7 @@ public class Rbr {
     if (QDSSTAVKE.isEmpty())
       return (int) 1;
     else {
-      return (int)(QDSSTAVKE.getInt(fild)+1);
+      return (int)(QDSSTAVKE.getInt(0)+1);
     }
   }
 
@@ -90,7 +90,7 @@ public class Rbr {
     if (QDSSTAVKE.isEmpty())
       return (short) 1;
     else {
-      return (short)(QDSSTAVKE.getShort("mrbr")+1);
+      return (short)(QDSSTAVKE.getShort(0)+1);
     }
   }
 
