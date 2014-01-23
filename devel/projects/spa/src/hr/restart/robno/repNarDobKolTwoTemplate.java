@@ -17,15 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import hr.restart.util.reports.raDosDetail;
-import hr.restart.util.reports.raDosSH1;
-import hr.restart.util.reports.raIzlazSectionFooterForCustom;
-import hr.restart.util.reports.raKCISectionFooter;
-import hr.restart.util.reports.raPonDetail;
-import hr.restart.util.reports.raPonSectionHeader1;
-import hr.restart.util.reports.raRPSectionHeader;
-import hr.restart.util.reports.raReportElement;
-import hr.restart.util.reports.raReportSection;
+import hr.restart.util.reports.*;
 
 /**
  * <p>Title: </p>
@@ -38,20 +30,26 @@ import hr.restart.util.reports.raReportSection;
 
 public class repNarDobKolTwoTemplate extends repIzlazOrigTemplate {
   public raReportSection createSectionHeader0() {
-    raRPSectionHeader sh = new raRPSectionHeader(this);
+    raRPSectionHeaderROT sh = new raRPSectionHeaderROT(this);
     sh.LabelRACUNOTPREMNICA.setDefault(ep.CAPTION, "\nNARUDŽBENICA");
+    
+    long old = sh.LabelMjestoDatum.defaultAlterer().getTop();
 
-    sh.defaultAltererSect().getView(sh.LabelMjesto, sh.TextNAZFRA).
+    sh.defaultAltererSect().getView(sh.LabelMjestoDatum, sh.TextNAZFRA).
         deleteElementsPushDown(sh, new raReportElement[]
-        {sh.LabelNarudzba, sh.TextBRNARIZ, sh.TextSgetDATNARIZ,
-        /*sh.LabelParitet, sh.TextNAZFRA*/});
+        {sh.LabelDatum_isporuke, sh.LabelNacin_otpreme, sh.TextNAZNAC,
+        sh.LabelNacin_placanja, sh.TextNAZNACPL});
 
     sh.LabelR1.defaultAlterer().setVisible(false);
     sh.LabelObrazac.defaultAlterer().setVisible(false);
-    sh.LabelDospijece.defaultAlterer().setCaption("Rok izvršenja");
+    sh.LabelDospijeceDatum.defaultAlterer().setCaption("Rok izvršenja");
     
     sh.LabelParitet.defaultAlterer().setCaption("Mjesto troška");
     sh.TextNAZFRA.defaultAlterer().setControlSource("CSNS");
+    
+    sh.TextSgetDATDOK.defaultAlterer().setTop(sh.LabelMjestoDatum.defaultAlterer().getTop());
+    
+    sh.defaultAltererSect().getView(sh.LabelMjestoDatum, sh.TextISPORUKA).moveUp(sh.LabelMjestoDatum.defaultAlterer().getTop() - old);
 
     sh.addModel(ep.TEXT, new String[] {
       "NATEM", "", "", "", "", "", "", "", "20",
