@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.lookupData;
 
 import java.math.BigDecimal;
@@ -26,17 +27,21 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class repOTPcp extends repOTP {
 
+
   public repOTPcp() {
-    
   }
   
   public BigDecimal getPPOP() {
+    if (raDOS.dosfc && ds.getString("VRDOK").equals("DOS")) return ds.getBigDecimal("UPRAB");
+    
     if (lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", ds.getInt("CPAR")+""))
       return dm.getPartneri().getBigDecimal("PRAB");
     return null;
   }
   
   public BigDecimal getCJC() {
+    if (raDOS.dosfc && ds.getString("VRDOK").equals("DOS")) return ds.getBigDecimal("FC");
+    
     QueryDataSet tmpCjenik = allStanje.getallStanje().getCijenik(
         ds.getString("VRDOK"), ds.getString("CSKL"), ds.getInt("CPAR"), ds.getInt("CART"));
     if (tmpCjenik != null && tmpCjenik.rowCount() > 0)

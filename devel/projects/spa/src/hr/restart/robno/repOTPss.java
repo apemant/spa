@@ -37,6 +37,8 @@ public class repOTPss extends repOTP {
   }
   
   public BigDecimal getCJC() {
+    if (raDOS.dosfc && ds.getString("VRDOK").equals("DOS")) return ds.getBigDecimal("FC");
+    
     QueryDataSet tmpCjenik = allStanje.getallStanje().getCijenik(
         ds.getString("VRDOK"), ds.getString("CSKL"), ds.getInt("CPAR"), ds.getInt("CART"));
     if (tmpCjenik != null && tmpCjenik.rowCount() > 0)
