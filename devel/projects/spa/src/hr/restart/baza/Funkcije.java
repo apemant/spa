@@ -16,9 +16,7 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 
@@ -30,11 +28,11 @@ public class Funkcije extends KreirDrop implements DataModule {
 
   QueryDataSet func = new raDataSet();
 
-  Column funcLOKK = new Column();
+/*  Column funcLOKK = new Column();
   Column funcAKTIV = new Column();
   Column funcCFUNC = new Column();
   Column funcOPISFUNC = new Column();
-  Column funcAPP = new Column();
+  Column funcAPP = new Column();*/
 
   public static Funkcije getDataModule() {
     if (Funkcijeclass == null) {
@@ -58,7 +56,7 @@ public class Funkcije extends KreirDrop implements DataModule {
   }
 
   private void jbInit() throws Exception {
-    funcLOKK.setCaption("Status zauzetosti");
+/*    funcLOKK.setCaption("Status zauzetosti");
     funcLOKK.setColumnName("LOKK");
     funcLOKK.setDataType(com.borland.dx.dataset.Variant.STRING);
     funcLOKK.setPrecision(1);
@@ -101,10 +99,11 @@ public class Funkcije extends KreirDrop implements DataModule {
     funcAPP.setSqlType(1);
     func.setResolver(dm.getQresolver());
     func.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(),"select * from Funkcije", null, true, Load.ALL));
- setColumns(new Column[] {funcLOKK, funcAKTIV, funcCFUNC, funcOPISFUNC, funcAPP});
+ setColumns(new Column[] {funcLOKK, funcAKTIV, funcCFUNC, funcOPISFUNC, funcAPP});*/
+    initModule();
   }
 
-  public void setall() {
+  /*public void setall() {
 
     ddl.create("Funkcije")
        .addChar("lokk", 1, "N")
@@ -123,5 +122,5 @@ public class Funkcije extends KreirDrop implements DataModule {
     String[] uidx = new String[] {};
     DefIndex = ddl.getIndices(idx, uidx);
     NaziviIdx = ddl.getIndexNames(idx, uidx);
-  }
+  }*/
 }
