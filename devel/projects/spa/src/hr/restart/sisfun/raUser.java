@@ -30,6 +30,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raTransaction;
 import hr.restart.util.sysoutTEST;
+import hr.restart.zapod.raUserChangeListener;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -60,6 +61,8 @@ public class raUser {
   private boolean superuser = false, ogranicen = false;
   private static String softLockEnabledInProperties = IntParam.getTag("softlock");
   protected static raUser usr;
+  
+  private java.beans.PropertyChangeSupport chSupp;
 
   StorageDataSet prava = new StorageDataSet();
 //  StorageDataSet appr = new StorageDataSet();
@@ -170,6 +173,7 @@ public class raUser {
   }
 
   public void setUser(String user) {
+    String oldUser = m_user;
     m_user = user;
     if (user.equals("")) return;
     if (user.equals("root")) {
@@ -190,6 +194,27 @@ public class raUser {
     dm.getKljucevi().refresh();
     preparePrava();
     MsgDispatcher.install(true);
+    fireUserChanged(oldUser, user);
+  }
+  
+  private java.beans.PropertyChangeSupport getChangeSupport() {
+    if (chSupp == null) chSupp = new java.beans.PropertyChangeSupport(this);
+    return chSupp;
+  }
+  
+  public void addUserChangeListener(raUserChangeListener lis) {
+    getChangeSupport().addPropertyChangeListener("user",lis);
+  }
+
+  public void removeUserChangeListener(raUserChangeListener lis) {
+    if (chSupp == null) return;
+    getChangeSupport().removePropertyChangeListener("user",lis);
+    if (!getChangeSupport().hasListeners("user")) chSupp = null;
+  }
+
+  public void fireUserChanged(String oldUser, String newUser) {
+    if (chSupp == null) return;
+    getChangeSupport().firePropertyChange("user",oldUser,newUser);
   }
 
   private String add(String p1, String p2) {
@@ -635,6 +660,7 @@ public class raUser {
 //    }
     return canAccessAnything("F", dm.getFunkcije().getString("CFUNC"), "", action.toUpperCase());
   }
+  
 
   private boolean inPravo(String pravo, String action) {
     if ((action.startsWith("P") && pravo.charAt(0) == '1') ||
