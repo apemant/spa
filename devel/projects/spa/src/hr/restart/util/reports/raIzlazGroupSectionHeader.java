@@ -28,7 +28,7 @@ import hr.restart.util.Aus;
  * @author abf
  */
 public class raIzlazGroupSectionHeader extends raReportSection {
-  private String[] thisProps = new String[] {"Group", "", "", "", "Yes", "Yes", "No", "Yes", "320"};
+  private String[] thisProps = new String[] {"Group", "", "", "", "Yes", "Yes", "No", "No", "320"};
   public raReportElement TextGROUPTEXT;
   private String[] TextGROUPTEXTProps = new String[] {"GROUPTEXT", "", "", "", "", "", "Yes",
      "Yes", "", "200", "10000", "0", "", "", "", "", "", "", "Lucida Bright", "12", "", "", "",
