@@ -398,6 +398,29 @@ public class frmUlazTemplate extends raMasterDetail {
 		SanityCheck.basicStdoku(getDetailSet());
 		return true;
 	}
+	
+	boolean updateMC, updateNC;
+	public boolean checkArtCijene() {
+	  updateMC = updateNC = false;
+	  if (frmParam.getParam("robno","dohMcPOS","AR",
+        "Dohvat cijene na POS-u (AR,ST)").trim().equalsIgnoreCase("AR")) {
+	    
+	    if (lD.raLocate(dm.getArtikli(), "CART", getDetailSet().getInt("CART") + "") &&
+	        Aus.comp(dm.getArtikli(), "MC", getDetailSet()) != 0) {
+	      int opt = JOptionPane.showConfirmDialog(raDetail.getWindow(),
+                  "Cijena s porezom se razlikuje od cijene na artiklu. Ažurirati cijenu na artiklu?",
+                  "Promjena cijene", JOptionPane.YES_NO_CANCEL_OPTION);
+	      if (opt == JOptionPane.CANCEL_OPTION) return false;
+	      if (opt == JOptionPane.YES_OPTION) updateMC = true;
+	    }
+	  }
+	  
+	  if (frmParam.getParam("robno","updNCulaz","D",
+          "Ažurirati nabavnu cijenu na artiklu kod ulaza (D,N)").trim().equalsIgnoreCase("D"))
+	    updateNC = true;
+
+	  return true;
+	}
 
 	//  public void AfterSaveDetail(char mode) {
 	//    updateStanje('N');
@@ -658,7 +681,10 @@ System.out.println("oldBRRAC "+oldBRRAC);
 
 		//    Util.getUtil().getSkladFromCorg().interactiveLocate(getMasterSet().getString("CSKL"),"CSKL",com.borland.dx.dataset.Locate.FIRST,
 		// false);
-		if (dm.getSklad().getString("VRZAL").trim().equals("N")) {
+		if (dm.getSklad().getString("VRZAL").trim().equals("N") ||
+		    dm.getSklad().getString("VRZAL").trim().equals("F") ||
+		    dm.getSklad().getString("VRZAL").trim().equals("L") ||
+		    dm.getSklad().getString("VRZAL").trim().equals("H")) {
 			getDetailSet().setBigDecimal("ZC",
 					getDetailSet().getBigDecimal("NC"));
 			getDetailSet().setBigDecimal("IZAD",
@@ -857,11 +883,31 @@ System.out.println("oldBRRAC "+oldBRRAC);
 
 	public boolean doBeforeSaveDetail(char mode) {
 		//System.out.println("doBeforeSaveDetail('"+mode+"')");
+	  if (mode != 'B' && (updateMC || updateNC)) try {
+	    if (lD.raLocate(dm.getArtikli(), "CART", getDetailSet().getInt("CART") + "")) {
+	      if (updateMC) Aus.set(dm.getArtikli(), "MC", getDetailSet());
+	      if (updateMC) Aus.set(dm.getArtikli(), "VC", getDetailSet());
+	      if (updateNC) Aus.set(dm.getArtikli(), "NC", stanjeSet);
+	      if (updateNC) Aus.set(dm.getArtikli(), "DC", getDetailSet());
+	      hr.restart.util.raTransaction.saveChanges(dm.getArtikli());
+	    }
+	  } finally {
+	    updateMC = updateNC = false;
+	  }
 		if (mode == 'N') {
-			getMasterSet().setBigDecimal(
+            getDetailSet().setInt("RBSID", rbr.getRbsID(getDetailSet()));
+            getDetailSet().setString(
+                    "ID_STAVKA",
+                    raControlDocs.getKey(getDetailSet(), new String[] { "cskl",
+                            "vrdok", "god", "brdok", "rbsid" }, "stdoku"));
+
+            getMasterSet().setBigDecimal(
 					"UIKAL",
 					getMasterSet().getBigDecimal("UIKAL").add(
 							getDetailSet().getBigDecimal("INAB")));
+			
+            raFLH.getInstance().ulazNoviFLH(getDetailSet());    /* FLH */
+            
 		} else if (mode == 'B') {
 			System.out.println("UIKAL (prije) = "
 					+ getMasterSet().getBigDecimal("UIKAL"));
@@ -896,14 +942,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	}
 
 	public boolean doWithSaveDetail(char mode) {
-		if (mode == 'N') {
-			getDetailSet().setInt("RBSID", rbr.getRbsID(getDetailSet()));
-			getDetailSet().setString(
-					"ID_STAVKA",
-					raControlDocs.getKey(getDetailSet(), new String[] { "cskl",
-							"vrdok", "god", "brdok", "rbsid" }, "stdoku"));
-			hr.restart.util.raTransaction.saveChanges(getDetailSet());
-		}
+
 		if ((isTranzit || isNar) && this instanceof frmPRK) 
 		  if (!((frmPRK) this).updateRotStavka(mode)) return false;
 		if (mode == 'B') {
@@ -1012,6 +1051,8 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	}
 
 	public boolean isUpdateOrDeletePossible() {
+	  if (raFLH.getInstance().provjeraFLH(getDetailSet())) return false;    /* FLH */
+	  
 	  if (!isFind) return true;
 		stanjeSet.refresh();
 		return rCD.testKalkulacije(getDetailSet(), stanjeSet);
