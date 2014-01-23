@@ -545,6 +545,8 @@ public class frmFormKPR extends raUpitLite {
   private String nazivDok(QueryDataSet data, String vd) {
     if (vd.equals("ROT")) {
       return "Ra\u010Dun otpremnica br. " + getKey(data);
+    } else if (vd.equals("RAC")) {
+      return "Ra\u010Dun br. " + getKey(data);
     } else if (vd.equals("DON")) {
       return "Donos";
     } else if (vd.equals("PRK")) {
