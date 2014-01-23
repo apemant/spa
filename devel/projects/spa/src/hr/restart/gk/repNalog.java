@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.gk;
 
+import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
 
 import com.borland.dx.dataset.DataSet;
@@ -32,6 +33,7 @@ public class repNalog implements raReportData {
  hr.restart.robno.repMemo rpm = hr.restart.robno.repMemo.getrepMemo();
  hr.restart.robno.repUtil ru = hr.restart.robno.repUtil.getrepUtil();
  hr.restart.util.Valid val = hr.restart.util.Valid.getValid();
+ lookupData ld = lookupData.getlookupData();
 
  public repNalog() {
    ru.setDataSet(ds);
@@ -85,6 +87,17 @@ public class repNalog implements raReportData {
 
  public String getDatumIsp() {
   return rdu.dataFormatter(val.getToday());
+ }
+ 
+ public String getDATDOK() {
+   return rdu.dataFormatter(ds.getTimestamp("DATDOK"));
+ }
+ 
+ public String getPartnerOpis() {
+   ld.raLocate(dm.getPartneri(), "CPAR", String.valueOf(ds.getInt("CPAR")));
+   return ds.getInt("CPAR")+"    "+dm.getPartneri().getString("NAZPAR") +"   "+ dm.getPartneri().getInt("PBR") + " " +
+       dm.getPartneri().getString("MJ")+", "+dm.getPartneri().getString("ADR");
+   
  }
 
  public String getFake() {
