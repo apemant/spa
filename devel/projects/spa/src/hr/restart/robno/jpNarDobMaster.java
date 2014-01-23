@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.robno.rajpIzlazMPTemplate.panOstatak;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
@@ -29,6 +30,8 @@ import hr.restart.zapod.jpGetValute;
 import hr.restart.zapod.raKnjigChangeListener;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -37,6 +40,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
@@ -57,6 +61,8 @@ public class jpNarDobMaster extends JPanel {
 	jpOsnovni jp1 = new jpOsnovni();
 
 	jpOstali jp2 = new jpOstali();
+	
+	panOstatak jp3 = new panOstatak();
 	
 	panDodatni jpd = new panDodatni();
 
@@ -80,6 +86,7 @@ public class jpNarDobMaster extends JPanel {
 	public void BindComponents(DataSet ds) {
 		jp1.BindComponents(ds);
 		jp2.BindComponents(ds);
+		jp3.BindComp(ds);
 		jpd.BindComp(ds);
 		brdok.setDataSet(ds);
 	}
@@ -88,6 +95,7 @@ public class jpNarDobMaster extends JPanel {
 		this.setLayout(new BorderLayout());
 		tabs.add(jp1, "Osnovni podaci");
 		tabs.add(jp2, "Dodatni podaci");
+		tabs.add(jp3, "Ostali podaci");
 		tabs.add(jpd, "Napomene i ostalo");
 
 		brdok.addBorder();
@@ -449,6 +457,132 @@ public class jpNarDobMaster extends JPanel {
 			jlrCNACPL.setDataSet(ds);
 		}
 	}
+	
+	
+	class panOstatak extends JPanel {
+
+      XYLayout xYLayoutDODPOD = new XYLayout();
+
+      //  java.util.ResourceBundle res =
+      // java.util.ResourceBundle.getBundle("hr.restart.robno.Res");
+      JLabel jlIZDOK = new JLabel();
+
+      JLabel jlBRNAR = new JLabel();
+
+      JLabel jlBRUGO = new JLabel();
+
+      JLabel jlBRPRED = new JLabel();
+
+      JraTextField jraBRDOKIZ = new JraTextField();
+
+      JraTextField jraBRNARIZ = new JraTextField();
+
+      JraTextField jraCUG = new JraTextField();
+
+      JraTextField jraBRPRD = new JraTextField();
+
+      JLabel jlIZDOK1 = new JLabel();
+
+      JLabel jlIZDOK2 = new JLabel();
+
+      JLabel jlIZDOK3 = new JLabel();
+
+      JLabel jlIZDOK4 = new JLabel();
+
+      JraTextField jraDATDOKIZ = new JraTextField();
+
+      JraTextField jraDATNARIZ = new JraTextField();
+
+      JraTextField jraDATUG = new JraTextField();
+
+      JraTextField jraDATPRD = new JraTextField();
+     
+
+      JraTextField jraFBR = new JraTextField();
+      JLabel jlFBR = new JLabel();
+      
+
+      panOstatak() {
+
+          addAncestorListener(new AncestorListener() {
+              public void ancestorAdded(AncestorEvent e) {
+                  jraBRDOKIZ.requestFocus();
+              }
+
+              public void ancestorMoved(AncestorEvent e) {
+              }
+
+              public void ancestorRemoved(AncestorEvent e) {
+              }
+          });
+          setLayout(xYLayoutDODPOD);
+          setBorder(BorderFactory.createEtchedBorder());
+
+          jlIZDOK.setText("Izlazni dokument");
+          jlBRNAR.setText("Broj narudžbe");
+          jlBRUGO.setText("Broj ugovora");
+          jlBRPRED.setText("Broj predra\u010Duna");
+          jraBRDOKIZ.setColumnName("BRDOKIZ");
+          jraBRNARIZ.setColumnName("BRNARIZ");
+          jraCUG.setColumnName("CUG");
+          jraBRPRD.setColumnName("BRPRD");
+          jlIZDOK1.setText("Datum izlaznog dokumenta");
+          jlIZDOK2.setText("Datum narudžbe");
+          jlIZDOK3.setText("Datum ugovora");
+          jlIZDOK4.setText("Datum predra\u010Duna");
+          
+          jraDATDOKIZ.setColumnName("DATDOKIZ");
+          jraDATDOKIZ.setHorizontalAlignment(SwingConstants.CENTER);
+          jraDATNARIZ.setColumnName("DATNARIZ");
+          jraDATNARIZ.setHorizontalAlignment(SwingConstants.CENTER);
+          jraDATUG.setColumnName("DATUG");
+          jraDATUG.setHorizontalAlignment(SwingConstants.CENTER);
+          jraDATPRD.setColumnName("DATPRD");
+          jraDATPRD.setHorizontalAlignment(SwingConstants.CENTER);
+          jraFBR.setColumnName("FBR");
+          jlFBR.setText("Broj fiskalnog RN");
+          System.err.println("jraFBR.setVisible");
+          boolean v = repFISBIH.isFISBIH()&&frmParam.getParam("robno", "FBRenabled", "N", "Omoguciti rucni unos fiskalnog broja na dokumentima").equalsIgnoreCase("D");
+          jraFBR.setVisible(v);
+          jlFBR.setVisible(v);
+
+          add(jlIZDOK, new XYConstraints(15, 15, -1, -1));
+          add(jraBRDOKIZ, new XYConstraints(130, 15, 110, -1));
+          add(jlIZDOK1, new XYConstraints(365, 15, -1, -1));
+          add(jraDATDOKIZ, new XYConstraints(522, 15, 110, -1));
+
+          add(jlBRNAR, new XYConstraints(15, 40, -1, -1));
+          add(jraBRNARIZ, new XYConstraints(130, 40, 110, -1));
+          add(jlIZDOK2, new XYConstraints(365, 40, -1, -1));
+          add(jraDATNARIZ, new XYConstraints(522, 40, 110, -1));
+
+          add(jlBRUGO, new XYConstraints(15, 65, -1, -1));
+          add(jraCUG, new XYConstraints(130, 65, 110, -1));
+          add(jlIZDOK3, new XYConstraints(365, 65, -1, -1));
+          add(jraDATUG, new XYConstraints(522, 65, 110, -1));
+
+          add(jlBRPRED, new XYConstraints(15, 90, -1, -1));
+          add(jraBRPRD, new XYConstraints(130, 90, 110, -1));
+          add(jlIZDOK4, new XYConstraints(365, 90, -1, -1));
+          add(jraDATPRD, new XYConstraints(522, 90, 110, -1));
+          
+    add(jlFBR, new XYConstraints(15, 115, -1, -1));
+    add(jraFBR, new XYConstraints(130, 115, 110, -1));
+      }
+
+      public void BindComp(DataSet ds) {
+          jraBRDOKIZ.setDataSet(ds);
+          jraBRNARIZ.setDataSet(ds);
+          jraCUG.setDataSet(ds);
+          jraBRPRD.setDataSet(ds);
+          jraDATDOKIZ.setDataSet(ds);
+          jraDATNARIZ.setDataSet(ds);
+          jraDATUG.setDataSet(ds);
+          jraDATPRD.setDataSet(ds);
+          jraFBR.setDataSet(ds);
+      }
+  }
+
 	
 	class panDodatni extends JPanel {
 
