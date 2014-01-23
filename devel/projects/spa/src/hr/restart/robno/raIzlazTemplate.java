@@ -176,6 +176,15 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	
 	boolean isMinusAllowed = false;
 	
+	boolean minKolCheck = false;
+	
+	boolean sigKolCheck = false;
+	
+	boolean chStanjeRiG = false;
+	
+	boolean docBefDatKnj = false;
+
+	
 	boolean autoval = false;
 	boolean autovali = false; 
 
@@ -185,7 +194,6 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 
 	int oldCPAR = -1;
 
-	boolean isUsluga = false;
 	boolean hideKup = false;
 	boolean allowNabedit = false;
 
@@ -194,7 +202,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	// ab.f za brisanje stavki izdatnica prenesenih iz RNL
 	protected int delRbsrn, delRbsid;
 
-	protected String delCradnal = "";
+	protected String delCradnal = "", delId = "";
 
 	java.math.BigDecimal Nula = new java.math.BigDecimal(0);
 
@@ -300,12 +308,15 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 
 	raControlDocs rCD = new raControlDocs();
 
-	String defNacpl = hr.restart.sisfun.frmParam.getParam("robno", "defNacpl",
-			"", "Predefinirani naèin plaæanja");
+	String defNacpl = "";
+	String defcrab = "";
 
 	String dodatak = "";
 
 	String dodatakRN = "";
+	
+	String rezkol = "D";
+	String rezkolst = "D";
 
 	SecondChooser dcz = null;
 
@@ -934,6 +945,12 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	               dm.getOrgstruktura().getString("NAZIV");
 	       }
 	    }
+	    
+	    defcrab = hr.restart.sisfun.frmParam.getParam("robno", "defcrab", "1",
+            "Predefinirana šifra rabata stavke");
+	    
+	    defNacpl = hr.restart.sisfun.frmParam.getParam("robno", "defNacpl",
+            "", "Predefinirani naèin plaæanja");
 
 	    isTranzit = !isOJ && cskl.length() > 0 && 
 	        TD.isCsklSklad(what_kind_of_dokument) && 
@@ -943,8 +960,27 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	    isSingleKOL = frmParam.getParam("robno", "singleKOL", "N",
             "Defaultna kolièina od 1 kom (D,N)?").equals("D");
 	    
+	    docBefDatKnj = frmParam.getParam("robno","docBefDatKnj","N",
+	        "Dozvoliti izradu dokumenta u periodu koje je veæ knjižen (D,N) ").equalsIgnoreCase("N");
+	    
+	    rezkol = hr.restart.sisfun.frmParam.getParam("robno", "rezkol", "N",
+	        "Automatsko rezerviranje kolièina putem ponude (D,N,O)");
+	    
+	    rezkolst = hr.restart.sisfun.frmParam.getParam("robno",
+            "rezkol4Stanje", "O",
+            "Kalkulacija stanja kod rezervacije (D/N/O)");
+	    
 	    isMinusAllowed = frmParam.getParam("robno", "allowMinus", "N",
 	        "Dopustiti odlazak u minus na izlazima (D,N)?").equals("D");
+	    
+	    minKolCheck = hr.restart.sisfun.frmParam.getParam("robno", "minkol", 
+	        "Provjera minimalne kolièine na stanju (D,N)", "N").equalsIgnoreCase("D");
+	    
+	    sigKolCheck = hr.restart.sisfun.frmParam.getParam("robno", "sigkol", 
+	        "Provjera signalne kolièine na stanju (D,N)", "N").equalsIgnoreCase("D");
+	    
+	    chStanjeRiG = hr.restart.sisfun.frmParam.getParam("robno", "chStanjeRiG", "N",
+          "Provjera stanja kod GRN i RAC -a").equalsIgnoreCase("D");
 	        
 	    String av = frmParam.getParam("robno", "autoValuta", "N",
 	          "Preraèunati iznos iz valute u kune na izlazima (N,D,A)");
@@ -1012,11 +1048,20 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		prepareOldMasterValues();
 		if (!LocalDeleteCheckMaster())
 			return false;
+		
+		if (getMasterSet().getString("FOK").equals("D")) {
+		  javax.swing.JOptionPane.showConfirmDialog(raMaster.getWindow(),
+              "Zakljuèani dokumenti se ne mogu brisati!", "Greška",
+              javax.swing.JOptionPane.DEFAULT_OPTION,
+              javax.swing.JOptionPane.ERROR_MESSAGE);
+		  return false;
+		}
+		
 		boolean returnValue = true;
 		srcString = util.getSeqString(getMasterSet());
 		returnValue = util.checkSeq(srcString, Integer.toString(getMasterSet()
 				.getInt("BRDOK")));
-		if (returnValue) {
+		if (returnValue && checkStavkeDel()) {
 			if (!this.getDetailSet().isEmpty()) {
 				javax.swing.JOptionPane.showConfirmDialog(raMaster.getWindow(),
 						"Nisu pobrisane stavke dokumenta !", "Gre\u0161ka",
@@ -1050,29 +1095,42 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	public boolean LocalDeleteCheckMaster() {
 		return true;
 	}
+	
+	public boolean checkStavkeDel() {
+	  return true;
+	}
 
 	public boolean doBeforeSaveDetail(char mode) {
-		
-		if (nabDirect && (mode == 'N' || mode == 'I') &&
-		    (what_kind_of_dokument.equals("ROT") ||
-		     what_kind_of_dokument.equals("GOT") ||
-		     what_kind_of_dokument.equals("POD"))) {
-		    Aus.set(getDetailSet(), "RNC", "NC");
-		    Aus.set(getDetailSet(), "RINAB", "INAB");
-		 }
 
 		if (mode == 'N') {
 			cskl2csklart();
 			getDetailSet().setString("ID_STAVKA",
                 raControlDocs.getKey(getDetailSet(), new String[] { "cskl",
                         "vrdok", "god", "brdok", "rbsid" }, "stdoki"));
+			
+			raFLH.getInstance().izlazNoviFLH(getDetailSet());  /* FLH */
+			
 			maintanceRabat(true);
 		} else if (mode == 'I') {
 			cskl2csklart();
+			
+			raFLH.getInstance().izlazIzmjenaFLH(getDetailSet());  /* FLH */
+			
 			maintanceRabat(false);
 		} else if (mode == 'B') {
 			// deleteRabat();
+		  
+		  raFLH.getInstance().izlazBrisanjeFLH(getMasterSet(), delId);  /* FLH */
 		}
+		
+		if (nabDirect && (mode == 'N' || mode == 'I') &&
+            (what_kind_of_dokument.equals("ROT") ||
+             what_kind_of_dokument.equals("GOT") ||
+             what_kind_of_dokument.equals("POD"))) {
+            Aus.set(getDetailSet(), "RNC", "NC");
+            Aus.set(getDetailSet(), "RINAB", "INAB");
+         }
+		
 		if (mode != 'B') 
 			SanityCheck.basicStdoki(getDetailSet());
 		if (mode == 'N' && autoval || mode == 'I' && autovali) {
@@ -1101,9 +1159,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 			vtrabat.setInt("BRDOK", getDetailSet().getInt("BRDOK"));
 			vtrabat.setShort("RBR", (short) getDetailSet().getInt("RBSID"));
 			vtrabat.setShort("LRBR", (short) 1);
-			vtrabat.setString("CRAB", hr.restart.sisfun.frmParam.getParam(
-					"robno", "defcrab", "1",
-					"Predefinirana šifra rabata stavke"));
+			vtrabat.setString("CRAB", defcrab);
 			vtrabat.setString("RABNARAB", "N");
 			vtrabat.setBigDecimal("PRAB", getDetailSet()
 							.getBigDecimal("UPRAB"));
@@ -1234,6 +1290,9 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	    
 		if (mode == 'N') {
 			util.getBrojDokumenta(getMasterSet());
+			if (ut.sameDay(val.getToday(), getMasterSet().getTimestamp("DATDOK")))
+			  getMasterSet().setTimestamp("DATDOK", getMasterSet().getTimestamp("SYSDAT"));
+			
 			getMasterSet().setString("PNBZ2",
 					pnb.getPozivNaBroj(getMasterSet()));
 			if (!extrasave()) return false;			
@@ -1603,7 +1662,7 @@ ST.prn(radninal);
 	public boolean FirstPartValidDetail() {
 		if (val.isEmpty(MP.panelBasic.jtfDATDOK))
 			return false;
-        if (frmParam.getParam("robno","docBefDatKnj","N","Dozvoliti izradu dokumenta u periodu koje je veæ knjižen ").equalsIgnoreCase("N")) {
+        if (docBefDatKnj) {
 		if (!isKnjigDataOK()) {
 			javax.swing.JOptionPane.showMessageDialog(raMaster.getWindow(),
 					"Datum u periodu koji je veæ knjižen !", "Greška",
@@ -1687,9 +1746,9 @@ ST.prn(radninal);
 			delRbsrn = getDetailSet().getInt("RBSRN");
 			delRbsid = getDetailSet().getInt("RBSID");
 			delCradnal = getDetailSet().getString("CRADNAL");
+			delId = getDetailSet().getString("ID_STAVKA");
 			delCART = getDetailSet().getInt("CART");
 			delRbr = getDetailSet().getShort("RBR");
-			isUsluga = DP.rpcart.isUsluga();
 			tmpIPRODSP = getDetailSet().getBigDecimal("IPRODSP");
 			tmpIRAZ = getDetailSet().getBigDecimal("IRAZ");
 			if (lD.raLocate(dm.getArtikli(), new String[] { "CART" },
@@ -2153,7 +2212,7 @@ ST.prn(radninal);
 			dlgSerBrojevi.getdlgSerBrojevi().returnOrgTransactionActive();
 			if (afterWish()) {
 				if (TD.isDocDiraZalihu(getDetailSet().getString("VRDOK"))) {
-					if (!DP.rpcart.isUsluga()) {
+					if (!isUslugaOrTranzit()) {
 						retValue = UpdateStanje();
 					}
 				}
@@ -2174,7 +2233,7 @@ ST.prn(radninal);
 							.getString("VRDOK").equalsIgnoreCase("DOS"))) {
 				nStavka = (short) (nStavka + 1);
 				try {
-					if (!DP.rpcart.isUsluga()) {
+					if (!isUslugaOrTranzit()) {
 						lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje);
 						rCD.unosIzlaz(getDetailSet(), AST.gettrenSTANJE()); // ???????
 						raTransaction.saveChanges(getDetailSet());
@@ -2238,7 +2297,7 @@ ST.prn(radninal);
 		boolean retValue = true;
 
 		try {
-			if (!DP.rpcart.isUsluga()
+			if (!isUslugaOrTranzit()
 					&& TypeDoc.getTypeDoc().isDocDiraZalihu(
 							what_kind_of_dokument)) {
 				lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje);
@@ -3323,6 +3382,11 @@ System.out.println("findCjenik::else :: "+sql);
 	
 		
 	public void selectDoc() {
+	  
+	  if (!checkAccess()) {
+        showUserCheckMsg(); 
+	    return;
+	  }
     
     DataSet pon = doki.getDataModule().getTempSet(
     		"vrdok='PON' and god>='" + (Aus.getNumber(val.findYear()) - 1) +
@@ -3340,7 +3404,7 @@ System.out.println("findCjenik::else :: "+sql);
           util.mkey, new String[] {"", "", "", ""}, new int[] {1,4,5,6,44});
 
       if (ret != null && ret[0] != null && ret[0].length() > 0 && lD.raLocate(pon, util.mkey, ret))
-        copyStavke(pon);
+        copyStavke(pon, false);
 
     } finally {
       lD.saveName = null;
@@ -3348,12 +3412,20 @@ System.out.println("findCjenik::else :: "+sql);
     }
   }
 	
-	void copyStavke(DataSet pon) {
+	void copyStavke(DataSet pon, boolean all) {
 		
 		DataSet single = doki.getDataModule().getTempSet(Condition.whereAllEqual(util.mkey, pon));
 		single.open();
 		
-		final SecondChooser sc = new SecondChooser("");
+		final SecondChooser sc = new SecondChooser("") {
+		  public void afterOK() {
+		    afterCopyStavke();
+		  }
+		  public boolean saveChangeInSecondChooser() {
+		    if (!dodSaveCopyStavke()) return false;
+		    return super.saveChangeInSecondChooser();
+		  }
+		};
 		sc.setSelected("PON");		
 		sc.setUpClass(this);
 		
@@ -3363,6 +3435,10 @@ System.out.println("findCjenik::else :: "+sql);
     sc.setDataSetKey(new String[] { "CSKL", "GOD", "VRDOK", "BRDOK" }, dods);
     sc.initialise();
     sc.simTrans();
+    if (all) {
+      sc.okSelect();
+      return;
+    }
     
     sc.findStavke();
 		if (sc.checkStavke()) {
@@ -3383,6 +3459,14 @@ System.out.println("findCjenik::else :: "+sql);
 			}
 		}
 	}
+	
+	public void afterCopyStavke() {
+	  
+	}
+	
+	public boolean dodSaveCopyStavke() {
+	  return true;
+    }
 
 	public void findRabat() {
 
@@ -3985,9 +4069,7 @@ System.out.println("findCjenik::else :: "+sql);
 									javax.swing.JOptionPane.ERROR_MESSAGE);
 					return false;
 				} else if (i == -2) {
-					DP.jtfKOL.requestFocus();
-					String rezkol = hr.restart.sisfun.frmParam.getParam(
-							"robno", "rezkol");
+					DP.jtfKOL.requestFocus(); 
 					if (!rezkol.equals("N")) {
 						JOptionPane.showMessageDialog(raDetail.getWindow(),
 										"Koristite rezervirane koli\u010Dine !",
@@ -4006,9 +4088,7 @@ System.out.println("findCjenik::else :: "+sql);
 					return false;
 				}
 
-				if (hr.restart.sisfun.frmParam.getParam("robno", "minkol", "N")
-						.equalsIgnoreCase("D")
-						&& DP.rpcart.jrfCART.getRaDataSet().getBigDecimal(
+				if (minKolCheck && DP.rpcart.jrfCART.getRaDataSet().getBigDecimal(
 								"MINKOL").doubleValue() != 0
 						&& rKD.isKolStanjeManjeOd(DP.rpcart.jrfCART
 								.getRaDataSet().getBigDecimal("MINKOL"))) {
@@ -4030,9 +4110,7 @@ System.out.println("findCjenik::else :: "+sql);
 					return false;
 				}
 
-				if (hr.restart.sisfun.frmParam.getParam("robno", "sigkol", "N")
-						.equalsIgnoreCase("D")
-						&& DP.rpcart.jrfCART.getRaDataSet().getBigDecimal(
+				if (sigKolCheck && DP.rpcart.jrfCART.getRaDataSet().getBigDecimal(
 								"SIGKOL").doubleValue() != 0
 						&& rKD.isKolStanjeManjeOd(DP.rpcart.jrfCART
 								.getRaDataSet().getBigDecimal("SIGKOL"))) {
@@ -4345,6 +4423,9 @@ System.out.println("findCjenik::else :: "+sql);
         boolean ally = frmParam.getParam("robno", "sc2god", "D",
             "Dopustiti dohvat dokumenata iz prošlih godina (D,N)", true).equals("D");
         
+        boolean ponPon = frmParam.getParam("robno", "ponPon", "N",
+            "Dopustiti dohvat prenešenih ponuda (D,N)", true).equals("D");
+        
         String ky = Valid.getValid().getKnjigYear("robno");
         
         String yc = ky.equalsIgnoreCase(year) ? "god='"+year+"' and " : "god in ('"+
@@ -4373,7 +4454,7 @@ System.out.println("findCjenik::else :: "+sql);
             } else if ((getMasterSet().getString("VRDOK").equalsIgnoreCase("RAC") ||
 			    getMasterSet().getString("VRDOK").equalsIgnoreCase("GRN"))
 					&& odabrano.equalsIgnoreCase("PON")) {
-				upit = "statira='N' and "+yc+" vrdok= 'PON'" + dodatak
+				upit = (ponPon ? "statira!='X'" : "statira='N'") + " and "+yc+" vrdok= 'PON'" + dodatak
 						+ " and cskl in ('"
 						+ pressel.getSelRow().getString("CSKL") + "')"; // samo
 			} else if ((getMasterSet().getString("VRDOK").equalsIgnoreCase(
@@ -4764,8 +4845,7 @@ System.out.println("findCjenik::else :: "+sql);
             "Greška", JOptionPane.ERROR_MESSAGE);
         return;
 	  }
-	  String gr = hr.restart.sisfun.frmParam.getParam(
-          "robno", "defglobrab", "",
+	  String gr = hr.restart.sisfun.frmParam.getParam("robno", "defglobrab", "",
           "Predefinirana šifra rabata na raèunu");
 	  if (gr == null || gr.length() == 0) {
 	    JOptionPane.showMessageDialog(this.raMaster, "Potrebno je definirati parametar defglobrab prije dodavanja rabata na raèun!",
@@ -4929,10 +5009,11 @@ System.out.println("findCjenik::else :: "+sql);
 	 */
 	public boolean updateTxt() {
 		if (raDetail.getMode() == 'N') {
+		  String cdkey = rCD.getKey(DP.rpcart.jrfCART.getRaDataSet());
+		  System.out.println("CKEY="+cdkey);
 			QueryDataSet tmpVTTEXT = hr.restart.util.Util.getNewQueryDataSet(
-					"SELECT * FROM vttext WHERE CKEY='"
-							+ rCD.getKey(DP.rpcart.jrfCART.getRaDataSet())
-							+ "'", true);
+					"SELECT * FROM vttext WHERE CKEY='" + cdkey + "'", true);
+			
 			if (tmpVTTEXT.getRowCount() > 0) {
 				vttext = hr.restart.util.Util.getNewQueryDataSet(
 						"SELECT * FROM vttext WHERE 1=0", true);
@@ -5112,9 +5193,7 @@ System.out.println("findCjenik::else :: "+sql);
 			return true;
 		}
 
-		if (hr.restart.sisfun.frmParam.getParam("robno", "chStanjeRiG", "N",
-				"Provjera stanja kod GRN i RAC -a").equalsIgnoreCase("D")) {
-
+		if (chStanjeRiG) {
 			QueryDataSet qdsStanje = hr.restart.util.Util.getNewQueryDataSet(
 					"select * from stanje where god='"
 							+ getDetailSet().getString("GOD") + "' and cskl='"
@@ -5141,17 +5220,15 @@ System.out.println("findCjenik::else :: "+sql);
 			}
 
 			if (kolrezervirano.doubleValue() < 0) {
-				String rezkol = hr.restart.sisfun.frmParam.getParam("robno",
-						"rezkol4Stanje", "O",
-						"Kalkulacija stanja kod rezervacije (D/N/O)");
-				if (rezkol.equals("O")) {
+				
+				if (rezkolst.equals("O")) {
 					javax.swing.JOptionPane.showMessageDialog(raDetail
 							.getWindow(), "Koristite rezervirane kolièine !",
 							"Upozorenje",
 							javax.swing.JOptionPane.WARNING_MESSAGE);
 					return true;
 				}
-				if (rezkol.equals("D")) {
+				if (rezkolst.equals("D")) {
 					javax.swing.JOptionPane.showMessageDialog(null,
 							"Nedovoljna zaliha artikla !", "Greška",
 							javax.swing.JOptionPane.ERROR_MESSAGE);
