@@ -595,7 +595,7 @@ public class ispStatPar extends raPanStats {
       cols[0] = dm.createIntColumn("CART", "Šifra");
       cols[1] = dm.createStringColumn("CART1", "Oznaka", 20);
       cols[2] = dm.createStringColumn("BC", "Barcode", 20);
-      cols[3] = dm.createStringColumn("NAZART", "Naziv artikla", 50);
+      cols[3] = dm.createStringColumn("NAZART", "Naziv artikla", 150);
       cols[4] = dm.createIntColumn("CPAR", "Kupac");
       cols[5] = dm.createStringColumn("NAZPAR", "Naziv kupca", 150);
 
@@ -1038,7 +1038,7 @@ public class ispStatPar extends raPanStats {
 
     String artikliFilter;
 
-    if (fieldSet.getString("VRART").equals("") || fieldSet.getString("VRART").equals("X"))
+    if (fieldSet.getString("VRART").equals("") || fieldSet.getString("VRART").equals("@") || fieldSet.getString("VRART").equals("X"))
       artikliFilter = "";
     else
       artikliFilter = " AND ARTIKLI.VRART='" + fieldSet.getString("VRART") + "' ";
