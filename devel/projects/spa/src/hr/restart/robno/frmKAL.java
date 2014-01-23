@@ -587,6 +587,7 @@ public class frmKAL extends frmUlazTemplate implements IZavtrHandler {
 		}
 		if (!super.ValidacijaDetail(mode))
 			return false;
+		if (!super.checkArtCijene()) return false;
 		zts.prepareSave();
 		return true;
 	}
