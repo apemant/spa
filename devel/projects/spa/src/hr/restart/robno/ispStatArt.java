@@ -24,9 +24,12 @@ import hr.restart.util.lookupData;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import java.util.Locale;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
@@ -82,6 +85,108 @@ public class ispStatArt extends raPanStats {
   
   private boolean doubleclicked = false, isIspis;
   
+  private QueryDataSet getRawSet(String pdat, String zdat) {
+    String selStr = "select " + 
+    "doki.cskl, " +
+    "doki.brdok, " + 
+    "doki.vrdok, " + 
+    "doki.god, " + 
+    "doki.datdok, " + 
+    "doki.cpar, " +
+    "doki.pj, " + 
+    "stdoki.cart, " + "stdoki.cart1, " + 
+    "stdoki.bc, " + "stdoki.nazart, " + "stdoki.jm, " + " artikli.cgrart, " + "stdoki.kol, " + 
+    "stdoki.iraz, " + "stdoki.iprodbp, " + "CAST ((stdoki.iprodsp - stdoki.iprodbp) AS numeric(12,2)) as por, " + 
+    "stdoki.iprodsp, " + "stdoki.inab, " + "CAST ((stdoki.iprodbp-stdoki.inab) AS numeric(12,2)) as ruc, " +
+    "CAST ((stdoki.iprodsp+stdoki.uirab) AS numeric(12,2)) as itot ";
+
+    String cskls;
+    if (getCskl().equals("")) {
+      QueryDataSet sklds = hr.restart.robno.Util.getSkladFromCorg();
+      sklds.open();
+      sklds.first();
+
+      String sifskl = "";
+      
+      do {
+        sifskl += "'"+sklds.getString("CSKL")+"'";
+        if (sklds.next()) sifskl += ",";
+        else break;
+      } while (true);
+
+      cskls = " AND DOKI.CSKL in ("+sifskl+")";
+    } else {
+      cskls = " AND DOKI.CSKL = '"+getCskl()+"'";
+    }
+      
+      /*
+      cskls = "in (";
+      do {
+        cskls += "'" + sklds.getString("CSKL") + "',";
+      } while (sklds.next());
+      cskls = cskls.substring(0, cskls.length() - 1) + ")";
+      //        System.out.println("cskls " + cskls);
+    } else {
+      cskls = "= '" + getCskl() + "'";
+    }
+*/
+      
+    String inq;
+    StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(fieldSet.getString("CORG"));
+    if (corgs.rowCount() == 0)
+      inq = "1=1";
+    else if (corgs.rowCount() == 1)
+      inq = "DOKI.CSKL = '" + fieldSet.getString("CORG") + "'";
+    else
+      inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs, "DOKI.CSKL")+") ";
+    hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
+    String exInClude = "AND ((" + oj + " AND " + inq + ") OR (" + oj.not() + cskls + ")) ";//"
+                                                                                                               // AND
+                                                                                                               // DOKI.CSKL
+                                                                                                               // =
+                                                                                                               // '"+getCskl()+"'))
+                                                                                                               // ";
+
+    String artikliFilter;
+
+    if (fieldSet.getString("VRART").equals("") || fieldSet.getString("VRART").equals("@") || fieldSet.getString("VRART").equals("X"))
+      artikliFilter = "";
+    else
+      artikliFilter = " AND ARTIKLI.VRART='" + fieldSet.getString("VRART") + "' ";
+
+    String carting = "";
+    if (!rpcart.findCART(podgrupe).equals("")) {
+      carting = " AND " + rpcart.findCART(podgrupe);
+    }
+
+    String ckupca = "", pjKupca = "";
+
+    if (!getCkup().equals("")) ckupca = "and doki.cpar='" + getCkup() + "' ";
+    if (!getPjCkup().equals("")) pjKupca = "and doki.pj='" + getPjCkup() + "' ";
+
+    selStr += " from doki,stdoki,artikli WHERE doki.cskl = stdoki.cskl " +
+            "AND doki.vrdok = stdoki.vrdok AND doki.god = stdoki.god " + 
+            "AND doki.brdok = stdoki.brdok AND stdoki.cart = artikli.cart " +
+            "AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') " + 
+            exInClude + ckupca + pjKupca + artikliFilter + carting + 
+            " and doki.datdok between " + pdat + " " + "and " + zdat;
+
+    //if ()
+    // REMARK!!
+    // nešto što sam primjetio, a moglo bi dobro doæi kad se bude implementirao
+    // nabavljaè je da postoji i CPAR kolona u tablici artikli
+    // i predstavlja dobavljaèa za taj artikl.
+
+        System.out.println("---> "+selStr+" <---");
+        
+    QueryDataSet ret = ut.getNewQueryDataSet(selStr);
+
+    if (ret.rowCount() == 0)
+      return null;
+    return ret;
+  }
+  
+  
   public void okPress() {
 //      hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
 //      syst.prn(fieldSet);
@@ -92,7 +197,7 @@ public class ispStatArt extends raPanStats {
     
     String /* qStr, /*qDodatakNaStr, */artikliFilter;
 
-    if (fieldSet.getString("VRART").equals("") || fieldSet.getString("VRART").equals("X"))
+    if (fieldSet.getString("VRART").equals("") || fieldSet.getString("VRART").equals("@") || fieldSet.getString("VRART").equals("X"))
       artikliFilter = "";
     else
       artikliFilter = " AND ARTIKLI.VRART='" + fieldSet.getString("VRART") + "' ";
@@ -102,7 +207,111 @@ public class ispStatArt extends raPanStats {
       carting = " AND " + rpcart.findCART(podgrupe);
     }
     
-    if (!doubleclicked) {
+    if (fieldSet.getString("PRIKAZ").equalsIgnoreCase("MJ")) { 
+      this.killAllReports();
+      this.addReport("hr.restart.robno.repStatsMonthsA", "hr.restart.robno.repStatsMonthsA", "StatsMonths", "Top lista mjeseèna");
+
+      QueryDataSet ds = getRawSet(util.getTimestampValue(fieldSet.getTimestamp("pocDatum"), 0), 
+          util.getTimestampValue(fieldSet.getTimestamp("zavDatum"), 1));
+
+      //  System.out.println("after");
+      //    syst.prn(reportSet);
+      checkClosing();
+      if (ds == null || ds.rowCount() == 0)
+        setNoDataAndReturnImmediately();
+      
+      String _od_ = fieldSet.getTimestamp("pocDatum").toString().substring(5, 7);
+      String _do_ = fieldSet.getTimestamp("zavDatum").toString().substring(5, 7);
+
+      System.out.println("od " + _od_ + " mjeseca do " + _do_ + " mjeseca");
+
+      int odInt = Integer.parseInt(_od_);
+      int doInt = Integer.parseInt(_do_);
+
+//      String[] includedMonths = new String[(doInt - odInt) + 1];
+
+      Column[] cols = new Column[6 + (doInt - odInt) + 1];
+      
+      /*int wisCols = (doInt - odInt) + 1;
+      
+      for (int i=0; i < wisCols; wisCols++){
+        
+      }*/
+
+      cols[0] = dm.createIntColumn("CART", "Šifra");
+      cols[1] = dm.createStringColumn("CART1", "Oznaka", 20);
+      cols[2] = dm.createStringColumn("BC", "Barcode", 20);
+      cols[3] = dm.createStringColumn("NAZART", "Naziv artikla", 150);
+      cols[4] = dm.createStringColumn("JM", "Jmj", 10);
+
+      int iter1 = 5;
+      int iter2 = 0;
+
+      String[] prikaz = new String[(doInt - odInt) + 2];
+
+      for (int i = odInt; i <= doInt; i++) {
+        if (i < 10){
+          cols[iter1++] = dm.createBigDecimalColumn("0"+i, moonshine[i-1], 2);
+          prikaz[iter2++] = "0"+i;
+        } else {
+          cols[iter1++] = dm.createBigDecimalColumn(""+i, moonshine[i-1], 2);
+          prikaz[iter2++] = ""+i;
+        }
+        
+        System.out.println("prikaz["+(iter2-1)+"]="+prikaz[iter2-1]);
+      }
+
+      cols[iter1] = dm.createBigDecimalColumn("UKUPNO", "Ukupno", 2);
+      prikaz[iter2] = "UKUPNO";
+
+      monthSet = new QueryDataSet();
+      monthSet.setLocale(Locale.getDefault());
+      monthSet.setColumns(cols);
+      monthSet.open();
+      
+      ds.setSort(new SortDescriptor(new String[] {"CART"}));
+      
+      int cart=-1027;
+      for (ds.first(); ds.inBounds(); ds.next()) {
+        checkClosing();
+        if (ds.getInt("CART") != cart) {
+          cart = ds.getInt("CART");
+          monthSet.insertRow(false);
+          monthSet.insertRow(false);
+          monthSet.setInt("CART", cart);
+          try {
+            monthSet.setString("CART1", ds.getString("CART1"));
+          } catch (Exception e) {
+            //            System.out.println("Exepshn - int from string");
+            monthSet.setString("CART1", ds.getString("CART11"));
+          }
+
+          monthSet.setString("BC", ds.getString("BC"));
+          monthSet.setString("NAZART", ds.getString("NAZART"));
+          monthSet.setString("JM", ds.getString("JM"));
+        }
+        String mj = ds.getTimestamp("DATDOK").toString().substring(5, 7);
+        try {
+          monthSet.setBigDecimal(mj, monthSet.getBigDecimal(mj).add(ds.getBigDecimal(getKolonu())));
+          monthSet.setBigDecimal("UKUPNO", monthSet.getBigDecimal("UKUPNO").add(ds.getBigDecimal(getKolonu())));
+        } catch (Exception ex1) {
+          monthSet.setBigDecimal(mj, monthSet.getBigDecimal(mj).add(new BigDecimal(ds.getDouble(getKolonu()))));
+          monthSet.setBigDecimal("UKUPNO", monthSet.getBigDecimal("UKUPNO").add(new BigDecimal(ds.getDouble(getKolonu()))));
+        }
+      }
+      
+      if (fieldSet.getString("SLJED").equals("CART"))
+        monthSet.setSort(new SortDescriptor(new String[]{"CART"}));
+      else if (fieldSet.getString("SLJED").equals("NAZART"))
+        monthSet.setSort(new SortDescriptor(new String[]{"NAZART"}, true, false));
+      else
+        monthSet.setSort(new SortDescriptor(new String[]{"UKUPNO"}, true, true));
+      
+      monthSet.last();
+      monthSet.setTableName("MJ");
+      setDataSetAndSums(monthSet, prikaz);
+
+    } else if (!doubleclicked) {
 
       killAllReports();
       addReport("hr.restart.robno.repStatArtDva", "hr.restart.robno.repStatArtDva", "StatArtDva", "Top lista artikala");
@@ -267,7 +476,7 @@ public class ispStatArt extends raPanStats {
 	 "from artikli, doki, stdoki "+dobart+
 	 "where doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok "+
 	 "and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok AND stdoki.cart = artikli.cart "+
-	 " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','INM','INV','IZD','GOT','GRN','OTP') "+
+	 " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','INM','INV','IZD','OTP') "+
 	 exInClude+
 	 ckupca+
 	 pjKupca+
@@ -402,7 +611,7 @@ public class ispStatArt extends raPanStats {
       getJPTV().setDataSetAndSums(reportSet, new String[]{"INAB", "RUC", "POR", "IPRODBP", "IPRODSP"});*/
     } else {
 	  super.firstESC();
-      rcc.setLabelLaF(rcmbPrikaz,false);
+      //rcc.setLabelLaF(rcmbPrikaz,false);
     }
   }
   
@@ -430,7 +639,7 @@ public class ispStatArt extends raPanStats {
 
     rcmbPoCemu.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        setSljed();
+        setSljedDva();
       }
     });
 
@@ -439,7 +648,8 @@ public class ispStatArt extends raPanStats {
   private void setSljed() {
     rcmbPoCemu.setSelectedIndex(0);
     rcc.setLabelLaF(rcmbPoCemu, false);
-    rcc.setLabelLaF(rcmbPrikaz, false);
+    //rcc.setLabelLaF(rcmbPoCemu, false);
+    //rcc.setLabelLaF(rcmbPrikaz, false);
     /*
      * if (fieldSet.getString("PRIKAZ").equalsIgnoreCase("IR")){
      * rcmbSljed.setRaItems(new String[][] { {"Kupac", "CPAR"} , {"Iznos
@@ -450,6 +660,10 @@ public class ispStatArt extends raPanStats {
        rcmbSljed.setRaItems(new String[][]{{"Šifra", "CART"}, {"Naziv", "NAZART"}, {"Kolièina", "KOL"}, {"RuC", "RUC"}, {"RuC %", "PostoRUC"}, {"Vrijednost", "IPRODSP"}});
       fieldSet.setString("SLJED", "CART");
     } else {
+      rcmbSljed.setRaItems(new String[][]{{"Šifra", "CART"}, {"Naziv", "NAZART"}, {"Ukupno " + rcmbPoCemu.getItemAt(rcmbPoCemu.getSelectedIndex()).toString().toLowerCase(), "UKUPNO"}});
+      fieldSet.setString("SLJED", "CART");
+      fieldSet.setString("POCEMU", "INAB");
+      rcc.setLabelLaF(rcmbPoCemu, true);
 //      rcmbSljed.setRaItems(new String[][]{{"Šifra", "CART"}, {"Ukupno " +
 // rcmbPoCemu.getItemAt(rcmbPoCemu.getSelectedIndex()).toString().toLowerCase(),
 // "BRDOK"}});
@@ -458,6 +672,19 @@ public class ispStatArt extends raPanStats {
 //      rcc.setLabelLaF(rcmbPoCemu, true);
     }
     rcmbSljed.setSelectedIndex(0);
+  }
+  
+  private void setSljedDva() {
+    int position;
+    try {
+      position = rcmbSljed.getSelectedIndex();
+    } catch (Exception ex) {
+      position = 0;
+    }
+    rcmbSljed.setRaItems(new String[][]{{"Šifra", "CART"}, {"Naziv", "NAZART"}, {"Ukupno " + rcmbPoCemu.getItemAt(rcmbPoCemu.getSelectedIndex()).toString().toLowerCase(), "UKUPNO"}});
+    try {
+      rcmbSljed.setSelectedIndex(position);
+    } catch (Exception ex) {}
   }
 
 //  private void setSljedDva() {
@@ -521,6 +748,8 @@ public class ispStatArt extends raPanStats {
   }
 
   public void jptv_doubleClick() {
+    if (fieldSet.getString("PRIKAZ").equals("MJ")) return;
+    
     if (!doubleclicked) {
       doubleclicked = true;
       isIspis = false;
