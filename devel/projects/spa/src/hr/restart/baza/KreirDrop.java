@@ -293,7 +293,7 @@ public abstract class KreirDrop {
   	ret.setColumns(cols);
   	return ret;
   }
-
+  
   /**
    * Vraca NOVI QueryDataSet za ovu tablicu, bez WHERE filtera.
    * (SELECT * FROM <table>), sa svim kloniranim kolonama.
@@ -352,6 +352,54 @@ public abstract class KreirDrop {
     return filtered;
   }
 
+  /*  */
+  
+  
+  public QueryDataSet openEmptySet() {
+    return openTempSet("1=0");
+  }
+  
+  public QueryDataSet openTempSet() {
+    return openTempSet("");
+  }
+
+  public QueryDataSet openTempSet(Condition cond) {
+    return openTempSet(cond.toString());
+  }
+  
+  public QueryDataSet openTempSet(String cols, Condition cond) {
+    return openTempSet(cols, cond.toString());
+  }
+  
+  public QueryDataSet openTempSet(String[] cols, Condition cond) {
+    return getTempSet(cols, cond.toString());
+  }
+  
+  
+  public QueryDataSet openTempSet(String filter) {
+    QueryDataSet filtered = new QueryDataSet();
+    createFilteredDataSet(filtered, filter);
+    filtered.open();
+    return filtered;
+  }
+  
+  public QueryDataSet openTempSet(String cols, String filter) {
+    QueryDataSet filtered = new QueryDataSet();
+    String[] cols2; 
+    if (cols.indexOf(',') >= 0) cols2 = new VarStr(cols).splitTrimmed(',');
+    else cols2 = new VarStr(cols).split();
+    createFilteredDataSet(filtered, cols2, filter);
+    filtered.open();
+    return filtered;
+  }
+  
+  public QueryDataSet openTempSet(String[] cols, String filter) {
+    QueryDataSet filtered = new QueryDataSet();
+    createFilteredDataSet(filtered, cols, filter);
+    filtered.open();
+    return filtered;
+  }
+  
   /**
    * Vraca NOVI QueryDataSet za ovu tablicu, bez WHERE filtera.
    * (SELECT * FROM <table>), sa svim kloniranim kolonama.<p>
