@@ -789,7 +789,7 @@
           <Property Name="Model Name">Section Header</Property>
           <Property Name="Name">Section Header2</Property>
           <Property Name="Caption">CN</Property>
-          <Property Name="Force New Page">None</Property>
+          <Property Name="Force New Page">No</Property>
           <Property Name="New Row Or Col">None</Property>
           <Property Name="Keep Together">Yes</Property>
           <Property Name="Visible">Yes</Property>
