@@ -644,18 +644,20 @@ System.out.println("key4del "+ key4del);
   void afterVc() {
 	    getDetailSet().setBigDecimal("IBP", rut.multiValue(getDetailSet().getBigDecimal("VC"),
 	            getDetailSet().getBigDecimal("KOL")));
-	    getDetailSet().setBigDecimal("UPRAB", rut.negateValue(rut.sto, rut.findPostotak(getDetailSet().getBigDecimal("NC"), getDetailSet().getBigDecimal("VC"))));
+	    getDetailSet().setBigDecimal("UPRAB", rut.negateValue(rut.sto, rut.findPostotak(getDetailSet().getBigDecimal("INAB"), getDetailSet().getBigDecimal("IBP"))));
   }
   void afterIvc() {
 	    getDetailSet().setBigDecimal("VC", rut.divideValue(getDetailSet().getBigDecimal("IBP"),
 	            getDetailSet().getBigDecimal("KOL")));
-	    getDetailSet().setBigDecimal("UPRAB", rut.negateValue(rut.sto, rut.findPostotak(getDetailSet().getBigDecimal("NC"), getDetailSet().getBigDecimal("VC"))));
+	    getDetailSet().setBigDecimal("UPRAB", rut.negateValue(rut.sto, rut.findPostotak(getDetailSet().getBigDecimal("INAB"), getDetailSet().getBigDecimal("IBP"))));
 	  }
   void afterAll() {
-	getDetailSet().setBigDecimal("VC", findMxFormula(getDetailSet().getBigDecimal("NC"),
+	getDetailSet().setBigDecimal("IBP", findMxFormula(getDetailSet().getBigDecimal("INAB"),
 	            getDetailSet().getBigDecimal("UPRAB")));
-    getDetailSet().setBigDecimal("IBP", rut.multiValue(getDetailSet().getBigDecimal("VC"),
-            getDetailSet().getBigDecimal("KOL")));
+	getDetailSet().setBigDecimal("VC", rut.divideValue(getDetailSet().getBigDecimal("IBP"),
+        getDetailSet().getBigDecimal("KOL")));
+    /*getDetailSet().setBigDecimal("IBP", rut.multiValue(getDetailSet().getBigDecimal("VC"),
+            getDetailSet().getBigDecimal("KOL")));*/
 	  
   }
   private BigDecimal findMxFormula(BigDecimal osnovica, BigDecimal posto) {
