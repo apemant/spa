@@ -87,6 +87,12 @@ public class repSklad implements sg.com.elixir.reportwriter.datasource.IDataProv
       return "Zadnja prod. cijena bez poreza";
     else if (temp.equals("M"))
       return "Zadnja prod. cijena s porezom";
+    else if (temp.equals("F"))
+      return "Nabavna cijena - metoda FIFO";
+    else if (temp.equals("L"))
+      return "Nabavna cijena - metoda LIFO";
+    else if (temp.equals("H"))
+      return "Nabavna cijena - metoda HIFO";
 
     return "";
   }

@@ -725,7 +725,10 @@ public class Util {
  * @return
  */
   java.math.BigDecimal findZC(com.borland.dx.sql.dataset.QueryDataSet qds) {
-    if (dm.getSklad().getString("VRZAL").equals("N")) {
+    if (dm.getSklad().getString("VRZAL").equals("N") ||
+        dm.getSklad().getString("VRZAL").equals("F") ||
+        dm.getSklad().getString("VRZAL").equals("L") ||
+        dm.getSklad().getString("VRZAL").equals("H")) { /* FLH */
       return qds.getBigDecimal("NC");
     }
     else if (dm.getSklad().getString("VRZAL").equals("V")) {
