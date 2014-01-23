@@ -476,11 +476,12 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
       return false;
     if (vl.isEmpty(jpDetail.jtfMC))
       return false;
-    if (mode == 'N') super.saveDobArt();
+
     if (!dlgSerBrojevi.getdlgSerBrojevi().findSB(jpDetail.rpcart, getDetailSet(), 'U', mode)) {
       return false;
     }
     if (!super.ValidacijaDetail(mode)) return false;
+    if (!super.checkArtCijene()) return false;
     if (rotStavkaNew != null && isTranzit) {
       rotStavkaNew.refresh();
       if (getDetailSet().getBigDecimal("KOL").compareTo(
@@ -509,6 +510,7 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
       }
     }
     zts.prepareSave();
+    if (mode == 'N') super.saveDobArt();
     return true;
   }
   public void AfterSaveDetail(char mode) {
