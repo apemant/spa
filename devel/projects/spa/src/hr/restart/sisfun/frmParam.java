@@ -25,6 +25,7 @@ import hr.restart.swing.JraLabel;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.IntParam;
 import hr.restart.util.JlrNavField;
+import hr.restart.util.ParamHandler;
 import hr.restart.util.PreSelect;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -33,10 +34,18 @@ import hr.restart.util.raMatPodaci;
 import hr.restart.util.raNavAction;
 
 import java.awt.Font;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
@@ -286,6 +295,7 @@ public class frmParam extends raMatPodaci {
     if (sParam.equals("")) return null;
     try {
       dM dm = dM.getDataModule();
+      if (grabber != null) grab(sApl, sParam, defValue, defOpis, locpar);
       
       DataRow param = lookupData.getlookupData().raLookup(dm.getParametri(),
                           new String[] {"APP","PARAM"},new String[] {sApl,sParam});
@@ -317,4 +327,35 @@ public class frmParam extends raMatPodaci {
       return defValue;
     }
   }
+  
+  // trik za punjenje tablice parametara :) - pozvati metodu grab() i onda raditi u programu...
+  // ... a on æe zgrabati sve parametre na koje naiðe i trpati ih sortirane u clipboard, koji se onda moze pastat tamo u ParamHandler
+  public static void grab() {
+    grabber = new TreeSet();
+    area = new JTextArea();
+    ParamHandler.init();
+  }
+  
+  static void grab(String sApl, String sParam, String defValue, String defOpis, boolean locpar) {
+    if (ParamHandler.inst.defined(sApl + "." + sParam)) return;
+    
+    char s = '\"';
+    
+    String line = "{" + s + sApl + "." + sParam + s + ", " + 
+                s + (defValue == null ? "" : defValue) + s + ", " +
+                s + (defOpis == null ? "" : defOpis) + s + ", " +
+                (locpar ? "LOCAL" : "GLOBAL") + ", QUICK, SPEC, " + s + s + "},\n";
+    
+    if (!grabber.add(line)) return;
+    
+    area.selectAll();
+    area.replaceSelection("");
+    for (Iterator i = grabber.iterator(); i.hasNext(); )
+      area.append((String) i.next());
+    area.selectAll();
+    area.cut();
+  }
+
+  private static JTextArea area = null;
+  private static Set grabber = null; 
 }
