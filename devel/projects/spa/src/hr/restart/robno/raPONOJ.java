@@ -93,6 +93,12 @@ public class raPONOJ extends raIzlazTemplate {
         return;
       }
       
+      if (!raUser.getInstance().isSuper() && !ms.getString("CUSER").equals(raUser.getInstance().getUser())) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Samo vlastite ponude se mogu zakljuèati!", 
+            "Zakljuèavanje", JOptionPane.INFORMATION_MESSAGE);
+        return;
+      }
+      
       if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li zakljuèati ponudu?", "Zakljuèivanje", 
           JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
       
