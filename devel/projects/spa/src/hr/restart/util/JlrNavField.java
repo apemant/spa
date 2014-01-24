@@ -531,6 +531,7 @@ public class JlrNavField extends JraTextField {
 	      if (sm == 3) sm = 4;
 	      if (sm == 33) sm = 3;
 	    } else {
+	      if (newSearchMode == -1) return -1;
 	      String param = frmParam.getParam("sisfun","srchmodrplc"+newSearchMode);
 	      if (param!=null) {
 	        sm = Integer.parseInt(param);
