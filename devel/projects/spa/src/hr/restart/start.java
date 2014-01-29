@@ -18,7 +18,9 @@
 package hr.restart;
 import hr.restart.baza.BazaOper;
 import hr.restart.baza.Verinfo;
+import hr.restart.baza.dM;
 import hr.restart.baza.kreator;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.IntParam;
 import hr.restart.util.Util;
@@ -86,6 +88,7 @@ public class start {
     raTB.showTB();
     raTB.showIfShowable();
     raSplashAWT.splashMSG("Priprema ekrana ...");
+    dM.getDataModule().loadModules();
     createMainFrame(2);
     hr.restart.zapod.dlgGetKnjig.changeKnjig(getFlaggedArg("knjig:"),true);
     raSplashAWT.splashMSG("Prièekajte ...");
@@ -625,6 +628,7 @@ System.out.println("no port starting shell");
         raSplashAWT.splashMSG("Provjera parametara...");
         parseURL();
         if (!checkArgs("direct")) hr.restart.util.Util.redirectSystemOut();
+        else frmParam.grab();
         startClient();
         new start();
       } else {
