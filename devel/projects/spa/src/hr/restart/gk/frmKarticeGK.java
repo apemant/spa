@@ -103,6 +103,8 @@ public class frmKarticeGK extends raUpit {
   JraTextField jtfZavDatum = new JraTextField();
 
   static frmKarticeGK fkgk;
+  
+  raTableColumnModifier cpm = new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, dm.getPartneri());
 
   public frmKarticeGK() {
     try {
@@ -603,9 +605,9 @@ System.out.println(queryString);
         /*if (!solo) this.getJPTV().setDataSetAndSums(outSet, new String[] {"ID","IP"});
          * 
         else */
-        this.getJPTV().removeAllTableModifiers();
+        this.getJPTV().removeTableModifier(cpm);
         if (outSet.getColumn("CPAR").getVisible() == 1)
-            getJPTV().addTableModifier(new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, dm.getPartneri()));
+            getJPTV().addTableModifier(cpm);
         this.getJPTV().setDataSetAndSums(outSet, new String[] {"ID","IP"});
         
       } else {
