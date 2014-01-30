@@ -59,7 +59,14 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
 //  zakaii::     sh.TextTEL.defaultAlterer().setVisible(false);
     
     
-    long topNar = sh.LabelNarudzba.defaultAlterer().getTop();
+    sh.defaultAltererSect().getView(sh.LabelNacin_placanja, sh.TextNAZNACPL).moveUp(
+        sh.LabelNacin_placanja.defaultAlterer().getTop() - sh.LabelNarudzba.defaultAlterer().getTop());
+    
+    sh.defaultAltererSect().removeModels(new raReportElement[] {
+        sh.LabelNarudzba, sh.TextBRNARIZ, sh.TextSgetDATNARIZ,
+        sh.LabelIzlazni_dokument, sh.TextBRDOKIZ});
+    
+    /*long topNar = sh.LabelNarudzba.defaultAlterer().getTop();
     long topIzDok = sh.LabelIzlazni_dokument.defaultAlterer().getTop();
     
     sh.defaultAltererSect().getView(sh.LabelNarudzba, sh.LabelR1).moveDown(topIzDok - topNar);
@@ -74,7 +81,7 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
     
     raReportElement textSgetDatug = sh.copyToModify(sh.TextSgetDATNARIZ);
     textSgetDatug.setControlSource("SgetDATUG");
-    textSgetDatug.setTop(topNar);
+    textSgetDatug.setTop(topNar);*/
     
     
     /*if (hr.restart.sisfun.frmParam.getParam("robno","ispisTELFAX_Par","N","Ispis Telefona i faxa partnera na ROT-u u polju za adresu").
@@ -98,6 +105,8 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
       raReportElement ob = sh.LabelObrazac.defaultAlterer();
       ob.setTop(ob.getTop() + isp.getTop() - rac.getTop() - 120);
     }
+    
+    sh.defaultAltererSect().setHeight(sh.defaultAltererSect().getHeight() - 200);
     
     return sh;
 //    sh.LabelNacinplacanja.defaultAlterer().setTop(sh.LabelNacinotpreme.defaultAlterer().getTop());
