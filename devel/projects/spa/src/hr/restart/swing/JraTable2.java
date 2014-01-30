@@ -1456,6 +1456,12 @@ public class JraTable2 extends JTable implements JraTableInterface {
           }
 
         }
+        
+        raHideDataModifier.inst.setValues(table,value,isSelected,hasFocus,row,column,this_component);
+        if (raHideDataModifier.inst.doModify()) {
+          raHideDataModifier.inst.modify();
+          this_component = raHideDataModifier.inst.renderComponent;
+        }
 
       }
 
