@@ -130,6 +130,7 @@ public class SecondChooser extends JraDialog {
     
     private boolean rnlOpis = false;
     private boolean ponOpis = false;
+    private boolean ponDodText = false;
     
     private boolean transOtp = false;
     private boolean transPnbz = false;
@@ -184,6 +185,9 @@ public class SecondChooser extends JraDialog {
             "Prenijeti opis radnog naloga na raèun (D,N)?").equals("D");
         ponOpis = frmParam.getParam("robno", "ponTransOpis", "N",
             "Prenijeti opis ponude na drugi dokument (D,N)?").equals("D");
+        
+        ponDodText = frmParam.getParam("robno", "ponTransDodText", "N",
+           "Prenijeti dodatni tekst sa stavaka ponude na drugi dokument (D,N)?").equals("D");
         
         transOtp = frmParam.getParam("robno", "transBrdokOtp", "D",
             "Prenijeti broj otpremnice na raèun (D,N)").equals("D");
@@ -350,6 +354,9 @@ public class SecondChooser extends JraDialog {
 		
 		
 		rIT.getMasterSet().setString("CNACPL", ZaglavljeSet.getString("CNACPL"));
+		rIT.getMasterSet().setString("CNAC", ZaglavljeSet.getString("CNAC"));
+		rIT.getMasterSet().setString("CNAMJ", ZaglavljeSet.getString("CNAMJ"));
+		rIT.getMasterSet().setString("CFRA", ZaglavljeSet.getString("CFRA"));
 		
         if ((ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("DOS")
         		|| ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("OTP"))
@@ -1003,7 +1010,8 @@ System.out.println(StavkeSet.getInt("CARt"));
               Aus.set(rIT.getDetailSet(), "RINAB", "INAB");
             }
 
-			addVTtext(StavkeSet, keykey);
+			if (ponDodText || !StavkeSet.getString("VRDOK").equals("PON"))
+			  addVTtext(StavkeSet, keykey);
 			uirac = uirac.add(rIT.getDetailSet().getBigDecimal("IPRODSP"));
 			brstavke++;
 			brsid++;
