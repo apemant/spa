@@ -170,6 +170,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 
 	boolean isVTtextzag = false;
 	
+	boolean isAutoFixPor = false;
+	
 	boolean isTranzit = false;
 	
 	boolean isSingleKOL = false;
@@ -792,7 +794,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	raNavAction rnvFixPor = new raNavAction("Popravi ukupni porez",
         raImages.IMGPREFERENCES, java.awt.event.KeyEvent.VK_F8) {
       public void actionPerformed(ActionEvent e) {
-        fixRac();
+        fixRac(false);
       }
 	};
 
@@ -977,6 +979,9 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	    
 	    isMinusAllowed = frmParam.getParam("robno", "allowMinus", "N",
 	        "Dopustiti odlazak u minus na izlazima (D,N)?").equals("D");
+	    
+	    isAutoFixPor = frmParam.getParam("robno", "autoFixPor", "N",
+            "Automatska provjera ukupnog poreza (D,N)?").equals("D");
 	    
 	    minKolCheck = hr.restart.sisfun.frmParam.getParam("robno", "minkol", 
 	        "Provjera minimalne kolièine na stanju (D,N)", "N").equalsIgnoreCase("D");
@@ -1441,9 +1446,18 @@ ST.prn(radninal);
 		try {
 			insideAfterAfter = true;
 			vttextzag = null;
+			if (mode == 'I' && !getMasterSet().getString("CNAMJ").equals(changeNamj)) {
+              boolean nopor = lD.raLocate(dm.getNamjena(), "CNAMJ", getMasterSet().getString("CNAMJ"))
+                                && dm.getNamjena().getString("POREZ").equals("N");
+              boolean noporold = lD.raLocate(dm.getNamjena(), "CNAMJ", changeNamj)
+                                && dm.getNamjena().getString("POREZ").equals("N");
+			  if (nopor != noporold) recalcPor();
+            }
+			
+			
 			// int rbr = getMasterSet().getRow();
-			getMasterSet().refresh();
-			lD.raLocate(getMasterSet(), "BRDOK", String.valueOf(savebrdok));
+			getMasterSet().refetchRow(getMasterSet());
+			// lD.raLocate(getMasterSet(), "BRDOK", String.valueOf(savebrdok));
 			System.out.println("DOK " + getMasterSet().getString("VRDOK") + "-"
 					+ getMasterSet().getInt("BRDOK"));
 			// getMasterSet().goToRow(rbr);
@@ -1498,6 +1512,7 @@ ST.prn(radninal);
     }
       
     int changeCpar;
+    String changeNamj;
 	public void SetFokusMaster(char mode) {
 		SetFocusMasterBefore();
 		// if (MP.panelBasic == null)
@@ -1515,7 +1530,10 @@ ST.prn(radninal);
 		if (mode == 'N') {
 			pressel.copySelValues();
         } else fillDod();
-        if (mode == 'I') changeCpar = getMasterSet().getInt("CPAR");  // ab.f
+        if (mode == 'I') {
+          changeCpar = getMasterSet().getInt("CPAR");  // ab.f
+          changeNamj = getMasterSet().getString("CNAMJ");
+        }
 
 		if (MP.panelBasic != null) {
 			MP.panelBasic.jpgetval.initJP(mode); // Dodao andrej 02-11-2001
@@ -4943,10 +4961,65 @@ System.out.println("findCjenik::else :: "+sql);
        getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
        getMasterSet().saveChanges();
        ValidacijaPrijeIzlazaDetail();
-       raMaster.getJpTableView().fireTableDataChanged();
+       //raMaster.getJpTableView().fireTableDataChanged();
 	}
+	
+	public boolean ValidacijaPrijeIzlazaDetail() {
+	  if (!isAutoFixPor) return true;
+	  fixRac(true);
+	  return true;
+	}
+	
+	void recalcPor() {
+	  QueryDataSet ds = stdoki.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, getMasterSet()));
+	  if (ds.rowCount() == 0) return;
+	  
+	  if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li preraèunati porez na svim stavkama?",
+	      "Promjena poreza", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+	  
+	  boolean nopor = lD.raLocate(dm.getNamjena(), "CNAMJ", getMasterSet().getString("CNAMJ"))
+          && dm.getNamjena().getString("POREZ").equals("N");
+	  
+	  BigDecimal uirac = Aus.zero2;
+      for (ds.first(); ds.inBounds(); ds.next()) {
 
-	private QueryDataSet forallpopust;
+          rKD.stavka.Init();
+          rKD.stavkaold.Init();
+          rKD.setWhat_kind_of_document(ds.getString("VRDOK"));
+          if (nopor) {
+            ds.setBigDecimal("PPOR1", Aus.zero2);
+            ds.setBigDecimal("PPOR2", Aus.zero2);
+            ds.setBigDecimal("PPOR3", Aus.zero2);
+          } else if (lD.raLocate(dm.getArtikli(), "CART", String.valueOf(ds.getInt("CART")))) {
+            if (lD.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"))) {
+              ds.setBigDecimal("PPOR1", dm.getPorezi().getBigDecimal("POR1"));
+              ds.setBigDecimal("PPOR2", dm.getPorezi().getBigDecimal("POR2"));
+              ds.setBigDecimal("PPOR3", dm.getPorezi().getBigDecimal("POR3"));
+              ds.setBigDecimal("UPPOR", dm.getPorezi().getBigDecimal("UKUPOR"));
+            }
+          }
+          
+          lc.TransferFromDB2Class(ds, rKD.stavka);
+          if (isMaloprodajnaKalkulacija) {
+              rKD.MaloprodajnaKalkulacija();
+          } else {
+              rKD.kalkFinancPart();
+          }
+          lc.TransferFromClass2DB(ds, rKD.stavka);
+          uirac = uirac.add(ds.getBigDecimal("IPRODSP"));
+      }
+
+      getMasterSet().setBigDecimal("UIRAC", uirac);
+      nacPlDod();
+      getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+
+      if (raTransaction.saveChangesInTransaction(new QueryDataSet[] {ds, getMasterSet()}))
+          getDetailSet().refresh();
+      
+	  JOptionPane.showMessageDialog(raMaster.getWindow(), "Porez rekalkuliran na svim stavkama.", 
+	      "Promjena poreza", JOptionPane.INFORMATION_MESSAGE);
+	  
+	}
 
 	public void popust4All() {
 
@@ -4956,7 +5029,7 @@ System.out.println("findCjenik::else :: "+sql);
 				+ getMasterSet().getString("GOD") + "' and brdok="
 				+ getMasterSet().getInt("BRDOK");
 
-		forallpopust = hr.restart.util.Util.getNewQueryDataSet(str, true);
+		QueryDataSet forallpopust = hr.restart.util.Util.getNewQueryDataSet(str, true);
 
 		if (forallpopust == null || forallpopust.getRowCount() == 0) {
 
@@ -4989,18 +5062,16 @@ System.out.println("findCjenik::else :: "+sql);
 		getMasterSet().setBigDecimal("UIRAC", uirac);
 		nacPlDod();
 		getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
-		raLocalTransaction rltpopustAllApply = new raLocalTransaction() {
+/*		raLocalTransaction rltpopustAllApply = new raLocalTransaction() {
 			public boolean transaction() throws Exception {
 				raTransaction.saveChanges(forallpopust);
 				raTransaction.saveChanges(getMasterSet());
 				return true;
 			}
 		};
-		// privremeno zmrceno jer grijesi
-		if (rltpopustAllApply.execTransaction()) {
+*/		if (raTransaction.saveChangesInTransaction(new QueryDataSet[] {forallpopust, getMasterSet()}))
 			getDetailSet().refresh();
-		}
-		;
+		
 		afterOKSC();
 	}
 
@@ -5247,15 +5318,15 @@ System.out.println("findCjenik::else :: "+sql);
   public boolean isDosIzd() {
     return false;
   }
-  
-  public void fixRac() {
+    
+  public void fixRac(boolean auto) {
     if (getMasterSet().getRowCount() == 0) return;
     
     if (!checkAccess()) {
-      if (!showUserCheckMsg()) return;
+      if (auto || !showUserCheckMsg()) return;
     }
     
-    refilterDetailSet();
+    if (!auto) refilterDetailSet();
     
     if (getDetailSet().getRowCount() == 0) return;
     
@@ -5263,7 +5334,8 @@ System.out.println("findCjenik::else :: "+sql);
     
     DataSet ds = getDetailSet();
     DataSet art = dm.getArtikli();
-    DataSet por = dm.getPorezi();
+    boolean nopor = lD.raLocate(dm.getNamjena(), "CNAMJ", getMasterSet().getString("CNAMJ"))
+                      && dm.getNamjena().getString("POREZ").equals("N");
     
     HashMap totals = new HashMap();
     
@@ -5272,7 +5344,7 @@ System.out.println("findCjenik::else :: "+sql);
         return;
       PorData pd = (PorData) totals.get(art.getString("CPOR"));
       if (pd == null) 
-        totals.put(art.getString("CPOR"), pd = new PorData());
+        totals.put(art.getString("CPOR"), pd = new PorData(nopor));
       pd.add(ds);
       pd.calc(art.getString("CPOR"));
     }
@@ -5284,7 +5356,7 @@ System.out.println("findCjenik::else :: "+sql);
       err = err.add(pd.por3.subtract(pd.rpor3).abs());
     }
     if (err.signum() == 0) {
-      JOptionPane.showMessageDialog(raMaster.getWindow(), 
+      if (!auto) JOptionPane.showMessageDialog(raMaster.getWindow(), 
           "Nema greške ukupnog poreza na ukupnoj osnovici.", "Poruka",
           JOptionPane.INFORMATION_MESSAGE);
       return;
@@ -5319,8 +5391,14 @@ System.out.println("findCjenik::else :: "+sql);
     public BigDecimal osn, por1, por2, por3, tot;
     public BigDecimal rpor1, rpor2, rpor3;
     public BigDecimal ppor1, ppor2, ppor3;
+    boolean nopor = false;
     public PorData() {
       osn = por1 = por2 = por3 = tot = Aus.zero2;
+    }
+    
+    public PorData(boolean npor) {
+      osn = por1 = por2 = por3 = tot = Aus.zero2;
+      nopor = npor;
     }
     
     public void add(DataSet ds) {
@@ -5334,13 +5412,13 @@ System.out.println("findCjenik::else :: "+sql);
     public void calc(String cpor) {
       DataSet por = dm.getPorezi();
       lD.raLocate(por, "CPOR", cpor);
-      ppor1 = por.getBigDecimal("POR1");
+      ppor1 = nopor ? Aus.zero0 : por.getBigDecimal("POR1");
       rpor1 = osn.multiply(ppor1).movePointLeft(2).
                   setScale(2, BigDecimal.ROUND_HALF_UP);
-      ppor2 = por.getBigDecimal("POR2");
+      ppor2 = nopor ? Aus.zero0 : por.getBigDecimal("POR2");
       rpor2 = osn.multiply(ppor2).movePointLeft(2).
                   setScale(2, BigDecimal.ROUND_HALF_UP);
-      ppor3 = por.getBigDecimal("POR3");
+      ppor3 = nopor ? Aus.zero0 : por.getBigDecimal("POR3");
       rpor3 = osn.multiply(ppor3).movePointLeft(2).
                   setScale(2, BigDecimal.ROUND_HALF_UP);
     }
