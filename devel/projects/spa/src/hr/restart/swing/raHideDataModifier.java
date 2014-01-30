@@ -147,6 +147,8 @@ public class raHideDataModifier extends raTableModifier {
       
       if (!vc.cols.contains(((JraTable2) getTable()).getRealColumnName(getColumn()))) return false;
 
+      if (vc.key == null) return true;
+      
       for (int c = 0; c < vc.key.length; c++)
         if (getDataSet().hasColumn(vc.key[c]) == null) return false;
       if (vc.keyset.contains(getRowKey(vc.key, getRow()))) return true;
