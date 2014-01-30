@@ -18,7 +18,7 @@ public class raWebSync {
   static {
   	if (active)
 			try {
-				impl = (WebSyncInterface) Class.forName("hr.restart.robno.WebSyncImpl_binom").newInstance();
+				impl = (WebSyncInterface) Class.forName("hr.restart.robno.WebSyncImpl_binomNew").newInstance();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				active = false;
