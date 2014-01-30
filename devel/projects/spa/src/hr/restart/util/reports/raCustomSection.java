@@ -215,14 +215,19 @@ public class raCustomSection implements raElixirProperties, raElixirPropertyValu
     ensureSignature(new raReportSection(footer));
   }
   
-  public static void addFisk(raReportSection ps) {
+  public static void addFisk(raReportSection ps, boolean bottom) {
     long max = 0;
     
-    for (int i = ps.model.getModelCount() - 1; i >= 0; i--)
-      if (Aus.getNumber(ps.model.getModel(i).getPropertyValue(TOP)) +
-          Aus.getNumber(ps.model.getModel(i).getPropertyValue(HEIGHT)) > max)
-        max = Aus.getNumber(ps.model.getModel(i).getPropertyValue(TOP)) +
-        Aus.getNumber(ps.model.getModel(i).getPropertyValue(HEIGHT));
+    if (bottom) {
+      for (int i = ps.getModelCount() - 1; i >= 0; i--)
+        if (ps.getModel(i).getTop() + ps.getModel(i).getHeight() > max)
+          max = ps.getModel(i).getTop() + ps.getModel(i).getHeight();
+    } else {
+      for (int i = ps.getModelCount() - 1; i >= 0; i--)
+        ps.getModel(i).setTop(ps.getModel(i).getTop() + 180);
+      ps.setHeight(ps.getHeight() + 180);
+      ps.setVisible(true);      
+    }
         
 /*
     for (int i = 0; i < ps.getModelCount(); i++) {
@@ -242,8 +247,8 @@ public class raCustomSection implements raElixirProperties, raElixirPropertyValu
     fisk.setControlSource("FISKRED");
     fisk.setFont("Lucida Bright");
     fisk.setFontSize(frs);
-    fisk.setTop(max + 40);
-    fisk.setHeight(20);
+    fisk.setTop(bottom ? max + 40 : 0);
+    fisk.setHeight(bottom ? 20 : 180);
     fisk.setLeft(0);
     fisk.setWidth(10480);
     fisk.setProperty(WRAP, YES);
@@ -254,17 +259,17 @@ public class raCustomSection implements raElixirProperties, raElixirPropertyValu
     if (nf != null && nf.length() > 0)
       fisk.setFont(nf);
 
-    ps.setHeight(max + 40);
+    if (bottom) ps.setHeight(max + 40);
     
     //Aus.dumpModel(ps.model, 2);
   }
   
-  public static void addFisk(Class source, IModel sect) {
+  public static void addFisk(Class source, IModel sect, boolean bottom) {
     Method[] meth = source.getMethods();
     //Aus.dumpModel(sect, 0);
     for (int i = 0; i < meth.length; i++)
       if (meth[i].getName().equals("getFISKRED"))
-        addFisk(new raReportSection(sect));
+        addFisk(new raReportSection(sect, true), bottom);
   }  
 
   private static String getTextElement(String text, Class source) {

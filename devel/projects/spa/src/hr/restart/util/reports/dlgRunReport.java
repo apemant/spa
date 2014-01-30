@@ -614,8 +614,6 @@ public class dlgRunReport {
       Class dsource;
       try {
         dsource = rd.isExtended() ? Class.forName(rd.getDataSource()) : rd.getProvider().getClass();
-        raCustomSection.addFisk(dsource, rt.getReportTemplate().getModel(raElixirProperties.SECTION_FOOTER + 1));
-        
       } catch (Exception e) {
         dsource = null;
       }
@@ -643,6 +641,11 @@ public class dlgRunReport {
         for (Iterator i = rd.getCustomSect().iterator(); i.hasNext(); )
           modifySectionIfNeeded(corg, "C", rd.getCustomVrdok(), (String) i.next(), dsource);
       else modifySectionIfNeeded(corg, "C", rd.getCustomVrdok(), "SF0", dsource);
+      
+      if (frmParam.getParam("robno", "fiskFooter", "D", 
+          "Podaci o fiskalnom raèunu u page footer (D,N)").equalsIgnoreCase("D"))
+        raCustomSection.addFisk(dsource, rt.getReportTemplate().getModel(raElixirProperties.PAGE_FOOTER), false);
+      else raCustomSection.addFisk(dsource, rt.getReportTemplate().getModel(raElixirProperties.SECTION_FOOTER + 1), true);
       
     } else ModelFactory.setCurrentReport(rt.getReportTemplate());
     if (!rd.isDisabledSignature())
