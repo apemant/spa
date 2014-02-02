@@ -18,13 +18,17 @@
 package hr.restart.sisfun;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raSifraNaziv;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.text.JTextComponent;
+
+import bsh.EvalError;
 
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -48,8 +52,8 @@ public class frmFunc extends raSifraNaziv {
   JlrNavField jlrNazapp = new JlrNavField();
   JLabel jlApp = new JLabel();
   JraButton jbApp = new JraButton();
-  JraTextField jraSpec = new JlrNavField();
-  JraTextField jraData = new JlrNavField();
+  JraTextField jraSpec = new JraTextField();
+  JraTextField jraData = new JraTextField();
 
   public frmFunc() {
     try {
@@ -80,6 +84,15 @@ public class frmFunc extends raSifraNaziv {
   public boolean Validacija(char mode) {
     if (vl.isEmpty(this.jtfCSIFRA)) return false;
     if (mode == 'N' && vl.notUnique(new JTextComponent[] {jtfCSIFRA, jlrApp})) return false;
+    int p = getRaQueryDataSet().getString("DATA").indexOf(" => ");
+    if (p > 0) {
+      try {
+        new bsh.Interpreter().eval(getRaQueryDataSet().getString("DATA").substring(p + 4));
+      } catch (EvalError e) {
+        JOptionPane.showMessageDialog(this.getWindow(), new raMultiLineMessage(e.getMessage()), "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+    }
     return true;
   }
 
@@ -87,7 +100,7 @@ public class frmFunc extends raSifraNaziv {
     this.setRaDataSet(dm.getFunkcije());
     this.setRaColumnSifra("CFUNC");
     this.setRaColumnNaziv("OPISFUNC");
-    this.setRaText("Program");
+    this.setRaText("Funkcija");
 
     jlApp.setText("Aplikacija");
     jbApp.setText("...");
