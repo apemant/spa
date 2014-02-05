@@ -202,7 +202,7 @@ public class raIzlazSectionFooterLines extends raReportSection {
   
   public raReportElement TextSLOVIMA;
   private String[] TextSLOVIMAProps = new String[] {"SLOVIMA", "", "", "", "", "", "Yes", "", "900",
-     "1800", "8500", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+     "1800", "5240", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
   public raReportElement LabelSlovima_;
   private String[] LabelSlovima_Props = new String[] {"Slovima :", "", "", "1800", "840", "220", "",
      "", "", "", "", "", "Lucida Bright", "8", "", "", "", ""};  
