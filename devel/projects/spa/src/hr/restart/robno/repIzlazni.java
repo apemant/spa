@@ -60,7 +60,7 @@ import com.borland.dx.dataset.Variant;
 public class repIzlazni implements raReportData {
   public static String vanizkuce = frmParam.getParam("robno", "vanizkuce","X",
   "Izbaciti maticni broj i sifru partnera iz okvira sa adresom kupca na racunima (D/N/X)");
-  protected DataSet ds;
+  protected DataSet ds, orig;
   repMemo rm = repMemo.getrepMemo();
   Valid vl = Valid.getValid();
   protected hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
@@ -77,7 +77,7 @@ public class repIzlazni implements raReportData {
   private String specForm, fiskForm;
   
   protected BigDecimal dineto, diprodbp, diprodsp;
-  
+    
   protected raStringCache cache = new raStringCache();
   
   protected String lastDok = null;
@@ -96,6 +96,7 @@ public class repIzlazni implements raReportData {
     if (init) {
       setCurrentDataset();
       ds.open();
+      if (orig != null) orig.open();
 //      sysoutTEST s = new sysoutTEST(false);
 //      s.prn(ds);
       ru.setDataSet(ds);
@@ -143,12 +144,17 @@ public class repIzlazni implements raReportData {
       ds = reportsQuerysCollector.getRQCModule().getValuteQueryDataSet();
     else ds = reportsQuerysCollector.getRQCModule().getQueryDataSet();
     ds.setSort(new SortDescriptor(new String[] {"BRDOK", "RBR"}));
+    if (isReportValute()) {
+      orig = reportsQuerysCollector.getRQCModule().getQueryDataSet();
+      orig.setSort(new SortDescriptor(new String[] {"BRDOK", "RBR"}));
+    } else orig = null;
   }
 
   long tim;
   
   public raReportData getRow(int i) {
     ds.goToRow(i);
+    if (orig != null) orig.goToRow(i);
     String nowDok = getFormatBroj();
     if (lastDok != null && !nowDok.equals(lastDok)) {
       lastDok = nowDok;
@@ -857,13 +863,49 @@ public class repIzlazni implements raReportData {
     return ds.getBigDecimal("INETO").doubleValue();
   }
   
-  public BigDecimal getIPRODBPV() {
+  public double getINETOV() {
+    return orig == null ? getINETO() : orig.getBigDecimal("INETO").doubleValue();
+  }
+  
+  public double getIPRODBPV() {
+    return orig == null ? getIPRODBP() : orig.getBigDecimal("IPRODBP").doubleValue();
+  }
+  
+  public double getUIRABV() {
+    return orig == null ? getUIRAB() : orig.getBigDecimal("UIRAB").doubleValue();
+  }
+  
+  public double getPOR1V() {
+    return orig == null ? getPOR1() : orig.getBigDecimal("POR1").doubleValue();
+  }
+  
+  public double getPOR2V() {
+    return orig == null ? getPOR2() : orig.getBigDecimal("POR2").doubleValue();
+  }
+  
+  public double getPOR3V() {
+    return orig == null ? getPOR3() : orig.getBigDecimal("POR3").doubleValue();
+  }
+  
+  public double getUIUV() {
+    return orig == null ? getUIU() : orig.getBigDecimal("UIU").doubleValue();
+  }
+  
+  public String getDOMNAZ() {
+    return hr.restart.zapod.Tecajevi.getDomOZNVAL();
+  }
+  
+  public String getVALNAZ() {
+    return getOZNVAL();
+  }
+  
+  /*public BigDecimal getIPRODBPV() {
     if (getTECAJ().signum() == 0) 
       return ds.getBigDecimal("IPRODBP");
     return ds.getBigDecimal("IPRODBP").
       multiply(raSaldaKonti.getJedVal(getOZNVAL())).
       divide(getTECAJ(), 2, BigDecimal.ROUND_HALF_UP);
-  }
+  }*/
   
   public double getINETOP() {
 //System.out.println("ds.getBigDecimal(INETO)        "+ds.getBigDecimal("INETO"));
