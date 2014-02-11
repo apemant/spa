@@ -853,6 +853,7 @@ public class ConsoleCreator {
             "hr.restart.baza.Rnus",
             "hr.restart.baza.Distlist","hr.restart.baza.StDistlist",
             "hr.restart.baza.Distart","hr.restart.baza.Distkal","hr.restart.baza.StDistkal",
+            "hr.restart.baza.Radplsifre","hr.restart.baza.JoppdA","hr.restart.baza.JoppdB",
             "hr.restart.baza.VezaFLH"
       };
 }

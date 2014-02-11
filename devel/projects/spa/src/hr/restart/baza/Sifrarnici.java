@@ -99,14 +99,14 @@ public class Sifrarnici extends KreirDrop implements DataModule {
     sifrNAZIV.setCaption("Naziv");
     sifrNAZIV.setColumnName("NAZIV");
     sifrNAZIV.setDataType(com.borland.dx.dataset.Variant.STRING);
-    sifrNAZIV.setPrecision(30);
+    sifrNAZIV.setPrecision(150);
     sifrNAZIV.setTableName("SIFRARNICI");
     sifrNAZIV.setServerColumnName("NAZIV");
     sifrNAZIV.setSqlType(1);
     sifrOPIS.setCaption("Opis");
     sifrOPIS.setColumnName("OPIS");
     sifrOPIS.setDataType(com.borland.dx.dataset.Variant.STRING);
-    sifrOPIS.setPrecision(150);
+    sifrOPIS.setPrecision(500);
     sifrOPIS.setTableName("SIFRARNICI");
     sifrOPIS.setServerColumnName("OPIS");
     sifrOPIS.setSqlType(1);
