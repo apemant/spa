@@ -66,6 +66,11 @@ public class frmRadnicipl extends raMatPodaci {
       vrOdb_action();
     }
   };
+  raNavAction rnvSifre = new raNavAction("Šifre za JOPPD",raImages.IMGALLUP,KeyEvent.VK_F8) {
+    public void actionPerformed(ActionEvent e) {
+     DlgRadplSifre.showDialog(getRaQueryDataSet().getString("CRADNIK"));
+    }
+  };
   private static frmRadnicipl fradnicipl;
   
   public static frmRadnicipl getInstance() {
@@ -160,6 +165,7 @@ public class frmRadnicipl extends raMatPodaci {
     );
 
     this.addOption(rnvIzvProm,4);
+    this.addOption(rnvSifre,4);
     this.setRaDetailPanel(jpDetail);
 
     getJpTableView().setNoTablePanel(new frmRadnicipl.jpNoTableGetRadnici(getJpTableView()));

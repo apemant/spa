@@ -61,6 +61,7 @@ public class frmPL extends startFrame {
   JMenuItem jmiRekDopPor = new JMenuItem();
   JMenu jmObrasciObr = new JMenu();
   JMenuItem jmiRS = new JMenuItem();
+  JMenuItem jmiJOPPD = new JMenuItem();
   JMenuItem jmiVirmani = new JMenuItem();
   JMenuItem jmiBankSpec = new JMenuItem();
   JMenuItem jmiBankSpecA = new JMenuItem();
@@ -306,6 +307,12 @@ public class frmPL extends startFrame {
     jmiRS.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiRS_actionPerformed(e);
+      }
+    });
+    jmiJOPPD.setText("Obrasci za e-poreznu");
+    jmiJOPPD.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiJOPPD_actionPerformed(e);
       }
     });
     jmiVirmani.setText("Virmani / diskete");
@@ -572,6 +579,7 @@ public class frmPL extends startFrame {
     jmObrasciObr.add(jmiVirmani);
     jmObrasciObr.add(jmiBankSpec);
     jmObrasciObr.add(jmiIDObr);
+    jmObrasciObr.add(jmiJOPPD);
     jmArhiva.add(jmiArhiviranje);
     jmArhiva.add(jmiDohArh);
     jmArhiva.add(jmiDelArh);
@@ -728,6 +736,10 @@ public class frmPL extends startFrame {
 
   void jmiRS_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.pl.frmRS",jmiRS.getText());
+  }
+  
+  void jmiJOPPD_actionPerformed(ActionEvent e) {
+    showFrame("hr.restart.sk.frmPDV2", "Obrasci za poreznu upravu");
   }
 
   void jmiVirmani_actionPerformed(ActionEvent e) {

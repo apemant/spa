@@ -27,6 +27,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Odbici;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.Radnicipl;
+import hr.restart.sk.frmPDV2;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -123,7 +124,16 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
     addVar(new raMnemVar("$rsind","Identifikator RS") {
       public String getText() {
         ld.raLocate(dm.getOrgpl(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
-        return dm.getOrgpl().getString("RSIND");        
+        return frmPDV2.getOZNJOPPD(dm.getOrgpl().getTimestamp("DATUMISPL"));
+        /*        return dm.getOrgpl().getString("RSIND");*/        
+      }
+    });
+
+    addVar(new raMnemVar("$joppd","Oznaka JOPPD") {
+      public String getText() {
+        ld.raLocate(dm.getOrgpl(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
+        return frmPDV2.getOZNJOPPD(dm.getOrgpl().getTimestamp("DATUMISPL"));
+        /*        return dm.getOrgpl().getString("RSIND");*/        
       }
     });
     

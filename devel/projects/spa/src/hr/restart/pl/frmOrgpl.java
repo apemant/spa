@@ -59,6 +59,7 @@ public class frmOrgpl extends raMatPodaci {
       datumispl_action();
     }
   };
+
 // konstruktor
   public frmOrgpl() {
     try {
@@ -121,6 +122,11 @@ public class frmOrgpl extends raMatPodaci {
     jpDetail = new jpOrgpl(this);
     this.addOption(rnvVrOdb, 3);
     this.addOption(rnvDatIspl,4);
+    this.addOption(new raNavAction("Šifre za JOPPD",raImages.IMGALLUP,KeyEvent.VK_F11) {
+      public void actionPerformed(ActionEvent e) {
+        DlgRadplSifre.showDialog("#"+getRaQueryDataSet().getString("CORG"));
+      }
+    },7);
     this.setRaDetailPanel(jpDetail);
   }
 

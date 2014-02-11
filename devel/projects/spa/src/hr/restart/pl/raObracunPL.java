@@ -352,6 +352,12 @@ sysoutTEST ST = new sysoutTEST(false);
           BigDecimal doprinosi = raddopr.multiply(propkoef);
 //System.out.println("primanja.setBigDecimal('DOPRINOSI',"+ut.setScale(doprinosi,2)+");");
           primanja.setBigDecimal("DOPRINOSI",ut.setScale(doprinosi,2));
+          if (raParam.getParam(_vrsteprim,2).equals("N")) {//obraèunava se doprinos ali ne porez - treba izbaciti iz bruta
+            addBigDec_kumulrad("BRUTO", primanja.getBigDecimal("BRUTO").negate());
+            addBigDec_kumulrad("NETO", primanja.getBigDecimal("BRUTO").negate());
+            addBigDec_kumulorg("BRUTO", primanja.getBigDecimal("BRUTO").negate());
+            addBigDec_kumulorg("NETO", primanja.getBigDecimal("BRUTO").negate());
+          }
         } else {
           primanja.setBigDecimal("DOPRINOSI",nula);
         }
@@ -690,14 +696,20 @@ sysoutTEST ST = new sysoutTEST(false);
     if (lastSrchdMjVals_cradnik!=null && mjVals != null && _crad.equals(lastSrchdMjVals_cradnik)) {
       return mjVals;
     }
+    String in_crad = "('"+_crad+"'";
+    if (_crad.contains("@")) {//hackchuga samo takva za oj4
+      in_crad = in_crad + ",'"+_crad.substring(0,_crad.indexOf("@"))+"')";
+    } else {
+      in_crad = in_crad + ")";
+    }
     BigDecimal[] ret = new BigDecimal[] {nula,nula,nula,nula,nula,nula,nula,nula,nula};
     String qmjvls = "SELECT sum(kumulradarh.POROSN), sum(kumulradarh.ISKNEOP), "
                   +"sum(kumulradarh.por1), sum(kumulradarh.por2), sum(kumulradarh.por3), sum(kumulradarh.por4), sum(kumulradarh.por5), "
                   +"sum(kumulradarh.bruto),"
                   +"sum(kumulradarh.neto2)"
                   +" FROM kumulradarh,kumulorgarh"
-                  +" WHERE kumulradarh.cradnik = '"+_crad
-                  +"' AND kumulorgarh.godobr = kumulradarh.godobr"
+                  +" WHERE kumulradarh.cradnik in "+in_crad
+                  +" AND kumulorgarh.godobr = kumulradarh.godobr"
                   +" AND kumulorgarh.mjobr = kumulradarh.mjobr"
                   +" AND kumulorgarh.rbrobr = kumulradarh.rbrobr"
                   +" AND kumulradarh.cvro = kumulorgarh.cvro"
@@ -709,6 +721,7 @@ sysoutTEST ST = new sysoutTEST(false);
 //                  +new java.sql.Date(Util.getUtil().getFirstDayOfMonth(datumispl).getTime()).toString()
 //                  +"' AND '"
 //                  +new java.sql.Date(Util.getUtil().getLastDayOfMonth(datumispl).getTime()).toString()+"'";
+//    System.out.println("qmjvls::: "+qmjvls);
     QueryDataSet oldmjsums = Util.getNewQueryDataSet(qmjvls);
     for (int i = 0; i < 9; i++) {
       ret[i] = ut.setScale(oldmjsums.getBigDecimal(i),2);

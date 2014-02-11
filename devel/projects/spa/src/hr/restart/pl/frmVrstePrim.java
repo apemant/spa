@@ -142,6 +142,11 @@ public class frmVrstePrim extends raMatPodaci {
     this.addOption(rnvOsnovice,5);
     this.addOption(rnvIzvPrim,6);
     this.addOption(rnvVrOdb,5);
+    this.addOption(new raNavAction("Šifre za JOPPD",raImages.IMGALLUP,KeyEvent.VK_F11) {
+      public void actionPerformed(ActionEvent e) {
+        DlgRadplSifre.showDialog("P"+getRaQueryDataSet().getShort("CVRP"));
+      }
+    },7);
 
     this.getJpTableView().addTableModifier(
       new raTableColumnModifier("COBR", new String[]{"COBR", "OPIS"}, dm.getNacobr())
