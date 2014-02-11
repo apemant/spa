@@ -221,7 +221,7 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
     /*if (sto.equals("PM")) {*/
       tempSetColumns = new Column[]{(
           Column) dm.getSklad().getColumn("CSKL").clone(), 
-          dm.createStringColumn("NAZSKL", "Naziv prodajnog mjesta", 70), 
+          dm.createStringColumn("NAZSKL", "Naziv prodajnog mjesta", 270), 
           dm.createBigDecimalColumn("INAB", "Nabavni iznos", 2), 
           dm.createBigDecimalColumn("RUC", "Razlika u cijeni", 2), 
           dm.createBigDecimalColumn("PRUC", "% RUC", 2), 
@@ -247,9 +247,9 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
     chartSet = new QueryDataSet();
     Column[] cols;
     if (fin)
-      cols = new Column[]{dm.createStringColumn("CSNS", "Oznaka", 65),dm.createStringColumn("CSKL", "Oznaka", 12), dm.createStringColumn("NAZSKL", "Naziv", 50), dm.createBigDecimalColumn("IPRODBP", "Prodajni iznos bez poreza", 2), dm.createBigDecimalColumn("POR", "Porez", 2), dm.createBigDecimalColumn("IPRODSP", "Prodajni iznos s porezom", 2)};
+      cols = new Column[]{dm.createStringColumn("CSNS", "Oznaka", 65),dm.createStringColumn("CSKL", "Oznaka", 12), dm.createStringColumn("NAZSKL", "Naziv", 250), dm.createBigDecimalColumn("IPRODBP", "Prodajni iznos bez poreza", 2), dm.createBigDecimalColumn("POR", "Porez", 2), dm.createBigDecimalColumn("IPRODSP", "Prodajni iznos s porezom", 2)};
     else
-      cols = new Column[]{dm.createStringColumn("CSNS", "Oznaka", 65),dm.createStringColumn("CSKL", "Oznaka", 12), dm.createStringColumn("NAZSKL", "Naziv", 50), dm.createBigDecimalColumn("INAB", "Nabavni iznos", 2), dm.createBigDecimalColumn("RUC", "Razlika u cijeni", 2), dm.createBigDecimalColumn("PRUC", "% RUC", 2), dm.createBigDecimalColumn("IPRODBP", "Prodajni iznos bez poreza", 2), dm.createBigDecimalColumn("POR", "Porez", 2), dm.createBigDecimalColumn("IPRODSP", "Prodajni iznos s porezom", 2)};
+      cols = new Column[]{dm.createStringColumn("CSNS", "Oznaka", 65),dm.createStringColumn("CSKL", "Oznaka", 12), dm.createStringColumn("NAZSKL", "Naziv", 250), dm.createBigDecimalColumn("INAB", "Nabavni iznos", 2), dm.createBigDecimalColumn("RUC", "Razlika u cijeni", 2), dm.createBigDecimalColumn("PRUC", "% RUC", 2), dm.createBigDecimalColumn("IPRODBP", "Prodajni iznos bez poreza", 2), dm.createBigDecimalColumn("POR", "Porez", 2), dm.createBigDecimalColumn("IPRODSP", "Prodajni iznos s porezom", 2)};
 
     chartSet.setColumns(cols);
     chartSet.open();
@@ -367,7 +367,7 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
 
     cols[0] = (Column) dm.getSklad().getColumn("CSKL").clone(); //dm.createStringColumn("CSKL",
                                                                 // "Šifra",15);
-    cols[1] = dm.createStringColumn("NAZSKL", "Naziv prodajnog mjesta", 70);
+    cols[1] = dm.createStringColumn("NAZSKL", "Naziv prodajnog mjesta", 270);
 
     //    monthCols[0] = dm.createStringColumn("CSKL", "Šifra",15);
     //    monthCols[1] = dm.createStringColumn("NAZSKL", "Naziv prodajnog mjesta",
@@ -443,7 +443,7 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
 
       tmpSet.first();
       chartSet = new QueryDataSet();
-      chartSet.setColumns(new Column[]{dm.createStringColumn("CSNS", "Oznaka", 65), dm.createStringColumn("CSKL", 15), dm.createStringColumn("NAZSKL", 50), dm.createStringColumn("MJESEC", 2), dm.createBigDecimalColumn("IZNOS", 2)});
+      chartSet.setColumns(new Column[]{dm.createStringColumn("CSNS", "Oznaka", 65), dm.createStringColumn("CSKL", 15), dm.createStringColumn("NAZSKL", 250), dm.createStringColumn("MJESEC", 2), dm.createBigDecimalColumn("IZNOS", 2)});
       chartSet.open();
 
       do {
