@@ -1062,7 +1062,7 @@ public class frmArtikli extends raMatPodaci {
     pi = new raPartialIncrementor(jtfCART1);
 //    raDataIntegrity.installFor(this);
     raDataIntegrity di = raDataIntegrity.installFor(this);
-    di.setProtectedColumns(new String[] {"CART1","TIPART","VRART"});
+    di.setProtectedColumns(new String[] {"TIPART","VRART"});
     di.addOtherTable("norme", new String[] {"CARTNOR"});
 //    raDataIntegrity.installFor(this).setProtectedColumns(
 //        new String[] {"CART1","BC","TIPART","VRART"});
