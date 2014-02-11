@@ -45,12 +45,14 @@ import hr.restart.util.raNavAction;
 import hr.restart.util.raNavBar;
 import hr.restart.util.raProcess;
 import hr.restart.util.raTransaction;
+import hr.restart.util.reports.ReportMailDialog;
 import hr.restart.zapod.raKonta;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -96,9 +98,14 @@ public class frmNalozi extends raMasterDetail {
       masovnaObrNaloga_action();
     }
   };
- raNavAction rnvToggleSelect = new raNavAction("Okreni odabir",raImages.IMGALIGNJUSTIFY,KeyEvent.VK_A,KeyEvent.CTRL_MASK) {
+  raNavAction rnvToggleSelect = new raNavAction("Okreni odabir",raImages.IMGALIGNJUSTIFY,KeyEvent.VK_A,KeyEvent.CTRL_MASK) {
     public void actionPerformed(ActionEvent e) {
       toggleSelection();
+    }
+  };
+ raNavAction rnvSendData = new raNavAction("Pošalji",raImages.IMGEXPORT,KeyEvent.VK_S,KeyEvent.CTRL_MASK) {
+    public void actionPerformed(ActionEvent e) {
+      sendData();
     }
   };
 
@@ -184,6 +191,7 @@ public class frmNalozi extends raMasterDetail {
     raMaster.addOption(rnvObrNaloga,5,false);
     raMaster.addOption(rnvObrNalogaMas,6,false);
     raMaster.addOption(rnvToggleSelect,7,false);
+    raMaster.addOption(rnvSendData,8,false);
     setMasterKey(keys);
     setDetailKey(dkeys);
     setNaslovMaster("Nalozi - temeljnice");
@@ -1710,5 +1718,16 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
     }
     if (updateNalog) raTransaction.saveChanges(nalog);
     return changeDatumKnjizenja_ret;
-}
+  }
+  
+  //zove skriptu za pripremu i šalje na zadanu e-mail adresu
+  protected void sendData() {
+    
+    File attachment = GKDataTransfer.serializeData(getMasterSet(), frmParam.getParam("gk", "mode4data", "", "Mod prijenosa podataka mailom iz GK")); // tu zdampaj
+    if (attachment == null) return;
+    String kome = frmParam.getParam("gk", "mail4data", "andrej@rest-art.hr", "email adresa na koju se šalju podaci iz temeljnice");
+    String naslov = "Podaci iz naloga za knjiženje "+getMasterSet().getString("CNALOGA")+" od "+getMasterSet().getTimestamp("DATUMKNJ");
+    String txt = "U privitku ...";
+    ReportMailDialog.sendMail(attachment, ReportMailDialog.showMailDialog(kome, naslov, txt));
+  }
 }
