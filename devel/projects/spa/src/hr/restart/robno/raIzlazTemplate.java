@@ -974,7 +974,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
             "rezkol4Stanje", "O",
             "Kalkulacija stanja kod rezervacije (D/N/O)");
 	    
-	    isDospDatdok = hr.restart.sisfun.frmParam.getParam("robno", "dospDatdok", "D",
+	    isDospDatdok = hr.restart.sisfun.frmParam.getParam("robno", "dospDatdok", "N",
             "Dospjeæe se raèuna od datuma dokumenta (D,N)").equalsIgnoreCase("D");
 	    
 	    isMinusAllowed = frmParam.getParam("robno", "allowMinus", "N",
@@ -2877,7 +2877,8 @@ System.out.println("findCjenik::else :: "+sql);
 
 			// && !MP.panelBasic.jrfCPAR.getText().equals("")) {
 			getMasterSet().setShort("DDOSP", tmpPar.getShort("DOSP"));
-			jtfDVO_focusLost(null);
+			if (isDospDatdok) jtfDATDOK_focusLost(null); 
+			else jtfDVO_focusLost(null);
             cpar = getMasterSet().getInt("CPAR");
 		}
 		changeCPAR();
