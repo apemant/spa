@@ -1483,4 +1483,74 @@ public class raIspisUraIra extends raFrame {
       set.post();
     }
   }
+  
+  public static QueryDataSet cnvpdv2014() {
+    QueryDataSet iset = Aus.q("SELECT * FROM StIzvjPDV WHERE ciz like 'Pod%'");
+    QueryDataSet nset = Aus.q("SELECT * FROM StIzvjPDV WHERE ciz like 'Pdv%'");
+    for (iset.first();iset.inBounds();iset.next()) {
+      nset.insertRow(false);
+      iset.copyTo(nset);
+      String ciz = iset.getString("CIZ");
+      int piz = Integer.parseInt(ciz.substring(3,6));
+      String siz = "";
+      if (ciz.length() > 6) siz=ciz.substring(6);
+      
+      if (piz==302) 
+        piz = 304;
+      else if (piz==306) 
+        piz=314;
+      else if (piz==307) 
+        piz=315;
+      else if (piz==301 || piz==303 || piz==304 || piz==305) {
+         int a = 0;
+         if (piz==301) {
+           a=0;
+         } else if (piz==303) {
+           a=2;
+         } else if (piz==304) {
+           a=4;
+         } else if (piz==305) {
+           a=6;
+         }
+         short ckol = iset.getShort("CKOLONE");
+        switch (ckol) { 
+          case 6:
+            piz = piz+a;
+            break;
+    
+          case 7:
+            piz = piz+a+1;
+            break;
+            
+          case 8:
+            piz = piz+a+2;
+            break;
+           
+          case 13:
+            piz = piz+a+1;
+            break;
+    
+          case 14:
+            piz = piz+a+1;
+            break;
+    
+          case 15:
+            piz = piz+a+2;
+            break;
+    
+          case 16:
+            piz = piz+a+2;
+            break;
+    
+          default:
+            break;
+        }//switch
+         
+      }//if
+  
+      nset.setString("CIZ","Pdv"+piz+siz);
+      nset.post();
+    }//for
+    return nset;
+  }
 }

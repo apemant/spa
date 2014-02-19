@@ -98,15 +98,16 @@ public class frmPDV2 extends raUpitFat {
   JraTextField jraPoctDat = new JraTextField();
   JraTextField jraKrajDat = new JraTextField();
   JraButton jbJOPPD_A = new JraButton();
-  JraComboBox jraObrazac = new JraComboBox(new String[] {"Obrazac PDV","Obrazac PDV-S","Obrazac ZP","Obrazac PDV-K", "Obrazac JOPPD"});
+  JraComboBox jraObrazac = new JraComboBox(new String[] {"Obrazac PDV","Obrazac PDV-S","Obrazac ZP","Obrazac PDV-K", "Obrazac JOPPD", "Obrazac PDV za 2013"});
   XYLayout xYlay = new XYLayout();
   StorageDataSet stds = new StorageDataSet();
   hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
   Util ut = Util.getUtil();
   Valid vl = Valid.getValid();
-  QueryDataSet izvjpdv = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pod%'");
+  QueryDataSet izvjpdv = null;//IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pdv%'");
+  private String _izvjpdv_ciz_prefix = "Pdv";
   QueryDataSet izvjpdv_k = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pok%'");
-  QueryDataSet izvjpdv_k_all = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pod%' or CIZ like 'Pok%'");
+  QueryDataSet izvjpdv_k_all = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pdv%' or CIZ like 'Pod%' or CIZ like 'Pok%'");
   private String opcinarada;
   
   public frmPDV2() {
@@ -207,6 +208,10 @@ public class frmPDV2 extends raUpitFat {
       
     case 4:
       doJOPPD();
+      break;
+      
+    case 5:
+      doPDV13();
       break;
       
     default:
@@ -412,12 +417,12 @@ public class frmPDV2 extends raUpitFat {
   }
   private String getOrovi(String param) {
     //init
-    frmParam.getParam("sk", "PDVSCIZroba","Pod303o","Oznake definicija PDV-a iz kojih se prenosi vrijednost dobara u PDVS");
-    frmParam.getParam("sk", "PDVSCIZusl","Pod304o","Oznake definicija PDV-a iz kojih se prenosi vrijednost usluga u PDVS");
-    frmParam.getParam("sk", "ZPCIZdob","Pod103","Oznake definicija PDV-a iz kojih se prenosi vrijednost dobara u ZP");
-    frmParam.getParam("sk", "ZPCIZdob42","Pod106","Oznake definicija PDV-a iz kojih se prenosi vrijednost dobara 42 i 63 u ZP");
-    frmParam.getParam("sk", "ZPCIZdobTro","Pod107","Oznake definicija PDV-a iz kojih se prenosi vrijednost dobara tro.pos. u ZP");
-    frmParam.getParam("sk", "ZPCIZusl","Pod104","Oznake definicija PDV-a iz kojih se prenosi vrijednost usluga u ZP");
+    frmParam.getParam("sk", "PDVSCIZroba","Pdv305o,Pdv306o,Pdv307o","Oznake definicija PDV-a iz kojih se prenosi vrijednost dobara u PDVS");
+    frmParam.getParam("sk", "PDVSCIZusl","Pdv308o,Pdv309o,Pdv310o","Oznake definicija PDV-a iz kojih se prenosi vrijednost usluga u PDVS");
+    frmParam.getParam("sk", "ZPCIZdob","Pdv103","Oznake definicija PDV-a iz kojih se prenosi vrijednost dobara u ZP");
+    frmParam.getParam("sk", "ZPCIZdob42","Pdv106","Oznake definicija PDV-a iz kojih se prenosi vrijednost dobara 42 i 63 u ZP");
+    frmParam.getParam("sk", "ZPCIZdobTro","Pdv107","Oznake definicija PDV-a iz kojih se prenosi vrijednost dobara tro.pos. u ZP");
+    frmParam.getParam("sk", "ZPCIZusl","Pdv104","Oznake definicija PDV-a iz kojih se prenosi vrijednost usluga u ZP");
     //
     VarStr cond= new VarStr("STIZVJPDV.CIZ in (");
     StringTokenizer cizovi = new StringTokenizer(frmParam.getParam("sk", param), ",");
@@ -473,7 +478,7 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
     //make filters
     HashMap filters = new HashMap();
  
-    QueryDataSet stizvj = StIzvjPDV.getDataModule().getTempSet("CIZ like 'Pod%'");
+    QueryDataSet stizvj = StIzvjPDV.getDataModule().getTempSet("CIZ like '" + _izvjpdv_ciz_prefix + "%'");
     stizvj.open();
     for (stizvj.first(); stizvj.inBounds(); stizvj.next()) {
       HashSet filt = (HashSet)filters.get(stizvj.getString("CIZ"));
@@ -481,7 +486,7 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
       filt.add(new colFilter0107(stizvj));
       filters.put(stizvj.getString("CIZ"), filt);
     }
-    QueryDataSet stizvj3006 = Aus.q("SELECT s.ciz, s.cknjige, s.ckolone, s.uraira, i.parametri FROM StIzvjPDV s, IzvjPDV i WHERE s.ciz = i.ciz and s.CIZ like 'I%' and i.PARAMETRI like 'Pod%'");
+    QueryDataSet stizvj3006 = Aus.q("SELECT s.ciz, s.cknjige, s.ckolone, s.uraira, i.parametri FROM StIzvjPDV s, IzvjPDV i WHERE s.ciz = i.ciz and s.CIZ like 'I%' and i.PARAMETRI like '" + _izvjpdv_ciz_prefix + "%'");
         //StIzvjPDV.getDataModule().getTempSet("CIZ like 'I%' and PARAMETRI like 'Pod%'");
     stizvj3006.open();
     for (stizvj3006.first(); stizvj3006.inBounds(); stizvj3006.next()) {
@@ -556,7 +561,7 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
           if (tok.equals("+") || tok.equals("-")) {
             predznak = tok;
           } else {
-            String poz = "Pod"+tok;
+            String poz = _izvjpdv_ciz_prefix+tok;
             boolean located = lookupData.getlookupData().raLocate(mset, "POZ", poz);
             if (!located) {
               located = lookupData.getlookupData().raLocate(mset, "POZ", poz+"o");
@@ -594,7 +599,8 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
     return setPDV_K;
   }
   private void doPDV_K() {
-    // TODO Auto-generated method stub
+    _izvjpdv_ciz_prefix = "Pod";
+    izvjpdv = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pod%'");
     setPDV_K = new StorageDataSet();
     setPDV_K.addColumn(dM.createStringColumn("POZ","Pozicija",200));
     setPDV_K.addColumn(dM.createBigDecimalColumn("OSN", "Osnovica"));
@@ -634,64 +640,62 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
   public StorageDataSet getSetPDV() {
     return setPDV;
   }
+  
   private void doPDV() {
     try {
-//      Object rPDVD = Class.forName("hr.restart.sk.repPDVDisk").newInstance();
-//      HashMap data = (HashMap)rPDVD.getClass().getMethod("tijeloData", null).invoke(rPDVD, null);
-      setPDV = new StorageDataSet();
-      setPDV.addColumn(dM.createStringColumn("POZ","Pozicija",200));
-      setPDV.addColumn(dM.createBigDecimalColumn("OSN", "Osnovica"));
-      setPDV.addColumn(dM.createBigDecimalColumn("PDV", "PDV"));
-      setPDV.open();
-      //
-      fillsetPDV(setPDV);
-      recalcPDVSet(setPDV, izvjpdv);
-      recalcPDVSet(setPDV, izvjpdv);
-//      for (Iterator iterator = data.keySet().iterator(); iterator.hasNext();) {
-//        String ciz = (String) iterator.next();
-//        String poz;
-//        boolean p = ciz.trim().endsWith("p");
-//        if (p) {
-//          poz = new VarStr(ciz).replaceLast("p", "o").toString();
-//        } else {
-//          poz = ciz;
-//        }
-//        if (!lookupData.getlookupData().raLocate(mset, "POZ", poz)) {
-//          mset.insertRow(false);
-//          mset.setString("POZ", poz);
-//        }
-//        mset.setBigDecimal(p?"PDV":"OSN", (BigDecimal)data.get(ciz));
-//        mset.post();
-//      }
-      //
-      setPDV.setSort(new SortDescriptor(new String[] {"POZ"}));
-      setPDV.setTableName("setPDV");
-      setDataSet(setPDV);
-      getJPTV().removeAllTableModifiers();
-      getJPTV().addTableModifier(
-          new raTableColumnModifier("POZ", new String[] {"CIZ", "OPIS"}, new String[] {"POZ"}, new String[] {"CIZ"}, izvjpdv) {
-            public String formatShared(Variant sh, String colname) {
-              if ("CIZ".equalsIgnoreCase(colname)) {
-                char[] orig = sh.toString().toCharArray();
-                StringBuffer ret = new StringBuffer();
-                for (int i = 0; i < orig.length; i++) {
-                  if (Character.isDigit(orig[i])) ret.append(orig[i]);
-                }
-                return ret.toString();
-              } else {
-                return shared.toString();
-              }
-            }
-      });
-      killAllReports();
+      _izvjpdv_ciz_prefix = "Pdv";
+      izvjpdv = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pdv%'");
+      doPDVcommon();
       addReport("hr.restart.sk.repPDVDisk", "Datoteka PDV za e-poreznu");
       setTitle("Obrazac PDV za period "+raDateUtil.getraDateUtil().dataFormatter(getDatumOd())+" - "+raDateUtil.getraDateUtil().dataFormatter(getDatumDo()));
-//      getJPTV().getColumnsBean().setSaveName("frmPDV2-PDV");
-//      getJPTV().fireTableDataChanged();
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
+  private void doPDV13() {
+    try {
+      _izvjpdv_ciz_prefix = "Pod";
+      izvjpdv = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pod%'");
+      doPDVcommon();
+      addReport("hr.restart.sk.repPDVDisk13", "Datoteka PDV 2013 za e-poreznu");
+      setTitle("Obrazac PDV (2013) za period "+raDateUtil.getraDateUtil().dataFormatter(getDatumOd())+" - "+raDateUtil.getraDateUtil().dataFormatter(getDatumDo()));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  private void doPDVcommon() {
+    setPDV = new StorageDataSet();
+    setPDV.addColumn(dM.createStringColumn("POZ","Pozicija",200));
+    setPDV.addColumn(dM.createBigDecimalColumn("OSN", "Osnovica"));
+    setPDV.addColumn(dM.createBigDecimalColumn("PDV", "PDV"));
+    setPDV.open();
+    //
+    fillsetPDV(setPDV);
+    recalcPDVSet(setPDV, izvjpdv);
+    recalcPDVSet(setPDV, izvjpdv);
+    //
+    setPDV.setSort(new SortDescriptor(new String[] {"POZ"}));
+    setPDV.setTableName("setPDV");
+    setDataSet(setPDV);
+    getJPTV().removeAllTableModifiers();
+    getJPTV().addTableModifier(
+        new raTableColumnModifier("POZ", new String[] {"CIZ", "OPIS"}, new String[] {"POZ"}, new String[] {"CIZ"}, izvjpdv) {
+          public String formatShared(Variant sh, String colname) {
+            if ("CIZ".equalsIgnoreCase(colname)) {
+              char[] orig = sh.toString().toCharArray();
+              StringBuffer ret = new StringBuffer();
+              for (int i = 0; i < orig.length; i++) {
+                if (Character.isDigit(orig[i])) ret.append(orig[i]);
+              }
+              return ret.toString();
+            } else {
+              return shared.toString();
+            }
+          }
+    });
+    killAllReports();
+  }
+  
   private static frmPDV2 _this;
   public static frmPDV2 getInstance() {
     return _this;
@@ -782,6 +786,10 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
       updJOPPD();
       break;
       
+    case 5:
+      updPDV();
+      break;
+            
     default:
       break;
     }
