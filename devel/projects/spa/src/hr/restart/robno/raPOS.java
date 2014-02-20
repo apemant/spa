@@ -293,10 +293,10 @@ public class raPOS extends raIzlazTemplate  {
     	}
     };
     pj.setRaItems(new String[][] {
-    		{"Robna kuæa \"Vesna\"", "1"},
+    		{"Robna kuæa \"Vesna I\"", "1"},
     		{"Robna kuæa \"Tena\"", "2"},
     		{"Robna kuæa \"Pierre\"", "3"},
-    		{"Robna kuæa \"Tena\" - higijena", "5"}
+    		{"Robna kuæa \"Vesna II\"", "4"}
     });
     dat.setHorizontalAlignment(JLabel.CENTER);
     new raDateMask(dat);
@@ -646,7 +646,7 @@ public class raPOS extends raIzlazTemplate  {
 		QueryDataSet rt = Rate.getDataModule().getTempSet("1=0");
         rt.open();
 		
-		QueryDataSet sta = Stanje.getDataModule().getTempSet(csklCond + " and god='" + 
+		QueryDataSet sta = Stanje.getDataModule().getTempSet("cskl like '" + oldpj + "%' and god='" + 
 				Valid.getValid().findYear(tds.getTimestamp("DATDOK")) + "'");
 		sta.open();
 		
@@ -813,8 +813,9 @@ public class raPOS extends raIzlazTemplate  {
   }
   
   static StorageDataSet getArtikliSet(Condition cond) {
+    String status = vhack ? "m.status" : "m.cnacpl as status";
     VarStr q = new VarStr(
-        "SELECT m.cskl, m.brdok, m.cnacpl as status, d.cart, d.cart1, d.bc, d.jm, d.nazart, " +
+        "SELECT m.cskl, m.brdok, " + status + ", d.cart, d.cart1, d.bc, d.jm, d.nazart, " +
         "d.kol, d.rezkol, d.ipopust1+d.ipopust2 as uirab, " +
         "(d.ipopust1+d.ipopust2)/d.ukupno*100 as uprab, " +
         "(d.iznos-d.por1-d.por2-d.por3)/d.kol as fc, " +
@@ -836,7 +837,7 @@ public class raPOS extends raIzlazTemplate  {
         "IPRODSP", "PPOR1", "PPOR2", "PPOR3", "STATUS"};
     String[] sumc = {"KOL", "UIRAB", "INETO", "IPRODBP", 
           "POR1", "POR2", "POR3", "IPRODSP"};
-    StorageDataSet inter = stdoki.getDataModule().getScopedSet(cols);       
+    StorageDataSet inter = stdoki.getDataModule().getScopedSet(cols);     
     hr.restart.util.Util.fillReadonlyData(inter, q.toString());
     if (!vhack && rep) {
       for (inter.first(); inter.inBounds(); inter.next())
@@ -859,7 +860,7 @@ public class raPOS extends raIzlazTemplate  {
       		inter.getInt("CART") != cart || 
           !inter.getString("REZKOL").equals(rezkol) ||
           inter.getBigDecimal("UPRAB").compareTo(uprab) != 0 ||
-          (rep && !inter.getString("STATUS").equals(stat) && !vhack)) {
+          (rep && !vhack && !inter.getString("STATUS").equals(stat))) {
         group.insertRow(false);
         dM.copyColumns(inter, group, cols);
         cskl = inter.getString("CSKL");
