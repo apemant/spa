@@ -390,11 +390,11 @@ public class raIspisUraIra extends raFrame {
     cols.add(dM.createBigDecimalColumn("OSTALO", "Ostalo"));
     if (ui.equals("U")) {
       cols.add(dM.createBigDecimalColumn("OCHECK5", "Greška 5% poreza"));
-      cols.add(dM.createBigDecimalColumn("OCHECK10", "Greška 10% poreza"));
+      cols.add(dM.createBigDecimalColumn("OCHECK10", "Greška 13% poreza"));
       cols.add(dM.createBigDecimalColumn("OCHECK25", "Greška 25% poreza"));
     } else {
       cols.add(dM.createBigDecimalColumn("OCHECK5", "Greška 5% poreza"));
-      cols.add(dM.createBigDecimalColumn("OCHECK10", "Greška 10% poreza"));
+      cols.add(dM.createBigDecimalColumn("OCHECK10", "Greška 13% poreza"));
       cols.add(dM.createBigDecimalColumn("OCHECK25", "Greška 25% poreza"));
     }
     cols.add(dM.createBigDecimalColumn("SALDO", "Greška zbroja"));
@@ -438,7 +438,7 @@ public class raIspisUraIra extends raFrame {
   
   private void findErrors(boolean ulaz) {
     BigDecimal x5 = new BigDecimal("0.05");
-    BigDecimal x10 = new BigDecimal("0.10");
+    BigDecimal x10 = new BigDecimal("0.13");
     BigDecimal x25 = new BigDecimal("0.25");
     boolean nem = "D".equalsIgnoreCase(frmParam.getParam("sk", 
         "checkNemoze", "N", "Uraèunati kolonu ne može se odbiti u provjeru (D,N)"));
