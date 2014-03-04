@@ -374,7 +374,11 @@ public class raSectionHeader0TF extends raReportSection {
     String r1 = hr.restart.sisfun.frmParam.getParam("robno", "izlazObr"+knjig,
         "R-1", "Vrsta obrasca ispisa raèuna za knjigovodstvo "+knjig);
     LabelR1.setCaption(r1);
-    if (r1.length() == 0) LabelObrazac.setCaption("");
+    if (r1.length() == 0) { 
+      LabelObrazac.setCaption("");
+      LabelObrazac.setTop(2000);
+      LabelR1.setTop(2000);
+    }
     
     if (frmParam.getParam("robno", "ispisPJ", "D", "Ispis poslovne jedinice na ROT-u " +
             "(D-u adresi, I-kao isporuka, O-na oba mjesta, N-bez P.J.)").equalsIgnoreCase("I") ||
