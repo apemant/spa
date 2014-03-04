@@ -43,10 +43,10 @@ public class frmAllKpr {
         }
     };
     pj.setRaItems(new String[][] {
-            {"Robna kuæa \"Vesna\"", "1"},
+            {"Robna kuæa \"Vesna I\"", "1"},
             {"Robna kuæa \"Tena\"", "2"},
             {"Robna kuæa \"Pierre\"", "3"},
-            {"Robna kuæa \"Tena\" - higijena", "5"}
+            {"Robna kuæa \"Vesna II\"", "4"}
     });
     dat.setHorizontalAlignment(JLabel.CENTER);
     new raDateMask(dat);
