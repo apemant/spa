@@ -1010,7 +1010,7 @@ System.out.println(StavkeSet.getInt("CARt"));
               Aus.set(rIT.getDetailSet(), "RINAB", "INAB");
             }
 
-			if (ponDodText || !StavkeSet.getString("VRDOK").equals("PON"))
+			if (ponDodText || !StavkeSet.getString("VRDOK").equals("PON") || rIT.getDetailSet().getString("VRDOK").equals("PON"))
 			  addVTtext(StavkeSet, keykey);
 			uirac = uirac.add(rIT.getDetailSet().getBigDecimal("IPRODSP"));
 			brstavke++;
