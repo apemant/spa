@@ -64,7 +64,7 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
     
     sh.defaultAltererSect().removeModels(new raReportElement[] {
         sh.LabelNarudzba, sh.TextBRNARIZ, sh.TextSgetDATNARIZ,
-        sh.LabelIzlazni_dokument, sh.TextBRDOKIZ});
+        sh.LabelIzlazni_dokument, sh.TextBRDOKIZ, sh.TextLABDOD, sh.TextTEXTDOD});
     
     /*long topNar = sh.LabelNarudzba.defaultAlterer().getTop();
     long topIzDok = sh.LabelIzlazni_dokument.defaultAlterer().getTop();
