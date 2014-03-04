@@ -139,14 +139,14 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
     System.out.println("updating all "+ ds.rowCount());
     for (ds.first(); ds.inBounds(); ds.next()) {
       if (cart != ds.getInt("CART")) {
-        if (cart != -99) updateStanje(Integer.toString(ds.getInt("CART")), kol.intValue());
+        if (cart != -99) updateStanje(Integer.toString(cart), kol.intValue());
         cart = ds.getInt("CART");
         kol = Aus.zero3;
       }
       kol = kol.add(ds.getBigDecimal("KOL"));
       //updateStanje(Integer.toString(ds.getInt("CART")), ds.getBigDecimal("KOL").intValue());
     }
-    if (cart != -99) updateStanje(Integer.toString(ds.getInt("CART")), kol.intValue());
+    if (cart != -99) updateStanje(Integer.toString(cart), kol.intValue());
   }
   
   public void updateStanje(String cart, int count) {
