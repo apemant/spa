@@ -7,6 +7,7 @@ import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
 
 import java.io.File;
+import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 
@@ -81,6 +82,12 @@ public class GKDataTransfer {
             }
           } else {
             racuni.setString("VRSTA", "UR");
+          }
+          //micanje godine iz broja
+          StringTokenizer brtok = new StringTokenizer(racuni.getString("BROJ"),"-");
+          if (brtok.countTokens() == 4) {
+            String broj = brtok.nextToken()+"-"+brtok.nextToken()+"-"+brtok.nextToken();
+            racuni.setString("BROJ", broj);
           }
         }
         String[] cols = new String[] {"VRSTA","KUPAC","OIB","BROJ","DATUM","IZNOS","OSNOVICA","PDV","STOPA","DATDOSP"};
