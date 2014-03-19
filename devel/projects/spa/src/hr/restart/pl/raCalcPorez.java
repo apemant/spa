@@ -202,12 +202,19 @@ public class raCalcPorez {
       } else {
         log.debug("---- 35 ili 45% ");
         log.debug("el 1 if 1 el");
-        losnovica = neto2.add(lodbitak.negate()).add(
-//        lporminpl.multiply(l15.multiply(new BigDecimal("2.00")).add(l20.multiply(new BigDecimal("2.50"))).add(l35.multiply(new BigDecimal("4.50")).negate()))
-        lporminpl.multiply(l15.multiply(new BigDecimal("2.00")).add(l20.multiply(new BigDecimal("3.00"))).add(l35.multiply(new BigDecimal("5.00")).negate()))
-        .multiply(jedan.add(lpostprirez))
-        ).divide(jedan.add(l35.multiply(jedan.add(lpostprirez)).negate())
-        ,BigDecimal.ROUND_HALF_UP);
+////        lporminpl.multiply(l15.multiply(new BigDecimal("2.00")).add(l20.multiply(new BigDecimal("2.50"))).add(l35.multiply(new BigDecimal("4.50")).negate()))
+//        losnovica = neto2.add(lodbitak.negate())
+//            .add(lporminpl.multiply(l15.multiply(new BigDecimal("1.00")).add(l20.multiply(new BigDecimal("3.00"))).add(l35.multiply(new BigDecimal("5.00")).negate()))
+//        .multiply(jedan.add(lpostprirez))
+//        ).divide(jedan.add(l35.multiply(jedan.add(lpostprirez)).negate())
+//        ,BigDecimal.ROUND_HALF_UP);
+        losnovica = neto2.subtract(lodbitak)
+            .add(lporminpl.multiply(
+                             new BigDecimal("1.00").add(lpostprirez)
+                           ).multiply(
+                               l15.add(l20.multiply(new BigDecimal("3.00"))).subtract(l35.multiply(new BigDecimal("4.00")))
+                             )
+                ).divide(new BigDecimal("1.00").subtract(l35).subtract(l35.multiply(lpostprirez)), BigDecimal.ROUND_HALF_UP);
         log.debug("losnovica = "+losnovica);
         losn15=lporminpl_2;
         losn25=lporminpl_5.add(lporminpl_2.negate());
