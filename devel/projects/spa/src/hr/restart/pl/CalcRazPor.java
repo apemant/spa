@@ -125,7 +125,11 @@ public class CalcRazPor {
   private void calc(String cradnik, String corg) {
     //get data
     String inqrange = raPlObrRange.getInQueryIsp(_godina,1,_godina,12,"");
-    QueryDataSet raddata = Kumulradarh.getDataModule().getTempSet(Condition.equal("CRADNIK",cradnik)+" and "+inqrange);
+    Condition condcradnik = Condition.equal("CRADNIK",cradnik);
+    if (cradnik.contains("@")) {//hackchuga samo takva za oj4
+      condcradnik = Condition.in("CRADNIK", new String[] {cradnik,cradnik.substring(0,cradnik.indexOf("@"))});
+    }
+    QueryDataSet raddata = Kumulradarh.getDataModule().getTempSet(condcradnik+" and "+inqrange);
     if (log.isDebugEnabled()) {
       log.debug(raddata.getQuery().getQueryString());
     }
@@ -147,7 +151,7 @@ public class CalcRazPor {
           orgdata.post();
         }
       }
-    StorageDataSet kumrad = Kumulrad.getDataModule().getTempSet(Condition.equal("CRADNIK",cradnik));
+    StorageDataSet kumrad = Kumulrad.getDataModule().getTempSet(condcradnik);
     kumrad.open();
     //get values
     Kumulrad.getDataModule().getQueryDataSet().open();
