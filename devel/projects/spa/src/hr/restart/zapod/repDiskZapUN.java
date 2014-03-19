@@ -33,6 +33,7 @@ public class repDiskZapUN extends repDisk {
   hr.restart.baza.dM dm;
   Valid vl;
   public String fileName="";
+  private String vrstaNalogaUDatoteci = "1";
 
   public repDiskZapUN() {
     super(1000);
@@ -102,12 +103,26 @@ public class repDiskZapUN extends repDisk {
     String param = hr.restart.sisfun.frmParam.getParam("zapod", "znoIzdok","   ");
     if (param.length()<3) param="   ";
     sb.replace(0, 7, datumParser(datumpodnosenja,2));
-    sb.replace(8, 8, "1"); //nacionalna plaæanja !!!HC!!!
+    sb.replace(8, 8, getVrstaNalogaUDatoteci()); //1 - nacionalna plaæanja 4 - plaæe i ostala redovna primanja!!!HC!!!
     sb.replace(9, 11, param);
     sb.replace(997, 997+3, "300");// TIP SLOGA
     return new String(sb);
   }
 
+  public String getVrstaNalogaUDatoteci() {
+    return vrstaNalogaUDatoteci ;
+  }
+  /**
+   *  Vrsta naloga u datoteci
+   * 1 nacionalna plaæanja u HRK
+   * 2 meðunarodna plaæanja u valuti HRK ili stranoj valuti
+   * 3 nacionalna plaæanja u stranoj valuti
+   * 4 plaæe, ostala redovna i povremena primanja
+   * @param _vrstaNalogaUDatoteci
+   */
+  public void setVrstaNalogaUDatoteci(String _vrstaNalogaUDatoteci) {
+    vrstaNalogaUDatoteci = _vrstaNalogaUDatoteci;
+  }
   private String datumParser(String datum, int i)
   {
     if(i==0) //DDMMGG
