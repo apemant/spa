@@ -140,6 +140,8 @@ public class SecondChooser extends JraDialog {
 
 	private boolean isMultipleDocs = false;
 	
+	private boolean isDospDatdok = false;
+	
 	private boolean checkCskl = false;
 	
 	private boolean allowMinus = false;
@@ -195,6 +197,9 @@ public class SecondChooser extends JraDialog {
         transPnbz = frmParam.getParam("robno", "transPoziv", "D",
         "Prenijeti poziv na broj s ponude na raèun (D,N)").equals("D");
         
+        isDospDatdok = hr.restart.sisfun.frmParam.getParam("robno", "dospDatdok", "N",
+            "Dospjeæe se raèuna od datuma dokumenta (D,N)").equalsIgnoreCase("D");
+        
         copySkladParam = frmParam.getParam("robno", "copySkladPrice", "N",
              "Prepisati skladišne cijene kod prijenosa (D,N)").equals("D");
         
@@ -247,6 +252,14 @@ public class SecondChooser extends JraDialog {
 	}
     
     private void fixDosp() {
+      if (rIT.getMasterSet().getString("VRDOK").equals("RAC") && frmParam.getParam("robno", "noDospRac", "N",
+          "Ignorirati dane dospjeæa za RAC (D,N)").equalsIgnoreCase("D")) {
+        rIT.getMasterSet().setShort("DDOSP", (short) 0);
+        if (isDospDatdok)  rIT.jtfDATDOK_focusLost(null); 
+        else rIT.jtfDVO_focusLost(null);
+        return;
+      }
+      
       if (!rIT.getMasterSet().isNull("CPAR") && rIT.getMasterSet().getInt("CPAR") > 0 &&
           (rIT.getMasterSet().isNull("DATDOSP") || 
              raDateUtil.getraDateUtil().DateDifference(
@@ -258,7 +271,8 @@ public class SecondChooser extends JraDialog {
         if (tmpPar.rowCount() > 0) {
           // && !MP.panelBasic.jrfCPAR.getText().equals("")) {
           rIT.getMasterSet().setShort("DDOSP", tmpPar.getShort("DOSP"));
-          rIT.jtfDVO_focusLost(null);
+          if (isDospDatdok)  rIT.jtfDATDOK_focusLost(null); 
+          else rIT.jtfDVO_focusLost(null);
         }
       }
     }
@@ -1853,12 +1867,12 @@ System.out.println(StavkeSet.getInt("CARt"));
 			polja_za_kopiranje[i] = (String) al.get(i);
 		}
 		dM.copyColumns(source, dest, polja_za_kopiranje);
-		if (source.hasColumn("CUSER") != null) {
+		/*if (source.hasColumn("CUSER") != null) {
 			System.out.println("USER "
 					+ hr.restart.sisfun.raUser.getInstance().getUser());
 			source.setString("CUSER", hr.restart.sisfun.raUser.getInstance()
 					.getUser());
-		}
+		}*/
 
 		hm = null;
 		al = null;
