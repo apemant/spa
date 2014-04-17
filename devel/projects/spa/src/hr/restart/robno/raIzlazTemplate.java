@@ -88,6 +88,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	public boolean isMaloprodajnaKalkulacija = false;
 	
 	public boolean isPopustMC = false;
+	public boolean isAllowArtChange = false;
+	public boolean isAutoUcesce = false;
 	
 	hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
 
@@ -582,8 +584,13 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         }
         
          int count = 0;
-         for (int i = 0; i < brdoks.length; i++) {
-           if (!lD.raLocate(ms, "BRDOK", brdoks[i].toString()) || ms.getString("FOK").equals("D")) continue;
+         for (int i = 0; i < brdoks.length; i++) {                      
+           if (!lD.raLocate(ms, "BRDOK", brdoks[i].toString())) continue;
+           
+           DataSet tms = doki.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey,  ms));
+           tms.open();           
+           if (tms.getString("FOK").equals("D")) continue;
+           
            String cOpis = presBlag.getSeqOpis(ms);
            getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
            getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
@@ -650,7 +657,10 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         return;
       }
       
-      if (ms.getString("FOK").equals("D")) {
+      DataSet tms = doki.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey,  ms));
+      tms.open();
+      
+      if (tms.getString("FOK").equals("D")) {
         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument je veæ zakljuèan!", "Greška", JOptionPane.ERROR_MESSAGE);
         return;
       }
@@ -949,6 +959,12 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	               dm.getOrgstruktura().getString("NAZIV");
 	       }
 	    }
+	    
+	    isAllowArtChange = frmParam.getParam("robno", "allowCartChange", "D",
+	          "Dopustiti promjenu artikla na ponudama (D,N)").equalsIgnoreCase("D");
+	    
+	    isAutoUcesce = frmParam.getParam("robno", "autoUcesce", "N",
+            "Dodati automatski uèešæe kao plaæanje raèuna u mini-saldak (D,N)").equalsIgnoreCase("D");
 	    
 	    defcrab = hr.restart.sisfun.frmParam.getParam("robno", "defcrab", "1",
             "Predefinirana šifra rabata stavke");
@@ -1313,6 +1329,32 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		}
 		if (mode != 'B') 
 			SanityCheck.basicDoki(getMasterSet());
+		if (mode != 'B' && isAutoUcesce) {
+		  getMasterSet().setBigDecimal("PLATITI",  getMasterSet().getBigDecimal("UIU"));
+		  
+		  String ikey = raControlDocs.getKey(getMasterSet(), "doki");
+          QueryDataSet upls = UplRobno.getDataModule().getTempSet(Condition.equal("CDOC", ikey).and(Condition.equal("RBR", (short) 1)));
+          upls.open();
+          if (upls.rowCount() > 0) {
+            upls.setBigDecimal("IZNOS", getMasterSet().getBigDecimal("UIU"));
+            upls.setTimestamp("DATUM", getMasterSet().getTimestamp("DATDOK"));
+          } else if (getMasterSet().getBigDecimal("UIU").signum() != 0) {
+            upls.insertRow(false);
+            upls.setShort("RBR", (short) 1);
+            upls.setString("CDOC", ikey);
+            upls.setBigDecimal("IZNOS", getMasterSet().getBigDecimal("UIU"));
+            upls.setTimestamp("DATUM", getMasterSet().getTimestamp("DATDOK"));
+            upls.setString("NAP", "uèešæe");
+            upls.post();
+          }
+          if (upls.rowCount() > 0)
+            raTransaction.saveChanges(upls);
+          
+          upls = UplRobno.getDataModule().getTempSet(Condition.equal("CDOC", ikey));
+          upls.open();
+          
+          getMasterSet().setBigDecimal("PLATITI", Aus.sum("IZNOS", upls));		  
+		}
 		saveDod(mode);
 		return true;
 	}
@@ -1400,7 +1442,14 @@ ST.prn(radninal);
 				raTransaction.saveChanges(dm.getVTText());
 				raMaster.markChange(dm.getVTText());
 			}
-
+			
+			try {
+			  val.runSQL("DELETE FROM uplrobno WHERE " + Condition.equal("CDOC", key4del));
+            } catch (Exception ex) {
+              ex.printStackTrace();
+              return false;
+            }
+			
 			try {
 				util.delSeqCheck(srcString, true, delBRDOK); // / transakcija
 			} catch (Exception ex) {
@@ -1821,6 +1870,7 @@ ST.prn(radninal);
 		DP.rpcart.enableNaziv();
 		isRabatCallBefore = false;
 		isZavtrCallBefore = false;
+		restarted = false;
 		if (mode == 'I') {
 			DP.rpcart.findStanjeUnconditional();
 			focusOffOn(mode == 'N');
@@ -2138,9 +2188,10 @@ ST.prn(radninal);
 			  if (TD.isDocFinanc(what_kind_of_dokument)) {
     			  Aus.sub(getMasterSet(), "UIRAC", tmpIPRODSP);
     			  nacPlDod();
-    			  getMasterSet().setBigDecimal("UIU", getMasterSet().getBigDecimal("UIRAC").multiply(vcdec).
+    			  if (vcdec.signum() != 0)
+    			    getMasterSet().setBigDecimal("UIU", getMasterSet().getBigDecimal("UIRAC").multiply(vcdec).
     			  		movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
-    				raTransaction.saveChanges(getMasterSet());
+    			  raTransaction.saveChanges(getMasterSet());
 			  } else if (TD.isDocSklad(what_kind_of_dokument)) {
 			    Aus.sub(getMasterSet(), "UIRAC", tmpIRAZ);
                 raTransaction.saveChanges(getMasterSet());
@@ -2295,7 +2346,8 @@ ST.prn(radninal);
 		    Aus.addSub(getMasterSet(), "UIRAC",
 		        getDetailSet(), "IPRODSP", tmpIPRODSP);
 		    nacPlDod();
-		    getMasterSet().setBigDecimal("UIU", getMasterSet().getBigDecimal("UIRAC").multiply(vcdec).
+		    if (vcdec.signum() != 0)
+		      getMasterSet().setBigDecimal("UIU", getMasterSet().getBigDecimal("UIRAC").multiply(vcdec).
 			  		movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
 		    raTransaction.saveChanges(getMasterSet());
 		  } else if (TD.isDocSklad(what_kind_of_dokument)) {
@@ -2419,10 +2471,18 @@ ST.prn(radninal);
 	public boolean ValDPEscapeDetail(char mode) {
 
 		vttext = null;
-		if (raDetail.getMode() == 'N') {
+		System.out.println("valdp");
+		System.out.println(isAllowArtChange);
+		System.out.println(what_kind_of_dokument);
+		System.out.println(rKD.stavkaold.rezkol);
+		System.out.println(getDetailSet().getString("REZKOL"));
+		
+		if (raDetail.getMode() == 'N' || (isAllowArtChange && what_kind_of_dokument.equals("PON") &&
+		      !rKD.stavkaold.rezkol.equalsIgnoreCase("D") && !getDetailSet().getString("REZKOL").equalsIgnoreCase("D"))) {
 			if (this.DP.rpcart.getCART().trim().equals("")) {
 				return true;
 			} else {
+			  if (raDetail.getMode() != 'N') restarted = true;
 				ClearAll();
 				// rki.Clean();
 				setupRabat();
@@ -2876,7 +2936,10 @@ System.out.println("findCjenik::else :: "+sql);
 			tmpPar.open();
 
 			// && !MP.panelBasic.jrfCPAR.getText().equals("")) {
-			getMasterSet().setShort("DDOSP", tmpPar.getShort("DOSP"));
+			if (what_kind_of_dokument.equals("RAC") && frmParam.getParam("robno", "noDospRac", "N",
+			    "Ignorirati dane dospjeæa za RAC (D,N)").equalsIgnoreCase("D"))
+			  getMasterSet().setShort("DDOSP", (short) 0);  
+			else getMasterSet().setShort("DDOSP", tmpPar.getShort("DOSP"));
 			if (isDospDatdok) jtfDATDOK_focusLost(null); 
 			else jtfDVO_focusLost(null);
             cpar = getMasterSet().getInt("CPAR");
@@ -3624,9 +3687,10 @@ System.out.println("findCjenik::else :: "+sql);
 	 * u
 	 */
 
+	private boolean restarted = false;
 	public void findCStanje() {
 
-		if (raDetail.getMode() == 'N'
+		if ((raDetail.getMode() == 'N' || restarted)
 				&& !DP.rpcart.jrfCART.getText().equals("") && !isEndedCancel) {
 			// ///// zbog kolicine u novom nacinu
 			dm.getArtikli().open();
@@ -4691,6 +4755,9 @@ System.out.println("findCjenik::else :: "+sql);
 				new String[] { getMasterSet().getString("CNACPL")})) {
 			vcinc = dm.getNacpl().getBigDecimal("VCINC");
 			vcdec = dm.getNacpl().getBigDecimal("VCDEC");
+		} else {
+		  vcinc = Aus.zero2;
+		  vcdec = Aus.zero2;
 		}
 	}
 
@@ -4959,7 +5026,8 @@ System.out.println("findCjenik::else :: "+sql);
 
        getMasterSet().setBigDecimal("UIRAC", uirac);
        nacPlDod();
-       getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+       if (vcdec.signum() != 0)
+         getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
        getMasterSet().saveChanges();
        ValidacijaPrijeIzlazaDetail();
        //raMaster.getJpTableView().fireTableDataChanged();
@@ -5012,7 +5080,8 @@ System.out.println("findCjenik::else :: "+sql);
 
       getMasterSet().setBigDecimal("UIRAC", uirac);
       nacPlDod();
-      getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+      if (vcdec.signum() != 0)
+        getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
 
       if (raTransaction.saveChangesInTransaction(new QueryDataSet[] {ds, getMasterSet()}))
           getDetailSet().refresh();
@@ -5062,7 +5131,8 @@ System.out.println("findCjenik::else :: "+sql);
 
 		getMasterSet().setBigDecimal("UIRAC", uirac);
 		nacPlDod();
-		getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+		if (vcdec.signum() != 0)
+		  getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
 /*		raLocalTransaction rltpopustAllApply = new raLocalTransaction() {
 			public boolean transaction() throws Exception {
 				raTransaction.saveChanges(forallpopust);
@@ -5376,7 +5446,8 @@ System.out.println("findCjenik::else :: "+sql);
     }
     getMasterSet().setBigDecimal("UIRAC", uirac);
     nacPlDod();
-    getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+    if (vcdec.signum() != 0)
+      getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
     if (raTransaction.saveChangesInTransaction(
         new QueryDataSet[] {getMasterSet(), getDetailSet()})) 
       JOptionPane.showMessageDialog(raMaster.getWindow(), 
