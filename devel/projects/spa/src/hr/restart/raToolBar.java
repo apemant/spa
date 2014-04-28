@@ -133,7 +133,7 @@ public class raToolBar extends javax.swing.JWindow {
       }
   }
   public static void loadForOptimize() {
-    if (start.checkArgs("nooptimize")) return;
+    if (!start.checkArgs("optimize")) return;
     hr.restart.util.raUpit dummy1 = new hr.restart.util.raUpit() {
       public void componentShow() {      }
       public void firstESC() {      }
