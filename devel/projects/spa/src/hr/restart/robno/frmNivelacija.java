@@ -786,11 +786,15 @@ public class frmNivelacija extends raMasterDetail {
       Aus.getDataTreeList(pa.getGrupart(),dm.getGrupart(),"CGRART","CGRARTPRIP");
     if (grart == null) return false;
     else if (grart != "") grart = " and artikli." + grart;
+    
+    String q = "select stanje.cart, artikli.cart1, artikli.bc, artikli.nazart, artikli.jm, stanje.vc, stanje.mc "+
+        "from stanje,artikli where stanje.cart = artikli.cart and " +
+        "stanje.cskl = '" + this.getMasterSet().getString("CSKL") + "' and " +
+        "stanje.god = '" + this.getMasterSet().getString("GOD") +"' "+grart;
+    
+    System.out.println(q);
 
-    vl.execSQL("select stanje.cart, artikli.cart1, artikli.bc, artikli.nazart, artikli.jm, stanje.vc, stanje.mc "+
-               "from stanje,artikli where stanje.cart = artikli.cart and " +
-               "cskl = '" + this.getMasterSet().getString("CSKL") + "' and " +
-               "god = '" + this.getMasterSet().getString("GOD") +"' "+grart);
+    vl.execSQL(q);
     allArt = vl.RezSet;
     allArt.open();
     return (!allArt.isEmpty());
