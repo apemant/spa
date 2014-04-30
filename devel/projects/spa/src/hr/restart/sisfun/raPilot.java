@@ -1151,9 +1151,19 @@ public class raPilot extends raFrame {
     System.arraycopy(result, 0, res, 0, i);
     return res;    
   }
+  
+  private int findWhere(String sql) {
+    VarStr var = new VarStr(sql);
+    int beg = 0;
+    while ((beg = var.indexOfIgnoreCase("where",  beg) + 1) > 0)
+      if (var.leftCopy(beg).countOccurences('(') == var.leftCopy(beg).countOccurences(')'))
+        return beg - 1;
+    
+    return 0;
+  }
 
   private String[] findTables(String sql, boolean show) {
-    int last = sql.toLowerCase().indexOf("where"), i = 0;
+    int last = findWhere(sql), i = 0;
 
     if (getFromIndex(sql) <= 0) {
       if (show) {
