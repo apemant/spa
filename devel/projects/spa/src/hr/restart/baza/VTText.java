@@ -68,7 +68,7 @@ public class VTText extends KreirDrop implements DataModule {
     vttTEXTFAK.setCaption("Tekst stavke");
     vttTEXTFAK.setColumnName("TEXTFAK");
     vttTEXTFAK.setDataType(com.borland.dx.dataset.Variant.STRING);
-    vttTEXTFAK.setPrecision(2000);
+    vttTEXTFAK.setPrecision(4000);
     vttTEXTFAK.setTableName("VTTEXT");
     vttTEXTFAK.setServerColumnName("TEXTFAK");
     vttTEXTFAK.setSqlType(1);
@@ -82,7 +82,7 @@ public class VTText extends KreirDrop implements DataModule {
 
     ddl.create("VTText")
        .addChar("ckey", 60, true)
-       .addChar("textfak", 2000)
+       .addChar("textfak", 4000)
        .addPrimaryKey("ckey");
 
 
