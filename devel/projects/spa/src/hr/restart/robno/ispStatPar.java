@@ -236,6 +236,7 @@ public class ispStatPar extends raPanStats {
           dm.createStringColumn("BRDOK", "Vrsta i broj dokumenta", 20), 
           dm.createStringColumn("VRDOK", "Vrsta dokumenta", 3), 
           dm.createStringColumn("GOD", "Godina", 4), 
+          dm.createStringColumn("FBR", "Fiskalni broj", 20),
           dm.createTimestampColumn("DATDOK", "Datum"),
           dm.createBigDecimalColumn("INAB", "Nabavni iznos", 2), 
           dm.createBigDecimalColumn("RUC", "Razlika u cijeni", 2), 
@@ -274,6 +275,7 @@ public class ispStatPar extends raPanStats {
           reportSet.setTimestamp("DATDOK", temporarySet.getTimestamp("DATDOK"));
           reportSet.setString("NAZPAR", pca.getNameNotNull(temporarySet.getInt("CPAR")));
           reportSet.setString("BRDOK", oldBrdok = brdok);
+          reportSet.setString("FBR", temporarySet.getString("PNBZ2"));
           reportSet.setBigDecimal("INAB", temporarySet.getBigDecimal("INAB"));
           reportSet.setBigDecimal("RUC", temporarySet.getBigDecimal("IPRODBP").subtract(temporarySet.getBigDecimal("INAB")));
           reportSet.setBigDecimal("IPRODBP", temporarySet.getBigDecimal("IPRODBP"));
@@ -982,7 +984,8 @@ public class ispStatPar extends raPanStats {
     "doki.god, " + 
     "doki.datdok, " + 
     "doki.cpar, " +
-    "doki.pj, " + 
+    "doki.pj, " +
+    "doki.pnbz2, " + 
     "stdoki.cart, " + "stdoki.cart1, " + 
     "stdoki.bc, " + "stdoki.nazart, " + "stdoki.jm, " + " artikli.cgrart, " + "stdoki.kol, " + 
     "stdoki.iraz, " + "stdoki.iprodbp, " + "CAST ((stdoki.iprodsp - stdoki.iprodbp) AS numeric(12,2)) as por, " + 
