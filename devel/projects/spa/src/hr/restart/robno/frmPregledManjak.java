@@ -436,7 +436,7 @@ public class frmPregledManjak extends raMasterDetail {
 
   private void initNewMaster() {
     this.getPreSelect().copySelValues();
-    this.getMasterSet().setString("VRDOK", "INV");
+    this.getMasterSet().setString("VRDOK", "INM");
     this.getMasterSet().setTimestamp("DATDOK",
         vl.getPresToday(getPreSelect().getSelRow()));
     this.getMasterSet().setString("GOD",vl.findYear(getMasterSet().getTimestamp("DATDOK")));
