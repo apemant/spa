@@ -40,7 +40,7 @@ public class frmDistkal extends raMasterDetail {
   jpDistkalDetail jpDetail;
   
   
-  raNavAction navRECALC = new raNavAction("Reklakulacija brojeva",raImages.IMGMOVIE,KeyEvent.VK_F7) {
+  raNavAction navRECALC = new raNavAction("Rekalkulacija brojeva",raImages.IMGMOVIE,KeyEvent.VK_F7) {
     public void actionPerformed(ActionEvent e) {
     	if (JOptionPane.showConfirmDialog(raDetail.getWindow(), "Rekalkulirati brojeve iza ovog datuma?",
     			"Rekalkulacija", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
@@ -114,8 +114,14 @@ public class frmDistkal extends raMasterDetail {
     return true;
   }
 
+  boolean generate = false;
   public void AfterAfterSaveMaster(char mode) {
-    // ništa
+    if (generate) try {
+      jpMaster.autoAdd();
+    } finally {
+      generate = false;
+    }
+    super.AfterAfterSaveMaster(mode);
   }
   
   public void SetFokusDetail(char mode) {

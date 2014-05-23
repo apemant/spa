@@ -2,6 +2,7 @@ package hr.restart.distrib;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 import javax.swing.*;
@@ -182,11 +183,12 @@ public class jpDistkalMaster extends JPanel {
   }
 
   protected void generate() {
-    if (fDistkal.raMaster.getMode() != 'I') {
+    /*if (fDistkal.raMaster.getMode() != 'I') {
       JOptionPane.showMessageDialog(getTopLevelAncestor(), "Prvo morate dodati kalendar da bi generirali datume", 
           "Greška", JOptionPane.ERROR_MESSAGE);
       return;
-    }
+    }*/
+    if (!fDistkal.ValidacijaMaster(fDistkal.raMaster.getMode())) return;
     if (vl.isEmpty(jraDatumfrom) || vl.isEmpty(jraDatumto) || vl.isEmpty(jraBroj)) return;
     if (fDistkal.getAaSet().getTimestamp("DATUMFROM").after(fDistkal.getAaSet().getTimestamp("DATUMTO"))) {
       JOptionPane.showMessageDialog(getTopLevelAncestor(), "Poèetni datum je iza završnog!", 
@@ -202,9 +204,31 @@ public class jpDistkalMaster extends JPanel {
         Aus.formatTimestamp(fDistkal.getAaSet().getTimestamp("DATUMTO")) + " od broja:"+fDistkal.getAaSet().getInt("BROJ")+" ?";
     if (JOptionPane.showConfirmDialog(getTopLevelAncestor(), pitanjce, "Potvrda", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)
         == JOptionPane.YES_OPTION) {
-      fDistkal.autoAdd(jcbSvaki.getSelectedIndex(), jcbDan.getSelectedIndex(), jcbFLAGADD.getSelectedIndex(), 
+      
+      if (fDistkal.raMaster.getMode() == 'N') {
+        idxSvaki = jcbSvaki.getSelectedIndex();
+        idxDan = jcbDan.getSelectedIndex();
+        idxFlag = jcbFLAGADD.getSelectedIndex();
+        dfrom = fDistkal.getAaSet().getTimestamp("DATUMFROM");
+        dto = fDistkal.getAaSet().getTimestamp("DATUMTO");
+        stBroj = fDistkal.getAaSet().getInt("BROJ");
+        
+        fDistkal.generate = true;
+        
+        fDistkal.raMaster.getOKpanel().jBOK_actionPerformed();
+        
+      } else 
+       fDistkal.autoAdd(jcbSvaki.getSelectedIndex(), jcbDan.getSelectedIndex(), jcbFLAGADD.getSelectedIndex(), 
           fDistkal.getAaSet().getTimestamp("DATUMFROM"), fDistkal.getAaSet().getTimestamp("DATUMTO"), fDistkal.getAaSet().getInt("BROJ"));
     }
+  }
+  
+  int idxSvaki, idxDan, idxFlag;
+  Timestamp dfrom, dto;
+  int stBroj;
+  
+  public void autoAdd() {
+    fDistkal.autoAdd(idxSvaki, idxDan, idxFlag, dfrom, dto, stBroj);
   }
 
 }
