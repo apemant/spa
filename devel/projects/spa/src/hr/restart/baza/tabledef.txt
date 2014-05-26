@@ -1861,3 +1861,57 @@ JNI;char;1;;;16.1. Oznaka naèina isplate
 NETOPK;numeric;17,2;;0;16.2. Iznos za isplatu
 BRUTOOBR;numeric;17,2;;0;17. Obraèunata plaæa
 
+
+
+#CRM
+
+$Klijenti
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CKLIJENT;int;6;pkey;;Šifra
+NAZIV;char;80;;;Naziv;25
+MJ;char;30;;;Mjesto;15
+ADR;char;40;;;Adresa;15
+PBR;int;6;;;Poštanski broj;15
+MB;char;13;;;Matièni broj
+TEL;char;40;;;Telefon;15
+TELFAX;char;20;;;Fax;15
+EMADR;char;60;;;E-mail;15
+WEBADR;char;60;;;Website;15
+STATUS;char;1;;;Status
+OIB;char;20;;;Oib;15
+
+$Kontosobe
+COSOBE;int;6;pkey;;Šifra;*
+CKLIJENT;int;6;;;Klijent
+IME;char;50;;;Kontakt
+MJ;char;30;;;Mjesto;15
+ADR;char;40;;;Adresa;15
+PBR;int;6;;;Poštanski broj;15
+ULOGA;char;30;;;Položaj
+TEL;char;40;;;Telefon;15
+MOB;char;40;;;Mobitel;15
+EMADR;char;60;;;E-mail;15
+
+$Kontakti
+UID;int;6;pkey;;Šifra;*
+CKLIJENT;int;6;;;Klijent
+NASLOV;char;30;;;Naslov
+CUSER;char;15;;;Agent
+DATUM;timestamp;;;;Datum
+TRAJANJE;char;30;;;Trajanje
+CKANAL;int;6;;;Kanal
+INFOKANAL;char;50;;;Detalji kanala
+KOSOBA;char;50;;;Kontakt osoba
+OPIS;char;2000;;;Opis kontakta
+
+$KlijentStat
+SID;char;1;pkey;;Šifra
+NAZIV;char;30;;;Naziv
+BOJA;char;20;;;Boja
+
+$Kanali
+CKANAL;int;6;;;Šifra
+NAZIV;char;30;;;Naziv
+
+#END CRM

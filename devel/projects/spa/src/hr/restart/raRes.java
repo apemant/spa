@@ -26,6 +26,7 @@ public class raRes extends java.util.ListResourceBundle {
   { "APLrobno", "hr.restart.robno._Main" },//<disabled>
   { "APLmp", "hr.restart.mp.frmMp" },
   { "APLpos", "hr.restart.pos.posMain" },
+  
   { "APLrac", "hr.restart.rac.frmRac" },
   { "APLrn", "hr.restart.rn.rnMain" },
   { "APLposl", "hr.restart.posl.frmPosl" },
@@ -37,6 +38,7 @@ public class raRes extends java.util.ListResourceBundle {
   { "APLos", "hr.restart.os.osMain" },
   { "APLok", "hr.restart.ok.frmOK" },
   { "APLvir", "hr.restart.zapod.frmVir" },
+  { "APLcrm", "hr.restart.crm.crmMain" },
 	{ "APLsisfun", "hr.restart.sisfun.frmSistem" },
 	{ "jBzapod_text", "Zajedni\u010Dki podaci" },
 	{ "jBok_text", "Obraèun kamata" },
