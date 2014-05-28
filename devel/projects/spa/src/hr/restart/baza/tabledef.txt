@@ -1911,7 +1911,7 @@ NAZIV;char;30;;;Naziv
 BOJA;char;20;;;Boja
 
 $Kanali
-CKANAL;int;6;;;Šifra
+CKANAL;int;6;pkey;;Šifra
 NAZIV;char;30;;;Naziv
 
 #END CRM
