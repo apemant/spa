@@ -49,6 +49,7 @@ public class raRes extends java.util.ListResourceBundle {
 	{ "jBsk_text", "Salda konti" },
 	{ "jBrobno_text", "Robno knjigovodstvo" },
 	{ "jBpos_text", "Maloprodaja (POS)" },
+	{ "jBcrm_text", "CRM" },
 	{ "jBos_text", "Osnovna sredstva" },
         { "jBmp_text", "Maloprodaja" },
         { "jBsklad_text", "Skladišno poslovanje" },
