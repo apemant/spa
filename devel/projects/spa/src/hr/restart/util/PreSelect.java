@@ -1105,6 +1105,10 @@ private void testPrintRanges() {
     }
   }
 //
+  
+  public void setUserSelected(boolean sel) {
+  	jtbUser.setSelected(sel);
+  }
 
   public Condition getUserCondition() {
     if (!isUserQuery()) return Condition.none;
