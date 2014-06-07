@@ -5,6 +5,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JEditorPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.EditorKit;
+import javax.swing.text.html.HTMLEditorKit;
+
+import bsh.EvalError;
+import bsh.Interpreter;
 
 import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.Variant;
@@ -68,13 +75,16 @@ public class frmMessages extends raMatPodaci {
   	return instance;
   }
   
+  public void table2Clicked() {
+  	//
+  }
+  
   public void SetFokus(char mode) {
-    // TODO Auto-generated method stub
-
+    //
   }
 
   public boolean Validacija(char mode) {
-    // TODO Auto-generated method stub
+    // 
     return false;
   }
   
@@ -120,12 +130,35 @@ public class frmMessages extends raMatPodaci {
   
   public void raQueryDataSet_navigated(NavigationEvent e) {
   	if (getRaQueryDataSet().rowCount() == 0) msg.setText("");
-  	else msg.setText(getRaQueryDataSet().getString("MTEXT"));
+  	else {
+  		String tx = getRaQueryDataSet().getString("MTEXT");
+  		EditorKit kit = tx.startsWith("<html>") || tx.startsWith("<HTML>") ? html : def;
+  		if (msg.getEditorKit() != kit) msg.setEditorKit(kit);
+  		msg.setText(tx);
+  	}
   }
 
+  EditorKit def = msg.getEditorKit();
+  EditorKit html = new HTMLEditorKit();
   private void jbInit() throws Exception {
 
     msg.setEditable(false);
+    //msg.setEditorKit(new HTMLEditorKit());
+    msg.addHyperlinkListener(new HyperlinkListener() {
+			
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					Interpreter bsh = new Interpreter(); 
+					try {
+						bsh.eval(e.getDescription());
+					} catch (EvalError e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+    });
 
     setRaQueryDataSet(Mesg.getDataModule().getFilteredDataSet("1=0"));
     getRaQueryDataSet().getColumn("DATUM").setDisplayMask("dd-MM-yyyy  'u' HH:mm:ss");
