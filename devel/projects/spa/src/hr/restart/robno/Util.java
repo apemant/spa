@@ -1078,13 +1078,26 @@ public class Util {
   }
   
 
-  public void showDocs(String skl, String sklul, 
-      final String vrdok, int brdok, String god) {
+  public void showDocs(String skl, String sklul, String vrdok, int brdok, String god) {
     showDocs(skl, sklul, vrdok, brdok, god, null);
   }
   
+  public void showDocs(String skl, String sklul, String vrdok, int brdok, String god, String cart) {
+  	showDocs(skl, sklul, vrdok, brdok, god, null, null, cart);
+  }
+  
+  public void showDocs(String skl, String vrdok, Timestamp datfrom, Timestamp datto) {
+  	showDocs(skl, null, vrdok, 0, null, datfrom, datto, null);
+  }
+  
+  public void showDocs(String skl, String sklul, String vrdok, Timestamp datfrom, Timestamp datto) {
+  	showDocs(skl, sklul, vrdok, 0, null, datfrom, datto, null);
+  }
+  
+  
   public void showDocs(String skl, String sklul, 
       final String vrdok, int brdok, String god, 
+      Timestamp datfrom, Timestamp datto, 
       final String cart) {
     System.out.println("skl="+skl+" vrdk="+vrdok+" brdok"+brdok+"god "+god);
 
@@ -1125,25 +1138,45 @@ public class Util {
     }
     DataSet pres = md.getPreSelect().getSelRow();
     pres.setString("VRDOK", vrdok);
-    pres.setTimestamp("DATDOK-from", findFirstDayOfYear(Integer.parseInt(god)));
-    pres.setTimestamp("DATDOK-to", findLastDayOfYear(Integer.parseInt(god)));
-    Runnable afterShow = cart == null ? null :
-      new Runnable() {
-        public void run() {
-          lookupData.getlookupData().raLocate(md.getDetailSet(), "CART", cart);
-        }
-      };      
-    if (TypeDoc.getTypeDoc().isDocMeskla(vrdok)) {
-      pres.setString("CSKLIZ", skl);
-      pres.setString("CSKLUL", sklul);
-      ((jpSelectMeskla) md.getPreSelect()).memorize();
-      md.showRecord(new String[] {skl, sklul, vrdok, 
-          god, Integer.toString(brdok)}, afterShow);
+    
+    if (god != null) {
+	    pres.setTimestamp("DATDOK-from", findFirstDayOfYear(Integer.parseInt(god)));
+	    pres.setTimestamp("DATDOK-to", findLastDayOfYear(Integer.parseInt(god)));
+	    Runnable afterShow = cart == null ? null :
+	      new Runnable() {
+	        public void run() {
+	          lookupData.getlookupData().raLocate(md.getDetailSet(), "CART", cart);
+	        }
+	      };      
+	    if (TypeDoc.getTypeDoc().isDocMeskla(vrdok)) {
+	      pres.setString("CSKLIZ", skl);
+	      pres.setString("CSKLUL", sklul);
+	      ((jpSelectMeskla) md.getPreSelect()).memorize();
+	      md.showRecord(new String[] {skl, sklul, vrdok, 
+	          god, Integer.toString(brdok)}, afterShow);
+	    } else {
+	      pres.setString("CSKL", skl);
+	      ((jpPreselectDoc) md.getPreSelect()).memorize();
+	      md.showRecord(new String[] {skl, vrdok, god, 
+	          Integer.toString(brdok)}, afterShow);
+	    }
     } else {
-      pres.setString("CSKL", skl);
-      ((jpPreselectDoc) md.getPreSelect()).memorize();
-      md.showRecord(new String[] {skl, vrdok, god, 
-          Integer.toString(brdok)}, afterShow);
+    	pres.setTimestamp("DATDOK-from", datfrom);
+	    pres.setTimestamp("DATDOK-to", datto);
+	    md.getPreSelect().setUserSelected(false);
+	    if (TypeDoc.getTypeDoc().isDocMeskla(vrdok)) {
+	      pres.setString("CSKLIZ", skl);
+	      pres.setString("CSKLUL", sklul);
+	      ((jpSelectMeskla) md.getPreSelect()).memorize();
+	    } else {
+	      pres.setString("CSKL", skl);
+	      ((jpPreselectDoc) md.getPreSelect()).memorize();
+	    }
+	    try {
+				md.showRecord(null,  null, false, null);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
     }
   }
   
