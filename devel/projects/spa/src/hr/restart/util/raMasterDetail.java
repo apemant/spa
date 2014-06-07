@@ -3084,7 +3084,7 @@ System.out.println("Detail.hide()  versionall="+versionall);
   public void showRecord(String[] keyNames, String[] keyValues, 
       final boolean showDetail, final Runnable afterShow) throws Exception {
 
-    final String qry = getFilteredQuery(getMasterSet(),keyNames,keyValues);
+    final String qry = keyNames == null ? null : getFilteredQuery(getMasterSet(),keyNames,keyValues);
     
     if (raDetail.isShowing()) {
       char dm = raDetail.getMode();
@@ -3108,7 +3108,8 @@ System.out.println("Detail.hide()  versionall="+versionall);
 
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
-      	Aus.refilter(getMasterSet(), qry);        
+      	if (qry == null) getPreSelect().applySQLFilter();
+      	else Aus.refilter(getMasterSet(), qry);        
         show();
         if (showDetail) //raMaster.table2Clicked(); TV. update
           SwingUtilities.invokeLater(new Runnable() {
