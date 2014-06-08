@@ -85,6 +85,11 @@ public class MsgDispatcher implements ActionListener {
     return inst.sendImpl(from, to, msg);
   }
   
+  public synchronized static boolean sendOut(String from, String to, String msg) {
+    if (inst == null) return false;
+    return inst.sendOutImpl(from, to, msg);
+  }
+  
   public static void refresh() {
   	Valid.getValid().execSQL("SELECT COUNT(*) FROM mesg WHERE dest='" +raUser.getInstance().getUser()+"' AND nova='D'");
   	inst.unread = Valid.getValid().getSetCount(Valid.getValid().RezSet, 0);
@@ -112,14 +117,48 @@ public class MsgDispatcher implements ActionListener {
       return false;
     }
   }
+  
+  private boolean sendOutImpl(String from, String to, String msg) {
+    if (++serial >= 1000) serial = 0;
+    try {
+    	Connection oc = dM.getTempConnection();
+    	PreparedStatement insert = oc.prepareStatement(
+    			"INSERT INTO mesg(id, src, dest, datum, mtext) VALUES (?, ?, ?, ?, ?)");
+      insert.setString(1, from+serial+":"+Aus.timeToString());
+      insert.setString(2, from);
+      insert.setString(3, to);
+      insert.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+      insert.setString(5, msg);
+      boolean ret = insert.executeUpdate() > 0;
+      oc.createStatement().executeUpdate("UPDATE useri SET param='NEW' WHERE cuser='" +to+"'");
+      oc.close();
+      return ret;
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
     
   void checkMsg() {
     System.out.println("Updating");
-   	Valid.getValid().runSQL("UPDATE useri SET param='' WHERE cuser='" +raUser.getInstance().getUser()+"'");
+    createStatements();
+    if (con == null) return;
+    try {
+			con.createStatement().executeUpdate("UPDATE useri SET param='' WHERE cuser='" +raUser.getInstance().getUser()+"'");
+			ResultSet rs = con.createStatement().executeQuery("SELECT COUNT(*) FROM mesg WHERE dest='" 
+													+ raUser.getInstance().getUser() + "' AND nova='D'");
+			if (rs.next()) {
+				inst.unread = (int) rs.getLong(1);
+				raUserDialog.getInstance().updateMessageButton(true);
+			}
+		} catch (SQLException e) {
+			con = null;
+			e.printStackTrace();
+		}
 
-   	Valid.getValid().execSQL("SELECT COUNT(*) FROM mesg WHERE dest='" +raUser.getInstance().getUser()+"' AND nova='D'");
+/*   	Valid.getValid().execSQL("SELECT COUNT(*) FROM mesg WHERE dest='" +raUser.getInstance().getUser()+"' AND nova='D'");
   	inst.unread = Valid.getValid().getSetCount(Valid.getValid().RezSet, 0);
      
-    raUserDialog.getInstance().updateMessageButton(true);
+    raUserDialog.getInstance().updateMessageButton(true);*/
   }
 }
