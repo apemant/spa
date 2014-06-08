@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.ReadRow;
+import com.borland.dx.dataset.RowFilterListener;
 import com.borland.dx.dataset.SortDescriptor;
 
 /**
@@ -2302,6 +2303,18 @@ sysoutTEST sT = new sysoutTEST(false);
 
 
         public void afterSetMode(char oldMod,char newMod) {
+        	
+        	if (newMod == 'N') {
+        		RowFilterListener filter = getRaQueryDataSet().getRowFilterListener();
+            if (filter != null) {
+            	getRaQueryDataSet().removeRowFilterListener(filter);
+            	getRaQueryDataSet().refilter();
+              
+              raSelectTableModifier stm = getJpTableView().getMpTable().hasSelectionTrackerInstalled();
+              if (stm != null && stm.isNatural()) stm.clearSelection();
+              fireTableDataChanged();
+            }
+          }
 
           afterSetModeMaster(oldMod, newMod);
 
