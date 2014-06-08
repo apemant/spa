@@ -127,7 +127,6 @@ public class raSendMessage extends raOptionDialog {
     msg.setText("");
     
     if (show(parent, pan, "Poruka")) 
-      MsgDispatcher.send(raUser.getInstance().getUser(),
-          ds.getString("CUSER"), msg.getText());
+      MsgDispatcher.send(ds.getString("CUSER"), msg.getText());
   }
 }
