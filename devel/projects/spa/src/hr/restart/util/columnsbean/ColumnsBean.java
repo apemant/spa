@@ -1310,7 +1310,7 @@ System.out.println(raDataSet.getColumn(i).getWidth());
 
       raDataSet.removeRowFilterListener(filter);
 
-      raDataSet.setSort(raDataSet.getSort());
+      raDataSet.refilter();
 
       if (getRaJdbTable() instanceof JraTable2) {
         JraTable2 tab = (JraTable2) getRaJdbTable();
