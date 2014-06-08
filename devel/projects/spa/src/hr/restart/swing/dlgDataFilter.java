@@ -27,6 +27,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -37,6 +38,7 @@ import java.util.TreeMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
@@ -650,6 +652,7 @@ public class dlgDataFilter extends raOptionDialog {
       TreePath tp = new TreePath(model.getPathToRoot(node));
       tree.expandPath(tp);
       tree.setSelectionPath(tp);
+      dlgDataFilter.inst.fieldChanged();
       dlgDataFilter.inst.editFilter(node);
     }
     
@@ -897,6 +900,32 @@ public class dlgDataFilter extends raOptionDialog {
     }
   }
   
+  static class TextIcon extends JLabel implements Icon {
+
+  	public TextIcon(String text) {
+  		super(text);
+		}
+  	
+		@Override
+		public void paintIcon(Component c, Graphics g, int x, int y) {
+			g.translate(x,  y);
+			this.paintComponent(g);
+			g.translate(-x,  -y);
+		}
+		
+		@Override
+		public int getIconWidth() {
+			return getPreferredSize().width + 10;
+		}
+
+		@Override
+		public int getIconHeight() {
+			return getPreferredSize().height;
+		}
+  	
+  }
+  
+ 
   static class OperatorChange extends AbstractAction {
     DefaultMutableTreeNode node;
     int op;
@@ -904,12 +933,18 @@ public class dlgDataFilter extends raOptionDialog {
     
     public OperatorChange(DefaultMutableTreeNode node, int op, boolean not) {
       super(not ? raDataFilter.nopdescs[op] : raDataFilter.opdescs[op]);
+      
+      TextIcon ti = new TextIcon(not ? raDataFilter.nops[op] : raDataFilter.ops[op]);
+      ti.setSize(ti.getIconWidth(), ti.getIconHeight());
+      putValue(Action.SMALL_ICON, ti);
       this.node = node;
       this.op = op;
       this.not = not;
+      
     }
     
     public void actionPerformed(ActionEvent e) {
+    	
       raDataFilter df = (raDataFilter) node.getUserObject();
       df.setOperator(op, not);
       dlgDataFilter.inst.op.setText(not ? 
