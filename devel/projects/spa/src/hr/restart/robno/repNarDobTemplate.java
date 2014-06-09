@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.reports.raIzlazSectionFooterForCustom;
 import hr.restart.util.reports.raIzlazSectionFooterForCustomSlovima;
 import hr.restart.util.reports.raPonDetail;
@@ -51,11 +52,13 @@ public class repNarDobTemplate extends repIzlazOrigTemplate {
     sh.LabelParitet.defaultAlterer().setCaption("Mjesto troška");
     sh.TextNAZFRA.defaultAlterer().setControlSource("CSNS");
 
-    sh.addModel(ep.TEXT, new String[] {
-      "NATEM", "", "", "", "", "", "", "", "20",
-     "2600", "10500", "220", "", "", "", "", "", "", "Lucida Bright", "8",
-      "", "", "", "", ""
-    });
+    if (frmParam.getParam("robno", "narNatemelju", "D", 
+        "Ispis linije 'na temelju' na narudžbi za dobavljaèa (D,N)?").equalsIgnoreCase("D"))
+      sh.addModel(ep.TEXT, new String[] {
+          "NATEM", "", "", "", "", "", "", "", "20",
+          "2600", "10500", "220", "", "", "", "", "", "", "Lucida Bright", "8",
+          "", "", "", "", ""
+      });
     return sh;
   }
   public raReportSection createSectionFooter1() {
