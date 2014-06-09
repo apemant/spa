@@ -837,7 +837,8 @@ public class raPOS extends raIzlazTemplate  {
         "IPRODSP", "PPOR1", "PPOR2", "PPOR3", "STATUS"};
     String[] sumc = {"KOL", "UIRAB", "INETO", "IPRODBP", 
           "POR1", "POR2", "POR3", "IPRODSP"};
-    StorageDataSet inter = stdoki.getDataModule().getScopedSet(cols);     
+    StorageDataSet inter = stdoki.getDataModule().getScopedSet(cols);
+    inter.getColumn("STATUS").setPrecision(30);
     hr.restart.util.Util.fillReadonlyData(inter, q.toString());
     if (!vhack && rep) {
       for (inter.first(); inter.inBounds(); inter.next())
