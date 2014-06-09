@@ -2168,6 +2168,9 @@ public BigDecimal getIPRODSP() {
         frmParam.getParam("robno", "gotPar", "N",
         "Gotovinski raèuni za partnere (D,N)"));
     
+    String npref = frmParam.getParam("robno", "prefixPar" + getCSKL());
+    if (npref != null) prefn = npref;
+    
     if (prefn.length() > 0) prefn = prefn + "\n";
     
     
@@ -2195,6 +2198,12 @@ public BigDecimal getIPRODSP() {
     String ispisPJCPAR = getIspisPJCPAR(getCPAR());
     ispisPJ = (ispisPJCPAR.equals("")?ispisPJ:ispisPJCPAR);
     System.err.println("modParams: lastdok = "+lastDok+" cpar = "+getCPAR()+" ispisPJ = "+ispisPJ);
+    
+    String npref = frmParam.getParam("robno", "prefixPar" + getCSKL());
+    if (npref != null) {
+      prefn = npref;
+      if (prefn.length() > 0) prefn = prefn + "\n";
+    }
   }
   public static String getIspisPJCPAR(int cpar) {
     String ispisPJCPAR = frmParam.getParam("robno", "ispisPJCPAR", "", "Vrijednost parametra ispisPJ u odnosu na partnera (cpar1:value,cpar2:value,cparN:value...");
