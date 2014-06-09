@@ -471,7 +471,7 @@ public class jpUlazDetail extends JPanel {
     jpDetailCenter.add(trans, new XYConstraints(470, 20, 21, 21));
     jpDetailCenter.add(jlZaKolicinu, new XYConstraints(500, 50, 130, -1));
     jpDetailCenter.add(jlZaJedinicu, new XYConstraints(360, 50, 130, -1));
-    jpDetailCenter.add(jlPostotak, new XYConstraints(270, 50, 80, -1));
+    jpDetailCenter.add(jlPostotak, new XYConstraints(250, 50, 100, -1));
     this.setLayout(new BorderLayout());
     tds.setColumns(new Column[] {column1, column2, column3});
     this.add(jpDetailCenter, BorderLayout.CENTER);
@@ -486,11 +486,11 @@ public class jpUlazDetail extends JPanel {
     jpDetailCenter.add(jlMC, new XYConstraints(15, 275, -1, -1));
     jpDetailCenter.add(jLabel1, new XYConstraints(15, 75, -1, -1));
     jpDetailCenter.add(jtfDC, new XYConstraints(360, 100, 130, -1));
-    jpDetailCenter.add(jbZT, new XYConstraints(150, 150, 110, 21));
-    jpDetailCenter.add(jtfPRAB, new XYConstraints(270, 125, 80, -1));
-    jpDetailCenter.add(jtfPZT, new XYConstraints(270, 150, 80, -1));
-    jpDetailCenter.add(jtfPMAR, new XYConstraints(270, 200, 80, -1));
-    jpDetailCenter.add(jtfPPOR, new XYConstraints(270, 250, 80, -1));
+    jpDetailCenter.add(jbZT, new XYConstraints(150, 150, 90, 21));
+    jpDetailCenter.add(jtfPRAB, new XYConstraints(250, 125, 100, -1));
+    jpDetailCenter.add(jtfPZT, new XYConstraints(250, 150, 100, -1));
+    jpDetailCenter.add(jtfPMAR, new XYConstraints(250, 200, 100, -1));
+    jpDetailCenter.add(jtfPPOR, new XYConstraints(250, 250, 100, -1));
     jpDetailCenter.add(jtfRAB, new XYConstraints(360, 125, 130, -1));
     jpDetailCenter.add(jtfZT, new XYConstraints(360, 150, 130, -1));
     jpDetailCenter.add(jtfNC, new XYConstraints(360, 175, 130, -1));
@@ -511,6 +511,11 @@ public class jpUlazDetail extends JPanel {
     
     if (edion && frm.prSTAT == 'P') addEdi();
     this.add(rpcart, BorderLayout.NORTH);
+    
+    tds.open();
+    if (tds.rowCount()==0) {
+      tds.insertRow(true);
+    }
   }
   
   /*JLabel jlDatPro = new JLabel();
@@ -1037,8 +1042,11 @@ public class jpUlazDetail extends JPanel {
       calcFromINAB();
     }
     else if (mode==8) {   // ZT u iznosu
-      frm.getDetailSet().setBigDecimal("INAB", frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB")).add(frm.getDetailSet().getBigDecimal("IZT")));
-      frm.getDetailSet().setBigDecimal("PZT", util.findPostotak7 (util.negateValue(frm.getDetailSet().getBigDecimal("IDOB"), frm.getDetailSet().getBigDecimal("IRAB")), frm.getDetailSet().getBigDecimal("IZT")));
+      //frm.getDetailSet().setBigDecimal("INAB", frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB")).add(frm.getDetailSet().getBigDecimal("IZT")));
+      Aus.sub(frm.getDetailSet(), "INAB", "IDOB", "IRAB");
+      Aus.add(frm.getDetailSet(), "INAB", "IZT");
+      Aus.percent(frm.getDetailSet(), "PZT", "IZT", Aus.minus(frm.getDetailSet(), "IDOB", "IRAB"));
+      //frm.getDetailSet().setBigDecimal("PZT", util.findPostotak7 (util.negateValue(frm.getDetailSet().getBigDecimal("IDOB"), frm.getDetailSet().getBigDecimal("IRAB")), frm.getDetailSet().getBigDecimal("IZT")));
       calcFromINAB();
     }
     else if (mode==9) {   // Nabavna cijena
@@ -1078,7 +1086,8 @@ public class jpUlazDetail extends JPanel {
       frm.getDetailSet().setBigDecimal("IZT", util.findIznos(frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB")), frm.getDetailSet().getBigDecimal("PZT")));
     else {
       checkZT();
-      frm.getDetailSet().setBigDecimal("PZT", util.findPostotak7 (util.negateValue(frm.getDetailSet().getBigDecimal("IDOB"), frm.getDetailSet().getBigDecimal("IRAB")), frm.getDetailSet().getBigDecimal("IZT")));
+      Aus.percent(frm.getDetailSet(), "PZT", "IZT", Aus.minus(frm.getDetailSet(), "IDOB", "IRAB"));
+      //frm.getDetailSet().setBigDecimal("PZT", util.findPostotak7 (util.negateValue(frm.getDetailSet().getBigDecimal("IDOB"), frm.getDetailSet().getBigDecimal("IRAB")), frm.getDetailSet().getBigDecimal("IZT")));
     }
     frm.getDetailSet().setBigDecimal("INAB", frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB")).add(frm.getDetailSet().getBigDecimal("IZT")));
     calcFromINAB();
@@ -1089,13 +1098,13 @@ public class jpUlazDetail extends JPanel {
     if (kol.signum() == 0) return;
     Aus.div(frm.getDetailSet(), "NC", "INAB", "KOL");
     //frm.getDetailSet().setBigDecimal("NC", frm.getDetailSet().getBigDecimal("INAB").divide(kol, 2, BigDecimal.ROUND_HALF_UP));
-    if ("D".equalsIgnoreCase(hr.restart.sisfun.frmParam.getParam("robno","kalkchVC","D"))) {
+    if ("D".equalsIgnoreCase(hr.restart.sisfun.frmParam.getParam("robno","kalkchVC","N"))) {
       frm.getDetailSet().setBigDecimal("MAR",     util.findIznos    (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("PMAR")));
       frm.getDetailSet().setBigDecimal("VC",      util.sumValue     (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
       tds.setBigDecimal("POR",                      util.findIznos    (frm.getDetailSet().getBigDecimal("VC"), dm.getPorezi().getBigDecimal("UKUPOR")));
       frm.getDetailSet().setBigDecimal("MC",        util.sumValue     (frm.getDetailSet().getBigDecimal("VC"), tds.getBigDecimal("POR")));
     }
-    else if ("M".equalsIgnoreCase(hr.restart.sisfun.frmParam.getParam("robno","kalkchVC","D"))) {
+    else if ("M".equalsIgnoreCase(hr.restart.sisfun.frmParam.getParam("robno","kalkchVC","N"))) {
     	tds.setBigDecimal("POR",                      util.findIznos    (frm.getDetailSet().getBigDecimal("MC"), dm.getPorezi().getBigDecimal("UKUNPOR")));
         frm.getDetailSet().setBigDecimal("VC",        util.negateValue  (frm.getDetailSet().getBigDecimal("MC"), tds.getBigDecimal("POR")));
         frm.getDetailSet().setBigDecimal("MAR",       util.negateValue  (frm.getDetailSet().getBigDecimal("VC"), frm.getDetailSet().getBigDecimal("NC")));
@@ -1357,6 +1366,11 @@ public class jpUlazDetail extends JPanel {
 //    jpDetailCenter.add(jtfDC_VAL, new XYConstraints(360, 75, 130, -1));
 //    jpDetailCenter.add(jtfIDOB_VAL, new XYConstraints(500, 75, 130, -1));
     this.add(rpcart, BorderLayout.NORTH);
+    
+    tds.open();
+    if (tds.rowCount()==0) {
+      tds.insertRow(true);
+    }
   }
 
 
