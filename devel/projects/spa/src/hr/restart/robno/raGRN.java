@@ -85,7 +85,7 @@ public class raGRN extends raIzlazTemplate  {
     DP.resizeDP();
     MP.panelBasicExt.jlrCNACPL.setRaDataSet(dm.getNacplG());
     raDetail.addOption(rnvNacinPlac,4);
-    raMaster.addOption(rnvIzradaOtp,6);
+    raMaster.addOption(rnvIzradaOtp,6,false);
     setVisibleColsMaster(new int[] {4,5,9});
     defNacpl = hr.restart.sisfun.frmParam.getParam("robno","gotNacPl");
   }
