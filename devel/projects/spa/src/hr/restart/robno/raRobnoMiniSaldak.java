@@ -66,6 +66,8 @@ import com.borland.jbcl.layout.XYLayout;
 public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 	private boolean isFirstEscOver = true;
+	
+	private boolean danasUpl = false;
 
 	private String status = "SVI";
 
@@ -488,6 +490,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 	 */
 	private void initializer() throws Exception {
 	    vdat = frmParam.getParam("robno", "miniDvo", "N", "Mini saldak dohvat po DVO (D,N)").equalsIgnoreCase("N") ? "DATDOK" : "DVO";
+	    
+	    danasUpl = frmParam.getParam("robno", "danasUpl", "N", "Staviti današnji dan po defaultu za uplatu (D,N)").equalsIgnoreCase("D");
 	  
 		keySupport.setNavContainer(getJPTV().getNavBar().getNavContainer());
 		setUpQDS();
@@ -1526,7 +1530,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			uplata.getDataSet().setBigDecimal("UPLATA",
 					qdsPojedIzlaz.getBigDecimal("SALDO"));
 			datupl.getDataSet().setTimestamp("datupl",
-					hr.restart.util.Valid.getValid().findDate(false, -1));
+					hr.restart.util.Valid.getValid().findDate(false, danasUpl ? 0 : -1));
 			
 			upls = UplRobno.getDataModule().getTempSet("CDOC RBR NAP DATUM IZNOS",
 			    Condition.equal("CDOC", dockey = raControlDocs.getKey(qdsPojedIzlaz, "doki")));
@@ -1574,7 +1578,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			uplata.getDataSet().setBigDecimal("UPLATA",
 					qdsPojedUlaz.getBigDecimal("SALDO"));
 			datupl.getDataSet().setTimestamp("datupl",
-					hr.restart.util.Valid.getValid().findDate(false, -1));
+					hr.restart.util.Valid.getValid().findDate(false, danasUpl ? 0 : -1));
 			upls = UplRobno.getDataModule().getTempSet("CDOC RBR NAP DATUM IZNOS",
 			    Condition.equal("CDOC", dockey = raControlDocs.getKey(qdsPojedUlaz, "doku")));
 			upls.open();
