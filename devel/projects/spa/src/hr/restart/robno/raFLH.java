@@ -17,62 +17,23 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.*;
-import java.util.List;
-
-import javax.swing.FocusManager;
-import javax.swing.InputMap;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-
-import sg.com.elixir.reportwriter.xml.IModel;
-
-import hr.restart.start;
-import hr.restart.baza.*;
-import hr.restart.db.raPreparedStatement;
-import hr.restart.sisfun.frmParam;
-import hr.restart.swing.AWTKeyboard;
-import hr.restart.swing.JraTextField;
-import hr.restart.swing.KeyAction;
-import hr.restart.swing.raCalculatorMask;
-import hr.restart.swing.raFieldMask;
-import hr.restart.swing.raInhumanNumberMask;
+import hr.restart.baza.Condition;
+import hr.restart.baza.Doku;
+import hr.restart.baza.Meskla;
+import hr.restart.baza.Stdoku;
+import hr.restart.baza.Stmeskla;
+import hr.restart.baza.VezaFLH;
+import hr.restart.baza.dM;
 import hr.restart.util.Aus;
-import hr.restart.util.DataSetExpander;
-import hr.restart.util.StackFrame;
-import hr.restart.util.Util;
-import hr.restart.util.Valid;
-import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raTransaction;
-import hr.restart.zapod.OrgStr;
 
-import com.borland.dx.dataset.Column;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.borland.dx.dataset.DataSet;
-import com.borland.dx.dataset.MetaDataUpdate;
-import com.borland.dx.dataset.ReadRow;
-import com.borland.dx.dataset.ReadWriteRow;
-import com.borland.dx.dataset.RowFilterListener;
-import com.borland.dx.dataset.StorageDataSet;
-import com.borland.dx.dataset.Variant;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.dx.sql.dataset.QueryDescriptor;
 
 
 public class raFLH {
