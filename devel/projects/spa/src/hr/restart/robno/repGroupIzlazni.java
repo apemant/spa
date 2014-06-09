@@ -48,17 +48,29 @@ public class repGroupIzlazni extends repIzlazni {
   }
   
   public int getGroup() {
+    String gr = dm.getArtikli().getString("CGRART");
+    
     if (!lD.raLocate(dm.getArtikli(), "CART", Integer.toString(ds.getInt("CART"))) ||
-        !lD.raLocate(dm.getGrupart(), "CGRART", dm.getArtikli().getString("CGRART")))
+        !lD.raLocate(dm.getGrupart(), "CGRART", gr))
       return 0;
+    
+    while (!dm.getGrupart().getString("CGRARTPRIP").equals(gr))
+      if (!lD.raLocate(dm.getGrupart(), "CGRART", gr = dm.getGrupart().getString("CGRARTPRIP")))
+        return 0;
     
     return dm.getGrupart().getInt("SSORT");
   }
   
   public String getGROUPTEXT() {
+    String gr = dm.getArtikli().getString("CGRART");
+    
     if (!lD.raLocate(dm.getArtikli(), "CART", Integer.toString(ds.getInt("CART"))) ||
         !lD.raLocate(dm.getGrupart(), "CGRART", dm.getArtikli().getString("CGRART")))
       return "";
+    
+    while (!dm.getGrupart().getString("CGRARTPRIP").equals(gr))
+      if (!lD.raLocate(dm.getGrupart(), "CGRART", gr = dm.getGrupart().getString("CGRARTPRIP")))
+        return "";
     
     return dm.getGrupart().getString("NAZGRART");
   }

@@ -81,12 +81,7 @@ public class jpVTZtr extends JPanel {
       if (fVTZtrstav != null) fVTZtrstav.afterPZT();
     }
   };
-  JlrNavField jlrNzt = new JlrNavField() {
-    public void after_lookUp() {
-      if (fVTZtr != null && fVTZtr.inedit)
-        fVTZtr.afterCzt();
-    }
-  };
+  
   JlrNavField jlrCpar = new JlrNavField() {
     public void after_lookUp() {
     }
@@ -100,6 +95,7 @@ public class jpVTZtr extends JPanel {
         fVTZtr.afterCzt();
     }
   };
+  JlrNavField jlrNzt = new JlrNavField();
   JlrNavField jlrNazpar = new JlrNavField() {
     public void after_lookUp() {
     }

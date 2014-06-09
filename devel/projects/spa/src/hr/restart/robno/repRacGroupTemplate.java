@@ -18,7 +18,6 @@
 package hr.restart.robno;
 
 import hr.restart.sisfun.frmParam;
-import hr.restart.util.Aus;
 import hr.restart.util.reports.raIzlazDetail;
 import hr.restart.util.reports.raIzlazGroupSectionHeader;
 import hr.restart.util.reports.raIzlazSectionFooterLines;
@@ -127,6 +126,22 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
     sh.LabelKolicina.defaultAlterer().setCaption("Kol");
     sh.LabelNaziv.defaultAlterer().setLeft(sh.LabelNaziv.defaultAlterer().getLeft() - rbrGain);
     sh.LabelNaziv.defaultAlterer().setWidth(sh.LabelNaziv.defaultAlterer().getWidth() + rbrGain + kolGain);
+    
+    long need = sh.LabelIznos.defaultAlterer().getLeft() - sh.LabelPor.defaultAlterer().getLeft();
+    sh.LabelIznos.defaultAlterer().setWidth(sh.LabelIznos.defaultAlterer().getWidth() - need / 2);
+    sh.LabelIznos.defaultAlterer().setLeft(sh.LabelIznos.defaultAlterer().getLeft() + need / 2);
+    sh.LabelCijena.defaultAlterer().setWidth(sh.LabelCijena.defaultAlterer().getWidth() - need + need / 2);
+    
+    sh.Label1.defaultAlterer().setLeft(sh.Label1.defaultAlterer().getLeft() - need + need / 2);
+    sh.Label1.defaultAlterer().setWidth(sh.Label1.defaultAlterer().getWidth() + need);
+    sh.LabelPop.defaultAlterer().setLeft(sh.LabelPop.defaultAlterer().getLeft() - need + need / 2);
+    
+    raReportElement pnp = sh.copyToModify(sh.LabelPor);
+    pnp.defaultAlterer().setCaption("Pnp");
+    pnp.defaultAlterer().setLeft(pnp.defaultAlterer().getLeft() + need / 2);
+    sh.LabelPor.defaultAlterer().setLeft(sh.LabelPor.defaultAlterer().getLeft() - need + need / 2);
+    sh.LabelPor.defaultAlterer().setCaption("Pdv");
+    
     return sh;
   }
   
@@ -147,6 +162,21 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
 
     sh.TextNAZART.defaultAlterer().setLeft(sh.TextNAZART.defaultAlterer().getLeft() - rbrGain);
     sh.TextNAZART.defaultAlterer().setWidth(sh.TextNAZART.defaultAlterer().getWidth() + rbrGain + kolGain);
+    
+    long need = sh.TextINETO.defaultAlterer().getLeft() - sh.TextPor1p2p3Naz.defaultAlterer().getLeft();
+    System.out.println("need:" + need);
+    sh.TextINETO.defaultAlterer().setWidth(sh.TextINETO.defaultAlterer().getWidth() - need / 2);
+    sh.TextINETO.defaultAlterer().setLeft(sh.TextINETO.defaultAlterer().getLeft() + need / 2);
+    sh.TextFC.defaultAlterer().setWidth(sh.TextFC.defaultAlterer().getWidth() - need + need / 2);
+    
+    sh.TextUPRAB1.defaultAlterer().setLeft(sh.TextUPRAB1.defaultAlterer().getLeft() - need + need / 2);
+    
+    raReportElement pnp = sh.copyToModify(sh.TextPor1p2p3Naz);
+    pnp.defaultAlterer().setControlSource("POSPor2");
+    pnp.defaultAlterer().setLeft(pnp.defaultAlterer().getLeft() + need / 2);
+    sh.TextPor1p2p3Naz.defaultAlterer().setLeft(sh.TextPor1p2p3Naz.defaultAlterer().getLeft() - need + need / 2);
+    sh.TextPor1p2p3Naz.defaultAlterer().setControlSource("POSPor1");
+    
     return sh;
   }
 
