@@ -462,8 +462,7 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
   }
   void jtfUIZT_focusLost(FocusEvent e) {
     if (frm.getMasterSet().getBigDecimal("UINAB").doubleValue()!=0) {
-      frm.getMasterSet().setBigDecimal("UPZT", util.findPostotak7(
-          frm.getMasterSet().getBigDecimal("UINAB"), frm.getMasterSet().getBigDecimal("UIZT")));
+      Aus.percent(frm.getMasterSet(), "UPZT", "UIZT", "UINAB");
     }
   }
   void jtfUINAB_focusLost(FocusEvent e) {
@@ -473,8 +472,7 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
       jtfUIZT_focusLost(null);
     } else if (frm.getMasterSet().getBigDecimal("UINAB").doubleValue()>0) {
       if (frm.getMasterSet().getBigDecimal("UPZT").doubleValue()==0) {
-        frm.getMasterSet().setBigDecimal("UPZT", util.findPostotak7(
-          frm.getMasterSet().getBigDecimal("UINAB"), frm.getMasterSet().getBigDecimal("UIZT")));
+        Aus.percent(frm.getMasterSet(), "UPZT", "UIZT", "UINAB");
       }
       else {
         frm.getMasterSet().setBigDecimal("UIZT", util.findIznos(
