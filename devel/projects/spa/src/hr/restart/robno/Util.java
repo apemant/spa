@@ -341,28 +341,7 @@ public class Util {
       return nul;
     }
   }
-  /**
-   * Rachunanje postotka od iznosa
-   */
-    public java.math.BigDecimal findPostotak6(java.math.BigDecimal Iznos, java.math.BigDecimal Osnovica) {
-      if (Iznos.doubleValue()>0) {
-        return Osnovica.multiply(sto).divide(Iznos, 6, BigDecimal.ROUND_HALF_UP);
-      }
-      else {
-        return nul;
-      }
-    }
-    /**
-     * Rachunanje postotka od iznosa
-     */
-      public java.math.BigDecimal findPostotak7(java.math.BigDecimal Iznos, java.math.BigDecimal Osnovica) {
-        if (Iznos.doubleValue()>0) {
-          return Osnovica.multiply(sto).divide(Iznos, 7, BigDecimal.ROUND_HALF_UP);
-        }
-        else {
-          return nul;
-        }
-      }
+  
 /**
  * Zbrajanje
  */
