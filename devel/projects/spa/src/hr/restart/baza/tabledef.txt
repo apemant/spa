@@ -1906,11 +1906,15 @@ KOSOBA;char;50;;;Kontakt osoba
 OPIS;char;2000;;;Opis kontakta
 
 $KlijentStat
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
 SID;char;1;pkey;;Šifra
 NAZIV;char;30;;;Naziv
 BOJA;char;20;;;Boja
 
 $Kanali
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
 CKANAL;int;6;pkey;;Šifra
 NAZIV;char;30;;;Naziv
 
