@@ -227,7 +227,8 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
       god = Valid.getValid().findYear();
     
     
-    QueryDataSet sta = Stanje.getDataModule().openTempSet(getSkladCond().and(Condition.equal("GOD", god)));
+    QueryDataSet sta = Stanje.getDataModule().openTempSet(getSkladCond().
+        and(Condition.equal("GOD", god)).and(Condition.where("KOL", Condition.GREATER_THAN, Aus.zero0)));
         
     
     dzg.insertRow(false);
