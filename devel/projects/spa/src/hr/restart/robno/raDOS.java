@@ -102,6 +102,7 @@ public class raDOS extends raIzlazTemplate  {
         raMaster.getRepRunner().addReport("hr.restart.robno.repDOS6","hr.restart.robno.repOTPss","DOS6","Dostavnica sa šifrom kupca, dvije jedinice mjere naruèeno / isporuèeno");
         raMaster.getRepRunner().addReport("hr.restart.robno.repDOS7","hr.restart.robno.repOTPcp","DOS7","Dostavnica s dvije jedinice mjere, cijenom i popustom");
         raMaster.getRepRunner().addReport("hr.restart.robno.repDOS8","hr.restart.robno.repOTPss","DOS8","Dostavnica sa šifrom kupca, dvije jedinice mjere i cijenom");
+        raMaster.getRepRunner().addReport("hr.restart.robno.repDOS9","hr.restart.robno.repOTP","DOS9","Dostavnica kao raèun");
         if (hr.restart.sisfun.frmParam.getParam("robno","IspisGetroROTs","N","Stavke ispisa sadržavaju i ispis za Getro",true).equals("D")){
           raMaster.getRepRunner().addReport("hr.restart.robno.repDOSGetro","hr.restart.robno.repRacuniPnP","DosGetro","Dostavnica za Getro");
         }
@@ -117,6 +118,7 @@ public class raDOS extends raIzlazTemplate  {
         raDetail.getRepRunner().addReport("hr.restart.robno.repDOS6","hr.restart.robno.repOTPss","DOS6","Dostavnica sa šifrom kupca, dvije jedinice mjere naruèeno / isporuèeno");
         raDetail.getRepRunner().addReport("hr.restart.robno.repDOS7","hr.restart.robno.repOTPcp","DOS7","Dostavnica s dvije jedinice mjere, cijenom i popustom");
         raDetail.getRepRunner().addReport("hr.restart.robno.repDOS8","hr.restart.robno.repOTPss","DOS8","Dostavnica sa šifrom kupca, dvije jedinice mjere i cijenom");
+        raDetail.getRepRunner().addReport("hr.restart.robno.repDOS9","hr.restart.robno.repOTP","DOS9","Dostavnica kao raèun");
         if (hr.restart.sisfun.frmParam.getParam("robno","IspisGetroROTs","N","Stavke ispisa sadržavaju i ispis za Getro",true).equals("D")){
           raDetail.getRepRunner().addReport("hr.restart.robno.repDOSGetro","hr.restart.robno.repRacuniPnP","DosGetro","Dostavnica za Getro");
         }
