@@ -20,6 +20,10 @@
  */
 package hr.restart.util.reports;
 
+import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
+import hr.restart.util.VarStr;
+
 
 /**
  * @author abf
@@ -49,5 +53,13 @@ public class raIzlazSectionFooterForCustom extends raReportSection {
   }
 
   private void modifyThis() {
+    String font = frmParam.getParam("robno", "napomenaFont", "", "Font za napomene na izlazima (Name;size;N/B/I/BI)");
+    if (font != null && font.length() > 0) {
+      String[] p = new VarStr(font).split(';');
+      TextNAPOMENAOPIS.setFont(p[0]);
+      if (p.length > 1 && p[1].length() > 0) TextNAPOMENAOPIS.setFontSize(Aus.getAnyNumber(p[1]));
+      if (p.length > 2 && p[2].toUpperCase().indexOf("B") > 0) TextNAPOMENAOPIS.setFontBold(true);
+      if (p.length > 2 && p[2].toUpperCase().indexOf("I") > 0) TextNAPOMENAOPIS.setFontItalic(true);
+    }
   }
 }
