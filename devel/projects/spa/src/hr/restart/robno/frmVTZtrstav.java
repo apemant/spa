@@ -22,6 +22,7 @@ import hr.restart.baza.VTZtr;
 import hr.restart.baza.VTZtrt;
 import hr.restart.baza.dM;
 import hr.restart.swing.raTableColumnModifier;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raMatPodaci;
@@ -33,7 +34,9 @@ import java.math.BigDecimal;
 
 import javax.swing.JOptionPane;
 
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.Variant;
+import com.borland.dx.sql.dataset.QueryDataSet;
 
 /**
  * <p>Title: </p>
@@ -124,15 +127,26 @@ public class frmVTZtrstav extends raMatPodaci {
     dm.getVTZtr().open();
     dm.getVTZtr().deleteAllRows();
     if (mode != 'B') {
-      getJpTableView().enableEvents(false);
+      QueryDataSet ds = VTZtrt.getDataModule().getTempSet(Condition.equal("DODKEY", dodkey));
+      ds.open();
+      for (ds.first(); ds.inBounds(); ds.next()) {
+        if (ds.getShort("LRBR") == 0) continue;
+        dm.getVTZtr().insertRow(false);
+        dm.copyColumns(frm.getDetailSet(), dm.getVTZtr(), frm.key);
+        dm.getVTZtr().setShort("RBR",  frm.getDetailSet().getShort("RBR"));
+        dm.copyColumns(ds, dm.getVTZtr(), ccols);
+      }
+      ds.deleteAllRows();
+      raTransaction.saveChanges(ds);
+      /*getJpTableView().enableEvents(false);
       for (getRaQueryDataSet().first(); getRaQueryDataSet().inBounds(); getRaQueryDataSet().next()) {
         dm.getVTZtr().insertRow(false);
         dm.copyColumns(frm.getDetailSet(), dm.getVTZtr(), frm.key);
         dm.getVTZtr().setShort("RBR", (short) frm.getDetailSet().getShort("RBR"));
         dm.copyColumns(getRaQueryDataSet(), dm.getVTZtr(), ccols);
       }
-      getJpTableView().enableEvents(true);
-      raTransaction.runSQL("DELETE from vtztrt WHERE dodkey="+dodkey);
+      getJpTableView().enableEvents(true);*/
+      //raTransaction.runSQL("DELETE from vtztrt WHERE dodkey="+dodkey);
     }
     raTransaction.saveChanges(dm.getVTZtr());
     if (mode == 'B') {
@@ -223,18 +237,11 @@ public class frmVTZtrstav extends raMatPodaci {
   }
 
   public void calcPZT() {
-    BigDecimal idob = getIVAL();
-    if (idob.signum() == 0)
-      getRaQueryDataSet().setBigDecimal("PZT", _Main.nul);
-    else
-      getRaQueryDataSet().setBigDecimal("PZT", new BigDecimal(100 *
-        getRaQueryDataSet().getBigDecimal("IZT").doubleValue() / idob.doubleValue()));
+    Aus.percent(getRaQueryDataSet(), "PZT", "IZT", getIVAL());
   }
 
   public void calcIZT() {
-    BigDecimal idob = getIVAL();
-    getRaQueryDataSet().setBigDecimal("IZT", new BigDecimal(idob.multiply(getRaQueryDataSet().
-        getBigDecimal("PZT")).doubleValue() / 100).setScale(2, BigDecimal.ROUND_HALF_UP));
+    Aus.percentage(getRaQueryDataSet(), "IZT", getIVAL(), "PZT");
   }
 
   public void AfterSave(char mode) {
