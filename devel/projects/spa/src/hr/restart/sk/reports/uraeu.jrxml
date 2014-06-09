@@ -504,7 +504,7 @@ S POREZOM]]></text>
 						<font fontName="Arial" size="7" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
 					<text><![CDATA[
-10%]]></text>
+13%]]></text>
 				</staticText>
 				<line>
 					<reportElement positionType="Float" x="387" y="44" width="1" height="37" forecolor="#000000"/>
@@ -557,7 +557,7 @@ SE ODBITI]]></text>
 						<font fontName="Arial" size="7" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
 					<text><![CDATA[
-10%]]></text>
+13%]]></text>
 				</staticText>
 				<staticText>
 					<reportElement positionType="Float" x="622" y="70" width="50" height="10" forecolor="#000000"/>
