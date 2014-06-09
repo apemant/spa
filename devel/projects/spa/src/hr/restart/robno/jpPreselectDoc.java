@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
@@ -413,9 +414,14 @@ abstract public class jpPreselectDoc extends PreSelect {
     if (!Aut.getAut().getKnjigodRobno().equals(vl.findYear()) &&
         !dm.getKnjigod().getString("STATRADA").equalsIgnoreCase("D"))
       day = uut.getYearEnd(Aut.getAut().getKnjigodRobno());
+    
 
       getSelRow().setTimestamp("DATDOK-from",day);
       getSelRow().setTimestamp("DATDOK-to",day);
+      
+      String dan = frmParam.getParam("robno", "preselDatum", "D", "Poèetni datum na predselekciji u robnom (D,M,Y)?", true);
+      if (dan.equalsIgnoreCase("M")) getSelRow().setTimestamp("DATDOK-from", uut.getFirstDayOfMonth(day));
+      else if (dan.equalsIgnoreCase("Y")) getSelRow().setTimestamp("DATDOK-from", uut.getFirstDayOfYear(day));
 
       getSelRow().post();
   }
