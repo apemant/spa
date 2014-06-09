@@ -243,7 +243,8 @@ public class Aus {
   }
   
   public static void div(ReadWriteRow ds, String dest, String c1, String c2) {
-    ds.setBigDecimal(dest, ds.getBigDecimal(c1).divide(ds.getBigDecimal(c2),
+    if (ds.getBigDecimal(c2).signum() == 0) ds.setBigDecimal(dest, Aus.zero0);
+    else ds.setBigDecimal(dest, ds.getBigDecimal(c1).divide(ds.getBigDecimal(c2),
         ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
   }
   
@@ -253,7 +254,8 @@ public class Aus {
   }
   
   public static void div(ReadWriteRow ds, String dest, BigDecimal num) {
-    ds.setBigDecimal(dest, ds.getBigDecimal(dest).divide(num, 
+    if (num.signum() == 0) ds.setBigDecimal(dest, Aus.zero0);
+    else ds.setBigDecimal(dest, ds.getBigDecimal(dest).divide(num, 
         ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
   }
   
@@ -266,6 +268,46 @@ public class Aus {
     add(ds, dest, row.getBigDecimal(src).subtract(num));
   }
   
+  public static void base(ReadWriteRow ds, String dest, String src, BigDecimal percent) {
+    ds.setBigDecimal(dest, ds.getBigDecimal(src).divide(percent.movePointLeft(2).add(one0), 
+        ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
+  }
+  
+  public static void percent(ReadWriteRow ds, String dest, String src, BigDecimal num) {
+    if (num.signum() == 0) ds.setBigDecimal(dest, Aus.zero0);
+    else ds.setBigDecimal(dest, ds.getBigDecimal(src).movePointRight(2).divide(num,
+        ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
+  }
+  
+  public static void percentage(ReadWriteRow ds, String dest, BigDecimal num, String percent) {
+    ds.setBigDecimal(dest, ds.getBigDecimal(percent).movePointLeft(2).multiply(num).
+        setScale(ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
+  }
+  
+  public static BigDecimal minus(ReadWriteRow ds, String c1, String c2) {
+    return ds.getBigDecimal(c1).subtract(ds.getBigDecimal(c2));
+  }
+  
+  public static BigDecimal plus(ReadWriteRow ds, String c1, String c2) {
+    return ds.getBigDecimal(c1).add(ds.getBigDecimal(c2));
+  }
+  
+  public static BigDecimal to0(BigDecimal num) {
+    return num.setScale(0, BigDecimal.ROUND_HALF_UP);
+  }
+  
+  public static BigDecimal to2(BigDecimal num) {
+    return num.setScale(2, BigDecimal.ROUND_HALF_UP);
+  }
+  
+  public static BigDecimal to3(BigDecimal num) {
+    return num.setScale(3, BigDecimal.ROUND_HALF_UP);
+  }
+  
+  public static BigDecimal to6(BigDecimal num) {
+    return num.setScale(6, BigDecimal.ROUND_HALF_UP);
+  }
+    
   /**
    * vraæa true ako je string cijeli broji.
    */
