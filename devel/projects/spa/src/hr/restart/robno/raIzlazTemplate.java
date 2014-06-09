@@ -5055,17 +5055,20 @@ System.out.println("findCjenik::else :: "+sql);
           rKD.stavka.Init();
           rKD.stavkaold.Init();
           rKD.setWhat_kind_of_document(ds.getString("VRDOK"));
-          if (nopor) {
-            ds.setBigDecimal("PPOR1", Aus.zero2);
-            ds.setBigDecimal("PPOR2", Aus.zero2);
-            ds.setBigDecimal("PPOR3", Aus.zero2);
-          } else if (lD.raLocate(dm.getArtikli(), "CART", String.valueOf(ds.getInt("CART")))) {
+          
+          if (lD.raLocate(dm.getArtikli(), "CART", String.valueOf(ds.getInt("CART")))) {
             if (lD.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"))) {
               ds.setBigDecimal("PPOR1", dm.getPorezi().getBigDecimal("POR1"));
               ds.setBigDecimal("PPOR2", dm.getPorezi().getBigDecimal("POR2"));
               ds.setBigDecimal("PPOR3", dm.getPorezi().getBigDecimal("POR3"));
               ds.setBigDecimal("UPPOR", dm.getPorezi().getBigDecimal("UKUPOR"));
             }
+          }
+          if (nopor) {
+            ds.setBigDecimal("PPOR1", Aus.zero2);
+            /*ds.setBigDecimal("PPOR2", Aus.zero2);
+            ds.setBigDecimal("PPOR3", Aus.zero2);*/
+            ds.setBigDecimal("UPPOR", ds.getBigDecimal("PPOR2"));
           }
           
           lc.TransferFromDB2Class(ds, rKD.stavka);
@@ -5487,10 +5490,10 @@ System.out.println("findCjenik::else :: "+sql);
       ppor1 = nopor ? Aus.zero0 : por.getBigDecimal("POR1");
       rpor1 = osn.multiply(ppor1).movePointLeft(2).
                   setScale(2, BigDecimal.ROUND_HALF_UP);
-      ppor2 = nopor ? Aus.zero0 : por.getBigDecimal("POR2");
+      ppor2 = /*nopor ? Aus.zero0 : */ por.getBigDecimal("POR2");
       rpor2 = osn.multiply(ppor2).movePointLeft(2).
                   setScale(2, BigDecimal.ROUND_HALF_UP);
-      ppor3 = nopor ? Aus.zero0 : por.getBigDecimal("POR3");
+      ppor3 = /*nopor ? Aus.zero0 : */ por.getBigDecimal("POR3");
       rpor3 = osn.multiply(ppor3).movePointLeft(2).
                   setScale(2, BigDecimal.ROUND_HALF_UP);
     }
