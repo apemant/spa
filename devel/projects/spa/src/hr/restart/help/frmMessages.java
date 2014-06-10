@@ -145,8 +145,6 @@ public class frmMessages extends raMatPodaci {
     msg.setEditable(false);
     //msg.setEditorKit(new HTMLEditorKit());
     msg.addHyperlinkListener(new HyperlinkListener() {
-			
-			@Override
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 					Interpreter bsh = new Interpreter(); 

@@ -906,23 +906,19 @@ public class dlgDataFilter extends raOptionDialog {
   		super(text);
 		}
   	
-		@Override
 		public void paintIcon(Component c, Graphics g, int x, int y) {
 			g.translate(x,  y);
 			this.paintComponent(g);
 			g.translate(-x,  -y);
 		}
 		
-		@Override
 		public int getIconWidth() {
 			return getPreferredSize().width + 10;
 		}
 
-		@Override
 		public int getIconHeight() {
 			return getPreferredSize().height;
 		}
-  	
   }
   
  
