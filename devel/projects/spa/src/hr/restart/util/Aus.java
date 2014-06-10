@@ -279,8 +279,19 @@ public class Aus {
         ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
   }
   
+  public static void percent(ReadWriteRow ds, String dest, String src, String total) {
+    if (ds.getBigDecimal(total).signum() == 0) ds.setBigDecimal(dest, Aus.zero0);
+    else ds.setBigDecimal(dest, ds.getBigDecimal(src).movePointRight(2).divide(ds.getBigDecimal(total),
+        ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
+  }
+  
   public static void percentage(ReadWriteRow ds, String dest, BigDecimal num, String percent) {
     ds.setBigDecimal(dest, ds.getBigDecimal(percent).movePointLeft(2).multiply(num).
+        setScale(ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
+  }
+  
+  public static void percentage(ReadWriteRow ds, String dest, String total, String percent) {
+    ds.setBigDecimal(dest, ds.getBigDecimal(percent).movePointLeft(2).multiply(ds.getBigDecimal(total)).
         setScale(ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
   }
   
