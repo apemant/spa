@@ -23,7 +23,7 @@ import hr.restart.sisfun.frmParam;
 public class raPONSectionHeader0TF extends raReportSection {
 
   private String[] thisProps = new String[] {"BRDOK", "Before", "", "", "Yes", "", "No", "", 
-     "2840"};
+     "3240"};
   public raReportElement LabelP_O_N_U_D_A;
   private String[] LabelP_O_N_U_D_AProps = new String[] {"\nP O N U D A", "", "7020", "", "4100", 
      "600", "", "", "", "", "", "", "Lucida Bright", "12", "Bold", "", "", "Center"};
