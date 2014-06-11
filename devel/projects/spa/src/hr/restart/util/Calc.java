@@ -96,6 +96,9 @@ public class Calc {
   Operator PERCENT = new Operator("%", 2, 20) {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.multiply(val2).movePointLeft(2); }
   };
+  Operator GETPERCENT = new Operator("%%", 2, 20) {
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.divide(val2.movePointLeft(2), val1.scale(), BigDecimal.ROUND_HALF_UP); }
+  };
   Operator ADDPERCENT = new Operator("+%", 2, 20) {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.add(val1.multiply(val2).movePointLeft(2)); }
   };
@@ -164,7 +167,7 @@ public class Calc {
   
   private BigDecimal getVar(String var) {
     if (values != null && values.hasColumn(var) != null) 
-    	return values.getBigDecimal(var);
+      return values.getBigDecimal(var);
     return (BigDecimal) vars.get(var);
   }
   
@@ -191,7 +194,7 @@ public class Calc {
     this.vars = new HashMap();
   }
   
-  private Calc(Calc copy) {
+  public Calc(Calc copy) {
     this.values = copy.values;
     this.vars = copy.vars;
   }
@@ -204,12 +207,36 @@ public class Calc {
     return new Calc(ds, expr).eval();
   }
   
-  public void set(String var, BigDecimal val) {
+  public static BigDecimal run(ReadWriteRow ds, String expr) {
+    return new Calc(ds, expr).eval();
+  }
+  
+  public Calc set(String var, BigDecimal val) {
   	vars.put(var,  val);
+  	return this;
   }
   
   public BigDecimal get(String var) {
     return (BigDecimal) vars.get(var);
+  }
+  
+  public Calc reset() {
+    vars.clear();
+    return this;
+  }
+  
+  public Calc setData(ReadWriteRow ds) {
+    this.values = ds;
+    return this;
+  }
+  
+  public BigDecimal runOn(ReadWriteRow ds, String expr) {
+    return new Calc(this).setData(ds).run(expr);
+  }
+  
+  public BigDecimal run(String expr) {
+    this.expression = expr;
+    return eval();
   }
   
   public BigDecimal evaluate(String expr) {
@@ -325,6 +352,7 @@ public class Calc {
           if (ch == '-') return ASSIGN_SUBPERCENT;
           if (ch == '~') return ASSIGN_INVERTPERCENT;
         } else {
+          if (ch == '%') return GETPERCENT;
           if (ch == '+') return ADDPERCENT;
           if (ch == '-') return SUBPERCENT;
           if (ch == '~') return INVERTPERCENT;
