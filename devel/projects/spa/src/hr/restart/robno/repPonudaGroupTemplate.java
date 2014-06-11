@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.util.reports.raElixirPropertyValues;
 import hr.restart.util.reports.raIzlazDetail;
 import hr.restart.util.reports.raIzlazGroupSectionHeader;
 import hr.restart.util.reports.raIzlazSectionFooterLines;
@@ -53,8 +54,20 @@ public class repPonudaGroupTemplate extends repIzlazGroupOrigTemplate {
     sh.defaultAltererSect().removeModels(new raReportElement[] {
         sh.LabelNarudzba, sh.TextBRNARIZ, sh.TextSgetDATNARIZ,
         sh.LabelUgovor, sh.TextCUG, sh.TextSgetDATUG,
-        sh.LabelNacin_otpreme, sh.TextNAZNAC, sh.LabelParitet, sh.TextNAZFRA});
-    sh.defaultAltererSect().setHeight(sh.defaultAltererSect().getHeight() - 200);
+        sh.LabelNacin_otpreme, sh.TextNAZNAC, 
+        sh.LabelParitet, sh.TextNAZFRA, sh.LabelIsporuka, 
+        sh.TextISPORUKA, sh.LabelObrazac, sh.LabelR1});
+    
+    raReportElement[] adrmj = {sh.TextADR, sh.TextMJ};
+    sh.defaultAltererSect().getView(adrmj).moveUp(40);
+    raReportElement[] rest = {sh.TextMB, sh.TextCPAR, sh.TextTEL};
+    sh.defaultAltererSect().getView(rest).moveUp(360);
+    sh.Rectangle1.defaultAlterer().setHeight(sh.Rectangle1.defaultAlterer().getHeight() - 360);
+    sh.Rectangle2.defaultAlterer().setHeight(sh.Rectangle2.defaultAlterer().getHeight() - 360);
+    sh.Rectangle4.defaultAlterer().setHeight(sh.Rectangle4.defaultAlterer().getHeight() - 360);
+    
+    sh.setDefault(ep.SHRINK, raElixirPropertyValues.YES);
+    //sh.defaultAltererSect().setHeight(sh.defaultAltererSect().getHeight() - 200);
     return sh;
 
 //    return new raPONSectionHeader0TF(this);

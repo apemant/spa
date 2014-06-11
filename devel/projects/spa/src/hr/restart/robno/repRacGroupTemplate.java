@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.sisfun.frmParam;
+import hr.restart.util.reports.raElixirPropertyValues;
 import hr.restart.util.reports.raIzlazDetail;
 import hr.restart.util.reports.raIzlazGroupSectionHeader;
 import hr.restart.util.reports.raIzlazSectionFooterLines;
@@ -63,7 +64,17 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
     
     sh.defaultAltererSect().removeModels(new raReportElement[] {
         sh.LabelNarudzba, sh.TextBRNARIZ, sh.TextSgetDATNARIZ,
-        sh.LabelIzlazni_dokument, sh.TextBRDOKIZ, sh.TextLABDOD, sh.TextTEXTDOD});
+        sh.LabelIzlazni_dokument, sh.TextBRDOKIZ, sh.TextLABDOD, 
+        sh.TextTEXTDOD, sh.LabelIsporuka, 
+        sh.TextISPORUKA, sh.LabelObrazac, sh.LabelR1});
+    
+    raReportElement[] adrmj = {sh.TextADR, sh.TextMJ};
+    sh.defaultAltererSect().getView(adrmj).moveUp(40);
+    raReportElement[] rest = {sh.TextMB, sh.TextCPAR, sh.TextTEL};
+    sh.defaultAltererSect().getView(rest).moveUp(360);
+    sh.Rectangle1.defaultAlterer().setHeight(sh.Rectangle1.defaultAlterer().getHeight() - 360);
+    sh.Rectangle2.defaultAlterer().setHeight(sh.Rectangle2.defaultAlterer().getHeight() - 360);
+    sh.Rectangle3.defaultAlterer().setHeight(sh.Rectangle3.defaultAlterer().getHeight() - 360);
     
     /*long topNar = sh.LabelNarudzba.defaultAlterer().getTop();
     long topIzDok = sh.LabelIzlazni_dokument.defaultAlterer().getTop();
@@ -105,7 +116,8 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
       ob.setTop(ob.getTop() + isp.getTop() - rac.getTop() - 120);
     }
     
-    sh.defaultAltererSect().setHeight(sh.defaultAltererSect().getHeight() - 200);
+    sh.setDefault(ep.SHRINK, raElixirPropertyValues.YES);
+    //sh.defaultAltererSect().setHeight(sh.defaultAltererSect().getHeight() - 200);
     
     return sh;
 //    sh.LabelNacinplacanja.defaultAlterer().setTop(sh.LabelNacinotpreme.defaultAlterer().getTop());
