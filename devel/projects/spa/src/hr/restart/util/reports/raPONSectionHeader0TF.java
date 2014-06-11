@@ -145,11 +145,18 @@ public class raPONSectionHeader0TF extends raReportSection {
   public raReportElement TextNAZFRA;
   private String[] TextNAZFRAProps = new String[] {"NAZFRA", "", "", "", "", "", "", "", "7280", 
      "2360", "3020", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+  public raReportElement LabelIsporuka;
+  private String[] LabelIsporukaProps = new String[] {"Isporuka", "", "5700", "2580", "1500", "220", 
+     "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
+  public raReportElement TextISPORUKA;
+  private String[] TextISPORUKAProps = new String[] {"ISPORUKA", "", "", "", "", "", "Yes", "Yes", 
+     "7280", "2580", "3020", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", 
+     ""};
   public raReportElement LabelObrazac;
-  private String[] LabelObrazacProps = new String[] {"Obrazac", "No", "9480", "2400", "1000", "", 
-     "", "", "", "", "", "", "Lucida Bright", "7", "Bold", "", "", "Right"};
+  private String[] LabelObrazacProps = new String[] {"Obrazac", "", "9480", "2820", "1000", "", "", 
+     "", "", "", "", "", "Lucida Bright", "7", "Bold", "", "", "Right"};
   public raReportElement LabelR1;
-  private String[] LabelR1Props = new String[] {"R-1", "No", "9640", "2400", "1240", "", "", "", "", 
+  private String[] LabelR1Props = new String[] {"R-1", "", "9640", "2820", "1240", "", "", "", "", 
      "", "", "", "Lucida Bright", "7", "Bold", "", "", "Right"};
 
   public raPONSectionHeader0TF(raReportTemplate owner) {
@@ -216,12 +223,26 @@ public class raPONSectionHeader0TF extends raReportSection {
     TextMB = addModel(ep.TEXT, TextMBProps);
     LabelParitet = addModel(ep.LABEL, LabelParitetProps);
     TextNAZFRA = addModel(ep.TEXT, TextNAZFRAProps);
-    LabelObrazac = addModel(ep.LABEL, LabelObrazacProps);
+    LabelIsporuka = addModel(ep.LABEL, LabelIsporukaProps);
+    TextISPORUKA = addModel(ep.TEXT, TextISPORUKAProps);
     LabelR1 = addModel(ep.LABEL, LabelR1Props);
+    LabelObrazac = addModel(ep.LABEL, LabelObrazacProps);
   }
   
   String last = "L";
   private void modifyThis() {
+    String knjig = hr.restart.zapod.OrgStr.getKNJCORG(false);
+    String r1 = frmParam.getParam("robno", "izlazObr"+knjig,
+        "R-1", "Vrsta obrasca ispisa raèuna za knjigovodstvo "+knjig);
+    LabelR1.setCaption(r1);
+    if (r1.length() == 0) LabelObrazac.setCaption("");
+    
+    if (frmParam.getParam("robno","ispisPJ","D", "Ispis poslovne jedinice na ROT-u " +
+        "(D-u adresi, I-kao isporuka, O-na oba mjesta, N-bez P.J.)").equalsIgnoreCase("I") ||
+        frmParam.getParam("robno","ispisPJ").equalsIgnoreCase("O"))
+      LabelIsporuka.setCaption("Isporuka");  //LabelIsporuka.setCaption("");
+    else LabelIsporuka.setCaption("");
+    
     String now = hr.restart.sisfun.frmParam.getParam("robno", "ispProzor");
     if (!now.equals(last)) {
       last = now;
