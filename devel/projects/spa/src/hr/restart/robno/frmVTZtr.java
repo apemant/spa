@@ -28,6 +28,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raMatPodaci;
 import hr.restart.util.raNavBar;
+import hr.restart.util.raProcess;
 import hr.restart.util.raTransaction;
 import hr.restart.util.startFrame;
 
@@ -122,9 +123,8 @@ public class frmVTZtr extends raMatPodaci {
 
   public void saveChanges(char mode) throws Exception {
     //DataSet tmp = getRaQueryDataSet();
-    QueryDataSet zt = dm.getVTZtr(); 
     if (frm.enableZT || mode != 'I') {
-      VTZtr.getDataModule().setFilter(masterRow+" AND rbr = 0");
+      QueryDataSet zt = VTZtr.getDataModule().getTempSet(masterRow+" AND rbr = 0");
       zt.open();
       zt.deleteAllRows();
       
@@ -145,25 +145,28 @@ public class frmVTZtr extends raMatPodaci {
         raTransaction.saveChanges(tmp);
       }
       raTransaction.saveChanges(zt);
-    } else {
-      QueryDataSet tmp = VTZtrt.getDataModule().getTempSet(Condition.equal("DODKEY", dodkey));
-      tmp.open();
-      VTZtr.getDataModule().setFilter(masterRow);
-      zt.open();
-      
-      repairStructuralDiffs(tmp, zt);
-      
-      for (tmp.first(); tmp.inBounds(); tmp.next()) {
-        for (zt.first(); zt.inBounds(); zt.next()) {
-          if (tmp.getShort("LRBR") == zt.getShort("LRBR") && tmp.getShort("CZT") == zt.getShort("CZT"))
-            dm.copyColumns(tmp, zt, ecols);
+    } else {      
+      raProcess.runChild(frm.raMaster.getWindow(), new Runnable() {
+        public void run() {
+          QueryDataSet tmp = VTZtrt.getDataModule().getTempSet(Condition.equal("DODKEY", dodkey));
+          tmp.open();
+          QueryDataSet zt = VTZtr.getDataModule().getTempSet(masterRow);
+          zt.open();
+
+          repairStructuralDiffs(tmp, zt);
+
+          for (tmp.first(); tmp.inBounds(); tmp.next()) {
+            for (zt.first(); zt.inBounds(); zt.next()) {
+              if (tmp.getShort("LRBR") == zt.getShort("LRBR") && tmp.getShort("CZT") == zt.getShort("CZT"))
+                dm.copyColumns(tmp, zt, ecols);
+            }
+          }
+          zt.post();
+          raTransaction.saveChanges(zt);
         }
-      }
-      zt.post();
-      raTransaction.saveChanges(zt);
-      
+      });
+      if (!raProcess.isCompleted()) throw raProcess.getLastException();
       raTransaction.runSQL("DELETE from vtztrt WHERE dodkey="+dodkey);
-      
     }
   }
   
@@ -195,7 +198,7 @@ public class frmVTZtr extends raMatPodaci {
     return delRbr;
   }
   
-  private void repairStructuralDiffs(QueryDataSet tmp, QueryDataSet zt) {
+  void repairStructuralDiffs(QueryDataSet tmp, QueryDataSet zt) {
     
     TreeSet delRbr = findDeleted(tmp, zt);
     
@@ -225,19 +228,23 @@ public class frmVTZtr extends raMatPodaci {
     dm.copyColumns(frm.getMasterSet(), zt, frm.key);
     zt.setShort("RBR", (short) 0);
     dm.copyColumns(tmp, zt, ccols);
-    frm.raDetail.getJpTableView().enableEvents(false);
-    for (frm.getDetailSet().first(); frm.getDetailSet().inBounds(); frm.getDetailSet().next()) {
-      zt.insertRow(false);
-      dm.copyColumns(frm.getMasterSet(), zt, frm.key);
-      zt.setShort("RBR", frm.getDetailSet().getShort("RBR"));
-      dm.copyColumns(tmp, zt, ccols);
-      BigDecimal uinab = frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB"));
-      zt.setBigDecimal("IZT", new BigDecimal(uinab.multiply(
-          zt.getBigDecimal("PZT")).doubleValue() / 100).setScale(2, BigDecimal.ROUND_HALF_UP));
+    try {
+      long row = frm.getDetailSet().getInternalRow();
+      frm.raDetail.getJpTableView().enableEvents(false);
+      for (frm.getDetailSet().first(); frm.getDetailSet().inBounds(); frm.getDetailSet().next()) {
+        zt.insertRow(false);
+        dm.copyColumns(frm.getMasterSet(), zt, frm.key);
+        zt.setShort("RBR", frm.getDetailSet().getShort("RBR"));
+        dm.copyColumns(tmp, zt, ccols);
+        BigDecimal uinab = frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB"));
+        Aus.percentage(zt, "IZT", uinab, "PZT");
+        zt.post();
+      }
+      frm.getDetailSet().goToInternalRow(row);
+    } finally {
+      frm.raDetail.getJpTableView().enableEvents(true);
     }
-    zt.post();
     raTransaction.saveChanges(zt);
-    frm.raDetail.getJpTableView().enableEvents(true);
   }
   
   private void deleteZav(QueryDataSet zt, TreeSet delRbr) {
@@ -293,12 +300,9 @@ public class frmVTZtr extends raMatPodaci {
     if (inedit) needUpdate = true;
     else {
       needUpdate = false;
-      int row = getRaQueryDataSet().getRow();
-      getJpTableView().enableEvents(false);
-      for (getRaQueryDataSet().first(); getRaQueryDataSet().inBounds(); getRaQueryDataSet().next())
-        calcPZT();
-      getRaQueryDataSet().goToRow(row);
-      getJpTableView().enableEvents(true);
+      calc.set("uinab", frm.getMasterSet().getBigDecimal("UINAB"));
+      performAllRows("PZT = IZT,7 %% uinab");
+      getRaQueryDataSet().saveChanges();
     }
   }
 
@@ -307,14 +311,6 @@ public class frmVTZtr extends raMatPodaci {
       inedit = false;
       if (needUpdate) updateZT();
     }
-  }
-
-  public void calcPZT() {
-    Aus.percent(getRaQueryDataSet(), "PZT", "IZT", frm.getMasterSet().getBigDecimal("UINAB"));
-  }
-
-  public void calcIZT() {
-    Aus.percentage(getRaQueryDataSet(), "IZT", frm.getMasterSet().getBigDecimal("UINAB"), "PZT");
   }
 
   private void setNextDodKey() {
@@ -341,18 +337,19 @@ public class frmVTZtr extends raMatPodaci {
       jpDetail.jlrCpar.setText(String.valueOf(dm.getZtr().getInt("CPAR")));
     else jpDetail.jlrCpar.setText("");
     jpDetail.jlrCpar.forceFocLost();
-    jpDetail.setSkipCpar();
-    jpDetail.setSkipPzt();
-    getRaQueryDataSet().setBigDecimal("PZT", dm.getZtr().getBigDecimal("PZT"));
-    calcIZT();
+    //jpDetail.setSkipCpar();
+    //jpDetail.setSkipPzt();
+    Aus.set(getRaQueryDataSet(), "PZT", dm.getZtr());
+    afterPZT();
+    jpDetail.jraIzt.requestFocusLater();
   }
 
   public void afterIZT() {
-    calcPZT();
+    Aus.percent(getRaQueryDataSet(), "PZT", "IZT", frm.getMasterSet().getBigDecimal("UINAB"));
   }
 
   public void afterPZT() {
-    calcIZT();
+    Aus.percentage(getRaQueryDataSet(), "IZT", frm.getMasterSet().getBigDecimal("UINAB"), "PZT");
   }
   
   public void EntryPoint(char mode) {
@@ -467,14 +464,9 @@ public class frmVTZtr extends raMatPodaci {
   }
 
   public void changedZT() {
-    int row = getRaQueryDataSet().getRow();
-    getJpTableView().enableEvents(false);
-    BigDecimal total = _Main.nul;
-    for (getRaQueryDataSet().first(); getRaQueryDataSet().inBounds(); getRaQueryDataSet().next())
-      total = total.add(getRaQueryDataSet().getBigDecimal("IZT"));
-    getRaQueryDataSet().goToRow(row);
-    getJpTableView().enableEvents(true);
-    frm.getMasterSet().setBigDecimal("UIZT", total);
+    calc.set("total", Aus.zero2);
+    performAllRows("total += IZT");
+    calc.runOn(frm.getMasterSet(), "UIZT = total");
     ((IZavtrHandler) frm).getMasterPanel().jtfUIZT_focusLost(null);
   }
 

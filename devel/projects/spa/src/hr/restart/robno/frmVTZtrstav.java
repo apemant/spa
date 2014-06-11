@@ -34,7 +34,6 @@ import java.math.BigDecimal;
 
 import javax.swing.JOptionPane;
 
-import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
@@ -90,8 +89,7 @@ public class frmVTZtrstav extends raMatPodaci {
         getRaQueryDataSet().insertRow(false);
         getRaQueryDataSet().setShort("DODKEY", dodkey);
         dM.copyColumns(dm.getVTZtr(), getRaQueryDataSet(), ccols);
-        if (mode == 'N')
-          calcIZT();
+        if (mode == 'N') afterPZT();
       }
       getRaQueryDataSet().saveChanges();
     }
@@ -138,15 +136,6 @@ public class frmVTZtrstav extends raMatPodaci {
       }
       ds.deleteAllRows();
       raTransaction.saveChanges(ds);
-      /*getJpTableView().enableEvents(false);
-      for (getRaQueryDataSet().first(); getRaQueryDataSet().inBounds(); getRaQueryDataSet().next()) {
-        dm.getVTZtr().insertRow(false);
-        dm.copyColumns(frm.getDetailSet(), dm.getVTZtr(), frm.key);
-        dm.getVTZtr().setShort("RBR", (short) frm.getDetailSet().getShort("RBR"));
-        dm.copyColumns(getRaQueryDataSet(), dm.getVTZtr(), ccols);
-      }
-      getJpTableView().enableEvents(true);*/
-      //raTransaction.runSQL("DELETE from vtztrt WHERE dodkey="+dodkey);
     }
     raTransaction.saveChanges(dm.getVTZtr());
     if (mode == 'B') {
@@ -179,12 +168,8 @@ public class frmVTZtrstav extends raMatPodaci {
     if (inedit) needUpdate = true;
     else {
       needUpdate = false;
-      int row = getRaQueryDataSet().getRow();
-      getJpTableView().enableEvents(false);
-      for (getRaQueryDataSet().first(); getRaQueryDataSet().inBounds(); getRaQueryDataSet().next())
-        calcIZT();
-      getRaQueryDataSet().goToRow(row);
-      getJpTableView().enableEvents(true);
+      calc.set("inab", getIVAL());
+      performAllRows("IZT = inab % PZT");
       getRaQueryDataSet().saveChanges();
     }
   }
@@ -202,11 +187,11 @@ public class frmVTZtrstav extends raMatPodaci {
   }
 
   public void afterIZT() {
-    calcPZT();
+    Aus.percent(getRaQueryDataSet(), "PZT", "IZT", getIVAL());
   }
 
   public void afterPZT() {
-    calcIZT();
+    Aus.percentage(getRaQueryDataSet(), "IZT", getIVAL(), "PZT");
   }
 
   public void EntryPoint(char mode) {
@@ -236,28 +221,14 @@ public class frmVTZtrstav extends raMatPodaci {
     return false;
   }
 
-  public void calcPZT() {
-    Aus.percent(getRaQueryDataSet(), "PZT", "IZT", getIVAL());
-  }
-
-  public void calcIZT() {
-    Aus.percentage(getRaQueryDataSet(), "IZT", getIVAL(), "PZT");
-  }
-
   public void AfterSave(char mode) {
     changedZT(true);
   }
 
   public void changedZT(boolean force) {
-    int row = getRaQueryDataSet().getRow();
-    getJpTableView().enableEvents(false);
-    BigDecimal total = _Main.nul;
-    for (getRaQueryDataSet().first(); getRaQueryDataSet().inBounds(); getRaQueryDataSet().next())
-      total = total.add(getRaQueryDataSet().getBigDecimal("IZT"));
-    getRaQueryDataSet().goToRow(row);
-    getJpTableView().enableEvents(true);
-    getRaQueryDataSet().saveChanges();
-    frm.getDetailSet().setBigDecimal("IZT", total.setScale(2, BigDecimal.ROUND_HALF_UP));
+    calc.set("total", Aus.zero2);
+    performAllRows("total += IZT");
+    calc.runOn(frm.getDetailSet(), "IZT = total");
     if (force) ((IZavtrHandler) frm).getDetailPanel().kalkulacija(8);
   }
 
