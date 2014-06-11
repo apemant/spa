@@ -21,6 +21,7 @@ package hr.restart.swing;
 
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
+import hr.restart.util.Calc;
 import hr.restart.util.NavigationAdapter;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
@@ -169,6 +170,8 @@ public class JraTable2 extends JTable implements JraTableInterface {
   private String tableSort;
 
   private boolean descendingTableSort = true;
+  
+  public Calc calc = new Calc();
 
   public JraTable2() {
     this(false);
@@ -642,12 +645,32 @@ public class JraTable2 extends JTable implements JraTableInterface {
       updateTableColumns();
 
     }
+    
+    calc.reset();
+    calc.setData(ds);
 
     tableSort = null;
     updateModifiers();
 
     setVisible(true);
 
+  }
+  
+  public void performAllRows(String command) {
+    if (tabModel.getDataSet() == null) return;
+    
+    try {
+      long row = tabModel.getDataSet().getInternalRow();
+      tabModel.getDataSet().enableDataSetEvents(false);
+      stopFire();
+      for (tabModel.getDataSet().first(); tabModel.getDataSet().inBounds(); tabModel.getDataSet().next())
+        calc.run(command);
+      tabModel.getDataSet().goToInternalRow(row);
+    } finally {
+      tabModel.getDataSet().enableDataSetEvents(true);
+      startFire();
+    }
+    fireTableDataChanged();
   }
   
   public void updateModifiers() {

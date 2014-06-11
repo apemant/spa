@@ -317,6 +317,8 @@ sysoutTEST ST = new sysoutTEST(false);
 
 
   };
+  
+  public Calc calc = new Calc(jpTableView.calc);
 
   SharedFlag ticket = okp.getTicket();
   
@@ -1231,6 +1233,9 @@ sysoutTEST ST = new sysoutTEST(false);
     }
 
     raQueryDataSet = newRaQueryDataSet;
+    
+    calc.reset();
+    calc.setData(raQueryDataSet);
 
 //-opn-    raQueryDataSet.open();
     if (raQueryDataSet != null) {
@@ -1257,6 +1262,10 @@ sysoutTEST ST = new sysoutTEST(false);
 
   }
 
+  public void performAllRows(String command) {
+    getJpTableView().performAllRows(command);
+  }
+  
 ///testic
 
   com.borland.dx.dataset.OpenListener notifyOpen = new com.borland.dx.dataset.OpenListener() {
@@ -2424,11 +2433,10 @@ sysoutTEST ST = new sysoutTEST(false);
 
     }
 
+    setMode('B');
     switch2table();
 
     switchButton(true,false);
-
-    setMode('B');
 
     fixJlrNavFieldDataSetStatus();
 

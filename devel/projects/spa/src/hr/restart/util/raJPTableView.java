@@ -249,6 +249,8 @@ public class raJPTableView extends JPanel {
   private String[] Naslovi = null;
 
   private raRowSume sumrow;
+  
+  public Calc calc;
 
 
 
@@ -306,6 +308,8 @@ public class raJPTableView extends JPanel {
   public void jbInit() throws Exception {
 
     this.setLayout(new BorderLayout());
+    
+    calc = new Calc(mpTable.calc);
 
     //jScrollPaneTable.setPreferredSize(new Dimension(300, 200));
 
@@ -657,6 +661,8 @@ public class raJPTableView extends JPanel {
     if (fuckUPKeys) setKeyColumns(null);
 
     mpTable.setDataSet(raQueryDataSet);
+    calc.reset();
+    calc.setData(raQueryDataSet);
 
     if (raQueryDataSet==null) {
 
@@ -706,7 +712,20 @@ public class raJPTableView extends JPanel {
     return raQueryDataSet;
 
   }
-
+  
+  public void performAllRows(String command) {
+    if (getStorageDataSet() == null) return;
+    
+    try {
+      long row = getStorageDataSet().getInternalRow();
+      enableEvents(false);
+      for (getStorageDataSet().first(); getStorageDataSet().inBounds(); getStorageDataSet().next())
+        calc.run(command);
+      getStorageDataSet().goToInternalRow(row);
+    } finally {
+      enableEvents(true);
+    }
+  }
 
 
 /**
@@ -1061,7 +1080,7 @@ public class raJPTableView extends JPanel {
     }
 
   }
-
+  
   /**
 
    * Vraca ime kolone na koju je user zadnje kliknuo za sort
