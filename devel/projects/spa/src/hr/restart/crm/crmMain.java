@@ -36,6 +36,7 @@ import javax.swing.JMenuBar;
 public class crmMain extends startFrame {
   public static crmMain _crmMain;
   //public static hr.restart.pos.jposMenu posMnu;
+  public static hr.restart.crm.jcrmOpMenu crmMnu;
   JMenuBar jmMain = new JMenuBar();
 
   public crmMain() {
@@ -61,8 +62,15 @@ public class crmMain extends startFrame {
     posMnu = new jposMenu(startframe);
     return posMnu;
   }*/
+  
+  public static javax.swing.JMenu getJcrmMenu(startFrame startframe) {
+    crmMnu = new jcrmOpMenu(startframe);
+    return crmMnu;
+  }
+  
   private void jbInit() throws Exception  {
     jmMain.add(hr.restart.zapod.frmZapod.getJzpMenu(this));
+    jmMain.add(hr.restart.crm.crmMain.getJcrmMenu(this));
     //jmMain.add(hr.restart.mp.frmMp.getOpMpMenu(this));
     //jmMain.add(hr.restart.pos.posMain.getJposMenu(this));
     this.setRaJMenuBar(jmMain);
