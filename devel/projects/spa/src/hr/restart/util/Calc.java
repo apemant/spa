@@ -105,7 +105,7 @@ public class Calc {
   Operator INVERTPERCENT = new Operator("~%", 2, 20) {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.divide(Aus.one0.add(val2.movePointLeft(2)), val1.scale(), BigDecimal.ROUND_HALF_UP); }
   };
-  Operator PRECISION = new Operator(":", 2, 30) {
+  Operator PRECISION = new Operator(",", 2, 30) {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.setScale(val2.intValue(), BigDecimal.ROUND_HALF_UP); }
   };
   Operator ASSIGN = new Operator("=", 2, 0) {
@@ -140,7 +140,27 @@ public class Calc {
   };
   Operator ASSIGN_INVERTPERCENT = new Operator("~%=", 2, 0) {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.divide(Aus.one0.add(val2.movePointLeft(2)), val1.scale(), BigDecimal.ROUND_HALF_UP); }
+  };  
+  Operator EQ = new Operator("==", 2, 5) {
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.compareTo(val2) == 0 ? Aus.one0 : Aus.zero0; }
   };
+  Operator NEQ = new Operator("!=", 2, 5) {
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.compareTo(val2) != 0 ? Aus.one0 : Aus.zero0; }
+  };
+  Operator GT = new Operator(">", 2, 5) {
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.compareTo(val2) > 0 ? Aus.one0 : Aus.zero0; }
+  };
+  Operator LT = new Operator("<", 2, 5) {
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.compareTo(val2) < 0 ? Aus.one0 : Aus.zero0; }
+  };
+  Operator GE = new Operator(">=", 2, 5) {
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.compareTo(val2) >= 0 ? Aus.one0 : Aus.zero0; }
+  };
+  Operator LE = new Operator("<=", 2, 5) {
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.compareTo(val2) <= 0 ? Aus.one0 : Aus.zero0; }
+  };  
+  Operator IF = new Operator("?:", 2, 5);
+  
   
   private BigDecimal getVar(String var) {
     if (values != null && values.hasColumn(var) != null) 
@@ -186,6 +206,10 @@ public class Calc {
   
   public void set(String var, BigDecimal val) {
   	vars.put(var,  val);
+  }
+  
+  public BigDecimal get(String var) {
+    return (BigDecimal) vars.get(var);
   }
   
   public BigDecimal evaluate(String expr) {
@@ -278,6 +302,7 @@ public class Calc {
       char ch = expression.charAt(p++);
       if (ch == ' ' || ch == '\n' || ch == '\t' || ch == '\r') continue;
       if (ch == ';') return skip();
+      if (ch == '?') return IF;
       char ch2 = p < l ? expression.charAt(p) : (char) 0;
       char ch3 = p+1 < l ? expression.charAt(p + 1): (char) 0;
       if (ch2 == '=') {
@@ -287,6 +312,10 @@ public class Calc {
         if (ch == '*') return ASSIGN_MUL;
         if (ch == '/') return ASSIGN_DIV;
         if (ch == '%') return ASSIGN_PERCENT;
+        if (ch == '=') return EQ;
+        if (ch == '!') return NEQ;
+        if (ch == '>') return GE;
+        if (ch == '<') return LE;
         new IllegalArgumentException("Illegal operand: " + expression);
       } else if (ch2 == '%') {
         ++p;
@@ -307,7 +336,7 @@ public class Calc {
       if (ch == '*') return MUL;
       if (ch == '/') return DIV;
       if (ch == '=') return ASSIGN;
-      if (ch == ':') return PRECISION;
+      if (ch == ',') return PRECISION;
       if (ch == '%') return PERCENT;
       if (ch == '<' && ch2 == '<') {
         ++p;
@@ -321,29 +350,38 @@ public class Calc {
         ++p;
         return ASSIGN_RSH;
       }
+      if (ch == '>') return GT;
+      if (ch == '<') return LT;
+      if (ch == '<' && ch2 == '>') return NEQ;
       new IllegalArgumentException("Illegal operand: " + expression);
     }
     return null;
   }
   
-  // d = 5 + 2d + d * 3;
+  // d = 5 + 2d + d * 3; (1 ? 2 : 2) 
+  
+  // D = 3 ? 
   int p, l;
   public BigDecimal eval() {
     p = 0;
     l = expression.length();
     LinkedList stack = new LinkedList();
-    boolean oex = true;
     Object left = null;
     Operator op = null;
     
     while (p < l) {
-    	while (op == null) {
-    		left = getOperand();
-    		op = getOperator();
-    		if (p >= l) return getValue(left);
-    	}
+      while (op == null) {
+    	left = getOperand();
+    	op = getOperator();
+    	if (op == null && p >= l) return getValue(left);
+      }
+      if (op == IF) return evalBranch(getValue(left).signum() != 0);
       Object right = getOperand();
       Operator nop = getOperator();
+      if (nop == IF && nop.strongerThan(op)) {
+        right = evalBranch(getValue(right).signum() != 0);
+        nop = null;
+      }
       if (nop != null && nop.strongerThan(op)) {
       	stack.addLast(left);
       	stack.addLast(op);
@@ -359,6 +397,19 @@ public class Calc {
       }
     }
     return getValue(left);
+  }
+
+  private BigDecimal evalBranch(boolean first) {
+    int depth = 1;
+    int beg = p;
+    while (p < l) {
+      char cc = expression.charAt(p++);
+      if (cc == ':') {
+        if (--depth == 0)  return new Calc(this).evaluate(
+            first ? expression.substring(beg, p - 1) : expression.substring(p));
+      } else if (cc == '?') ++depth;
+    }
+    throw new IllegalArgumentException("Unmatched conditional expression: " + expression);
   }
   
   public static void test() {
@@ -389,8 +440,13 @@ public class Calc {
   	tim = System.currentTimeMillis();
   	for (int i = 0; i < 50000; i++) {
   		Calc c = new Calc(ds);
-  		c.evaluate("DIOPORMAR = PORAV ~% Porezi.UKUPOR");
-  		c.evaluate("DIOPORPOR = PORAV - DIOPORPOR");
+  		c.evaluate("DIOPORMAR = PORAV ~% Porezi.UKUPOR;" +
+  				   "DIOPORPOR = PORAV - DIOPORPOR;" +
+  				   "34 > 33 ? 4 : 3"  
+  		    );
+  		
+  		
+  		//c.evaluate("DIOPORPOR = PORAV - DIOPORPOR");
   	}
   	System.out.println("calc " + (System.currentTimeMillis() - tim));
 
