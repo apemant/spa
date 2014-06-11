@@ -17,9 +17,14 @@
 ****************************************************************************/
 package hr.restart.util;
 
+import hr.restart.baza.Stdoku;
+import hr.restart.baza.dM;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.LinkedList;
 
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.ReadWriteRow;
 
 public class Calc {
@@ -36,8 +41,11 @@ public class Calc {
       this.args = args;
       this.priority = priority;
     }
-    public boolean stronger(Operator o) {
+    public boolean strongerThan(Operator o) {
       return priority > o.priority;
+    }
+    public boolean notWeaker(Operator o) {
+    	return o == null || priority >= o.priority;
     }
     public BigDecimal exec(BigDecimal val) {
       return null;
@@ -46,8 +54,12 @@ public class Calc {
       return null;
     } 
     public BigDecimal exec(String var, BigDecimal val) {
-      BigDecimal temp = exec(values.getBigDecimal(var), val);
+      BigDecimal temp = exec(getVar(var), val);
       if (priority > 0) return temp;
+      if (values == null || values.hasColumn(var) == null) {
+      	vars.put(var, temp); 
+      	return temp;
+      }
       values.setBigDecimal(var, temp.setScale(values.getColumn(var).getScale(), BigDecimal.ROUND_HALF_UP));
       return values.getBigDecimal(var);
     }
@@ -55,9 +67,11 @@ public class Calc {
       boolean var = o1 instanceof String;
       if (priority == 0 && !var)
         new IllegalArgumentException("Invalid operand for assignment: " + expression);
-      BigDecimal v2 = o2 instanceof BigDecimal ? (BigDecimal) o2 : values.getBigDecimal((String) o2);
-      if (var) return exec((String) o1, v2);
-      return exec((BigDecimal) o1, v2);
+      if (var) return exec((String) o1, getValue(o2));
+      return exec((BigDecimal) o1, getValue(o2));
+    }
+    public String toString() {
+    	return op;
     }
   }
   
@@ -128,7 +142,17 @@ public class Calc {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.divide(Aus.one0.add(val2.movePointLeft(2)), val1.scale(), BigDecimal.ROUND_HALF_UP); }
   };
   
-    
+  private BigDecimal getVar(String var) {
+    if (values != null && values.hasColumn(var) != null) 
+    	return values.getBigDecimal(var);
+    return (BigDecimal) vars.get(var);
+  }
+  
+  private BigDecimal getValue(Object o) {
+    if (o instanceof BigDecimal) return (BigDecimal) o;
+    return getVar((String) o);
+  }
+  
   public Calc() {
     this(null, null);
   }
@@ -160,6 +184,10 @@ public class Calc {
     return new Calc(ds, expr).eval();
   }
   
+  public void set(String var, BigDecimal val) {
+  	vars.put(var,  val);
+  }
+  
   public BigDecimal evaluate(String expr) {
     this.expression = expr;
     return eval();
@@ -177,14 +205,26 @@ public class Calc {
   }
   
   private String getVar(int beg) {
+  	String module = null;
     while (p < l) {
       char ch = expression.charAt(p++);
-      if (ch != '_' && (ch < 'A' || ch > 'Z') && (ch < 'a' || ch > 'z') && (ch < '0' || ch > '9')) {
+      if (ch == '.') {
+      	if (module != null) throw new IllegalArgumentException("Invalid variable, double dot: " + expression);
+      	module = expression.substring(beg, p - 1);
+      } else if (ch != '_' && (ch < 'A' || ch > 'Z') && (ch < 'a' || ch > 'z') && (ch < '0' || ch > '9')) {
         --p;
         break;
       }
     }
-    return expression.substring(beg, p);
+    String var = expression.substring(beg, p);
+    if (module != null) {
+    	if (beg == p) throw new IllegalArgumentException("Invalid variable after dot: " + expression);
+    	ReadWriteRow ds = dM.getDataByName(module);
+    	if (ds == null) throw new IllegalArgumentException("Invalid module: " + expression);
+    	String col = expression.substring(beg + module.length() + 1, p);
+    	vars.put(var, ds.getBigDecimal(col));
+    }
+    return var;
   }
   
   private BigDecimal getNumber(int beg, boolean sign, boolean dot, boolean num) {
@@ -198,7 +238,7 @@ public class Calc {
         else throw new IllegalArgumentException("Invalid number, double dot: " + expression);
       else if (ch >= '0' && ch <= '9') num = true;
       else if (!num && !dot && (ch == '_' || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')))
-        return values.getBigDecimal(getVar(p - 1)).negate();
+        return getVar(getVar(p - 1)).negate();
       else {
         --p;
         break;
@@ -286,34 +326,73 @@ public class Calc {
     return null;
   }
   
-  private BigDecimal getVar(String var) {
-    if (values.hasColumn(var) != null) return values.getBigDecimal(var);
-    return (BigDecimal) vars.get(var);
-  }
-  
-  private BigDecimal getValue(Object o) {
-    if (o instanceof BigDecimal) return (BigDecimal) o;
-    return getVar((String) o);
-  }
-  
+  // d = 5 + 2d + d * 3;
   int p, l;
   public BigDecimal eval() {
     p = 0;
     l = expression.length();
+    LinkedList stack = new LinkedList();
     boolean oex = true;
-    Object ret = null;
+    Object left = null;
+    Operator op = null;
+    
     while (p < l) {
-      if (oex) ret = getOperand();
-      Operator op = getOperator();
-      if (oex = (op == null)) ret = getValue(ret);
-      o = op.eval(o, getNextOperand(op));
+    	while (op == null) {
+    		left = getOperand();
+    		op = getOperator();
+    		if (p >= l) return getValue(left);
+    	}
+      Object right = getOperand();
+      Operator nop = getOperator();
+      if (nop != null && nop.strongerThan(op)) {
+      	stack.addLast(left);
+      	stack.addLast(op);
+      	left = right;
+      	op = nop;
+      } else {
+      	left = op.eval(left,  right);
+      	while (stack.size() > 0 && ((Operator) stack.getLast()).notWeaker(nop)) {
+      		op = (Operator) stack.removeLast();
+      		left = op.eval(stack.removeLast(), left);
+      	}
+      	op = nop;
+      }
     }
+    return getValue(left);
   }
   
-  private Object getNextOperand(Operator op) {
-    Object o = getOperand();
-    Operator nop = getOperator();
-    if (nop == null || nop.priority <= op.priority) return o;
-    return nop.eval(o, getNextOperand(nop));
+  public static void test() {
+  	BigDecimal sto = new java.math.BigDecimal(100).setScale(2, java.math.BigDecimal.ROUND_HALF_UP);
+  	DataSet ds = Stdoku.getDataModule().getTempSet("rbr=2");
+  	ds.open();
+
+  	lookupData.getlookupData().raLocate(dM.getDataModule().getArtikli(), "CART1", ds.getString("CART1"));
+  	lookupData.getlookupData().raLocate(dM.getDataModule().getPorezi(), "CPOR", dM.getDataModule().getArtikli().getString("CPOR"));
+  	
+  	long tim = System.currentTimeMillis();
+  	for (int i = 0; i < 50000; i++) {
+	  	ds.setBigDecimal(
+					"DIOPORPOR",
+					ds.getBigDecimal("PORAV").multiply(
+							dM.getDataModule().getPorezi().getBigDecimal("UKUNPOR"))
+							.divide(sto, 1).setScale(2,
+									BigDecimal.ROUND_HALF_UP));
+			ds.setBigDecimal(
+					"DIOPORMAR",
+					ds.getBigDecimal("PORAV").add(
+							ds.getBigDecimal("DIOPORPOR")
+									.negate()).setScale(2,
+							BigDecimal.ROUND_HALF_UP));
+  	}
+  	System.out.println("direct " + (System.currentTimeMillis() - tim));
+  	
+  	tim = System.currentTimeMillis();
+  	for (int i = 0; i < 50000; i++) {
+  		Calc c = new Calc(ds);
+  		c.evaluate("DIOPORMAR = PORAV ~% Porezi.UKUPOR");
+  		c.evaluate("DIOPORPOR = PORAV - DIOPORPOR");
+  	}
+  	System.out.println("calc " + (System.currentTimeMillis() - tim));
+
   }
 }
