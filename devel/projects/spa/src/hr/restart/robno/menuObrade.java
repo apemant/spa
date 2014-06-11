@@ -50,6 +50,8 @@ public class menuObrade extends JMenu {
   JMenuItem jmImportLot = new JMenuItem();
   JMenuItem jmCreateKPR = new JMenuItem();
   JMenuItem jmObrIzd = new JMenuItem();
+  JMenuItem jmRecalcKart = new JMenuItem();
+  JMenuItem jmRecalcStanje = new JMenuItem();
   
   public menuObrade(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -132,6 +134,19 @@ public class menuObrade extends JMenu {
         jmObrIzd_actionPerformed(e);
       }
     });
+    jmRecalcStanje.setText("Rekalkulacija stanja");
+    jmRecalcStanje.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmRecalcStanje_actionPerformed(e);
+      }
+    });
+    jmRecalcKart.setText("Rekalkulacija kartica");
+    jmRecalcKart.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmRecalcKart_actionPerformed(e);
+      }
+    });
+    
     this.add(jmDvijeGodine);
     this.add(jmNovaGodina);
     this.add(jmPST);
@@ -148,6 +163,12 @@ public class menuObrade extends JMenu {
         "Omoguæiti unos lota na dokumente s vanjskog ureðaja (D,N)")))
       this.add(jmImportLot);
     this.add(jmCreateKPR);
+    if ("D".equalsIgnoreCase(frmParam.getParam("robno", "robnoRekalk", "N",
+        "Omoguæiti poziv funkcija za rekalkulaciju iz robno (D,N)"))) {
+      this.addSeparator();
+      this.add(jmRecalcKart);
+      this.add(jmRecalcStanje);
+    }
   }
   void jmDvijeGodine_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmDvijeGodine", jmDvijeGodine.getText());
@@ -174,6 +195,13 @@ public class menuObrade extends JMenu {
   
   void jmRemoteStart_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.raLiteFrameRobnoReplicator", jmRemoteStart.getText());
+  }
+  
+  void jmRecalcStanje_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.robno.raRekalkulacijaStanja", jmRecalcStanje.getText());
+  }
+  void jmRecalcKart_actionPerformed(ActionEvent e){
+    SF.showFrame("hr.restart.robno.frmTestValidKartica", jmRecalcKart.getText());
   }
   
   
