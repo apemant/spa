@@ -570,10 +570,10 @@ public class repRacunPOS extends mxReport {
     String blop = hr.restart.sisfun.frmParam.getParam("pos","BlOp","0","Ispis i pozicija blagajne i operatora na malim raèunima (0,1,2,3)");
     if (!blop.equalsIgnoreCase("0")){
       DataRow usr = lD.raLookup(hr.restart.baza.dM.getDataModule().getUseri(),"CUSER", user);
-      String operater = usr.getString("NAZIV");
+      String operater = usr == null ? "" : usr.getString("NAZIV");
       if (!presBlag.isUserOriented()) {
         usr = lD.raLookup(hr.restart.baza.dM.getDataModule().getBlagajnici(),"CBLAGAJNIK", master.getString("CBLAGAJNIK"));
-        operater = usr.getString("NAZBLAG");
+        operater = usr == null ? "" : usr.getString("NAZBLAG");
       }
       if (blop.equalsIgnoreCase("1")){
         return "BLAGAJNA: "+blag+"<$newline$>"+
