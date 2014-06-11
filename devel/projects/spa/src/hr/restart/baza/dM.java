@@ -2466,16 +2466,19 @@ public class dM implements DataModule {
     } catch (Exception e) {}
     return false;
   }
+  
+  protected static HashMap moduleNames = new HashMap(400);
 
   public static QueryDataSet getDataByName(String name) {
-    try {
+  	QueryDataSet ret = (QueryDataSet) moduleNames.get(name);
+  	if (ret == null) 
+  	try {
+  		if (!name.startsWith("get")) name = "get" + name;
       Method m = dM.class.getMethod(name, null);
-      if (name.startsWith("get") && m.getReturnType().isAssignableFrom(QueryDataSet.class))
-        return (QueryDataSet) m.invoke(getDataModule(), null);
+      if (m.getReturnType().isAssignableFrom(QueryDataSet.class))
+      	moduleNames.put(name.substring(3), ret = (QueryDataSet) m.invoke(getDataModule(), null));
     } catch (Exception e) {}
-    return null;
+    return ret;
   }
-  
-  
 }
 
