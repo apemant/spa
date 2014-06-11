@@ -217,7 +217,7 @@ public class frmTestValidKartica extends hr.restart.util.raUpit {
     String srows = frmParam.getParam("robno", "maxKartRows", "10000", 
         "Broj stavaka koji se dohvaca odjednom kod popravka kartica");
     int maxRows = Aus.getNumber(srows);
-    if (maxRows <= 0 || stav / maxRows > 100) {
+    if (maxRows <= 0 || stav / maxRows > 20) {
       maxRows = stav / 10;
       System.err.println("Pogresan parametar maxKarRows! auto-reset na "+maxRows);
     }
