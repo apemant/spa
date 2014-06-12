@@ -1486,8 +1486,9 @@ System.out.println("oldBRRAC "+oldBRRAC);
 					    + "bit æe korigirana na stavci br. " + mrbr + "\n("
 							+ nazart + "). U redu?", "Potvrda",
 					JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.OK_OPTION) {
+			    row = getDetailSet().getInternalRow();
 				raDetail.getJpTableView().enableEvents(false);
-				row = getDetailSet().getRow();
+
 				for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet()
 						.next())
 					if (getDetailSet().getShort("RBR") == mrbr) {
@@ -1525,7 +1526,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 						raTransaction.saveChangesInTransaction(new QueryDataSet[] {getDetailSet(), ztr, stanjeSet });
 						break;
 					}
-				getDetailSet().goToRow(row);
+				getDetailSet().goToInternalRow(row);
 				raDetail.getJpTableView().enableEvents(true);
 			}
 		}
