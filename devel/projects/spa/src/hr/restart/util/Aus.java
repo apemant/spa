@@ -1392,6 +1392,28 @@ public class Aus {
     return sep;
   }
   
+  public static String createLink(String text, String action) {
+    VarStr v = new VarStr();
+    v.append("<a href=\"");
+    v.append(toHtml(new VarStr(action)));
+    v.append("\">");
+    v.append(toHtml(new VarStr(text)));
+    v.append("</a>");
+    return v.toString();
+  }
+  
+  public static VarStr toHtml(VarStr v) {
+    v.replaceAll("&", "&amp;");
+    v.replaceAll("\"", "&quot;");
+    v.replaceAll("<", "&lt;");
+    v.replaceAll(">", "&gt;");
+    return v;
+  }
+  
+  public static String toHtml(String orig) {
+    return toHtml(new VarStr(orig)).toString();
+  }
+  
   public static String convertToURLFriendly(String orig) {
     VarStr v = new VarStr(orig);
     Set non = new HashSet();
