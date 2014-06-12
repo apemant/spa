@@ -1520,7 +1520,7 @@ NOVA;char;1;;D;Nova
 SRC;char;15;;;Šalje
 DEST;char;15;idx;;Prima
 DATUM;date;;;;Poslano
-MTEXT;char;2000;;;Poruka
+MTEXT;char;4000;;;Poruka
 
 $Smjene
 LOKK;char;1;;N;Lokk;*
