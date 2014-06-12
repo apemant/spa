@@ -1004,14 +1004,14 @@ public class frmMasterBlagajna extends raMasterDetail {
           }
         },6,false);
       } else {
-        if (raUser.getInstance().isSuper()) {
+        if (false && raUser.getInstance().isSuper()) {
           raMaster.addOption(navPonisti, 4);
         }
         this.raMaster.addOption(new raNavAction("Pregled materijala", raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
           public void actionPerformed(java.awt.event.ActionEvent ev) {
             showRequirementsMaster();
           }
-        },5,false);
+        },4,false);
       }
     }
     
@@ -2305,14 +2305,14 @@ public class frmMasterBlagajna extends raMasterDetail {
           int row = getMasterSet().getRow();
           raMaster.getJpTableView().enableEvents(false);
 
-          for (getMasterSet().first(); getMasterSet().inBounds(); getMasterSet().next())
-            if ("arh".equals(getMasterSet().getString("RDOK"))) {
+          for (getMasterSet().first(); getMasterSet().inBounds(); getMasterSet().next()) {
+            //if ("arh".equals(getMasterSet().getString("RDOK"))) {
               DataSet ds = Stpos.getDataModule().getTempSet(
                   Condition.whereAllEqual(key, getMasterSet()));
               raProcess.openScratchDataSet(ds);
               fillRequirements(reqs, ds);
               ds.close();
-            }
+          }
           getMasterSet().goToRow(row);
           raMaster.getJpTableView().enableEvents(true);
         
@@ -2345,7 +2345,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     viewReq.setSums(new String[] {"INAB"});
     viewReq.setSaveName("Pregled-arh");
     viewReq.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-    viewReq.setTitle("Prikaz arhivirane potrošnje materijala  za odabrano razdoblje");
+    viewReq.setTitle("Prikaz potrošnje materijala  za odabrano razdoblje");
     viewReq.setVisibleCols(new int[] {0, Aut.getAut().getCARTdependable(1, 2, 3), 4, 5, 6, 7, 8});
     viewReq.show();
   }
