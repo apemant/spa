@@ -598,6 +598,10 @@ public class VarStr {
     count = newcount;
     return this;
   }
+  
+  public VarStr appendq(String str) {
+    return append('"').append(str).append('"');
+  }
 
   public VarStr append(VarStr str) {
     int newcount = count + str.count;
@@ -606,6 +610,10 @@ public class VarStr {
     System.arraycopy(str.value, 0, value, count, str.count);
     count = newcount;
     return this;
+  }
+  
+  public VarStr appendq(VarStr str) {
+    return append('"').append(str).append('"');
   }
 
   public VarStr append(char str[]) {
@@ -616,6 +624,10 @@ public class VarStr {
     System.arraycopy(str, 0, value, count, len);
     count = newcount;
     return this;
+  }
+  
+  public VarStr appendq(char str[]) {
+    return append('"').append(str).append('"');
   }
 
   public VarStr append(boolean b) {
@@ -628,6 +640,10 @@ public class VarStr {
       expandCapacity(newcount);
     value[count++] = c;
     return this;
+  }
+  
+  public VarStr appendq(char c) {
+    return append('\'').append(c).append('\'');
   }
 
   public VarStr append(int i) {
