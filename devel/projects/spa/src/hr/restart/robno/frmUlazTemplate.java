@@ -1208,6 +1208,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	}
 	
 	public void recalcFromZtr(QueryDataSet zt) {
+	  long row = getDetailSet().getInternalRow();
 	  raDetail.getJpTableView().enableEvents(false);
 	  try {
 	    for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next()) {
@@ -1234,6 +1235,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	      raTransaction.saveChanges(getDetailSet());
 	      raTransaction.saveChanges(stanjeSet);
 	    }
+	    getDetailSet().goToInternalRow(row);
 	  } finally {
 	    raDetail.getJpTableView().enableEvents(true);
 	  }
@@ -1251,6 +1253,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	      BigDecimal uinab = Aus.zero2;
 	      double maxerr = Math.max(0.005 * getDetailSet().rowCount(), 0.04);
 	      try {
+	        long row = getDetailSet().getInternalRow();
 	        raDetail.getJpTableView().enableEvents(false);
 	        for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next()) {
 	          boolean found = false;
@@ -1273,6 +1276,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	              Aus.percent(ztr, "PZT",  "IZT", inab);
 	            }
 	        }
+	        getDetailSet().goToInternalRow(row);
 	      } finally {
 	        raDetail.getJpTableView().enableEvents(true);
 	      }
@@ -1318,6 +1322,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
           }
           raProcess.checkClosing();
           try {
+            long row = getDetailSet().getInternalRow();
             raDetail.getJpTableView().enableEvents(false);
             for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next()) {
               BigDecimal inab = Aus.minus(getDetailSet(), "IDOB", "IRAB");
@@ -1332,6 +1337,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
                 }
               }
             }
+            getDetailSet().goToInternalRow(row);
           } finally {
             raDetail.getJpTableView().enableEvents(true);
           }
@@ -1433,7 +1439,6 @@ System.out.println("oldBRRAC "+oldBRRAC);
 		  return;
 		}
 				
-		int row = getDetailSet().getRow();
 		BigDecimal max = _Main.nul;
 		short mrbr = (short) 0;
 		String nazart = "";
@@ -1441,6 +1446,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
             Condition.whereAllEqual(key, getMasterSet()));
         ztr.open();
         getZavtr(ztr, zag, stav, ztopis);
+        long row = getDetailSet().getInternalRow();
         raDetail.getJpTableView().enableEvents(false);
         for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next())
 			if (Aus.to2(Aus.minus(getDetailSet(), "IDOB", "IRAB")).compareTo(max) > 0) {
@@ -1466,7 +1472,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 					nazart = getDetailSet().getString("NAZART");
 				}
 			}
-		getDetailSet().goToRow(row);
+        getDetailSet().goToInternalRow(row);
 		raDetail.getJpTableView().enableEvents(true);
 		if (mrbr == 0) {
 			JOptionPane.showMessageDialog(
