@@ -364,12 +364,12 @@ public class frmDugPot extends raFrame {
       zbir.setBigDecimal("NEDOSP", zd.nedosp);
       zbir.setBigDecimal("UPL", zd.upl);
       zbir.setBigDecimal("SALDO", zd.saldo);
-      if (pres.getGrupa() != null) zbir.setString("CGPART", pres.gmsz.getString("CGRPAR"));
+      if (pres.getGrupa() != null) zbir.setString("CGRPAR", pres.gmsz.getString("CGRPAR"));
     }
     zbir.post();
     zbir.first();
     if (pres.getGrupa() != null) {
-    	((raExtendedTable) jp.getMpTable()).addToGroup("CGPART", true, new String[] {"#", "NAZIV"}, dm.getGruppart(), true);
+    	((raExtendedTable) jp.getMpTable()).addToGroup("CGRPAR", true, new String[] {"#", "NAZIV"}, dm.getGruppart(), true);
     }
     jp.enableEvents(true);
     pCache.dispose();
@@ -433,12 +433,12 @@ public class frmDugPot extends raFrame {
       dM.createBigDecimalColumn("NEDOSP", "Nedospjeli", 2),
       dM.createBigDecimalColumn("UPL", "Uplate", 2),
       dM.createBigDecimalColumn("SALDO", "Saldo", 2),
-  	  dM.createStringColumn("CGPART", "Grupa", 20)
+  	  dM.createStringColumn("CGRPAR", "Grupa", 20)
     });
     zbir.getColumn("CPAR").setWidth(7);
     zbir.getColumn("NAZAGENT").setCaption("Agent");
     zbir.getColumn("NAZAGENT").setWidth(20);
-    zbir.getColumn("CGPART").setVisible(TriStateProperty.FALSE);
+    zbir.getColumn("CGRPAR").setVisible(TriStateProperty.FALSE);
     zbir.setLocale(Aus.hr);
     zbir.open();
     jp.setDataSet(zbir);

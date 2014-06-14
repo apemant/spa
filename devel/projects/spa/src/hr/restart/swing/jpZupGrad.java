@@ -170,7 +170,7 @@ public class jpZupGrad extends JPanel {
     zupn.setSearchMode(1);
     
     gr.setColumnName("CGRPAR");
-    gr.setNavColumnName("CGPART");
+    gr.setNavColumnName("CGRPAR");
     gr.setColNames(new String[] {"NAZIV"});
     gr.setTextFields(new JTextComponent[] {grn});
     gr.setVisCols(new int[] {0, 1});

@@ -72,10 +72,10 @@ public class Gruppart extends KreirDrop implements DataModule {
     ddl.create("gruppart")
        .addChar("lokk", 1, "N")
        .addChar("aktiv", 1, "D")
-       .addChar("cgpart", 3, true)
+       .addChar("cgrpar", 3, true)
        .addChar("naziv", 50)
        .addInteger("cagent", 6)
-       .addPrimaryKey("cgpart");
+       .addPrimaryKey("cgrpar");
 
     Naziv="Gruppart";
 
@@ -119,12 +119,12 @@ public class Gruppart extends KreirDrop implements DataModule {
     gpartNAZGPART.setServerColumnName("NAZGPART");
     gpartNAZGPART.setSqlType(1);*/
     gpartCGPART.setCaption("Šifra");
-    gpartCGPART.setColumnName("CGPART");
+    gpartCGPART.setColumnName("CGRPAR");
     gpartCGPART.setDataType(com.borland.dx.dataset.Variant.STRING);
     gpartCGPART.setPrecision(3);
     gpartCGPART.setRowId(true);
     gpartCGPART.setTableName("GRUPPART");
-    gpartCGPART.setServerColumnName("CGPART");
+    gpartCGPART.setServerColumnName("CGRPAR");
     gpartCGPART.setSqlType(1);
     gpartAKTIV.setColumnName("AKTIV");
     gpartAKTIV.setDataType(com.borland.dx.dataset.Variant.STRING);

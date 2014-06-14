@@ -335,7 +335,7 @@ public class frmPartneri extends raMatPodaci {
     jlUGOVOR.setText(res.getString("jlUGOVOR_text"));
     jlLIMKRED.setText(res.getString("jlLIMKRED_text"));
     jlrCGRPAR.setColumnName("CGRPAR");
-    jlrCGRPAR.setNavColumnName("CGPART");
+    jlrCGRPAR.setNavColumnName("CGRPAR");
     jlrCGRPAR.setDataSet(getRaQueryDataSet());
     jlrCGRPAR.setColNames(new String[] {"NAZIV"});
     jlrCGRPAR.setTextFields(new javax.swing.text.JTextComponent[] {jlrNAZGRPAR});

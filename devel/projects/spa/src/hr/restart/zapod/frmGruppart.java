@@ -91,7 +91,7 @@ public class frmGruppart extends raSifraNaziv {
 
    setRaDataSet(dm.getAllGruppart());
 
-   setRaColumnSifra("CGPART");
+   setRaColumnSifra("CGRPAR");
 
    setRaColumnNaziv("NAZIV");
 

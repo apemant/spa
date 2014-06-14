@@ -102,7 +102,7 @@ public class RaPregledKupacaPoGrupama extends raUpitFat {
     
     for (grupa.first();grupa.inBounds();grupa.next()){
       grArry[grupa.getRow()][0] = grupa.getString("NAZIV");
-      grArry[grupa.getRow()][1] = grupa.getString("CGPART");
+      grArry[grupa.getRow()][1] = grupa.getString("CGRPAR");
     }
     
     jp.setLayout(myXyLayout);
