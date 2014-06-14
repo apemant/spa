@@ -1522,6 +1522,11 @@ DEST;char;15;idx;;Prima
 DATUM;date;;;;Poslano
 MTEXT;char;4000;;;Poruka
 
+$MesgStatus
+CUSER;char;15;pkey;;Šifra
+NOVA;char;1;;N;Nova
+ALARM;date;;;;Sljedeæi datum
+
 $Smjene
 LOKK;char;1;;N;Lokk;*
 AKTIV;char;1;;D;Aktiv;*
