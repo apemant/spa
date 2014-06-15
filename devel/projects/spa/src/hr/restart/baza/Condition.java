@@ -472,6 +472,14 @@ class SimpleCondition extends Condition {
 
   public SimpleCondition() {}
   
+  protected SimpleCondition(SimpleCondition copy, int nc) {
+  	condition = nc;
+  	table = copy.table;
+  	del = copy.del;
+  	val = copy.val;
+  	column = copy.column;
+  }
+  
   protected SimpleCondition(String raw) {
     val = raw;
     condition = RAW;
@@ -507,6 +515,16 @@ class SimpleCondition extends Condition {
   
   public Condition orNull() {
     return new CompoundCondition(this, OR, isNull(column)).forceBrackets();
+  }
+  
+  public Condition not() {  	
+  	if (condition == EQUAL) return new SimpleCondition(this, NOT_EQUAL);
+  	if (condition == NOT_EQUAL) return new SimpleCondition(this, EQUAL);
+  	if (condition == LESS_THAN) return new SimpleCondition(this, GREATER_OR_EQUAL);
+  	if (condition == LESS_OR_EQUAL) return new SimpleCondition(this, GREATER_THAN);
+  	if (condition == GREATER_OR_EQUAL) return new SimpleCondition(this, LESS_THAN);
+  	if (condition == GREATER_THAN) return new SimpleCondition(this, LESS_OR_EQUAL);
+  	return super.not();
   }
   
   int getType() {
