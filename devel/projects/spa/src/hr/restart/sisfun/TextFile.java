@@ -139,6 +139,7 @@ public class TextFile {
   	String line;
   	while ((line = in()) != null)
   		ret.add(line);
+  	close();
   	return ret;
   }
 
