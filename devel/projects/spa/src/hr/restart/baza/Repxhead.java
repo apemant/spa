@@ -22,31 +22,14 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Repxhead extends KreirDrop implements DataModule {
 
-  private static Repxhead cls;
-  QueryDataSet dat = new raDataSet();
+  private static Repxhead inst = new Repxhead();
 
   public static Repxhead getDataModule() {
-    if (cls == null) {
-      cls = new Repxhead();
-    }
-    return cls;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return dat;
-  }
 
-  public Repxhead(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

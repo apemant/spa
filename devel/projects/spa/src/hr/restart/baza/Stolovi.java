@@ -21,28 +21,15 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Stolovi extends KreirDrop {
 
-  private static Stolovi stoloviclass;
+  private static Stolovi inst = new Stolovi();
   
-  QueryDataSet stolovi = new raDataSet();
   
   public static Stolovi getDataModule() {
-    if (stoloviclass == null) {
-      stoloviclass = new Stolovi();
-    }
-    return stoloviclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return stolovi;
-  }
 
-  public Stolovi() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

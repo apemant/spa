@@ -22,28 +22,15 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Urvrdok extends KreirDrop {
 
-  private static Urvrdok Urvrdokclass;
+  private static Urvrdok inst = new Urvrdok();
   
-  QueryDataSet urvrdok = new raDataSet();
   
   public static Urvrdok getDataModule() {
-    if (Urvrdokclass == null) {
-      Urvrdokclass = new Urvrdok();
-    }
-    return Urvrdokclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return urvrdok;
-  }
 
-  public Urvrdok() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

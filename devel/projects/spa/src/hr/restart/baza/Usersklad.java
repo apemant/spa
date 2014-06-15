@@ -16,80 +16,23 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 
 
 public class Usersklad extends KreirDrop implements DataModule {
 
-  dM dm  = dM.getDataModule();
-  private static Usersklad Userskladclass;
+  private static Usersklad inst = new Usersklad();
 
-  QueryDataSet uskl = new raDataSet();
 
-  Column usklCUSER = new Column();
-  Column usklCSKL = new Column();
 
   public static Usersklad getDataModule() {
-    if (Userskladclass == null) {
-      Userskladclass = new Usersklad();
-    }
-    return Userskladclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return uskl;
-  }
 
-  public Usersklad() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    usklCUSER.setCaption("Korisnik");
-    usklCUSER.setColumnName("CUSER");
-    usklCUSER.setDataType(com.borland.dx.dataset.Variant.STRING);
-    usklCUSER.setPrecision(15);
-    usklCUSER.setRowId(true);
-    usklCUSER.setTableName("USERSKLAD");
-    usklCUSER.setServerColumnName("CUSER");
-    usklCUSER.setSqlType(1);
-    usklCSKL.setCaption("Skladište");
-    usklCSKL.setColumnName("CSKL");
-    usklCSKL.setDataType(com.borland.dx.dataset.Variant.STRING);
-    usklCSKL.setPrecision(12);
-    usklCSKL.setTableName("USERSKLAD");
-    usklCSKL.setServerColumnName("CSKL");
-    usklCSKL.setSqlType(1);
-    uskl.setResolver(dm.getQresolver());
-    uskl.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(),"select * from Usersklad", null, true, Load.ALL));
- setColumns(new Column[] {usklCUSER, usklCSKL});
-  }
-
-  public void setall() {
-
-    ddl.create("Usersklad")
-       .addChar("cuser", 15, true)
-       .addChar("cskl", 12)
-       .addPrimaryKey("cuser");
-
-
-    Naziv = "Usersklad";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

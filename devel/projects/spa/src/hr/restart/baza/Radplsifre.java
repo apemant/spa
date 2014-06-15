@@ -4,29 +4,15 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Radplsifre extends KreirDrop {
 
-  private static Radplsifre radplsifreclass;
+  private static Radplsifre inst = new Radplsifre();
   
-  QueryDataSet radplsifre = new raDataSet();
   
   public static Radplsifre getDataModule() {
-    if (radplsifreclass == null) {
-      radplsifreclass = new Radplsifre();
-    }
-    return radplsifreclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return radplsifre;
-  }
 
-  public Radplsifre() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+  public boolean isAutoRefresh() {
+    return true;
   }
-
 }

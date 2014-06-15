@@ -570,8 +570,10 @@ public class dM implements DataModule {
       while ((line = tf.in()) != null) {
         line = line.trim();
         tabledef.add(line);
-        if (line.startsWith("$")) 
-          tabledefStart.put(line.substring(1).toUpperCase(), new Integer(tabledef.size()));
+        if (line.startsWith("$")) {
+          Object old = tabledefStart.put(line.substring(1).toUpperCase(), new Integer(tabledef.size()));
+          if (old != null) System.out.println("Duplicate "+line.substring(1).toUpperCase());
+        }
       }
       tf.close();
       is.close();

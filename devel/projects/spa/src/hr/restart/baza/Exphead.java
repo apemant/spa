@@ -22,31 +22,9 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Exphead extends KreirDrop implements DataModule {
 
-  private static Exphead expheadclass;
-  QueryDataSet exphead = new QueryDataSet();
+  private static Exphead inst = new Exphead();
 
   public static Exphead getDataModule() {
-    if (expheadclass == null) {
-      expheadclass = new Exphead();
-    }
-    return expheadclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return exphead;
-  }
-
-  public Exphead(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }

@@ -16,83 +16,23 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.dx.sql.dataset.QueryDescriptor;
 
 
 
 public class VTText extends KreirDrop implements DataModule {
 
-  dM dm  = dM.getDataModule();
-  private static VTText VTTextclass;
+  private static VTText inst = new VTText();
 
-  QueryDataSet vtt = new raDataSet();
 
-  Column vttCKEY = new Column();
-  Column vttTEXTFAK = new Column();
 
   public static VTText getDataModule() {
-    if (VTTextclass == null) {
-      VTTextclass = new VTText();
-    }
-    return VTTextclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return vtt;
-  }
 
-  public VTText() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    vttCKEY.setCaption("Klju\u010D izvornog dokumenta");
-    vttCKEY.setColumnName("CKEY");
-    vttCKEY.setDataType(com.borland.dx.dataset.Variant.STRING);
-    vttCKEY.setPrecision(60);
-    vttCKEY.setRowId(true);
-    vttCKEY.setTableName("VTTEXT");
-    vttCKEY.setServerColumnName("CKEY");
-    vttCKEY.setSqlType(1);
-    vttCKEY.setWidth(30);
-    vttTEXTFAK.setCaption("Tekst stavke");
-    vttTEXTFAK.setColumnName("TEXTFAK");
-    vttTEXTFAK.setDataType(com.borland.dx.dataset.Variant.STRING);
-    vttTEXTFAK.setPrecision(4000);
-    vttTEXTFAK.setTableName("VTTEXT");
-    vttTEXTFAK.setServerColumnName("TEXTFAK");
-    vttTEXTFAK.setSqlType(1);
-    vttTEXTFAK.setWidth(30);
-    vtt.setResolver(dm.getQresolver());
-    vtt.setQuery(new QueryDescriptor(dm.getDatabase1(),"select * from VTText", null, true, Load.ALL));
- setColumns(new Column[] {vttCKEY, vttTEXTFAK});
-  }
-
-  public void setall() {
-
-    ddl.create("VTText")
-       .addChar("ckey", 60, true)
-       .addChar("textfak", 4000)
-       .addPrimaryKey("ckey");
-
-
-    Naziv = "VTText";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

@@ -22,31 +22,14 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Stakcije extends KreirDrop implements DataModule {
 
-  private static Stakcije stakcijeclass;
-  QueryDataSet stakcije = new raDataSet();
+  private static Stakcije inst = new Stakcije();
 
   public static Stakcije getDataModule() {
-    if (stakcijeclass == null) {
-      stakcijeclass = new Stakcije();
-    }
-    return stakcijeclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return stakcije;
-  }
 
-  public Stakcije(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

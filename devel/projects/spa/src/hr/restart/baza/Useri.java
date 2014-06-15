@@ -16,38 +16,14 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Useri extends KreirDrop implements DataModule {
 
-  private static Useri usericlass;
-  dM dm  = dM.getDataModule();
-  QueryDataSet useri = new QueryDataSet();
+  private static Useri inst = new Useri();
 
   public static Useri getDataModule() {
-    if (usericlass == null) {
-      usericlass = new Useri();
-    }
-    return usericlass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return useri;
-  }
-  public Useri() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }

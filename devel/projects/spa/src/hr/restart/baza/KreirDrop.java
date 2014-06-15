@@ -76,13 +76,29 @@ public abstract class KreirDrop {
   protected Column[] origColumns;
   protected static HashMap modules = new HashMap(200);
   protected static HashMap moduleNames = new HashMap(400);
+  protected QueryDataSet data;
 
   private static raTransferNotifier track = null;
 
   public KreirDrop() {
-    setall();
-    pkey = ddl.getPrimaryKey();
-    ddl.dispose();
+  	try {
+  		pkey = ddl.getPrimaryKey();
+  		ddl.dispose();
+    	data = isAutoRefresh() ? new raDataSet() : new QueryDataSet();
+      modules.put(this.getClass().getName(), this);
+      initModule();
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
+  /*protected void jbInit() throws Exception {
+    initModule();
+  }*/
+  
+  public boolean isAutoRefresh() {
+  	return false;
   }
   
   protected void initModule() {
@@ -605,7 +621,9 @@ public abstract class KreirDrop {
    * automatski refresh).
    * @return defaultnu instancu QueryDataSet-a odn. raDataSet-a.
    */
-  public abstract QueryDataSet getQueryDataSet();
+  public QueryDataSet getQueryDataSet() {
+  	return data;
+  }
 
   public static void installNotifier(raTransferNotifier tn) {
     track = tn;
@@ -1117,6 +1135,7 @@ public abstract class KreirDrop {
 
   public void setall(){
     // nothing
+  	new Throwable(getClass().getName()).printStackTrace();
   }
 
 //  public void Kreiranje(BazaOper baza) {
@@ -1343,6 +1362,7 @@ public abstract class KreirDrop {
         ddl.addChar(cname, c.getPrecision(), def, c.isRowId());
         break;
       case Variant.BIGDECIMAL:
+      case Variant.DOUBLE:
         ddl.addFloat(cname, c.getPrecision(), c.getScale(), c.isRowId());
         break;
       case Variant.INT:
@@ -1382,11 +1402,13 @@ public abstract class KreirDrop {
       dtype = Variant.TIMESTAMP;
     else if (stype.equals("blob"))
       dtype = Variant.INPUTSTREAM;
+    else if (stype.equals("double"))
+      dtype = Variant.DOUBLE;
     else
       terror("pogresan tip kolone, "+stype);
     
     int scale = -1;
-    if (dtype == Variant.BIGDECIMAL)
+    if (dtype == Variant.BIGDECIMAL || dtype == Variant.DOUBLE)
       if (parts[2].indexOf(',') > 0) {
         String sscale = new VarStr(parts[2]).removeWhitespace().split(',')[1];
         if (!Aus.isDigit(sscale))

@@ -22,31 +22,14 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Rabshema extends KreirDrop implements DataModule {
 
-  private static Rabshema rabshemaclass;
-  QueryDataSet rabshema = new raDataSet();
+  private static Rabshema inst = new Rabshema();
 
   public static Rabshema getDataModule() {
-    if (rabshemaclass == null) {
-    	rabshemaclass = new Rabshema();
-    }
-    return rabshemaclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return rabshema;
-  }
 
-  public Rabshema(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

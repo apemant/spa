@@ -16,17 +16,15 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
+
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 
 public class Doku extends KreirDrop implements DataModule {
 
-  private static Doku dokuclass;
-  dM dm  = dM.getDataModule();
-  QueryDataSet doku = new raDataSet();
+  private static Doku inst = new Doku();
+  
   QueryDataSet dokuPST = new raDataSet();
   QueryDataSet dokuPRI = new raDataSet();
   QueryDataSet dokuPOR = new raDataSet();
@@ -36,15 +34,12 @@ public class Doku extends KreirDrop implements DataModule {
   QueryDataSet dokuPRE = new raDataSet();
   QueryDataSet dokuINV = new raDataSet();
 
+  {
+  	initClones();
+  }
   
   public static Doku getDataModule() {
-    if (dokuclass == null) {
-      dokuclass = new Doku();
-    }
-    return dokuclass;
-  }
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return doku;
+    return inst;
   }
 
   public com.borland.dx.sql.dataset.QueryDataSet getDokuPST() {
@@ -79,19 +74,8 @@ public class Doku extends KreirDrop implements DataModule {
     return dokuINV;
   }
 
-  public Doku(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    initModule();
-    
-    initClones();
+  public boolean isAutoRefresh() {
+    return true;
   }
 
   private void initClones() {

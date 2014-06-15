@@ -22,31 +22,9 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Kontakti extends KreirDrop implements DataModule {
 
-  private static Kontakti kontakticlass;
-  QueryDataSet kontakti = new QueryDataSet();
+  private static Kontakti inst = new Kontakti();
 
   public static Kontakti getDataModule() {
-    if (kontakticlass == null) {
-      kontakticlass = new Kontakti();
-    }
-    return kontakticlass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return kontakti;
-  }
-
-  public Kontakti(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }

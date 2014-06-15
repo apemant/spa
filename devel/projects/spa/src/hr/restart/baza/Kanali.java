@@ -22,31 +22,14 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Kanali extends KreirDrop implements DataModule {
 
-  private static Kanali kanaliclass;
-  QueryDataSet kanali = new raDataSet();
+  private static Kanali inst = new Kanali();
 
   public static Kanali getDataModule() {
-    if (kanaliclass == null) {
-      kanaliclass = new Kanali();
-    }
-    return kanaliclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return kanali;
-  }
 
-  public Kanali(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

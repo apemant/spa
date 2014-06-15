@@ -21,33 +21,15 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 
 public class Kosobe extends KreirDrop implements DataModule {
-  dM dm  = dM.getDataModule();
-  private static Kosobe Kosobeclass;
+  private static Kosobe inst = new Kosobe();
 
-  QueryDataSet kos = new raDataSet();
 
   public static Kosobe getDataModule() {
-    if (Kosobeclass == null) {
-      Kosobeclass = new Kosobe();
-    }
-    return Kosobeclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return kos;
-  }
 
-  public Kosobe() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

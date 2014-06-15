@@ -23,22 +23,19 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Artikli extends KreirDrop implements DataModule {
 
-  private static Artikli artikliclass;
-  dM dm  = dM.getDataModule();
-  QueryDataSet artikli = new raDataSet();
+  private static Artikli inst = new Artikli();
   QueryDataSet artikliaktiv = new raDataSet();
   QueryDataSet artikliroba = new raDataSet();
 
+  {
+    createFilteredDataSet(artikliaktiv, "aktiv = 'D'");
+    createFilteredDataSet(artikliroba, "vrart = 'A'");
+  }
+  
   public static Artikli getDataModule() {
-    if (artikliclass == null) {
-      artikliclass = new Artikli();
-    }
-    return artikliclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return artikli;
-  }
 
   public com.borland.dx.sql.dataset.QueryDataSet getArtikliRoba() {
     return artikliroba;
@@ -55,22 +52,7 @@ public class Artikli extends KreirDrop implements DataModule {
       artikliaktiv.setSort(new SortDescriptor(new String[] {"CART"}));
   }
 
-  public Artikli(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
-    
-    createFilteredDataSet(artikliaktiv, "aktiv = 'D'");
-    createFilteredDataSet(artikliroba, "vrart = 'A'");
-    
-    fixSort();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

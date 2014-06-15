@@ -21,31 +21,14 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Pjpar extends KreirDrop implements DataModule {
 
-  QueryDataSet pjpar = new raDataSet();
 
-  private static Pjpar Pjparclass;
-  dM dm  = dM.getDataModule();
+  private static Pjpar inst = new Pjpar();
 
   public static Pjpar getDataModule() {
-    if (Pjparclass == null) {
-      Pjparclass = new Pjpar();
-    }
-    return Pjparclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return pjpar;
-  }
-  public Pjpar() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

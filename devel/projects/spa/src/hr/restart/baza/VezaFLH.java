@@ -21,28 +21,10 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class VezaFLH extends KreirDrop {
 
-  private static VezaFLH vezaflhclass;
+  private static VezaFLH inst = new VezaFLH();
   
-  QueryDataSet vezaflh = new QueryDataSet();
   
   public static VezaFLH getDataModule() {
-    if (vezaflhclass == null) {
-      vezaflhclass = new VezaFLH();
-    }
-    return vezaflhclass;
-  }
-
-  public QueryDataSet getQueryDataSet() {
-    return vezaflh;
-  }
-
-  public VezaFLH() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+    return inst;
   }
 }

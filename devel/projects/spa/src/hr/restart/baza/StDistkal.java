@@ -21,28 +21,15 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class StDistkal extends KreirDrop {
 
-  private static StDistkal stdistkalclass;
+  private static StDistkal inst = new StDistkal();
   
-  QueryDataSet stdistkal = new raDataSet();
   
   public static StDistkal getDataModule() {
-    if (stdistkalclass == null) {
-      stdistkalclass = new StDistkal();
-    }
-    return stdistkalclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return stdistkal;
-  }
 
-  public StDistkal() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

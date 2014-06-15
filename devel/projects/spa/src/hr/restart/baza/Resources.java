@@ -21,33 +21,11 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Resources extends KreirDrop implements DataModule {
 
-  private static Resources Resourcesclass;
+  private static Resources inst = new Resources();
 
-  QueryDataSet resources = new QueryDataSet();
   
 
   public static Resources getDataModule() {
-    if (Resourcesclass == null) {
-      Resourcesclass = new Resources();
-    }
-    return Resourcesclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return resources;
-  }
-
-  public Resources() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }
-

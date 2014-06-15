@@ -18,35 +18,17 @@
 package hr.restart.baza;
 
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Artnap extends KreirDrop implements DataModule {
 
-  private static Artnap artnapclass;
-  QueryDataSet artnap = new raDataSet();
+  private static Artnap inst = new Artnap();
 
   public static Artnap getDataModule() {
-    if (artnapclass == null) {
-      artnapclass = new Artnap();
-    }
-    return artnapclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return artnap;
-  }
 
-  public Artnap(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

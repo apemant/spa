@@ -16,37 +16,14 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
+
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class dokidod extends KreirDrop implements DataModule {
 
-  private static dokidod dokidodclass;
-  QueryDataSet dokidod = new QueryDataSet();
+  private static dokidod inst = new dokidod();
 
   public static dokidod getDataModule() {
-    if (dokidodclass == null) {
-      dokidodclass = new dokidod();
-    }
-    return dokidodclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return dokidod;
-  }
-
-  public dokidod() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }
-

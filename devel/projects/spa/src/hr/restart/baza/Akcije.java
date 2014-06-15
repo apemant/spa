@@ -18,35 +18,17 @@
 package hr.restart.baza;
 
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Akcije extends KreirDrop implements DataModule {
 
-  private static Akcije akcijeclass;
-  QueryDataSet akcije = new raDataSet();
+  private static Akcije inst = new Akcije();
 
   public static Akcije getDataModule() {
-    if (akcijeclass == null) {
-      akcijeclass = new Akcije();
-    }
-    return akcijeclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return akcije;
-  }
 
-  public Akcije(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

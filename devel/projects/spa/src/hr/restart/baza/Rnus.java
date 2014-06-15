@@ -22,31 +22,9 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Rnus extends KreirDrop implements DataModule {
 
-  private static Rnus rnusclass;
-  QueryDataSet rnus = new QueryDataSet();
+  private static Rnus inst = new Rnus();
 
   public static Rnus getDataModule() {
-    if (rnusclass == null) {
-    	rnusclass = new Rnus();
-    }
-    return rnusclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return rnus;
-  }
-
-  public Rnus(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }

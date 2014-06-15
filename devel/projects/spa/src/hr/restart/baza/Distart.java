@@ -21,28 +21,15 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Distart extends KreirDrop {
 
-  private static Distart distartclass;
+  private static Distart inst = new Distart();
   
-  QueryDataSet distart = new raDataSet();
   
   public static Distart getDataModule() {
-    if (distartclass == null) {
-      distartclass = new Distart();
-    }
-    return distartclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return distart;
-  }
 
-  public Distart() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

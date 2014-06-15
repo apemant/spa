@@ -16,81 +16,23 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 
 
 public class VTprijenos extends KreirDrop implements DataModule {
 
-  dM dm  = dM.getDataModule();
-  private static VTprijenos VTprijenosclass;
+  private static VTprijenos inst = new VTprijenos();
 
-  QueryDataSet vtprijenos = new raDataSet();
 
-  Column vtprijenosKEYSRC = new Column();
-  Column vtprijenosKEYDEST = new Column();
 
   public static VTprijenos getDataModule() {
-    if (VTprijenosclass == null) {
-      VTprijenosclass = new VTprijenos();
-    }
-    return VTprijenosclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return vtprijenos;
-  }
 
-  public VTprijenos() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    vtprijenosKEYSRC.setCaption("Klju\u010D izvornog dokumenta");
-    vtprijenosKEYSRC.setColumnName("KEYSRC");
-    vtprijenosKEYSRC.setDataType(com.borland.dx.dataset.Variant.STRING);
-    vtprijenosKEYSRC.setPrecision(60);
-    vtprijenosKEYSRC.setRowId(true);
-    vtprijenosKEYSRC.setTableName("VTPRIJENOS");
-    vtprijenosKEYSRC.setServerColumnName("KEYSRC");
-    vtprijenosKEYSRC.setSqlType(1);
-    vtprijenosKEYDEST.setCaption("Klju\u010D ciljnog dokumenta");
-    vtprijenosKEYDEST.setColumnName("KEYDEST");
-    vtprijenosKEYDEST.setDataType(com.borland.dx.dataset.Variant.STRING);
-    vtprijenosKEYDEST.setPrecision(60);
-    vtprijenosKEYDEST.setRowId(true);
-    vtprijenosKEYDEST.setTableName("VTPRIJENOS");
-    vtprijenosKEYDEST.setServerColumnName("KEYDEST");
-    vtprijenosKEYDEST.setSqlType(1);
-    vtprijenos.setResolver(dm.getQresolver());
-    vtprijenos.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(),"select * from VTprijenos", null, true, Load.ALL));
- setColumns(new Column[] {vtprijenosKEYSRC, vtprijenosKEYDEST});
-  }
-
-  public void setall() {
-
-    ddl.create("VTprijenos")
-       .addChar("keysrc", 60, true)
-       .addChar("keydest", 60, true)
-       .addPrimaryKey("keysrc,keydest");
-
-
-    Naziv = "VTprijenos";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {/*"keysrc", "keydest"*/};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

@@ -16,101 +16,18 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.dx.sql.dataset.QueryDescriptor;
 
 
 
 public class Transdata extends KreirDrop implements DataModule {
 
-  dM dm  = dM.getDataModule();
-  private static Transdata Transdataclass;
+  private static Transdata inst = new Transdata();
 
-  QueryDataSet transdata = new QueryDataSet();
 
-  Column transdataIMETAB = new Column();
-  Column transdataKOLONA = new Column();
-  Column transdataSDAT = new Column();
-  Column transdataNDAT = new Column();
 
   public static Transdata getDataModule() {
-    if (Transdataclass == null) {
-      Transdataclass = new Transdata();
-    }
-    return Transdataclass;
-  }
-
-  public QueryDataSet getQueryDataSet() {
-    return transdata;
-  }
-
-  public Transdata() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    transdataIMETAB.setCaption("Tablica");
-    transdataIMETAB.setColumnName("IMETAB");
-    transdataIMETAB.setDataType(com.borland.dx.dataset.Variant.STRING);
-    transdataIMETAB.setPrecision(20);
-    transdataIMETAB.setRowId(true);
-    transdataIMETAB.setTableName("TRANSDATA");
-    transdataIMETAB.setServerColumnName("IMETAB");
-    transdataIMETAB.setSqlType(1);
-    transdataKOLONA.setCaption("Kolona");
-    transdataKOLONA.setColumnName("KOLONA");
-    transdataKOLONA.setDataType(com.borland.dx.dataset.Variant.STRING);
-    transdataKOLONA.setPrecision(20);
-    transdataKOLONA.setRowId(true);
-    transdataKOLONA.setTableName("TRANSDATA");
-    transdataKOLONA.setServerColumnName("KOLONA");
-    transdataKOLONA.setSqlType(1);
-    transdataSDAT.setCaption("Stara vrijednost");
-    transdataSDAT.setColumnName("SDAT");
-    transdataSDAT.setDataType(com.borland.dx.dataset.Variant.STRING);
-    transdataSDAT.setPrecision(20);
-    transdataSDAT.setRowId(true);
-    transdataSDAT.setTableName("TRANSDATA");
-    transdataSDAT.setServerColumnName("SDAT");
-    transdataSDAT.setSqlType(1);
-    transdataNDAT.setCaption("Nova vrijednost");
-    transdataNDAT.setColumnName("NDAT");
-    transdataNDAT.setDataType(com.borland.dx.dataset.Variant.STRING);
-    transdataNDAT.setPrecision(20);
-    transdataNDAT.setTableName("TRANSDATA");
-    transdataNDAT.setServerColumnName("NDAT");
-    transdataNDAT.setSqlType(1);
-    transdata.setResolver(dm.getQresolver());
-    transdata.setQuery(new QueryDescriptor(dm.getDatabase1(),"select * from Transdata", null, true, Load.ALL));
-    setColumns(new Column[] {transdataIMETAB, transdataKOLONA, transdataSDAT, transdataNDAT});
-  }
-
-  public void setall() {
-
-    ddl.create("Transdata")
-       .addChar("imetab", 20, true)
-       .addChar("kolona", 20, true)
-       .addChar("sdat", 20, true)
-       .addChar("ndat", 20)
-       .addPrimaryKey("imetab,kolona,sdat");
-
-
-    Naziv = "Transdata";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
+    return inst;
   }
 }

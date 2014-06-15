@@ -22,31 +22,9 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Rnser extends KreirDrop implements DataModule {
 
-  private static Rnser rnserclass;
-  QueryDataSet rnser = new QueryDataSet();
+  private static Rnser inst = new Rnser();
 
   public static Rnser getDataModule() {
-    if (rnserclass == null) {
-    	rnserclass = new Rnser();
-    }
-    return rnserclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return rnser;
-  }
-
-  public Rnser(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }

@@ -22,28 +22,15 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Approdok extends KreirDrop {
 
-  private static Approdok Approdokclass;
+  private static Approdok inst = new Approdok();
   
-  QueryDataSet Approdok = new raDataSet();
   
   public static Approdok getDataModule() {
-    if (Approdokclass == null) {
-      Approdokclass = new Approdok();
-    }
-    return Approdokclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return Approdok;
-  }
 
-  public Approdok() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

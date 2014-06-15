@@ -21,17 +21,12 @@ import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
-import com.borland.dx.sql.dataset.QueryDataSet;
-
 
 
 public class Refresher extends KreirDrop implements DataModule {
 
-  dM dm  = dM.getDataModule();
-  private static Refresher Refresherclass;
+  private static Refresher inst = new Refresher();
 
   Timer t = new Timer();
   TimerTask refresh = new TimerTask() {
@@ -45,7 +40,7 @@ public class Refresher extends KreirDrop implements DataModule {
     		      System.out.println("refreshing after " +
     		          (System.currentTimeMillis() - lastRefresh) + " ms");
     		      lastRefresh = System.currentTimeMillis();
-    		      ref.refresh();
+    		      data.refresh();
     		    }
               }
             });
@@ -55,28 +50,18 @@ public class Refresher extends KreirDrop implements DataModule {
   int delay;
   static long lastRefresh;
 
-  QueryDataSet ref = new QueryDataSet();
 
-  Column refDUMMY = new Column();
 
   public static Refresher getDataModule() {
-    if (Refresherclass == null) {
-      Refresherclass = new Refresher();
-    }
-    return Refresherclass;
+    return inst;
   }
   
   public static void postpone() {
     lastRefresh = System.currentTimeMillis();
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return ref;
-  }
 
   public void begin(int refreshRate) {
-//    Valid.getValid().runSQL("DELETE FROM Refresher");
-//    Valid.getValid().runSQL("INSERT INTO Refresher VALUES('D')");
     delay = refreshRate;
     lastRefresh = System.currentTimeMillis();
     t.schedule(refresh, refreshRate, refreshRate);
@@ -84,46 +69,5 @@ public class Refresher extends KreirDrop implements DataModule {
 
   public void stop() {
     t.cancel();
-  }
-
-  public Refresher() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    refDUMMY.setCaption("Dummy polje");
-    refDUMMY.setColumnName("DUMMY");
-    refDUMMY.setDataType(com.borland.dx.dataset.Variant.STRING);
-    refDUMMY.setPrecision(1);
-    refDUMMY.setRowId(true);
-    refDUMMY.setTableName("REFRESHER");
-    refDUMMY.setServerColumnName("DUMMY");
-    refDUMMY.setSqlType(1);
-    ref.setResolver(dm.getQresolver());
-    ref.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(),"select * from Refresher", null, true, Load.ALL));
- setColumns(new Column[] {refDUMMY});
-  }
-
-  public void setall() {
-
-    ddl.create("Refresher")
-       .addChar("dummy", 1, true)
-       .addPrimaryKey("dummy");
-
-
-    Naziv = "Refresher";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
   }
 }

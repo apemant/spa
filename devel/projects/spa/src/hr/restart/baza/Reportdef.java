@@ -16,102 +16,23 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.dx.sql.dataset.QueryDescriptor;
 
 
 
 public class Reportdef extends KreirDrop implements DataModule {
 
-  dM dm  = dM.getDataModule();
-  private static Reportdef Reportdefclass;
+  private static Reportdef inst = new Reportdef();
 
-  QueryDataSet rpd = new raDataSet();
 
-  Column rpdID = new Column();
-  Column rpdVRDOK = new Column();
-  Column rpdIZLAZNI = new Column();
-  Column rpdORIENT = new Column();
 
   public static Reportdef getDataModule() {
-    if (Reportdefclass == null) {
-      Reportdefclass = new Reportdef();
-    }
-    return Reportdefclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return rpd;
-  }
 
-  public Reportdef() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    rpdID.setCaption("Jedinstveno ime izvještaja");
-    rpdID.setColumnName("ID");
-    rpdID.setDataType(com.borland.dx.dataset.Variant.STRING);
-    rpdID.setPrecision(50);
-    rpdID.setRowId(true);
-    rpdID.setTableName("REPORTDEF");
-    rpdID.setServerColumnName("ID");
-    rpdID.setSqlType(1);
-    rpdID.setWidth(30);
-    rpdVRDOK.setCaption("Vrsta dokumenta");
-    rpdVRDOK.setColumnName("VRDOK");
-    rpdVRDOK.setDataType(com.borland.dx.dataset.Variant.STRING);
-    rpdVRDOK.setPrecision(3);
-    rpdVRDOK.setTableName("REPORTDEF");
-    rpdVRDOK.setServerColumnName("VRDOK");
-    rpdVRDOK.setSqlType(1);
-    rpdIZLAZNI.setCaption("Izlazni izvještaj");
-    rpdIZLAZNI.setColumnName("IZLAZNI");
-    rpdIZLAZNI.setDataType(com.borland.dx.dataset.Variant.STRING);
-    rpdIZLAZNI.setPrecision(1);
-    rpdIZLAZNI.setTableName("REPORTDEF");
-    rpdIZLAZNI.setServerColumnName("IZLAZNI");
-    rpdIZLAZNI.setSqlType(1);
-    rpdIZLAZNI.setDefault("N");
-    rpdORIENT.setCaption("Orijentacija");
-    rpdORIENT.setColumnName("ORIENT");
-    rpdORIENT.setDataType(com.borland.dx.dataset.Variant.STRING);
-    rpdORIENT.setPrecision(1);
-    rpdORIENT.setTableName("REPORTDEF");
-    rpdORIENT.setServerColumnName("ORIENT");
-    rpdORIENT.setSqlType(1);
-    rpdORIENT.setDefault("P");
-    rpd.setResolver(dm.getQresolver());
-    rpd.setQuery(new QueryDescriptor(dm.getDatabase1(),"select * from Reportdef", null, true, Load.ALL));
- setColumns(new Column[] {rpdID, rpdVRDOK, rpdIZLAZNI, rpdORIENT});
-  }
-
-  public void setall() {
-
-    ddl.create("Reportdef")
-       .addChar("id", 50, true)
-       .addChar("vrdok", 3)
-       .addChar("izlazni", 1, "N")
-       .addChar("orient", 1, "P")
-       .addPrimaryKey("id");
-
-
-    Naziv = "Reportdef";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

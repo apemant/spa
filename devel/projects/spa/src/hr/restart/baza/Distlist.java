@@ -21,28 +21,15 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Distlist extends KreirDrop {
 
-  private static Distlist distlistclass;
+  private static Distlist inst = new Distlist();
   
-  QueryDataSet distlist = new raDataSet();
   
   public static Distlist getDataModule() {
-    if (distlistclass == null) {
-      distlistclass = new Distlist();
-    }
-    return distlistclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return distlist;
-  }
 
-  public Distlist() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

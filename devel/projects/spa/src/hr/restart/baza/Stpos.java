@@ -16,8 +16,8 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
+
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.QueryDataSet;
 
 /**
  * Title:
@@ -30,30 +30,9 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Stpos extends KreirDrop implements DataModule {
 
-  private static Stpos Stposclass;
-  dM dm  = dM.getDataModule();
-  QueryDataSet Stpos = new QueryDataSet();
+  private static Stpos inst = new Stpos();
 
   public static Stpos getDataModule() {
-    if (Stposclass == null) {
-      Stposclass = new Stpos();
-    }
-    return Stposclass;
-  }
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return Stpos;
-  }
-
-  public Stpos() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }

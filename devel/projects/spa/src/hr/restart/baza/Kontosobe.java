@@ -22,31 +22,9 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Kontosobe extends KreirDrop implements DataModule {
 
-  private static Kontosobe kontosobeclass;
-  QueryDataSet kontosobe = new QueryDataSet();
+  private static Kontosobe inst = new Kontosobe();
 
   public static Kontosobe getDataModule() {
-    if (kontosobeclass == null) {
-      kontosobeclass = new Kontosobe();
-    }
-    return kontosobeclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return kontosobe;
-  }
-
-  public Kontosobe(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }

@@ -22,34 +22,17 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class VTCparHist extends KreirDrop implements DataModule {
   
-  public static VTCparHist VTCparHistClass;
+  private static VTCparHist inst = new VTCparHist();
   
-  QueryDataSet vtparhist = new raDataSet();
 
 
   public static VTCparHist getDataModule() {
-    if (VTCparHistClass == null) {
-      VTCparHistClass = new VTCparHist();
-    }
-    return VTCparHistClass;
+    return inst;
   }
 
-  public VTCparHist() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
   
-  public QueryDataSet getQueryDataSet() {
-    return vtparhist;
-  }
   
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
-
 }

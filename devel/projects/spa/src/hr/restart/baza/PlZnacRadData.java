@@ -16,93 +16,23 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.dx.sql.dataset.QueryDescriptor;
 
 
 
 public class PlZnacRadData extends KreirDrop implements DataModule {
 
-  dM dm  = dM.getDataModule();
-  private static PlZnacRadData PlZnacRadDataclass;
+  private static PlZnacRadData inst = new PlZnacRadData();
 
-  QueryDataSet plznacraddata = new raDataSet();
 
-  Column plznacraddataCRADNIK = new Column();
-  Column plznacraddataCZNAC = new Column();
-  Column plznacraddataVRI = new Column();
 
   public static PlZnacRadData getDataModule() {
-    if (PlZnacRadDataclass == null) {
-      PlZnacRadDataclass = new PlZnacRadData();
-    }
-    return PlZnacRadDataclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return plznacraddata;
-  }
 
-  public PlZnacRadData() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    plznacraddataCRADNIK.setCaption("Radnik");
-    plznacraddataCRADNIK.setColumnName("CRADNIK");
-    plznacraddataCRADNIK.setDataType(com.borland.dx.dataset.Variant.STRING);
-    plznacraddataCRADNIK.setPrecision(6);
-    plznacraddataCRADNIK.setRowId(true);
-    plznacraddataCRADNIK.setTableName("PLZNACRADDATA");
-    plznacraddataCRADNIK.setServerColumnName("CRADNIK");
-    plznacraddataCRADNIK.setSqlType(1);
-    plznacraddataCZNAC.setCaption("Zna\u010Dajka");
-    plznacraddataCZNAC.setColumnName("CZNAC");
-    plznacraddataCZNAC.setDataType(com.borland.dx.dataset.Variant.SHORT);
-    plznacraddataCZNAC.setPrecision(4);
-    plznacraddataCZNAC.setRowId(true);
-    plznacraddataCZNAC.setTableName("PLZNACRADDATA");
-    plznacraddataCZNAC.setServerColumnName("CZNAC");
-    plznacraddataCZNAC.setSqlType(5);
-    plznacraddataCZNAC.setWidth(4);
-    plznacraddataVRI.setCaption("Vrijednost");
-    plznacraddataVRI.setColumnName("VRI");
-    plznacraddataVRI.setDataType(com.borland.dx.dataset.Variant.STRING);
-    plznacraddataVRI.setPrecision(50);
-    plznacraddataVRI.setTableName("PLZNACRADDATA");
-    plznacraddataVRI.setServerColumnName("VRI");
-    plznacraddataVRI.setSqlType(1);
-    plznacraddataVRI.setWidth(30);
-    plznacraddata.setResolver(dm.getQresolver());
-    plznacraddata.setQuery(new QueryDescriptor(dm.getDatabase1(),"select * from PlZnacRadData", null, true, Load.ALL));
-    setColumns(new Column[] {plznacraddataCRADNIK, plznacraddataCZNAC, plznacraddataVRI});
-  }
-
-  public void setall() {
-
-    ddl.create("PlZnacRadData")
-       .addChar("cradnik", 6, true)
-       .addShort("cznac", 4, true)
-       .addChar("vri", 50)
-       .addPrimaryKey("cradnik,cznac");
-
-
-    Naziv = "PlZnacRadData";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

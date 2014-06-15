@@ -16,94 +16,23 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.dx.sql.dataset.QueryDescriptor;
 
 
 
 public class IzvjPDV extends KreirDrop implements DataModule {
 
-  dM dm  = dM.getDataModule();
-  private static IzvjPDV IzvjPDVclass;
+  private static IzvjPDV inst = new IzvjPDV();
 
-  QueryDataSet izp = new raDataSet();
 
-  Column izpCIZ = new Column();
-  Column izpOPIS = new Column();
-  Column izpPARAM = new Column();
 
   public static IzvjPDV getDataModule() {
-    if (IzvjPDVclass == null) {
-      IzvjPDVclass = new IzvjPDV();
-    }
-    return IzvjPDVclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return izp;
-  }
 
-  public IzvjPDV() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    izpCIZ.setCaption("Oznaka stavke obr.PDV");
-    izpCIZ.setColumnName("CIZ");
-    izpCIZ.setDataType(com.borland.dx.dataset.Variant.STRING);
-    izpCIZ.setPrecision(10);
-    izpCIZ.setRowId(true);
-    izpCIZ.setTableName("IZVJPDV");
-    izpCIZ.setServerColumnName("CIZ");
-    izpCIZ.setSqlType(1);
-    izpOPIS.setCaption("Opis");
-    izpOPIS.setColumnName("OPIS");
-    izpOPIS.setDataType(com.borland.dx.dataset.Variant.STRING);
-    izpOPIS.setPrecision(100);
-    izpOPIS.setTableName("IZVJPDV");
-    izpOPIS.setServerColumnName("OPIS");
-    izpOPIS.setSqlType(1);
-    izpOPIS.setWidth(30);
-    
-    izpPARAM.setCaption("Parametri");
-    izpPARAM.setColumnName("PARAMETRI");
-    izpPARAM.setDataType(com.borland.dx.dataset.Variant.STRING);
-    izpPARAM.setPrecision(100);
-    izpPARAM.setTableName("IZVJPDV");
-    izpPARAM.setServerColumnName("PARAMETRI");
-    izpPARAM.setSqlType(1);
-    izpPARAM.setWidth(30);
-    
-    izp.setResolver(dm.getQresolver());
-    izp.setQuery(new QueryDescriptor(dm.getDatabase1(),"select * from IzvjPDV", null, true, Load.ALL));
- setColumns(new Column[] {izpCIZ, izpOPIS, izpPARAM});
-  }
-
-  public void setall() {
-
-    ddl.create("IzvjPDV")
-       .addChar("ciz", 10, true)
-       .addChar("opis", 100)
-       .addChar("parametri", 100)
-       .addPrimaryKey("ciz");
-
-
-    Naziv = "IzvjPDV";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

@@ -21,33 +21,11 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Mesg extends KreirDrop implements DataModule {
 
-  private static Mesg Mesgclass;
+  private static Mesg inst = new Mesg();
 
-  QueryDataSet mesg = new QueryDataSet();
   
   
   public static Mesg getDataModule() {
-    if (Mesgclass == null) {
-      Mesgclass = new Mesg();
-    }
-    return Mesgclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return mesg;
-  }
-
-  public Mesg() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }
-

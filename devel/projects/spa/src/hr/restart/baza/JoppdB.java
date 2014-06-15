@@ -4,29 +4,15 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class JoppdB extends KreirDrop {
 
-  private static JoppdB joppdbclass;
+  private static JoppdB inst = new JoppdB();
   
-  QueryDataSet joppdb = new raDataSet();
   
   public static JoppdB getDataModule() {
-    if (joppdbclass == null) {
-      joppdbclass = new JoppdB();
-    }
-    return joppdbclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return joppdb;
-  }
 
-  public JoppdB() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+  public boolean isAutoRefresh() {
+    return true;
   }
-
 }

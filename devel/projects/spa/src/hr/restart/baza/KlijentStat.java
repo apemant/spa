@@ -22,31 +22,14 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class KlijentStat extends KreirDrop implements DataModule {
 
-  private static KlijentStat klijentstatclass;
-  QueryDataSet klijentstat = new raDataSet();
+  private static KlijentStat inst = new KlijentStat();
 
   public static KlijentStat getDataModule() {
-    if (klijentstatclass == null) {
-      klijentstatclass = new KlijentStat();
-    }
-    return klijentstatclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return klijentstat;
-  }
 
-  public KlijentStat(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

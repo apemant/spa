@@ -21,33 +21,10 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Kredkar extends KreirDrop implements DataModule {
 
-  private static Kredkar Kredkarclass;
-
-  QueryDataSet kredkar = new QueryDataSet();
+  private static Kredkar inst = new Kredkar();
   
   
   public static Kredkar getDataModule() {
-    if (Kredkarclass == null) {
-      Kredkarclass = new Kredkar();
-    }
-    return Kredkarclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return kredkar;
-  }
-
-  public Kredkar() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }
-

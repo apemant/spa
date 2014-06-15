@@ -22,31 +22,9 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class UplRobno extends KreirDrop implements DataModule {
 
-  private static UplRobno uplrobnoclass;
-  QueryDataSet uplrobno = new QueryDataSet();
+  private static UplRobno inst = new UplRobno();
 
   public static UplRobno getDataModule() {
-    if (uplrobnoclass == null) {
-    	uplrobnoclass = new UplRobno();
-    }
-    return uplrobnoclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return uplrobno;
-  }
-
-  public UplRobno(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }

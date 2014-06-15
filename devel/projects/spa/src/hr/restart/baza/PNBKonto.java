@@ -22,31 +22,14 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class PNBKonto extends KreirDrop implements DataModule {
 
-  private static PNBKonto PNBKontoclass;
-  QueryDataSet pnbKonto = new raDataSet();
+  private static PNBKonto inst = new PNBKonto();
 
   public static PNBKonto getDataModule() {
-    if (PNBKontoclass == null) {
-      PNBKontoclass = new PNBKonto();
-    }
-    return PNBKontoclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return pnbKonto;
-  }
 
-  public PNBKonto(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

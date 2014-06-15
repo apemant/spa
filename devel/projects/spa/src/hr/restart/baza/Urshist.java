@@ -22,28 +22,15 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Urshist extends KreirDrop {
 
-  private static Urshist Urshistclass;
+  private static Urshist inst = new Urshist();
   
-  QueryDataSet urshist = new raDataSet();
   
   public static Urshist getDataModule() {
-    if (Urshistclass == null) {
-      Urshistclass = new Urshist();
-    }
-    return Urshistclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return urshist;
-  }
   
-  public Urshist() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

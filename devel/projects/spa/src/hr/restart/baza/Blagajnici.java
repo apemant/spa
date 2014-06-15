@@ -16,43 +16,21 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
-import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
-import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.dx.sql.dataset.QueryDescriptor;
 
+import com.borland.dx.dataset.DataModule;
 
 
 public class Blagajnici extends KreirDrop implements DataModule {
 
-  dM dm  = dM.getDataModule();
-  private static Blagajnici Blagajniciclass;
+  private static Blagajnici inst = new Blagajnici();
 
-  QueryDataSet blagajnici = new raDataSet();
 
   public static Blagajnici getDataModule() {
-    if (Blagajniciclass == null) {
-      Blagajniciclass = new Blagajnici();
-    }
-    return Blagajniciclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return blagajnici;
-  }
 
-  public Blagajnici() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    initModule();
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

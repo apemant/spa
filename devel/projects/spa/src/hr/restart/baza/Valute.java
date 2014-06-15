@@ -16,30 +16,26 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import java.util.ResourceBundle;
 
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Valute extends KreirDrop implements DataModule {
-  private static Valute Valuteclass;
-  dM dm  = dM.getDataModule();
-  QueryDataSet valute = new raDataSet();
-  QueryDataSet valuteaktiv = new raDataSet();
+  
+	private static Valute inst = new Valute();
+  
+	QueryDataSet valuteaktiv = new raDataSet();
   QueryDataSet valutestrane = new raDataSet();
 
+  {
+    createFilteredDataSet(valuteaktiv, "aktiv = 'D'");
+    createFilteredDataSet(valutestrane, "strval = 'D' AND aktiv = 'D'");
+  }
+  
   public static Valute getDataModule() {
-    if (Valuteclass == null) {
-      Valuteclass = new Valute();
-    }
-    return Valuteclass;
+    return inst;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return valute;
-  }
 
   public com.borland.dx.sql.dataset.QueryDataSet getAktiv() {
     return valuteaktiv;
@@ -49,19 +45,7 @@ public class Valute extends KreirDrop implements DataModule {
     return valutestrane;
   }
 
-  public Valute() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    initModule();
-    
-    createFilteredDataSet(valuteaktiv, "aktiv = 'D'");
-    createFilteredDataSet(valutestrane, "strval = 'D' AND aktiv = 'D'");
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

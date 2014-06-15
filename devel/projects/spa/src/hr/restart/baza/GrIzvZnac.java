@@ -16,95 +16,23 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.dx.sql.dataset.QueryDescriptor;
 
 
 
 public class GrIzvZnac extends KreirDrop implements DataModule {
 
-  dM dm  = dM.getDataModule();
-  private static GrIzvZnac GrIzvZnacclass;
+  private static GrIzvZnac inst = new GrIzvZnac();
 
-  QueryDataSet giz = new raDataSet();
 
-  Column gizCIZV = new Column();
-  Column gizCGRIZV = new Column();
-  Column gizCZNAC = new Column();
 
   public static GrIzvZnac getDataModule() {
-    if (GrIzvZnacclass == null) {
-      GrIzvZnacclass = new GrIzvZnac();
-    }
-    return GrIzvZnacclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return giz;
-  }
 
-  public GrIzvZnac() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void jbInit() throws Exception {
-    gizCIZV.setCaption("Izvještaj");
-    gizCIZV.setColumnName("CIZV");
-    gizCIZV.setDataType(com.borland.dx.dataset.Variant.SHORT);
-    gizCIZV.setPrecision(4);
-    gizCIZV.setRowId(true);
-    gizCIZV.setTableName("GRIZVZNAC");
-    gizCIZV.setServerColumnName("CIZV");
-    gizCIZV.setSqlType(5);
-    gizCIZV.setWidth(4);
-    gizCGRIZV.setCaption("Grupa izvještaja");
-    gizCGRIZV.setColumnName("CGRIZV");
-    gizCGRIZV.setDataType(com.borland.dx.dataset.Variant.SHORT);
-    gizCGRIZV.setPrecision(4);
-    gizCGRIZV.setRowId(true);
-    gizCGRIZV.setTableName("GRIZVZNAC");
-    gizCGRIZV.setServerColumnName("CGRIZV");
-    gizCGRIZV.setSqlType(5);
-    gizCGRIZV.setWidth(4);
-    gizCZNAC.setCaption("Zna\u010Dajka");
-    gizCZNAC.setColumnName("CZNAC");
-    gizCZNAC.setDataType(com.borland.dx.dataset.Variant.SHORT);
-    gizCZNAC.setPrecision(4);
-    gizCZNAC.setRowId(true);
-    gizCZNAC.setTableName("GRIZVZNAC");
-    gizCZNAC.setServerColumnName("CZNAC");
-    gizCZNAC.setSqlType(5);
-    gizCZNAC.setWidth(4);
-    giz.setResolver(dm.getQresolver());
-    giz.setQuery(new QueryDescriptor(dm.getDatabase1(),"select * from GrIzvZnac", null, true, Load.ALL));
-    setColumns(new Column[] {gizCIZV, gizCGRIZV, gizCZNAC});
-  }
-
-  public void setall() {
-
-    ddl.create("GrIzvZnac")
-       .addShort("cizv", 4, true)
-       .addShort("cgrizv", 4, true)
-       .addShort("cznac", 4, true)
-       .addPrimaryKey("cizv,cgrizv,cznac");
-
-
-    Naziv = "GrIzvZnac";
-
-    SqlDefTabela = ddl.getCreateTableString();
-
-    String[] idx = new String[] {};
-    String[] uidx = new String[] {};
-    DefIndex = ddl.getIndices(idx, uidx);
-    NaziviIdx = ddl.getIndexNames(idx, uidx);
+  public boolean isAutoRefresh() {
+    return true;
   }
 }

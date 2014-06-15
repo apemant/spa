@@ -16,39 +16,15 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
+
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class stdokitmp extends KreirDrop implements DataModule {
 
-  private static stdokitmp stdokiclass;
-  dM dm  = dM.getDataModule();
-  QueryDataSet stdokitmp = new QueryDataSet();
+  private static stdokitmp inst = new stdokitmp();
  
   
   public static stdokitmp getDataModule() {
-    if (stdokiclass == null) {
-      stdokiclass = new stdokitmp();
-    }
-    return stdokiclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return stdokitmp;
-  }
-
-
-  public stdokitmp(){
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    initModule();
- 
+    return inst;
   }
 }

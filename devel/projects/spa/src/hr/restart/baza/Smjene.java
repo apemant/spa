@@ -21,33 +21,11 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Smjene extends KreirDrop implements DataModule {
 
-  private static Smjene Smjeneclass;
+  private static Smjene inst = new Smjene();
 
-  QueryDataSet smjene = new QueryDataSet();
   
   
   public static Smjene getDataModule() {
-    if (Smjeneclass == null) {
-      Smjeneclass = new Smjene();
-    }
-    return Smjeneclass;
-  }
-
-  public com.borland.dx.sql.dataset.QueryDataSet getQueryDataSet() {
-    return smjene;
-  }
-
-  public Smjene() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      jbInit();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    initModule();
+    return inst;
   }
 }
-

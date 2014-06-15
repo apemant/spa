@@ -17,33 +17,18 @@
 ****************************************************************************/
 package hr.restart.baza;
 
-import com.borland.dx.sql.dataset.QueryDataSet;
-
 
 public class Artrans extends KreirDrop {
 
-  private static Artrans Artransclass;
+  private static Artrans inst = new Artrans();
   
-  QueryDataSet Artrans = new raDataSet();
   
   public static Artrans getDataModule() {
-    if (Artransclass == null) {
-      Artransclass = new Artrans();
-    }
-    return Artransclass;
+    return inst;
   }
 
-  public QueryDataSet getQueryDataSet() {
-    return Artrans;
-  }
 
-  public Artrans() {
-    try {
-      modules.put(this.getClass().getName(), this);
-      initModule();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+  public boolean isAutoRefresh() {
+    return true;
   }
 }
