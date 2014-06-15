@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -132,6 +133,14 @@ public class TextFile {
       return null;
     }
   }
+  
+  public LinkedList lines() {
+  	LinkedList ret = new LinkedList();
+  	String line;
+  	while ((line = in()) != null)
+  		ret.add(line);
+  	return ret;
+  }
 
   public String in() {
     try {
@@ -146,6 +155,19 @@ public class TextFile {
     try {
       writer.write(line);
       writer.newLine();
+      return this;
+    } catch (IOException e) {
+      return null;
+    }
+  }
+  
+  public TextFile out(LinkedList lines) {
+  	if (lines == null || lines.size() == 0) return this;
+  	try {
+      for (Iterator i = lines.iterator(); i.hasNext(); ) {
+        writer.write((String) i.next());
+        writer.newLine();
+      }
       return this;
     } catch (IOException e) {
       return null;
