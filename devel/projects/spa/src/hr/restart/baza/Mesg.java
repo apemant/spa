@@ -16,15 +16,13 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
+
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Mesg extends KreirDrop implements DataModule {
 
   private static Mesg inst = new Mesg();
 
-  
-  
   public static Mesg getDataModule() {
     return inst;
   }
