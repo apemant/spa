@@ -912,13 +912,6 @@ IDX=cradnal
 IDX=veza
 IDX=id_stavka
 
-$Imageinfo
-img_id;int;6;pkey;;img_id
-tablica;text;50;;;TABLICA
-ckey;text;100;;;ckey
-imgurl;text;100;;;URL
-img;blob;;;;Slika
-
 $Artikli
 LOKK;char;1;;N;LOKK;*
 AKTIV;char;1;;D;AKTIV;*
@@ -1011,7 +1004,6 @@ DEST;char;50;;;Na
 KOL;numeric;15,3;;0;Kolièina
 IDX=src
 IDX=dest
-
 
 $Doku
 LOKK;char;1;;N;LOKK;*
@@ -1193,6 +1185,12 @@ IDX=cart
 IDX=cradnal
 IDX=veza
 IDX=id_stavka
+
+$Aplikacija
+APP;char;10;pkey;;Aplikacija
+KLASA;char;50;;;Klasa;15
+INSTALIRANA;char;1;;D;Instalirana
+OPIS;char;30;;;Opis aplikacije;15
 
 $FondSati
 KNJIG;char;12;pkey;;Poduzeæe
@@ -1866,6 +1864,2669 @@ JNI;char;1;;;16.1. Oznaka naèina isplate
 NETOPK;numeric;17,2;;0;16.2. Iznos za isplatu
 BRUTOOBR;numeric;17,2;;0;17. Obraèunata plaæa
 
+
+### sve ostale tablice
+
+$Banke
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CBANKA;char;4;pkey;;Šifra;5
+NAZIV;char;200;;;Naziv;15
+ZIRO;char;40;;;Žiro raèun;15
+BANKA;char;1;;;Banka fl.;*
+MAX_RATA;short;2;;0;Maximalni broj rata;15
+MIN_IZNOS;numeric;15,2;;0;Minimalni iznos rate
+MAX_IZNOS;numeric;15,2;;0;Maximalni iznos rate
+BROJKONTA;char;8;;;Konto
+VRDOK;char;3;;;Vrsta dokumenta
+
+$Bankepl
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CBANKE;int;6;pkey;;Oznaka
+NAZBANKE;char;40;;;Naziv;15
+CPOV;int;6;;;Oznaka povjerioca-virmana
+BRDOM;char;10;;;Broj domicilne banke
+BRPOSL;char;10;;;Broj poslovnice banke
+PARAMETRI;char;20;;;Parametri;*
+
+$Blagajna
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+CBLAG;int;6;pkey;;Broj blagajne
+OZNVAL;char;3;pkey;;Oznaka valute
+NAZIV;char;50;;;Naziv blagajne;30
+SALDO;numeric;17,2;;0;Saldo blagajne;15
+DATIZV;date;;;;Datum zadnjeg blagajnièkog izvještaja;10
+BRIZV;int;6;;;Broj zadnjeg blagajnièkog izvještaja
+PVSALDO;numeric;17,2;;0;Saldo u dom. valuti;15
+BREZGOT;char;1;;N;Bezgotovinska
+STAVKA;char;8;;;Veza sa kontom preko SHKONTA.VRDOK=BL
+CSKL;char;12;;;Veza sa kontom preko SHKONTA
+VRDOK;char;3;;;Vrsta dokumenta
+
+$Blagizv
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+CBLAG;int;6;pkey;;Blagajna
+OZNVAL;char;3;pkey;;Oznaka valute
+GODINA;short;2;pkey;;Godina
+BRIZV;int;6;pkey;;Izvještaj
+DATOD;date;;;;Od;10
+DATDO;date;;;;Do;10
+UKPRIMITAK;numeric;17,2;;0;Ukupno primitak;15
+UKIZDATAK;numeric;17,2;;0;Ukupno izdatak;15
+PRIJENOS;numeric;17,2;;0;Prijenos;15
+SALDO;numeric;17,2;;0;Saldo;15
+UKSALDO;numeric;17,2;;0;Ukupni saldo;15
+PVUKPRIMITAK;numeric;17,2;;0;Ukupno primitak u dom.valuti;15
+PVUKIZDATAK;numeric;17,2;;0;Ukupno izdatak u dom.valuti;15
+PVPRIJENOS;numeric;17,2;;0;Prijenos u dom.valuti;15
+PVSALDO;numeric;17,2;;0;Saldo u dom.valuti;15
+PVUKSALDO;numeric;17,2;;0;Ukupni saldo u dom.valuti;15
+STATUS;char;1;;U;Status
+
+$Cardav
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CDAV;char;10;pkey;;Šifra vrste davanja
+NAZIV;char;80;;;Naziv;30
+IDX=cdav
+
+$Cardozvole
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CDOZ;char;10;pkey;;Šifra dozvole
+NAZIV;char;100;;;Naziv;30
+IDX=cdoz
+
+$Cardrzava
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CSIFDRV;char;3;pkey;;Šifra države
+COZNDRV;char;3;;;Oznaka države
+NAZIV;char;80;;;Naziv carinarnice;30
+IDX=csifdrv
+
+$Carinarnica
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CCAR;char;20;pkey;;Šifra carinarnice;15
+NAZIV;char;80;;;Naziv carinarnice;30
+IDX=ccar
+
+$Carizlaz
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CUSER;char;15;;;Operater
+ID_IZLAZ_ZAG;int;6;pkey;;Brojaè autonumber;*
+CBRDOK;char;30;;;Broj dokumenta
+DATDOK;date;;;;Datum dokumenta;10
+CPAR;int;6;;;Principal;5
+CSKL;char;12;;;Skladište
+RACPRI;char;30;;;Raèun principala
+OZNVAL;char;3;;;Valuta
+TECAJ;numeric;17,6;;0;Iznos teèaja;15
+ODGOSOBA;char;80;;;Odgovorna osoba;30
+COMMENT;char;500;;;Komentar;30
+IDX=id_izlaz_zag
+
+$Carizlazst
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+ID_IZLAZ_ZAG;int;6;pkey;;Brojaè autonumber;*
+ID_IZLAZ_STAV;int;6;pkey;;Brojaè autonumber stavaka;*
+RBR;short;2;;;Rbr;4
+CTG;char;10;;;Tarifni broj
+STOPA1;numeric;17,3;;0;Stopa;15
+CART;int;6;;;Šifra;8
+CART1;char;20;;;Kataloški broj;15
+BC;char;20;;;Barcode;15
+NAZART;char;50;;;Naziv;30
+JM;char;3;;;Jm
+CSIFDRV;char;3;;;Porijeklo
+PREF;char;10;;;Preferencijal
+CPOTPOR;char;10;;;Potvrda o porijeklu
+KOL;numeric;17,3;;0;Kolièina;15
+NETTO_KG;numeric;17,3;;0;Netto kg;15
+KOL_KOM;numeric;17,3;;0;Kolièina (kom);15
+CIJENA_VAL;numeric;17,2;;0;Cijena valutna;15
+VRIJEDNOST_VAL;numeric;17,2;;0;Vrijednost valutna;15
+OSNOVICA;numeric;17,2;;0;Vrijednost valutna;15
+IZNOSCAR;numeric;17,2;;0;Carinska osnovica;15
+PPOREZ;numeric;17,2;;0;Posto poreza;15
+POREZ;numeric;17,2;;0;Vrijednost valutna;15
+TROS;numeric;17,2;;0;Posebni porez;15
+JCD_CCAR;char;20;;;Šifra carinarnice;15
+JCD_BROJ;char;30;;;Broj JCD
+JCD_DATUM;date;;;;Datum JCD;10
+JCD_CPP37;char;10;;;Šifra carinskog postupka
+JCD_CCAR_KONAC;char;20;;;Šifra carinarnice (konaèni);15
+JCD_BROJ_KONAC;char;30;;;Broj JCD (konaèni)
+JCD_DATUM_KONAC;date;;;;Datum JCD (konaèni);10
+JCD_CPP37_KONAC;char;10;;;Šifra carinskog postupka
+IDX=id_izlaz_zag
+IDX=id_izlaz_stav
+
+$Carnacpl
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CCARNACPL;char;10;pkey;;Šifra naèina plaæanja ili osiguranja plaæanja
+NAZIV;char;80;;;Naziv;30
+IDX=ccarnacpl
+
+$Carodob
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CODOB;char;10;pkey;;Šifra carinskog odobrenja
+NAZIV;char;80;;;Naziv;30
+IDX=codob
+
+$Caroslobod
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+COSLO;char;10;pkey;;Šifra osloboðenja
+NAZIV;char;100;;;Naziv;30
+IDX=coslo
+
+$Carpostpp37
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CPP37;char;10;pkey;;Šifra carinskog postupka pp37
+NAZIV;char;100;;;Naziv;30
+IDX=cpp37
+
+$Carpostpp372
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CPP372;char;10;pkey;;Šifra carinskog postupka drugog pp37
+NAZIV;char;100;;;Naziv;30
+IDX=cpp372
+
+$Carpotpor
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CPOTPOR;char;10;pkey;;Šifra potvrde o porijeklu
+NAZIV;char;120;;;Naziv;30
+IDX=cpotpor
+
+$Cartarifa
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CTG;char;10;pkey;;Šifra tarifne grupe
+CUGOVOR;char;4;pkey;;Šifra ugovora
+KVOTA;numeric;17,3;;0;Carinska kvota;15
+STOPA1;numeric;17,2;;0;Stopa 1;15
+STOPA2;numeric;17,2;;0;Stopa 2;15
+IDX=ctg
+IDX=cugovor
+
+$CarTG
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CTG;char;10;pkey;;Tarifni broj
+NAZIV;char;80;;;Naziv;30
+OPIS;char;80;;;Opis;30
+CJMCAROZN;char;10;;;Oznaka mjerne jedinice
+KVOTA;numeric;17,3;;0;Kvota;15
+STOPA1;numeric;17,3;;0;Stopa 1;15
+STOPA2;numeric;17,3;;0;Stopa 2;15
+IDX=ctg
+
+$Cartrosotp
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CTROSOTP;char;10;pkey;;Šifra troška otpreme
+NAZIV;char;80;;;Naziv;30
+IDX=ctrosotp
+
+$Carugovor
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CUGOVOR;char;4;pkey;;Šifra ugovora
+NAZIV;char;80;;;Naziv;30
+IDX=cugovor
+
+$Carulaz
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CUSER;char;15;;;Operater
+ID_ULAZ_ZAG;int;6;pkey;;Brojaè autonumber;*
+CBRDOK;char;30;;;Broj dokumenta
+DATDOK;date;;;;Datum dokumenta;10
+CPAR;int;6;;;Principal;5
+ODOB;char;30;;;Odobrenje
+DATODOB;date;;;;Datum odobrenja;10
+CSKL;char;12;;;Skladište
+RACPRI;char;30;;;Raèun principala
+BRNAZK;char;30;;;Broj nadzorne knjige
+DATNAZK;date;;;;Datum nadzorna knjige;10
+JCD_CCAR_PRET;char;20;;;Šifra carinarnice (prethodni);15
+JCD_BROJ_PRET;char;30;;;Broj JCD (prethodni)
+JCD_DATUM_PRET;date;;;;Datum JCD (prethodni);10
+JCD_CPP37_PRET;char;10;;;Šifra carinskog postupka
+JCD_CCAR_PROV;char;20;;;Šifra carinarnice (provozni);15
+JCD_BROJ_PROV;char;30;;;Broj JCD (provozni)
+JCD_DATUM_PROV;date;;;;Datum JCD (provozni);10
+JCD_CPP37_PROV;char;10;;;Šifra carinskog postupka
+CPAR1PP;char;10;;;Šifra pariteta za prvo podpolje
+OZNVAL;char;3;;;Valuta
+TECAJ;numeric;17,6;;0;Iznos teèaja;15
+BRUTOKG;numeric;17,3;;0;Bruto težina (kg);15
+PRS;char;80;;;Prijevozno sredstvo;30
+ODGOSOBA;char;80;;;Odgovorna osoba;30
+COMMENT;char;500;;;Komentar;30
+IDX=id_ulaz_zag
+
+$Carulazst
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+ID_ULAZ_ZAG;int;6;;;Brojaè autonumber zaglavlja;*
+ID_ULAZ_STAV;int;6;pkey;;Brojaè autonumber stavaka;*
+RBR;short;2;;;Rbr;4
+CTG;char;10;;;Tarifni broj
+CART;int;6;;;Šifra;8
+CART1;char;20;;;Kataloški broj;15
+BC;char;20;;;Barcode;15
+NAZART;char;50;;;Naziv;30
+JM;char;3;;;Jm
+CSIFDRV;char;3;;;Porijeklo
+PREF;char;10;;;Preferencijal
+CPOTPOR;char;10;;;Potvrda o porijeklu
+KOL;numeric;17,3;;0;Kolièina;15
+NETTO_KG;numeric;17,3;;0;Netto kg;15
+KOL_KOM;numeric;17,3;;0;Kolièina (kom);15
+CIJENA_VAL;numeric;17,2;;0;Cijena valutna;15
+VRIJEDNOST_VAL;numeric;17,2;;0;Vrijednost valutna;15
+TROSKOVI_VAL;numeric;17,2;;0;Troškovi valutni;15
+TROS1_KN;numeric;17,2;;0;Troškovi kunski1;15
+TROS2_KN;numeric;17,2;;0;Troškovi kunski2;15
+IDX=id_ulaz_stav
+
+$Carvri
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRI;char;10;pkey;;Šifra vrijednosti
+NAZIV;char;80;;;Naziv;30
+IDX=cvri
+
+$Defshkonta
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+VRDOK;char;3;pkey;;Vrsta dokumenta
+STAVKA;short;2;pkey;;RBS
+OPIS;char;40;;;Opis;30
+POLJE;char;50;;;Polje;15
+BROJKONTA;char;8;;;Konto
+KARAKTERISTIKA;char;1;;;Karakteristika
+APP;char;10;;;Aplikacija
+CKNJIGE;char;5;;;Knjiga
+CKOLONE;short;2;;;Kolona
+SQLCONDITION;char;3072;;;SQL upit na bazu;*
+
+$Defvaluedok
+VRDOK;char;3;pkey;;Vrsta dokumenta
+KLJUC;char;10;pkey;;Kolona
+DEFVALUE;char;20;;;Default vrijednost;15
+
+$Detrepgk
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CREPGK;int;6;pkey;;Izvještaj;8
+RBSREPGK;int;6;pkey;;Oznaka stavke izvještaja;8
+DESCRIPTION;char;200;;;Opis;30
+KTO1;char;200;;;Formula za 1. iznos;30
+KTO2;char;200;;;Formula za 2. iznos;30
+KTO3;char;200;;;Formula za 3. iznos;30
+PARAMS;char;20;;;Parametri;15
+IDX=crepgk
+IDX=rbsrepgk
+
+$Detrepgkdata
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CREPGK;int;6;pkey;;Izvještaj;8
+RBSREPGK;int;6;pkey;;Oznaka stavke izvještaja;8
+DATREPGK;date;;pkey;;Datum;10
+VAL1;numeric;17,2;;0;Iznos 1;15
+VAL2;numeric;17,2;;0;Iznos 2;15
+VAL3;numeric;17,2;;0;Iznos 3;15
+PARAMS;char;20;;;Parametri;15
+IDX=crepgk
+IDX=rbsrepgk
+IDX=datrepgk
+
+$Diorep
+CORG;char;12;pkey;;Org. jedinica
+VRSEC;char;3;pkey;;Dio izvještaja
+VRDOK;char;3;pkey;;VD;4
+ID;int;6;;;Opis dizajna
+
+$dob_art
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CPAR;int;6;pkey;;Šifra partnera;5
+CART;int;6;pkey;;Šifra;6
+CART1;char;20;;;Oznaka;11
+BC;char;20;;;Barcode;10
+NAZART;char;75;;;Naziv;30
+DC;numeric;12,2;;0;Dobavljaèeva cijena
+PRAB;numeric;8,2;;0;Posto rabata
+NAZPAK;char;10;;;Naziv pakiranja
+JMPAK;char;3;;;Jm pakiranja
+BRJED;numeric;15,3;;0;Broj jedinica
+TEZPAK;numeric;15,3;;0;Težina pakiranja
+
+$Fizosobe
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CSIFIZO;char;10;pkey;;Šifra fizièke osobe
+NAZIV;char;80;;;Naziv;30
+IDX=csifizo
+
+$franka
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CFRA;char;3;pkey;;Šifra;5
+NAZFRA;char;30;;;Naziv
+
+$Gkkumulativi
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;;;Knjigovodstvo
+CORG;char;12;pkey;;Org. jedinica
+BROJKONTA;char;8;pkey;;Konto
+GODMJ;char;6;pkey;;Godina + mjesec
+ID;numeric;17,2;;0;Iznos duguje;15
+IP;numeric;17,2;;0;Iznos potražuje;15
+IDX=brojkonta
+
+$Grizvodb
+CIZV;short;2;pkey;;Izvještaj
+CGRIZV;short;2;pkey;;Grupa izvještaja
+CVRODB;short;2;pkey;;Vrsta odbitka
+
+$Grizvprim
+CIZV;short;2;pkey;;Izvještaj
+CGRIZV;short;2;pkey;;Grupa izvještaja
+CVRP;short;2;pkey;;Vrsta primanja
+
+$GrIzvZnac
+CIZV;short;2;pkey;;Izvještaj
+CGRIZV;short;2;pkey;;Grupa izvještaja
+CZNAC;short;2;pkey;;Znaèajka
+
+$Grupeizv
+CIZV;short;2;pkey;;Oznaka izvještaja
+CGRIZV;short;2;pkey;;Oznaka grupe izvještaja
+NAZIV;char;30;;;Naziv grupe izvještaja;15
+SUMBRUTO;char;1;;D;Suma bruto (D/N)
+SUMSATI;char;1;;D;Suma sati (D/N)
+SUMNETO;char;1;;D;Suma neto (D/N)
+SUMNETO2;char;1;;D;Suma iznos na ruke (D/N)
+PARAMETRI;char;20;;;Parametri;*
+
+$Grupeusera
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CGRUPEUSERA;char;5;pkey;;Šifra
+NAZIV;char;30;;;Naziv
+OGRANICEN;char;1;;N;OGRANICEN
+
+$Gruppart
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CGRPAR;char;3;pkey;;Šifra
+NAZIV;char;50;;;Naziv;15
+CAGENT;int;6;;;Šifra agenta
+IDX=cagent
+
+$Imageinfo
+IMG_ID;int;6;pkey;;img_id
+TABLICA;char;50;;;TABLICA;30
+CKEY;char;100;;;ckey;30
+IMGURL;char;100;;;URL;30
+IMG;blob;;;;Slika;15
+
+$Iniprim
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan
+CVRP;short;2;pkey;;Oznaka
+RBR;short;2;pkey;1;Redni broj
+SATI;numeric;17,2;;0;Sati;15
+KOEF;numeric;17,2;;0;Koeficijent;15
+IZNOS;numeric;17,2;;0;Iznos;15
+IRAZOD;date;;;;Isplaæeno za razdoblje od;10
+IRAZDO;date;;;;Isplaæeno za razdoblje do;10
+SFOND;char;1;;X;Fond sati
+CNIVO;char;15;;;Oznaka nivoa
+
+$IsplMJ
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CISPLMJ;short;2;pkey;;Oznaka
+NAZIV;char;30;;;Naziv;15
+CBANKE;int;6;;;Oznaka banke
+NOVSPEC;char;1;;N;Specifikacija novèanica
+BANSPEC;char;1;;D;Specifikacija za banku
+TIPISPLMJ;char;1;;G;Tip isplatnog mjesta
+TIPFILE;char;1;;0;Tip datoteke
+PARAMETRI;char;20;;;Parametri;*
+
+$IzvjPDV
+CIZ;char;10;pkey;;Oznaka stavke obr.PDV
+OPIS;char;100;;;Opis;30
+PARAMETRI;char;100;;;Parametri;30
+
+$Izvodi
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+ZIRO;char;40;pkey;;Žiro raèun;15
+BROJIZV;int;6;pkey;;Broj izvoda
+BROJSTAVKI;int;6;;0;Broj stavki
+PRETHSTANJE;numeric;17,2;;0;Prethodno stanje;15
+ID;numeric;17,2;;0;Ukupni dnevni dugovni promet;15
+IP;numeric;17,2;;0;Ukupni dnevni potražni promet;15
+NOVOSTANJE;numeric;17,2;;0;Novo stanje;15
+DATUM;date;;;;Datum;10
+CNALOGA;char;30;;;Oznaka naloga;15
+STATUS;char;1;;;Status
+GOD;char;4;pkey;;Godina
+
+$jedmj
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+JM;char;3;pkey;;Oznaka;5
+NAZJM;char;20;;;Naziv;30
+ZNACDEC;int;6;;;Znaèajne decimale;7
+
+$Jmcarina
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CJMCAR;char;10;pkey;;Šifra mjerne jedinice
+CJMCAROZN;char;10;;;Oznaka mjerne jedinice
+NAZIV;char;80;;;Naziv;30
+IDX=cjmcar
+
+$Kamate
+CKAM;int;6;pkey;;Šifra
+OPIS;char;50;;;Opis;30
+DATUM;date;;pkey;;Vrijedi od;10
+STOPA;numeric;8,2;;0;Stopa
+VRSTA;char;1;;G;Vrsta
+DANI;int;6;;;Za dana
+
+$KamRac
+KNJIG;char;12;pkey;;Knjigovodstvo
+CPAR;int;6;pkey;;Partner
+BROJDOK;char;50;pkey;;Broj raèuna;30
+DUGPOT;char;1;;D;Kupac / dobavljaè
+DATDOK;date;;;;Datum;10
+DATDOSP;date;;;;Dospjeæe;10
+IZNOS;numeric;17,2;;0;Iznos raèuna;15
+CRACUNA;char;80;;;Jedinstveni kljuè;30
+IDX=brojdok
+
+$KamUpl
+KNJIG;char;12;pkey;;Knjigovodstvo
+CPAR;int;6;pkey;;Partner
+BROJDOK;char;50;pkey;;Broj uplate;30
+RBR;int;6;pkey;;Rbr
+DATDOK;date;;;;Datum dokumenta;10
+IZNOS;numeric;17,2;;0;Iznos uplate;15
+CRACUNA;char;80;;;Kljuè pokrivenog raèuna;30
+IDX=brojdok
+IDX=rbr
+
+$Kartice
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CBANKA;char;4;pkey;;Šifra;5
+NAZIV;char;30;;;Naziv
+MAX_RATA;short;2;;0;Maximalni broj rata;15
+MIN_IZNOS;numeric;15,2;;0;Minimalni iznos rate
+MAX_IZNOS;numeric;15,2;;0;Maksimalni iznos rate
+PROVIZIJA;numeric;10,2;;0;Provizija
+BROJKONTA;char;8;;;Konto
+VRDOK;char;3;;;Vrsta dokumenta
+
+$Kljucevi
+CKEY;int;6;pkey;;Šifra kljuèa;*
+CUSER;char;15;pkey;;Korisnik;9
+IMETAB;char;20;;;Ime tablice;10
+KL_KEYS;char;100;;;Popis kolona kljuèa;20
+VALS;char;100;;;Popis vrijednosti kljuèa;20
+DATUM;date;;;;Datum unosa;10
+
+$KnjigeUI
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CKNJIGE;char;5;pkey;;Oznaka
+URAIRA;char;1;pkey;;Indikator URA/IRA
+CSKL;char;12;;;Vrsta sheme knjiženja
+VRDOK;char;3;;;Vrsta dokumenta
+NAZKNJIGE;char;30;;;Naziv;15
+NACBROJDOK;char;1;;0;Naèin nuðenja broja izlaznog dokumenta
+KNJIZENJE;char;1;;D;Knjizenje u GK/SK
+VIRTUA;char;1;;N;Virtualna knjiga
+
+$Knjigod
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;Knjigovodstvo
+APP;char;10;pkey;;Aplikacija
+GOD;char;4;pkey;;Godina
+STATRADA;char;1;;N;Status
+
+$Konta_par
+DOB_TUZ;char;8;pkey;;Dobavljaè tuzemni
+DOB_INO;char;8;pkey;;Dobavljaè inozemni
+KUP_TUZ;char;8;pkey;;Kupac tuzemni
+KUP_INO;char;8;pkey;;Kupac inozemni
+
+$KPR
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;N;Aktivan - neaktivan;*
+CSKL;char;12;pkey;;Skladiste
+RBR;int;6;pkey;;Rbr
+GOD;char;4;pkey;;Godina
+KLJUC;char;20;;;Kljuc;15
+OPIS;char;80;;;Opis;30
+DATUM;date;;;;Datum;10
+ZAD;numeric;17,2;;0;Zaduzenje;15
+RAZ;numeric;17,2;;0;Razduzenje;15
+IDX=rbr
+IDX=kljuc
+IDX=datum
+
+$Kumulorg
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;Org. Jedinica
+CVRO;char;6;pkey;;Vrsta rada
+KNJIG;char;12;;;Knjigovodstvo
+SATI;numeric;17,2;;0;Sati;15
+BRUTO;numeric;17,2;;0;Bruto;15
+DOPRINOSI;numeric;17,2;;0;Doprinosi;15
+NETO;numeric;17,2;;0;Bruto po odbitku doprinosa;15
+NEOP;numeric;17,2;;0;Neoporezivi dio - olakšica;15
+ISKNEOP;numeric;17,2;;0;Iskorišteni neoporezivi dio;15
+POROSN;numeric;17,2;;0;Porezna osnovica;15
+POR1;numeric;17,2;;0;Porez 1;15
+POR2;numeric;17,2;;0;Porez 2;15
+POR3;numeric;17,2;;0;Porez 3;15
+POR4;numeric;17,2;;0;Porez 4;15
+POR5;numeric;17,2;;0;Porez 5 (invisible);*
+PORUK;numeric;17,2;;0;Porez ukupno;15
+PRIR;numeric;17,2;;0;Prirez;15
+PORIPRIR;numeric;17,2;;0;Porez i prirez;15
+NETO2;numeric;17,2;;0;Iznos nakon oporezivanja;15
+NAKNADE;numeric;17,2;;0;Naknade;15
+NETOPK;numeric;17,2;;0;Iznos prije kredita;15
+KREDITI;numeric;17,2;;0;Iznos kredita;15
+NARUKE;numeric;17,2;;0;Za isplatu;15
+DOPRPOD;numeric;17,2;;0;Doprinosi poduzeæa;15
+
+$Kumulorgarh
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+GODOBR;short;2;pkey;;Godina obraèuna
+MJOBR;short;2;pkey;;Mjesec obraèuna
+RBROBR;short;2;pkey;;Redni broj obraèuna
+CORG;char;12;pkey;;Org. Jedinica
+CVRO;char;6;pkey;;Vrsta rada
+KNJIG;char;12;;;Knjigovodstvo
+SATI;numeric;17,2;;0;Sati;15
+BRUTO;numeric;17,2;;0;Bruto;15
+DOPRINOSI;numeric;17,2;;0;Doprinosi;15
+NETO;numeric;17,2;;0;Bruto po odbitku doprinosa;15
+NEOP;numeric;17,2;;0;Neoporezivi dio - olakšica;15
+ISKNEOP;numeric;17,2;;0;Iskorišteni neoporezivi dio;15
+POROSN;numeric;17,2;;0;Porezna osnovica;15
+POR1;numeric;17,2;;0;Porez 1;15
+POR2;numeric;17,2;;0;Porez 2;15
+POR3;numeric;17,2;;0;Porez 3;15
+POR4;numeric;17,2;;0;Porez 4;15
+POR5;numeric;17,2;;0;Porez 5 (invisible);*
+PORUK;numeric;17,2;;0;Porez ukupno;15
+PRIR;numeric;17,2;;0;Prirez;15
+PORIPRIR;numeric;17,2;;0;Porez i prirez;15
+NETO2;numeric;17,2;;0;Iznos nakon oporezivanja;15
+NAKNADE;numeric;17,2;;0;Naknade;15
+NETOPK;numeric;17,2;;0;Iznos prije kredita;15
+KREDITI;numeric;17,2;;0;Iznos kredita;15
+NARUKE;numeric;17,2;;0;Za isplatu;15
+DOPRPOD;numeric;17,2;;0;Doprinosi poduzeæa;15
+COPCINE;char;3;;;Opæina sjedišta
+NACOBRS;char;1;;1;Naèin obraèuna satnice
+NACOBRB;char;1;;1;Naèin obraèuna bruta
+SATIMJ;numeric;17,2;;182;Sati za fiksnu satnicu;15
+OSNKOEF;numeric;17,6;;0;Osnovica za primjenu koeficijenta;15
+SATNORMA;numeric;17,2;;0;Satnica za rad po normi;15
+DATUMISPL;date;;;;Datum isplate;10
+BROJDANA;short;2;;;Broj radnih dana u mjesecu
+STOPAK;numeric;17,2;;0;stopa akontacije;15
+MINPL;numeric;17,2;;1250;Minimalna plaæa - olakšice;15
+MINOSDOP;numeric;17,2;;1800;Minimalna osnovica za doprinose;15
+OSNPOR1;numeric;17,2;;2500;Osnovica za prvi porez;15
+OSNPOR2;numeric;17,2;;6250;Osnovica za drugi porez;15
+OSNPOR3;numeric;17,2;;0;Osnovica za treæi porez;15
+OSNPOR4;numeric;17,2;;0;Osnovica za èetvrti porez;15
+OSNPOR5;numeric;17,2;;0;Osnovica za peti porez;15
+PARAMETRI;char;20;;;Parametri;*
+IDX=mjobr
+IDX=rbrobr
+
+$Kumulrad
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CRADNIK;char;6;pkey;;Radnik
+SATI;numeric;17,2;;0;Sati;15
+BRUTO;numeric;17,2;;0;Bruto;15
+DOPRINOSI;numeric;17,2;;0;Doprinosi;15
+NETO;numeric;17,2;;0;Bruto po odbitku doprinosa;15
+NEOP;numeric;17,2;;0;Neoporezivi dio - olakšica;15
+ISKNEOP;numeric;17,2;;0;Iskorišteni neoporezivi dio;15
+POROSN;numeric;17,2;;0;Porezna osnovica;15
+POR1;numeric;17,2;;0;Porez 1;15
+POR2;numeric;17,2;;0;Porez 2;15
+POR3;numeric;17,2;;0;Porez 3;15
+POR4;numeric;17,2;;0;Porez 4;15
+POR5;numeric;17,2;;0;Porez 5 (invisible);*
+PORUK;numeric;17,2;;0;Porez ukupno;15
+PRIR;numeric;17,2;;0;Prirez;15
+PORIPRIR;numeric;17,2;;0;Porez i prirez;15
+NETO2;numeric;17,2;;0;Iznos nakon oporezivanja;15
+NAKNADE;numeric;17,2;;0;Naknade;15
+NETOPK;numeric;17,2;;0;Iznos prije kredita;15
+KREDITI;numeric;17,2;;0;Iznos kredita;15
+NARUKE;numeric;17,2;;0;Za isplatu;15
+
+$kup_art
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CPAR;int;6;pkey;;Partner;15
+CART;int;6;pkey;;Šifra;15
+CART1;char;20;;;Oznaka;11
+BC;char;20;;;Barcode;10
+NAZART;char;50;;;Naziv;20
+CDOB;int;6;;;Dobavljaè;15
+CGRART;char;10;;;Grupa artikla
+CSHRAB;char;3;;;Shema rabata
+VC;numeric;15,2;;0;Cijena
+PRAB;numeric;10,2;;0;Posto rabata
+NAZPAK;char;10;;;Naziv pakiranja
+JMPAK;char;3;;;JM pakiranja
+BRJED;numeric;15,3;;0;Broj jedinica
+TEZPAK;numeric;15,3;;0;Težina pakiranja
+IDX=cart
+
+$Logodat
+CORG;char;12;pkey;;Org. jedinica
+VRSTA;char;1;pkey;;Podvrsta;*
+VRSEC;char;3;pkey;;Dio izvještaja
+VRDOK;char;3;pkey;;Vrsta dokumenta
+RBR;short;2;pkey;;Rbr
+ORIENT;char;1;;P;Orijentacija
+TIP;char;1;;T;Tip
+HPOS;int;6;;;Horizontalno
+VPOS;int;6;;;Vertikalno
+SIRINA;int;6;;;Širina
+VISINA;int;6;;;Visina
+TEKST;char;200;;;Tekst;30
+ALIGN;char;1;;L;Poravnanje
+FONT;char;40;;;Font;30
+
+$Menus
+CMENU;char;50;pkey;;Sifra;30
+CSORT;int;6;;;Redoslijed;6
+PARENTCMENU;char;50;pkey;;Parent;30
+MENUTYPE;char;1;;I;Tip
+METHOD;char;80;;;Metoda;30
+IDX=parentcmenu
+
+$Mjesta
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CMJESTA;int;6;pkey;;Šifra
+NAZMJESTA;char;30;;;Naziv
+PBR;int;6;;;Poštanski broj
+CZUP;short;2;;;Županija
+CZEM;char;3;;;Zemlja
+IDX=cmjesta
+UIDX=cmjesta
+
+$MxDokument
+CDOC;int;6;pkey;;Šifra
+OPIS;char;50;;;Opis;30
+PAGESIZE;int;6;;;Visina stranice
+PAGEWIDTH;int;6;;;Širina stranice
+TOPMARGIN_MM;int;6;;;Gornja margina u mm
+LEFTMARGIN;int;6;;;Lijeva margina
+LINESPACING;char;15;;;Razmak linija
+EJECTPAPER;char;1;;;Izbaciti papir
+USER1;char;15;;;User 1
+USER2;char;15;;;User 2
+USER3;char;15;;;User 3
+USER4;char;15;;;User 4
+USER5;char;15;;;User 5
+USER6;char;15;;;User 6
+USER7;char;15;;;User 7
+USER8;char;15;;;User 8
+USER9;char;15;;;User 9
+
+$MxPrinter
+CPRINTER;int;6;pkey;;Šifra
+OPIS;char;50;;;Opis;30
+PAGESIZE;int;6;;;Visina stranice
+PAGEWIDTH;int;6;;;Širina stranice
+TOPMARGIN;int;6;;;Gornja margina
+LEFTMARGIN;int;6;;;Lijeva margina
+BOTMARGIN;int;6;;;Donja margina
+LINEFEEDSEC;char;15;;;Razmak linija
+LINEFEED;int;6;;;Preciznost razmaka
+POMAKMM;int;6;;;Pomak papira u mm
+RESET;char;15;;;Inicijalizacija
+NEWLINE;char;15;;;Novi red
+CPI10;char;15;;;10 CPI Ispis
+CPI12;char;15;;;12 CPI Ispis
+CPI15;char;15;;;15 CPI Ispis
+CPI17;char;1;;;17 CPI Ispis
+CONDENSON;char;15;;;Kondenzirani ispis
+CONDENSOFF;char;15;;;Nekondenzirani ispis
+DOUBLEHON;char;15;;;Dvostruka visina
+DOUBLEHOFF;char;15;;;Normalna visina
+DOUBLEWON;char;15;;;Dvostruka širina
+DOUBLEWOFF;char;15;;;Normalna visina
+LPI6;char;15;;;6 redova po inèu
+LPI8;char;15;;;8 redova po inèu
+LF_N180;char;15;;;Razmak redova N/180
+LF_N360;char;15;;;Razmak redova N/360
+PROPON;char;15;;;Proporcionalni ispis
+PROPOFF;char;15;;;Fiksna širina
+ENDOFPAGE;char;15;;;Kraj stranice
+USER1;char;15;;;User 1
+USER2;char;15;;;User 2
+USER3;char;15;;;User 3
+USER4;char;15;;;User 4
+
+$MxPrinterRM
+CRM;int;6;pkey;;Šifra
+OPIS;char;50;;;Opis;30
+CPRINTER;int;6;;;Printer
+PORT;char;100;;;Port;30
+LOCALCOM;char;100;;;Naredba ispisa (local);30
+REMOTECOM;char;100;;;Naredba ispisa (remote);30
+
+$Nacobr
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+COBR;short;2;pkey;;Oznaka
+OPIS;char;50;;;Opis;15
+FORMULA;char;100;;;Formula izraèuna;15
+UNSATI;char;1;;D;Unos sati
+UNKOEF;char;1;;D;Unos koeficijenta
+UNIZNOS;char;1;;D;Unos iznosa
+PARAMETRI;char;20;;;Parametri;*
+
+$nacotp
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CNAC;char;3;pkey;;Šifra;5
+NAZNAC;char;30;;;Naziv
+
+$NadzornaKnjiga
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+GOD;char;4;pkey;;Godina
+RBR;int;6;pkey;;Redni broj unosa
+DATUM;date;;;;Datum unosa;10
+BRSTR;int;6;;;Broj stranice
+BRISPRAVE;char;15;;;Broj dokumenta – osnove plaæanja
+DATDOK;date;;;;Datum dokumenta – osnove plaæanja;10
+CPAR;int;6;;;Partner
+VRIJEDNOST;numeric;17,2;;0;Ugovorena vrijednost posla;15
+CPARPOSR;int;6;;;Partner u èije ime je sklopljen posao
+PROVIZIJA;numeric;17,2;;0;Postotak provizije;15
+DATUMPL;date;;;;Datum plaæanja;10
+IZNOSPL;numeric;17,2;;0;Iznos plaæanja;15
+CNACPL;char;3;;;Naèin plaæanja
+BROJRJES;char;35;;;Oznaka rješenja / odobrenja;30
+DATUMRJES;date;;;;Datum rješenja / odobrenja;10
+STARIRBR;int;6;;;Oznaka rednog broja iz prijašnjih nadzornih knjiga
+STARAGOD;char;4;;;Godina prijašnje nadzorne knjige
+BROJJCD;char;35;;;Broj JCD;30
+DATUMJCD;date;;;;Datum JCD;10
+ZEMPODRIJETLA;char;3;;;Zemlja podrijetla robe
+
+$Nalozi
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CNALOGA;char;30;;;Broj naloga;15
+KNJIG;char;12;pkey;;Knjigovodstvo
+GOD;char;4;pkey;;Godina
+CVRNAL;char;2;pkey;;Oznaka vrste naloga
+RBR;int;6;pkey;;RBR naloga
+DATUMKNJ;date;;;;Datum knjiženja;10
+KONTRIZNOS;numeric;17,2;;0;Kontrolni iznos;15
+ID;numeric;17,2;;0;Iznos duguje;15
+IP;numeric;17,2;;0;Iznos potražuje;15
+STATUS;char;1;;;Status
+DATUM;date;;;;Datum;10
+PICK;char;1;;;Indikator za odabire;*
+SALDO;numeric;17,2;;0;Saldo;15
+IDX=rbr
+
+$namjena
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CNAMJ;char;3;pkey;;Šifra;5
+NAZNAMJ;char;30;;;Naziv
+POREZ;char;1;;D;Porez
+
+$napomene
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CNAP;char;3;pkey;;Šifra;5
+NAZNAP;char;200;;;Naziv;30
+
+$norme
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CARTNOR;int;6;pkey;;Normativ;5
+CART;int;6;pkey;;Šifra;5
+CART1;char;20;;;Oznaka;11
+BC;char;20;;;Barcode;12
+NAZART;char;50;;;Naziv;30
+JM;char;3;;;JM
+KOL;numeric;15,6;;0;Kolièina;10
+IDX=cart
+
+$Odbici
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRODB;short;2;pkey;;Vrsta odbitka
+CKEY;char;30;pkey;;Kljuè nivoa odbitka;15
+CKEY2;char;30;pkey;;Kljuè 2;15
+RBRODB;short;2;pkey;;Redni broj odbitka
+PNB1;char;2;;;Poziv na broj 1
+PNB2;char;22;;;Poziv na broj 2;15
+IZNOS;numeric;17,2;;0;Iznos;15
+STOPA;numeric;7,5;;0;Stopa
+DATPOC;date;;;;Poèetak obustave;10
+DATZAV;date;;;;Završetak obustave;10
+GLAVNICA;numeric;17,2;;0;Glavnica;15
+RATA;numeric;17,2;;0;Rata;15
+SALDO;numeric;17,2;;0;Ostatak duga;15
+STAVKA;char;8;;;Veza s kontom
+OZNVAL;char;3;;;Valuta
+PARAMETRI;char;20;;;Parametri;*
+IDX=ckey
+IDX=ckey2
+IDX=rbrodb
+
+$Odbiciarh
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+GODOBR;short;2;pkey;;Godina obraèuna
+MJOBR;short;2;pkey;;Mjesec obraèuna
+RBROBR;short;2;pkey;;Redni broj obraèuna
+CRADNIK;char;6;pkey;;Radnik
+CVRP;short;2;pkey;;Vrsta primanja
+RBR;short;2;pkey;1;Redni broj
+CVRODB;short;2;pkey;;Vrsta odbitka
+CKEY;char;30;pkey;;Kljuè nivoa odbitka;15
+CKEY2;char;30;pkey;;Kljuè 2;15
+RBRODB;short;2;pkey;;Redni broj odbitka
+OBROSN;numeric;17,2;;0;Osnovica za obraèun;15
+OBRSTOPA;numeric;17,2;;0;Stopa;15
+OBRIZNOS;numeric;17,2;;0;Obraèunati iznos;15
+NIVOODB;char;4;;RA;Nivo odbitka
+TIPODB;char;1;;S;Tip odbitka
+VRSTAOSN;char;1;;3;Vrsta osnovice
+OSNOVICA;char;1;;0;Osnovica za obracun
+CPOV;int;6;;;Oznaka povjerioca-virmana
+PNB1;char;2;;;Poziv na broj 1
+PNB2;char;22;;;Poziv na broj;15
+IZNOS;numeric;17,2;;0;Iznos;15
+STOPA;numeric;9,5;;0;Stopa
+DATPOC;date;;;;Poèetak obustave;10
+DATZAV;date;;;;Završetak obustave;10
+GLAVNICA;numeric;17,2;;0;Glavnica;15
+RATA;numeric;17,2;;0;Rata;15
+SALDO;numeric;17,2;;0;Ostatak duga;15
+STAVKA;char;8;;;Veza sa kontom CSKL=1 APP=pl VRDOK=PL
+PARAMETRI;char;20;;;Parametri;*
+IDX=mjobr
+IDX=rbr
+IDX=cradnik
+IDX=rbr
+IDX=ckey
+IDX=ckey2
+IDX=rbrodb
+
+$Odbiciobr
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CRADNIK;char;6;pkey;;Radnik
+CVRP;short;2;pkey;;Vrsta primanja
+RBR;short;2;pkey;1;Redni broj
+CVRODB;short;2;pkey;;Vrsta odbitka
+CKEY;char;30;pkey;;Kljuè nivoa odbitka
+CKEY2;char;30;pkey;;Kljuè 2
+RBRODB;short;2;pkey;;Redni broj odbitka
+OBROSN;numeric;17,2;;0;Osnovica za obraèun;15
+OBRSTOPA;numeric;17,2;;0;Stopa;15
+OBRIZNOS;numeric;17,2;;0;Obraèunati iznos;15
+GLAVNICA;numeric;17,2;;0;Glavnica;15
+SALDO;numeric;17,2;;0;Ostatak duga;15
+IDX=cradnik
+IDX=rbr
+IDX=ckey
+IDX=ckey2
+IDX=rbrodb
+
+$Opcine
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+COPCINE;char;3;pkey;;Oznaka;5
+NAZIVOP;char;50;;;Naziv;30
+CZUP;short;2;;;Oznaka županije;5
+PARAMETRI;char;20;;;Parametri;*
+
+$Orgpl
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;Org. Jedinica
+COPCINE;char;3;;;Opæina sjedišta
+NACOBRS;char;1;;1;Naèin obraèuna satnice
+NACOBRB;char;1;;1;Naèin obraèuna bruta
+SATIMJ;numeric;17,2;;182;Sati za fiksnu satnicu;15
+OSNKOEF;numeric;17,6;;0;Osnovica za primjenu koeficijenta;15
+SATNORMA;numeric;17,2;;0;Satnica za rad po normi;15
+OOZO;char;6;;;Osnova osiguranja - zdravstvena kartica
+PODRUREDZO;char;3;;;Podruèni ured - zdravstvena kartica
+REGBRMIO;char;15;;;Registarski broj MIO
+REGBRZO;char;15;;;Registarski broj ZO
+PODMATBR;char;4;;;Podbroj matiènom broju poduzeæa
+CGRORG;char;5;;;Oznaka grupe org. Jedinica
+GODOBR;short;2;;;Godina obraèuna
+MJOBR;short;2;;;Mjesec obraèuna
+RBROBR;short;2;;;Redni broj obraèuna
+DATUMISPL;date;;;;Datum isplate;10
+BROJDANA;short;2;;;Broj radnih dana u mjesecu
+STOPAK;numeric;17,2;;0;Stopa akontacije;15
+RSZ;char;5;;1;Oznaka zdravstvenog osiguranja
+RSIND;char;4;;;Identifikator RS
+PARAMETRI;char;20;;;Parametri;*
+
+$Orgrad
+CORG;char;12;pkey;;Org. Jedinica
+CRADNIK;char;6;pkey;;Matièni broj
+UDIORADA;numeric;17,2;;0;Udio rada u drugoj org jedinici %;15
+PARAMETRI;char;20;;;Parametri;*
+IDX=cradnik
+
+$OS_Amgrupe
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CGRUPE;char;6;pkey;;Šifra
+NAZGRUPE;char;50;;;Naziv;30
+ZAKSTOPA;numeric;10,4;;0;Zakonska stopa;8
+ODLSTOPA;numeric;10,4;;0;Stopa po odluci;8
+
+$OS_Arhiva
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;OJ
+RBR;int;6;pkey;;Rbr
+INVBROJ;char;10;pkey;;IBroj
+NAZSREDSTVA;char;50;;;Naziv sredstva;30
+CLOKACIJE;char;12;;;Lokacija
+COBJEKT;char;6;;;Objekt
+CARTIKLA;char;6;;;Artikl
+CPAR;int;6;;;Partner
+BROJKONTA;char;8;;;Konto
+CGRUPE;char;6;;;Amort. grupa
+ZAKSTOPA;numeric;10,4;;0;Zakonska stopa
+ODLSTOPA;numeric;10,4;;0;Stopa po odluci
+CSKUPINE;char;6;;;Rev. skupina
+PORIJEKLO;char;2;;;Porijeklo
+RADNIK;char;6;;;Radnik
+DATNABAVE;date;;;;Datum nabave;10
+DATAKTIVIRANJA;date;;;;Datum aktiviranja;10
+STATUSKNJ;char;1;;N;Status knjiženja
+OSNOVICA;numeric;17,2;;0;Osnovica;15
+ISPRAVAK;numeric;17,2;;0;Ispravak;15
+SADVRIJED;numeric;17,2;;0;Vrijednost;15
+REVOSN;numeric;17,2;;0;Rev. isnovice;15
+REVISP;numeric;17,2;;0;Rev. ispravka;15
+REVSAD;numeric;17,2;;0;Revalorizacija;15
+AMORTIZACIJA;numeric;17,2;;0;Amortizacija;15
+PAMORTIZACIJA;numeric;17,2;;0;Pov. amortizacija;15
+REVAMOR;numeric;17,2;;0;Rev. amortizacije;15
+PREBACAM;numeric;17,2;;0;Preb. amortizacije;15
+IDX=rbr
+IDX=invbroj
+
+$OS_Artikli
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CARTIKLA;char;6;pkey;;Šifra
+NAZARTIKLA;char;50;;;Naziv;30
+
+$OS_Kontaisp
+LOKK;char;1;;N;Status zauzetosti
+AKTIV;char;1;;D;Aktivan - neaktivan
+CORG;char;12;pkey;;OJ
+BROJKONTA;char;8;pkey;;Konto osnovice
+KONTOISP;char;8;;;Konto ispravka
+KONTODOB;char;8;;;Konto dobavljaèa
+KONTOPOR;char;8;;;Konto poreza
+KONTOAMOR;char;8;;;Konto amortizacije
+KONTOSADVR;char;8;;;Konto sadašnje vr.
+IDX=brojkonta
+
+$OS_Kontrola
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;OJ;6
+PROM;char;1;;;Promjene
+AMOR;char;1;;;Amortizacija
+REVA;char;1;;;Revalorizacija
+DATUM;date;;;;Datum;10
+MJESEC;char;2;;;Mjesec
+GODINA;char;4;;;Godina
+
+$OS_Log
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;OJ
+RBR;int;6;pkey;;Rbr
+DATOD;date;;;;Datum od;10
+DATDO;date;;;;Datum do;10
+STATKNJ;char;1;;N;Knjiženo
+CNALOGA;char;30;;;Broj naloga
+IDX=rbr
+
+$OS_Lokacije
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;OJ;6
+COBJEKT;char;6;pkey;;Objekt
+CLOKACIJE;char;6;pkey;;Šifra
+NAZLOKACIJE;char;50;;;Naziv;30
+IDX=cobjekt
+IDX=clokacije
+
+$OS_Metaobrada
+CORG;char;12;pkey;;OJ;6
+CORG2;char;12;;;Šifra org. Jedinice - deprecated;*
+DATUMDO;date;;;;Datum do;10
+DATUMOD;date;;;;Datum od;10
+DATUMDO2;date;;;;Datum obraèuna - deprecated;*
+DATUMOD2;date;;;;Datum obraèuna - deprecated;*
+TIPAMOR;char;1;;;Tip amortizacije
+VRSTAAMOR;char;1;;;Vrsta amortizacije
+VRSTAREVA;char;1;;;Vrsta revalorizacije
+REVAAMOR;char;1;;;Revalorizacija amortizacije
+ISPISINVBROJ;char;1;;;Ispis inventarnog broja
+NAZIVIZV;char;50;;;Naziv izvještaja;30
+
+$OS_Objekt
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;OJ;7
+COBJEKT;char;6;pkey;;Šifra
+NAZOBJEKT;char;50;;;Naziv;30
+IDX=cobjekt
+
+$OS_Obrada1
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;;;OJ
+NAZIV;char;50;;;Naziv;30
+INVBROJ;char;10;;;IBroj
+NAZSREDSTVA;char;50;;;Naziv sredstva;30
+COBJEKT;char;6;;;Objekt
+CLOKACIJE;char;12;;;Lokacija
+CARTIKLA;char;6;;;Artikl
+CPAR;int;6;;;Partner
+BROJKONTA;char;8;;;Konto
+CGRUPE;char;6;;;Amort. grupa
+ZAKSTOPA;numeric;10,4;;0;Zakonska stopa
+ODLSTOPA;numeric;10,4;;0;Stopa po odluci
+OTPSTOPA;numeric;10,4;;0;Otp. stopa
+CSKUPINE;char;6;;;Rev. skupina
+KOEFICIJENT;numeric;10,2;;0;Koeficijent
+MJESEC;char;2;;;Mjesec
+PORIJEKLO;char;2;;;Porijeklo
+RADNIK;char;6;;;Radnik
+DATNABAVE;date;;;;Datum nabave;10
+DATAKTIVIRANJA;date;;;;Datum aktiviranja;10
+DATPROMJENE;date;;;;Datum promjene;10
+DATLIKVIDACIJE;date;;;;Datum likvidacije;10
+OSNOVICA;numeric;17,2;;0;Osnovica;15
+ISPRAVAK;numeric;17,2;;0;Ispravak;15
+SADVRIJED;numeric;17,2;;0;Vrijednost;15
+REVOSN;numeric;17,2;;0;Rev. isnovice;15
+REVISP;numeric;17,2;;0;Rev. ispravka;15
+REVSAD;numeric;17,2;;0;Revalorizacija;15
+AMORTIZACIJA;numeric;17,2;;0;Amortizacija;15
+AMOR1;numeric;17,2;;0;Amor1;15
+AMOR2;numeric;17,2;;0;Amor2;15
+PAMORTIZACIJA;numeric;17,2;;0;Pov. amortizacija;15
+PAMOR1;numeric;17,2;;0;Pamor1;15
+PAMOR2;numeric;17,2;;0;Pamor2;15
+REVAMOR;numeric;17,2;;0;Rev. amortizacije;15
+PREBACAM;numeric;17,2;;0;Preb. amortizacije;15
+VK;char;3;;;
+COBRADA1;char;22;pkey;;Šifra;15
+
+$OS_Obrada2
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;OJ
+NAZIV;char;50;;;Naziv;30
+INVBROJ;char;10;pkey;;IBroj
+NAZSREDSTVA;char;50;;;Naziv sredstva;30
+COBJEKT;char;6;;;Objekt
+CLOKACIJE;char;12;;;Lokacija
+CARTIKLA;char;6;;;Artikl
+CPAR;int;6;;;Partner
+BROJKONTA;char;8;;;Konto
+CGRUPE;char;6;;;Amort. grupa
+ZAKSTOPA;numeric;10,4;;0;Zakonska stopa
+ODLSTOPA;numeric;10,4;;0;Stopa po odluci
+OTPSTOPA;numeric;10,4;;0;Otp. stopa
+CSKUPINE;char;6;;;Rev. skupina
+KOEFICIJENT;numeric;10,2;;0;Koeficijent
+MJESEC;char;2;;;Mjesec
+PORIJEKLO;char;2;;;Porijeklo
+RADNIK;char;6;;;Radnik
+DATNABAVE;date;;;;Datum nabave;10
+DATAKTIVIRANJA;date;;;;Datum aktiviranja;10
+DATPROMJENE;date;;;;Datum promjene;10
+DATLIKVIDACIJE;date;;;;Datum likvidacije;10
+OSNOVICA;numeric;17,2;;0;Osnovica;15
+ISPRAVAK;numeric;17,2;;0;Ispravak;15
+SADVRIJED;numeric;17,2;;0;Vrijednost;15
+REVOSN;numeric;17,2;;0;Rev. isnovice;15
+REVISP;numeric;17,2;;0;Rev. ispravka;15
+REVSAD;numeric;17,2;;0;Revalorizacija;15
+AMORTIZACIJA;numeric;17,2;;0;Amortizacija;15
+AMOR1;numeric;17,2;;0;Amor1;15
+AMOR2;numeric;17,2;;0;Amor2;15
+PAMORTIZACIJA;numeric;17,2;;0;Pov. amortizacija;15
+PAMOR1;numeric;17,2;;0;Pamor1;15
+PAMOR2;numeric;17,2;;0;Pamor2;15
+REVAMOR;numeric;17,2;;0;Rev. amortizacije;15
+PREBACAM;numeric;17,2;;0;Preb. amortizacije;15
+VK;char;3;;;
+IDX=invbroj
+
+$OS_Obrada3
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;OJ
+NAZIV;char;50;;;Naziv;30
+INVBROJ;char;10;pkey;;IBroj
+NAZSREDSTVA;char;50;;;Naziv sredstva;30
+COBJEKT;char;6;;;Objekt
+CLOKACIJE;char;12;;;Lokacija
+CARTIKLA;char;6;;;Artikl
+CPAR;int;6;;;Partner
+BROJKONTA;char;8;;;Konto
+CGRUPE;char;6;;;Amort. grupa
+ZAKSTOPA;numeric;10,4;;0;Zakonska stopa
+ODLSTOPA;numeric;10,4;;0;Stopa po odluci
+OTPSTOPA;numeric;10,4;;0;Otp. stopa
+CSKUPINE;char;6;;;Rev. skupina
+KOEFICIJENT;numeric;10,2;;0;Koeficijent
+MJESEC;char;2;;;Mjesec
+PORIJEKLO;char;2;;;Porijeklo
+RADNIK;char;6;;;Radnik
+DATNABAVE;date;;;;Datum nabave;10
+DATAKTIVIRANJA;date;;;;Datum aktiviranja;10
+DATPROMJENE;date;;;;Datum promjene;10
+DATLIKVIDACIJE;date;;;;Datum likvidacije;10
+OSNOVICA;numeric;17,2;;0;Osnovica;15
+ISPRAVAK;numeric;17,2;;0;Ispravak;15
+SADVRIJED;numeric;17,2;;0;Vrijednost;15
+REVOSN;numeric;17,2;;0;Rev. isnovice;15
+REVISP;numeric;17,2;;0;Rev. ispravka;15
+REVSAD;numeric;17,2;;0;Revalorizacija;15
+AMORTIZACIJA;numeric;17,2;;0;Amortizacija;15
+AMOR1;numeric;17,2;;0;Amor1;15
+AMOR2;numeric;17,2;;0;Amor2;15
+PAMORTIZACIJA;numeric;17,2;;0;Pov. amortizacija;15
+PAMOR1;numeric;17,2;;0;Pamor1;15
+PAMOR2;numeric;17,2;;0;Pamor2;15
+REVAMOR;numeric;17,2;;0;Rev. amortizacije;15
+PREBACAM;numeric;17,2;;0;Preb. amortizacije;15
+VK;char;3;;;
+IDX=invbroj
+
+$OS_Obrada4
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;OJ
+NAZIV;char;50;;;Naziv;30
+INVBROJ;char;10;pkey;;IBroj
+NAZSREDSTVA;char;50;;;Naziv sredstva;30
+COBJEKT;char;6;;;Objekt
+CLOKACIJE;char;12;;;Lokacija
+CARTIKLA;char;6;;;Artikl
+CPAR;int;6;;;Partner
+BROJKONTA;char;8;;;Konto
+CGRUPE;char;6;;;Amort. grupa
+ZAKSTOPA;numeric;10,4;;0;Zakonska stopa
+ODLSTOPA;numeric;10,4;;0;Stopa po odluci
+OTPSTOPA;numeric;10,4;;0;Otp. stopa
+CSKUPINE;char;6;;;Rev. skupina
+KOEFICIJENT;numeric;10,2;;0;Koeficijent
+MJESEC;char;2;;;Mjesec
+PORIJEKLO;char;2;;;Porijeklo
+RADNIK;char;6;;;Radnik
+DATNABAVE;date;;;;Datum nabave;10
+DATAKTIVIRANJA;date;;;;Datum aktiviranja;10
+DATPROMJENE;date;;;;Datum promjene;10
+DATLIKVIDACIJE;date;;;;Datum likvidacije;10
+OSNOVICA;numeric;17,2;;0;Osnovica;15
+ISPRAVAK;numeric;17,2;;0;Ispravak;15
+SADVRIJED;numeric;17,2;;0;Vrijednost;15
+REVOSN;numeric;17,2;;0;Rev. isnovice;15
+REVISP;numeric;17,2;;0;Rev. ispravka;15
+REVSAD;numeric;17,2;;0;Revalorizacija;15
+AMORTIZACIJA;numeric;17,2;;0;Amortizacija;15
+AMOR1;numeric;17,2;;0;Amor1;15
+AMOR2;numeric;17,2;;0;Amor2;15
+PAMORTIZACIJA;numeric;17,2;;0;Pov. amortizacija;15
+PAMOR1;numeric;17,2;;0;Pamor1;15
+PAMOR2;numeric;17,2;;0;Pamor2;15
+REVAMOR;numeric;17,2;;0;Rev. amortizacije;15
+PREBACAM;numeric;17,2;;0;Preb. amortizacije;15
+VK;char;3;;;
+UOSNOVICA;numeric;17,2;;0;Osnovica;15
+UISPRAVAK;numeric;17,2;;0;Ispravak;15
+USADVRIJED;numeric;17,2;;0;Sadašnja vrijednost;15
+IDX=invbroj
+
+$OS_Obrada5
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;pkey;;OJ
+NAZIV;char;50;;;Naziv;30
+INVBROJ;char;10;pkey;;IBroj
+NAZSREDSTVA;char;50;;;Naziv sredstva;30
+COBJEKT;char;6;;;Objekt
+CLOKACIJE;char;12;;;Lokacija
+CARTIKLA;char;6;;;Artikl
+CPAR;int;6;;;Partner
+BROJKONTA;char;8;;;Konto
+CGRUPE;char;6;;;Amort. grupa
+ZAKSTOPA;numeric;10,4;;0;Zakonska stopa
+ODLSTOPA;numeric;10,4;;0;Stopa po odluci
+OTPSTOPA;numeric;10,4;;0;Otp. stopa
+CSKUPINE;char;6;;;Rev. skupina
+KOEFICIJENT;numeric;10,2;;0;Koeficijent
+MJESEC;char;2;;;Mjesec
+PORIJEKLO;char;2;;;Porijeklo
+RADNIK;char;6;;;Radnik
+DATNABAVE;date;;;;Datum nabave;10
+DATAKTIVIRANJA;date;;;;Datum aktiviranja;10
+DATPROMJENE;date;;;;Datum promjene;10
+DATLIKVIDACIJE;date;;;;Datum likvidacije;10
+OSNOVICA;numeric;17,2;;0;Osnovica;15
+ISPRAVAK;numeric;17,2;;0;Ispravak;15
+SADVRIJED;numeric;17,2;;0;Vrijednost;15
+REVOSN;numeric;17,2;;0;Rev. isnovice;15
+REVISP;numeric;17,2;;0;Rev. ispravka;15
+REVSAD;numeric;17,2;;0;Revalorizacija;15
+AMORTIZACIJA;numeric;17,2;;0;Amortizacija;15
+AMOR1;numeric;17,2;;0;Amor1;15
+AMOR2;numeric;17,2;;0;Amor2;15
+PAMORTIZACIJA;numeric;17,2;;0;Pov. amortizacija;15
+PAMOR1;numeric;17,2;;0;Pamor1;15
+PAMOR2;numeric;17,2;;0;Pamor2;15
+REVAMOR;numeric;17,2;;0;Rev. amortizacije;15
+PREBACAM;numeric;17,2;;0;Preb. amortizacije;15
+VK;char;3;;;
+IDX=invbroj
+
+$OS_Porijeklo
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CPORIJEKLO;char;2;pkey;;Šifra
+NAZPORIJEKLA;char;40;;;Naziv;30
+
+$OS_Promjene
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;;;Knjigovodstvo
+CORG2;char;12;pkey;;OJ;6
+INVBROJ;char;10;pkey;;IBroj
+CPROMJENE;char;3;;;VP;4
+DATPROMJENE;date;;;;Datum;10
+OSNDUGUJE;numeric;17,2;;0;OsnovicaD;15
+OSNPOTRAZUJE;numeric;17,2;;0;OsnovicaP;15
+ISPDUGUJE;numeric;17,2;;0;IspravakD;15
+ISPPOTRAZUJE;numeric;17,2;;0;IspravakP;15
+OSNPOCETAK;numeric;17,2;;0;Osnovica poèetak;15
+ISPPOCETAK;numeric;17,2;;0;Ispravak poèetak;15
+DATKNJIZENJA;date;;;;Datum knjiženja;10
+STATUSKNJ;char;1;;N;Status knjiženja
+CNALOGA;char;30;;;Broj naloga
+RBR;int;6;pkey;;Rbr;3
+STATUS;char;1;pkey;;Status
+DOKUMENT;char;50;;;Dokument;30
+OPIS;char;100;;;Opis;30
+CPAR;int;6;;;Partnera
+MJESECP;char;2;;;Mjesec
+SALDO;numeric;17,2;;0;Saldo;15
+OJINVBRB;char;1;;;Ojin;*
+UIPRPOR;numeric;17,2;;0;Pretporez;15
+OLDCORG;char;12;;;Stara OJ;6
+OSNOVICA;numeric;17,2;;0;Osnovica;15
+ISPRAVAK;numeric;17,2;;0;Ispravak;15
+IDX=invbroj
+IDX=rbr
+
+$OS_Revskupine
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CSKUPINE;char;6;pkey;;Šifra
+NAZSKUPINE;char;50;;;Naziv;30
+MJESEC;char;6;;;Mjesec
+KOEFICIJENT;numeric;10,2;;0;Koeficijent;8
+KOEFICIJENT2;numeric;10,2;;0;Koeficijent 2;8
+
+$OS_SI
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan
+CORG;char;12;;;Knigovodstvo
+CORG2;char;12;pkey;;OJ;6
+INVBROJ;char;10;pkey;;IBroj
+NAZSREDSTVA;char;50;;;Naziv;30
+COBJEKT;char;6;;;Objekt
+CLOKACIJE;char;12;;;Lokacija
+CARTIKLA;char;6;;;Artikl
+CPAR;int;6;;;Partner
+BROJKONTA;char;8;;;Konto
+CGRUPE;char;6;;;Amor. grupa
+CSKUPINE;char;6;;;Reva. skupina
+DATPROMJENE;date;;;;Datum promjene;10
+DATLIKVIDACIJE;date;;;;Datum likvidacije;10
+GODPROIZ;char;4;;;Godina proizvodnje
+PORIJEKLO;char;2;;;Porijeklo
+RADNIK;char;6;;;Radnik
+NABVRIJED;numeric;17,2;;0;Nabavna vrijednost;15
+OSNPOCETAK;numeric;17,2;;0;Osnovica poèetak;15
+OSNDUGUJE;numeric;17,2;;0;OsnovicaD;15
+OSNPOTRAZUJE;numeric;17,2;;0;OsnovicaP;15
+REVOSN;numeric;17,2;;0;Revalorizacija osnovice;15
+ISPPOCETAK;numeric;17,2;;0;Ispravak poèetak;15
+ISPDUGUJE;numeric;17,2;;0;IspravakD;15
+ISPPOTRAZUJE;numeric;17,2;;0;IspravakP;15
+REVISP;numeric;17,2;;0;Revalorizacija ispravka;15
+AMORTIZACIJA;numeric;17,2;;0;Amortizacija;15
+REVAMOR;numeric;17,2;;0;Amortizacija revalorizacije;15
+PAMORTIZACIJA;numeric;17,2;;0;Povišena amortizacija;15
+DOKUMENT;char;50;;;Dokument;30
+SALDO;numeric;17,2;;0;Saldo;15
+STATUS;char;1;pkey;;Status
+DATNABAVE;date;;;;Datum nabave;10
+DATAKTIVIRANJA;date;;;;Datum aktiviranja;10
+OSNOVICA;numeric;17,2;;0;Osnovica;15
+ISPRAVAK;numeric;17,2;;0;Ispravak;15
+OLDCORG;char;12;;;Stara OJ;6
+CRADNIK;char;6;;;Radnik
+STARISTATUS;char;1;;;Stari status;*
+OJINV;char;22;;;Ojin;*
+IDX=invbroj
+
+$OS_Sredstvo
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan
+CORG;char;12;;;Knigovodstvo
+CORG2;char;12;pkey;;OJ;6
+INVBROJ;char;10;pkey;;IBroj
+NAZSREDSTVA;char;50;;;Naziv;30
+COBJEKT;char;6;;;Objekt
+CLOKACIJE;char;12;;;Lokacija
+CARTIKLA;char;6;;;Artikl
+CPAR;int;6;;;Partner
+BROJKONTA;char;8;;;Konto
+CGRUPE;char;6;;;Amor. grupa
+CSKUPINE;char;6;;;Reva. skupina
+DATPROMJENE;date;;;;Datum promjene;10
+DATLIKVIDACIJE;date;;;;Datum likvidacije;10
+GODPROIZ;char;4;;;Godina
+PORIJEKLO;char;2;;;Porijeklo
+CRADNIK;char;6;;;Radnik
+NABVRIJED;numeric;17,2;;0;Nabavna vrijednost;15
+OSNPOCETAK;numeric;17,2;;0;Osnovica Poèetak;15
+OSNDUGUJE;numeric;17,2;;0;OsnovicaD;15
+OSNPOTRAZUJE;numeric;17,2;;0;OsnovicaP;15
+REVOSN;numeric;17,2;;0;Revalorizacija osnovice;15
+ISPPOCETAK;numeric;17,2;;0;Ispravak poèetak;15
+ISPDUGUJE;numeric;17,2;;0;IspravakD;15
+ISPPOTRAZUJE;numeric;17,2;;0;IspravakP;15
+REVISP;numeric;17,2;;0;Revalorizacija ispravka;15
+AMORTIZACIJA;numeric;17,2;;0;Amortizacija;15
+REVAMOR;numeric;17,2;;0;Amortizacija revalorizacije;15
+PAMORTIZACIJA;numeric;17,2;;0;Povišena amortizacija;15
+DOKUMENT;char;50;;;Dokument;30
+SALDO;numeric;17,2;;0;Saldo;15
+STATUS;char;1;pkey;;Status
+DATNABAVE;date;;;;Nabavljeno;10
+DATAKTIVIRANJA;date;;;;Aktivirano;10
+OSNOVICA;numeric;17,2;;0;Osnovica;15
+ISPRAVAK;numeric;17,2;;0;Ispravak;15
+OLDCORG;char;12;;;Stara OJ;6
+STARISTATUS;char;1;;;Stari status;*
+OJINV;char;22;;;Ojin;*
+IDX=invbroj
+
+$OS_StSI
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CORG;char;12;;;Knjigovodstvo
+CORG2;char;12;pkey;;OJ;6
+INVBROJ;char;10;pkey;;IBroj
+CPROMJENE;char;3;;;VP;4
+DATPROMJENE;date;;;;Datum;10
+OSNDUGUJE;numeric;17,2;;0;OsnovicaD;15
+OSNPOTRAZUJE;numeric;17,2;;0;OsnovicaP;15
+ISPDUGUJE;numeric;17,2;;0;IspravakD;15
+ISPPOTRAZUJE;numeric;17,2;;0;IspravakP;15
+OSNPOCETAK;numeric;17,2;;0;Osnovica poèetak;15
+ISPPOCETAK;numeric;17,2;;0;Ispravak poèetak;15
+DATKNJIZENJA;date;;;;Datum knjiženja;10
+CNALOGA;char;30;;;Broj naloga
+RBR;int;6;pkey;;Rbr;3
+STATUS;char;1;pkey;;Status
+DOKUMENT;char;50;;;Dokument;30
+OPIS;char;100;;;Opis;30
+CPAR;int;6;;;Partner
+MJESECP;char;2;;;Mjesec
+SALDO;numeric;17,2;;0;Saldo;15
+OJINVBRB;char;1;;;Ojin;*
+IDX=invbroj
+IDX=rbr
+
+$OS_Vrpromjene
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CPROMJENE;char;3;pkey;;Šifra
+NAZPROMJENE;char;50;;;Naziv;30
+TIPPROMJENE;char;1;;N;Tip
+
+$Paramblpn
+KNJIG;char;12;pkey;;Knjigovodstvo
+CSKL;char;12;;;Vrsta stavke
+VRDOK;char;3;;;Vrsta dokumenta;*
+STAVKAPNZ;char;8;;;Trošak PN u zemlji
+STAVKAPNI;char;8;;;Trošak PN u inozemstvu
+STAVKAF;char;500;;;Footer isplatnice / uplatnice;15
+PNF;char;200;;;Footer putnog naloga;15
+PARAMETRI;char;20;;;Parametri;*
+
+$Parametri
+APP;char;10;pkey;;Aplikacija
+PARAM;char;25;pkey;;Parametar;15
+OPISPAR;char;100;;;Opis parametara;20
+VRIJEDNOST;char;200;;;Defaultna vrijednost;12
+SISTEMSKI;char;1;;G;Vrsta
+
+$Parametripl
+CPARPL;short;2;pkey;1;Kljuè;*
+MINPL;numeric;17,2;;1250;Minimalna plaæa - olakšice;15
+MINOSDOP;numeric;17,2;;1800;Minimalna osnovica za doprinose;15
+OSNPOR1;numeric;17,2;;2500;Osnovica za prvi porez;15
+OSNPOR2;numeric;17,2;;6250;Osnovica za drugi porez;15
+OSNPOR3;numeric;17,2;;0;Osnovica za treæi porez;15
+OSNPOR4;numeric;17,2;;0;Osnovica za èetvrti porez;15
+OSNPOR5;numeric;17,2;;0;Osnovica za peti porez;15
+PARAMETRI;char;20;;;Parametri;*
+
+$Paritet1PP
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CPAR1PP;char;10;pkey;;Šifra pariteta za prvo podpolje
+NAZIV;char;80;;;Naziv;30
+IDX=cpar1pp
+
+$Paritet3PP
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CPAR3PP;char;10;pkey;;Šifra pariteta za treæe podpolje
+NAZIV;char;80;;;Naziv;30
+IDX=cpar3pp
+
+$Plizv
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CIZV;short;2;pkey;;Oznaka
+OPIS;char;30;;;Opis;15
+PARAMETRI;char;20;;;Parametri;*
+
+$Plosnovice
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+COSN;short;2;pkey;;Oznaka
+OPIS;char;30;;;Opis;15
+VRSTA;char;1;;1;Vrsta
+PARAMETRI;char;20;;;Parametri;*
+
+$Plosnprim
+CVRP;short;2;pkey;;Oznaka vrste primanja
+COSN;short;2;pkey;;Oznaka osnovice
+
+$PlZnacRadData
+CRADNIK;char;6;pkey;;Radnik
+CZNAC;short;2;pkey;;Znaèajka
+VRI;char;50;;;Vrijednost;30
+
+$Porezi
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CPOR;char;6;pkey;;Šifra;5
+NAZPOR;char;50;;;Naziv;30
+POR1;numeric;10,2;;0;Postotak 1
+NAZPOR1;char;50;;;Naziv prvog poreza;15
+POR2;numeric;10,2;;0;Postotak 2
+NAZPOR2;char;50;;;Naziv drugog poreza;15
+POR3;numeric;10,2;;0;Postotak 3;*
+NAZPOR3;char;50;;;Naziv treæeg poreza;15
+UKUPOR;numeric;10,2;;0;Ukupno;5
+UNPOR1;numeric;10,6;;0;Invertna stopa 1;*
+UNPOR2;numeric;10,6;;0;Invertna stopa 2;*
+UNPOR3;numeric;10,6;;0;Invertna stopa 3;*
+UKUNPOR;numeric;10,6;;0;Invertna stopa;*
+PORNAPOR1;char;1;;N;PnP 1
+PORNAPOR2;char;1;;N;PnP 2
+PORNAPOR3;char;1;;N;PnP 3
+
+$Povjerioci
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CPOV;int;6;pkey;;Oznaka
+NAZPOV;char;100;;;Naziv;15
+PBR;int;6;;;Poštanski broj
+MJESTO;char;30;;;Mjesto;15
+ADRESA;char;50;;;Adresa;15
+NACISP;char;1;;2;Naèin ispisa
+PNBZ1;char;2;;;Poziv na broj zaduž (1.dio)
+PNBZ2;char;22;;;Poziv na broj zaduž (2.dio);15
+PNBO1;char;2;;;Poziv na broj odob (1.dio)
+PNBO2;char;22;;;Poziv na broj odob (2.dio);15
+SIF1;char;3;;;Šifra 1
+SIF2;char;3;;;Šifra 2
+SIF3;char;3;;;Šifra 3
+ZIRO;char;40;;;Žiro raèun;15
+SVRHA;char;50;;;Svrha doznake;15
+PARAMETRI;char;20;;;Parametri;*
+
+$Prava
+CPRAVA;short;2;pkey;;Šifra;7
+VRPRAVA;char;1;;A;Domena;8
+PRAVO;char;4;;1000;Pravo;6
+SIFRA;char;20;;;Šifra u domeni;15
+KLJUC;char;50;;;Kljuè;15
+OPIS;char;50;;;Opis prava;30
+
+$Pravagrus
+CGRUPEUSERA;char;5;pkey;;Šifra grupe
+CPRAVA;short;2;pkey;;Šifra prava
+POZ;char;1;;D;Daje / oduzima
+
+$Pravauser
+CUSER;char;15;pkey;;Šifra operatera
+CPRAVA;short;2;pkey;;Šifra prava
+POZ;char;1;;D;Daje / oduzima
+
+$Primanjaarh
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+GODOBR;short;2;pkey;;Godina obraèuna
+MJOBR;short;2;pkey;;Mjesec obraèuna
+RBROBR;short;2;pkey;;Redni broj obraèuna
+CRADNIK;char;6;pkey;;Radnik
+CVRP;short;2;pkey;;Vrsta primanja
+RBR;short;2;pkey;1;Redni broj
+CORG;char;12;;;Org. Jedinica u kojoj je obavljen rad
+SATI;numeric;17,2;;0;Sati;15
+KOEF;numeric;17,2;;0;Koeficijent;15
+BRUTO;numeric;17,2;;0;Bruto;15
+DOPRINOSI;numeric;17,2;;0;Odbici od bruta (doprinosi);15
+NETO;numeric;17,2;;0;Neto za oporetivanje;15
+COBR;short;2;;;Naèin obraèuna
+COSN;short;2;;;Oznaka osnovice iz koje se raèuna zarada
+RSOO;char;5;;;Osnova osiguranja
+RNALOG;char;1;;N;Unos radnog naloga
+REGRES;char;1;;;Primanje na godišnjoj osnovi (regres)
+CGRPRIM;char;5;;;Grupa primanja
+CVRPARH;short;2;;;Vrsta primanja u koju se dohvaæa iz arhive
+STAVKA;char;8;;;Veza sa kontom preko SHKONTA.VRDOK+CSKL+STAVKA -> CSKL=1(APPL=pl) VRDOK=PL
+PARAMETRI;char;20;;;Parametri;*
+IRAZOD;date;;;;Isplaæeno za razdoblje od;10
+IRAZDO;date;;;;Isplaæeno za razdoblje do;10
+IDX=mjobr
+IDX=rbr
+IDX=cradnik
+IDX=rbr
+
+$Primanjaobr
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CRADNIK;char;6;pkey;;Radnik
+CVRP;short;2;pkey;;Vrsta primanja
+RBR;short;2;pkey;1;Redni broj
+CORG;char;12;;;Org. Jedinica u kojoj je obavljen rad
+SATI;numeric;17,2;;0;Sati;15
+KOEF;numeric;17,2;;0;Koeficijent;15
+BRUTO;numeric;17,2;;0;Bruto;15
+DOPRINOSI;numeric;17,2;;0;Odbici od bruta (doprinosi);15
+NETO;numeric;17,2;;0;Neto za oporetivanje;15
+IRAZOD;date;;;;Isplaæeno za razdoblje od;10
+IRAZDO;date;;;;Isplaæeno za razdoblje do;10
+IDX=cradnik
+IDX=rbr
+
+$Prisutarh
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+GODOBR;short;2;pkey;;Godina obraèuna
+MJOBR;short;2;pkey;;Mjesec obraèuna
+RBROBR;short;2;pkey;;Redni broj obraèuna
+CRADNIK;char;6;pkey;;Radnik
+CVRP;short;2;pkey;;Vrsta primanja
+DAN;short;2;pkey;1;Dan
+GRPRIS;char;5;pkey;;Grupa
+SATI;numeric;17,2;;0;Sati;15
+IZNOS;numeric;17,2;;0;Iznos;15
+SATIRADA;numeric;17,2;;0;Fond sati rada;15
+SATIPRAZ;numeric;17,2;;0;Fond sati praznika;15
+IZNOSOBU;numeric;17,2;;0;Iznos obustava;*
+IZNOSP;numeric;17,2;;0;Iznos plaæe;*
+PARAMETRI;char;20;;;Parametri;*
+IDX=mjobr
+IDX=rbrobr
+IDX=cradnik
+IDX=dan
+
+$Prisutobr
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CRADNIK;char;6;pkey;;Radnik
+CVRP;short;2;pkey;;Vrsta primanja
+DAN;short;2;pkey;1;Dan
+GRPRIS;char;5;pkey;;Grupa
+SATI;numeric;17,2;;0;Sati;15
+IZNOS;numeric;17,2;;0;Iznos;15
+SATIRADA;numeric;17,2;;0;Fond sati rada;15
+SATIPRAZ;numeric;17,2;;0;Fond sati praznika;15
+IZNOSOBU;numeric;17,2;;0;Iznos obustava;*
+IZNOSP;numeric;17,2;;0;Iznos plaæe;*
+PARAMETRI;char;20;;;Parametri;*
+IDX=cradnik
+IDX=dan
+
+$Prodmj
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CPRODMJ;char;2;pkey;;Šifra
+NPRODMJ;char;30;;;Naziv;15
+
+$Prod_mj
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CPRODMJ;char;3;pkey;;Šifra
+NAZPRODMJ;char;50;;;Naziv;15
+CSKL;char;12;;;Skladište
+
+$Programi
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CPROG;char;20;pkey;;Oznaka;15
+OPISPROG;char;50;;;Naziv;15
+APP;char;10;pkey;;Aplikacija
+IDX=cprog
+
+$Putnalarh
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+GODINA;short;2;pkey;;Godina
+BROJ;int;6;pkey;;Broj putnog naloga
+CPN;char;24;;;Broj naloga;15
+CRADNIK;char;6;;;Radnik
+DATUMODL;date;;;;Datum odlaska;10
+DATOBR;date;;;;Datum obraèuna;10
+TRAJANJE;short;2;;1;Trajanje
+RAZLOGPUTA;char;50;;;Razlog puta;30
+MJESTA;char;50;;;Mjesta;30
+CPRIJSRED;char;5;;;Prijevozno sredstvo
+INDPUTA;char;1;pkey;Z;Indikator puta
+STATUS;char;1;;P;Status
+AKONTACIJA;numeric;17,2;;0;Isplaæena akontacija;15
+TROSKOVI;numeric;17,2;;0;Obraèunati troškovi;15
+RAZLIKA;numeric;17,2;;0;Razlika po obraèunu;15
+UPLRAZLIKA;numeric;17,2;;0;Uplaæena razlika po obraèunu;15
+TECRAZLIKA;numeric;17,2;;0;Teèajna razlika;15
+CZEMLJE;char;3;;;Zemlja
+CORG;char;12;;;Org. jedinica
+CNALOGA;char;30;;;Oznaka naloga u GK
+IDX=broj
+
+$PutniNalog
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+GODINA;short;2;pkey;;Godina
+BROJ;int;6;pkey;;Broj putnog naloga
+CPN;char;24;;;Broj naloga;15
+CRADNIK;char;6;;;Radnik
+DATUMODL;date;;;;Odlazak;10
+DATOBR;date;;;;Datum obraèuna;10
+TRAJANJE;short;2;;1;Trajanje
+RAZLOGPUTA;char;50;;;Razlog puta;30
+MJESTA;char;50;;;Mjesta;30
+CPRIJSRED;char;5;;;Prijevozno sredstvo
+INDPUTA;char;1;pkey;Z;Indikator puta
+STATUS;char;1;;P;Status
+AKONTACIJA;numeric;17,2;;0;Isplaæena akontacija;15
+TROSKOVI;numeric;17,2;;0;Obraèunati troškovi;15
+RAZLIKA;numeric;17,2;;0;Razlika po obraèunu;15
+UPLRAZLIKA;numeric;17,2;;0;Uplaæena razlika po obraèunu;15
+TECRAZLIKA;numeric;17,2;;0;Teèajna razlika;15
+CZEMLJE;char;3;;;Zemlja
+CORG;char;12;;;Org. jedinica
+IDX=broj
+
+$rabati
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CRAB;char;2;pkey;;Šifra;5
+NRAB;char;50;;;Naziv;30
+PRAB;numeric;10,2;;0;Posto popusta;5
+IRAB;numeric;15,2;;0;Iznos popusta;*
+RABNARAB;char;1;;;PnP
+
+$RadMJ
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CRADMJ;char;6;pkey;;Oznaka
+NAZIVRM;char;50;;;Naziv;15
+KOEF;numeric;17,4;;0;Koeficijent;15
+BODOVI;numeric;17,2;;0;Bodovi;15
+DODBOD;numeric;17,2;;0;Dodatni bodovi;15
+PARAMETRI;char;20;;;Parametri;*
+
+$Radnici
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CRADNIK;char;6;pkey;;Matièni broj
+IME;char;50;;;Ime;15
+PREZIME;char;50;;;Prezime;15
+IMEOCA;char;50;;;Ime oca;15
+TITULA;char;15;;;Titula
+CORG;char;12;;;Org. jedinica
+
+$Rate
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSKL;char;12;pkey;;Skladište
+VRDOK;char;3;pkey;;Vrsta
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj;15
+RBR;short;2;pkey;;Rbr;15
+CNACPL;char;3;;;Plaæanje
+CBANKA;char;4;;;Banka
+BANKA;char;1;;;Flag;*
+BROJ_TRG;char;30;;;Broj raèuna;15
+BROJ_CEK;char;30;;;Broj èeka;15
+BRRATA;short;2;;;Rata;15
+DATUM;date;;;;Datum;10
+IRATA;numeric;15,2;;0;Iznos
+DATDOK;date;;;;Datum dokumenta;10
+VLASNIK;char;50;;;Vlasnik;15
+VRIJEDIDO;char;8;;;Vrijedi do
+CPRODMJ;char;3;pkey;;Blagajna;5
+
+$Refresher
+DUMMY;char;1;pkey;;Dummy polje
+
+$Repgk
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CREPGK;int;6;pkey;;Oznaka;8
+TITLE;char;200;;;Naslov;30
+HEADER1;char;50;;;Zaglavlje 1. iznosa;30
+HEADER2;char;50;;;Zaglavlje 2. iznosa;30
+HEADER3;char;50;;;Zaglavlje 3. iznosa;30
+PARAMS;char;20;;;Parametri;15
+IDX=crepgk
+
+$Repgkdata
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CREPGK;int;6;pkey;;Izvještaj;8
+DATREPGK;date;;pkey;;Datum;10
+COMMENT;char;200;;;Komentar;30
+DAT1_FROM;date;;;;OD za 1.iznos;10
+DAT1_TO;date;;;;DO za 1.iznos;10
+DAT2_FROM;date;;;;OD za 2.iznos;10
+DAT2_TO;date;;;;DO za 2.iznos;10
+DAT3_FROM;date;;;;OD za 3.iznos;10
+DAT3_TO;date;;;;DO za 3.iznos;10
+PARAMS;char;20;;;Parametri;15
+IDX=crepgk
+IDX=datrepgk
+
+$Repldef
+BATCH_INDEX;char;20;pkey;;Identifikator;15
+IMETAB;char;20;pkey;;Naziv tablice;15
+RBR_URL;short;2;pkey;0;URL – iz;2
+RBR_URL_U;short;2;;0;URL – u;2
+NACINREP;char;1;;1;Naèin replikacije
+SLIJED;int;6;;0;Redoslijed;6
+CLASSNAME;char;40;;;Ime klase;30
+IDX=batch_index
+IDX=imetab
+
+$Replication_TX
+LAST_TX;int;6;pkey;;Zadnja TX;6
+
+$Replinfo
+IMETAB;char;20;pkey;;Naziv tablice;15
+KEYTAB;char;50;pkey;;Kljuè tablice;30
+RBR_URL;short;2;pkey;;Index remote URL-a
+REP_FLAG;char;1;;;Status replikacije
+DATPROM;date;;;;Datum promjene;10
+IDX=imetab
+IDX=keytab
+
+$Replurl
+RBR_URL;short;2;pkey;;Index
+URL;char;100;;;URL;30
+DRIVER;char;50;;;Driver;30
+USR;char;20;;;User;15
+PASS;char;20;;;Password;15
+
+$Reportdef
+ID;char;50;pkey;;Jedinstveno ime izvještaja;30
+VRDOK;char;3;;;Vrsta dokumenta
+IZLAZNI;char;1;;N;Izlazni izvještaj
+ORIENT;char;1;;P;Orijentacija
+
+$Reportext
+IME;char;12;pkey;;Ime
+NASLOV;char;80;;;Izvještaj;40
+URL;char;150;;;URL;40
+APP;char;12;;;Aplikacija
+
+$RN_sifznac
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CVRSUBJ;short;2;pkey;;Vrsta subjekta
+CZNAC;short;2;pkey;;Podatak
+VRIZNAC;char;50;pkey;;Vrijednost;15
+OPIS;char;50;;;Opis vrijednosti;15
+
+$RN_subjekt
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CSUBRN;char;20;pkey;;Subjekt;15
+BROJ;char;30;;;Serijski broj;15
+CVRSUBJ;short;2;;;Vrsta subjekta
+
+$RN_tekstovi
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CTEKST;int;6;pkey;;Šifra;15
+CSKUPART;char;6;;;Skupina artikala;5
+TEKST;char;200;;;Tekst;15
+
+$RN_vrsub
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRSUBJ;short;2;pkey;;Šifra
+NAZVRSUBJ;char;50;;;Naziv;30
+NAZSERBR;char;40;;;Tekst S/B;30
+CPRIP;short;2;;;Pripadnost
+NAZSIF;char;40;;;Tekst šifre;30
+
+$RN_znacajke
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CZNAC;short;2;pkey;;Podatak;5
+CVRSUBJ;short;2;pkey;;Vrsta subjekta;5
+ZNACOPIS;char;30;;;Opis podatka
+ZNACTIP;char;1;;S;Tip znaèajke
+ZNACSIF;char;1;;;Šifrirana znaèajka
+ZNACREQ;char;1;;;Obavezni unos
+ZNACDOH;char;50;;;Dohvat iz dM;30
+
+$RN_znachint
+CVRSUBJ;short;2;pkey;;Vrsta subjekta
+CHINT;short;2;pkey;;Šifra linije
+ZHINT;char;100;;;Popis hintova;30
+
+$RN_znacsub
+CSUBRN;char;20;pkey;;Subjekt;15
+CVRSUBJ;short;2;pkey;;Vrsta subjekta
+CZNAC;short;2;pkey;;Znaèajka
+VRIZNAC;char;50;;;Vrijednost;15
+CRADNAL;char;30;pkey;;Radni nalog;15
+IDX=cradnal
+
+$RSPeriod
+CRADNIK;char;6;pkey;;Radnik
+RBR;int;6;pkey;;Rbr
+RSOO;char;5;;;Osnova osiguranja
+ODDANA;short;2;;;Od
+DODANA;short;2;;;Do
+COPCINE;char;3;;;Opæina
+IDX=cradnik
+IDX=rbr
+
+$RSPeriodarh
+GODOBR;short;2;pkey;;Godina obraèuna
+MJOBR;short;2;pkey;;Mjesec obraèuna
+RBROBR;short;2;pkey;;Redni broj obraèuna
+CRADNIK;char;6;pkey;;Radnik
+RBR;int;6;pkey;;Rbr
+RSOO;char;5;;;Osnova osiguranja
+ODDANA;short;2;;;Od
+DODANA;short;2;;;Do
+JMBG;char;13;;;JMBG
+COPCINE;char;3;;;Opæina
+RSINV;char;5;;;Invalidnost
+RSB;char;5;;;Beneficirani staž
+RSZ;char;5;;;Oznaka zdravstvenog osiguranja
+SATI;numeric;17,2;;0;Sati;15
+BRUTO;numeric;17,2;;0;Bruto uplaæeni;15
+BRUTOMJ;numeric;17,2;;0;Bruto obraèunati;15
+MIO1;numeric;17,2;;0;MIO 1 stup uplaæeno;15
+MIO1MJ;numeric;17,2;;0;MIO 1 stup obraèunat;15
+MIO2;numeric;17,2;;0;MIO 2 stup uplaæen;15
+MIO2MJ;numeric;17,2;;0;MIO 2 stup obraèunat;15
+ZO;numeric;17,2;;0;Zdravstveno os. uplaæeno;15
+ZOMJ;numeric;17,2;;0;Zdravstveno os. obraèunato;15
+ZAPOS;numeric;17,2;;0;Zapošljavanje uplaæeno;15
+ZAPOSMJ;numeric;17,2;;0;Zapošljavanje obraèunato;15
+PREMOS;numeric;17,2;;0;Premije osiguranja;15
+OSODB;numeric;17,2;;0;Osobni odbitak;15
+POREZ;numeric;17,2;;0;Porez uplaæeni;15
+POREZMJ;numeric;17,2;;0;Porez obraèunati;15
+PRIREZ;numeric;17,2;;0;Prirez uplaæeni;15
+PRIREZMJ;numeric;17,2;;0;Prirez obraèunati;15
+NETOPK;numeric;17,2;;0;Neto;15
+MJESEC;short;2;;;Mjesec
+GODINA;short;2;;;Godina
+IDENTIFIKATOR;char;4;;;Identifikator
+VRSTAUPL;char;2;;;Vrsta uplate
+VROBV;char;5;;;Vrsta obveznika
+IDX=mjobr
+IDX=rbr
+IDX=cradnik
+IDX=rbr
+
+$RSPeriodobr
+CRADNIK;char;6;pkey;;Radnik
+RBR;int;6;pkey;;Rbr
+RSOO;char;5;;;Osnova osiguranja
+ODDANA;short;2;;;Od
+DODANA;short;2;;;Do
+JMBG;char;13;;;JMBG
+COPCINE;char;3;;;Opæina
+RSINV;char;5;;;Invalidnost
+RSB;char;5;;;Beneficirani staž
+RSZ;char;5;;;Oznaka zdravstvenog osiguranja
+SATI;numeric;17,2;;0;Sati;15
+BRUTO;numeric;17,2;;0;Bruto uplaæeni;15
+BRUTOMJ;numeric;17,2;;0;Bruto obraèunati;15
+MIO1;numeric;17,2;;0;MIO 1 stup uplaæeno;15
+MIO1MJ;numeric;17,2;;0;MIO 1 stup obraèunat;15
+MIO2;numeric;17,2;;0;MIO 2 stup uplaæen;15
+MIO2MJ;numeric;17,2;;0;MIO 2 stup obraèunat;15
+ZO;numeric;17,2;;0;Zdravstveno os. uplaæeno;15
+ZOMJ;numeric;17,2;;0;Zdravstveno os. obraèunato;15
+ZAPOS;numeric;17,2;;0;Zapošljavanje uplaæeno;15
+ZAPOSMJ;numeric;17,2;;0;Zapošljavanje obraèunato;15
+PREMOS;numeric;17,2;;0;Premije osiguranja;15
+OSODB;numeric;17,2;;0;Osobni odbitak;15
+POREZ;numeric;17,2;;0;Porez uplaæeni;15
+POREZMJ;numeric;17,2;;0;Porez obraèunati;15
+PRIREZ;numeric;17,2;;0;Prirez uplaæeni;15
+PRIREZMJ;numeric;17,2;;0;Prirez obraèunati;15
+NETOPK;numeric;17,2;;0;Neto;15
+MJESEC;short;2;;;Mjesec
+GODINA;short;2;;;Godina
+IDENTIFIKATOR;char;4;;;Identifikator
+VRSTAUPL;char;2;;;Vrsta uplate
+VROBV;char;5;;;Vrsta obveznika
+IDX=cradnik
+IDX=rbr
+
+$SEQ
+LOKK;char;1;;N;LOKK;*
+OPIS;char;30;pkey;;Opis;15
+KNJIG;char;12;;;Knjigovodstvo
+GOD;char;4;;;Godina
+APP;char;10;;;Aplikacija
+BROJ;double;10,0;;;Broj;15
+
+$Serbr
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CSERBR;char;30;pkey;;Serijski broj
+CART;int;6;pkey;;Artikl
+CSKL;char;12;;;Skladište
+VRDOK;char;3;;;VD
+GOD;char;4;;;Godina
+BRDOK;int;6;;;Broj
+RBR;short;2;;;Rbr
+CSKLIZ;char;12;;;Izlazno skladište
+VRDOKIZ;char;3;;;VD iz.
+GODIZ;char;4;;;Godina iz.
+BRDOKIZ;int;6;;;Broj iz.
+RBRIZ;short;2;;;Rbr iz.
+IDX=cserbr
+
+$ShemevezeUI
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CSKL;char;12;pkey;;Vrsta sheme
+VRDOK;char;3;pkey;;Vrsta dokumenta
+STAVKA1;short;2;pkey;;Osnovica
+STAVKA2;short;2;pkey;;Rezultat
+STOPA;numeric;6,2;;0;Stopa
+INVERTNA;char;1;;N;Invertna
+DODATNA;char;1;;N;Dodatna
+STOPA2;numeric;6,2;;0;Dodatna stopa
+
+$Shkonta
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+VRDOK;char;3;pkey;;Vrsta dokumenta
+CSKL;char;12;pkey;;Skladište
+STAVKA;short;2;pkey;;RBS
+OPIS;char;40;;;Opis;30
+POLJE;char;50;;;Polje;15
+BROJKONTA;char;8;;;Konto
+KARAKTERISTIKA;char;1;;;Karakteristika
+APP;char;10;;;Aplikacija
+CSKLUL;char;12;pkey;;Ulazno skladište
+CKNJIGE;char;5;;;Knjiga
+CKOLONE;short;2;;;Kolona
+SQLCONDITION;char;3072;;;SQL upit na bazu;*
+IDX=stavka
+
+$shrab
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSHRAB;char;3;pkey;;Šifra;5
+NSHRAB;char;50;;;Naziv;30
+UPRAB;numeric;10,2;;0;Posto rabata
+
+$Shzavtr
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CSHZT;char;3;pkey;;Šifra;5
+NSHZT;char;20;;;Naziv;30
+CZT1;char;2;;;Šifra zavisnog troška 1
+CZT2;char;2;;;Šifra zavisnog troška 2
+CZT3;char;2;;;Šifra zavisnog troška 3
+CZT4;char;2;;;Šifra zavisnog troška 4
+CZT5;char;2;;;Šifra zavisnog troška 5
+ZTPUK;numeric;10,2;;0;Posto zavisnih troškova
+ZTIUK;numeric;15,2;;0;Iznos zavisnih troškova;10
+
+$Sifrarnici
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CSIF;char;5;pkey;;Oznaka
+VRSTASIF;char;4;pkey;;Vrsta
+NAZIV;char;150;;;Naziv;15
+OPIS;char;500;;;Opis;15
+CSIFPRIP;char;5;;;Oznaka pripadnosti
+PARAMETRI;char;20;;;Parametri;*
+IDX=csif
+IDX=vrstasif
+
+$Skkumulativi
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+GODINA;char;4;pkey;;Godina
+CORG;char;12;pkey;;Org. jedinica
+CPAR;int;6;pkey;;Partner
+ULOGA;char;1;pkey;;Uloga
+BROJKONTA;char;8;pkey;;Konto
+POCSTRAC;numeric;17,2;;0;Poèetno stanje raèuna;15
+POCSTUPL;numeric;17,2;;0;Poèetno stanje uplata;15
+PROMETR;numeric;17,2;;0;Promet raèuna;12
+PROMETU;numeric;17,2;;0;Promet uplata;12
+DATZADRAC;date;;;;Datum zadnjeg raèuna u kumulativu;10
+IDX=cpar
+IDX=brojkonta
+
+$Skupart
+CSKUPART;char;6;pkey;;Šifra;5
+NAZSKUPART;char;50;;;Naziv;30
+CART;int;6;pkey;;Artikl
+CART1;char;20;;;Oznaka;11
+BC;char;20;;;Barcode;10
+NAZART;char;50;;;Naziv artikla;20
+JM;char;3;;;Jedinica mjere
+KOL;numeric;15,3;;0;Kolièina
+IDX=cskupart
+
+$Stavblag
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+CBLAG;int;6;pkey;;Broj blagajne
+OZNVAL;char;3;pkey;;Oznaka valute
+GODINA;short;2;pkey;;Godina
+BRIZV;int;6;pkey;;Broj blagajnièkog izvještaja
+RBS;int;6;pkey;;RBS
+DATUM;date;;;;Datum;10
+PRIMITAK;numeric;17,2;;0;Primitak;15
+IZDATAK;numeric;17,2;;0;Izdatak;15
+PVPRIMITAK;numeric;17,2;;0;Primitak u dom.valuti;15
+PVIZDATAK;numeric;17,2;;0;Izdatak u dom.valuti;15
+TECAJ;numeric;12,6;;1;Teèaj
+CRADNIK;char;6;;;Radnik
+CPN;char;24;;;Putni nalog;15
+OPIS;char;50;;;Opis;15
+TKO;char;50;;;Kome / od koga;15
+CGRSTAV;char;5;;;Grupa
+STAVKA;char;8;;;Veza sa kontom
+CSKL;char;12;;;Vrsta sheme
+VRDOK;char;3;;;Vrsta dokumenta
+CORG;char;12;;;Org. jedinica
+VRSTA;char;1;pkey;;Uplatnica Isplatnica
+BROJKONTA;char;8;;;Konto
+DATDOK;date;;;;Datum dokumenta;10
+DATDOSP;date;;;;Datum dospjeæa;10
+BROJDOK;char;50;;;Broj dokumenta;30
+CPAR;int;6;;;Partner
+IDX=brizv
+IDX=rbs
+
+$Stavkeblarh
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+CBLAG;int;6;pkey;;Broj blagajne
+OZNVAL;char;3;pkey;;Oznaka valute
+GODINA;short;2;pkey;;Godina
+BRIZV;int;6;pkey;;Broj blagajnièkog izvještaja
+RBS;int;6;pkey;;RBS
+DATUM;date;;;;Datum;10
+PRIMITAK;numeric;17,2;;0;Primitak;15
+IZDATAK;numeric;17,2;;0;Izdatak;15
+PVPRIMITAK;numeric;17,2;;0;Primitak u dom.valuti;15
+PVIZDATAK;numeric;17,2;;0;Izdatak u dom.valuti;15
+TECAJ;numeric;12,6;;1;Teèaj
+CRADNIK;char;6;;;Radnik
+CPN;char;24;;;Putni nalog;15
+OPIS;char;50;;;Opis;15
+TKO;char;50;;;Kome / od koga;15
+CGRSTAV;char;5;;;Grupa
+STAVKA;char;8;;;Veza sa kontom preko SHKONTA.VRDOK=BL
+CSKL;char;12;;;Veza sa kontom preko SHKONTA
+VRDOK;char;3;;;Vrsta dokumenta
+CORG;char;12;;;Org. jedinica
+CNALOGA;char;30;;;Oznaka naloga u GK;15
+VRSTA;char;1;pkey;;Uplatnica Isplatnica
+BROJKONTA;char;8;;;Konto
+DATDOK;date;;;;Datum dokumenta;10
+DATDOSP;date;;;;Datum dospjeæa;10
+BROJDOK;char;50;;;Broj dokumenta;30
+CPAR;int;6;;;Partner
+IDX=brizv
+IDX=rbs
+
+$Stavkepn
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+GODINA;short;2;pkey;;Godina
+BROJ;int;6;pkey;;Broj putnog naloga
+RBS;short;2;pkey;;RBR
+STAVKA;short;2;;;Trošak
+CSKL;char;12;;;Vrsta stavke
+VRDOK;char;3;;;Vrsta dokumenta;*
+CZEMLJE;char;3;;;Zemlja
+IZNOS;numeric;17,2;;0;Iznos;15
+PVIZNOS;numeric;17,2;;0;Iznos u dom. val.;15
+TECAJ;numeric;12,6;;1;Teèaj
+OZNVAL;char;3;;;Oznaka valute
+ODMJ;char;30;;;Od mjesta
+DOMJ;char;30;;;Do mjesta
+CPRIJSRED;char;5;;;Prijevozno sredstvo
+BROJDNK;numeric;17,2;;0;Dnevnica / noæenja / kilometara;15
+DATUMODL;date;;;;Datum odlaska;10
+DATUMDOL;date;;;;Datum dolaska;10
+VRIJODL;short;2;;;Odlazak
+VRIJDOL;short;2;;;Dolazak
+BROJSATI;int;6;;;Broj sati
+INDPUTA;char;1;pkey;Z;Indikator puta
+CPN;char;24;;;Broj naloga;15
+ISPL;char;1;;N;Isplaæeno;*
+IDX=broj
+IDX=rbs
+
+$Stavpnarh
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+KNJIG;char;12;pkey;;Knjigovodstvo
+GODINA;short;2;pkey;;Godina
+BROJ;int;6;pkey;;Broj putnog naloga
+RBS;short;2;pkey;;Redni broj stavke
+STAVKA;short;2;;;Trošak
+CSKL;char;12;;;Vrsta stavke
+VRDOK;char;3;;;Vrsta dokumenta;*
+CZEMLJE;char;3;;;Zemlja
+IZNOS;numeric;17,2;;0;Iznos;15
+PVIZNOS;numeric;17,2;;0;Iznos u dom. val.;15
+TECAJ;numeric;12,6;;1;Teèaj
+OZNVAL;char;3;;;Oznaka valute
+ODMJ;char;30;;;Od mjesta
+DOMJ;char;30;;;Do mjesta
+CPRIJSRED;char;5;;;Prijevozno sredstvo
+BROJDNK;numeric;17,2;;0;Dnevnica / noæenja / kilometara;15
+DATUMODL;date;;;;Datum odlaska;10
+DATUMDOL;date;;;;Datum dolaska;10
+VRIJODL;short;2;;;Vrijeme odlaska
+VRIJDOL;short;2;;;Vrijeme dolaska
+BROJSATI;int;6;;;Broj sati
+INDPUTA;char;1;pkey;Z;Indikator puta
+CPN;char;24;;;Broj naloga;15
+ISPL;char;1;;N;Isplaæeno;*
+CNALOGA;char;30;;;Oznaka naloga u GK
+IDX=broj
+IDX=rbs
+
+$StIzvjPDV
+CIZ;char;10;pkey;;Oznaka stavke obr.PDV
+CKNJIGE;char;5;pkey;;Oznaka knjige
+CKOLONE;short;2;pkey;;Broj kolone
+URAIRA;char;1;pkey;;Indikator URA/IRA
+IDX=ciz
+IDX=ckolone
+
+$Sume
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CSUME;int;6;pkey;;Oznaka
+OPIS;char;30;;;Opis;15
+VRSTA;char;1;;1;Vrsta sume
+PARAMETRI;char;20;;;Parametri;*
+
+$SumePrim
+CVRP;short;2;pkey;;Oznaka vrste primanja
+CSUME;int;6;pkey;;Oznaka sume
+
+$TableSync
+IMETAB;char;20;pkey;;Tablica;15
+SERIALNUM;int;6;;;Serijski broj izmjene;6
+
+$Tablice
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CTAB;int;6;pkey;;Oznaka
+IMETAB;char;20;;;Ime;15
+KLASATAB;char;50;;;Klasa;15
+OPISTAB;char;50;;;Opis;15
+APP;char;10;;;Aplikacija
+
+$Tecajevi
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+OZNVAL;char;3;pkey;;Oznaka
+DATVAL;date;;pkey;;Datum teèaja;10
+TECKUP;numeric;15,6;;0;Kupovni teèaj
+TECSRED;numeric;15,6;;0;Srednji teèaj
+TECPROD;numeric;15,6;;0;Prodajni teèaj
+IDX=datval
+
+$Telehist
+CHIST;int;6;pkey;;Auto;*
+CTEL;int;6;;;Telemarketer;6
+CPAR;int;6;;;Partner;6
+DATUMOD;date;;;;Od;10
+DATUMDO;date;;;;Do;10
+IDX=cpar
+
+$Temelj
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSKL;char;12;pkey;;Skladište
+UI;char;1;;;Ulaz/izlaz
+BROJKONTA;char;8;pkey;;Konto
+IZNOSDUG;numeric;15,2;;0;Iznos dugovanja;14
+IZNOSPOT;numeric;15,2;;0;Iznos potraživanja;14
+
+$TempCRM
+MB;char;13;pkey;;Matièni broj
+
+$Tmjesta
+RBR;int;6;pkey;;Rbr
+PBR;int;6;;;Pbr
+MJ;char;50;;;Mjesto;30
+NAS;char;50;;;Naselje;30
+ZUP;char;50;;;Županija;30
+CZUP;short;2;;;Šifžup
+
+$Transdata
+IMETAB;char;20;pkey;;Tablica;15
+KOLONA;char;20;pkey;;Kolona;15
+SDAT;char;20;pkey;;Stara vrijednost;15
+NDAT;char;20;;;Nova vrijednost;15
+
+$TransHistory
+FILENAMECLIENT;char;100;pkey;;Ime datoteke;15
+FILENAMESERVER;char;100;;;Ime datoteke;15
+STATUS;char;1;;N;Status prenesenosti
+DATPRIJENOS;date;;;;Datum prijenosa;10
+DATPOTVRDE;date;;;;Datum potvrde;10
+KOMENTAR;char;120;;;Komentar;30
+
+$Usersklad
+CUSER;char;15;pkey;;Korisnik
+CSKL;char;12;;;Skladište
+
+$Vrdokum
+VRDOK;char;3;pkey;;Kratica;4
+NAZDOK;char;40;;;Naziv;30
+VRSDOK;char;2;;UI;Vrsta
+TIPDOK;char;2;;O;Tip
+KNJIZ;char;1;;D;Knjiženje;2
+APP;char;10;;;Aplikacija
+ID;char;2;;;Šifra
+ISPLOGO;char;1;;D;Ispis loga
+PARAM;char;20;;;Parametri;15
+
+$Vriboda
+KNJIG;char;12;pkey;;Poduzeæe
+GODINA;short;2;pkey;;Godina
+MJOBR;short;2;pkey;;Mjesec
+BOD;numeric;17,6;;1;Vrijednost boda;15
+IDX=mjobr
+
+$Vrodn
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRO;char;6;pkey;;Oznaka
+NAZIVRO;char;50;;;Naziv;15
+KOEF;numeric;17,4;;0;Koeficijent;15
+PARAMETRI;char;20;;;Parametri;*
+
+$Vrshemek
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRSK;char;12;pkey;;Oznaka
+OPISVRSK;char;50;;;Naziv;30
+VRDOK;char;3;;;VD
+APP;char;10;pkey;;Aplikacija
+IDX=cvrsk
+
+$Vrstaposla
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRPOS;char;10;pkey;;Šifra vrste posla
+NAZIV;char;100;;;Naziv;30
+CVRPOSPRIP;char;10;;;Pripadnost vrsti posla
+IDX=cvrpos
+
+$Vrstaprometa
+LOCK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRPROM;char;10;pkey;;Šifra vrste prometa
+NAZIV;char;80;;;Naziv;30
+IDX=cvrprom
+
+$Vrstenaloga
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRNAL;char;2;pkey;;Oznaka
+OPISVRNAL;char;40;;;Opis;15
+
+$Vrsteodb
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRODB;short;2;pkey;;Oznaka
+OPISVRODB;char;30;;;Opis;15
+NIVOODB;char;4;;RA;Nivo odbitka
+TIPODB;char;1;;S;Tip odbitka
+VRSTAOSN;char;1;;3;Vrsta osnovice
+OSNOVICA;char;1;;0;Osnovica za obracun
+CPOV;int;6;;;Oznaka povjerioca-virmana
+IZNOS;numeric;17,2;;0;Iznos;15
+STOPA;numeric;7,5;;0;Stopa
+PARAMETRI;char;20;;;Parametri;*
+
+$Vrsteprim
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRP;short;2;pkey;;Oznaka
+NAZIV;char;30;;;Naziv;15
+COBR;short;2;;;Naèin obraèuna
+COSN;short;2;;;Oznaka osnovice iz koje se raèuna zarada
+RSOO;char;5;;;Osnova osiguranja
+RNALOG;char;1;;N;Unos radnog naloga
+REGRES;char;1;;N;Primanje na godišnjoj osnovi (regres)
+CGRPRIM;char;5;;;Grupa primanja
+CVRPARH;short;2;;;Vrsta primanja u koju se dohvaæa iz arhive
+STAVKA;char;8;;;Veza sa kontom CSKL=1 APP=pl VRDOK=PL
+CPOV;int;6;;;Povjerioc
+KOEF;numeric;9,5;;100;Koeficijent
+PARAMETRI;char;20;;;Parametri;*
+
+$Vrstesif
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+VRSTASIF;char;4;pkey;;Vrsta
+OPISVRSIF;char;30;;;Opis;15
+
+$Vrsteugo
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CVRUGO;char;13;pkey;;Šifra
+OPIS;char;50;;;Opis;30
+
+$Vrtros
+LOKK;char;1;;N;Lokk;*
+AKTIV;char;1;;D;Aktiv;*
+CVRTR;char;12;pkey;;Šifra
+NAZIV;char;50;;;Naziv;15
+BROJKONTA;char;8;;;Broj konta;*
+VRDOK;char;3;;;Vrsta dokumenta;*
+OSNOVICA;numeric;15,2;;0;Posto osnovice poreza;14
+
+$vshrab_rab
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSHRAB;char;3;pkey;;Šifra sheme
+RBR;short;2;pkey;;Rbr;15
+CRAB;char;2;;;Šifra rabata
+PRAB;numeric;10,2;;0;Posto rabata
+RABNARAB;char;1;;N;RnR
+
+$vshztr_ztr
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSHZT;char;3;pkey;;Šifra sheme
+RBR;short;2;pkey;;Rbr
+CZT;char;2;;;Šifra zavisnog troška
+PZT;numeric;10,2;;0;Posto zavisnog troška
+IZT;numeric;15,2;;0;Iznos zavisnog troška;10
+ZTNAZT;char;1;;N;ZnZ
+
+$VTPred
+ID_STAVKA;char;50;pkey;;id_stavka predatnice;30
+MAT_I;numeric;17,2;;0;Iznos materijala;15
+MAT_F;numeric;12,6;;0;Faktor mnozenja MAT
+MAT_FI;numeric;17,2;;0;Rezultirajuci iznos MAT;15
+PRO_I;numeric;17,2;;0;Iznos proizvoda;15
+PRO_F;numeric;12,6;;0;Faktor mnozenja PRO
+PRO_FI;numeric;17,2;;0;Rezultirajuci iznos PRO;15
+ROB_I;numeric;17,2;;0;Iznos robe;15
+ROB_F;numeric;12,6;;0;Faktor mnozenja ROB
+ROB_FI;numeric;17,2;;0;Rezultirajuci iznos ROB;15
+USL_I;numeric;17,2;;0;Iznos usluga;15
+USL_F;numeric;12,6;;0;Faktor mnozenja USL
+USL_FI;numeric;17,2;;0;Rezultirajuci iznos USL;15
+POL_I;numeric;17,2;;0;Iznos POL;15
+POL_F;numeric;12,6;;0;Faktor mnozenja POL
+POL_FI;numeric;17,2;;0;Rezultirajuci iznos POL;15
+TOTAL;numeric;17,2;;0;Suma svih _FI;15
+
+$VTprijenos
+KEYSRC;char;60;pkey;;Kljuè izvornog dokumenta;15
+KEYDEST;char;60;pkey;;Kljuè ciljnog dokumenta;15
+
+$vtrabat
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSKL;char;12;pkey;;Skladište
+VRDOK;char;3;pkey;;Vrsta
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj;15
+RBR;short;2;pkey;;Rbr;15
+LRBR;short;2;pkey;;Lrbr;15
+CRAB;char;2;;;Šifra rabata
+PRAB;numeric;10,2;;0;Posto rabata
+IRAB;numeric;15,2;;0;Iznos rabata
+RABNARAB;char;1;;;RnR
+
+$VTRnl
+CRADNAL;char;30;pkey;;Radni nalog
+RBSRNL;int;6;pkey;;Rbr stavke rnl;6
+BRANCH;char;60;pkey;;Grana normativa;30
+RBSIZD;int;6;;;Rbr stavke izdatnice;6
+VEZA;char;50;;;id_stavka pripadajuæe izdatnice;30
+IDX=cradnal
+
+$VTText
+CKEY;char;60;pkey;;Kljuè izvornog dokumenta;30
+TEXTFAK;char;4000;;;Tekst stavke;30
+
+$vtzavtr
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CSKL;char;12;pkey;;Skladište
+VRDOK;char;3;pkey;;Vrsta
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj;15
+RBR;short;2;pkey;;Rbr;15
+LRBR;short;2;pkey;;Lrbr;15
+CZT;char;5;;;Šifra zavisnog troška
+PZT;numeric;10,2;;0;Posto zavisnog troška
+IZT;numeric;15,2;;0;Iznos zavisnog troška
+UIPRPOR;numeric;15,2;;0;Iznos pretporeza
+ZTNAZT;char;1;;;ZnZ
+BROJKONTA;char;8;;;Konto partnera
+
+$VTZtr
+CSKL;char;12;pkey;;Skladište
+VRDOK;char;3;pkey;;Vrsta dokumenta
+GOD;char;4;pkey;;Godina
+BRDOK;int;6;pkey;;Broj dokumenta;6
+RBR;short;2;pkey;;Rbr stavke dokumenta (0 - zaglavlje);4
+LRBR;short;2;pkey;;Rbr stavke troškova;4
+CZT;short;2;;;Zavisni trošak;2
+CPAR;int;6;;;Partner;6
+IZT;numeric;17,2;;0;Iznos troškova stavke;15
+PZT;numeric;17,7;;0;Postotno optereæenje;15
+PRPOR;numeric;17,2;;0;Iznos pretporeza;15
+BRRAC;char;20;;;Broj raèuna;15
+DATRAC;date;;;;Datum raèuna;10
+ULDOK;char;20;;;Ulazni dokument;15
+DATDOSP;date;;;;Datum dospjeæa;10
+IDX=brdok
+
+$VTZtrt
+DODKEY;short;2;pkey;;Privremeni kljuè;4
+LRBR;short;2;pkey;;Rbr stavke troškova;4
+CZT;short;2;;;Zavisni trošak;2
+CPAR;int;6;;;Partner;6
+IZT;numeric;17,2;;0;Iznos troškova stavke;15
+PZT;numeric;17,7;;0;Postotno optereæenje;15
+PRPOR;numeric;17,2;;0;Iznos pretporeza;15
+BRRAC;char;20;;;Broj raèuna;15
+DATRAC;date;;;;Datum raèuna;10
+ULDOK;char;20;;;Ulazni dokument;15
+DATDOSP;date;;;;Datum dospjeæa;10
+
+$Zavtr
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CZT;char;5;pkey;;Šifra
+PZT;numeric;10,2;;0;Posto zavisnih troškova
+IZT;numeric;15,2;;0;Iznos ZT
+CPAR;int;6;;;Partner;15
+ZTNAZT;char;1;;N;ZT na ZT
+BROJKONTA;char;8;;;Konto partnera
+BROJKONTA2;char;8;;;Konto za pretporez
+NZT;char;50;;;Naziv;30
+
+$Zemlje
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CZEMLJE;char;3;pkey;;Oznaka
+NAZIVZEM;char;50;;;Naziv;15
+OZNVAL;char;3;;;Valuta
+DNEVNICA;numeric;17,2;;0;Dnevnica;15
+NOCENJE;numeric;17,2;;0;Noæenje;15
+LOCO;numeric;17,2;;0;Prijevoz po km;15
+LITBENZ;numeric;17,2;;0;Prijevoz po litri goriva;15
+INDPUTA;char;1;;Z;Indikator puta
+
+$Ziropar
+CPAR;int;6;pkey;;Oznaka partnera
+ZIRO;char;40;pkey;;Žiro raèun;15
+DEV;char;1;;N;Devizni
+OZNVAL;char;3;;;Oznaka valute
+UIDX=ziro
+
+$ZpZemlje
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CZEM;char;3;pkey;;Šifra
+NAZIVZEM;char;50;;;Naziv;30
+OZNZEM;char;3;;;Oznaka
+TRGZEM;char;2;;;Trgovaèka oznaka
+UIDX=oznzem
+UIDX=trgzem
+
+$Ztr
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CZT;short;2;pkey;;Šifra
+NZT;char;50;;;Naziv;20
+CPAR;int;6;;;Partner
+PZT;numeric;6,2;;0;Postotak
+FIKS;char;1;;N;Fiksni postotak
+VRDOK;char;3;;;Vrsta dokumenta
+
+$Zupanije
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CZUP;short;2;pkey;;Oznaka;5
+NAZIVZUP;char;50;;;Naziv;30
+PARAMETRI;char;20;;;Parametri;*
+
+
+### sve ostale
 
 
 #CRM
