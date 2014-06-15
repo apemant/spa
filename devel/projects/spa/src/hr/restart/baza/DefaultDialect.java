@@ -90,8 +90,10 @@ public class DefaultDialect extends Dialect {
         return 5;
       case Variant.TIMESTAMP:
         return 93;
+      case Variant.DOUBLE:
+        return 8;
       case Variant.INPUTSTREAM:
-        return -4;
+        return -4;      
     }
     throw new RuntimeException("Pogresan tip kolone");
   }
