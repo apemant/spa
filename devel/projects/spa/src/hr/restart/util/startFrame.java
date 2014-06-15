@@ -20,6 +20,7 @@ package hr.restart.util;
 import hr.restart.start;
 import hr.restart.help.raLiteBrowser;
 import hr.restart.help.raSendMessage;
+import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraFrame;
 import hr.restart.swing.raCalculator;
 import hr.restart.util.mail.LogMailer;
@@ -408,6 +409,12 @@ public class startFrame extends JraFrame implements Cloneable {
         raCalculator.getInstance().show();
       }
     });
+    JMenuItem jmiSearch = new JMenuItem("Pretraga");
+    jmiSearch.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        new raSearchTextFiles().show();
+      }
+    });
 //Systemski menui
     jmStartFrSys = new javax.swing.JMenu(res.getString("jmStartFrSys"));
 /*
@@ -543,6 +550,9 @@ public class startFrame extends JraFrame implements Cloneable {
     jmStartFrHelp.add(jmiShowMsg);
     jmStartFrHelp.addSeparator();
     jmStartFrHelp.add(jmiStartFrCalc);
+    if (raUser.getInstance().getUser().equals("restart") ||
+    		raUser.getInstance().getUser().equals("test") ||
+    		raUser.getInstance().getUser().equals("root")) jmStartFrHelp.add(jmiSearch);
     jmStartFrHelp.addSeparator();
     jmStartFrHelp.add(jmiStartFrHlpAbout);
     jMnuB.add(jmStartFrHelp);
