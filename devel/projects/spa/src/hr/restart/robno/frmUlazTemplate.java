@@ -1270,8 +1270,10 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	              BigDecimal inab = Aus.minus(getDetailSet(), "IDOB", "IRAB");
 	              BigDecimal dio = inab.multiply(diff).divide(uinab, 2, BigDecimal.ROUND_HALF_UP);
 	              tot = tot.add(dio);
-	              if (tot.subtract(diff).abs().doubleValue() <= maxerr)
+	              if (tot.subtract(diff).abs().doubleValue() <= maxerr) {
 	                dio = dio.add(diff.subtract(tot));
+	                tot = diff;
+	              }
 	              Aus.add(ztr, "IZT",  dio);
 	              Aus.percent(ztr, "PZT",  "IZT", inab);
 	            }
@@ -1426,7 +1428,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
         }
         
         
-		BigDecimal uizt = Aus.sum("IZT", getDetailSet());
+		BigDecimal uizt = Aus.to2(Aus.sum("IZT", getDetailSet()));
 		BigDecimal uiztz = getMasterSet().getBigDecimal("UIZT");
 		
 		if (uizt.compareTo(uiztz) != 0 && uizt.subtract(uiztz).abs().divide(uiztz, 6, BigDecimal.ROUND_HALF_UP).doubleValue() >= 0.001
@@ -1483,7 +1485,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 			if (JOptionPane.showConfirmDialog(raDetail.getWindow(),
 					"Razlika zavisnih troškova od " +
 					    Aus.formatBigDecimal(uizt.subtract(uiztz).abs())
-					    + "bit æe korigirana na stavci br. " + mrbr + "\n("
+					    + " bit æe korigirana na stavci br. " + mrbr + "\n("
 							+ nazart + "). U redu?", "Potvrda",
 					JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.OK_OPTION) {
 			    row = getDetailSet().getInternalRow();

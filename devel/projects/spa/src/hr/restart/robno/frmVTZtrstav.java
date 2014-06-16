@@ -89,7 +89,10 @@ public class frmVTZtrstav extends raMatPodaci {
         getRaQueryDataSet().insertRow(false);
         getRaQueryDataSet().setShort("DODKEY", dodkey);
         dM.copyColumns(dm.getVTZtr(), getRaQueryDataSet(), ccols);
-        if (mode == 'N') afterPZT();
+        if (mode == 'N') {
+          Aus.mul(getRaQueryDataSet(), "IZT", getIVAL());
+          Aus.div(getRaQueryDataSet(), "IZT", frm.getMasterSet().getBigDecimal("UINAB"));
+        }
       }
       getRaQueryDataSet().saveChanges();
     }
