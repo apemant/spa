@@ -1064,7 +1064,7 @@ sysoutTEST ST = new sysoutTEST(false);
     if (left) {
       addCenteredLeft(compToAdd,jScrollPane.getViewport());
     } else {
-      jScrollPane.getViewport().add(compToAdd);
+      jScrollPane.setViewportView(compToAdd);
     }
     return jScrollPane;
   }
@@ -2409,6 +2409,12 @@ sysoutTEST ST = new sysoutTEST(false);
       raQueryDataSet.deleteRow();
 
     }
+    
+    if (version!=1 && internal >= 0) {
+      raQueryDataSet.goToInternalRow(internal);
+      fireTableDataChanged();
+      internal = -1;
+    }
 
   }
 
@@ -2823,6 +2829,7 @@ ST.prnc(raQueryDataSet);
 */
 
   public boolean copyToNew = false;
+  long internal = -1;
 
   public void Insertiraj() {
   	
@@ -2836,7 +2843,10 @@ ST.prnc(raQueryDataSet);
       raQueryDataSet.copyTo(curr);
     }
 
-    if (version!=1) raQueryDataSet.last();
+    if (version!=1) {
+      internal = raQueryDataSet.getInternalRow();
+      raQueryDataSet.last();
+    }
 
     raQueryDataSet.insertRow(version==1);
 
