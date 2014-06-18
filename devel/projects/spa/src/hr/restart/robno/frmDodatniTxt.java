@@ -17,8 +17,6 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import hr.restart.baza.Condition;
-import hr.restart.baza.Grupart;
 import hr.restart.baza.VTText;
 import hr.restart.baza.dM;
 import hr.restart.swing.AWTKeyboard;
@@ -29,7 +27,6 @@ import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.KeyAction;
 import hr.restart.util.OKpanel;
-import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.lookupFrame;
 
@@ -39,7 +36,6 @@ import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
