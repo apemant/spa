@@ -856,6 +856,7 @@ public class ConsoleCreator {
             "hr.restart.baza.Radplsifre","hr.restart.baza.JoppdA","hr.restart.baza.JoppdB",
             "hr.restart.baza.VezaFLH",
             "hr.restart.baza.Klijenti","hr.restart.baza.Kontosobe","hr.restart.baza.Kontakti",
-            "hr.restart.baza.Kanali","hr.restart.baza.KlijentStat"            
+            "hr.restart.baza.Kanali","hr.restart.baza.KlijentStat",
+            "hr.restart.baza.Segmentacija"     
       };
 }
