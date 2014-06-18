@@ -47,6 +47,7 @@ public class MsgDispatcher implements ActionListener {
       if (it <= 0) return;
 
       Timer tim = new Timer(it, this);
+      tim.setInitialDelay(10000);
       tim.setRepeats(true);
       tim.start();
     } catch (Exception e) {
