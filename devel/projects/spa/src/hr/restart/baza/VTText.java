@@ -16,21 +16,16 @@
 **
 ****************************************************************************/
 package hr.restart.baza;
+
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.QueryDataSet;
-
-
 
 public class VTText extends KreirDrop implements DataModule {
 
   private static VTText inst = new VTText();
 
-
-
   public static VTText getDataModule() {
     return inst;
   }
-
 
   public boolean isAutoRefresh() {
     return true;
