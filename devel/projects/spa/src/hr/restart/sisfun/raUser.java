@@ -193,7 +193,7 @@ public class raUser {
 
     dm.getKljucevi().refresh();
     preparePrava();
-    MsgDispatcher.install(true);
+    //MsgDispatcher.install(true);
     fireUserChanged(oldUser, user);
   }
   
