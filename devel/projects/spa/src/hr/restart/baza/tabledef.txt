@@ -4544,8 +4544,9 @@ TEL;char;40;;;Telefon;15
 TELFAX;char;20;;;Fax;15
 EMADR;char;60;;;E-mail;15
 WEBADR;char;60;;;Website;15
-STATUS;char;1;;;Status
+SID;char;1;;;Status
 OIB;char;20;;;Oib;15
+CSEG;int;6;;;Segmentacija
 
 $Kontosobe
 COSOBE;int;6;pkey;;Šifra;*
@@ -4582,6 +4583,12 @@ $Kanali
 LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
 CKANAL;int;6;pkey;;Šifra
+NAZIV;char;30;;;Naziv
+
+$Segmentacija
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+CSEG;int;6;pkey;;Šifra
 NAZIV;char;30;;;Naziv
 
 #END CRM
