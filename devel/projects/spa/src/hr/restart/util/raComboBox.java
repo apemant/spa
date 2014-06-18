@@ -181,7 +181,8 @@ System.out.println("actionPerformed");
     if (!this.isShowing()) return;
     if (raDataSet == null) return;
 //    raDataSet.open();
-    raDataSet.setString(raColumn,raItems[getSelectedIndex()][1]);
+    if (getSelectedIndex() >= 0)
+        raDataSet.setString(raColumn,raItems[getSelectedIndex()][1]);
   }
 /**
  * Funkcija za pronalazhenje i postavljanje default vrijednosti u neshem raComboBox
