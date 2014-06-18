@@ -19,7 +19,7 @@ package hr.restart;
 import hr.restart.baza.BazaOper;
 import hr.restart.baza.Verinfo;
 import hr.restart.baza.dM;
-import hr.restart.baza.kreator;
+import hr.restart.help.MsgDispatcher;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.IntParam;
@@ -82,7 +82,7 @@ public class start {
     raSplashAWT.splashMSG("Priprema ekrana ...");
     createMainFrame(1);
     raSplashAWT.splashMSG("Autorizacija ...");
-    if (!checkLogin(true)) System.exit(0);
+    if (!checkLogin(true)) System.exit(0);    
     raSplashAWT.splashMSG("Priprema toolbara ...");
     raTB = raToolBar.getRaToolBar();
     raTB.showTB();
@@ -92,6 +92,7 @@ public class start {
     createMainFrame(2);
     hr.restart.zapod.dlgGetKnjig.changeKnjig(getFlaggedArg("knjig:"),true);
     raSplashAWT.splashMSG("Prièekajte ...");
+    MsgDispatcher.install(true);
   }
 
   public static hr.restart.sisfun.frmPassword getFrmPassword() {
