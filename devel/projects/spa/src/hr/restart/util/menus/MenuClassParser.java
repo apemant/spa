@@ -112,6 +112,8 @@ public class MenuClassParser {
       {"hr.restart.os.osMain","hr.restart.os.osMain"},
       //pos
       {"hr.restart.pos.jposMenu","hr.restart.pos.posMain"},
+      //crm
+      {"hr.restart.pos.jcrmOpMenu","hr.restart.crm.crmMain"},
       //rn
       {"hr.restart.rn.jrnMenu","hr.restart.rn.rnMain"},
       {"hr.restart.rn.menuOpRn","hr.restart.rn.rnMain"},
