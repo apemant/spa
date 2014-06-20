@@ -1099,7 +1099,7 @@ public class Aus {
     // pokrice duzeg niza kracim, pocevsi od podniza najvece duzine, do podniza od 2 znaka.
     // najprije generiraj tablicu koeficijenata za pokrivanje podnizom neke duljine.
     double[] koef = new double[l2];
-    double factor = 0.5 / (Math.sqrt(l2) - 1);
+    double factor = 0.8 / (Math.sqrt(l2) - 1);
     for (int i = 0; i < l2; i++)
       koef[i] = 1 - factor * (Math.sqrt((double) l2 / (i + 1)) - 1);
 
@@ -1117,7 +1117,7 @@ public class Aus {
         }
       while (--sublength > v2c.length());
     }
-    return simChars * 0.5 + simSubstr * 0.5;
+    return simChars * 0.2 + simSubstr * 0.8;
   }
   
   public static void installComboPopupHideKey(final JComboBox combo) {
