@@ -17,23 +17,21 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import hr.restart.baza.VTText;
 import hr.restart.baza.raDataSet;
 import hr.restart.swing.JrCheckBox;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
-import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
-import hr.restart.util.VarStr;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raImages;
+import hr.restart.util.raLoader;
 import hr.restart.util.raMatPodaci;
 import hr.restart.util.raNavAction;
+import hr.restart.util.startFrame;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -41,7 +39,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
-import com.borland.dx.dataset.DataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -114,7 +111,7 @@ public class frmGrupArt extends raMatPodaci {
   QueryDataSet vttext = null;
   
   void addNapomena() {
-    frmDodatniTxt dtx= new frmDodatniTxt(){
+    /*frmDodatniTxt dtx= new frmDodatniTxt(){
       public void stoakojesnimio(QueryDataSet vtt){
         if (vttext.rowCount() == 0 || vttext.getString("TEXTFAK").trim().length() == 0) return;
         
@@ -144,8 +141,11 @@ public class frmGrupArt extends raMatPodaci {
 
     vttext = VTText.getDataModule().getTempSet("1=0");
     vttext.open();
-    dtx.setUP(getWindow(), getRaQueryDataSet(), getLocation(), vttext);
+    dtx.setUP(getWindow(), getRaQueryDataSet(), getLocation(), vttext);*/
     
+    frmDodTextUnos.getInstance().setKey("group-" + getRaQueryDataSet().getString("CGRART") + "-");
+    startFrame.getStartFrame().showFrame("hr.restart.robno.frmDodTextUnos", 15, 
+        "Dodatni tekst za grupu " + getRaQueryDataSet().getString("NAZGRART"), true);
   }
   
   private void jbInit() throws Exception {
@@ -291,6 +291,8 @@ public class frmGrupArt extends raMatPodaci {
     jp.add(jbNap, new XYConstraints(545, 140, 21, 21));
     
     jp.add(jcbCGRARTPRIP, new XYConstraints(15, 165, -1, -1));
+    
+    raLoader.load("hr.restart.robno.frmDodTextUnos");
     
     addOption(rnvGrupNap,4,true);
   }
