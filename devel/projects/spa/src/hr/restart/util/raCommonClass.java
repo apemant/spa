@@ -145,9 +145,10 @@ public class raCommonClass {
       while (j<i) {
         sve_comp = ContainerName.getComponent(j);
         rList.add(sve_comp);
-        try {
-          addCompTreeToList((java.awt.Container) sve_comp,rList);
-        } catch (java.lang.ClassCastException e) {}
+        if (sve_comp instanceof java.awt.Container)
+          try {
+            addCompTreeToList((java.awt.Container) sve_comp,rList);
+          } catch (java.lang.ClassCastException e) {}
         j++;
       }
     }
