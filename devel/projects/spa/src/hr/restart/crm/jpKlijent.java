@@ -1,28 +1,52 @@
 package hr.restart.crm;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.KlijentStat;
+import hr.restart.baza.Kontosobe;
 import hr.restart.baza.Segmentacija;
 import hr.restart.baza.dM;
+import hr.restart.swing.ActionExecutor;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.JraScrollPane;
+import hr.restart.swing.JraSplitPane;
 import hr.restart.swing.JraTextField;
-import hr.restart.util.Aus;
-import hr.restart.util.JlrNavField;
-import hr.restart.util.raComboBox;
+import hr.restart.swing.SharedFlag;
+import hr.restart.util.*;
 
-import javax.swing.FocusManager;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 
 
 public class jpKlijent extends JPanel {
+  
+  raCommonClass rcc = raCommonClass.getraCommonClass();
 
   JraTextField jraNAZIV = new JraTextField();
   JraTextField jraADR = new JraTextField();
@@ -38,6 +62,19 @@ public class jpKlijent extends JPanel {
   JraTextField jraMB = new JraTextField();
   JraTextField jraOIB = new JraTextField();
   
+  JraTextField jraOSOBA = new JraTextField();
+  JraTextField jraULOGA = new JraTextField();
+  JraTextField jraOADR = new JraTextField();
+  JraTextField jraOTEL = new JraTextField();
+  JraTextField jraOMOB = new JraTextField();
+  JraTextField jraOEMADR = new JraTextField();
+  
+  JlrNavField jlrOPBR = new JlrNavField();
+  JlrNavField jlrOMJ = new JlrNavField();
+  JlrNavField jlrOCMJ = new JlrNavField();
+  JlrNavField jlrOCZUP = new JlrNavField();
+  
+  
   JLabel dispCol = new JLabel();
   Color defColor = dispCol.getBackground();
   raComboBox rcbStatus = new raComboBox() {
@@ -47,12 +84,51 @@ public class jpKlijent extends JPanel {
     }
   };
   raComboBox rcbSegment = new raComboBox();
-  JraButton jbGetMj = new JraButton(); 
+  JraButton jbGetMj = new JraButton();
+  JraButton jbOGetMj = new JraButton(); 
   
   HashMap cols = new HashMap();
   
-  public jpKlijent() {
-    setLayout(new XYLayout(725, 190));
+  JPanel podaci = new JPanel();
+  JPanel kosobe = new JPanel();
+  
+  JTabbedPane tabs = new JTabbedPane();
+  JList kos = new JList() {
+    public void setEnabled(boolean enabled) {
+      super.setEnabled(true);
+    };
+  };
+  DefaultListModel model = new DefaultListModel();
+  
+  JraButton btnNovi = new JraButton();
+  JraButton btnObrisi = new JraButton();
+  
+  SharedFlag ticket = new SharedFlag();
+  
+  ActionExecutor execAdd = new ActionExecutor(ticket) {
+      public void run() {
+        tryEdit();
+        addOsoba();
+      }
+  };
+  
+  ActionExecutor execDel = new ActionExecutor(ticket) {
+      public void run() {
+        tryEdit();
+        delOsoba();
+      }
+  };
+  
+  QueryDataSet dsko;
+  raMatPodaci frm;
+  
+  public jpKlijent(raMatPodaci owner) {
+    this.frm = owner;
+    
+    dsko = Kontosobe.getDataModule().getTempSet("1=0");
+    dsko.open();
+    
+    podaci.setLayout(new XYLayout(725, 190));
     jraNAZIV.setColumnName("NAZIV");
     jraADR.setColumnName("ADR");
     jraMB.setColumnName("MB");
@@ -111,36 +187,184 @@ public class jpKlijent extends JPanel {
     for (ks.first(); ks.inBounds(); ks.next())
       cols.put(ks.getString("SID"), findColor(ks.getString("BOJA")));
     
-    add(new JLabel("Naziv"), new XYConstraints(15, 20, -1, -1));
-    add(jraNAZIV, new XYConstraints(100, 20, 320, -1));
-    add(new JLabel("Adresa"), new XYConstraints(15, 45, -1, -1));
-    add(jraADR, new XYConstraints(100, 45, 320, -1));
+    podaci.add(new JLabel("Naziv"), new XYConstraints(15, 20, -1, -1));
+    podaci.add(jraNAZIV, new XYConstraints(100, 20, 320, -1));
+    podaci.add(new JLabel("Adresa"), new XYConstraints(15, 45, -1, -1));
+    podaci.add(jraADR, new XYConstraints(100, 45, 320, -1));
     
-    add(new JLabel("Mjesto"), new XYConstraints(15, 70, -1, -1));
-    add(jlrPBR,   new XYConstraints(100, 70, 75, -1));
-    add(jlrMJ,   new XYConstraints(180, 70, 200, -1));    
-    add(jbGetMj,   new XYConstraints(385, 70, 21, 21));
+    podaci.add(new JLabel("Mjesto"), new XYConstraints(15, 70, -1, -1));
+    podaci.add(jlrPBR,   new XYConstraints(100, 70, 75, -1));
+    podaci.add(jlrMJ,   new XYConstraints(180, 70, 200, -1));    
+    podaci.add(jbGetMj,   new XYConstraints(385, 70, 21, 21));
     
-    add(new JLabel("OIB"), new XYConstraints(15, 95, -1, -1));
-    add(jraOIB, new XYConstraints(100, 95, 175, -1));
-    add(new JLabel("Telefon"), new XYConstraints(15, 120, -1, -1));
-    add(jraTEL, new XYConstraints(100, 120, 175, -1));
-    add(new JLabel("E-mail"), new XYConstraints(15, 145, -1, -1));
-    add(jraEMADR, new XYConstraints(100, 145, 175, -1));
+    podaci.add(new JLabel("OIB"), new XYConstraints(15, 95, -1, -1));
+    podaci.add(jraOIB, new XYConstraints(100, 95, 200, -1));
+    podaci.add(new JLabel("Telefon"), new XYConstraints(15, 120, -1, -1));
+    podaci.add(jraTEL, new XYConstraints(100, 120, 200, -1));
+    podaci.add(new JLabel("E-mail"), new XYConstraints(15, 145, -1, -1));
+    podaci.add(jraEMADR, new XYConstraints(100, 145, 200, -1));
     
-    add(dispCol, new XYConstraints(565, 20, 150, 21));
-    add(new JLabel("Status"), new XYConstraints(450, 45, -1, -1));
-    add(rcbStatus, new XYConstraints(565, 45, 150, 21));
-    add(new JLabel("Segmentacija"), new XYConstraints(450, 70, -1, -1));
-    add(rcbSegment, new XYConstraints(565, 70, 150, 21));
-    add(new JLabel("Matièni broj"), new XYConstraints(450, 95, -1, -1));
-    add(jraMB, new XYConstraints(565, 95, 150, -1));
-    add(new JLabel("Fax"), new XYConstraints(450, 120, -1, -1));
-    add(jraTELFAX, new XYConstraints(565, 120, 150, -1));
-    add(new JLabel("Web"), new XYConstraints(450, 145, -1, -1));
-    add(jraWEBADR, new XYConstraints(565, 145, 150, -1));
+    podaci.add(dispCol, new XYConstraints(565, 20, 150, 21));
+    podaci.add(new JLabel("Status"), new XYConstraints(450, 45, -1, -1));
+    podaci.add(rcbStatus, new XYConstraints(565, 45, 150, 21));
+    podaci.add(new JLabel("Segmentacija"), new XYConstraints(450, 70, -1, -1));
+    podaci.add(rcbSegment, new XYConstraints(565, 70, 150, 21));
+    podaci.add(new JLabel("Matièni broj"), new XYConstraints(450, 95, -1, -1));
+    podaci.add(jraMB, new XYConstraints(565, 95, 150, -1));
+    podaci.add(new JLabel("Fax"), new XYConstraints(450, 120, -1, -1));
+    podaci.add(jraTELFAX, new XYConstraints(565, 120, 150, -1));
+    podaci.add(new JLabel("Web"), new XYConstraints(450, 145, -1, -1));
+    podaci.add(jraWEBADR, new XYConstraints(565, 145, 150, -1));
+    
+    kos.setModel(model);
+    kos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    kos.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        if (!e.getValueIsAdjusting())
+          fillData(kos.getSelectedIndex());
+      }
+    });
+    kos.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 2) {
+          tryEdit();
+          editOsoba();
+        }
+      }
+    });
+   
+    kos.setCellRenderer(new DefaultListCellRenderer() {
+      public Component getListCellRendererComponent(JList list, Object value,
+          int index, boolean isSelected, boolean cellHasFocus) {
+        // TODO Auto-generated method stub
+        return super.getListCellRendererComponent(list, value, index, isSelected,
+            false);
+      }
+    });
+    
+    JPanel lpan = new JPanel(new BorderLayout());
+    JraScrollPane lsc = new JraScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    lsc.setViewportView(kos);
+    lpan.add(lsc);
+    lsc.setPreferredSize(new Dimension(295, 100));
+    
+    btnNovi.setText("Novi");
+    btnNovi.setIcon(raImages.getImageIcon(raImages.IMGADD));
+    btnNovi.setPreferredSize(new Dimension(90, 27));
+
+    btnObrisi.setText("Obriši");
+    btnObrisi.setIcon(raImages.getImageIcon(raImages.IMGDELETE));
+    btnObrisi.setPreferredSize(new Dimension(90, 27));
+
+    JPanel ubuttons = new JPanel(new GridLayout(1, 0));
+    ubuttons.add(btnNovi);
+    ubuttons.add(btnObrisi);
+    
+    lpan.add(ubuttons, BorderLayout.SOUTH);
+    btnNovi.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {    
+        execAdd.invoke();
+      }
+    });
+    btnObrisi.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        execDel.invoke();
+      }
+    });
+
+    JraSplitPane split = new JraSplitPane();
+    split.setLeftComponent(lpan);
+    split.setRightComponent(kosobe);
+    split.setResizeWeight(1.00);
+    
+    kosobe.setLayout(new XYLayout(425, 190));
+    
+    jraOSOBA.setColumnName("IME");
+    jraULOGA.setColumnName("ULOGA");
+    jraOADR.setColumnName("ADR");
+    jraOTEL.setColumnName("TEL");
+    jraOMOB.setColumnName("MOB");
+    jraOEMADR.setColumnName("EMADR");
+    
+    jlrOPBR.setSearchMode(-1);
+    jlrOPBR.setColumnName("PBR");
+    
+    jlrOPBR.setColNames(new String[] {"CMJESTA", "NAZMJESTA", "CZUP"});
+    jlrOPBR.setTextFields(new javax.swing.text.JTextComponent[] {jlrOCMJ, jlrOMJ, jlrOCZUP});
+    jlrOPBR.setVisCols(new int[] {0, 1, 2});
+    jlrOPBR.setRaDataSet(dM.getDataModule().getMjesta());
+    jlrOPBR.setNavButton(jbOGetMj);
+    jlrOPBR.setFocusLostOnShow(false);
+    jlrOPBR.setAfterLookUpOnClear(false);
+    jlrOPBR.setSearchMode(1);
+
+    jlrOMJ.setSearchMode(-1);
+    jlrOMJ.setColumnName("MJ");
+    jlrOMJ.setNavProperties(jlrOPBR);
+    jlrOMJ.setNavColumnName("NAZMJESTA");
+    
+    jlrOMJ.setFocusLostOnShow(false);
+    jlrOMJ.setAfterLookUpOnClear(false);
+    jlrOMJ.setSearchMode(1);
+
+    jlrOCMJ.setSearchMode(-1);
+    jlrOCMJ.setColumnName("CMJESTA");
+    jlrOCMJ.setNavProperties(jlrOPBR);
+    jlrOCMJ.setVisible(false);
+    jlrOCMJ.setEnabled(false);
+    jlrOCMJ.setFocusLostOnShow(false);
+    jlrOCMJ.setAfterLookUpOnClear(false);
+
+    jlrOCZUP.setSearchMode(-1);
+    jlrOCZUP.setColumnName("CZUP");
+    jlrOCZUP.setNavProperties(jlrOPBR);
+    jlrOCZUP.setVisible(false);
+    jlrOCZUP.setEnabled(false);
+    jlrOCZUP.setFocusLostOnShow(false);
+    jlrOCZUP.setAfterLookUpOnClear(false);
+
+    kosobe.add(new JLabel("Osoba"), new XYConstraints(15, 20, -1, -1));
+    kosobe.add(jraOSOBA, new XYConstraints(100, 20, 306, -1));
+    kosobe.add(new JLabel("Uloga"), new XYConstraints(15, 45, -1, -1));
+    kosobe.add(jraULOGA, new XYConstraints(100, 45, 306, -1));
+    kosobe.add(new JLabel("Adresa"), new XYConstraints(15, 70, -1, -1));
+    kosobe.add(jraOADR, new XYConstraints(100, 70, 306, -1));
+    kosobe.add(new JLabel("Mjesto"), new XYConstraints(15, 95, -1, -1));
+    kosobe.add(jlrOPBR,   new XYConstraints(100, 95, 75, -1));
+    kosobe.add(jlrOMJ,   new XYConstraints(180, 95, 200, -1));    
+    kosobe.add(jbOGetMj,   new XYConstraints(385, 95, 21, 21));
+    kosobe.add(new JLabel("E-mail"), new XYConstraints(15, 120, -1, -1));
+    kosobe.add(jraOEMADR, new XYConstraints(100, 120, 306, -1));
+    kosobe.add(new JLabel("Tel / mob"), new XYConstraints(15, 145, -1, -1));
+    kosobe.add(jraOTEL, new XYConstraints(100, 145, 151, -1));
+    kosobe.add(jraOMOB, new XYConstraints(256, 145, 150, -1));
+    
+    frm.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F2) {
+      public void keyAction() {
+        if (btnNovi.isShowing() && btnNovi.isEnabled())
+          addOsoba();
+      }
+    });
+    
+    frm.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F3) {
+      public void keyAction() {
+        if (btnObrisi.isShowing() && btnObrisi.isEnabled())
+          delOsoba();
+      }
+    });
+        
+    tabs.addTab("Osnovni podaci", podaci);
+    tabs.addTab("Kontakt osobe", split);
+    
+    tabs.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        if (kosobe.isShowing()) displayKO();
+      }
+    });
+    
+    this.add(tabs);
   }
-  
+    
   public void BindComponents(DataSet ds) {
     jraNAZIV.setDataSet(ds);
     jraADR.setDataSet(ds);
@@ -151,12 +375,168 @@ public class jpKlijent extends JPanel {
     jraEMADR.setDataSet(ds);
     jraWEBADR.setDataSet(ds);
     rcbStatus.setDataSet(ds);
+    rcbSegment.setDataSet(ds);
     
     jlrPBR.setDataSet(ds);
     jlrMJ.setDataSet(ds);
 
+    jraOSOBA.setDataSet(dsko);
+    jraULOGA.setDataSet(dsko);
+    jraOADR.setDataSet(dsko);
+    jraOTEL.setDataSet(dsko);
+    jraOMOB.setDataSet(dsko);
+    jraOEMADR.setDataSet(dsko);
+    jlrOPBR.setDataSet(dsko);
+    jlrOMJ.setDataSet(dsko);    
   }
-
+  
+  boolean editing = false;
+  boolean novi = false;
+  boolean changed = false;
+  public void SetFokus(char mode) {
+    if (mode != 'B') {
+      editing = novi = false;
+      rcc.EnabDisabAll(kosobe, false);
+      fixButtons();
+      jraNAZIV.requestFocus();
+    }
+  }
+  
+  public boolean isEditing() {
+    return editing && kosobe.isShowing();
+  }
+  
+  public boolean isChanged() {
+    return changed;
+  }
+  
+  public void cancelEdit() {
+    if (editing) {
+      dsko.cancel();
+      rcc.EnabDisabAll(kosobe, false);
+      editing = novi = false;
+      fixButtons();
+      System.out.println("cancel");
+      new sysoutTEST(false).prn(dsko);
+      System.out.println(model.toString());
+    }
+  }
+  
+  void fixButtons() {
+    rcc.setLabelLaF(btnNovi, !editing);
+    rcc.setLabelLaF(btnObrisi, !editing && model.size() > 0);
+  }
+  
+  void addOsoba() {
+    if (frm.getMode() == 'B') return;
+    novi = editing = true;
+    dsko.insertRow(false);
+    rcc.EnabDisabAll(kosobe, true);
+    fixButtons();
+    jraOSOBA.requestFocusLater();
+  }
+  
+  void tryEdit() {
+    if (frm.getMode() == 'B')
+      frm.rnvUpdate_action();
+  }
+  
+  void editOsoba() {
+    if (frm.getMode() == 'B') return;
+    rcc.EnabDisabAll(kosobe, true);
+    novi = false;
+    editing = true;
+    fixButtons();
+    jraOSOBA.requestFocusLater();
+  }
+  
+  public void saveOsoba() {
+    if (frm.getMode() == 'B' || !editing) return;
+    if (Valid.getValid().isEmpty(jraOSOBA)) return;
+    dsko.post();
+    if (novi) {
+      model.addElement(new Kosoba(dsko));      
+      kos.setSelectedIndex(model.size() - 1);
+    } else 
+      model.setElementAt(new Kosoba(dsko), kos.getSelectedIndex());
+    
+    System.out.println("spremi " + (novi ? "novi" : "izmjenu"));
+    new sysoutTEST(false).prn(dsko);
+    System.out.println(model.toString());
+    changed = true;
+    lastc = -2;
+    
+    novi = editing = false;
+    rcc.EnabDisabAll(kosobe, false);
+    fixButtons();
+  }
+  
+  void delOsoba() {
+    if (frm.getMode() == 'B') return;
+    if (kos.getSelectedIndex() >= 0 && kos.getSelectedIndex() < model.size()) {
+      dsko.deleteRow();
+      model.remove(kos.getSelectedIndex());
+      if (kos.getSelectedIndex() >= model.size() || kos.getSelectedIndex() < 0)
+        kos.setSelectedIndex(model.size() - 1);
+      changed = true;
+      lastc = -2;
+      System.out.println("delete row");
+      new sysoutTEST(false).prn(dsko);
+      System.out.println(model.toString());
+      fixButtons();
+    }
+  }
+  
+  int lastc = -1;
+  boolean needUpdate;
+  public void lazyPopulateKO() {
+    if (frm.getRaQueryDataSet() == null || frm.getRaQueryDataSet().rowCount() == 0) {
+      if (lastc == -1) return;
+      needUpdate = true;
+      lastc = -1;
+    } else if (frm.getRaQueryDataSet().getInt("CKLIJENT") != lastc) {
+      lastc = frm.getRaQueryDataSet().getInt("CKLIJENT");
+      needUpdate = true;
+    }
+  }
+  
+  public void displayKO() {
+    if (needUpdate) {
+      needUpdate = changed = false;
+      Kontosobe.getDataModule().setFilter(dsko, lastc == -1 ? Condition.nil : Condition.equal("CKLIJENT", lastc));
+      dsko.open();
+      Kosoba.minus = 0;
+      model = new DefaultListModel();
+      for (dsko.first(); dsko.inBounds(); dsko.next())
+        model.addElement(new Kosoba(dsko));
+      kos.setModel(model);
+      if (model.size() > 0)
+        kos.setSelectedIndex(0);
+      fixButtons();
+    }
+  }
+  
+  public void saveChanges(char mode) {
+    if (mode != 'B' && changed) {
+      Valid.getValid().execSQL("SELECT MAX(cosobe) as cosobe FROM kontosobe");
+      Valid.getValid().RezSet.open();
+      int last = Valid.getValid().RezSet.getInt(0);
+      for (dsko.first(); dsko.inBounds(); dsko.next())
+        if (dsko.getInt("COSOBE") < 0) {
+          dsko.setInt("COSOBE", ++last);
+          dsko.setInt("CKLIJENT", frm.getRaQueryDataSet().getInt("CKLIJENT"));
+        }
+      raTransaction.saveChanges(dsko);
+      changed = false;
+    }
+  }
+  
+  void fillData(int idx) {
+    cancelEdit();
+    if (idx < 0 || model.size() <= idx) return;
+    Kosoba k = (Kosoba) model.get(idx);
+    lookupData.getlookupData().raLocate(dsko, "COSOBE", Integer.toString(k.cosobe));
+  }
   
   public void setColor() {
     DataSet ds = rcbStatus.getDataSet();
@@ -180,5 +560,39 @@ public class jpKlijent extends JPanel {
         System.out.println(e);
       }
     return defColor;
+  }
+  
+  private static class Kosoba {
+    static int minus = 0;
+    int cosobe;
+    String ime;
+    String uloga;
+
+    
+    public Kosoba(DataSet ds) {
+      System.out.println("is null? " + ds.isNull("COSOBE"));
+      if (ds.isNull("COSOBE")) {
+        ds.setInt("COSOBE", --minus);
+        ds.post();
+      }
+      cosobe = ds.getInt("COSOBE");
+      ime = ds.getString("IME");
+      uloga = ds.getString("ULOGA");
+    }
+    
+    public boolean equals(Object obj) {
+      if (obj instanceof Kosoba)
+        return ((Kosoba) obj).cosobe == cosobe;
+      return false;
+    }
+    
+    public int hashCode() {
+      return cosobe;
+    }
+    
+    public String toString() {
+      if (uloga == null || uloga.length() == 0) return ime;
+      return ime + ", " + uloga;
+    }
   }
 }
