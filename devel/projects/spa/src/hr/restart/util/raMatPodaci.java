@@ -60,6 +60,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -532,6 +533,12 @@ sysoutTEST ST = new sysoutTEST(false);
     jpDetailView.setOwner(this);
 
     jScrollPaneDetail.setBorder(BorderFactory.createEmptyBorder());
+    /*jScrollPaneDetail.getViewport().addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        System.out.println("view changesize");
+        System.out.println(jScrollPaneDetail.getViewport().getSize());
+      }
+    });*/
 
     jScrollPaneDetail.setViewportBorder(null);
 
@@ -539,6 +546,10 @@ sysoutTEST ST = new sysoutTEST(false);
 
   }
 
+  public void disableScrollbars() {
+    jScrollPaneDetail.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    jScrollPaneDetail.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+  }
 
 
   void createListeners() {
@@ -2420,7 +2431,7 @@ sysoutTEST ST = new sysoutTEST(false);
 
 
 
-  void jPrekid_action() {
+  public void jPrekid_action() {
 
 //    if (!okp.jPrekid.isEnabled()) return;
   	if (getMode() != 'N') memorizePreviousValues();
@@ -2439,10 +2450,10 @@ sysoutTEST ST = new sysoutTEST(false);
 
     }
 
-    setMode('B');
     switch2table();
 
     switchButton(true,false);
+    setMode('B');
 
     fixJlrNavFieldDataSetStatus();
 
@@ -2466,7 +2477,7 @@ sysoutTEST ST = new sysoutTEST(false);
 
   }
 
-  void jBOK_action() {
+  public void jBOK_action() {
 
     if (!okp.jBOK.isEnabled()) return;
 
