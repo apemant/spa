@@ -1,3 +1,20 @@
+/****license*****************************************************************
+**   file: jpKlijent.java
+**   Copyright 2006 Rest Art
+**
+**   Licensed under the Apache License, Version 2.0 (the "License");
+**   you may not use this file except in compliance with the License.
+**   You may obtain a copy of the License at
+**
+**       http://www.apache.org/licenses/LICENSE-2.0
+**
+**   Unless required by applicable law or agreed to in writing, software
+**   distributed under the License is distributed on an "AS IS" BASIS,
+**   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+**   See the License for the specific language governing permissions and
+**   limitations under the License.
+**
+****************************************************************************/
 package hr.restart.crm;
 
 import java.awt.BorderLayout;
@@ -20,7 +37,6 @@ import hr.restart.baza.dM;
 import hr.restart.swing.ActionExecutor;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraScrollPane;
-import hr.restart.swing.JraSplitPane;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.SharedFlag;
 import hr.restart.util.*;
@@ -62,8 +78,20 @@ public class jpKlijent extends JPanel {
   JraTextField jraMB = new JraTextField();
   JraTextField jraOIB = new JraTextField();
   
-  JraTextField jraOSOBA = new JraTextField();
-  JraTextField jraULOGA = new JraTextField();
+  JraTextField jraOSOBA = new JraTextField() {
+    public boolean maskCheck() {
+      boolean ret = super.maskCheck();
+      updateList(false);
+      return ret;
+    }
+  };
+  JraTextField jraULOGA = new JraTextField() {
+    public boolean maskCheck() {
+      boolean ret = super.maskCheck();
+      updateList(false);
+      return ret;
+    }
+  };
   JraTextField jraOADR = new JraTextField();
   JraTextField jraOTEL = new JraTextField();
   JraTextField jraOMOB = new JraTextField();
@@ -128,7 +156,7 @@ public class jpKlijent extends JPanel {
     dsko = Kontosobe.getDataModule().getTempSet("1=0");
     dsko.open();
     
-    podaci.setLayout(new XYLayout(725, 190));
+    podaci.setLayout(new XYLayout(750, 185));
     jraNAZIV.setColumnName("NAZIV");
     jraADR.setColumnName("ADR");
     jraMB.setColumnName("MB");
@@ -198,23 +226,23 @@ public class jpKlijent extends JPanel {
     podaci.add(jbGetMj,   new XYConstraints(385, 70, 21, 21));
     
     podaci.add(new JLabel("OIB"), new XYConstraints(15, 95, -1, -1));
-    podaci.add(jraOIB, new XYConstraints(100, 95, 200, -1));
+    podaci.add(jraOIB, new XYConstraints(100, 95, 225, -1));
     podaci.add(new JLabel("Telefon"), new XYConstraints(15, 120, -1, -1));
-    podaci.add(jraTEL, new XYConstraints(100, 120, 200, -1));
+    podaci.add(jraTEL, new XYConstraints(100, 120, 225, -1));
     podaci.add(new JLabel("E-mail"), new XYConstraints(15, 145, -1, -1));
-    podaci.add(jraEMADR, new XYConstraints(100, 145, 200, -1));
+    podaci.add(jraEMADR, new XYConstraints(100, 145, 225, -1));
     
-    podaci.add(dispCol, new XYConstraints(565, 20, 150, 21));
-    podaci.add(new JLabel("Status"), new XYConstraints(450, 45, -1, -1));
-    podaci.add(rcbStatus, new XYConstraints(565, 45, 150, 21));
-    podaci.add(new JLabel("Segmentacija"), new XYConstraints(450, 70, -1, -1));
-    podaci.add(rcbSegment, new XYConstraints(565, 70, 150, 21));
-    podaci.add(new JLabel("Matièni broj"), new XYConstraints(450, 95, -1, -1));
-    podaci.add(jraMB, new XYConstraints(565, 95, 150, -1));
-    podaci.add(new JLabel("Fax"), new XYConstraints(450, 120, -1, -1));
-    podaci.add(jraTELFAX, new XYConstraints(565, 120, 150, -1));
-    podaci.add(new JLabel("Web"), new XYConstraints(450, 145, -1, -1));
-    podaci.add(jraWEBADR, new XYConstraints(565, 145, 150, -1));
+    podaci.add(dispCol, new XYConstraints(555, 20, 180, 21));
+    podaci.add(new JLabel("Status"), new XYConstraints(445, 45, -1, -1));
+    podaci.add(rcbStatus, new XYConstraints(555, 45, 180, 21));
+    podaci.add(new JLabel("Segmentacija"), new XYConstraints(445, 70, -1, -1));
+    podaci.add(rcbSegment, new XYConstraints(555, 70, 180, 21));
+    podaci.add(new JLabel("Matièni broj"), new XYConstraints(445, 95, -1, -1));
+    podaci.add(jraMB, new XYConstraints(555, 95, 180, -1));
+    podaci.add(new JLabel("Fax"), new XYConstraints(445, 120, -1, -1));
+    podaci.add(jraTELFAX, new XYConstraints(555, 120, 180, -1));
+    podaci.add(new JLabel("Web"), new XYConstraints(445, 145, -1, -1));
+    podaci.add(jraWEBADR, new XYConstraints(555, 145, 180, -1));
     
     kos.setModel(model);
     kos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -236,9 +264,7 @@ public class jpKlijent extends JPanel {
     kos.setCellRenderer(new DefaultListCellRenderer() {
       public Component getListCellRendererComponent(JList list, Object value,
           int index, boolean isSelected, boolean cellHasFocus) {
-        // TODO Auto-generated method stub
-        return super.getListCellRendererComponent(list, value, index, isSelected,
-            false);
+        return super.getListCellRendererComponent(list, value, index, isSelected, false);
       }
     });
     
@@ -246,7 +272,7 @@ public class jpKlijent extends JPanel {
     JraScrollPane lsc = new JraScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     lsc.setViewportView(kos);
     lpan.add(lsc);
-    lsc.setPreferredSize(new Dimension(295, 100));
+    lsc.setPreferredSize(new Dimension(325, 100));
     
     btnNovi.setText("Novi");
     btnNovi.setIcon(raImages.getImageIcon(raImages.IMGADD));
@@ -272,12 +298,14 @@ public class jpKlijent extends JPanel {
       }
     });
 
-    JraSplitPane split = new JraSplitPane();
-    split.setLeftComponent(lpan);
+    JPanel split = new JPanel(new BorderLayout());
+    split.add(lpan);
+    split.add(kosobe, BorderLayout.EAST);
+    /*split.setLeftComponent(lpan);
     split.setRightComponent(kosobe);
-    split.setResizeWeight(1.00);
+    split.setResizeWeight(1.00);*/
     
-    kosobe.setLayout(new XYLayout(425, 190));
+    kosobe.setLayout(new XYLayout(425, 185));
     
     jraOSOBA.setColumnName("IME");
     jraULOGA.setColumnName("ULOGA");
@@ -339,26 +367,29 @@ public class jpKlijent extends JPanel {
     kosobe.add(jraOTEL, new XYConstraints(100, 145, 151, -1));
     kosobe.add(jraOMOB, new XYConstraints(256, 145, 150, -1));
     
-    frm.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F2) {
-      public void keyAction() {
-        if (btnNovi.isShowing() && btnNovi.isEnabled())
-          addOsoba();
-      }
-    });
-    
-    frm.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F3) {
-      public void keyAction() {
-        if (btnObrisi.isShowing() && btnObrisi.isEnabled())
-          delOsoba();
-      }
-    });
+    if (frm instanceof frmKlijenti) {
+      frm.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F2) {
+        public void keyAction() {
+          if (btnNovi.isShowing() && btnNovi.isEnabled())
+            addOsoba();
+        }
+      });
+      
+      frm.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F3) {
+        public void keyAction() {
+          if (btnObrisi.isShowing() && btnObrisi.isEnabled())
+            delOsoba();
+        }
+      });
+    }
         
-    tabs.addTab("Osnovni podaci", podaci);
+    tabs.addTab("Klijent", podaci);
     tabs.addTab("Kontakt osobe", split);
     
     tabs.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         if (kosobe.isShowing()) displayKO();
+        else updateList(true);
       }
     });
     
@@ -390,46 +421,46 @@ public class jpKlijent extends JPanel {
     jlrOMJ.setDataSet(dsko);    
   }
   
-  boolean editing = false;
-  boolean novi = false;
-  boolean changed = false;
   public void SetFokus(char mode) {
     if (mode != 'B') {
-      editing = novi = false;
-      rcc.EnabDisabAll(kosobe, false);
+      if (kosobe.isShowing()) displayKO();
+      if (model.size() == 0)
+        rcc.EnabDisabAll(kosobe, false);
       fixButtons();
-      jraNAZIV.requestFocus();
-    }
-  }
-  
-  public boolean isEditing() {
-    return editing && kosobe.isShowing();
-  }
-  
-  public boolean isChanged() {
-    return changed;
-  }
-  
-  public void cancelEdit() {
-    if (editing) {
-      dsko.cancel();
-      rcc.EnabDisabAll(kosobe, false);
-      editing = novi = false;
-      fixButtons();
-      System.out.println("cancel");
-      new sysoutTEST(false).prn(dsko);
-      System.out.println(model.toString());
+      if (frm instanceof frmKlijenti || frm.getMode() == 'N') 
+        jraNAZIV.requestFocus();
     }
   }
   
   void fixButtons() {
-    rcc.setLabelLaF(btnNovi, !editing);
-    rcc.setLabelLaF(btnObrisi, !editing && model.size() > 0);
+    rcc.setLabelLaF(btnNovi, true);
+    rcc.setLabelLaF(btnObrisi, model.size() > 0);
+  }
+  
+  boolean novi = false;
+  void updateList(boolean force) {
+    if (!novi) {
+      for (int i = 0; i < model.size(); i++)
+        if (((Kosoba) model.getElementAt(i)).cosobe == dsko.getInt("COSOBE"))
+          model.setElementAt(new Kosoba(dsko), i);
+      return;
+    }
+    if (dsko.getString("IME").trim().length() > 0) {
+      novi = false;
+      model.addElement(new Kosoba(dsko));
+      kos.setSelectedIndex(model.size() - 1);
+    } else if (force) {
+      novi = false;
+      dsko.deleteRow();
+      if (model.size() > 0) kos.setSelectedIndex(0);
+    }
+    fixButtons();
   }
   
   void addOsoba() {
     if (frm.getMode() == 'B') return;
-    novi = editing = true;
+    kos.clearSelection();
+    novi = true;
     dsko.insertRow(false);
     rcc.EnabDisabAll(kosobe, true);
     fixButtons();
@@ -443,32 +474,8 @@ public class jpKlijent extends JPanel {
   
   void editOsoba() {
     if (frm.getMode() == 'B') return;
-    rcc.EnabDisabAll(kosobe, true);
-    novi = false;
-    editing = true;
     fixButtons();
     jraOSOBA.requestFocusLater();
-  }
-  
-  public void saveOsoba() {
-    if (frm.getMode() == 'B' || !editing) return;
-    if (Valid.getValid().isEmpty(jraOSOBA)) return;
-    dsko.post();
-    if (novi) {
-      model.addElement(new Kosoba(dsko));      
-      kos.setSelectedIndex(model.size() - 1);
-    } else 
-      model.setElementAt(new Kosoba(dsko), kos.getSelectedIndex());
-    
-    System.out.println("spremi " + (novi ? "novi" : "izmjenu"));
-    new sysoutTEST(false).prn(dsko);
-    System.out.println(model.toString());
-    changed = true;
-    lastc = -2;
-    
-    novi = editing = false;
-    rcc.EnabDisabAll(kosobe, false);
-    fixButtons();
   }
   
   void delOsoba() {
@@ -478,18 +485,14 @@ public class jpKlijent extends JPanel {
       model.remove(kos.getSelectedIndex());
       if (kos.getSelectedIndex() >= model.size() || kos.getSelectedIndex() < 0)
         kos.setSelectedIndex(model.size() - 1);
-      changed = true;
-      lastc = -2;
-      System.out.println("delete row");
-      new sysoutTEST(false).prn(dsko);
-      System.out.println(model.toString());
       fixButtons();
     }
   }
   
   int lastc = -1;
   boolean needUpdate;
-  public void lazyPopulateKO() {
+  public void lazyPopulateKO(boolean force) {
+    if (force) lastc = -1027;
     if (frm.getRaQueryDataSet() == null || frm.getRaQueryDataSet().rowCount() == 0) {
       if (lastc == -1) return;
       needUpdate = true;
@@ -502,7 +505,7 @@ public class jpKlijent extends JPanel {
   
   public void displayKO() {
     if (needUpdate) {
-      needUpdate = changed = false;
+      needUpdate = false;
       Kontosobe.getDataModule().setFilter(dsko, lastc == -1 ? Condition.nil : Condition.equal("CKLIJENT", lastc));
       dsko.open();
       Kosoba.minus = 0;
@@ -517,25 +520,26 @@ public class jpKlijent extends JPanel {
   }
   
   public void saveChanges(char mode) {
-    if (mode != 'B' && changed) {
+    if (mode != 'B') {
+      updateList(true);
       Valid.getValid().execSQL("SELECT MAX(cosobe) as cosobe FROM kontosobe");
       Valid.getValid().RezSet.open();
-      int last = Valid.getValid().RezSet.getInt(0);
+      int last = Valid.getValid().getSetCount(Valid.getValid().RezSet, 0);
       for (dsko.first(); dsko.inBounds(); dsko.next())
         if (dsko.getInt("COSOBE") < 0) {
           dsko.setInt("COSOBE", ++last);
           dsko.setInt("CKLIJENT", frm.getRaQueryDataSet().getInt("CKLIJENT"));
         }
       raTransaction.saveChanges(dsko);
-      changed = false;
     }
   }
   
   void fillData(int idx) {
-    cancelEdit();
     if (idx < 0 || model.size() <= idx) return;
+    updateList(true);
     Kosoba k = (Kosoba) model.get(idx);
     lookupData.getlookupData().raLocate(dsko, "COSOBE", Integer.toString(k.cosobe));
+    frm.partialMemory(kosobe);
   }
   
   public void setColor() {
@@ -570,7 +574,6 @@ public class jpKlijent extends JPanel {
 
     
     public Kosoba(DataSet ds) {
-      System.out.println("is null? " + ds.isNull("COSOBE"));
       if (ds.isNull("COSOBE")) {
         ds.setInt("COSOBE", --minus);
         ds.post();

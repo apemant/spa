@@ -1,5 +1,5 @@
 /****license*****************************************************************
-**   file: frmKlijenti.java
+**   file: frmKontakti.java
 **   Copyright 2006 Rest Art
 **
 **   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,12 @@
 ****************************************************************************/
 package hr.restart.crm;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.DataSet;
@@ -31,6 +33,7 @@ import hr.restart.baza.Klijenti;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.raImages;
@@ -38,11 +41,12 @@ import hr.restart.util.raMatPodaci;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raTransaction;
 
-public class frmKlijenti extends raMatPodaci {
+public class frmKontakti extends raMatPodaci {
   
   Valid vl = Valid.getValid();
   
-  jpKlijent jp;
+  jpKlijent jpk;
+  jpKontakt jp;
   boolean forceSave;
   boolean checkOib;
   frmTableDataView sims = new frmTableDataView(false, false, true) {
@@ -55,7 +59,7 @@ public class frmKlijenti extends raMatPodaci {
     }
   };
 
-  public frmKlijenti() {
+  public frmKontakti() {
     super(2);
     try {
       jbInit();
@@ -67,9 +71,15 @@ public class frmKlijenti extends raMatPodaci {
   
   private void jbInit() throws Exception {
     this.setRaQueryDataSet(Klijenti.getDataModule().getFilteredDataSet(""));
-    jp = new jpKlijent(this);
-    jp.BindComponents(getRaQueryDataSet());
-    this.setRaDetailPanel(jp);
+    jpk = new jpKlijent(this);
+    jpk.BindComponents(getRaQueryDataSet());
+    jp = new jpKontakt(this);
+    
+    JPanel detail = new JPanel(new BorderLayout());
+    detail.add(jpk, BorderLayout.NORTH);
+    detail.add(jp);
+    
+    this.setRaDetailPanel(detail);
     this.setVisibleCols(new int[] {0,1,2,10});
     sims.jp.getNavBar().addOption(new raNavAction("Prikaži", raImages.IMGSTAV, KeyEvent.VK_F8) {
       public void actionPerformed(ActionEvent e) {
@@ -78,7 +88,7 @@ public class frmKlijenti extends raMatPodaci {
     });
     sims.setTitle("Konflikti kod dodavanja");
     sims.setSaveName("Klijenti-konflikti");
-    
+
     disableScrollbars();
     raDataIntegrity.installFor(this);
     raKlijentNames.getInstance();
@@ -86,23 +96,30 @@ public class frmKlijenti extends raMatPodaci {
 
   public void SetFokus(char mode) {
     if (mode == 'N') {
-      if (jp.rcbStatus.getSelectedIndex() < 0)
-        jp.rcbStatus.setSelectedIndex(0);
-      jp.rcbStatus.this_itemStateChanged();
-      if (jp.rcbSegment.getSelectedIndex() < 0)
-        jp.rcbSegment.setSelectedIndex(0);
-      jp.rcbSegment.this_itemStateChanged();
+      if (jpk.rcbStatus.getSelectedIndex() < 0)
+        jpk.rcbStatus.setSelectedIndex(0);
+      jpk.rcbStatus.this_itemStateChanged();
+      if (jpk.rcbSegment.getSelectedIndex() < 0)
+        jpk.rcbSegment.setSelectedIndex(0);
+      jpk.rcbSegment.this_itemStateChanged();
+      
+      if (jp.rcbKanal.getSelectedIndex() < 0)
+        jp.rcbKanal.setSelectedIndex(0);
+      jp.rcbKanal.this_itemStateChanged();
     }
+    if (mode != 'B') jpk.SetFokus(mode);
     if (mode != 'B') jp.SetFokus(mode);
   }
   
   int navigate = -1;
   public void AfterCancel() {
     if (sims.isShowing()) sims.hide();
-    jp.setColor();
+    jpk.setColor();
+    jpk.updateList(true);
+    jpk.lazyPopulateKO(true);
+    if (jpk.kosobe.isShowing()) jpk.displayKO();
     jp.updateList(true);
     jp.lazyPopulateKO(true);
-    if (jp.kosobe.isShowing()) jp.displayKO();
     
     if (navigate >= 0) {
       SwingUtilities.invokeLater(new Runnable() {
@@ -115,17 +132,21 @@ public class frmKlijenti extends raMatPodaci {
   }
   
   /*public void jBOK_action() {
-    if (getMode() != 'B' && jp.isEditing()) jp.saveOsoba();
+    if (getMode() != 'B' && jp.isEditing()) jp.saveKontakt();
+    else if (getMode() != 'B' && jpk.isEditing()) jpk.saveOsoba();
     else {
       jp.cancelEdit();
+      jpk.cancelEdit();
       super.jBOK_action();
     }
   }
   
   public void jPrekid_action() {
     if (getMode() != 'B' && jp.isEditing()) jp.cancelEdit();
+    else if (getMode() != 'B' && jpk.isEditing()) jpk.cancelEdit();
     else {
       jp.cancelEdit();
+      jpk.cancelEdit();
       super.jPrekid_action();
     }
   }*/
@@ -151,9 +172,10 @@ public class frmKlijenti extends raMatPodaci {
   }
   
   public void raQueryDataSet_navigated(NavigationEvent e) {
-    jp.setColor();
-    jp.lazyPopulateKO(false);
-    if (jp.kosobe.isShowing() && getMode() == 'B') jp.displayKO();
+    jpk.setColor();
+    jpk.lazyPopulateKO(false);
+    if (jpk.kosobe.isShowing() && getMode() == 'B') jpk.displayKO();
+    if (getMode() == 'B') jp.lazyPopulateKO(false);
   }
   
   void cancelAndNavigateTo(int cklijent) {
@@ -174,10 +196,12 @@ public class frmKlijenti extends raMatPodaci {
   }
   
   public boolean doWithSave(char mode) {
+    jpk.saveChanges(mode);
     jp.saveChanges(mode);
     if (mode == 'B') {
       try {
         raTransaction.runSQL("DELETE FROM Kontosobe WHERE cklijent=" + del);
+        raTransaction.runSQL("DELETE FROM Kontakti WHERE cklijent=" + del);
       } catch (Exception e) {
         e.printStackTrace();
         return false;
@@ -189,7 +213,6 @@ public class frmKlijenti extends raMatPodaci {
   int del;
   public boolean DeleteCheck() {
     del = getRaQueryDataSet().getInt("CKLIJENT");
-    
     Valid.getValid().execSQL("SELECT COUNT(*) FROM kontosobe WHERE cklijent=" + del);
     Valid.getValid().RezSet.open();
     int numO = Valid.getValid().getSetCount(Valid.getValid().RezSet, 0);
@@ -201,7 +224,7 @@ public class frmKlijenti extends raMatPodaci {
     JOptionPane.showMessageDialog(this.getWindow(), "Potrebno je najprije obrisati kontakte i kontakt osobe klijenta.",
         "Brisanje nedopušteno", JOptionPane.ERROR_MESSAGE);
     
-    return true;
+    return false;
   }
   
   public void AfterDelete() {
@@ -213,9 +236,9 @@ public class frmKlijenti extends raMatPodaci {
   }
 
   public boolean Validacija(char mode) {
-    if (vl.isEmpty(jp.jraNAZIV))
+    if (vl.isEmpty(jpk.jraNAZIV))
       return false;
-    if (checkOib && !forceSave && jp.jraOIB.isEmpty()) {
+    if (checkOib && !forceSave && jpk.jraOIB.isEmpty()) {
       if (JOptionPane.showConfirmDialog(this, "OIB nije upisan. Spremiti ipak?", 
           "Potvrda", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return false;
     }
@@ -237,4 +260,19 @@ public class frmKlijenti extends raMatPodaci {
    
     return true;
   }
+  
+  /*public boolean ValDPEscape(char mode) {
+    if (mode != 'B' && jp.isChanged()) {
+      jpk.tabs.setSelectedIndex(1);
+      if (JOptionPane.showConfirmDialog(jpk.kosobe, "Promjene na podacima o kontaktu æe biti izgubljene. Svejedno prekinuti?", 
+          "Podaci o kontaktu promjenjene", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
+          return false;
+    } else if (mode != 'B' && jpk.isChanged()) {
+      jpk.tabs.setSelectedIndex(1);
+      if (JOptionPane.showConfirmDialog(jpk.kosobe, "Promjene na kontakt osobama æe biti izgubljene. Svejedno prekinuti?", 
+          "Kontakt osobe promjenjene", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
+          return false;
+    }
+    return true;
+  }*/
 }
