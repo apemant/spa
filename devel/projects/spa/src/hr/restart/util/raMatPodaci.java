@@ -2905,6 +2905,18 @@ ST.prnc(raQueryDataSet);
   	}
   }
   
+  public void partialMemory(JPanel subPanel) {
+    List cs = myCC.getComponentTree(subPanel);
+    for (Iterator i = cs.iterator(); i.hasNext(); ) {
+        Object obj = i.next();
+        if (obj instanceof JTextComponent) {
+            JTextComponent tf = (JTextComponent) obj;
+            if (tf.isVisible())
+                textValues.put(getKey(tf), tf.getText());
+        }
+    }
+  }
+  
   Object getKey(JTextComponent tf) {
   	return tf.getBounds()+"#"+tf.getParent().getBounds();
   }
