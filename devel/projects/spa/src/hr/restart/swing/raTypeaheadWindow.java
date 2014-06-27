@@ -18,6 +18,7 @@
 package hr.restart.swing;
 
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -81,16 +82,16 @@ public class raTypeaheadWindow {
     if (invoker != null && comp != invoker) hide();
     if (invoker == null || !exp.isRunning()) {
       invoker = comp;
-      tip = new JWindow();
+      tip = new JWindow((Window) comp.getTopLevelAncestor());
       jtt = comp.createToolTip();
       jtt.setOpaque(true);
       exp = new ExpireTimer(tip);
       jtt.setTipText(text);
-      tip.setContentPane(jtt);
+      tip.getContentPane().add(jtt);
       tip.setSize(200, jtt.getPreferredSize().height);
       tip.setLocation(origin);
       tip.setBackground(jtt.getBackground());
-      tip.show();
+      tip.setVisible(true);
       exp.start();
     } else {
       exp.refresh();
@@ -120,6 +121,7 @@ class ExpireTimer extends javax.swing.Timer {
     if (targ != null) {
       targ.dispose();
       targ = null;
+      raTypeaheadWindow.inst.invoker = null;
     }
   }
   public void refresh() {
