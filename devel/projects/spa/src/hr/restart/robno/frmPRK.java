@@ -218,6 +218,7 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
         "Rekalkulirati sve stavke s teèajem i troškovima?", "Rekalkulacija", JOptionPane.OK_CANCEL_OPTION,
         JOptionPane.WARNING_MESSAGE)) return;
     
+    getDetailPanel().rekalk = true;
     for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next()) {
       findOldValues('I');
       getDetailSet().setBigDecimal("PZT", getMasterSet().getBigDecimal("UPZT"));
@@ -228,6 +229,7 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
       raTransaction.saveChangesInTransaction(new QueryDataSet[] {
                       getDetailSet(), stanjeSet});
     }
+    getDetailPanel().rekalk = false;
     
     raDetail.getJpTableView().fireTableDataChanged();
     JOptionPane.showMessageDialog(jpDetail, 

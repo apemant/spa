@@ -956,9 +956,11 @@ public class jpUlazDetail extends JPanel {
   }
 
 //  public void
+  
+  public boolean rekalk = false;
 
   void kalkulacija (int mode) {
-    if (frm.raDetail.getMode() == 'B') return;
+    if (frm.raDetail.getMode() == 'B' && !rekalk) return;
     
     boolean pzt = !frm.getMasterSet().getString("CSHZT").equals("YES");
     BigDecimal kol = frm.getDetailSet().getBigDecimal("KOL");

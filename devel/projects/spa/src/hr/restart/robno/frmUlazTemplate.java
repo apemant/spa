@@ -1228,7 +1228,9 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	          izt = izt.add(zt.getBigDecimal("IZT"));
 
 	      getDetailSet().setBigDecimal("IZT", izt);
+	      ((IZavtrHandler) this).getDetailPanel().rekalk = true;
 	      ((IZavtrHandler) this).getDetailPanel().kalkulacija(8);
+	      ((IZavtrHandler) this).getDetailPanel().rekalk = false;
 	      isFind = findSTANJE();
 	      findIZAD();
 	      updateStanje('I');
@@ -1521,7 +1523,9 @@ System.out.println("oldBRRAC "+oldBRRAC);
 						}
 						findOldValues('I');
 						getDetailSet().setBigDecimal("IZT", izt);
+						((IZavtrHandler) this).getDetailPanel().rekalk = true;
 						((IZavtrHandler) this).getDetailPanel().kalkulacija(8);
+						((IZavtrHandler) this).getDetailPanel().rekalk = false;
 						isFind = findSTANJE();
 						findIZAD();
 						updateStanje('I');
