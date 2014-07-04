@@ -181,6 +181,11 @@ public class jpCorg extends JPanel {
     return getCondition();
   }
   
+  public Condition getAnyCondition() {
+    if (corg.isEmpty()) return Condition.none;
+    return getOptCondition();
+  }
+  
   public Condition getCondition() {
     if (isRecursive()) return getRecursiveCondition();
     return Condition.equal("CORG", corg.getText());
