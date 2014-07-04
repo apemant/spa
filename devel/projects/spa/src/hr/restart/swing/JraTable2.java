@@ -29,6 +29,7 @@ import hr.restart.util.startFrame;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -1342,7 +1343,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
     return true;
   }
 
-  class dataSetTableCellRenderer extends javax.swing.table.DefaultTableCellRenderer {
+  public class dataSetTableCellRenderer extends javax.swing.table.DefaultTableCellRenderer {
 
 
     public java.awt.Component getTableCellRendererComponent(
@@ -1521,6 +1522,11 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
       return "UNKNOWN";
 
+    }
+    
+    protected void paintComponent(Graphics g) {
+      // TODO Auto-generated method stub
+      super.paintComponent(g);
     }
 
   }
