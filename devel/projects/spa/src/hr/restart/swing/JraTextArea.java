@@ -17,34 +17,53 @@
 ****************************************************************************/
 package hr.restart.swing;
 
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
-import javax.swing.JTextField;
-import javax.swing.border.Border;
 
 import com.borland.dbswing.JdbTextArea;
 
 public class JraTextArea extends JdbTextArea {
-  JTextField jtborder = new JTextField();
+  //JTextField jtborder = new JTextField();
   private int rowsText = -1;
+  public static JraTextArea currentFocus = null;
+  
   public JraTextArea() {
     addKeyListener(new KeyAdapter() {
       public void keyReleased(KeyEvent e) {
         checkRows();
       }
     });
+    dataBinder.setPostOnFocusLost(false);
+    dataBinder.setPostOnRowPosted(false);
+    
+    addFocusListener(new FocusListener() {
+      public void focusLost(FocusEvent e) {
+        System.out.println("foclost");
+        currentFocus = null;
+      }
+      public void focusGained(FocusEvent e) {
+        System.out.println("focgained");
+        currentFocus = JraTextArea.this;
+      }
+    });
   }
-  private void checkUI() {
+  
+  public void posText() {
+    currentFocus = null;
+    System.out.println("pos text");
+    dataBinder.postText();
+  }
+  /*private void checkUI() {
     if (jtborder == null) return;
     jtborder.updateUI();
-    setBorder(jtborder.getBorder());
     setFont(jtborder.getFont());
   }
   public void updateUI() {
     super.updateUI();
     checkUI();
-  }
+  }*/
   private void checkRows() {
     if (getRowsText() <= 0) return;
     if (getWrittenRows() > getRowsText()) {
@@ -62,10 +81,10 @@ public class JraTextArea extends JdbTextArea {
     }
     return rws;
   }
-  public void setBorder(Border b) {
+  /*public void setBorder(Border b) {
     if (jtborder != null) jtborder.setBorder(b);
     super.setBorder(b);
-  }
+  }*/
   public void setRowsText(int rowsText) {
     this.rowsText = rowsText;
   }
