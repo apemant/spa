@@ -140,6 +140,7 @@ sysoutTEST ST= new sysoutTEST(false);
   private JDialog preSelDialog;
   private Object psowner;
   private JPanel jpUser;
+  private String lastFail = "";
 
   private JraToggleButton jtbUser;
 //  private JraToggleButton jtbAll;
@@ -185,26 +186,34 @@ sysoutTEST ST= new sysoutTEST(false);
     jtbUser.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         boolean s = e.getStateChange() == e.SELECTED;
-        ((JraToggleButton)e.getSource()).setText(s?"Moji dokumenti":"Svi dokumenti");
+        ((JraToggleButton)e.getSource()).setText(s ? getMyDocText() : getAllDocText());
       }
     });
 //    rbgUser = new raButtonGroup(SwingConstants.RIGHT,SwingConstants.CENTER);
 //    rbgUser.add(jtbUser,"Moji dokumenti","U");
 //    rbgUser.add(jtbAll,"Svi dokumenti","A");
     jtbUser.setSelected(isUserSelected());
-    jtbUser.setText(isUserSelected()?"Moji dokumenti":"Svi dokumenti");
+    jtbUser.setText(isUserSelected() ? getMyDocText() : getAllDocText());
     jtbUser.setEnabled(isUserEnabled());
     jpUser.add(jtbUser);
 //    jpUser.add(jtbAll);
   }
-  private boolean isUserEnabled() {
-    return hr.restart.sisfun.frmParam.getParam("sisfun", "mojiDokEn", "D", 
-        "Smije li na user predselekcijama odabrati 'Moji dokumenti' ili 'Svi dokumenti' (D/N)")
-    .equals("D");
+  
+  protected String getMyDocText() {
+    return "Moji dokumenti";
   }
-  private boolean isUserSelected() {
-    return hr.restart.sisfun.frmParam.getParam("sisfun", "mojiDok", "D", "Da li je na user predselekcijama inicijalno odabran 'Moji dokumenti' (D/N)")
-      .equals("D");
+  
+  protected String getAllDocText() {
+    return "Svi dokumenti";
+  }
+  
+  protected boolean isUserEnabled() {
+    return hr.restart.sisfun.frmParam.getParam("sisfun", "mojiDokEn", "D", 
+        "Smije li na user predselekcijama odabrati 'Moji dokumenti' ili 'Svi dokumenti' (D/N)").equals("D");
+  }
+  protected boolean isUserSelected() {
+    return hr.restart.sisfun.frmParam.getParam("sisfun", "mojiDok", "D", 
+        "Da li je na user predselekcijama inicijalno odabran 'Moji dokumenti' (D/N)", true).equals("D");
   }
 
   public boolean isUserQuestion() {
@@ -428,6 +437,7 @@ sysoutTEST ST= new sysoutTEST(false);
         com.borland.dx.dataset.Column col = (com.borland.dx.dataset.Column)selDataSet.hasColumn(rCN).clone();
         if (col!=null) {
           col.setColumnName(rCN+getRangeColSufix(jtll));
+          col.setCaption(col.getCaption() + " " + (getRangeColSufix(jtll) == FROMSUFIX ? ", poèetni" : ", krajnji"));
 //ST.prn("createSelRow : seting colName to "+col.getColumnName());
           selRow.addColumn(col);
           com.borland.dx.dataset.ColumnAware llColItem = (com.borland.dx.dataset.ColumnAware)ll.get(i);
@@ -847,13 +857,7 @@ private void testPrintRanges() {
   public void showPreselect(raMasterDetail raMD, String ftitle) {
     showPreselect(raMD,ftitle,false);
   }
-  /**
-   * @deprecated na componentShown eventu zove se SetFokus, a ako trebas nesto na componentHidden samo
-   * pozovi metodu nakon showPreselect(.... pa to je JDialog
-   */
-  public void addComponentListener(java.awt.event.ComponentListener l) {
-    System.out.println("Metoda PreSelect.addComponentListener je deprecated, nista nisam napravio... pogledaj dokumentaciju");
-  }
+
 /**
  * Vidi {@link #showPreselect(java.awt.Frame, String)}
  */
@@ -1104,6 +1108,10 @@ private void testPrintRanges() {
       return false;
     }
   }
+  
+  public String getOffendingCol() {
+    return lastFail;
+  }
 //
   
   public void setUserSelected(boolean sel) {
@@ -1122,7 +1130,7 @@ private void testPrintRanges() {
       return "";
   }
 
-  private boolean isUserQuery() {
+  protected boolean isUserQuery() {
     if (!isUserQuestion()) return false;
     if (getSelDataSet().hasColumn("CUSER")==null) return false;
     if (jtbUser.isSelected()) return true;
@@ -1184,6 +1192,8 @@ private void testPrintRanges() {
       if (selNull) return false;
       for (int i=0;i<ll.size(); i++) {
         com.borland.dx.dataset.ColumnAware txCol = ((com.borland.dx.dataset.ColumnAware)ll.get(i));
+        lastFail = txCol.getDataSet().getColumn(txCol.getColumnName()).getCaption();
+        if (lastFail == null || lastFail.length() == 0) lastFail = txCol.getColumnName();
 //ST.prn("checking "+txCol.getColumnName());
         if (!txCol.getColumnName().endsWith(TOSUFIX)) {//TOSUFIX samo ignoriraj
           if (txCol.getColumnName().endsWith(FROMSUFIX)) {
@@ -1199,6 +1209,7 @@ private void testPrintRanges() {
               if (slr.props == -1) {
                 if (!Ut.betweenBVariants(row,selRow,col,colfrom,colto,slr.includeBorders)) {
 //  ST.prn("isRow : "+col+" not between "+colfrom+" and "+colto+" ... returning false");
+                  
                   return false;
                 } else {
 //  ST.prn("isRow : "+col+" between "+colfrom+" and "+colto+" ... continuing");
