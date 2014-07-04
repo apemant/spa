@@ -275,7 +275,8 @@ public class raIzlazSectionFooterLines extends raReportSection {
   }
 
   private void modifyThis() {
-    if (repIzlazni.isReportValute()) {
+    if (repIzlazni.isReportValute() && frmParam.getParam("robno", "doubleValute", "D", 
+        "Ispis raèuna u valuti u dva iznosa (D,N)?").equalsIgnoreCase("D")) {
       getView(LabelUkupno, Text9).moveDown(200);
       TextVALNAZ.setTop(140);
       TextDOMNAZ.setTop(140);
