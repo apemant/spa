@@ -180,7 +180,7 @@ public class raCommonClass {
       if (enabled) {
         // jos jedan workaround za jebeni basicComboboxui
         jcomp.setOpaque(true);
-        if (!(comp instanceof hr.restart.util.raComboBox))
+        if (!(comp instanceof hr.restart.swing.JraComboBox))
         {
 // tu ne nacrta dobro na javi 5 ako je prije bilo offano
               jcomp.updateUI();
