@@ -21,6 +21,7 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.ActionExecutor;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.JraTextArea;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.KeyAction;
 import hr.restart.swing.SharedFlag;
@@ -89,7 +90,9 @@ public abstract class OKpanel extends javax.swing.JPanel {
   
   ActionExecutor execOK = new ActionExecutor(ticket) {
 	  public void run() {
-		  jBOK_actionPerformed();
+	    if (JraTextArea.currentFocus != null)
+          JraTextArea.currentFocus.posText();
+		jBOK_actionPerformed();
 	  }
   };
   
