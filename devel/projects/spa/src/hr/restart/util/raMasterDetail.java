@@ -474,7 +474,7 @@ sysoutTEST sT = new sysoutTEST(false);
 
     JOptionPane.showMessageDialog(getJPanelMaster(),
 
-      "Uneseni podaci ne odgovaraju zadanim kriterijima u predselekciji",
+      "Uneseni podaci ne odgovaraju zadanim kriterijima u predselekciji (polje " + getPreSelect().getOffendingCol() + ").",
 
       "Greška",
 
@@ -1757,9 +1757,9 @@ sysoutTEST sT = new sysoutTEST(false);
 
     if (detailSet.getQuery().getQueryString().equals(newQuery)) {
 
-      if (!detailSet.isOpen()) detailSet.open();
+      return detailSet.open();
 
-      return false; //nije morao querat bazu
+      // return false; //nije morao querat bazu
 
     } else {
 
@@ -2426,8 +2426,6 @@ sysoutTEST sT = new sysoutTEST(false);
 
   }
 
-
-
   public boolean isNewDetailNeeded() {
 
      return true;
@@ -2580,9 +2578,7 @@ sysoutTEST sT = new sysoutTEST(false);
         afterToggleTableDetail();
 
       }
-
-
-
+      
       public boolean doBeforeSave(char mode) {
 
         return doBeforeSaveDetail(mode);
