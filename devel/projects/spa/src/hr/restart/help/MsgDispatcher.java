@@ -62,7 +62,7 @@ public class MsgDispatcher implements ActionListener {
       check = con.prepareStatement("SELECT alarm FROM MesgStatus WHERE cuser = ? AND alarm <= ? AND nova = 'D'");
     } catch (SQLException e) {
       con = null;
-      e.printStackTrace();
+      //e.printStackTrace();
     }
   }
     
