@@ -17,7 +17,6 @@
 ****************************************************************************/
 package hr.restart.baza;
 
-import hr.restart.robno.raSalepodTrans;
 import hr.restart.robno.raVart;
 import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
@@ -2418,6 +2417,18 @@ public class dM implements DataModule {
   
   public com.borland.dx.sql.dataset.QueryDataSet getArtrans() {
     return Artrans.getDataModule().getQueryDataSet();
+  }
+  
+  public QueryDataSet getKlijentStat() {
+    return KlijentStat.getDataModule().getQueryDataSet();
+  }
+  
+  public QueryDataSet getSegmentacija() {
+    return Segmentacija.getDataModule().getQueryDataSet();
+  }
+  
+  public QueryDataSet getKanali() {
+    return Kanali.getDataModule().getQueryDataSet();
   }
 
   public void loadModules() {
