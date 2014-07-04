@@ -1151,6 +1151,9 @@ System.out.println("Nije modal dialog...Vracam false");
 
 		switchFonts(getFontDelta(), getFontFamily());
     
+		UIManager.put("ComboBox.disabledForeground", UIManager.get("ComboBox.foreground"));
+	
+		
 /*    try {
       SkinDialog.getSkinDialog().makeLookAndFeel(hr.restart.util.IntParam.VratiSadrzajTaga("lookandfeel"));
     }
@@ -1202,7 +1205,9 @@ System.out.println("Nije modal dialog...Vracam false");
   	int maxf = 0;
   	
   	for (Iterator i = keys.iterator(); i.hasNext(); ) {
-  		Font font = defs.getFont(i.next());
+  	  Object k = i.next();
+  
+  		Font font = defs.getFont(k);
       if (font != null) {
       	Integer in = (Integer) fams.get(font.getFamily());
       	if (in == null) in = new Integer(1);
@@ -1213,6 +1218,7 @@ System.out.println("Nije modal dialog...Vracam false");
       		oldf = font.getFamily();
       	}
       }
+      
   	}
   	System.out.println("Old family: " + oldf);
 
