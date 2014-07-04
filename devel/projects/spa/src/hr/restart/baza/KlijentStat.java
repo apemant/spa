@@ -18,7 +18,6 @@
 package hr.restart.baza;
 
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class KlijentStat extends KreirDrop implements DataModule {
 
