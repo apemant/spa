@@ -189,7 +189,7 @@ sysoutTEST ST = new sysoutTEST(false);
 
   public JraPanel jpDetailView = new JraPanel();
 
-  JraSplitPane jSplitPaneMP = new JraSplitPane(JSplitPane.VERTICAL_SPLIT);
+  public JraSplitPane jSplitPaneMP = new JraSplitPane(JSplitPane.VERTICAL_SPLIT);
 
   java.awt.event.WindowAdapter raMatPod_WindowAdapter = new java.awt.event.WindowAdapter() {
 
