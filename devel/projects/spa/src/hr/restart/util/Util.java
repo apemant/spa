@@ -2022,6 +2022,31 @@ System.out.println("desetice "+inTxtVal.substring(9,11));
     return new Timestamp(cal.getTime().getTime());
 
   }
+  
+  
+  public Timestamp addHours(Timestamp fromDate, int hours){
+
+    cal.setTime(fromDate);
+
+    int fromDateInt = cal.get(cal.HOUR_OF_DAY);
+
+    cal.set(cal.HOUR_OF_DAY, fromDateInt + hours);
+
+    return new Timestamp(cal.getTime().getTime());
+
+  }
+  
+  public Timestamp addMinutes(Timestamp fromDate, int mins){
+
+    cal.setTime(fromDate);
+
+    int fromDateInt = cal.get(cal.MINUTE);
+
+    cal.set(cal.MINUTE, fromDateInt + mins);
+
+    return new Timestamp(cal.getTime().getTime());
+
+  }
 
 
 
