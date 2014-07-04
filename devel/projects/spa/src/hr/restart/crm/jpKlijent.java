@@ -522,14 +522,17 @@ public class jpKlijent extends JPanel {
   public void saveChanges(char mode) {
     if (mode != 'B') {
       updateList(true);
-      Valid.getValid().execSQL("SELECT MAX(cosobe) as cosobe FROM kontosobe");
-      Valid.getValid().RezSet.open();
-      int last = Valid.getValid().getSetCount(Valid.getValid().RezSet, 0);
+      Valid.getValid().setSeqFilter("CRM-kontosobe");
+      int last = (int) dM.getDataModule().getSeq().getDouble("BROJ");
       for (dsko.first(); dsko.inBounds(); dsko.next())
         if (dsko.getInt("COSOBE") < 0) {
           dsko.setInt("COSOBE", ++last);
           dsko.setInt("CKLIJENT", frm.getRaQueryDataSet().getInt("CKLIJENT"));
         }
+      if (last != dM.getDataModule().getSeq().getDouble("BROJ")) {
+        dM.getDataModule().getSeq().setDouble("BROJ", last);
+        raTransaction.saveChanges(dM.getDataModule().getSeq());
+      }
       raTransaction.saveChanges(dsko);
     }
   }
@@ -546,7 +549,11 @@ public class jpKlijent extends JPanel {
     DataSet ds = rcbStatus.getDataSet();
     if (ds.rowCount() == 0 || ds.getString("SID").equals(""))
       dispCol.setBackground(defColor);
-    else dispCol.setBackground((Color) cols.get(rcbStatus.getDataValue())); 
+    else dispCol.setBackground(getColor(rcbStatus.getDataValue())); 
+  }
+  
+  public Color getColor(String sid) {
+    return (Color) cols.get(sid);
   }
   
   private Color findColor(String col) {

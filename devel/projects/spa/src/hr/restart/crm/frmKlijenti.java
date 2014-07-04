@@ -28,9 +28,11 @@ import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.StorageDataSet;
 
 import hr.restart.baza.Klijenti;
+import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.swing.raTableColumnModifier;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.raImages;
@@ -78,6 +80,11 @@ public class frmKlijenti extends raMatPodaci {
     });
     sims.setTitle("Konflikti kod dodavanja");
     sims.setSaveName("Klijenti-konflikti");
+    
+    getJpTableView().addTableModifier(new raTableColumnModifier("SID", new String[] {"NAZIV"}, dM.getDataModule().getKlijentStat()));
+    getJpTableView().addTableModifier(new raTableColumnModifier("CSEG", new String[] {"NAZIV"}, dM.getDataModule().getSegmentacija()));
+    
+    installSelectionTracker("CKLIJENT");
     
     disableScrollbars();
     raDataIntegrity.installFor(this);
@@ -160,15 +167,14 @@ public class frmKlijenti extends raMatPodaci {
     if (sims.isShowing()) sims.hide();
     
     navigate = cklijent;
-    getOKpanel().jPrekid_actionPerformed();
-    
+    if (getMode() != 'B')
+      getOKpanel().jPrekid_actionPerformed();
+    else AfterCancel();    
   }
   
   public boolean doBeforeSave(char mode) {
     if (mode == 'N') {
-      Valid.getValid().execSQL("SELECT MAX(cklijent) as cklijent FROM klijenti");
-      Valid.getValid().RezSet.open();
-      getRaQueryDataSet().setInt("CKLIJENT", Valid.getValid().getSetCount(Valid.getValid().RezSet, 0) + 1);
+      getRaQueryDataSet().setInt("CKLIJENT", Valid.getValid().findSeqInt("CRM-klijenti"));
     }
     return true;
   }
@@ -226,13 +232,15 @@ public class frmKlijenti extends raMatPodaci {
       return true;
     }
     
-    raKlijentNames.getInstance().checkChanges();
-    DataSet ret = raKlijentNames.getInstance().findSimilar(getRaQueryDataSet());
-    if (ret != null && ret.rowCount() > 0) {
-      sims.setDataSet((StorageDataSet) ret);
-      sims.show();
-      sims.resizeLater();
-      return false;
+    if (mode == 'N') {
+      raKlijentNames.getInstance().checkChanges();
+      DataSet ret = raKlijentNames.getInstance().findSimilar(getRaQueryDataSet());
+      if (ret != null && ret.rowCount() > 0) {
+        sims.setDataSet((StorageDataSet) ret);
+        sims.show();
+        sims.resizeLater();
+        return false;
+      }
     }
    
     return true;

@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.crm;
 
+import hr.restart.util.PreSelect;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.JMenu;
@@ -63,7 +65,7 @@ public class jcrmMenu extends JMenu {
     jmKampanje.setText("Kampanje");
     jmKampanje.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        SF.showFrame("hr.restart.crm.frmKanali", jmKampanje.getText());
+        PreSelect.showPreselect("hr.restart.crm.presKampanje","hr.restart.crm.frmKampanje","Kampanje", true);
       }
     });
     this.add(jmKontakti);

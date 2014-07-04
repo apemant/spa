@@ -45,6 +45,7 @@ import hr.restart.sisfun.raUser;
 import hr.restart.swing.ActionExecutor;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraScrollPane;
+import hr.restart.swing.JraTextArea;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.SharedFlag;
 import hr.restart.util.JlrNavField;
@@ -85,7 +86,7 @@ public class jpKontakt extends JPanel {
   JraTextField jraTrajanje = new JraTextField();
   JlrNavField jlrKosoba = new JlrNavField();
   JraButton jbGetKosoba = new JraButton();
-  JTextArea opis = new JTextArea() {
+  JraTextArea opis = new JraTextArea() {
     public boolean getScrollableTracksViewportWidth() {
       return true;
     }
@@ -129,6 +130,8 @@ public class jpKontakt extends JPanel {
     jraNaslov.setDataSet(dsp);
     jraTrajanje.setColumnName("TRAJANJE");
     jraTrajanje.setDataSet(dsp);
+    opis.setColumnName("OPIS");
+    opis.setDataSet(dsp);
     
     jlrAgent.setSearchMode(-1);
     jlrAgent.setColumnName("CUSER");
@@ -157,8 +160,9 @@ public class jpKontakt extends JPanel {
     jlrKosoba.setAfterLookUpOnClear(false);
     jlrKosoba.setSearchMode(1);
     
-    rcbKanal.setRaColumn("CSEG");
+    rcbKanal.setRaColumn("CKANAL");
     rcbKanal.setRaItems(Kanali.getDataModule().getTempSet(), "CKANAL", "NAZIV");
+    rcbKanal.setRaDataSet(dsp);
     
     povijest.setModel(model);
     povijest.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -221,6 +225,7 @@ public class jpKontakt extends JPanel {
     JraScrollPane osc = new JraScrollPane();
     osc.setViewportView(opis);
     osc.setPreferredSize(new Dimension(410, 125));
+    //opis.setPostOnFocusLost(true);
     
     podaci.add(new JLabel("Povijest"), new XYConstraints(450, 5, -1, -1));
     podaci.add(lpan, new XYConstraints(445, 25, 290, 270));
@@ -230,10 +235,10 @@ public class jpKontakt extends JPanel {
     podaci.add(rcbKanal, new XYConstraints(100, 50, 150, -1));
     podaci.add(jraKanal, new XYConstraints(255, 50, 165, -1));
     podaci.add(new JLabel("Osoba"), new XYConstraints(15, 75, -1, -1));
-    podaci.add(jlrKosoba, new XYConstraints(100, 75, 220, -1));
-    podaci.add(jbGetKosoba, new XYConstraints(325, 75, 21, 21));
+    podaci.add(jlrKosoba, new XYConstraints(100, 75, 250, -1));
+    podaci.add(jbGetKosoba, new XYConstraints(355, 75, 21, 21));
     podaci.add(new JLabel("Trajanje"), new XYConstraints(15, 100, -1, -1));
-    podaci.add(jraTrajanje, new XYConstraints(100, 100, 220, -1));
+    podaci.add(jraTrajanje, new XYConstraints(100, 100, 250, -1));
     podaci.add(new JLabel("Agent"), new XYConstraints(15, 125, -1, -1));
     podaci.add(jlrAgent, new XYConstraints(100, 125, 100, -1));
     podaci.add(jlrNazagent, new XYConstraints(205, 125, 175, -1));
@@ -282,7 +287,6 @@ public class jpKontakt extends JPanel {
   boolean novi = false;
   public void updateList(boolean force) {
     if (!novi) {
-      dsp.setString("OPIS", opis.getText());
       for (int i = 0; i < model.size(); i++)
         if (((Kontakt) model.getElementAt(i)).uid == dsp.getInt("UID"))
           model.setElementAt(new Kontakt(dsp), i);
@@ -290,26 +294,21 @@ public class jpKontakt extends JPanel {
     }
     if (dsp.getString("NASLOV").trim().length() > 0) {
       novi = false;
-      dsp.setString("OPIS", opis.getText());
       model.add(0, new Kontakt(dsp));
       povijest.setSelectedIndex(0);
     } else if (force) {
       novi = false;
       dsp.deleteRow();
-      if (model.size() > 0) povijest.setSelectedIndex(0);
+      if (model.size() > 0 && povijest.getSelectedIndex() < 0) povijest.setSelectedIndex(0);
     }
   }
   
   void fillData(int idx) {
-
-    if (idx < 0 || model.size() <= idx) {
-      opis.setText("");
-      return;
-    }
+    if (idx < 0 || model.size() <= idx) return;
     updateList(true);
     Kontakt k = (Kontakt) model.get(idx);
     lookupData.getlookupData().raLocate(dsp, "UID", Integer.toString(k.uid));
-    opis.setText(dsp.getString("OPIS"));
+    jlrAgent.forceFocLost();
     frm.partialMemory(podaci);
   }
   
@@ -329,6 +328,9 @@ public class jpKontakt extends JPanel {
     dsp.setTimestamp("DATUM", new Timestamp(System.currentTimeMillis()));
     jlrAgent.forceFocLost();
     jlrKosoba.setRaDataSet(Kontosobe.getDataModule().getFilteredDataSet(Condition.equal("CKLIJENT", frm.getRaQueryDataSet())));
+    if (rcbKanal.getSelectedIndex() < 0)
+      rcbKanal.setSelectedIndex(0);
+    rcbKanal.this_itemStateChanged();
     fixButtons();
     if (frm.getMode() == 'I')
       jraNaslov.requestFocusLater();
@@ -387,14 +389,17 @@ public class jpKontakt extends JPanel {
   
   void lazyUpdate() {
     if (needUpdate) {
-      Kontakti.getDataModule().setFilter(dsp, lastc == -1 ? Condition.nil : Condition.equal("CKLIJENT", lastc));
+      Kontakti.getDataModule().setFilter(dsp, lastc == -1 ? Condition.nil : 
+        Condition.equal("CKLIJENT", lastc).and(Condition.equal("STATUS", frmKampanje.CLOSED)));
       dsp.open();
       DefaultListModel nmod = new DefaultListModel();
       for (dsp.first(); dsp.inBounds(); dsp.next())
         nmod.addElement(new Kontakt(dsp));
       povijest.setModel(model = nmod);
       needUpdate = false;
-      povijest.setSelectedIndex(0);
+      if (dsp.rowCount() > 0) povijest.setSelectedIndex(0);
+      else povijest.clearSelection();
+      
       Kontakt.minus = 0;
       fixButtons();
     }
@@ -402,15 +407,21 @@ public class jpKontakt extends JPanel {
   
   public void saveChanges(char mode) {
     if (mode != 'B') {
-      Valid.getValid().execSQL("SELECT MAX(uid) as uid FROM kontakti");
-      Valid.getValid().RezSet.open();
-      int last = Valid.getValid().getSetCount(Valid.getValid().RezSet, 0);
+      updateList(true);
+      Valid.getValid().setSeqFilter("CRM-kontakti");
+      int last = (int) dM.getDataModule().getSeq().getDouble("BROJ");
       for (dsp.first(); dsp.inBounds(); dsp.next())
         if (dsp.getInt("UID") < 0) {
           dsp.setInt("UID", ++last);
           dsp.setInt("CKLIJENT", frm.getRaQueryDataSet().getInt("CKLIJENT"));
+          dsp.setString("STATUS", frmKampanje.CLOSED);
         }
+      if (last != dM.getDataModule().getSeq().getDouble("BROJ")) {
+        dM.getDataModule().getSeq().setDouble("BROJ", last);
+        raTransaction.saveChanges(dM.getDataModule().getSeq());
+      }
       raTransaction.saveChanges(dsp);
+      fillData(povijest.getSelectedIndex());
     }
   }
   

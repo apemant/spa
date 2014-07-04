@@ -17,6 +17,21 @@
 ****************************************************************************/
 package hr.restart.crm;
 
+import hr.restart.baza.Klijenti;
+import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.frmTableDataView;
+import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.swing.JraTextField;
+import hr.restart.swing.raTableColumnModifier;
+import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
+import hr.restart.util.raImages;
+import hr.restart.util.raKeyAction;
+import hr.restart.util.raMatPodaci;
+import hr.restart.util.raNavAction;
+import hr.restart.util.raTransaction;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -28,18 +43,6 @@ import javax.swing.SwingUtilities;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.StorageDataSet;
-
-import hr.restart.baza.Klijenti;
-import hr.restart.sisfun.frmParam;
-import hr.restart.sisfun.frmTableDataView;
-import hr.restart.sisfun.raDataIntegrity;
-import hr.restart.util.Aus;
-import hr.restart.util.Valid;
-import hr.restart.util.lookupData;
-import hr.restart.util.raImages;
-import hr.restart.util.raMatPodaci;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raTransaction;
 
 public class frmKontakti extends raMatPodaci {
   
@@ -88,6 +91,54 @@ public class frmKontakti extends raMatPodaci {
     });
     sims.setTitle("Konflikti kod dodavanja");
     sims.setSaveName("Klijenti-konflikti");
+    
+    getJpTableView().addTableModifier(new raTableColumnModifier("SID", new String[] {"NAZIV"}, dM.getDataModule().getKlijentStat()));
+    getJpTableView().addTableModifier(new raTableColumnModifier("CSEG", new String[] {"NAZIV"}, dM.getDataModule().getSegmentacija()));
+    
+    installSelectionTracker("CKLIJENT");
+    
+    addKeyAction(new raKeyAction(KeyEvent.VK_F8) {
+      public void keyAction() {
+        if (JraTextField.currentFocus == jpk.jraNAZIV)
+          checkSims();
+      }
+    });
+    
+    /*JraTable2 tab = getJpTableView().getMpTable();
+    
+    tab.setDefaultRenderer(Object.class, tab.new dataSetTableCellRenderer() {
+      
+      Color status = null;
+      Variant v = new Variant();
+      public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+          int column) {
+        if (((JraTable2) table).getRealColumnName(column).equals("NAZIV")) {
+          ((JraTable2) table).getDataSet().getVariant("SID", row, v);
+          status = jpk.getColor(v.getString());
+        } else status = null;
+        return super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+            row, column);
+      }
+      
+      public Dimension getPreferredSize() {
+        if (status == null) return super.getPreferredSize();
+        
+        Dimension dim = super.getPreferredSize();
+        return new Dimension(dim.width + 25, dim.height);
+      }
+      protected void paintComponent(Graphics g) {
+        if (status != null) g.translate(25, 0);
+        super.paintComponent(g);
+        if (status != null) {
+          g.translate(-25, 0);
+          Color old = g.getColor();
+          g.setColor(status);
+          int h = getHeight();
+          g.fillRect(4, 4, 10, h - 8);
+          g.setColor(old);
+        }
+      }
+    });*/
 
     disableScrollbars();
     raDataIntegrity.installFor(this);
@@ -182,15 +233,15 @@ public class frmKontakti extends raMatPodaci {
     if (sims.isShowing()) sims.hide();
     
     navigate = cklijent;
-    getOKpanel().jPrekid_actionPerformed();
+    if (getMode() != 'B')
+      getOKpanel().jPrekid_actionPerformed();
+    else AfterCancel();
     
   }
   
   public boolean doBeforeSave(char mode) {
     if (mode == 'N') {
-      Valid.getValid().execSQL("SELECT MAX(cklijent) as cklijent FROM klijenti");
-      Valid.getValid().RezSet.open();
-      getRaQueryDataSet().setInt("CKLIJENT", Valid.getValid().getSetCount(Valid.getValid().RezSet, 0) + 1);
+      getRaQueryDataSet().setInt("CKLIJENT", Valid.getValid().findSeqInt("CRM-klijenti"));
     }
     return true;
   }
@@ -249,16 +300,30 @@ public class frmKontakti extends raMatPodaci {
       return true;
     }
     
+    if (mode == 'N') {
+      raKlijentNames.getInstance().checkChanges();
+      DataSet ret = raKlijentNames.getInstance().findSimilar(getRaQueryDataSet());
+      if (ret != null && ret.rowCount() > 0) {
+        sims.setDataSet((StorageDataSet) ret);
+        sims.show();
+        sims.resizeLater();
+        return false;
+      }
+    }
+   
+    return true;
+  }
+  
+  void checkSims() {
+    if (sims.isShowing()) sims.hide();
+    jpk.jraNAZIV.maskCheck();
     raKlijentNames.getInstance().checkChanges();
     DataSet ret = raKlijentNames.getInstance().findSimilar(getRaQueryDataSet());
     if (ret != null && ret.rowCount() > 0) {
       sims.setDataSet((StorageDataSet) ret);
       sims.show();
       sims.resizeLater();
-      return false;
     }
-   
-    return true;
   }
   
   /*public boolean ValDPEscape(char mode) {
