@@ -4547,6 +4547,7 @@ WEBADR;char;60;;;Website;15
 SID;char;1;;;Status
 OIB;char;20;;;Oib;15
 CSEG;char;1;;;Segmentacija
+CORG;text;12;;;Org. jed
 
 $Kontosobe
 COSOBE;int;6;pkey;;Šifra;*
@@ -4572,7 +4573,10 @@ CKANAL;char;1;;;Kanal
 INFOKANAL;char;50;;;Detalji kanala
 KOSOBA;char;50;;;Kontakt osoba
 OPIS;char;2000;;;Opis kontakta
+KAMPANJA;int;6;;;Kampanja
+STATUS;char;1;;;Status;*
 IDX=cklijent
+IDX=kampanja
 
 $KlijentStat
 LOKK;char;1;;N;Status zauzetosti;*
@@ -4592,5 +4596,19 @@ LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
 CSEG;char;1;pkey;;Šifra
 NAZIV;char;30;;;Naziv
+
+$Kampanje
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+UID;int;6;pkey;;Šifra;*
+NASLOV;char;50;;;Naslov;25
+DATPOC;timestamp;;;;Datum poèetka
+DATKRAJ;timestamp;;;;Zadnja izmjena
+DATNEXT;timestamp;;;;Prvi sljedeæi alarm;*
+CKANAL;char;1;;;Kanal
+CUSER;char;15;;;Agent
+OPIS;char;2000;;;Opis kampanje
+CORG;text;12;;;Org. jed
+
 
 #END CRM
