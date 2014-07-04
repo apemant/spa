@@ -18,7 +18,6 @@
 package hr.restart.baza;
 
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Kontakti extends KreirDrop implements DataModule {
 
@@ -26,5 +25,9 @@ public class Kontakti extends KreirDrop implements DataModule {
 
   public static Kontakti getDataModule() {
     return inst;
+  }
+  
+  public boolean isAutoRefresh() {
+    return true;
   }
 }
