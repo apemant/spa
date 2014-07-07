@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.zapod;
 
+import hr.restart.robno.repMemo;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -32,8 +34,9 @@ public class repDiskZapUN extends repDisk {
   QueryDataSet cjelineDS = new QueryDataSet();
   hr.restart.baza.dM dm;
   Valid vl;
+  repMemo memo = repMemo.getrepMemo();
   public String fileName="";
-  private String vrstaNalogaUDatoteci = "1";
+  private static String vrstaNalogaUDatoteci = null;//"1";
 
   public repDiskZapUN() {
     super(1000);
@@ -105,11 +108,17 @@ public class repDiskZapUN extends repDisk {
     sb.replace(0, 7, datumParser(datumpodnosenja,2));
     sb.replace(8, 8, getVrstaNalogaUDatoteci()); //1 - nacionalna plaæanja 4 - plaæe i ostala redovna primanja!!!HC!!!
     sb.replace(9, 11, param);
+    if (getVrstaNalogaUDatoteci().equals("4")) {
+      sb.replace(12, 13, frmParam.getParam("pl", "nacizUN"+OrgStr.getKNJCORG(), "1", "Naèin izvrš. u UN datoteke za placu:1-raèun firme nije u toj banci,2-raèun firme JE u toj banci"));
+      sb.replace(13, 24, memo.getLogoOIB());
+      sb.replace(24, 35, vl.maskZeroInteger(new Integer(memo.getLogoMatbroj()), 8)+"000");
+      sb.replace(46, 57, memo.getLogoOIB());
+    }
     sb.replace(997, 997+3, "300");// TIP SLOGA
     return new String(sb);
   }
 
-  public String getVrstaNalogaUDatoteci() {
+  public static String getVrstaNalogaUDatoteci() {
     return vrstaNalogaUDatoteci ;
   }
   /**
@@ -120,7 +129,7 @@ public class repDiskZapUN extends repDisk {
    * 4 plaæe, ostala redovna i povremena primanja
    * @param _vrstaNalogaUDatoteci
    */
-  public void setVrstaNalogaUDatoteci(String _vrstaNalogaUDatoteci) {
+  public static void setVrstaNalogaUDatoteci(String _vrstaNalogaUDatoteci) {
     vrstaNalogaUDatoteci = _vrstaNalogaUDatoteci;
   }
   private String datumParser(String datum, int i)
@@ -179,8 +188,8 @@ public class repDiskZapUN extends repDisk {
     StringBuffer sb = getNullSB();
     String svota,brNal, zirorac;
 //    String nalogodavatelj, mjesto,  DI, identifikator;
-//    String datumizvParsed1 = datumParser(cjelineDS.getTimestamp("DATUMIZV").toString(), 2);
-    String datumizvParsed1 = datumParser(Valid.getValid().getToday().toString(), 2);
+    String datumizvParsed1 = datumParser(cjelineDS.getTimestamp("DATUMIZV").toString(), 2);
+//    String datumizvParsed1 = datumParser(Valid.getValid().getToday().toString(), 2);
 //    int z = cjelineDS.getString("NATERET").indexOf("\n");
 //    if(z>0)
 //      nalogodavatelj = cjelineDS.getString("NATERET").substring(0,cjelineDS.getString("NATERET").indexOf("\n")).trim();
@@ -231,6 +240,10 @@ public class repDiskZapUN extends repDisk {
     return new String(sb);
   }
 
+  /**
+   * 309
+   * @param zr
+   */
   private void insertSlogPojNal(String zr)
   {
 
@@ -282,6 +295,9 @@ public class repDiskZapUN extends repDisk {
         sb.replace(347,347+svota.length(),svota);
         sb.replace(362,362+pnbo1.length(),pnbo1);
         sb.replace(366,366+pnbo2.length(),pnbo2);
+        if (getVrstaNalogaUDatoteci().equals("4")) {
+          sb.replace(548, 551, "100"); //sifra vrste osobnog primanja
+        }
         sb.replace(546, 546+1, "3");//troskovna opcija
         
         sb.replace(997, 997+3, "309");// TIP SLOGA

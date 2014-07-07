@@ -323,6 +323,7 @@ public class raTableIBANModifier extends raTableColumnModifier {
 //*** init metoda
 
   private void jbInit() throws Exception {
+    repDiskZapUN.setVrstaNalogaUDatoteci("1");
     getJpTableView().addTableModifier(new raTableIBANModifier("IBANNT", "BRRACNT"));
     getJpTableView().addTableModifier(new raTableIBANModifier("IBANUK", "BRRACUK"));
     // velicina, labela, pozicioniranje
@@ -504,15 +505,22 @@ public class raTableIBANModifier extends raTableColumnModifier {
   }
 
   public void save() {
-    if(!msg.isEmpty()) {
-      String greske="";
-      for(int i = 0;i<msg.size();i++)
-        greske += msg.get(i).toString()+"\n";
-      JOptionPane.showConfirmDialog(null, "Akcija nije uspjela !\n"+greske, "Greška !", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
-      getRaQueryDataSet().deleteRow();
+    save(true);
+  }
+  public void save(boolean check) {
+    if (check) {
+      if(!msg.isEmpty()) {
+        String greske="";
+        for(int i = 0;i<msg.size();i++)
+          greske += msg.get(i).toString()+"\n";
+        JOptionPane.showConfirmDialog(null, "Akcija nije uspjela !\n"+greske, "Greška !", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
+        getRaQueryDataSet().deleteRow();
+        msg.clear();
+        addIdx =0;
+        return;
+      }
+    } else {
       msg.clear();
-      addIdx =0;
-      return;
     }
     addIdx =0;
     getRaQueryDataSet().saveChanges(); /** @todo a transakcija ??? */
