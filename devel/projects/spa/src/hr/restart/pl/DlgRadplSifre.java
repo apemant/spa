@@ -30,7 +30,7 @@ public class DlgRadplSifre {
     } else {
       set.first();
     }
-    return frmPDV2.getDialogForSet(set, false, new Runnable() {
+    return frmPDV2.getInstance().getJOPPD().getDialogForSet(set, false, new Runnable() {
       
       public void run() {
         //ok
