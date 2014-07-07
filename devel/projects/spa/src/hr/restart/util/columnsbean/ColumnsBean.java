@@ -1023,7 +1023,7 @@ System.out.println(raDataSet.getColumn(i).getWidth());
 
 
 
-  String getSelectedColumnName() {
+  public String getSelectedColumnName() {
   	if (raJdbTable == null) return "";
   	
   	return raJdbTable.getModelColumnName(jComboB.getSelectedIndex());
