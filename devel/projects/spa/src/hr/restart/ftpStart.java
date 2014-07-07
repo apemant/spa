@@ -51,9 +51,9 @@ public class ftpStart {
     spla.dispose();
   }
   static void splashMessg(String mess) {
+    System.out.println(mess);
     if (spla == null) return;
     spla.setMs(mess);
-    System.out.println(mess);
   }
   
   public static void redirectSystemOut(String logname) {

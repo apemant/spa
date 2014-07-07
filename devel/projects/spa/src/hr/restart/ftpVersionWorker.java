@@ -23,21 +23,15 @@
 
 package hr.restart;
 
-import hr.restart.db.ftpTransfer;
 import hr.restart.util.FileHandler;
 import hr.restart.util.FileTransferUtil;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import com.oroinc.net.ftp.FTPClient;
-import com.oroinc.net.ftp.FTPReply;
 /**
  * Changelog:
  dodan tag ftpdtype = 'bsd' ili bilo sta drugo odnosno da li koristi (neverificirajuci) ftpTransfer 
@@ -332,7 +326,15 @@ public class ftpVersionWorker {
  * main radi versions file za zadani lib dir 
  */
   public static void main(String[] args) {
-    makeVersionsFile(args[0]);
+    if (args.length > 0 && "--get".equals(args[0])) {
+      try {
+        transferNewResources();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    } else {
+      makeVersionsFile(args[0]);
+    }
   }
   
   public static void makeVersionsFile(String libdirpath) {
