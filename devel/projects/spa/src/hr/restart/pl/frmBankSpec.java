@@ -17,13 +17,22 @@
 ****************************************************************************/
 package hr.restart.pl;
 import hr.restart.baza.Condition;
+import hr.restart.baza.Orgstruktura;
+import hr.restart.robno.dlgKupac;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
+import hr.restart.zapod.OrgStr;
+import hr.restart.zapod.frmVirmani;
+import hr.restart.zapod.repDiskZapUN;
 
 import java.awt.BorderLayout;
+import java.sql.Timestamp;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -71,11 +80,13 @@ public class frmBankSpec extends frmIzvjestajiPL{
   private JraButton jbIsplMJ = new JraButton();
   public static String tipFile;
   public static String tipRep;
+  public static String vbdi;
   private JLabel jlTipDat = new JLabel();
   JraTextField jrfTD = new JraTextField();
   JraTextField jrfTDOpis = new JraTextField();
   private JraCheckBox jcbIzn = new JraCheckBox();
   private JraCheckBox jcbSaldo = new JraCheckBox();
+  private JraCheckBox jcbNula = new JraCheckBox();
   Column column = new Column();
   Column column2 = new Column();
   public static frmBankSpec fBankSpec;
@@ -133,6 +144,10 @@ public class frmBankSpec extends frmIzvjestajiPL{
     jcbSaldo.setHorizontalAlignment(SwingConstants.RIGHT);
     jcbSaldo.setHorizontalTextPosition(SwingConstants.LEADING);
 
+    jcbNula.setText("Ukljuèiti iznos = 0");
+    jcbNula.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbNula.setHorizontalTextPosition(SwingConstants.LEADING);
+
     this.mainPanel.add(jpIspMj, BorderLayout.CENTER);
     jlTipDat.setText("Tip datoteke");
     jrfTD.setVisible(false);
@@ -155,6 +170,7 @@ public class frmBankSpec extends frmIzvjestajiPL{
     jpIspMj.add(jrfTDOpis,      new XYConstraints(150, 25, 100, 20));
     jpIspMj.add(jcbIzn,        new XYConstraints(370, 25, -1, -1));
     jpIspMj.add(jcbSaldo,        new XYConstraints(455, 50, -1, -1));
+    jpIspMj.add(jcbNula,        new XYConstraints(150, 50, -1, -1));
     column.setColumnName("CISPLMJ");
     column.setDataType(com.borland.dx.dataset.Variant.STRING);
     if (fieldSet.hasColumn("CISPLMJ")==null) fieldSet.addColumn(column);
@@ -188,6 +204,7 @@ public class frmBankSpec extends frmIzvjestajiPL{
   {
     String nazRep ="";
     tipRep ="";
+    vbdi="";
     tipFile = fieldSet.getString("TIPFILE");
     suma = 0;
     killAllReports();
@@ -212,29 +229,34 @@ public class frmBankSpec extends frmIzvjestajiPL{
     this.addReport("hr.restart.pl.repSpecBank", "Specifikacija za banku", 5);
     if(!fieldSet.getString("TIPFILE").equals(""))
     {
-
+      this.addReport("hr.restart.zapod.repDiskZapUN", "Univerzalna specifikacija za banku (IBAN)", 5);
       if(fieldSet.getString("TIPFILE").equals("1"))
       {
         this.addReport("hr.restart.pl.repSBDisk_Zaba", "Specifikacija za banku disketa - ZABA", 5);
         tipRep = "ZABA";
+        vbdi = "2360000";
       }
       else if(fieldSet.getString("TIPFILE").equals("2"))
       {
         this.addReport("hr.restart.pl.repSBDisk_Pbz", "Specifikacija za banku disketa - PBZ", 5);
         tipRep = "PBZ";
+        vbdi="2340009";
       }
       else if(fieldSet.getString("TIPFILE").equals("3"))
       {
         this.addReport("hr.restart.pl.repSBDisk_Rba", "Specifikacija za banku disketa - RBA", 5);
         tipRep = "RAIF";
+        vbdi="2484008";
       }
       else if(fieldSet.getString("TIPFILE").equals("4"))
       {
          this.addReport("hr.restart.pl.repSBDisk_Splitska", "Specifikacija za banku disketa - Splitska banka", 5);
         tipRep = "STB";
+        vbdi="2330003";
       }
+      
     }
-
+    
     if(!prepareIspis())
     {
       focusManage();
@@ -267,12 +289,31 @@ public class frmBankSpec extends frmIzvjestajiPL{
     if (mode=='A') {
       arhiva = getArhRangeQuery();
     }
-
-    String qStr = "select radnicipl.corg as corg, radnici.cradnik as cradnik, radnici.ime as ime, radnici.prezime as prezime,radnicipl.brojtek as brojtek,"+
-                 "radnicipl.jmbg as jmbg, radnicipl.cisplmj as isplmj, bankepl.cbanke as cbanke, "+getKumRadTableName()+".naruke as naruke "+
-                 "from radnici,radnicipl, bankepl, isplmj, "+getKumRadTableName()+" where radnici.cradnik = radnicipl.cradnik "+
-                 "and isplmj.cbanke = bankepl.cbanke and radnicipl.cisplmj =isplmj.cisplmj "+
-                 "and "+getKumRadTableName()+".cradnik = radnicipl.cradnik and "+cOrgAdd+ispMjAdd+arhiva;
+    String qStr = null;
+    String cvrodb = frmParam.getParam("pl","SPC"+jlfCIspMJ.getText(), "", "Za koju vrstu odbitka se radi specif.za ispl.mj."+jlfCIspMJ.getText()).trim();
+    if (lookupData.getlookupData().raLocate(dm.getVrsteodb(), "CVRODB", cvrodb)) {
+      QueryDataSet imset = Aus.q("SELECT cbanke from isplmj where cisplmj = "+jlfCIspMJ.getText());
+      imset.open(); imset.first();
+      int cbanke = imset.getInt("CBANKE");
+      qStr = "select radnicipl.corg as corg, radnici.cradnik as cradnik, radnici.ime as ime, radnici.prezime as prezime, odbici.pnb2 as brojtek,"+
+          "radnicipl.jmbg as jmbg, CAST ("+jlfCIspMJ.getText()+" as numeric(4)) as isplmj, "
+              + ""+cbanke+" as cbanke, odbiciobr.obriznos as naruke, CAST ("+jlfCIspMJ.getText()+" as numeric(4)) as cisplmj "+
+          "from radnici,radnicipl, odbici, odbiciobr where radnici.cradnik = radnicipl.cradnik "+
+          " and odbiciobr.cradnik = radnicipl.cradnik AND odbici.ckey = odbiciobr.ckey and odbici.cvrodb = odbiciobr.cvrodb "
+          + (jcbNula.isSelected()?"":" and odbiciobr.obriznos > 0 ")
+          + "AND odbici.rbrodb = odbiciobr.rbrodb AND odbici.cvrodb = "+cvrodb
+          //"and isplmj.cbanke = bankepl.cbanke and radnicipl.cisplmj =isplmj.cisplmj "+
+          //"and "+getKumRadTableName()+".cradnik = radnicipl.cradnik"
+              + " and "+cOrgAdd/*+ispMjAdd+arhiva*/;
+    } else {
+      qStr = "select radnicipl.corg as corg, radnici.cradnik as cradnik, radnici.ime as ime, radnici.prezime as prezime,radnicipl.brojtek as brojtek,"+
+          "radnicipl.jmbg as jmbg, radnicipl.cisplmj as isplmj, bankepl.cbanke as cbanke, "+getKumRadTableName()+".naruke as naruke "+
+          "from radnici,radnicipl, bankepl, isplmj, "+getKumRadTableName()+" where radnici.cradnik = radnicipl.cradnik "+
+          "and isplmj.cbanke = bankepl.cbanke and radnicipl.cisplmj =isplmj.cisplmj "+
+          (jcbNula.isSelected()?"":" and "+getKumRadTableName()+".naruke > 0 ")+ 
+          "and "+getKumRadTableName()+".cradnik = radnicipl.cradnik and "+cOrgAdd+ispMjAdd+arhiva;
+    }
+    
 System.out.println("BankSpec.qStr = "+qStr);
     if(qds.isOpen()) qds.close();
     qds.setQuery(new QueryDescriptor(dm.getDatabase1(), qStr));
@@ -280,13 +321,50 @@ System.out.println("BankSpec.qStr = "+qStr);
     qds.open();
 //    sysoutTEST ST = new sysoutTEST(false);
     //    ST.prn(qds);11
+    //virmani
+    String ckey = "bankspec"+OrgStr.getKNJCORG();
+    Valid.getValid().runSQL("DELETE FROM virmani where ckey = '"+ckey+"'");
+    frmVirmani fV = frmVirmani.getInstance();  
+    fV.getRaQueryDataSet().emptyAllRows();
+    fV.setKeys("zapod", OrgStr.getKNJCORG(), ckey);
+    QueryDataSet naTDS = Orgstruktura.getDataModule().getFilteredDataSet(Condition.equal("CORG",OrgStr.getKNJCORG()));
+    naTDS.open();
+    raIniciranje.getInstance().posOrgsPl(OrgStr.getOrgStr().getKNJCORG());
+    Timestamp datTS = dm.getOrgpl().getTimestamp("DATUMISPL");
+    String svrha = frmParam.getParam("pl", "svrhaUN", "dohodak", "svrha doznake u IBAN datoteci za tekuæe");
+    //
+    /**
+p1 Jedinica zavoda
+p2 Na teret racuna
+p3 Svrha doznake
+p4 U korist racuna
+p5 Broj racuna na teret ili IBAN
+p6 Nacin izvrs
+p7 Poziv na broj (zaduz.) 1
+p8 Poziv na broj (zaduz.) 2
+p9 Sifra 1
+p10 Sifra 2
+p11 Sifra 3
+p12 Broj racuna u korist ili IBAN
+p13 Poziv na broj (odobr.) 1
+p14 Poziv na broj (odobr.) 2
+p15 Iznos
+p16 Mjesto
+p17 Datum izvrsenja
+p18 Datum predaje
+     */
     qds.first();
     while(qds.inBounds())
     {
       suma += qds.getBigDecimal("NARUKE").doubleValue();
+      
+      fV.add("", "", svrha, "", naTDS.getString("ZIRO"), "", "", "", "", "", "", vbdi+"-"+qds.getString("BROJTEK"), "", "", 
+          qds.getBigDecimal("NARUKE"), "mjesto", datTS, Valid.getValid().getToday());
       qds.next();
     }
-
+    
+    fV.save(false);
+    repDiskZapUN.setVrstaNalogaUDatoteci("4");
     if(qds.getRowCount() > 0)
       return true;
     return false;
@@ -347,6 +425,7 @@ private String getArhRangeQuery() {
     rcc.setLabelLaF(jrfTDOpis,false);
     jcbSaldo.setSelected(true);
     jcbSaldo.setVisible(true);
+    jcbNula.setSelected(false);
     super.componentShow();
   }
 

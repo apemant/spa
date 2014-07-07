@@ -31,6 +31,7 @@ import hr.restart.util.raMnemonics;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.frmVirmani;
 import hr.restart.zapod.raKnjigChangeListener;
+import hr.restart.zapod.repDiskZapUN;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -355,6 +356,7 @@ public class frmVirmaniPl extends frmVirmani{
     }
     // ?????? frmVirmani.getInstance().save();
     this.save();
+    repDiskZapUN.setVrstaNalogaUDatoteci("1");
   }
 
   private String getPNBOPoj(int c, short cvrodb) {

@@ -61,6 +61,7 @@ public class repSBDisk_Pbz extends repDisk{
       fill();
     }
     catch (Exception ex) {
+      ex.printStackTrace();
     }
   }
 

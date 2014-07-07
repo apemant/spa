@@ -27,6 +27,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Odbici;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.Radnicipl;
+import hr.restart.sk.JOPPDhndlr;
 import hr.restart.sk.frmPDV2;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
@@ -124,7 +125,7 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
     addVar(new raMnemVar("$rsind","Identifikator RS") {
       public String getText() {
         ld.raLocate(dm.getOrgpl(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
-        return frmPDV2.getOZNJOPPD(dm.getOrgpl().getTimestamp("DATUMISPL"));
+        return JOPPDhndlr.getOZNJOPPD(dm.getOrgpl().getTimestamp("DATUMISPL"));
         /*        return dm.getOrgpl().getString("RSIND");*/        
       }
     });
@@ -132,7 +133,7 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
     addVar(new raMnemVar("$joppd","Oznaka JOPPD") {
       public String getText() {
         ld.raLocate(dm.getOrgpl(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
-        return frmPDV2.getOZNJOPPD(dm.getOrgpl().getTimestamp("DATUMISPL"));
+        return JOPPDhndlr.getOZNJOPPD(dm.getOrgpl().getTimestamp("DATUMISPL"));
         /*        return dm.getOrgpl().getString("RSIND");*/        
       }
     });
@@ -287,7 +288,7 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
     ret = ret + Short.toString(dm.getOrgpl().getShort("GODOBR")).substring(2);
 */
     //2014
-    ret = ret + "-" + frmPDV2.getOZNJOPPD(dm.getOrgpl().getTimestamp("DATUMISPL"));
+    ret = ret + "-" + JOPPDhndlr.getOZNJOPPD(dm.getOrgpl().getTimestamp("DATUMISPL"));
 //    Podatak o plaæi:
 //      0 – isplata plaæe u cijelosti
 //      1 – isplata prvog dijela plaæe
