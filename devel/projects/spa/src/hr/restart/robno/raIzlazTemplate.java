@@ -27,7 +27,6 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
-import hr.restart.swing.raDateMask;
 import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raOptionDialog;
@@ -40,7 +39,6 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
@@ -53,7 +51,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -63,7 +60,6 @@ import javax.swing.SwingUtilities;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
-import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -2191,6 +2187,7 @@ ST.prn(radninal);
     			  if (vcdec.signum() != 0)
     			    getMasterSet().setBigDecimal("UIU", getMasterSet().getBigDecimal("UIRAC").multiply(vcdec).
     			  		movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+    			  checkPlac();
     			  raTransaction.saveChanges(getMasterSet());
 			  } else if (TD.isDocSklad(what_kind_of_dokument)) {
 			    Aus.sub(getMasterSet(), "UIRAC", tmpIRAZ);
@@ -2349,6 +2346,7 @@ ST.prn(radninal);
 		    if (vcdec.signum() != 0)
 		      getMasterSet().setBigDecimal("UIU", getMasterSet().getBigDecimal("UIRAC").multiply(vcdec).
 			  		movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+		    checkPlac();
 		    raTransaction.saveChanges(getMasterSet());
 		  } else if (TD.isDocSklad(what_kind_of_dokument)) {
 		    Aus.addSub(getMasterSet(), "UIRAC",
@@ -4760,6 +4758,11 @@ System.out.println("findCjenik::else :: "+sql);
 		  vcdec = Aus.zero2;
 		}
 	}
+	
+	void checkPlac() {
+	  getMasterSet().setString("STATPLA", 
+	   (getMasterSet().getBigDecimal("UIRAC").compareTo(getMasterSet().getBigDecimal("PLATITI")) == 0) ? "D" : "N");
+	}
 
 	public void defNamjena() {
 		// namjena
@@ -5028,6 +5031,7 @@ System.out.println("findCjenik::else :: "+sql);
        nacPlDod();
        if (vcdec.signum() != 0)
          getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+       checkPlac();
        getMasterSet().saveChanges();
        ValidacijaPrijeIzlazaDetail();
        //raMaster.getJpTableView().fireTableDataChanged();
@@ -5085,6 +5089,7 @@ System.out.println("findCjenik::else :: "+sql);
       nacPlDod();
       if (vcdec.signum() != 0)
         getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+      checkPlac();
 
       if (raTransaction.saveChangesInTransaction(new QueryDataSet[] {ds, getMasterSet()}))
           getDetailSet().refresh();
@@ -5136,6 +5141,7 @@ System.out.println("findCjenik::else :: "+sql);
 		nacPlDod();
 		if (vcdec.signum() != 0)
 		  getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+		checkPlac();
 /*		raLocalTransaction rltpopustAllApply = new raLocalTransaction() {
 			public boolean transaction() throws Exception {
 				raTransaction.saveChanges(forallpopust);
@@ -5451,6 +5457,7 @@ System.out.println("findCjenik::else :: "+sql);
     nacPlDod();
     if (vcdec.signum() != 0)
       getMasterSet().setBigDecimal("UIU", uirac.multiply(vcdec).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP));
+    checkPlac();
     if (raTransaction.saveChangesInTransaction(
         new QueryDataSet[] {getMasterSet(), getDetailSet()})) 
       JOptionPane.showMessageDialog(raMaster.getWindow(), 
