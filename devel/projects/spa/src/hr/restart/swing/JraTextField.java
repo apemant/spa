@@ -312,12 +312,12 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
     super.setText(txt);
   }
   
-
   public void focusLost(FocusEvent e) {
     if (currentFocus == this) currentFocus = null;
     if (mask != null) mask.focusLost(e);
     if (maskCheck() && (e== null || !e.isTemporary())) select(0, 0);
   }
+
   void validateText() throws Exception {
     if (!dataBinder.isTextModified()) {
       return;
@@ -332,6 +332,7 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
     col.getFormatter().parse(getText(),varValue);
     col.validate(getDataSet(),varValue);
   }
+  
   boolean isLetters(String str) {
     char[] chrs = str.toCharArray();
     for (int i=0;i<chrs.length;i++) {
@@ -431,6 +432,10 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
  */
   public String getTxtBefore() {
     return txtBefore;
+  }
+  
+  public void setTxtBefore(String txt) {
+    txtBefore = txt;
   }
 /**
  * vraca !this.getTxtBefore().equals(this.getText())
