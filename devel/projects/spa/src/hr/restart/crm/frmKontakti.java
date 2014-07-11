@@ -205,6 +205,7 @@ public class frmKontakti extends raMatPodaci {
   public void switchPanel(boolean prvi,boolean drugi) {
     super.switchPanel(prvi, drugi);
     jp.fixButtons();
+    jpk.fixButtons();
   }
   
   
