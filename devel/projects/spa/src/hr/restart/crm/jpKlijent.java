@@ -115,7 +115,7 @@ public class jpKlijent extends JPanel {
   JraButton jbGetMj = new JraButton();
   JraButton jbOGetMj = new JraButton(); 
   
-  HashMap cols = new HashMap();
+  
   
   JPanel podaci = new JPanel();
   JPanel kosobe = new JPanel();
@@ -211,10 +211,7 @@ public class jpKlijent extends JPanel {
     
     rcbSegment.setRaColumn("CSEG");
     rcbSegment.setRaItems(Segmentacija.getDataModule().getTempSet(), "CSEG", "NAZIV");
-    
-    for (ks.first(); ks.inBounds(); ks.next())
-      cols.put(ks.getString("SID"), findColor(ks.getString("BOJA")));
-    
+        
     podaci.add(new JLabel("Naziv"), new XYConstraints(15, 20, -1, -1));
     podaci.add(jraNAZIV, new XYConstraints(100, 20, 320, -1));
     podaci.add(new JLabel("Adresa"), new XYConstraints(15, 45, -1, -1));
@@ -549,28 +546,7 @@ public class jpKlijent extends JPanel {
     DataSet ds = rcbStatus.getDataSet();
     if (ds.rowCount() == 0 || ds.getString("SID").equals(""))
       dispCol.setBackground(defColor);
-    else dispCol.setBackground(getColor(rcbStatus.getDataValue())); 
-  }
-  
-  public Color getColor(String sid) {
-    return (Color) cols.get(sid);
-  }
-  
-  private Color findColor(String col) {
-    if (col.startsWith("#") || col.startsWith("0x") || col.startsWith("0X") || Aus.isDigit(col))
-      try {
-        return Color.decode(col);
-      } catch (Exception e) {
-        //
-      }
-    else 
-      try {
-        Field f = Color.class.getDeclaredField(col);
-        return (Color) f.get(null);
-      } catch (Exception e) {
-        System.out.println(e);
-      }
-    return defColor;
+    else dispCol.setBackground(raStatusColors.getInstance().getColor(rcbStatus.getDataValue())); 
   }
   
   private static class Kosoba {
