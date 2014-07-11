@@ -92,8 +92,13 @@ public class ReportValuteTester {
         }
       }
     }
+    BigDecimal jedval = new BigDecimal(((double) dm.getValute().getInt("JEDVAL")));
+    BigDecimal tmpTecaj;
+    tmpTecaj = jedval.signum() != 0 ? repQDS.getBigDecimal("TECAJ").divide(jedval,6,BigDecimal.ROUND_HALF_UP) : Aus.zero0;
     for (repQDS.first();repQDS.inBounds();repQDS.next()) {
       repQDS.setBigDecimal("UIRAC",tmpBD);
+      if (tmpTecaj.signum() != 0)
+        repQDS.setBigDecimal("UIU", repQDS.getBigDecimal("UIU").divide(tmpTecaj,decs,BigDecimal.ROUND_HALF_UP));
     }
     return repQDS;
   }
