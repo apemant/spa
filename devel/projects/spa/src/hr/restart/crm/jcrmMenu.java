@@ -39,6 +39,7 @@ public class jcrmMenu extends JMenu {
   
   public JMenuItem jmKontakti = new JMenuItem();
   public JMenuItem jmKampanje = new JMenuItem();
+  public JMenuItem jmKampanjeKre = new JMenuItem();
   
 
   public jcrmMenu(hr.restart.util.startFrame startframe) {
@@ -68,7 +69,17 @@ public class jcrmMenu extends JMenu {
         PreSelect.showPreselect("hr.restart.crm.presKampanje","hr.restart.crm.frmKampanje","Kampanje", true);
       }
     });
+    
+    jmKampanjeKre.setText("Pokretanje kampanje");
+    jmKampanjeKre.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        SF.showFrame("hr.restart.crm.frmKampanjeKreator","Pokretanje kampanje");
+      }
+    });
+    
     this.add(jmKontakti);
     this.add(jmKampanje);
+    this.addSeparator();
+    this.add(jmKampanjeKre);
   }
 }
