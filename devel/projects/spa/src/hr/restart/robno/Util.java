@@ -17,6 +17,10 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Kampanje;
+import hr.restart.crm.frmKampanje;
+import hr.restart.crm.presKampanje;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.SanityException;
@@ -1156,6 +1160,58 @@ public class Util {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+    }
+  }
+  
+  public void showKampanja(int uid) {
+    showKampanja(uid, -1);
+  }
+  
+  public void showKampanja(int uid, final int stavka) {
+    DataSet kamp = Kampanje.getDataModule().getTempSet(Condition.equal("UID", uid));
+    kamp.open();
+    
+    if (kamp.rowCount() == 0) {
+      JOptionPane.showMessageDialog(null, "Ne postoji tražena kampanja!",
+          "Prikaz kampanje", JOptionPane.WARNING_MESSAGE);
+      return;
+    }
+    
+    raProcess.runChild(new Runnable() {
+      public void run() {
+        frmKampanje fk = (frmKampanje) raLoader.load("hr.restart.crm.frmKampanje");
+        presKampanje pres = (presKampanje) raLoader.load("hr.restart.crm.presKampanje");
+        fk.setPreSelect(pres, "Kampanje");
+        raProcess.yield(fk);
+      }
+    });
+    
+    final frmKampanje fk = (frmKampanje) raProcess.getReturnValue();
+    if (fk == null) {
+      JOptionPane.showMessageDialog(null, "Greška kod otvaranja kampanje!",
+          "Prikaz kampanje", JOptionPane.WARNING_MESSAGE);
+      return;
+    }
+    DataSet pres = fk.getPreSelect().getSelRow();
+    pres.setString("CORG",  kamp.getString("CORG"));
+    pres.setTimestamp("DATPOC-from", kamp.getTimestamp("DATPOC"));
+    pres.setTimestamp("DATPOC-to", kamp.getTimestamp("DATPOC"));
+    ((presKampanje) fk.getPreSelect()).jcbAktiv.setSelected(false);
+    ((presKampanje) fk.getPreSelect()).setUserSelected(false);
+    
+    Runnable afterShow = stavka < 0 ? null :
+      new Runnable() {
+        public void run() {
+          lookupData.getlookupData().raLocate(fk.getDetailSet(), "UID", Integer.toString(stavka));
+        }
+      };    
+    
+    try {
+      fk.showRecord(new String[] {"UID"}, new String[] {Integer.toString(uid)}, true, afterShow);
+    } catch (Exception e) {
+      e.printStackTrace();
+      JOptionPane.showMessageDialog(null, "Greška kod otvaranja kampanje!",
+          "Prikaz kampanje", JOptionPane.WARNING_MESSAGE);
     }
   }
   
