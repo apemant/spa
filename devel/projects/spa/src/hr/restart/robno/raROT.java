@@ -305,6 +305,7 @@ public class raROT extends raIzlazTemplate  {
      if (hr.restart.sisfun.frmParam.getParam("robno","IspisGetroROTs","N","Stavke ispisa sadržavaju i ispis za Getro",true).equals("D")){
        raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniGetro","hr.restart.robno.repRacuniPnP","RacGetro","Raèun za Getro");
      }
+     raMaster.getRepRunner().addReport("hr.restart.robno.repInvoiceNew","hr.restart.robno.repIzlazni","InvoiceNew","Invoice");
      raMaster.getRepRunner().addReport("hr.restart.robno.repMxROT","Matri\u010Dni ispis ra\u010Duna");
      raMaster.getRepRunner().addReport("hr.restart.robno.repMxROTPop","Matri\u010Dni ispis ra\u010Duna s više popusta");
      
@@ -367,6 +368,7 @@ System.err.println("getMasterSet().getInt(FBR) = "+getMasterSet().getInt("FBR"))
      if (hr.restart.sisfun.frmParam.getParam("robno","IspisGetroROTs","N","Stavke ispisa sadržavaju i ispis za Getro",true).equals("D")){
        raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniGetro","hr.restart.robno.repRacuniPnP","RacGetro","Raèun za Getro");
      }
+     raDetail.getRepRunner().addReport("hr.restart.robno.repInvoiceNew","hr.restart.robno.repIzlazni","InvoiceNew","Invoice");
      raDetail.getRepRunner().addReport("hr.restart.robno.repMxROT","Matri\u010Dni ispis ra\u010Duna");
      raDetail.getRepRunner().addReport("hr.restart.robno.repMxROTPop","Matri\u010Dni ispis ra\u010Duna s više popusta");
 //     if (repFISBIH.isFISBIH()) raDetail.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
