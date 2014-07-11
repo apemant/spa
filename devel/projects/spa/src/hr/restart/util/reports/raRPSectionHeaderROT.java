@@ -435,7 +435,7 @@ public class raRPSectionHeaderROT extends raReportSection {
     if (frmParam.getParam("robno","ispisPJ","D", "Ispis poslovne jedinice na ROT-u " +
             "(D-u adresi, I-kao isporuka, O-na oba mjesta, N-bez P.J.)").equalsIgnoreCase("I") ||
         frmParam.getParam("robno","ispisPJ").equalsIgnoreCase("O"))
-      LabelIsporuka.setCaption("Isporuka");  //LabelIsporuka.setCaption("");
+      LabelIsporuka.restoreDefault(ep.CAPTION);  //LabelIsporuka.setCaption("");
     else LabelIsporuka.setCaption("");
     
     String now = hr.restart.sisfun.frmParam.getParam("robno", "ispProzor");

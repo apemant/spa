@@ -135,8 +135,14 @@ public class repIzlazni implements raReportData {
             || descriptor.equals("hr.restart.robno.repOffer")
             || descriptor.equals("hr.restart.robno.repProformaInvoice")
             || descriptor.equals("hr.restart.robno.repPovratnicaOdobrenjeV")
+            || descriptor.equals("hr.restart.robno.repInvoiceNew")
             );
 
+  }
+  
+  public static boolean isReportForeign() {
+    return hr.restart.util.reports.dlgRunReport
+        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz();
   }
   
   protected void setCurrentDataset(){
@@ -569,6 +575,8 @@ public class repIzlazni implements raReportData {
   }
 
   public String SgetDDOSP() {
+    if (isReportForeign()) return (getDDOSP() == 0 ? "" : getDDOSP() +
+        (getDDOSP() == 1 ? " day" : " days"));
     return (getDDOSP() == 0 ? "" : getDDOSP() +
             (getDDOSP() % 10 == 1 && getDDOSP() % 100 != 11 ? " dan" : " dana"));
   }

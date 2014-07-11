@@ -452,7 +452,7 @@ public class raReportDescriptor {
       {"NAR", "SF0"}, {"PON", "SF0"}, {"PRD", "SF0"}, {"MES", "SF0"},
       {"MEI", "SF0"}, {"MEU", "SF0"}, {"OTP", "SF0"}, {"DOS", "SF0"}, {"NDO", "SF0"},
       {"PTE", "SF0"}, {"POD", "SF0"}, {"RNL", "SF0"}, {"PRK", "SF0"}, 
-      {"ODB", "SF0"}, {"TER", "SF0"}, {"IZD", "SF0"},
+      {"ODB", "SF0"}, {"TER", "SF0"}, {"IZD", "SF0"}, {"IVO", "SF0"},
       {"REV", "SF0"}, {"PRV", "SF0"}, {"PRE", "SF0"}
     };
     for (int i = 0; i < vrdoksect.length; i++)
@@ -503,6 +503,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repRacRnal", "RAC", "D", ""},
       {"hr.restart.robno.repRacGroup", "RAC", "D", ""},      
       {"hr.restart.robno.repInvoice", "IVO", "F", ""},
+      {"hr.restart.robno.repInvoiceNew", "IVO", "F", ""},
       {"hr.restart.robno.repNarudzba", "NAR", "D", ""},
       {"hr.restart.robno.repNarudzba2", "NAR", "D", ""},
       {"hr.restart.robno.repNarudzbaV", "NAR", "D", ""},
