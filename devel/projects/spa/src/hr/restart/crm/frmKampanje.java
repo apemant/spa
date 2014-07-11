@@ -46,6 +46,7 @@ import hr.restart.baza.Klijenti;
 import hr.restart.baza.Kontakti;
 import hr.restart.baza.dM;
 import hr.restart.help.MsgDispatcher;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
@@ -98,7 +99,7 @@ public class frmKampanje extends raMasterDetail {
     setDetailSet(Kontakti.getDataModule().getFilteredDataSet(Condition.nil));
     setMasterKey(new String[] {"UID"});
     setDetailKey(new String[] {"KAMPANJA"});
-    jpMaster = new jpKampanjeMaster();
+    jpMaster = new jpKampanjeMaster(true);
     jpMaster.BindComponents(getMasterSet());
     setJPanelMaster(jpMaster);
     setVisibleColsMaster(new int[] {0, 1, 4, 5});
@@ -112,11 +113,11 @@ public class frmKampanje extends raMasterDetail {
     jcb.addItem(new VariableNum("sat", "sata", "sati"));
     jcb.setPreferredSize(new Dimension(100,21));
     jcb.setEditable(false);
-    System.out.println("uneditable");
+    
     
     jtf.setHorizontalAlignment(SwingConstants.TRAILING);
     new raTextMask(jtf, 3, false, raTextMask.DIGITS);
-    jtf.setText("1");
+    
     jtf.getDocument().addDocumentListener(new DocumentListener() {
       public void removeUpdate(DocumentEvent e) {
         jcb.repaint();
@@ -219,6 +220,10 @@ public class frmKampanje extends raMasterDetail {
         return true;
       }
     });
+    
+    jtf.setText(frmParam.getParam("crm", "danaOdgode", "7", "Default broj dana za odgodu na kampanjama", true));
+    jcb.setSelectedIndex(0);
+    alarm.setSelected(frmParam.getParam("crm", "alarm", "D", "Je li alarm na kampanjama po defaultu ukljuèen (D,N)", true).equalsIgnoreCase("D"));
   }
   
   public void SetFokusMaster(char mode) {
@@ -328,7 +333,7 @@ public class frmKampanje extends raMasterDetail {
       autoEdit = true;
       raDetail.jBOK_action();
     } else {
-      autoEdit = true;
+      autoEdit = false;
       delayedSetStatusAndTime();
     }
   }
@@ -377,7 +382,7 @@ public class frmKampanje extends raMasterDetail {
       autoEdit = true;
       raDetail.jBOK_action();
     } else {
-      autoEdit = true;
+      autoEdit = false;
       delayedSetStatusAndTime();
     }
   }
