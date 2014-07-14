@@ -275,6 +275,7 @@ public class frmKampanjeKreator extends raFrame {
     List combo = new ArrayList();
     List numk = new ArrayList();
     List act = new ArrayList();
+    List real = new ArrayList();
 
     String[][] itm;
     
@@ -328,6 +329,7 @@ public class frmKampanjeKreator extends raFrame {
       createLine(0);
       ((raComboBox) combo.get(0)).setSelectedIndex(s);
       addLine(0, 55);
+      real.add(new Double(1));
     }
 
     void removeLine(int i) {
@@ -354,7 +356,7 @@ public class frmKampanjeKreator extends raFrame {
       
       JraTextField tf = new JraTextField() {
         public void valueChanged() {
-          if (isValueChanged()) recalc(this);
+          if (isValueChanged()) changed(this);
         }
       };
       new raTextMask(tf, 4, false, raTextMask.DIGITS);
@@ -383,16 +385,68 @@ public class frmKampanjeKreator extends raFrame {
     void setVal(int i, int num) {
       setVal((JraTextField) numk.get(i), num);
     }
+    
+    void changed(JraTextField tf) {
+      int idx = -1;
+      for (int i = 0; i < numk.size(); i++)
+        if (numk.get(i) == tf) idx = i;
+      
+      if (getVal(idx) > selMod.getSize())
+        setVal(idx, selMod.getSize());
+      
+      if (selMod.getSize() > 0) {
+        real.set(idx, new Double(getVal(idx) / (double) selMod.getSize()));
+        recalcReal(idx);
+      }
+      recalc(idx);
+    }
+    
+    void recalcReal(int idx) {
+      double di = ((Double) real.get(idx)).doubleValue();
+      di = Math.min(1, Math.max(0, di));
 
+      for (int i = 0; i < numk.size(); i++)
+        if (i != idx) real.set(i, new Double((1 - di) * ((Double) real.get(i)).doubleValue()));
+      System.out.println(real);
+    }
+    
+    void recalcReal() {
+      if (numk.size() == 0) return;
+      
+      Double avg = new Double(1d / numk.size());
+      for (int i = 0; i < numk.size(); i++)
+        real.set(i, avg);
+      
+      recalc(-1);
+    }
+    
     public void recalc() {
+      recalc(-1);
+    }
+    
+    void recalc(int idx) {
+      int total = selMod.getSize();
+      int d = idx >= 0 ? getVal(idx) : 0;
+      for (int i = 0; i < numk.size(); i++) 
+        if (i != idx) {        
+          setVal(i, (int) (total * ((Double) real.get(i)).doubleValue()));
+          d += getVal(i);
+        }
+      while (d < total)
+        for (int i = 0; i < numk.size() && d < total; i++, d++)
+          if (i != idx) setVal(i, getVal(i) + 1);
+          else --d;
+    }
+
+    /*public void recalc() {
       recalc(null);
     }
 
     void recalc(int i) {
       recalc((JraTextField) numk.get(i));
-    }
+    }*/
 
-    void recalc(JraTextField ignore) {
+    /*void recalc(JraTextField ignore) {
       int total = selMod.getSize();
       int oldtotal = 0;
       int count = numk.size();
@@ -430,16 +484,18 @@ public class frmKampanjeKreator extends raFrame {
             --count;
           }
         }
-/*      if (d != total) 
-        setVal(high, getVal(high) + total - d);*/
-    }
+//      if (d != total) 
+//        setVal(high, getVal(high) + total - d);
+    }*/
 
     void press(JraButton but) {
       if (but == jbAdd) {
         lay.setHeight(95 + 30 * (combo.size() >> 1));
         createLine(combo.size());
 
+        real.add(new Double(1d / combo.size()));
         setVal(combo.size() - 1, selMod.getSize() / combo.size());
+        recalcReal(combo.size() - 1);
         recalc(combo.size() - 1);
 
         addLine(combo.size() - 1, 55);
@@ -451,10 +507,7 @@ public class frmKampanjeKreator extends raFrame {
       if (act.size() == 1) return;
       
       if (but == jbRecalc) {
-        for (int i = 0; i < numk.size(); i++)
-          setVal(i, 0);
-        setVal(0, selMod.getSize() / numk.size());
-        recalc(0);
+        recalcReal();
         return;
       }
 
@@ -467,6 +520,12 @@ public class frmKampanjeKreator extends raFrame {
         removeLine(i);
         addLine(i, 55);
       }
+      double total = 0;
+      for (int i = 0; i < numk.size(); i++)
+        total += ((Double) real.get(i)).doubleValue();
+      total = 1 / total;
+      for (int i = 0; i < numk.size(); i++)
+        if (i != idx) real.set(i, new Double(total * ((Double) real.get(i)).doubleValue()));
       recalc();
       lay.setHeight(65 + 30 * ((combo.size() + 1) >> 1));
       pack();
@@ -504,9 +563,9 @@ public class frmKampanjeKreator extends raFrame {
     
     private int addImpl(Object element) {
       if (size >= elems.length)
-        elems = Arrays.copyOf(elems, size + (size >> 1));
+        elems = copyOf(elems, size + (size >> 1));
       
-      int point = Arrays.binarySearch(elems, 0, size, element);
+      int point = binarySearch(elems, 0, size, element);
       if (point < 0) point = -point - 1;
       
       if (point < size) 
@@ -523,7 +582,7 @@ public class frmKampanjeKreator extends raFrame {
         for (Iterator i = c.iterator(); i.hasNext(); addImpl(i.next()));
       else {
         if (size + c.size() > elems.length)
-          elems = Arrays.copyOf(elems, Math.max(size + c.size(), elems.length + (elems.length >> 1)));
+          elems = copyOf(elems, Math.max(size + c.size(), elems.length + (elems.length >> 1)));
         for (Iterator i = c.iterator(); i.hasNext(); )
           elems[size++] = i.next();
         Arrays.sort(elems, 0, size);
@@ -590,8 +649,34 @@ public class frmKampanjeKreator extends raFrame {
     }
     
     public String toString() {
-      return Arrays.toString(Arrays.copyOf(elems, size));
+      return Arrays.toString(copyOf(elems, size));
     }
+  }
+  
+  static Object[] copyOf(Object[] array, int size) {
+    Object[] na = new Object[size];
+    System.arraycopy(array, 0, na, 0, Math.min(array.length, size));
+    return na;
+  }
+  
+  static int binarySearch(Object[] a, int fromIndex, int toIndex,
+      Object key) {
+    int low = fromIndex;
+    int high = toIndex - 1;
+
+    while (low <= high) {
+      int mid = (low + high) >>> 1;
+      Comparable midVal = (Comparable) a[mid];
+      int cmp = midVal.compareTo(key);
+
+      if (cmp < 0)
+        low = mid + 1;
+      else if (cmp > 0)
+        high = mid - 1;
+      else
+        return mid; // key found
+    }
+    return -(low + 1); // key not found.
   }
 
   public static class Klijent implements Comparable {
