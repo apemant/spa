@@ -20,6 +20,7 @@ package hr.restart.zapod;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Skstavke;
 import hr.restart.baza.dM;
+import hr.restart.sk.raVrdokMatcher;
 import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.KeyAction;
@@ -40,6 +41,8 @@ import java.util.Calendar;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
+import bsh.util.Util;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.Variant;
@@ -159,12 +162,16 @@ public class dlgTotalPromet {
   private String procGod;
 
   public static class Results {
-    public BigDecimal rac, upl, nrac;
+    public BigDecimal rac, upl, nrac, drac, ndrac;
     public Results() {
-      rac = upl = nrac = new BigDecimal(0);
+      rac = upl = nrac = drac = ndrac = new BigDecimal(0);
     }
     public BigDecimal getSaldo() {
       return rac.add(nrac).subtract(upl);
+    }
+    
+    public BigDecimal getDospSaldo() {
+      return drac.add(ndrac).subtract(upl);
     }
   }
 
@@ -173,16 +180,21 @@ public class dlgTotalPromet {
     String god = hr.restart.util.Valid.getValid().getLastKnjigYear("gk");
     if (god == null) god = "1980";
     Timestamp beg = hr.restart.util.Util.getUtil().getYearBegin(god);
-
-    Skstavke.getDataModule().setFilter(Condition.equal("CPAR", cpar).
+    Timestamp today = hr.restart.util.Util.getUtil().getLastSecondOfDay(Valid.getValid().getToday());
+    
+    DataSet ds = Skstavke.getDataModule().getTempSet("ID IP VRDOK DATDOSP", 
+        Condition.equal("CPAR", cpar).
       and(Aus.getKnjigCond()).and(Aus.getVrdokCond(true)).
       and(Condition.where("DATUMKNJ", Condition.FROM, beg)));
-    DataSet ds = dM.getDataModule().getSkstavke();
+    //DataSet ds = dM.getDataModule().getSkstavke();
     if (!raProcess.isRunning()) ds.open();
     else raProcess.openDataSet(ds);
     for (ds.first(); ds.inBounds(); ds.next()) {
       ret.rac = ret.rac.add(ds.getBigDecimal("ID"));
       ret.upl = ret.upl.add(ds.getBigDecimal("IP"));
+      if (raVrdokMatcher.isRacunTip(ds) && !ds.isNull("DATDOSP") 
+          && !ds.getTimestamp("DATDOSP").after(today)) 
+        ret.drac = ret.drac.add(ds.getBigDecimal("ID"));
     }
 
     DataSet skl = hr.restart.robno.Util.getSkladFromCorg();
@@ -197,6 +209,16 @@ public class dlgTotalPromet {
     if (!raProcess.isRunning()) ds.open();
     else raProcess.openDataSet(ds);
     ret.nrac = ds.getBigDecimal("UIRAC");
+    
+    String dquery = "SELECT SUM(uirac) AS uirac FROM doki WHERE "+
+        Condition.equal("CPAR", cpar).and(Condition.equal("STATKNJ", "K").not()).
+        and(Condition.till("DATDOSP", today)).
+        and((sklDok.and(Condition.in("CSKL", skl))).
+        or(orgDok.and(Condition.in("CSKL", knj, "CORG"))));
+    ds = hr.restart.util.Util.getNewQueryDataSet(dquery, false);
+    if (!raProcess.isRunning()) ds.open();
+    else raProcess.openDataSet(ds);
+    ret.ndrac = ds.getBigDecimal("UIRAC");
     return ret;
   }
 
