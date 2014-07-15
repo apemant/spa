@@ -259,6 +259,7 @@ MJ;text;2;;;Mjesec
 ORIGBROJ;text;50;;;Broj dokumenta
 KOMP;text;1;;N;Kompenzacija
 IDX=brojdok
+IDX=cpar
 
 $RN
 LOKK;char;1;;N;Lokk;*
