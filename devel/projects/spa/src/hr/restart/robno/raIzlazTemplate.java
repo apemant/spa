@@ -121,6 +121,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	short nStavka; // redni broj stavke
 
 	public boolean checkLimit = false;
+	public boolean dospLimit = false;
 
 	Rbr rbr = Rbr.getRbr();
 
@@ -1006,6 +1007,12 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	        
 	    String av = frmParam.getParam("robno", "autoValuta", "N",
 	          "Preraèunati iznos iz valute u kune na izlazima (N,D,A)");
+	    
+	    if (what_kind_of_dokument.equals("ROT") || what_kind_of_dokument.equals("RAC")) {
+	      checkLimit = hr.restart.sisfun.frmParam.getParam("robno","checkLimit","D","Provjera limita kreditiranja (D,N)").equalsIgnoreCase("D");
+	      dospLimit = hr.restart.sisfun.frmParam.getParam("robno","dospLimit","D",
+	          "Limit kreditiranja uzima samo dospjele raèune (D,N)").equalsIgnoreCase("D");
+	    }
 	    
 	    autoval = !av.equalsIgnoreCase("N");
 	    autovali = av.equalsIgnoreCase("A");
@@ -5203,19 +5210,21 @@ System.out.println("findCjenik::else :: "+sql);
 
 			java.math.BigDecimal limit = dm.getPartneri().getBigDecimal(
 					"LIMKRED");
-			if (limit.doubleValue() != 0 && dm.getPartneri().getString("STATUS").equalsIgnoreCase("B")) {
+			if (dm.getPartneri().getString("STATUS").equalsIgnoreCase("B")) {
 				java.math.BigDecimal saldo = getSaldo();
 				if (!checkLimit(limit, saldo, oldvalue, newvalue)) {
-					javax.swing.JOptionPane.showMessageDialog(null,
+				  
+					if (JOptionPane.showConfirmDialog(null,
 							new raMultiLineMessage("Saldo dugovanja partnera "
 									+ dm.getPartneri().getString("NAZPAR")
 									+ " iznosi "
 									+ calculateSaldo(saldo, oldvalue, newvalue)
-											.setScale(2) + " kuna i prelazi "
+											.setScale(2) + " kuna\nprelazi "
 									+ "limit kreditiranja koji iznosi "
 									+ dm.getPartneri().getBigDecimal("LIMKRED")
-									+ " kuna.!", JLabel.CENTER, 80), "Greška",
-							javax.swing.JOptionPane.ERROR_MESSAGE);
+									+ " kuna! Nastaviti ipak?", JLabel.CENTER, 80), "Prekoraèenje limita kreditiranja",
+									JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.ERROR_MESSAGE) != JOptionPane.YES_OPTION)
 					return false;
 				}
 			}
@@ -5225,6 +5234,9 @@ System.out.println("findCjenik::else :: "+sql);
 
 	private BigDecimal calculateSaldo(java.math.BigDecimal saldo,
 			java.math.BigDecimal oldvalue, java.math.BigDecimal newvalue) {
+	  
+	  if (dospLimit && getMasterSet().getTimestamp("DATDOSP").after(
+	      ut.getLastSecondOfDay(val.getToday()))) return saldo;
 
 		saldo = saldo.subtract(oldvalue);
 		saldo = saldo.add(newvalue);
@@ -5234,6 +5246,10 @@ System.out.println("findCjenik::else :: "+sql);
 	private BigDecimal calculateLimit(java.math.BigDecimal limit,
 			java.math.BigDecimal saldo, java.math.BigDecimal oldvalue,
 			java.math.BigDecimal newvalue) {
+	  
+	  if (dospLimit && getMasterSet().getTimestamp("DATDOSP").after(
+          ut.getLastSecondOfDay(val.getToday()))) return limit.subtract(saldo);
+	  
 		BigDecimal zatrositi = Aus.zero2;
 		zatrositi = limit.subtract(saldo);
 		zatrositi = zatrositi.add(oldvalue);
@@ -5252,7 +5268,7 @@ System.out.println("findCjenik::else :: "+sql);
 	public java.math.BigDecimal getSaldo() {
 		hr.restart.zapod.dlgTotalPromet.Results res = hr.restart.zapod.dlgTotalPromet
 				.findPromet(getMasterSet().getInt("CPAR"));
-		return res.getSaldo();
+		return dospLimit ? res.getDospSaldo() : res.getSaldo();
 	}
 
 	public boolean isOtremniceExist() {
