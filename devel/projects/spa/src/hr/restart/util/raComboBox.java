@@ -151,15 +151,24 @@ System.out.println("actionPerformed");
  */
   private boolean itemStateTrack = true;
   public void setRaItems(DataSet ds, String valueColumn, String descrColumn) {
+    setRaItems(ds, valueColumn, descrColumn, null, null);
+  }
+  
+  public void setRaItems(DataSet ds, String valueColumn, String descrColumn, String defValue, String defDescr) {
     ds.open();
     ds.first();
     Variant v = new Variant();
-    String[][] itm = new String[ds.rowCount()][2];
-    for (int i = 0; ds.inBounds(); ds.next(), i++) {
+    int dod = defValue == null ? 0 : 1;
+    String[][] itm = new String[ds.rowCount() + dod][2];
+    for (int i = dod; ds.inBounds(); ds.next(), i++) {
       ds.getVariant(descrColumn, v);
       itm[i][0] = v.toString();
       ds.getVariant(valueColumn, v);
       itm[i][1] = v.toString();
+    }
+    if (dod > 0) {
+      itm[0][0] = defDescr;
+      itm[0][1] = defValue;
     }
     setRaItems(itm);
   }
