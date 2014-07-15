@@ -53,7 +53,7 @@ public class raStatusColors {
     if (serial == newSerial) return;
     serial = newSerial;
     cols.clear();
-    DataSet ks = KlijentStat.getDataModule().getQueryDataSet();
+    DataSet ks = dM.getDataModule().getKlijentStat();
     ks.open();
     for (ks.first(); ks.inBounds(); ks.next())
       cols.put(ks.getString("SID"), findColor(ks.getString("BOJA")));
