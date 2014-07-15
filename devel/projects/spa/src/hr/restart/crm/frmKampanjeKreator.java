@@ -24,9 +24,14 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
+import java.text.CollationKey;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,15 +52,18 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Kampanje;
 import hr.restart.baza.Klijenti;
 import hr.restart.baza.Useri;
+import hr.restart.baza.dM;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.ActionExecutor;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.SharedFlag;
+import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raTextMask;
 import hr.restart.util.Aus;
 import hr.restart.util.OKpanel;
+import hr.restart.util.Util;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raFrame;
 import hr.restart.util.raImages;
@@ -88,6 +96,10 @@ public class frmKampanjeKreator extends raFrame {
   
   DataSet ds;
   AgentPanel agents = new AgentPanel();
+  SelFilter sfPanel = new SelFilter();
+  raInputDialog sfDialog = new raInputDialog();
+  
+  dlgKampanjaFilter filt = new dlgKampanjaFilter();
 
   public frmKampanjeKreator() {
     JPanel main = new JPanel(new XYLayout(700, 320));
@@ -130,6 +142,18 @@ public class frmKampanjeKreator extends raFrame {
     jbAllRight.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         allRight();
+      }
+    });
+    
+    jbFilter.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        setFilter();
+      }
+    });
+    
+    jbDod.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        dodFilter();
       }
     });
     
@@ -182,6 +206,8 @@ public class frmKampanjeKreator extends raFrame {
     for (kl.first(); kl.inBounds(); kl.next())
       allMod.add(new Klijent(kl));
     
+    filt.reset();
+    
     all.revalidate();
     all.repaint();
     sel.revalidate();
@@ -192,11 +218,62 @@ public class frmKampanjeKreator extends raFrame {
   }
   
   public void OKPress() {
+    
+    
     this.hide();
   }
   
   public void cancelPress() {
     this.hide();
+  }
+  
+  void setFilter() {
+    if (filt.show(all.getParent())) {
+      allMod.clear();
+      DataSet kl = filt.getFilteredSet();
+      kl.open();
+      for (kl.first(); kl.inBounds(); kl.next())
+        allMod.add(new Klijent(kl));
+      all.revalidate();
+      all.repaint();
+    }
+  }
+  
+  void dodFilter() {
+    if (!sfDialog.show(sel.getParent(), sfPanel, "Dodatni filter za odabrane klijente")) return;
+    
+    if (selMod.getSize() == 0) return;
+    
+    int[] ids = new int[selMod.getSize()];
+    for (int i = 0; i < selMod.getSize(); i++)
+      ids[i] = ((Klijent) selMod.getElementAt(i)).id;
+    
+    Timestamp cutoff = Util.getUtil().addDays(new Timestamp(System.currentTimeMillis()), -sfPanel.getDana());
+    
+    DataSet dsk = Aus.q("SELECT cklijent, MAX(datum) as datum FROM kontakti WHERE " + 
+        Condition.in("CKLIJENT", ids).and(sfPanel.getUserCondition()) + " GROUP BY cklijent");
+    dsk.open();
+    HashMap dats = new HashMap();
+    for (dsk.first(); dsk.inBounds(); dsk.next()) {
+      Klijent k = new Klijent(dsk.getInt("CKLIJENT"), dsk.getTimestamp("DATUM"));
+      dats.put(k, k);
+    }
+    
+    ArrayList out = new ArrayList();
+    for (int i = 0; i < selMod.getSize(); i++) {
+      Klijent k = (Klijent) selMod.getElementAt(i);
+      Klijent dat = (Klijent) dats.get(k);
+      if ((dat == null || dat.datum.before(cutoff)) == sfPanel.isKeep())
+        out.add(new Integer(i));
+    }
+    if (out.isEmpty()) return;
+    
+    int[] indices = new int[out.size()];
+    for (int i = 0; i < out.size(); i++) 
+      indices[i] = ((Integer) out.get(i)).intValue();
+    
+    allMod.addAll(selMod.removeAll(indices));
+    updateLists();
   }
   
   void right() {
@@ -261,6 +338,48 @@ public class frmKampanjeKreator extends raFrame {
             }
         }
     };
+  }
+  
+  class SelFilter extends JPanel {
+    
+    raComboBox jcbAct = new raComboBox();
+    raComboBox jcbUser = new raComboBox();
+    
+    JraTextField jtfDana = new JraTextField();
+    
+    public SelFilter() {
+      setLayout(new XYLayout(665, 60));
+      
+      jcbUser.setRaItems(dM.getDataModule().getUseri(), "CUSER", "NAZIV", "*", "Bilo tko");
+      jcbUser.setSelectedIndex(0);
+      
+      jcbAct.setRaItems(new String[][] {
+          {"Izbaciti sve koje je kontaktirao", "1"},
+          {"Zadržati samo one koje je kontaktirao", "2"}
+      });
+      jcbAct.setSelectedIndex(0);
+      
+      new raTextMask(jtfDana, 4, false, raTextMask.DIGITS);
+      jtfDana.setText("30");
+      
+      add(jcbAct, new XYConstraints(20, 20, 275, -1));
+      add(jcbUser, new XYConstraints(305, 20, 185, -1));
+      add(new JLabel("unazad"), new XYConstraints(500, 20, -1, -1));
+      add(jtfDana, new XYConstraints(560, 20, 45, -1));
+      add(new JLabel("dana"), new XYConstraints(615, 20, -1, -1));
+    }
+    
+    public int getDana() {
+      return Aus.getAnyNumber(jtfDana.getText());
+    }
+    
+    public boolean isKeep() {
+      return jcbAct.getSelectedIndex() == 1;
+    }
+    
+    public Condition getUserCondition() {
+      return jcbUser.getSelectedIndex() == 0 ? Condition.none : Condition.equal("CUSER", jcbUser.getDataValue());
+    }
   }
   
   class AgentPanel extends JPanel {
@@ -403,11 +522,20 @@ public class frmKampanjeKreator extends raFrame {
     
     void recalcReal(int idx) {
       double di = ((Double) real.get(idx)).doubleValue();
-      di = Math.min(1, Math.max(0, di));
-
+      double old = 0;
+      
       for (int i = 0; i < numk.size(); i++)
-        if (i != idx) real.set(i, new Double((1 - di) * ((Double) real.get(i)).doubleValue()));
-      System.out.println(real);
+        if (i != idx) old += ((Double) real.get(i)).doubleValue();
+      
+      if (old == 0) {
+        for (int i = 0; i < numk.size(); i++)
+          if (i != idx) real.set(i, new Double(1));
+        old = numk.size() - 1;
+      }
+      
+      double f = (1 - di) / old;
+      for (int i = 0; i < numk.size(); i++)
+        if (i != idx) real.set(i, new Double(f * ((Double) real.get(i)).doubleValue()));
     }
     
     void recalcReal() {
@@ -434,59 +562,9 @@ public class frmKampanjeKreator extends raFrame {
         }
       while (d < total)
         for (int i = 0; i < numk.size() && d < total; i++, d++)
-          if (i != idx) setVal(i, getVal(i) + 1);
+          if (i != idx && ((Double) real.get(i)).doubleValue() != 0) setVal(i, getVal(i) + 1);
           else --d;
     }
-
-    /*public void recalc() {
-      recalc(null);
-    }
-
-    void recalc(int i) {
-      recalc((JraTextField) numk.get(i));
-    }*/
-
-    /*void recalc(JraTextField ignore) {
-      int total = selMod.getSize();
-      int oldtotal = 0;
-      int count = numk.size();
-      if (ignore != null) {
-        setVal(ignore, getVal(ignore));
-        if (numk.size() == 1)
-          setVal(ignore, total);
-        if (getVal(ignore) > total)
-          setVal(ignore, total);    
-        total -= getVal(ignore);
-        --count;
-      }
-      
-      JraTextField high = null;
-      for (int i = 0; i < numk.size(); i++)
-        if (numk.get(i) != ignore) {
-          oldtotal += getVal(i);
-          if (high == null || getVal(i) > getVal(high)) 
-            high = (JraTextField) numk.get(i);
-        }
-           
-      for (int i = 0; i < numk.size(); i++)
-        if (numk.get(i) != ignore) {
-          int old = getVal(i);
-          if (total == 0) setVal(i, 0);
-          else if (old > 0 && oldtotal > 0) {
-            int n = total * old / oldtotal;
-            setVal(i, n);
-            oldtotal -= old;
-            total -= n;
-          } else if (oldtotal == 0) {
-            int n = total / count;
-            setVal(i, n);
-            total -= n;
-            --count;
-          }
-        }
-//      if (d != total) 
-//        setVal(high, getVal(high) + total - d);
-    }*/
 
     void press(JraButton but) {
       if (but == jbAdd) {
@@ -496,7 +574,7 @@ public class frmKampanjeKreator extends raFrame {
         real.add(new Double(1d / combo.size()));
         setVal(combo.size() - 1, selMod.getSize() / combo.size());
         recalcReal(combo.size() - 1);
-        recalc(combo.size() - 1);
+        recalc();
 
         addLine(combo.size() - 1, 55);
         pack();
@@ -516,6 +594,7 @@ public class frmKampanjeKreator extends raFrame {
       remove((Component) combo.remove(idx));
       remove((Component) numk.remove(idx));
       remove((Component) act.remove(idx));
+      real.remove(idx);
       for (int i = idx; i < combo.size(); i++) {
         removeLine(i);
         addLine(i, 55);
@@ -525,7 +604,7 @@ public class frmKampanjeKreator extends raFrame {
         total += ((Double) real.get(i)).doubleValue();
       total = 1 / total;
       for (int i = 0; i < numk.size(); i++)
-        if (i != idx) real.set(i, new Double(total * ((Double) real.get(i)).doubleValue()));
+        real.set(i, new Double(total * ((Double) real.get(i)).doubleValue()));
       recalc();
       lay.setHeight(65 + 30 * ((combo.size() + 1) >> 1));
       pack();
@@ -680,20 +759,29 @@ public class frmKampanjeKreator extends raFrame {
   }
 
   public static class Klijent implements Comparable {
+    static Collator myCol = Collator.getInstance();
+    
     int id;
     String naziv;
-    String lowercase;
+    CollationKey coll;
     String grad;
     String seg;
     String status;
+    Timestamp datum;
     
     public Klijent(DataSet ds) {
       id = ds.getInt("CKLIJENT");
       naziv = ds.getString("NAZIV");
-      lowercase = naziv.toLowerCase();
+      coll = myCol.getCollationKey(naziv.toLowerCase());
       grad = ds.getString("MJ");
       seg = ds.getString("CSEG");
       status = ds.getString("SID");
+      datum = null;
+    }
+    
+    public Klijent(int cklijent, Timestamp dat) {
+      id = cklijent; 
+      datum = new Timestamp(dat.getTime());
     }
     
     public boolean equals(Object obj) {
@@ -711,7 +799,7 @@ public class frmKampanjeKreator extends raFrame {
     }
     
     public int compareTo(Object o) {
-      return this.lowercase.compareTo(((Klijent) o).lowercase);
+      return this.coll.compareTo(((Klijent) o).coll);
     }
   }
 }
