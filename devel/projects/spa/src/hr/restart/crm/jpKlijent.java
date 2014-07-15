@@ -17,6 +17,23 @@
 ****************************************************************************/
 package hr.restart.crm;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Kontosobe;
+import hr.restart.baza.dM;
+import hr.restart.swing.ActionExecutor;
+import hr.restart.swing.JraButton;
+import hr.restart.swing.JraScrollPane;
+import hr.restart.swing.JraTextField;
+import hr.restart.swing.SharedFlag;
+import hr.restart.util.JlrNavField;
+import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
+import hr.restart.util.raComboBox;
+import hr.restart.util.raCommonClass;
+import hr.restart.util.raImages;
+import hr.restart.util.raMatPodaci;
+import hr.restart.util.raTransaction;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -26,20 +43,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-
-import hr.restart.baza.Condition;
-import hr.restart.baza.KlijentStat;
-import hr.restart.baza.Kontosobe;
-import hr.restart.baza.Segmentacija;
-import hr.restart.baza.dM;
-import hr.restart.swing.ActionExecutor;
-import hr.restart.swing.JraButton;
-import hr.restart.swing.JraScrollPane;
-import hr.restart.swing.JraTextField;
-import hr.restart.swing.SharedFlag;
-import hr.restart.util.*;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -205,12 +208,11 @@ public class jpKlijent extends JPanel {
     jlrCZUP.setFocusLostOnShow(false);
     jlrCZUP.setAfterLookUpOnClear(false);
     
-    DataSet ks = KlijentStat.getDataModule().getTempSet();
     rcbStatus.setRaColumn("SID");
-    rcbStatus.setRaItems(ks, "SID", "NAZIV");
+    rcbStatus.setRaItems(dM.getDataModule().getKlijentStat(), "SID", "NAZIV");
     
     rcbSegment.setRaColumn("CSEG");
-    rcbSegment.setRaItems(Segmentacija.getDataModule().getTempSet(), "CSEG", "NAZIV");
+    rcbSegment.setRaItems(dM.getDataModule().getSegmentacija(), "CSEG", "NAZIV");
         
     podaci.add(new JLabel("Naziv"), new XYConstraints(15, 20, -1, -1));
     podaci.add(jraNAZIV, new XYConstraints(100, 20, 320, -1));
