@@ -2699,8 +2699,8 @@ ST.prnc(raQueryDataSet);
     if (saveChanges) {
 
 //      raQueryDataSet.saveChanges();
-      markTables.clear();
-      markDatasets.clear();
+//      markTables.clear();
+//      markDatasets.clear();
       raAbstractTransaction trans = prepareTransaction();
       if (!trans.execTransaction()) {
 
