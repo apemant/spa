@@ -19,7 +19,6 @@ package hr.restart.baza;
 
 import hr.restart.db.raPreparedStatement;
 import hr.restart.sisfun.TextFile;
-import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Int2;
 import hr.restart.util.Util;
@@ -32,10 +31,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1426,7 +1422,8 @@ public abstract class KreirDrop {
     Column c = dM.createColumn(parts[0].toUpperCase(), parts[5], parts[4].trim(), 
         dtype, Dialect.getSqlType(dtype), prec, scale);
     
-    modifyColumn(c);
+    
+    if (!dM.isMinimal()) modifyColumn(c);
 
     if (parts[3].equalsIgnoreCase("pkey") || parts[3].equalsIgnoreCase("key"))
       c.setRowId(true);
