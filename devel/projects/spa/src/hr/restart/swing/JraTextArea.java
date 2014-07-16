@@ -40,7 +40,7 @@ public class JraTextArea extends JdbTextArea {
     
     addFocusListener(new FocusListener() {
       public void focusLost(FocusEvent e) {
-        System.out.println("foclost");
+        if (currentFocus == JraTextArea.this) posText();
         currentFocus = null;
       }
       public void focusGained(FocusEvent e) {
