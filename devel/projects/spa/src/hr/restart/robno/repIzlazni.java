@@ -24,8 +24,6 @@ import hr.restart.baza.dM;
 import hr.restart.baza.dokidod;
 import hr.restart.baza.stdoki;
 import hr.restart.baza.vtrabat;
-import hr.restart.baza.zirorn;
-import hr.restart.pos.frmMasterBlagajna;
 import hr.restart.pos.presBlag;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raSaldaKonti;
@@ -33,7 +31,6 @@ import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
-import hr.restart.util.sysoutTEST;
 import hr.restart.util.reports.raReportData;
 import hr.restart.util.reports.raStringCache;
 
@@ -817,7 +814,17 @@ public class repIzlazni implements raReportData {
   }
   
   public String getNAZART() {
-    return ds.getString("NAZART");
+    if (!hr.restart.util.reports.dlgRunReport
+        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
+      return ds.getString("NAZART");
+    
+    if (!lD.raLocate(dm.getArtikli(), "CART1", getCART1())) 
+      return ds.getString("NAZART");
+    
+    if (dm.getArtikli().getString("NAZLANG").length() == 0)
+      return ds.getString("NAZART");
+    
+    return dm.getArtikli().getString("NAZLANG");
   }
 
   public String getNAZARText() {
@@ -1100,9 +1107,14 @@ public BigDecimal getIPRODSP() {
     
     String user = getCCUSER();
     if (user == null || user.length() == 0) user = getUSER();
-    
+       
     String first = "Datum i vrijeme izrade: " + SgetSYSDAT() + "  u " + SgetSYSTIME() +
         "       Operater: " + user + "        Interni broj: " + getOldFormatBroj();
+    
+    if (hr.restart.util.reports.dlgRunReport
+        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
+      first = "Date and time of creation: " + SgetSYSDAT() + "  at " + SgetSYSTIME() +
+      "       Operator ID: " + user + "        Internal number: " + getOldFormatBroj();
         
     System.out.println(first);
     if ("GOT|GRN|PRD".indexOf(getVRDOK()) < 0 ) return first;
