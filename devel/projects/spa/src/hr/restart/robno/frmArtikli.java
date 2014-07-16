@@ -17,7 +17,6 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import hr.restart.baza.Artnap;
 import hr.restart.baza.Condition;
 import hr.restart.baza.VTCartPart;
 import hr.restart.baza.dM;
@@ -101,10 +100,14 @@ public class frmArtikli extends raMatPodaci {
     public void valueChanged() {
       if (getRaQueryDataSet().getString("NAZPRI").trim().length() == 0)
         getRaQueryDataSet().setString("NAZPRI", jtfNAZART.getText());
+      if (getRaQueryDataSet().getString("NAZLANG").trim().length() == 0)
+        getRaQueryDataSet().setString("NAZLANG", jtfNAZART.getText());
     }
   };
   JLabel jlNAZPRI = new JLabel();
   JraTextField jtfNAZPRI = new JraTextField();
+  JLabel jlNAZLANG = new JLabel();
+  JraTextField jtfNAZLANG = new JraTextField();
   JLabel jlVC = new JLabel();
   JraTextField jtfIPOR = new JraTextField();
   JraTextField jtfSIFZANAR = new JraTextField();
@@ -364,6 +367,7 @@ public class frmArtikli extends raMatPodaci {
     jlBC.setText(res.getString("jlBC_text"));
     jlNAZART.setText(res.getString("jlNAZART_text"));
     jlNAZPRI.setText("Naziv za prikaz");
+    jlNAZLANG.setText("Strani naziv");
     jlNAZART2.setText(res.getString("jlNAZART_text"));
     jlNAZART3.setText(res.getString("jlNAZART_text"));
     jlNAZART4.setText(res.getString("jlNAZART_text"));
@@ -401,6 +405,8 @@ public class frmArtikli extends raMatPodaci {
     jtfNAZART.setDataSet(getRaQueryDataSet());
     jtfNAZPRI.setColumnName("NAZPRI");
     jtfNAZPRI.setDataSet(getRaQueryDataSet());
+    jtfNAZLANG.setColumnName("NAZLANG");
+    jtfNAZLANG.setDataSet(getRaQueryDataSet());
     jtfIPOR.setColumnName("IPOR");
     jtfIPOR.setDataSet(getRaQueryDataSet());
     jtfSIFZANAR.setColumnName("SIFZANAR");
@@ -1014,8 +1020,10 @@ public class frmArtikli extends raMatPodaci {
     jpSubjekt.add(jlrCAN, new XYConstraints(150, 105, 100, -1));
     jpSubjekt.add(jlrNAZAN, new XYConstraints(255, 105, 250, -1));
     jpSubjekt.add(jbNap, new XYConstraints(510, 105, 21, 21));
-    jpSubjekt.add(jbKasa, new XYConstraints(255, 130, 250, -1));
-    jpSubjekt.add(jbPov, new XYConstraints(255, 155, 250, -1));
+    jpSubjekt.add(jlNAZLANG, new XYConstraints(15, 130, -1, -1));
+    jpSubjekt.add(jtfNAZLANG, new XYConstraints(150, 130, 365, -1));
+    jpSubjekt.add(jbKasa, new XYConstraints(255, 155, 250, -1));
+    jpSubjekt.add(jbPov, new XYConstraints(255, 180, 250, -1));
 
     
     jpNarucivanje.add(jtfNAZPROIZ, new XYConstraints(150, 70, 390, -1));
