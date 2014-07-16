@@ -968,6 +968,7 @@ BCPAK;char;20;;;Barcode pakiranja;10
 BCKOL;char;20;;;Barcode kolete;10
 SORTKOL;int;6;;;Sortiranje
 POSTOPROV;numeric;15,3;;0;Postotak provizije
+NAZLANG;char;75;;;Naziv na stranom jeziku;20
 UIDX=cart1
 UIDX=bc
 
