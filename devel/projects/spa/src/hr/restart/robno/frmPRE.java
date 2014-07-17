@@ -211,13 +211,6 @@ public class frmPRE extends frmUlazTemplate {
 		return super.DeleteCheckDetail();
 	}
   
-  public boolean doBeforeSaveMaster(char mode) {
-		if (mode == 'N') {
-			util.getBrojDokumenta(getMasterSet());
-		}
-		return true;
-	}
-  
 	public boolean doWithSaveDetail(char mode) {
 		if (mode=='B'){
 			if (id_stavka != null && id_stavka.length() > 0 && ld.raLocate(dm.getVTPred(),"ID_STAVKA",id_stavka)){
@@ -237,19 +230,8 @@ public class frmPRE extends frmUlazTemplate {
 			id_stavka = null;
 			veza=null;
 		}
-		return true;
+		return super.doWithSaveDetail(mode);
 	}
-
-	public boolean doBeforeSaveDetail(char mode) {
-
-		
-		if (mode=='B'){
-			
-		}
-		return true;
-	}
-	
-	
 	
 	
   public boolean doWithSaveMaster(char mode) {
