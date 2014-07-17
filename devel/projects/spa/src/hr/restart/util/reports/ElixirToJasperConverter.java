@@ -203,8 +203,14 @@ public class ElixirToJasperConverter {
       if (isPageCounter(mods[i])) {
         JRDesignTextField te1 = (JRDesignTextField) createElement(mods[i]);
         JRDesignTextField te2 = (JRDesignTextField) e;
-        te1.setExpression(createExpression("_page1"));
-        te2.setExpression(createExpression("_page2"));
+        if (isForeignCounter(mods[i])) {
+          te1.setExpression(createExpression("_page1"));
+          te2.setExpression(createExpression("_page2"));
+        } else {
+          te1.setExpression(createExpression("_fpage1"));
+          te2.setExpression(createExpression("_fpage2"));
+        }
+        
         if (jas.getGroupsList().size() == 0)
           te2.setEvaluationTime(JRExpression.EVALUATION_TIME_REPORT);
         else {
@@ -247,6 +253,12 @@ public class ElixirToJasperConverter {
     if (!m.getPropertyValue(ep.MODEL_NAME).equals(ep.TEXT)) return false;
     String cs = m.getPropertyValue(ep.CONTROL_SOURCE);
     return cs.startsWith("=(") && cs.indexOf("string-append") > 0 && cs.indexOf("(page)") > 0;
+  }
+  
+  private boolean isForeignCounter(IModel m) {
+    if (!m.getPropertyValue(ep.MODEL_NAME).equals(ep.TEXT)) return false;
+    String cs = m.getPropertyValue(ep.CONTROL_SOURCE);
+    return cs.startsWith("=(") && cs.indexOf("string-append") > 0 && cs.indexOf("\"Page") > 0;
   }
 
   private JRDesignElement createElement(IModel m) throws JRException {
@@ -514,6 +526,12 @@ public class ElixirToJasperConverter {
       je.setValueClassName("java.lang.String");
     } else if (exp.equals("_page2")) {
       je.setText("\" od \" + $V{PAGE_NUMBER}");
+      je.setValueClassName("java.lang.String");
+    } else if (exp.equals("_fpage1")) {
+      je.setText("\"Page \" + $V{PAGE_NUMBER}");
+      je.setValueClassName("java.lang.String");
+    } else if (exp.equals("_fpage2")) {
+      je.setText("\" of \" + $V{PAGE_NUMBER}");
       je.setValueClassName("java.lang.String");
     } else if (data.getTypeMap().containsKey(exp)) {
       je.addFieldChunk(exp);
