@@ -204,11 +204,11 @@ public class ElixirToJasperConverter {
         JRDesignTextField te1 = (JRDesignTextField) createElement(mods[i]);
         JRDesignTextField te2 = (JRDesignTextField) e;
         if (isForeignCounter(mods[i])) {
-          te1.setExpression(createExpression("_page1"));
-          te2.setExpression(createExpression("_page2"));
-        } else {
           te1.setExpression(createExpression("_fpage1"));
           te2.setExpression(createExpression("_fpage2"));
+        } else {
+          te1.setExpression(createExpression("_page1"));
+          te2.setExpression(createExpression("_page2"));
         }
         
         if (jas.getGroupsList().size() == 0)
