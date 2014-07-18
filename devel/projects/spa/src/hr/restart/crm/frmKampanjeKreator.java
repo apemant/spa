@@ -17,6 +17,28 @@
 ****************************************************************************/
 package hr.restart.crm;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Kampanje;
+import hr.restart.baza.Klijenti;
+import hr.restart.baza.Kontakti;
+import hr.restart.baza.Useri;
+import hr.restart.baza.dM;
+import hr.restart.sisfun.raUser;
+import hr.restart.swing.ActionExecutor;
+import hr.restart.swing.JraButton;
+import hr.restart.swing.JraScrollPane;
+import hr.restart.swing.JraTextField;
+import hr.restart.swing.SharedFlag;
+import hr.restart.swing.raInputDialog;
+import hr.restart.swing.raTextMask;
+import hr.restart.util.Aus;
+import hr.restart.util.OKpanel;
+import hr.restart.util.Util;
+import hr.restart.util.Valid;
+import hr.restart.util.raComboBox;
+import hr.restart.util.raFrame;
+import hr.restart.util.raImages;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -34,12 +56,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
@@ -47,26 +71,6 @@ import javax.swing.ListCellRenderer;
 import com.borland.dx.dataset.DataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
-
-import hr.restart.baza.Condition;
-import hr.restart.baza.Kampanje;
-import hr.restart.baza.Klijenti;
-import hr.restart.baza.Useri;
-import hr.restart.baza.dM;
-import hr.restart.sisfun.raUser;
-import hr.restart.swing.ActionExecutor;
-import hr.restart.swing.JraButton;
-import hr.restart.swing.JraScrollPane;
-import hr.restart.swing.JraTextField;
-import hr.restart.swing.SharedFlag;
-import hr.restart.swing.raInputDialog;
-import hr.restart.swing.raTextMask;
-import hr.restart.util.Aus;
-import hr.restart.util.OKpanel;
-import hr.restart.util.Util;
-import hr.restart.util.raComboBox;
-import hr.restart.util.raFrame;
-import hr.restart.util.raImages;
 
 
 public class frmKampanjeKreator extends raFrame {
@@ -95,10 +99,12 @@ public class frmKampanjeKreator extends raFrame {
   SortedListModel selMod = new SortedListModel();
   
   DataSet ds;
+  jpKampanjeMaster podaci;
   AgentPanel agents = new AgentPanel();
   SelFilter sfPanel = new SelFilter();
   raInputDialog sfDialog = new raInputDialog();
   
+  JTabbedPane tabs = new JTabbedPane();
   dlgKampanjaFilter filt = new dlgKampanjaFilter();
 
   public frmKampanjeKreator() {
@@ -173,12 +179,12 @@ public class frmKampanjeKreator extends raFrame {
     main.add(ukupno, new XYConstraints(380, 305, -1, -1));
     
     
-    jpKampanjeMaster podaci = new jpKampanjeMaster(false);
+    podaci = new jpKampanjeMaster(false);
     ds = Kampanje.getDataModule().getTempSet(Condition.nil);
     ds.open();
     ds.insertRow(false);
     podaci.BindComponents(ds);
-    JTabbedPane tabs = new JTabbedPane();
+    
     tabs.add("Raspodjela klijenata", agents);
     tabs.add("Podaci o kampanji", podaci);
     tabs.setBorder(BorderFactory.createEmptyBorder(0, 20, 15, 20));
@@ -213,14 +219,103 @@ public class frmKampanjeKreator extends raFrame {
     sel.revalidate();
     sel.repaint();
     
+    ds.setTimestamp("DATPOC", Valid.getValid().getToday());
+    
     setNumberKlijents();
     super.show();
   }
   
   public void OKPress() {
+    if (selMod.getSize() == 0) {
+      JOptionPane.showMessageDialog(this.getWindow(), "Nije odabran nijedan klijent za kampanju!",
+          "Prazna kampanja", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
     
+    HashSet dups = new HashSet();
+    for (int i = 0; i < agents.combo.size(); i++)
+      if (!dups.add(((raComboBox) agents.combo.get(i)).getDataValue()))
+        if (JOptionPane.showConfirmDialog(this.getWindow(), "Neki agenti se pojavljuju više puta. Nastaviti ipak?",
+            "Duplikati", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) break;
+        else return;
+    
+    if (ds.getString("NASLOV").trim().length() == 0) {
+      tabs.setSelectedIndex(1);
+      if (Valid.getValid().isEmpty(podaci.jraNaslov)) return;
+    }
+    
+    if (agents.rcbMeth.getDataValue().equals("1")) {
+      // raposdjela po abecedi
+      int ki = 0;
+      for (int a = 0; a < agents.combo.size(); a++) {
+        ArrayList ks = new ArrayList();
+        for (int i = 0; i < agents.getVal(a); i++)
+          ks.add(selMod.getElementAt(ki++));
+        if (ks.size() > 0)
+          createKampanja(((raComboBox) agents.combo.get(a)).getDataValue(), ks);
+      }
+    } else if (agents.rcbMeth.getDataValue().equals("2")) {
+      // raspodjela po sluèajnom odabiru
+      Random rand = new Random();
+      
+      // popis svih odabranih klijenata
+      ArrayList all = new ArrayList(selMod.getSize());
+      for (int i = 0; i < selMod.getSize(); i++) 
+        all.add(selMod.getElementAt(i));
+      
+      // za svakog agenta dodati getVal() sluèajnih elemenata iz gornjeg popisa
+      for (int a = 0; a < agents.combo.size(); a++) {
+        ArrayList ks = new ArrayList();
+        for (int i = 0; i < agents.getVal(a); i++)
+          ks.add(all.remove(rand.nextInt(all.size())));
+        if (ks.size() > 0)
+          createKampanja(((raComboBox) agents.combo.get(a)).getDataValue(), ks);
+      }
+    } else if (agents.rcbMeth.getDataValue().equals("3")) {
+      // raspodjela koja uzima u obzir tko je zadnji kontaktirao klijenta
+      
+      // popis svih odabranih klijenata, za kasnije izbacivanje
+      HashSet all = new HashSet(selMod.getSize());
+      for (int i = 0; i < selMod.getSize(); i++) 
+        all.add(selMod.getElementAt(i));
+      
+      // mapa svih agenata na broj klijenata koje trebaju dobiti
+      HashMap numk = new HashMap();
+      for (int a = 0; a < agents.combo.size(); a++)
+        numk.put(((raComboBox) agents.combo.get(a)).getDataValue(), new Integer(agents.getVal(a)));
+      
+      // mapa svih listi klijenata po agentima, za dodavanje klijenata u te liste
+      HashMap lists = new HashMap();
+      for (Iterator i = numk.keySet().iterator(); i.hasNext(); )
+        lists.put(i.next(), new ArrayList());
+      
+      // popis šifri svih odabranih klijenata
+      int[] ids = new int[selMod.getSize()];
+      for (int i = 0; i < selMod.getSize(); i++)
+        ids[i] = ((Klijent) selMod.getElementAt(i)).id;
+      
+      // query: uzeti za svakog od odabranih klijenata, zadnji kontakt,
+      // da se vidi tko je zadnji kontaktirao tog klijenta. Radi se pomoæu 
+      // inner joina tablice kontakta i derivirane tablice grupirane po klijentima
+      String q = "SELECT k.uid, k.cklijent, k.cuser, k.datum " +
+      		"FROM (SELECT cklijent,MAX(datum) as datum FROM kontakti GROUP BY cklijent) kl " +
+      		"INNER JOIN kontakti k ON (k.cklijent = kl.cklijent AND k.datum = kl.datum) " +
+      		"WHERE " + Condition.in("CKLIJENT", ids);
+      System.out.println(q);
+      DataSet last = Aus.q(q);
+      
+      // prvi korak: svakom odabranom agentu dati što više klijenata koje je
+      // zadnje kontaktirao, ali ne preko broja kojeg uopæe treba dobiti
+      
+      
+      
+    }
     
     this.hide();
+  }
+  
+  void createKampanja(String cuser, List ks) {
+    
   }
   
   public void cancelPress() {
@@ -776,12 +871,15 @@ public class frmKampanjeKreator extends raFrame {
       grad = ds.getString("MJ");
       seg = ds.getString("CSEG");
       status = ds.getString("SID");
-      datum = null;
     }
     
     public Klijent(int cklijent, Timestamp dat) {
       id = cklijent; 
       datum = new Timestamp(dat.getTime());
+    }
+    
+    public Klijent(int cklijent) {
+      id = cklijent; 
     }
     
     public boolean equals(Object obj) {
