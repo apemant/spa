@@ -87,16 +87,17 @@ public class raRobno {
 				qds.close();
 			}
 			return false;
-		} else {
+		} 
 			if (doki.getDataModule().getRowCount(
 					"cpar=" + cpar + " and pnbz2='" + brrac + "'") > 0) {
 				qds = doki.getDataModule().getTempSet(
 						"cpar=" + cpar + " and pnbz2='" + brrac + "'");
+				qds.open();
 				if (qds.getRowCount() > 0) {
 					return isKnjigOK(qds);
 				}
 			}
 			return false;
-		}
+		
 	}
 }
