@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.gk;
 
+import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -24,7 +25,9 @@ import hr.restart.util.raMasterDetail;
 import hr.restart.util.raTransaction;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
@@ -37,6 +40,7 @@ public class raObrNaloga {
   QueryDataSet qdsKumulativi;
   QueryDataSet qdsGKStavke;
   String[] copyGKStavkeNames;
+  String[] copySKStavkeNames;
   String godmj;
   String knjig;
   String god;
@@ -121,12 +125,29 @@ public class raObrNaloga {
     }
     return true;
   }
+  
   public boolean raskNaloga(raMasterDetail raMD) {
+    return raskNaloga(raMD, null);
+  }
+  
+  public boolean raskNaloga(raMasterDetail raMD, DataSet sk) {
     try {
 //inicijalizacija
       initObrNaloga(raMD);
+      if (sk != null) initOldSk(sk);
 //prolaz kroz stavke
       makeKumul(qdsGKStavke,qdsStavke,false);
+      
+      // ako postoje saldakonti stavke, kopiraj one koje nisu u GKSTAVKE
+      if (sk != null) {
+        for (sk.first(); sk.inBounds(); sk.next()) {
+          String cgk = sk.getString("CGKSTAVKE");
+          int rbs = Aus.getNumber(cgk.substring(cgk.lastIndexOf("-") + 1));
+          if (rbs > 0 && ld.raLocate(qdsStavke, "RBS", Integer.toString(rbs)))
+            myCopyTo(copySKStavkeNames, sk,  qdsStavke);
+        }
+      }
+      
 //TODO TU UGLAVI RASKNJIZAVANJE SK
 //status na spremno
       qdsNalog.setString("STATUS","S");
@@ -149,6 +170,15 @@ public class raObrNaloga {
         ) {
       return qds.getString("GOD").concat("00");
     } else return qds.getString("GOD").concat(ut.getMonth(qds.getTimestamp("DATUMKNJ")));
+  }
+  
+  private void initOldSk(DataSet sk) throws Exception {
+    ArrayList skn = new ArrayList();
+    for (int i = 0; i < sk.columnCount(); i++)
+      if (qdsStavke.hasColumn(sk.getColumn(i).getColumnName()) != null &&
+          qdsGKStavke.hasColumn(sk.getColumn(i).getColumnName()) == null)
+        skn.add(sk.getColumn(i).getColumnName());
+    copySKStavkeNames = (String[]) skn.toArray(new String[skn.size()]);
   }
 
   private void initObrNaloga(raMasterDetail raMD) throws Exception {
