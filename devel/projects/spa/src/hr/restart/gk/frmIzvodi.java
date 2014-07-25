@@ -207,6 +207,7 @@ public class frmIzvodi extends raMasterDetail {
   public void masterSet_navigated(NavigationEvent ev) {
     if (raDetail.isShowing())
       return;
+    posNalozi();
     frmNalozi.handleRnvActionsWithStatus_masterSet_navigated(this, isLastIzvod());
 /*    if (!getMasterSet().getString("STATUS").equals("K")) {
       raMaster.setEnabledNavAction(rnvObrada,true);
@@ -1249,7 +1250,8 @@ public class frmIzvodi extends raMasterDetail {
   }
 
   void ponistiIzvod() {
-    if (!raObrNaloga.getRaObrNaloga().hasSkStavke(getMasterSet().getString("CNALOGA"))) {//kontrola ima li skstavaka koji imaju cgkstavke like cnaloga% + parametar?
+    raObrNaloga.getRaObrNaloga().hasSkStavke(getMasterSet().getString("CNALOGA")); //{kontrola ima li skstavaka koji imaju cgkstavke like cnaloga% + parametar?
+    Thread t = 
       new Thread() {
         public void run() {
           if (getKnjizenje().getFNalozi().obrNaloga_inThread(true, false, false, false)) {
@@ -1258,15 +1260,17 @@ public class frmIzvodi extends raMasterDetail {
                     " where cnaloga='"+getMasterSet().getString("CNALOGA")+"'");
             getMasterSet().setString("STATUS","S");
             getMasterSet().saveChanges();
+            raMaster.getJpTableView().fireTableDataChanged();
           }
         }
-      }.start();
-      raMaster.getJpTableView().fireTableDataChanged();
-    } else {
+      };
+      t.start();
+      
+ /*   } else {
       JOptionPane.showMessageDialog(raMaster.getWindow(),
           "Rasknjižavanje izvoda nije moguæe!", "Obrada izvoda",
           JOptionPane.ERROR_MESSAGE);
-    }
+    }*/
   }
 
   boolean askObrada() {
