@@ -199,8 +199,8 @@ public class JOPPDhndlr {
     //recalc rbr
     int rbr = 0;
     for (strBset.first(); strBset.inBounds(); strBset.next()) {
-      rbr++;
-      strBset.setInt("RBR", rbr);
+//      rbr++;
+//      strBset.setInt("RBR", rbr);
       //tweakovi 2
       if (strBset.getBigDecimal("BRUTO").compareTo(strBset.getBigDecimal("OSNDOP"))>0) {
         strBset.setString("JOP", "0002");
@@ -445,7 +445,12 @@ public class JOPPDhndlr {
         }
         addStrBSet("BRUTO", rs.getBigDecimal("PBTO"));
         strBset.setInt("SATI", (strBset.getInt("SATI")+rs.getBigDecimal("SATIVP").intValue()));
-        addStrBSet("OSNDOP", rs.getBigDecimal(/*"PBTO"*/"BRUTO"));
+        if (samojedna) {
+          strBset.setBigDecimal("OSNDOP", rs.getBigDecimal("BRUTO"));
+//          addStrBSet("OSNDOP", rs.getBigDecimal("BRUTO"));
+        } else {
+          addStrBSet("OSNDOP", rs.getBigDecimal("PBTO"));
+        }
         
         addStrBSet("MIO1", rs.getBigDecimal("MIO1").multiply(omjer));
         addStrBSet("MIO2", rs.getBigDecimal("MIO2").multiply(omjer));
@@ -517,7 +522,11 @@ public class JOPPDhndlr {
         strBset.setTimestamp("ODJ", getDatum(rs, "ODDANA"));
         strBset.setTimestamp("DOJ", getDatum(rs, "DODANA"));
         strBset.setBigDecimal("BRUTO", rs.getBigDecimal("PBTO"));
-        strBset.setBigDecimal("OSNDOP", rs.getBigDecimal("BRUTO"));
+        if (isMaxOsnDopReached(rs.getBigDecimal("BRUTO"))) {
+          strBset.setBigDecimal("OSNDOP", rs.getBigDecimal("BRUTO"));
+        } else {
+          strBset.setBigDecimal("OSNDOP", rs.getBigDecimal("PBTO"));
+        }
         strBset.setBigDecimal("MIO1", rs.getBigDecimal("MIO1").multiply(omjer));
         strBset.setBigDecimal("MIO2", rs.getBigDecimal("MIO2").multiply(omjer));
         //temp hack
@@ -613,6 +622,19 @@ public class JOPPDhndlr {
     raCommonClass.getraCommonClass().setLabelLaF(fPDV2.jraPoctDat, true);
   }
   
+  private boolean isMaxOsnDopReached(BigDecimal bto) {
+    try {
+      String smaxo = hr.restart.sisfun.frmParam.getParam("pl","maxosn1"/*HC!!!+_doprinosi.getShort("CVRODB")*/, "0", "Maksimalna osnovica za doprinos 1");
+      if ("0".equals(smaxo)) return false;
+      BigDecimal maxo = new BigDecimal(smaxo);
+      return bto.compareTo(maxo) > 0;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    return false;
+  }
+
   private boolean isZapInv() {
     // TODO Auto-generated method stub
     return frmParam.getParam("pl", "jzapinv"+hr.restart.zapod.OrgStr.getKNJCORG(), "N", "Ukljuèiti doprinos za zap.inv. u JOPPD za "+hr.restart.zapod.OrgStr.getKNJCORG()).equalsIgnoreCase("D");
