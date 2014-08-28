@@ -202,7 +202,7 @@ public class JOPPDhndlr {
 //      rbr++;
 //      strBset.setInt("RBR", rbr);
       //tweakovi 2
-      if (strBset.getBigDecimal("BRUTO").compareTo(strBset.getBigDecimal("OSNDOP"))>0) {
+      if (isMaxOsnDopReached(strBset.getBigDecimal("BRUTO")) /*&& strBset.getBigDecimal("BRUTO").compareTo(strBset.getBigDecimal("OSNDOP"))>0*/) {
         strBset.setString("JOP", "0002");
         strBset.setBigDecimal("OSNDOP", strBset.getBigDecimal("BRUTO"));
       }
