@@ -3763,6 +3763,12 @@ System.out.println("findCjenik::else :: "+sql);
 
 			tmpCijenik = null;
 			int cpar = getMasterSet().getInt("CPAR");
+			
+			if ((what_kind_of_dokument.equals("GOT") || what_kind_of_dokument.equals("GRN")) 
+			    && getMasterSet().getInt("CKUPAC")>0 &&
+                lD.raLocate(dm.getPartneri(), "CKUPAC", getMasterSet().getInt("CKUPAC")+""))
+              cpar = dm.getPartneri().getInt("CPAR");
+        
 			if (cpar > 0) {
 			  String doc = what_kind_of_dokument;
 			  if (doc.equals("PON") && "OJ".equals(
@@ -3815,9 +3821,6 @@ System.out.println("findCjenik::else :: "+sql);
 				// rKD.stavka);
 			}
 			
-			if (what_kind_of_dokument.equals("GOT") && getMasterSet().getInt("CKUPAC")>0 &&
-					lD.raLocate(dm.getPartneri(), "CKUPAC", getMasterSet().getInt("CKUPAC")+""))
-				cpar = dm.getPartneri().getInt("CPAR");
 			
 
 			/**
