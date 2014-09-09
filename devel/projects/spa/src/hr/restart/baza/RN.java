@@ -71,4 +71,8 @@ public class RN extends KreirDrop implements DataModule {
   public com.borland.dx.sql.dataset.QueryDataSet getRnz() {
     return RNz;
   }
+  
+  public boolean isAutoRefresh() {
+    return true;
+  }
 }
