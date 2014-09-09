@@ -118,8 +118,13 @@ abstract class ChartBase extends raFrame implements IChartXY, IChart, IReport {
 	 * @param subtitles The subtitles to set.
 	 */
 	final public void setSubtitles(List subtitles) {
+	    this.subtitles.clear();
 		this.subtitles.addAll(subtitles);
 	}
+	
+	final public void addSubtitles(List subtitles) {
+      this.subtitles.addAll(subtitles);
+  }
 		
 	/* (non-Javadoc)
 	 * @see hr.restart.util.chart.IChart#getNumberOfElements()
