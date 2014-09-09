@@ -200,8 +200,13 @@ abstract public class ChartXY extends ChartBase implements ActionListener{
      */
     public void initFrame() throws Exception {
 
-        if(isInstanciated())
+        if(isInstanciated()) {
+            if(chartPanel != null)
+              mainPanel.remove(chartPanel);
+            chartPanel = initGraph();             
+            mainPanel.add(chartPanel,BorderLayout.CENTER);
             return;        
+        }
         
         setInstanciated(true);    
         
