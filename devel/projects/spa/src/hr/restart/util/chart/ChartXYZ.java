@@ -22,13 +22,21 @@
 
 package hr.restart.util.chart;
 
+import hr.restart.util.Aus;
 import hr.restart.util.OKpanel;
 import hr.restart.util.raImages;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Paint;
+import java.awt.PaintContext;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -136,7 +144,9 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
 	    //return initMapTest();
 	}	
 	
-	
+	protected boolean isVariableZ() {
+	  return true;
+	}
 	
 	/**
 	 * 
@@ -212,7 +222,8 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
 		
 //		creates datasets		
 		// to be changed with the real MAP( dataSetToMap )
-		barDataset = createDataset(dataSetToMap());
+	  
+		barDataset = isVariableZ() ? createDataset(dataSetToMap()) : createDataset();
 		//barDataset = createDataset(initMapTest());
 				
 		
@@ -229,8 +240,13 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
 	 */
 	final public void initFrame() throws Exception{
 	    // initializing the combo box chartTypes	
-        if(isInstanciated())
+        if(isInstanciated()) {
+            if(chartPanel != null)
+              mainPanel.remove(chartPanel);
+            chartPanel = initGraph();
+            mainPanel.add(chartPanel, BorderLayout.CENTER);
             return;
+        }
         setInstanciated(true);    
 	    
 		chartTypes.add( BAR_CHART);
@@ -301,27 +317,29 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
 //		buttonsPanel.add(btTest);
 		
 		//adding combobox
-		String [] quantity = { "5","10","15"};
-		comboBoxQuantity = new JComboBox(quantity);
-		comboBoxQuantity.setEditable(true);
-		comboBoxQuantity.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-														
-				try {
-					mainPanel.remove(chartPanel);
-				} catch (RuntimeException e1) {
-
-					//e1.printStackTrace();	
-				    System.out.println("(ChartXYZ) : method --> initGraph : "+e1);
-				}
-
-								
-				selectionChanged();
-			}
-			
-		});													
-		comboBoxQuantity.setSelectedItem(new Integer(getNumberOfElements()).toString());					
-		buttonsPanel.add(comboBoxQuantity);
+		if (isVariableZ()) {
+    		String [] quantity = { "5","10","15"};
+    		comboBoxQuantity = new JComboBox(quantity);
+    		comboBoxQuantity.setEditable(true);
+    		comboBoxQuantity.addActionListener(new ActionListener() {
+    			public void actionPerformed(ActionEvent ev) {
+    														
+    				try {
+    					mainPanel.remove(chartPanel);
+    				} catch (RuntimeException e1) {
+    
+    					//e1.printStackTrace();	
+    				    System.out.println("(ChartXYZ) : method --> initGraph : "+e1);
+    				}
+    
+    								
+    				selectionChanged();
+    			}
+    			
+    		});													
+    		comboBoxQuantity.setSelectedItem(new Integer(getNumberOfElements()).toString());					
+    		buttonsPanel.add(comboBoxQuantity);
+		}
 		
 		//creates action buttons
 			//adding filechooser
@@ -447,6 +465,21 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
 		return dataset;        
 	
 	}
+    
+    final public CategoryDataset createDataset() {       
+      DataSet ds = getDataSet();
+      if(ds == null)
+          throw new NullPointerException("The DataSet should not be null. You should have implemented the getDataSet() method.");
+      
+      //creates the dataset...
+      final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+      
+      for (ds.first(); ds.inBounds(); ds.next()) 
+        dataset.addValue(ds.getBigDecimal(getAxisY()), ds.getString(getAxisZ()),ds.getString(getAxisX()));
+        
+      return dataset;
+    }
+    
 	
 	/**
 	 * @return Returns the lastSelected.
@@ -517,6 +550,7 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
         // customise the renderer...
         final LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
         renderer.setDrawShapes(true);
+        adjustLineRenderer(renderer);
 
 //        renderer.setSeriesStroke(
 //            0, new BasicStroke(
@@ -586,15 +620,33 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
         // disable bar outlines...
         final BarRenderer renderer = (BarRenderer) plot.getRenderer();
         renderer.setDrawBarOutline(false);      
-        renderer.setItemMargin(0.0);
+        renderer.setItemMargin(getItemMargin());
+        adjustBarRenderer(renderer);
                 
         final CategoryAxis domainAxis = plot.getDomainAxis();
-        domainAxis.setCategoryMargin(0.4);
+        domainAxis.setCategoryMargin(getCategoryMargin());
         // OPTIONAL CUSTOMISATION COMPLETED.
         
         return chart;
 
     }
+    
+    protected void adjustBarRenderer(BarRenderer renderer) {
+      
+    }
+    
+    protected void adjustLineRenderer(LineAndShapeRenderer renderer) {
+      
+    }
+    
+    protected double getItemMargin() {
+      return 0.0;
+    }
+    
+    protected double getCategoryMargin() {
+      return 0.4;
+    }
+    
     /* (non-Javadoc)
      * @see hr.restart.util.chart.IChart#repaintGraph()
      */
