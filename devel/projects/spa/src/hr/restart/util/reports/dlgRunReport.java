@@ -822,11 +822,16 @@ public class dlgRunReport {
       "Poruka",
       JOptionPane.INFORMATION_MESSAGE);
   }
+  
+  private void rememberLast() {
+    if (runner.getOwnerName() != null && runner.getReportsCount() > 1)
+      defaultIndexes.setProperty(runner.getOwnerName(), getCurrentDescriptor().getName());
+  }
+  
   private void runReport(int mode) {
     disableDlg();
 //    System.out.println(defaultIndexes);
-    if (runner.getOwnerName() != null && runner.getReportsCount() > 1)
-      defaultIndexes.setProperty(runner.getOwnerName(), getCurrentDescriptor().getName());
+    
     prw.removeDesign();
     if (isElixir()) {
       runElixir(mode);
@@ -841,6 +846,7 @@ public class dlgRunReport {
   }
   public void printReport() {
     try {
+      rememberLast();
       if (getCurrentDescriptor().getReportType() == raReportDescriptor.TYPE_CHART)
         ((IReport) getCurrentDescriptor().getProvider()).print();
       else runReport(0);
@@ -851,6 +857,7 @@ public class dlgRunReport {
 
   public void previewReport() {
     try {
+      rememberLast();
       if (getCurrentDescriptor().getReportType() == raReportDescriptor.TYPE_CHART)
         ((IReport) getCurrentDescriptor().getProvider()).preview();
       else runReport(1);
@@ -860,6 +867,7 @@ public class dlgRunReport {
   }
   public void exportReport() {
     try {
+      rememberLast();
       if (getCurrentDescriptor().getReportType() == raReportDescriptor.TYPE_CHART)
         ((IReport) getCurrentDescriptor().getProvider()).export();
       else runReport(2);
@@ -869,9 +877,11 @@ public class dlgRunReport {
   }
   public void mailReport() {
     try {
+      rememberLast();
 //      if (getCurrentDescriptor().getReportType() == raReportDescriptor.TYPE_CHART)
 //        ((IReport) getCurrentDescriptor().getProvider()).export();
 //      else 
+      if (getCurrentDescriptor().getReportType() != raReportDescriptor.TYPE_CHART)
         runReport(3);
     } catch (Exception e) {
       e.printStackTrace();
