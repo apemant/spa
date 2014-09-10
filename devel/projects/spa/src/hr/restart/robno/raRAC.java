@@ -35,6 +35,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -45,6 +46,7 @@ import javax.swing.text.JTextComponent;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
@@ -233,6 +235,11 @@ final public class raRAC extends raIzlazTemplate {
             "hr.restart.robno.repGroupIzlazni", "RacGroup",
             ReportValuteTester.titleRAC1R + " po grupama artikala");
 
+        
+        /*raMaster.getRepRunner().addJasper("hr.restart.robno.repMjeRac",
+            "hr.restart.robno.repMjeRac", "mje.jrxml", "Izvještaj uplata po mjesecima");*/
+        raMaster.getRepRunner().addReport("hr.restart.robno.repMjeRacChart3D", "hr.restart.robno.repMjeRacChart3D", "Grafikon prihoda i naplate");
+        
         raMaster.getRepRunner().addReport("hr.restart.robno.repMxRAC",
                 "Matri\u010Dni ispis ra\u010Duna");
         
@@ -248,6 +255,100 @@ final public class raRAC extends raIzlazTemplate {
           } else raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
         }
         
+    }
+    
+    
+    public String getPodnaslov() {
+      return "Za period od " + Aus.formatTimestamp(getPreSelect().getSelRow().getTimestamp("DATDOK-from"))  
+              + " do " + Aus.formatTimestamp(getPreSelect().getSelRow().getTimestamp("DATDOK-to"));
+    }
+    
+    public DataSet getMjeData() {
+      StorageDataSet ret = new StorageDataSet();
+      ret.setColumns(new Column[] {
+          dM.createStringColumn("MJ", "MJ", 100),
+          dM.createBigDecimalColumn("IZNOSR", "Iznos prihoda", 2),
+          dM.createBigDecimalColumn("IZNOSU", "Iznos uplata", 2)
+      });
+      ret.open();
+      
+      StorageDataSet ds = getMasterSet();
+      try {
+        long crow = ds.getInternalRow();
+        raMaster.getJpTableView().enableEvents(false);
+        Calendar cal = Calendar.getInstance();        
+        
+        for (ds.first(); ds.inBounds(); ds.next()) {
+          cal.setTime(ds.getTimestamp("DATDOK"));
+          String mj = (cal.get(cal.MONTH) + 1) + ". mjesec";
+          if (cal.get(cal.MONTH) + 1 < 10) mj = " " + mj;
+          
+          if (!lD.raLocate(ret, "MJ", mj)) {
+            ret.insertRow(false);
+            ret.setString("MJ", mj);
+            ret.setBigDecimal("IZNOSR", Aus.zero0);
+            ret.setBigDecimal("IZNOSU", Aus.zero0);
+          }
+          
+          Aus.add(ret, "IZNOSR", ds, "UIRAC");
+          Aus.add(ret, "IZNOSU", ds, "PLATITI");          
+        }
+        
+        ds.goToInternalRow(crow);
+      } finally {
+        raMaster.getJpTableView().enableEvents(true);
+      }
+      
+      return ret;
+    }
+    
+    public DataSet getMjeData3D() {
+      String[] mjn = {"Sijeèanj", "Veljaèa", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"};
+      StorageDataSet ret = new StorageDataSet();
+      ret.setColumns(new Column[] {
+          dM.createIntColumn("RBR", "Rbr"),
+          dM.createStringColumn("MJ", "MJ", 100),
+          dM.createStringColumn("RU", "Vrsta", 30),
+          dM.createBigDecimalColumn("IZNOS", "Iznos", 2)
+      });
+      ret.open();
+      
+      StorageDataSet ds = getMasterSet();
+      try {
+        long crow = ds.getInternalRow();
+        raMaster.getJpTableView().enableEvents(false);
+        Calendar cal = Calendar.getInstance();        
+        
+        for (ds.first(); ds.inBounds(); ds.next()) {
+          cal.setTime(ds.getTimestamp("DATDOK"));
+          int mj = cal.get(cal.MONTH);
+          
+          if (!lD.raLocate(ret, new String[] {"MJ", "RU"}, new String[] {mjn[mj], "Raèuni"})) {
+            ret.insertRow(false);
+            ret.setInt("RBR", mj);
+            ret.setString("MJ", mjn[mj]);
+            ret.setString("RU", "Raèuni");
+            ret.setBigDecimal("IZNOS", Aus.zero0);
+          } 
+          Aus.add(ret, "IZNOS", ds, "UIRAC");
+          
+          if (!lD.raLocate(ret, new String[] {"MJ", "RU"}, new String[] {mjn[mj], "Uplate"})) {
+            ret.insertRow(false);
+            ret.setInt("RBR", mj);
+            ret.setString("MJ", mjn[mj]);
+            ret.setString("RU", "Uplate");
+            ret.setBigDecimal("IZNOS", Aus.zero0);
+          }
+          Aus.add(ret, "IZNOS", ds, "PLATITI");          
+        }
+                
+        ds.goToInternalRow(crow);
+      } finally {
+        raMaster.getJpTableView().enableEvents(true);
+      }
+      
+      ret.setSort(new SortDescriptor(new String[] {"RBR"}));
+      return ret;
     }
 
     public void MyaddIspisDetail() {
