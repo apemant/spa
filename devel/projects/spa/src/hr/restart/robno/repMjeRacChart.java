@@ -1,5 +1,5 @@
 /****license*****************************************************************
-**   file: repMjeRacChart3D.java
+**   file: repMjeRacChart.java
 **   Copyright 2006 Rest Art
 **
 **   Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,15 +18,11 @@
 package hr.restart.robno;
 
 
-import hr.restart.util.Aus;
 import hr.restart.util.raLoader;
-import hr.restart.util.chart.ChartXYZ;
-import hr.restart.util.chart.ChartXYZ2;
+import hr.restart.util.chart.ChartXY;
 
-import java.awt.Color;
 import java.util.ArrayList;
-
-import org.jfree.chart.renderer.BarRenderer;
+import java.util.Map;
 
 import com.borland.dx.dataset.DataSet;
 
@@ -35,8 +31,11 @@ import com.borland.dx.dataset.DataSet;
  *
  */
 
-
-public class repMjeRacChart3D extends ChartXYZ2 {
+/**
+ * @author gradecak
+ *
+ */
+public class repMjeRacChart extends ChartXY {
 
     raRAC frm;
 
@@ -45,13 +44,17 @@ public class repMjeRacChart3D extends ChartXYZ2 {
         return BAR_CHART;
     }
     
-    public repMjeRacChart3D() throws Exception {
+    public repMjeRacChart() throws Exception {
         ArrayList subs = new ArrayList();
         frm = (raRAC) raLoader.load("hr.restart.robno.raRAC");        
         subs.add(frm.getPodnaslov());
         setSubtitles(subs);
     }
 
+
+    /* (non-Javadoc)
+     * @see hr.restart.util.chart.IChartXY#getAxisX()
+     */
     public String getAxisX() {  
         return "MJ";
     }
@@ -60,38 +63,41 @@ public class repMjeRacChart3D extends ChartXYZ2 {
      */
     public String getAxisY() {
         //return "IPRODBP";
-        return "IZNOS";
+        return null;
     }
-    
-    public String getAxisZ() {
-      //return "IPRODBP";
-      return "RU";
-    }
-    
+
     /* (non-Javadoc)
      * @see hr.restart.util.chart.IDataSet#getDataSet()
      */
     public DataSet getDataSet() {
-        ArrayList subs = new ArrayList();
-        subs.add(frm.getPodnaslov());
-        setSubtitles(subs);
-        return frm.getMjeData3D();
+        return frm.getMjeData();
     }
     /* (non-Javadoc)
      * @see hr.restart.util.chart.IChart#getGraphTitle()
      */
     public String getChartTitle() {
-        return "Pregled raèuna i uplata";
+        return "Pregled prihoda i uplata";
     }
 
     /* (non-Javadoc)
      * @see hr.restart.util.chart.IChart#getNumberOfElements()
      */
     public int getNumberOfElements() {
-        return 2;
+        return 12;
     }
     /* (non-Javadoc)
      * @see hr.restart.util.chart.ChartXY#getDefaultSelectedItem()
      */
-
+    public String getDefaultSelectedItem() {
+        // TODO Auto-generated method stub
+        return "Iznos prihoda";
+    }
+    
+    public boolean sortByValue() {
+      return false;
+    }
+    
+    public Map dataSetToMap() throws NullPointerException {
+      return null;
+    }
 }
