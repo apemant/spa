@@ -22,21 +22,13 @@
 
 package hr.restart.util.chart;
 
-import hr.restart.util.Aus;
 import hr.restart.util.OKpanel;
 import hr.restart.util.raImages;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Paint;
-import java.awt.PaintContext;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -96,12 +88,13 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
 	private JFreeChart barChart = null;
 	private JFreeChart lineChart = null;
 	private ChartPanel chartPanel = null;
-	private JPanel buttonsPanel = null;
+	protected JPanel buttonsPanel = null;
 	private JPanel actionsPanel = null;
 	private JPanel globalButtonsPanel = null;
 	private JPanel mainPanel = null;
 	private JComboBox comboBoxQuantity = null;
 	// END
+	
 	
 	/**
 	 * This constructor calls the super constructor from #hr.restart.util.chart.ChartBase
@@ -238,7 +231,7 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
 	/* (non-Javadoc)
 	 * @see hr.restart.util.chart.IChart#init()
 	 */
-	final public void initFrame() throws Exception{
+	public void initFrame() throws Exception{
 	    // initializing the combo box chartTypes	
         if(isInstanciated()) {
             if(chartPanel != null)
@@ -484,7 +477,7 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
 	/**
 	 * @return Returns the lastSelected.
 	 */
-	final private String getLastSelected() {
+	final protected String getLastSelected() {
 		return lastSelected.toString();
 	}
 	/**
@@ -647,10 +640,7 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
       return 0.4;
     }
     
-    /* (non-Javadoc)
-     * @see hr.restart.util.chart.IChart#repaintGraph()
-     */
-	final public void repaintGraph(){
+	public void repaintGraph(){
 		
 		this.chartPanel.repaint();
 		this.chartPanel.validate();		
@@ -695,7 +685,7 @@ abstract public class ChartXYZ extends ChartBase implements IChartXYZ{
      * Fire some actions when an input component has changed.
      *
      */
-    final private void selectionChanged(){
+    final protected void selectionChanged(){
 
         try {
             initGraph();
