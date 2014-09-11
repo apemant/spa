@@ -319,7 +319,7 @@ public class frmKampanje extends raMasterDetail {
   
   void obradi() {
     if (getDetailSet().getRowCount() == 0) return;
-    if (getDetailSet().getString("STATUS").equals("F")) return;
+    if (getDetailSet().getString("STATUS").equals(CLOSED)) return;
     
     setTime = new Timestamp(System.currentTimeMillis());
     setStatus = CLOSED;
@@ -340,7 +340,7 @@ public class frmKampanje extends raMasterDetail {
   
   void ponisti() {
     if (getDetailSet().getRowCount() == 0) return;
-    if (getDetailSet().getString("STATUS").equals("K")) return;
+    if (getDetailSet().getString("STATUS").equals(OPEN)) return;
     
     setTime = new Timestamp(System.currentTimeMillis());
     setStatus = OPEN;
@@ -355,7 +355,7 @@ public class frmKampanje extends raMasterDetail {
   
   void odlozi() {
     if (getDetailSet().getRowCount() == 0) return;
-    if (getDetailSet().getString("STATUS").equals("F")) return;
+    if (getDetailSet().getString("STATUS").equals(CLOSED)) return;
     if (Aus.getAnyNumber(jtf.getText()) == 0) {
       JOptionPane.showMessageDialog(this.getWindow(), 
           "Nije upisan broj " + (jcb.getSelectedIndex() == 0 ? "dana" : "sati") + " za odgodu!",
@@ -493,7 +493,7 @@ public class frmKampanje extends raMasterDetail {
       jpDetail.jlrCklijent.forceFocLost();
       getDetailSet().setTimestamp("DATUM", new Timestamp(System.currentTimeMillis()));
       getDetailSet().setInt("KAMPANJA", getMasterSet().getInt("UID"));
-      getDetailSet().setString("STATUS", "K");
+      getDetailSet().setString("STATUS", OPEN);
       jpDetail.jlrKlijent.requestFocus();
     } else if (mode == 'I')
       jpDetail.opis.requestFocus();
