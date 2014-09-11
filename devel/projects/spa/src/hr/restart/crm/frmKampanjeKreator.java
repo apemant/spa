@@ -31,13 +31,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.swing.SharedFlag;
 import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raTextMask;
-import hr.restart.util.Aus;
-import hr.restart.util.OKpanel;
-import hr.restart.util.Util;
-import hr.restart.util.Valid;
-import hr.restart.util.raComboBox;
-import hr.restart.util.raFrame;
-import hr.restart.util.raImages;
+import hr.restart.util.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -69,6 +63,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 
@@ -244,6 +239,32 @@ public class frmKampanjeKreator extends raFrame {
       if (Valid.getValid().isEmpty(podaci.jraNaslov)) return;
     }
     
+    raProcess.runChild(this, "Kampanje", "Generiranje kampanja...", new Runnable() {
+      public void run() {
+        Int2 ret = generate();
+        raProcess.yield(ret);
+      }
+    });
+    if (raProcess.isCompleted()) {
+      Int2 ret = (Int2) raProcess.getReturnValue();
+      JOptionPane.showMessageDialog(this.getWindow(), 
+          Aus.getNumDep(ret.one, 
+              "Kreirana " + ret.one + " kampanja ",
+              "Kreirane " + ret.one + " kampanje ",
+              "Kreirano " + ret.one + " kampanja ") + 
+          " s ukupno " + ret.two +
+          Aus.getNumDep(ret.two, " klijentom.", " klijenta.", " klijenata."),
+          "Kampanje", JOptionPane.INFORMATION_MESSAGE);
+    } else if (raProcess.isFailed()) {
+      JOptionPane.showMessageDialog(this.getWindow(), "Došlo je do greške. Neke kampanje su možda ipak kreirane! Provjerite ruèno.",
+          "Kampanje",  JOptionPane.ERROR_MESSAGE);
+    }
+    this.hide();
+  }
+  
+  Int2 generate() {
+    int kam = 0, kli = 0;
+    raProcess.setMessage("Raspodjela klijenata...", false);
     if (agents.rcbMeth.getDataValue().equals("1")) {
       // raposdjela po abecedi
       int ki = 0;
@@ -251,8 +272,12 @@ public class frmKampanjeKreator extends raFrame {
         ArrayList ks = new ArrayList();
         for (int i = 0; i < agents.getVal(a); i++)
           ks.add(selMod.getElementAt(ki++));
-        if (ks.size() > 0)
+        if (ks.size() > 0) {
+          raProcess.setMessage("Generiranje " + (kam+1) + ". kampanje...", false);
           createKampanja(((raComboBox) agents.combo.get(a)).getDataValue(), ks);
+          ++kam;
+          kli += ks.size();
+        }
       }
     } else if (agents.rcbMeth.getDataValue().equals("2")) {
       // raspodjela po sluèajnom odabiru
@@ -268,8 +293,12 @@ public class frmKampanjeKreator extends raFrame {
         ArrayList ks = new ArrayList();
         for (int i = 0; i < agents.getVal(a); i++)
           ks.add(all.remove(rand.nextInt(all.size())));
-        if (ks.size() > 0)
+        if (ks.size() > 0) {
+          raProcess.setMessage("Generiranje " + (kam+1) + ". kampanje...", false);
           createKampanja(((raComboBox) agents.combo.get(a)).getDataValue(), ks);
+          ++kam;
+          kli += ks.size();
+        }
       }
     } else if (agents.rcbMeth.getDataValue().equals("3")) {
       // raspodjela koja uzima u obzir tko je zadnji kontaktirao klijenta
@@ -306,16 +335,79 @@ public class frmKampanjeKreator extends raFrame {
       
       // prvi korak: svakom odabranom agentu dati što više klijenata koje je
       // zadnje kontaktirao, ali ne preko broja kojeg uopæe treba dobiti
+      for (last.first(); last.inBounds(); last.next()) {
+        Klijent k = new Klijent(last.getInt("CKLIJENT"));
+        String cuser = last.getString("CUSER");
+        Integer num = (Integer) numk.get(cuser);
+        if (num != null && num.intValue() > 0) {
+          ArrayList al = (ArrayList) lists.get(cuser);
+          al.add(k);
+          all.remove(k);
+          numk.put(cuser, new Integer(num.intValue() - 1));
+        }
+      }
       
+      // drugi korak: preostale klijente dodijeliti sluèajnim odabirom
+      Random rand = new Random();
+      ArrayList rest = new ArrayList(all);
       
-      
+      for (Iterator a = numk.keySet().iterator(); a.hasNext(); ) {
+        String cuser = (String) a.next();
+        ArrayList ks = (ArrayList) lists.get(cuser);
+        Integer num = (Integer) numk.get(cuser);
+        for (int i = 0; i < num.intValue(); i++)
+          ks.add(rest.remove(rand.nextInt(rest.size())));
+        
+        if (ks.size() > 0) {
+          raProcess.setMessage("Generiranje " + (kam+1) + ". kampanje...", false);
+          createKampanja(cuser, ks);
+          ++kam;
+          kli += ks.size();
+        }
+      }
     }
-    
-    this.hide();
+    return new Int2(kam, kli);
   }
   
   void createKampanja(String cuser, List ks) {
+    String[] cc = {"NASLOV", "DATPOC", "CKANAL", "OPIS", "CORG"};
+    QueryDataSet zag = Kampanje.getDataModule().getTempSet(Condition.nil);
+    zag.open();
     
+    int retry = 0;
+    do {
+      zag.empty();    
+      zag.insertRow(false);
+      dM.copyColumns(ds,  zag,  cc);
+      zag.setString("CUSER", cuser);
+      zag.setInt("UID", Valid.getValid().findSeqInt("CRM-kampanje", false, false));
+    } while (!raTransaction.saveChangesInTransaction(new QueryDataSet[] {zag, dM.getDataModule().getSeq()}) && ++retry < 3);
+    
+    if (retry == 3) raProcess.fail();
+    
+    String[] cols = {"NASLOV", "CKANAL", "CUSER", "OPIS"};
+    QueryDataSet st = Kontakti.getDataModule().getTempSet(Condition.nil);
+    st.open();
+    
+    retry = 0;
+    do {
+      st.empty();
+      int kuid = Valid.getValid().findSeqInt("CRM-kontakti", false, false) - 1;
+      int milli = 0;
+      for (Iterator i = ks.iterator(); i.hasNext(); ) {
+        Klijent k = (Klijent) i.next();
+        st.insertRow(false);
+        st.setInt("UID", ++kuid);
+        st.setInt("CKLIJENT", k.id);
+        st.setTimestamp("DATUM", new Timestamp(System.currentTimeMillis() + milli++));
+        dM.copyColumns(zag, st, cols);
+        st.setInt("KAMPANJA", zag.getInt("UID"));
+        st.setString("STATUS", frmKampanje.OPEN);
+      }
+      dM.getDataModule().getSeq().setDouble("BROJ", kuid);
+    } while (!raTransaction.saveChangesInTransaction(new QueryDataSet[] {st, dM.getDataModule().getSeq()}) && ++retry < 5);
+    
+    if (retry == 5) raProcess.fail();
   }
   
   public void cancelPress() {
