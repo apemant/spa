@@ -956,7 +956,7 @@ System.err.println(
       b.setText("...");
       String vrsif = c.getColumnName().equalsIgnoreCase("OZNPOD")?"PLPD":"PL"+c.getColumnName().substring(1);
       if (vrsif.trim().length()>4) return null;
-      final QueryDataSet sifre = Sifrarnici.getDataModule().getFilteredDataSet(Condition.equal("VRSTASIF", vrsif));
+      final QueryDataSet sifre = Sifrarnici.getDataModule().getTempSet(Condition.equal("VRSTASIF", vrsif));
       sifre.open();
       if (sifre.getRowCount() == 0) return null;
       b.addActionListener(new ActionListener() {
@@ -1217,16 +1217,12 @@ System.err.println(
   private void saveJOPPD() {
     if (strBset == null || strBset.getRowCount() == 0) return;
     String idizv = getIDIZV(strAset);
-    QueryDataSet qsA = JoppdA.getDataModule().getFilteredDataSet(Condition.equal("IDIZV", idizv));
+    QueryDataSet qsA = JoppdA.getDataModule().getTempSet(Condition.equal("IDIZV", idizv));
     qsA.open();
     boolean isNew = qsA.getRowCount() == 0;
     String message = isNew?"Pohraniti izvješæe "+idizv+" ?":"Zamijeniti postojeæe izvješæe "+idizv+" ?";
     if (JOptionPane.showConfirmDialog(null, message, "Potvrda", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-      if (!isNew) {
-        Valid.getValid().runSQL("DELETE FROM joppda where IDIZV = '"+idizv+"'");
-        Valid.getValid().runSQL("DELETE FROM joppdb where IDIZV = '"+idizv+"'");
-      }
-      QueryDataSet qsB = JoppdB.getDataModule().getFilteredDataSet(Condition.nil);
+      QueryDataSet qsB = JoppdB.getDataModule().getTempSet(Condition.nil);
       qsB.open();
       for (strBset.first();strBset.inBounds(); strBset.next()) {
         qsB.insertRow(false);
@@ -1239,6 +1235,10 @@ System.err.println(
       qsA.setString("IDIZV", idizv);
       qsA.setTimestamp("DATUM", fPDV2.getDatumOd());
       qsA.post();
+      if (!isNew) {
+        Valid.getValid().runSQL("DELETE FROM joppda where IDIZV = '"+idizv+"'");
+        Valid.getValid().runSQL("DELETE FROM joppdb where IDIZV = '"+idizv+"'");
+      }
       if (raTransaction.saveChangesInTransaction(new QueryDataSet[] {qsA,qsB})) {
         JOptionPane.showMessageDialog(null, "Snimanje uspješno!");
       } else {
@@ -1251,8 +1251,8 @@ System.err.println(
     getStrBset();
     strAset.empty();
     strBset.empty();
-    QueryDataSet qsA = JoppdA.getDataModule().getFilteredDataSet(Condition.equal("IDIZV", idizv));
-    QueryDataSet qsB = JoppdB.getDataModule().getFilteredDataSet(Condition.equal("IDIZV", idizv));
+    QueryDataSet qsA = JoppdA.getDataModule().getTempSet(Condition.equal("IDIZV", idizv));
+    QueryDataSet qsB = JoppdB.getDataModule().getTempSet(Condition.equal("IDIZV", idizv));
     qsA.open();
     qsA.first();
     strAset.insertRow(false);
