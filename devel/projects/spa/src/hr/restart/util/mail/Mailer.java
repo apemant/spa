@@ -72,6 +72,10 @@ public abstract class Mailer {
     mailer.setMailHost(getMailHost());
     mailer.setRecipients(getRecipients());
     mailer.setMessage(mess+getChecksum());
+    String user = getMailProperties().getProperty("mailuser");
+    if (user != null && user.length() > 0)
+      mailer.setAuth(user, getMailProperties().getProperty("mailpasswd"));
+    
     if (send) {
       mailer.sendMail();
     }
@@ -226,7 +230,7 @@ System.out.println(savedMailInfo);
   public static Properties getMailProperties() {
     if (mailprops != null) return mailprops; 
     mailprops = FileHandler.getProperties("mail.properties");
-    boolean b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b14, b15;
+    boolean b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b14, b15, b16, b17;
     b1 = checkProperty(mailprops, "mailhost", "mail.t-com.hr", "mail.rest-art.hr");
     b2 = checkProperty(mailprops, "mailfrom", "errors@rest-art.hr");
     b3 = checkProperty(mailprops, "mailboxdir", "mailbox");
@@ -241,7 +245,10 @@ System.out.println(savedMailInfo);
     b12 = checkProperty(mailprops, "mailrec8", "dborojevic@rest-art.hr");
     b14 = checkProperty(mailprops, "mailrec9", "kresimir@rest-art.hr");
     b15 =checkProperty(mailprops, "mailrec10", "marko@rest-art.hr");
-    if (b1||b2||b3||b4||b5||b6||b7||b8||b9||b10||b11||b12||b14||b15) {//:)
+    b16 = checkProperty(mailprops, "mailuser", "");
+    b17 = checkProperty(mailprops, "mailpasswd", "");
+    
+    if (b1||b2||b3||b4||b5||b6||b7||b8||b9||b10||b11||b12||b14||b15||b16||b17) {//:)
       FileHandler.storeProperties("mail.properties", mailprops);
     }
     return mailprops;

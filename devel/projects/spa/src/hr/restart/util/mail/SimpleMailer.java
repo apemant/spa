@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -46,6 +48,7 @@ public class SimpleMailer {
 	private String recipients[] = null;
 	private String subject = null;
 	private String message = null;
+	private Authenticator auth = null;
 	
 	public SimpleMailer(){		
 	}
@@ -89,9 +92,11 @@ public class SimpleMailer {
 			//Set the host smtp address
 			  Properties props = new Properties();
 			  props.put("mail.smtp.host", getMailHost());
+			  props.put("mail.transport.protocol", "smtp");
+			  if (auth != null) props.put("mail.smtp.auth", "true");
  
 			 // create some properties and get the default Session
-			 Session session = Session.getDefaultInstance(props, null);
+			 Session session = Session.getDefaultInstance(props, auth);
 			 session.setDebug(debug);
  
 			 // create a message
@@ -203,5 +208,13 @@ public class SimpleMailer {
 	 */
 	public void setMessage(String message) {
 		this.message = message;
+	}
+	
+	public void setAuth(final String user, final String passwd) {
+	  auth = new Authenticator() {
+        public PasswordAuthentication getPasswordAuthentication() {
+           return new PasswordAuthentication(user, passwd);
+        }
+      };
 	}
 }
