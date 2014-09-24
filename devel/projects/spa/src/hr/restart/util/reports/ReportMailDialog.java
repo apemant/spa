@@ -131,7 +131,7 @@ public class ReportMailDialog extends JraDialog {
   public static boolean showMailOptions() {
     final Properties props = new Properties();
     final Properties allprops = Mailer.getMailProperties();
-    final String[] keys = new String[] {"mailhost","mailfrom"};
+    final String[] keys = new String[] {"mailhost","mailfrom","mailuser","mailpasswd"};
     for (int i = 0; i < keys.length; i++) props.setProperty(keys[i], allprops.getProperty(keys[i]));
     propsDialog dmo = new propsDialog(props,"Postavke e-maila") {
       {
