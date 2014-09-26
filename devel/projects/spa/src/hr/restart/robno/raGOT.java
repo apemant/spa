@@ -17,15 +17,30 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.dM;
+import hr.restart.swing.JraButton;
+import hr.restart.swing.JraCheckBox;
+import hr.restart.swing.raInputDialog;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
 
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.StorageDataSet;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 public class raGOT extends raIzlazTemplate  {
+  
+  
 
   public void initialiser(){
     what_kind_of_dokument = "GOT";
@@ -74,19 +89,39 @@ public class raGOT extends raIzlazTemplate  {
 //    if (repFISBIH.isFISBIH()) raDetail.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
     isDetailInitIspis = true;
   }
+  
+  KupacDialog kup = new KupacDialog();
 
   raNavAction rnvNacinPlac = new raNavAction("Na\u010Din pla\u0107anja",raImages.IMGEXPORT,java.awt.event.KeyEvent.VK_F7) {
       public void actionPerformed(ActionEvent e) {
           keyNacinPlac();
       }
   };
+  
+  raNavAction rnvKupHack = new raNavAction("Promijeni kupca",
+      raImages.IMGPREFERENCES, java.awt.event.KeyEvent.VK_F11) {
+    public void actionPerformed(ActionEvent e) {
+      keyKupHack();
+    }
+  };
 
   public void keyNacinPlac(){
     frmPlacanje.entryRate(this);
   }
+  
+  public void keyKupHack() {
+    if (getMasterSet().getRowCount() == 0) return;
+    
+    kup.setData(getMasterSet());
+    if (kup.show(raMaster.getWindow())) {
+      kup.update(getMasterSet());
+      getMasterSet().saveChanges();
+      raMaster.getJpTableView().fireTableDataChanged();
+    }
+  }
 
   public void ExitPointDetail(){
-    //frmPlacanje.checkRate(this);
+
   }
 /*
   public boolean checkAccess(){
@@ -126,7 +161,8 @@ public class raGOT extends raIzlazTemplate  {
     raDetail.addOption(rnvKartica, 5, false);
     raMaster.addOption(rnvFisk, 5, false);
     defNacpl = hr.restart.sisfun.frmParam.getParam("robno","gotNacPl");
-
+    
+    if (hideKup) raMaster.addOption(rnvKupHack, 6, false);
   }
 
   public boolean LocalValidacijaMaster(){
@@ -236,5 +272,65 @@ public class raGOT extends raIzlazTemplate  {
                  (odabrano.equals("SGT") ? "and vrdok= 'GOT'" :
                      "and vrdok= '"+odabrano+"' and param like '%K%'") ; //samo trenutno
       qDS =  hr.restart.util.Util.getNewQueryDataSet(ss,true);
+   }
+   
+   class KupacDialog extends raInputDialog {
+     StorageDataSet sds = new StorageDataSet();
+     
+     
+     JlrNavField jlrKup = new JlrNavField();
+     JlrNavField jlrNaziv = new JlrNavField();
+     JraButton jbSelKup = new JraButton();
+     JraCheckBox jcbAktiv = new JraCheckBox();
+     JPanel jpMain;
+     
+     public KupacDialog() {
+       sds.setColumns(new Column[] {
+           dM.createIntColumn("CKUPAC", "Kupac")
+       });
+       sds.open();
+       sds.insertRow(false);
+       
+       jpMain = new JPanel();
+       jpMain.setLayout(new XYLayout(545, 85));
+       
+       jlrKup.setColumnName("CKUPAC");
+       jlrKup.setDataSet(sds);
+       jlrKup.setColNames(new String[] {"IME"});
+       jlrKup.setVisCols(new int[] {0, 1, 2});
+       jlrKup.setTextFields(new javax.swing.text.JTextComponent[] {jlrNaziv});
+       jlrKup.setRaDataSet(dm.getKupci());
+       jlrKup.setNavButton(jbSelKup);
+       jlrNaziv.setColumnName("IME");
+       jlrNaziv.setNavProperties(jlrKup);
+       jlrNaziv.setSearchMode(1);
+       
+       jcbAktiv.setHorizontalTextPosition(JLabel.LEADING);
+       jcbAktiv.setHorizontalAlignment(JLabel.TRAILING);
+       jcbAktiv.setText("Sakrij kupca");
+       
+       jpMain.add(new JLabel("Kupac"), new XYConstraints(15, 20, -1, -1));
+       jpMain.add(jlrKup, new XYConstraints(100, 20, 100, -1));
+       jpMain.add(jlrNaziv, new XYConstraints(205, 20, 300, -1));
+       jpMain.add(jbSelKup, new XYConstraints(510, 20, 21, 21));
+       jpMain.add(jcbAktiv, new XYConstraints(305, 50, 200, -1));
+     }
+     
+     public void setData(DataSet ds) {
+       jlrKup.emptyTextFields();
+       if (ds.isNull("CKUPAC")) sds.setUnassignedNull("CKUPAC");
+       else sds.setInt("CKUPAC", ds.getInt("CKUPAC"));
+       jcbAktiv.setSelected(ds.getString("AKTIV").equalsIgnoreCase("N"));
+     }
+     
+     public boolean show(Container parent) {
+       return super.show(parent, jpMain, "Promjena kupca");
+     }
+     
+     public void update(DataSet ds) {
+       if (sds.isNull("CKUPAC")) ds.setAssignedNull("CKUPAC");
+       else ds.setInt("CKUPAC", sds.getInt("CKUPAC"));
+       ds.setString("AKTIV", jcbAktiv.isSelected() ? "N" : "D");
+     }
    }
 }
