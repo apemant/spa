@@ -917,7 +917,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
             what_kind_of_dokument.equals("GOT") ||
             what_kind_of_dokument.equals("GRN") ||
             what_kind_of_dokument.equals("PON"))
-          raMaster.addOption(rnvPop, 5, false);
+          raMaster.addOption(rnvPop, 5, true);
         
 		setUpfrmDokIzlaz();
 		rCD.setisNeeded(hr.restart.sisfun.frmParam.getParam("robno",
@@ -1356,7 +1356,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
           upls = UplRobno.getDataModule().getTempSet(Condition.equal("CDOC", ikey));
           upls.open();
           
-          getMasterSet().setBigDecimal("PLATITI", Aus.sum("IZNOS", upls));		  
+          getMasterSet().setBigDecimal("PLATITI", Aus.sum("IZNOS", upls));
+          checkPlac();
 		}
 		saveDod(mode);
 		return true;
@@ -4573,6 +4574,15 @@ System.out.println("findCjenik::else :: "+sql);
 			    bPonudaZaKupca && "PON|PRD".indexOf(odabrano) >= 0) {
 			  upit = yc+" vrdok= '" + odabrano + "'" + dodatak + " and statira='N' and cskl in ('"
                 + pressel.getSelRow().getString("CSKL") + "')"; // samo
+			} else if (getMasterSet().getString("VRDOK").equals(odabrano)) {
+			  if (TD.isDocOJ(getMasterSet().getString("VRDOK"))) {
+			    upit = yc+" vrdok='"+odabrano+"'"+dodatak+" and (cskl in " + 
+			        OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "cskl") + ")"; 
+			  } else {
+			    String cskl = pressel.getSelRow().getString("CSKL");
+			    upit = yc+" vrdok='"+odabrano+"'"+dodatak+" and cskl in (select cskl from sklad where sklad.corg in ('"+cskl+"') "+
+                    " or sklad.knjig in ('"+cskl+"')) ";
+			  }
 			} else if (TD.isDocFinanc(getMasterSet().getString("VRDOK"))
 					&& !TD.isDocSklad(getMasterSet().getString("VRDOK"))) {
 				upit = aSS.getS4raCatchDoc(yc, pressel.getSelRow()
@@ -4584,6 +4594,8 @@ System.out.println("findCjenik::else :: "+sql);
 
             qDS = doki.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK DATDOK CPAR UIRAC BRDOKIZ BRNARIZ", upit);
             qDS.open();
+            System.out.println(qDS.rowCount());
+            System.out.println(qDS.getOriginalQueryString());
             
             System.out.println(upit);
 		}
