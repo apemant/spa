@@ -235,6 +235,7 @@ final public class raRAC extends raIzlazTemplate {
             "hr.restart.robno.repGroupIzlazni", "RacGroup",
             ReportValuteTester.titleRAC1R + " po grupama artikala");
 
+        raMaster.getRepRunner().addReport("hr.restart.robno.repOdobrenja", "hr.restart.robno.repIzlazni", "Odobrenja", "Ispis odobrenja");
         
         /*raMaster.getRepRunner().addJasper("hr.restart.robno.repMjeRac",
             "hr.restart.robno.repMjeRac", "mje.jrxml", "Izvještaj uplata po mjesecima");*/
@@ -405,6 +406,8 @@ final public class raRAC extends raIzlazTemplate {
         raDetail.getRepRunner().addReport("hr.restart.robno.repRacGroup",
             "hr.restart.robno.repGroupIzlazni", "RacGroup",
             ReportValuteTester.titleRAC1R + " po grupama artikala");
+        
+        raDetail.getRepRunner().addReport("hr.restart.robno.repOdobrenja", "hr.restart.robno.repIzlazni", "Odobrenja", "Ispis odobrenja");
         
         raDetail.getRepRunner().addReport("hr.restart.robno.repMxRAC",
                 "Matri\u010Dni ispis ra\u010Duna");
