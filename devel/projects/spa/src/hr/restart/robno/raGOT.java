@@ -60,6 +60,7 @@ public class raGOT extends raIzlazTemplate  {
   public void MyaddIspisMaster(){
     raMaster.getRepRunner().addReport("hr.restart.robno.repGotRac","hr.restart.robno.repIzlazni","GotRac","Gotovinski raèun 1 red");
     raMaster.getRepRunner().addReport("hr.restart.robno.repGotRac2","hr.restart.robno.repIzlazni","GotRac2","Gotovinski raèuni 2 red");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repGotRacBP","hr.restart.robno.repIzlazni","GotRacBP","Gotovinski raèun s cijenom bez poreza");
     
     raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniSKL","hr.restart.robno.repIzlazni","OTPGOT","Otpremnica");
     raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniSKLVri","hr.restart.robno.repIzlazni","OTPGORvri","Otpremnica vrijednosna");
@@ -79,6 +80,7 @@ public class raGOT extends raIzlazTemplate  {
   public void MyaddIspisDetail(){
     raDetail.getRepRunner().addReport("hr.restart.robno.repGotRac","hr.restart.robno.repIzlazni","GotRac","Gotovinski raèun 1 red");
     raDetail.getRepRunner().addReport("hr.restart.robno.repGotRac2","hr.restart.robno.repIzlazni","GotRac2","Gotovinski raèuni 2 red");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repGotRacBP","hr.restart.robno.repIzlazni","GotRacBP","Gotovinski raèun s cijenom bez poreza");
     
     raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniSKL","hr.restart.robno.repIzlazni","OTPGOT","Otpremnica");
     raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniSKLVri","hr.restart.robno.repIzlazni","OTPGORvri","Otpremnica vrijednosna");
