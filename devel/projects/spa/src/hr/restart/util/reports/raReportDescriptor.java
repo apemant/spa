@@ -471,6 +471,7 @@ public class raReportDescriptor {
     String[][] repvrdok = {
       {"hr.restart.robno.repGotRac", "GOT", "D", ""},
       {"hr.restart.robno.repGotRac2", "GOT", "D", ""},
+      {"hr.restart.robno.repGotRacBP", "GOT", "D", ""},
       {"hr.restart.robno.repGrnRac", "GRN", "D", ""},
       {"hr.restart.robno.repGrnRac2", "GRN", "D", ""},
       {"hr.restart.robno.repRacRnalKupac", "GRN", "D", ""},
@@ -539,6 +540,8 @@ public class raReportDescriptor {
       {"hr.restart.robno.repMeuExtendedVersion", "MEU", "", ""},
       {"hr.restart.robno.repOTP", "OTP", "D", ""},
       {"hr.restart.robno.repOTPvri", "OTP", "D", ""},
+      {"hr.restart.robno.repOTPSKL", "OTP", "D", ""},
+      {"hr.restart.robno.repOTPLOT", "OTP", "D", ""},
       {"hr.restart.robno.repOTPsif", "OTP", "D", ""},
       {"hr.restart.robno.repDOS", "DOS", "D", ""},
       {"hr.restart.robno.repDOS2", "DOS", "D", ""},
