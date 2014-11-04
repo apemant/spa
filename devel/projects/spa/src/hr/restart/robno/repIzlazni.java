@@ -192,6 +192,10 @@ public class repIzlazni implements raReportData {
   public int getCPAR() {
     return ds.getInt("CPAR");
   }
+  
+  public String getLOT() {
+    return ds.getString("LOT");
+  }
 
   public String getPARTNER(){   
     String cached = cache.getValue("PARTNER", Integer.toString(ds.getInt("CPAR")));
