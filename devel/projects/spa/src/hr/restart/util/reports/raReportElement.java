@@ -272,7 +272,11 @@ public class raReportElement {
   public void setWidth(long width) {
     setProperty(ep.WIDTH, "" + ((width + 10) / 20 * 20));
   }
-
+  
+  public void alterWidth(long width) {
+    setProperty(ep.WIDTH, "" + (getWidth() + (width / 20) * 20));
+  }
+  
   /**
    * Postavlja širinu elementa u centimetrima.<p>
    * @param width širina elementa u centimetrima.
@@ -332,6 +336,10 @@ public class raReportElement {
   public void setTop(long top) {
     setProperty(ep.TOP, "" + ((top + 10) / 20 * 20));
   }
+  
+  public void moveVert(long top) {
+    setProperty(ep.TOP, "" + (getTop() + (top / 20) * 20));
+  }
 
   /**
    * Postavlja Y koordinatu u centimetrima.<p>
@@ -376,6 +384,10 @@ public class raReportElement {
     setProperty(ep.LEFT, "" + ((left + 10) / 20 * 20));
   }
 
+  public void moveHor(long left) {
+    setProperty(ep.LEFT, "" + (getLeft() + (left / 20) * 20));
+  }
+  
   /**
    * Postavlja X koordinatu u centimetrima.<p>
    * @param left udaljenost od lijevog ruba u centimetrima.
