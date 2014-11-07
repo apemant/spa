@@ -1,3 +1,4 @@
+
 package hr.restart.sk;
 
 import hr.restart.baza.Condition;
@@ -22,10 +23,19 @@ import hr.restart.robno.raDateUtil;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraDialog;
-import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
-import hr.restart.swing.raExtendedTable;
-import hr.restart.util.*;
+import hr.restart.util.Aus;
+import hr.restart.util.OKpanel;
+import hr.restart.util.Util;
+import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
+import hr.restart.util.lookupFrame;
+import hr.restart.util.raCommonClass;
+import hr.restart.util.raImages;
+import hr.restart.util.raJPTableView;
+import hr.restart.util.raTransaction;
+import hr.restart.util.raTwoTableFrame;
+import hr.restart.util.startFrame;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.dlgGetKnjig;
 
@@ -848,159 +858,32 @@ System.err.println(
     return dlg;
   }
 
-  private JraDialog getDialogForSet(StorageDataSet set, boolean recalc) {
-    dlgViewSet dlg = new dlgViewSet(set, recalc, this);
-    dlg.createPanel();
-    return dlg;
-  }
-
-  static class dlgViewSet extends JraDialog {
-    
-    StorageDataSet ds;
-    boolean recalc;
-    JOPPDhndlr joppd;
-    List fields = new ArrayList();
-    
-    OKpanel okp = new OKpanel() {
-      public void jPrekid_actionPerformed() {
-        ds.cancel();
-        unregisterOKPanelKeys(dlgViewSet.this);
-        unbind();
-        dlgViewSet.this.dispose();
-      }
-      
-      public void jBOK_actionPerformed() {
-        ds.post();
-        int pos = ds.getRow();
+  private JraDialog getDialogForSet(final StorageDataSet set, final boolean recalc) {
+    return getDialogForSet(set, recalc, new Runnable() {
+      public void run() {
+        set.post();
+        int pos = set.getRow();
         if (recalc) {
-          joppd.getJPTV().enableEvents(false);
-          if (!joppd.isAutoSumLimit()) joppd.sumStrA();
-          ds.goToRow(pos);
-          joppd.getJPTV().enableEvents(true);          
+          getJPTV().enableEvents(false);
+          if (!isAutoSumLimit()) sumStrA();
+          set.goToRow(pos);
+          getJPTV().enableEvents(true);          
         } else {
-          joppd.saveJOPPD();
-          joppd.fPDV2.getJPTV().fireTableDataChanged();
+          saveJOPPD();
+          fPDV2.getJPTV().fireTableDataChanged();
         }
-        unregisterOKPanelKeys(dlgViewSet.this);
-        unbind();
-        dlgViewSet.this.dispose();
       }
-    };
-    
-    public dlgViewSet(StorageDataSet ds, boolean recalc, JOPPDhndlr joppd) {
-      this.ds = ds;
-      this.recalc = recalc;
-      this.joppd = joppd;
-    }
-    
-    public StorageDataSet getDataSet() {
-      return ds;
-    }
-    
-    public boolean isRecalc() {
-      return recalc;
-    }
-    
-    public void createPanel() {
-      JPanel contpane = new JPanel(new GridLayout(0,1));
-      Column[] cols = ds.getColumns();
-      for (int i = 0; i < cols.length; i++) {
-        XYLayout xyl = new XYLayout(570,30);
-        JPanel row = new JPanel(xyl);
-        row.add(new JLabel(cols[i].getCaption()), new XYConstraints(15,5,-1,-1));
-        JraTextField jt = new JraTextField();
-        jt.setColumnName(cols[i].getColumnName());
-        jt.setDataSet(cols[i].getDataSet());
-        fields.add(jt);
-        int size = getJTSize(cols[i]);
-        JraButton bget = getJTButton(cols[i]);
-        int bsize = 0;
-        if (bget!=null) {
-          bsize = 26;
-          row.add(bget, new XYConstraints(539, 5, 21, 21));
-        }
-        row.add(jt, new XYConstraints(560-size-bsize, 5, size, 21));
-        contpane.add(row);
-      }
+    }, new Runnable() {
       
-      getContentPane().setLayout(new BorderLayout());
-      getContentPane().add(new JScrollPane(contpane), BorderLayout.CENTER);
-      getContentPane().add(okp, BorderLayout.SOUTH);
-      setMinimumSize(new Dimension(600, 500));
-      pack();
-      okp.registerOKPanelKeys(this);
-    }
-    
-    void unbind() {
-      for (Iterator i = fields.iterator(); i.hasNext(); ) {
-        JraTextField tf = (JraTextField) i.next();
-        tf.setDataSet(null);
+      public void run() {
+        set.cancel();
       }
-    }
-    
-    private int getJTSize(Column c) {
-      if (c.getDataType() == Variant.STRING) {
-        if (c.getPrecision() > 5) return 250;
-        return 60;
-      }
-      if (c.getDataType() == Variant.TIMESTAMP) return 100;
-      if (c.getDataType() == Variant.INT) return 50;
-      return 160;
-    }
-    
-    private JraButton getJTButton(final Column c) {
-      JraButton b = null;
-      if (c.getColumnName().toUpperCase().startsWith("COP")) {
-        b = new JraButton();
-        b.setText("...");
-        final QueryDataSet opcine = Opcine.getDataModule().getTempSet();
-        opcine.open();
-        b.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              String[] rez = lookupData.getlookupData().lookUp(dlgViewSet.this, opcine, new int[] {0,1});
-              if (rez!=null) c.getDataSet().setString(c.getColumnName(), "0"+raIzvjestaji.convertCopcineToRS(opcine.getString("COPCINE")));
-          }
-        });
-      } else if (c.getColumnName().equalsIgnoreCase("OIB") || c.getColumnName().equalsIgnoreCase("IMEPREZ")) {
-        b = new JraButton();
-        b.setText("...");
-        final QueryDataSet radnici = Aus.q("SELECT radnici.cradnik, radnici.ime, radnici.prezime, radnicipl.oib, radnicipl.copcine "
-            + "FROM radnici, radnicipl where radnici.cradnik = radnicipl.cradnik and radnici."+plUtil.getPlUtil().getRadCurKnjig());
-        
-        radnici.open();
-        b.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              String[] rez = lookupData.getlookupData().lookUp(dlgViewSet.this, radnici, new int[] {0,1,2,3});
-              if (rez!=null) {
-                c.getDataSet().setString("IMEPREZ", radnici.getString("IME")+" "+radnici.getString("PREZIME"));
-                c.getDataSet().setString("OIB", radnici.getString("OIB"));
-                c.getDataSet().setString("COPCINE", "0"+raIzvjestaji.convertCopcineToRS(radnici.getString("COPCINE")));
-              }
-          }
-        });
-        
-      } else {
-        if (c.getColumnName().equalsIgnoreCase("ODJ") || c.getColumnName().equalsIgnoreCase("DOJ")) return null; 
-        b = new JraButton();
-        b.setText("...");
-        String vrsif = c.getColumnName().equalsIgnoreCase("OZNPOD")?"PLPD":"PL"+c.getColumnName().substring(1);
-        if (vrsif.trim().length()>4) return null;
-        final QueryDataSet sifre = Sifrarnici.getDataModule().getTempSet(Condition.equal("VRSTASIF", vrsif));
-        sifre.open();
-        if (sifre.getRowCount() == 0) return null;
-        b.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              String[] rez = lookupData.getlookupData().lookUp(dlgViewSet.this, sifre, new int[] {0,2,3});
-              if (rez!=null) c.getDataSet().setString(c.getColumnName(), sifre.getString("CSIF"));
-          }
-        });
-      }
-      return b;
-    }
+    });
   }
   
-  /*public static JraDialog getDialogForSet(final StorageDataSet set, final boolean recalc, final Runnable okAction, final Runnable cancelAction) {
+  public static JraDialog getDialogForSet(final StorageDataSet set, final boolean recalc, final Runnable okAction, final Runnable cancelAction) {
     final JraDialog dlg = new JraDialog();
+    final List fields = new ArrayList();
     JPanel contpane = new JPanel(new GridLayout(0,1));
     Column[] cols = set.getColumns();
     for (int i = 0; i < cols.length; i++) {
@@ -1010,6 +893,7 @@ System.err.println(
       JraTextField jt = new JraTextField();
       jt.setColumnName(cols[i].getColumnName());
       jt.setDataSet(cols[i].getDataSet());
+      fields.add(jt);
       int size = getJTSize(cols[i]);
       JraButton bget = getJTButton(cols[i], dlg);
       int bsize = 0;
@@ -1025,12 +909,20 @@ System.err.println(
       public void jPrekid_actionPerformed() {
         cancelAction.run();
         unregisterOKPanelKeys(dlg);
+        for (Iterator i = fields.iterator(); i.hasNext(); ) {
+          JraTextField tf = (JraTextField) i.next();
+          tf.setDataSet(null);
+        }
         dlg.dispose();
       }
       
       public void jBOK_actionPerformed() {
         okAction.run();
         unregisterOKPanelKeys(dlg);
+        for (Iterator i = fields.iterator(); i.hasNext(); ) {
+          JraTextField tf = (JraTextField) i.next();
+          tf.setDataSet(null);
+        }
         dlg.dispose();
       }
     };
@@ -1101,7 +993,7 @@ System.err.println(
     if (c.getDataType() == Variant.TIMESTAMP) return 100;
     if (c.getDataType() == Variant.INT) return 50;
     return 160;
-  }*/
+  }
   
   /**
    * zbrojeno porez i prirez nesamostalni rad /A.P1/
