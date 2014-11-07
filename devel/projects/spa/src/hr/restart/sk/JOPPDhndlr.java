@@ -24,6 +24,7 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.raExtendedTable;
 import hr.restart.util.Aus;
 import hr.restart.util.OKpanel;
 import hr.restart.util.Util;
