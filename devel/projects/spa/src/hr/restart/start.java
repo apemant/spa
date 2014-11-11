@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart;
 import hr.restart.baza.BazaOper;
+import hr.restart.baza.ConsoleCreator;
 import hr.restart.baza.Verinfo;
 import hr.restart.baza.dM;
 import hr.restart.help.MsgDispatcher;
@@ -586,7 +587,13 @@ System.out.println("no port starting shell");
     } else if (checkArgs("-dbchoose")) {
       if (!raDbaseChooser.showInstance(false)) System.exit(0);
     } else if (checkArgs("-dbinit")) {
-      if (!raDbaseChooser.initFrom()) System.exit(0);
+      try {
+        new ConsoleCreator().initDatabase();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      System.exit(0);
+      //if (!raDbaseChooser.initFrom()) System.exit(0);
     }
 //ai: HTS init (temporary)
 //     HTSZipcodes.initMe();
