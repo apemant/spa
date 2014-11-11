@@ -100,7 +100,7 @@ public class ConsoleCreator {
 	public ConsoleCreator() {
 	}
 
-	public void initDatabase() throws Exception {
+	public static void initDatabase() throws Exception {
 		dM.setMinimalMode();
 		dM dm = dM.getDataModule();
 		if (dm.conURL == null || dm.conURL.length() == 0
