@@ -588,7 +588,7 @@ System.out.println("no port starting shell");
       if (!raDbaseChooser.showInstance(false)) System.exit(0);
     } else if (checkArgs("-dbinit")) {
       try {
-        new ConsoleCreator().initDatabase();
+        ConsoleCreator.initDatabase();
       } catch (Exception e) {
         e.printStackTrace();
       }
