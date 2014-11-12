@@ -266,6 +266,7 @@ public class frmNalozi extends raMasterDetail {
     if (getStavkeSK() != null) {
       raMPa.getRepRunner().addReport("hr.restart.gk.repTemeljSK","Ispis stavaka za salda konti",5);
     }
+    if (getDetailSet() != null && getDetailSet().isOpen())
     if (getDetailSet().getString("OPIS").startsWith("Kompenzacija po raèunu - ")) {
       raMPa.getRepRunner().addReport("hr.restart.gk.repKompNalog","hr.restart.gk.repNalog","Komp","Ispis kompenzacije");
     }
@@ -1508,33 +1509,36 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
             } else {
               ui.deleteAllRows();
               sk.deleteAllRows();
-              for (di.first(); di.inBounds(); di.next()) {
-                di.setString("BRNAL", "");
-                di.setAssignedNull("DATKNJ");
-                di.setString("STATKNJ", "N");
-              }
-              for (du.first(); du.inBounds(); du.next()) {
-                du.setString("BRNAL", "");
-                du.setAssignedNull("DATKNJ");
-                du.setString("STATKNJ", "N");
-              }
-              for (mi.first(); mi.inBounds(); mi.next()) {
-                mi.setString("BRNAL", "");
-                mi.setAssignedNull("DATKNJ");
-                mi.setString("STATKNJI", "N");
-              }
-              for (mu.first(); mu.inBounds(); mu.next()) {
-                mi.setString("BRNALU", "");
-                mi.setAssignedNull("DATKNJU");
-                mi.setString("STATKNJU", "N");
-              }
+              
               raTransaction.saveChanges((QueryDataSet) sk);
               raTransaction.saveChanges((QueryDataSet) ui);
-              raTransaction.saveChanges((QueryDataSet) di);
-              raTransaction.saveChanges((QueryDataSet) du);
-              raTransaction.saveChanges((QueryDataSet) mi);
-              raTransaction.saveChanges((QueryDataSet) mu);
             }
+          } 
+          if (robno) {
+            for (di.first(); di.inBounds(); di.next()) {
+              di.setString("BRNAL", "");
+              di.setAssignedNull("DATKNJ");
+              di.setString("STATKNJ", "N");
+            }
+            for (du.first(); du.inBounds(); du.next()) {
+              du.setString("BRNAL", "");
+              du.setAssignedNull("DATKNJ");
+              du.setString("STATKNJ", "N");
+            }
+            for (mi.first(); mi.inBounds(); mi.next()) {
+              mi.setString("BRNAL", "");
+              mi.setAssignedNull("DATKNJ");
+              mi.setString("STATKNJI", "N");
+            }
+            for (mu.first(); mu.inBounds(); mu.next()) {
+              mi.setString("BRNALU", "");
+              mi.setAssignedNull("DATKNJU");
+              mi.setString("STATKNJU", "N");
+            }
+            raTransaction.saveChanges((QueryDataSet) di);
+            raTransaction.saveChanges((QueryDataSet) du);
+            raTransaction.saveChanges((QueryDataSet) mi);
+            raTransaction.saveChanges((QueryDataSet) mu);
           }
           
           isObrNalogaSucc = true;
