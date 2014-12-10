@@ -525,9 +525,11 @@ System.out.println("key4del "+ key4del);
     super.Funkcija_ispisa_detail();
   }
 
-  public String getNaTemelju() {
-    if (getMasterSet().getString("OPIS").equalsIgnoreCase("")) return "";
-    return jpMaster.jp1.rcbUvjet.getSelectedItem() + " " + getMasterSet().getString("OPIS") + " izvolite " +
+  public String getNaTemelju() {    
+    if (getMasterSet().getString("OPIS").length() == 0) return "";
+    if (jpMaster.jp1.rcbUvjet.getSelectedItem().toString().length()==0) 
+      return getMasterSet().getString("OPIS");
+    return jpMaster.jp1.rcbUvjet.getSelectedItem() + " " + getMasterSet().getString("OPIS") + " " +
         jpMaster.jp1.rcbAkcija.getSelectedItem();
   }
 

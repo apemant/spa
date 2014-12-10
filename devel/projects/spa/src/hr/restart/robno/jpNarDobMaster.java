@@ -216,10 +216,10 @@ public class jpNarDobMaster extends JPanel {
 			jlTem.setText("Na temelju");
             
 			rcbAkcija.setRaColumn("CSHZT");
-			rcbAkcija.setRaItems(new String[][] { { "dobaviti", "D" },
-					{ "izraditi", "I" }, { "popraviti", "P" } });
+			rcbAkcija.setRaItems(new String[][] {{ "", "0" }, { "izvolite dobaviti", "D" },
+					{ "izvolite izraditi", "I" }, { "izvolite popraviti", "P" } });
             rcbUvjet.setRaColumn("CSHRAB");
-            rcbUvjet.setRaItems(new String[][] { { "Na temelju", "1" },
+            rcbUvjet.setRaItems(new String[][] {{ "", "0" }, { "Na temelju", "1" },
                     { "Za potrebe", "2" }});
             
 			jraDaniz.setColumnName("DDOSP");
@@ -261,20 +261,20 @@ public class jpNarDobMaster extends JPanel {
 
 			add(jbSelCorg, new XYConstraints(610, 45, 21, 21));
 			add(jbSelCpar, new XYConstraints(610, 20, 21, 21));
-			add(jlAkcija, new XYConstraints(460, 71, -1, -1));
+			//add(jlAkcija, new XYConstraints(460, 71, -1, -1));
 			add(jlDaniz, new XYConstraints(265, 96, -1, -1));
 			add(jlDatdok, new XYConstraints(15, 95, -1, -1));
 			add(jlDatiz, new XYConstraints(410, 96, -1, -1));
 			add(jlIsp, new XYConstraints(15, 45, -1, -1));
 			add(jlPar, new XYConstraints(15, 20, -1, -1));
             
-			add(rcbUvjet, new XYConstraints(15, 70, -1, -1));
+			add(rcbUvjet, new XYConstraints(15, 70, 120, -1));
             
 			add(jlrCorg, new XYConstraints(150, 45, 100, -1));
 			add(jlrCpar, new XYConstraints(150, 20, 100, -1));
 			add(jlrNaziv, new XYConstraints(255, 45, 350, -1));
 			add(jlrNazpar, new XYConstraints(255, 20, 350, -1));
-			add(rcbAkcija, new XYConstraints(505, 70, 100, -1));
+			add(rcbAkcija, new XYConstraints(460, 70, 145, -1));
 			add(jraDaniz, new XYConstraints(350, 95, 50, -1));
 			add(jraDatdok, new XYConstraints(150, 95, 100, -1));
 			add(jraDatiz, new XYConstraints(505, 95, 100, -1));
