@@ -2739,6 +2739,7 @@ ST.prn(radninal);
 		if (!getDetailSet().isOpen())
 			getDetailSet().open();
 		SetDetailTitle("def");
+		if (lastLimitCpar != getMasterSet().getInt("CPAR")) lastLimit = true;
         if (raDetail.isShowing()) enableDetailNavBar();
         else enableMasterNavBar();
 		
@@ -5271,12 +5272,19 @@ System.out.println("findCjenik::else :: "+sql);
 		zatrositi = zatrositi.subtract(newvalue);
 		return zatrositi;
 	}
+	
+	private int lastLimitCpar = -1;
+	private boolean lastLimit = true;
 
 	public boolean checkLimit(java.math.BigDecimal limit,
 			java.math.BigDecimal saldo, java.math.BigDecimal oldvalue,
 			java.math.BigDecimal newvalue) {
+	  if (!lastLimit && lastLimitCpar == getMasterSet().getInt("CPAR")) return true;
+	  
+	  lastLimitCpar = getMasterSet().getInt("CPAR");
+	  lastLimit = !(calculateLimit(limit, saldo, oldvalue, newvalue).doubleValue() < 0);
 
-		return !(calculateLimit(limit, saldo, oldvalue, newvalue).doubleValue() < 0);
+		return lastLimit;
 
 	}
 
