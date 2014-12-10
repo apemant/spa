@@ -86,8 +86,8 @@ sysoutTEST ST = new sysoutTEST(false);
     }
   };
   
-  private StorageDataSet data;
-  private Properties props4list;
+  protected StorageDataSet data;
+  protected Properties props4list;
   private propEdit propedit = new propEdit(this);
   /*private raNavBar navbar = new raNavBar(raNavBar.DBNAVIGATE) {
     public void add_action() {
