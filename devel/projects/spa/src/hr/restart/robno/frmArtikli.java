@@ -287,6 +287,9 @@ public class frmArtikli extends raMatPodaci {
   JlrNavField jlrNAZAN = new JlrNavField();
   JraButton jbNap = new JraButton();
   
+  JLabel jlPPK = new JLabel("PPK");
+  JraTextField jraPPK = new JraTextField();
+  
   JraCheckBox jbKasa = new JraCheckBox();
   JraCheckBox jbPov = new JraCheckBox();
   
@@ -986,6 +989,9 @@ public class frmArtikli extends raMatPodaci {
     jlrNAZAN.setSearchMode(1);
     jlrNAZAN.setNavProperties(jlrCAN);
     
+    jraPPK.setColumnName("PPK");
+    jraPPK.setDataSet(getRaQueryDataSet());
+    
     jbKasa.setDataSet(getRaQueryDataSet());
     jbKasa.setColumnName("KASA");
     jbKasa.setSelectedDataValue("D");
@@ -1022,6 +1028,8 @@ public class frmArtikli extends raMatPodaci {
     jpSubjekt.add(jbNap, new XYConstraints(510, 105, 21, 21));
     jpSubjekt.add(jlNAZLANG, new XYConstraints(15, 130, -1, -1));
     jpSubjekt.add(jtfNAZLANG, new XYConstraints(150, 130, 365, -1));
+    jpSubjekt.add(jlPPK, new XYConstraints(15, 155, -1, -1));
+    jpSubjekt.add(jraPPK, new XYConstraints(150, 155, 100, -1));
     jpSubjekt.add(jbKasa, new XYConstraints(255, 155, 250, -1));
     jpSubjekt.add(jbPov, new XYConstraints(255, 180, 250, -1));
 

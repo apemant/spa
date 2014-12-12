@@ -969,6 +969,7 @@ BCKOL;char;20;;;Barcode kolete;10
 SORTKOL;int;6;;;Sortiranje
 POSTOPROV;numeric;15,3;;0;Postotak provizije
 NAZLANG;char;75;;;Naziv na stranom jeziku;20
+PPK;numeric;15,2;;0;Posebni porez za kavu
 UIDX=cart1
 UIDX=bc
 
@@ -2838,6 +2839,7 @@ COPCINE;char;3;pkey;;Oznaka;5
 NAZIVOP;char;50;;;Naziv;30
 CZUP;short;2;;;Oznaka županije;5
 PARAMETRI;char;20;;;Parametri;*
+DODTEXT;char;1000;;;Dodatni podaci;*
 
 $Orgpl
 LOKK;char;1;;N;Status zauzetosti;*
@@ -4316,6 +4318,7 @@ CPOV;int;6;;;Oznaka povjerioca-virmana
 IZNOS;numeric;17,2;;0;Iznos;15
 STOPA;numeric;7,5;;0;Stopa
 PARAMETRI;char;20;;;Parametri;*
+DODTEXT;char;1000;;;Dodatni pocaci;*
 
 $Vrsteprim
 LOKK;char;1;;N;Status zauzetosti;*
