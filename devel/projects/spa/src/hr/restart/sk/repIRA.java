@@ -49,6 +49,22 @@ public class repIRA implements raReportData {
   public void close() {
     ds = null;
   }
+  
+  public String getNAZORG() {
+    return re.getLogoNazivlog();
+  }
+  
+  public String getADRORG() {
+    return re.getLogoPbr() + " " + re.getLogoMjesto() + ", " + re.getLogoAdresa();  
+  }
+  
+  public String getOIBORG() {
+    return re.getLogoOIB();
+  }
+  
+  public String getCDJEL() {
+    return re.getLogoSifdjel();
+  }
 
   public String getKNJIGA() {
     return rui.getCKNJIGE();

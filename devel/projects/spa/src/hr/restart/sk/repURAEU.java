@@ -26,6 +26,23 @@ public class repURAEU extends repURA {
     super();
   }
   
+  public String getNAZORG() {
+    return re.getLogoNazivlog();
+  }
+  
+  public String getADRORG() {
+    return re.getLogoPbr() + " " + re.getLogoMjesto() + ", " + re.getLogoAdresa();  
+  }
+  
+  public String getOIBORG() {
+    return re.getLogoOIB();
+  }
+  
+  public String getCDJEL() {
+    return re.getLogoSifdjel();
+  }
+  
+  
   public BigDecimal getKOL6() {
     return raIspisUraIra.getKolona(ds,"6");
 //    if (!add6) return raIspisUraIra.getKolona(ds,"6");

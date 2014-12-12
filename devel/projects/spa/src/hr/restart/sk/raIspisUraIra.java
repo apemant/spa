@@ -280,6 +280,10 @@ public class raIspisUraIra extends raFrame {
     getRepRunner().clearAllReports();
     if (jrbUraira1.isSelected()) {
       getRepRunner().addJasper("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
+          "uraeu2.jrxml", "Ispis knjige URA EU 13%");
+      getRepRunner().addJasper("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
+          "uraeu10.jrxml", "Ispis knjige URA EU 10%");
+      getRepRunner().addJasper("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
           "uraeu.jrxml", "Ispis knjige URA EU");
       getRepRunner().addJasper("hr.restart.sk.repURA25", "hr.restart.sk.repURANew",
           "ura25.jrxml", "Ispis knjige URA 25%");
@@ -303,6 +307,10 @@ public class raIspisUraIra extends raFrame {
       });
 //      getRepRunner().addReport("hr.restart.sk.repURADod", "Ispis knjige URA sa dodatnim kolonama", 5);
     } else {
+      getRepRunner().addJasper("hr.restart.sk.repIRAEUN2", "hr.restart.sk.repIRA",
+          "iraeun2.jrxml", "Ispis knjige IRA EU novi - oporezive kolone");
+      getRepRunner().addJasper("hr.restart.sk.repIRAEUN1", "hr.restart.sk.repIRA",
+          "iraeun1.jrxml", "Ispis knjige IRA EU novi - neoporezive kolone");
       getRepRunner().addJasper("hr.restart.sk.repIRAEU2", "hr.restart.sk.repIRA",
           "iraeu2.jrxml", "Ispis knjige IRA EU - oporezive kolone");
       getRepRunner().addJasper("hr.restart.sk.repIRAEU1", "hr.restart.sk.repIRA",
