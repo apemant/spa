@@ -126,6 +126,20 @@ public class MailOptions extends propsDialog {
     fillData(props4list);
   }
   
+  public void props_del() {
+    if (data.rowCount() == 0) return;
+    props4list.remove(data.getString("PKEY"));
+    data.emptyRow();
+    jp.fireTableDataChanged();
+    doSave = true;
+  }
+  
+  public void props_delall() {
+    if (data.rowCount() == 0) return;
+    props4list.clear();
+    refreshList();
+    doSave = true;
+  }
   
   public void props_upd() {
     String pdf = frmParam.getParam("sisfun", "openPdfComm", "", "Naredba za otvaranje PDF datoteka");
