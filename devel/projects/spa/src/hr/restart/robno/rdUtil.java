@@ -1787,7 +1787,8 @@ public class rdUtil {
       return qStr;
     }
 
-    String qStr = "select artikli.cart as cart, artikli.cart1 as cart1, artikli.bc as bc, artikli.nazart as nazart, artikli.jm as jm, " + "stanje.zc as ZC, stanje.god as god, '" + cskl + "' as " + skl + ", " + cskliz + " '" + vrDok + "' as vrdok, " + brDok + " as brdok from artikli, stanje where artikli.cart = stanje.cart and stanje.cskl='" + cskl + "' and stanje.god='" + godina + "' and stanje.kol!=0 and " + cartIn + " order by artikli.cart";
+    String qStr = "select artikli.cart as cart, artikli.cart1 as cart1, artikli.bc as bc, artikli.nazart as nazart, artikli.jm as jm, artikli.brjed as brjed, artikli.jmpak as jmpak,  "
+    + "stanje.zc as ZC, stanje.god as god, '" + cskl + "' as " + skl + ", " + cskliz + " '" + vrDok + "' as vrdok, " + brDok + " as brdok from artikli, stanje where artikli.cart = stanje.cart and stanje.cskl='" + cskl + "' and stanje.god='" + godina + "' and stanje.kol!=0 and " + cartIn + " order by artikli.cart";
 
     //    System.out.println("qstr\n\n"+qStr);
 

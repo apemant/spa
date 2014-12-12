@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 
+import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
 
@@ -102,6 +103,14 @@ public class repCijenePol implements raReportData { //sg.com.elixir.reportwriter
   public BigDecimal getCijena()
   {
     return ds.getBigDecimal("ZC");
+  }
+  
+  public String getCijenaKG()
+  {
+    if (!ds.getString("JMPAK").equals("kg") || ds.getBigDecimal("BRJED").signum() == 0) return "";
+    
+    BigDecimal ckg = ds.getBigDecimal("ZC").divide(ds.getBigDecimal("BRJED"), 2, BigDecimal.ROUND_HALF_UP);
+    return "(" + Aus.formatBigDecimal(ckg) + " kn/kg)";
   }
 
   public String getSifra()

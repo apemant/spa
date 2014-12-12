@@ -579,6 +579,8 @@ public class frmCijenePolDva extends raUpitLite {
       (Column) dm.getArtikli().getColumn("BC").clone(),
       (Column) dm.getArtikli().getColumn("NAZART").clone(),
       (Column) dm.getArtikli().getColumn("JM").clone(),
+      (Column) dm.getArtikli().getColumn("JMPAK").clone(),
+      (Column) dm.getArtikli().getColumn("BRJED").clone(),
       (Column) dm.getStanje().getColumn("ZC").clone(),
       (Column) dm.getStanje().getColumn("GOD").clone(),
       (Column) dm.getStanje().getColumn("CSKL").clone(),
@@ -597,6 +599,8 @@ public class frmCijenePolDva extends raUpitLite {
     artikliTable.getColumn("CSKLIZ").setVisible(0);
     artikliTable.getColumn("VRDOK").setVisible(0);
     artikliTable.getColumn("BRDOK").setVisible(0);
+    artikliTable.getColumn("JMPAK").setVisible(0);
+    artikliTable.getColumn("BRJED").setVisible(0);
     artikliTable.getColumn("TKAL").setVisible(0);
     artikliTable.getColumn("CART").setVisible(0);
     artikliTable.getColumn("CART1").setVisible(0);
@@ -702,6 +706,8 @@ public class frmCijenePolDva extends raUpitLite {
       artikliTable.setString("BC",rpcart.getBC());
       artikliTable.setString("NAZART",rpcart.getNAZART());
       artikliTable.setString("JM",rpcart.jrfJM.getText());
+      if (lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", cart)) 
+        dM.copyColumns(dm.getArtikli(),  artikliTable,  new String[] {"JMPAK", "BRJED"});
 
       //dm.getStanje().refresh();
 
