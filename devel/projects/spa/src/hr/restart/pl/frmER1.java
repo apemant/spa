@@ -399,7 +399,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
 //                  " AND radnicipl.cvro = kumulorgarh.cvro"+
 //                  " AND radnicipl.corg = kumulorgarh.corg"+
                   " and kumulorgarh.datumispl between '"+ fieldSet.getTimestamp("DATOD") + "' and '" + ut.getLastSecondOfDay(fieldSet.getTimestamp("DATDO")) + "'" +
-                  " and kumulradarh.cradnik = '"+ fieldSet.getInt("CRADNIK") + "'" +
+                  " and kumulradarh.cradnik = '"+ fieldSet.getString("CRADNIK") + "'" +
 //                  " and (kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulradarh.corg")+")"+
                   " and " + kumul +
                   " group by kumulradarh.mjobr, kumulradarh.godobr "+
@@ -410,7 +410,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
   private String getPrimSql(short mjobr,short godobr,String izvjqry) {
     String qstr = "select sum(primanjaarh.sati) as sumsati" +
     		    " from primanjaarh " +
-    		    " where primanjaarh.cradnik = '"+ fieldSet.getInt("CRADNIK") + "'" +
+    		    " where primanjaarh.cradnik = '"+ fieldSet.getString("CRADNIK") + "'" +
     		    " AND primanjaarh.mjobr = "+mjobr+
     				" AND primanjaarh.godobr = "+godobr+
     				" AND "+izvjqry;
@@ -429,7 +429,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
                   " AND radnicipl.cvro = kumulorgarh.cvro"+
                   " AND kumulorgarh.datumispl between '"+ fieldSet.getTimestamp("DATOD") +
                   "' and '" + ut.getLastSecondOfDay(fieldSet.getTimestamp("DATDO")) + "'" +
-                  " AND primanjaarh.cradnik = '" + fieldSet.getInt("CRADNIK") + "'"+
+                  " AND primanjaarh.cradnik = '" + fieldSet.getString("CRADNIK") + "'"+
                   " AND vrsteprim.regres = 'D'"+
                   " order by kumulorgarh.datumispl";
 
@@ -458,7 +458,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
     jlRadnik.setText("Radnik");
     jlPeriod.setText("Za period");
 
-    colRadnik = dm.createIntColumn("CRADNIK", "Oznaka radnika");
+    colRadnik = dm.createStringColumn("CRADNIK","Oznaka radnika",6);
     colDatumOd = dm.createTimestampColumn("DATOD");
     colDatumDo = dm.createTimestampColumn("DATDO");
     colCorg = dm.createStringColumn("CORG","Oznaka organizacijske jedinice",0);
