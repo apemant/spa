@@ -99,7 +99,7 @@ public class frmPDV2 extends raUpitFat {
   JraTextField jraPoctDat = new JraTextField();
   JraTextField jraKrajDat = new JraTextField();
   
-  JraComboBox jraObrazac = new JraComboBox(new String[] {"Obrazac PDV","Obrazac PDV-S","Obrazac ZP","Obrazac PDV-K", "Obrazac JOPPD", "Obrazac PDV za 2013"});
+  JraComboBox jraObrazac = new JraComboBox(new String[] {"Obrazac PDV","Obrazac PDV-S","Obrazac ZP","Obrazac PDV-K", "Obrazac JOPPD", "Obrazac PDV za 2013", "Obrazac PPO 2013/2014"});
   XYLayout xYlay = new XYLayout();
   StorageDataSet stds = new StorageDataSet();
   hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
@@ -228,6 +228,10 @@ public class frmPDV2 extends raUpitFat {
     case 5:
       doPDV13();
       break;
+
+    case 6:
+      doPPO20132014();
+      break;
       
     default:
       break;
@@ -258,6 +262,10 @@ public class frmPDV2 extends raUpitFat {
       addJOPPD();
       break;
       
+    case 6:
+      addPPO();
+      break;
+      
     default:
       break;
     }
@@ -277,7 +285,9 @@ public class frmPDV2 extends raUpitFat {
   private void addPDV_S() {
     addGeneric();
   }
-
+  private void addPPO() {
+    addGeneric();
+  }
   private void addGeneric() {
     addGeneric_part1();
     addGeneric_part2();
@@ -364,8 +374,66 @@ public class frmPDV2 extends raUpitFat {
 
   }
 
+  StorageDataSet setPPO;
+  public StorageDataSet getSetPPO() {
+    return setPPO;
+  }
+  private void doPPO20132014() {
+    setPPO = new StorageDataSet();
+    setPPO.addColumn(dM.createIntColumn("RBR"));
+    setPPO.addColumn(dM.createIntColumn("CPAR", "Partner"));
+    setPPO.addColumn(dM.createStringColumn("OIB", "OIB",12));
+    setPPO.addColumn(dM.createBigDecimalColumn("VRI","Vrijednost"));
+    setPPO.addColumn(dM.createBigDecimalColumn("POR","Porez"));
+    setPPO.addColumn(dM.createTimestampColumn("DATUMOD", "Datum od"));
+    setPPO.addColumn(dM.createTimestampColumn("DATUMDO", "Datum do"));
+    setPPO.open();
+    fillsetPPO("PPOCIZvri","VRI");
+//    fillsetPPO("PPOCIZpor","POR");
+    setPPO.setTableName("setPPO");
+    setDataSetAndSums(setPPO, new String[] {"VRI"});
+    getJPTV().addTableModifier(
+        new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, new String[] {"CPAR"}, new String[] {"CPAR"}, dM.getDataModule().getAllPartneri()));
+    killAllReports();
+    addReport("hr.restart.sk.repPPO20132014Disk", "Datoteka PPO za e-poreznu");
+    setTitle("Obrazac PPO za period "+raDateUtil.getraDateUtil().dataFormatter(getDatumOd())+" - "+raDateUtil.getraDateUtil().dataFormatter(getDatumDo()));
+
+    
+  }
+  private void fillsetPPO(String param, String col) {
+    String qrycommon = getQryCommon(", skstavke.datpri ");
+    String orovi = getOrovi(param);
+    if (orovi == null) return;
+    QueryDataSet upitP = Aus.q(qrycommon + orovi);
+    dm.getAllPartneri().open();
+    int rbr = 0;
+    for (upitP.first(); upitP.inBounds(); upitP.next()) {
+      if (!lookupData.getlookupData().raLocate(setPPO, new String[]{"CPAR","DATUMOD"}, new String[]{upitP.getInt("CPAR")+"",Util.getUtil().getFirstDayOfMonth(upitP.getTimestamp("DATPRI")).toString()})) {//TU PO cpar i datumOD
+        if (lookupData.getlookupData().raLocate(dm.getAllPartneri(), "CPAR", upitP.getInt("CPAR")+"")) {
+          String oib =  dm.getAllPartneri().getString("OIB");
+          setPPO.insertRow(false);
+          rbr++;
+          setPPO.setInt("RBR", rbr);
+          setPPO.setInt("CPAR", upitP.getInt("CPAR"));
+          setPPO.setString("OIB", oib);
+          setPPO.setTimestamp("DATUMOD", Util.getUtil().getFirstDayOfMonth(upitP.getTimestamp("DATPRI")));
+          setPPO.setTimestamp("DATUMDO", Util.getUtil().getLastDayOfMonth(upitP.getTimestamp("DATPRI")));
+          setPPO.setBigDecimal("VRI", Aus.zero2);
+          setPPO.setBigDecimal("POR", Aus.zero2);
+        } else {
+          System.err.println("!!!!! nisam pronašao partnera "+upitP.getInt("CPAR"));
+          continue;
+        }
+      }
+      setPPO.setBigDecimal(col, setPPO.getBigDecimal(col).add(upitP.getBigDecimal("VAL")));
+      setPPO.post();
+    }
+  }
   private String getQryCommon() {
-    return "SELECT skstavke.cpar, (uistavke.ID+uistavke.IP) as val " +
+    return getQryCommon("");
+  }
+  private String getQryCommon(String extsql) {
+    return "SELECT skstavke.cpar, (uistavke.ID+uistavke.IP) as val " + ((extsql==null)?"":extsql) +
         "FROM skstavke INNER JOIN uistavke ON uistavke.knjig = skstavke.knjig AND uistavke.cpar = skstavke.cpar " +
         "AND uistavke.vrdok = skstavke.vrdok AND uistavke.brojdok = skstavke.brojdok AND uistavke.cknjige = skstavke.cknjige " +
         "WHERE skstavke.knjig='"+dlgGetKnjig.getKNJCORG()+"' AND "+
@@ -437,6 +505,8 @@ public class frmPDV2 extends raUpitFat {
     frmParam.getParam("sk", "ZPCIZdob42","Pdv106","Oznake definicija PDV-a iz kojih se prenosi vrijednost dobara 42 i 63 u ZP");
     frmParam.getParam("sk", "ZPCIZdobTro","Pdv107","Oznake definicija PDV-a iz kojih se prenosi vrijednost dobara tro.pos. u ZP");
     frmParam.getParam("sk", "ZPCIZusl","Pdv104","Oznake definicija PDV-a iz kojih se prenosi vrijednost usluga u ZP");
+    frmParam.getParam("sk", "PPOCIZvri","Pdv204o","Oznake definicija PDV-a iz kojih se prenosi osnovica u PPO");
+    frmParam.getParam("sk", "PPOCIZpor","Pdv204p","Oznake definicija PDV-a iz kojih se prenosi porez u PPO");
     //
     VarStr cond= new VarStr("STIZVJPDV.CIZ in (");
     StringTokenizer cizovi = new StringTokenizer(frmParam.getParam("sk", param), ",");
@@ -512,7 +582,7 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
     
     //query data
     
-    // ova verzija je negdje 20 puta brža u gali... :)
+    // ova verzija je negdje 20 puta brža u gali... 
     
     String kverchina = "SELECT uistavke.cknjige, uistavke.ckolone, uistavke.uraira, cast(uistavke.ID+uistavke.IP as numeric(17,2)) as val, skstavke.datpri as datpri " +
             "FROM skstavke INNER JOIN uistavke ON uistavke.knjig = skstavke.knjig AND uistavke.cpar = skstavke.cpar " +
@@ -807,6 +877,10 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
       updPDV();
       break;
             
+    case 6:
+      updPPO();
+      break;
+            
     default:
       break;
     }
@@ -821,6 +895,25 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
     updPDV(setPDV_K);
   }
 
+  private JraDialog dlgPPO;
+  private void updPPO() {
+    dlgPPO = JOPPDhndlr.getDialogForSet(setPPO, false, 
+    new Runnable() {
+      public void run() {
+        setPPO.post();
+        frmPDV2.this.getJPTV().fireTableDataChanged();
+        dlgPPO.dispose();
+      }
+    },
+    new Runnable() {
+      public void run() {
+        setPPO.cancel();
+        dlgPPO.dispose();
+      }
+    });
+    dlgPPO.show();
+  }
+  
   private void updZP() {
     final JraDialog jdZP = new JraDialog((JFrame)getWindow());
     JPanel jpZP = new JPanel(new BorderLayout()); 
