@@ -54,7 +54,7 @@ public class repOTPLOTTemplate extends repDOSTemplate {
     sh.LabelNaziv_artikla.defaultAlterer().alterWidth(-680);
     sh.LabelJmj.defaultAlterer().moveHor(-680);
     raReportElement lot = sh.copyToModify(sh.LabelNaziv_artikla);
-    lot.setCaption("Šarža");
+    lot.setCaption("Šarža / Lot");
     lot.setWidth(1060);
     lot.setLeft(sh.LabelJmj.defaultAlterer().getLeft() + sh.LabelJmj.defaultAlterer().getWidth() + 20);
     sh.LabelKol.defaultAlterer().alterWidth(-200);
