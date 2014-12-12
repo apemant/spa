@@ -52,7 +52,7 @@ import com.borland.jbcl.layout.XYLayout;
 public class propsDialog extends JraDialog implements navFrame, loadFrame, okFrame {
 sysoutTEST ST = new sysoutTEST(false);
   private String propfile = null;
-  private boolean doSave = false;
+  protected boolean doSave = false;
   private boolean sysprop = false;
   
   private raNavBar navbar = new raNavBar(raNavBar.EMPTY);
