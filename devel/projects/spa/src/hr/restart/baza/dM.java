@@ -692,87 +692,93 @@ public class dM implements DataModule {
     }
     return null;
   }
-
+  
   public static void copyColumns(ReadRow source, ReadWriteRow dest, String[] cols) {
-    for (int i = 0; i < cols.length; i++) {
-      if (source.hasColumn(cols[i]) == null || dest.hasColumn(cols[i]) == null)
-        throw new NullPointerException("Missing column: "+cols[i]);
-      if (source.isNull(cols[i]) && dest.isNull(cols[i])) continue;
-      Column dc = dest.getColumn(cols[i]);
+  	copyColumns(source, cols, dest, cols);
+  }
+
+  public static void copyColumns(ReadRow source, String[] scols, ReadWriteRow dest, String[] dcols) {
+  	if (scols.length != dcols.length)
+  		throw new UnsupportedOperationException("Incompatible column lists");
+    for (int i = 0; i < scols.length; i++) {
+      if (source.hasColumn(scols[i]) == null || dest.hasColumn(dcols[i]) == null)
+        throw new NullPointerException("Missing column: "+scols[i]+"/"+dcols[i]);
+      if (source.isNull(scols[i]) && dest.isNull(dcols[i])) continue;
+      Column dc = dest.getColumn(dcols[i]);
       int dt = dc.getDataType();
-      int st = source.getColumn(cols[i]).getDataType();
-      if (source.isAssignedNull(cols[i]))
-        dest.setAssignedNull(cols[i]);
-      else if (source.isUnassignedNull(cols[i]))
-        dest.setUnassignedNull(cols[i]);
+      int st = source.getColumn(scols[i]).getDataType();
+      if (source.isAssignedNull(scols[i]))
+        dest.setAssignedNull(dcols[i]);
+      else if (source.isUnassignedNull(scols[i]))
+        dest.setUnassignedNull(dcols[i]);
       else switch (st) {
+	      case Variant.STRING:
+	        if (dt == Variant.STRING) {
+	          String src = source.getString(scols[i]);
+	          if (src.length() > dc.getPrecision() && dc.getPrecision() > 0)
+	            dest.setString(dcols[i], src.substring(0, dc.getPrecision()));
+	          else dest.setString(dcols[i], src);
+	        } else throw new UnsupportedOperationException("Incompatible column: "+scols[i]+"/"+dcols[i]+
+	            " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
+	        break;
         case Variant.BIGDECIMAL:
           if (dt == Variant.BIGDECIMAL)
-            dest.setBigDecimal(cols[i], scaled(source.getBigDecimal(cols[i]), dc.getScale()));
+            dest.setBigDecimal(dcols[i], scaled(source.getBigDecimal(scols[i]), dc.getScale()));
           else if (dt == Variant.FLOAT)
-            dest.setFloat(cols[i], source.getBigDecimal(cols[i]).floatValue());
+            dest.setFloat(dcols[i], source.getBigDecimal(scols[i]).floatValue());
           else if (dt == Variant.DOUBLE)
-            dest.setDouble(cols[i], source.getBigDecimal(cols[i]).doubleValue());
-          else throw new UnsupportedOperationException("Incompatible column: "+cols[i]+
-              " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
-          break;
-        case Variant.FLOAT:
-          if (dt == Variant.BIGDECIMAL)
-            dest.setBigDecimal(cols[i], scaled(new BigDecimal((double) source.getFloat(cols[i])), dc.getScale()));
-          else if (dt == Variant.FLOAT)
-            dest.setFloat(cols[i], source.getFloat(cols[i]));
-          else if (dt == Variant.DOUBLE)
-            dest.setDouble(cols[i], (double) source.getFloat(cols[i]));
-          else throw new UnsupportedOperationException("Incompatible column: "+cols[i]+
-              " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
-          break;
-        case Variant.DOUBLE:
-          if (dt == Variant.BIGDECIMAL)
-            dest.setBigDecimal(cols[i], scaled(new BigDecimal(source.getDouble(cols[i])), dc.getScale()));
-          else if (dt == Variant.FLOAT)
-            dest.setFloat(cols[i], (float) source.getDouble(cols[i]));
-          else if (dt == Variant.DOUBLE)
-            dest.setDouble(cols[i], source.getDouble(cols[i]));
-          else throw new UnsupportedOperationException("Incompatible column: "+cols[i]+
-              " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
-          break;
-        case Variant.STRING:
-          if (dt == Variant.STRING) {
-            String src = source.getString(cols[i]);
-            if (src.length() > dc.getPrecision() && dc.getPrecision() > 0)
-              dest.setString(cols[i], src.substring(0, dc.getPrecision()));
-            else dest.setString(cols[i], src);
-          } else throw new UnsupportedOperationException("Incompatible column: "+cols[i]+
-              " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
-          break;
-        case Variant.TIMESTAMP:
-          if (dt == Variant.TIMESTAMP)
-            dest.setTimestamp(cols[i], source.getTimestamp(cols[i]));
-          else throw new UnsupportedOperationException("Incompatible column: "+cols[i]+
+            dest.setDouble(dcols[i], source.getBigDecimal(scols[i]).doubleValue());
+          else throw new UnsupportedOperationException("Incompatible column: "+scols[i]+"/"+dcols[i]+
               " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
           break;
         case Variant.INT:
           if (dt == Variant.INT)
-            dest.setInt(cols[i], source.getInt(cols[i]));
+            dest.setInt(dcols[i], source.getInt(scols[i]));
           else if (dt == Variant.LONG)
-            dest.setLong(cols[i], (long) source.getInt(cols[i]));
-          else throw new UnsupportedOperationException("Incompatible column: "+cols[i]+
+            dest.setLong(dcols[i], (long) source.getInt(scols[i]));
+          else throw new UnsupportedOperationException("Incompatible column: "+scols[i]+"/"+dcols[i]+
+              " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
+          break;
+        case Variant.TIMESTAMP:
+          if (dt == Variant.TIMESTAMP)
+            dest.setTimestamp(dcols[i], source.getTimestamp(scols[i]));
+          else throw new UnsupportedOperationException("Incompatible column: "+scols[i]+"/"+dcols[i]+
+              " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
+          break;
+        case Variant.FLOAT:
+          if (dt == Variant.BIGDECIMAL)
+            dest.setBigDecimal(dcols[i], scaled(new BigDecimal((double) source.getFloat(scols[i])), dc.getScale()));
+          else if (dt == Variant.FLOAT)
+            dest.setFloat(dcols[i], source.getFloat(scols[i]));
+          else if (dt == Variant.DOUBLE)
+            dest.setDouble(dcols[i], (double) source.getFloat(scols[i]));
+          else throw new UnsupportedOperationException("Incompatible column: "+scols[i]+"/"+dcols[i]+
+              " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
+          break;
+        case Variant.DOUBLE:
+          if (dt == Variant.BIGDECIMAL)
+            dest.setBigDecimal(dcols[i], scaled(new BigDecimal(source.getDouble(scols[i])), dc.getScale()));
+          else if (dt == Variant.FLOAT)
+            dest.setFloat(dcols[i], (float) source.getDouble(scols[i]));
+          else if (dt == Variant.DOUBLE)
+            dest.setDouble(dcols[i], source.getDouble(scols[i]));
+          else throw new UnsupportedOperationException("Incompatible column: "+scols[i]+"/"+dcols[i]+
               " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
           break;
         case Variant.SHORT:
           if (dt == Variant.SHORT)
-            dest.setShort(cols[i], source.getShort(cols[i]));
+            dest.setShort(dcols[i], source.getShort(scols[i]));
           else if (dt == Variant.INT)
-            dest.setInt(cols[i], (int) source.getShort(cols[i]));
+            dest.setInt(dcols[i], (int) source.getShort(scols[i]));
           else if (dt == Variant.LONG)
-            dest.setLong(cols[i], (long) source.getShort(cols[i]));
-          else throw new UnsupportedOperationException("Incompatible column: "+cols[i]+
+            dest.setLong(dcols[i], (long) source.getShort(scols[i]));
+          else throw new UnsupportedOperationException("Incompatible column: "+scols[i]+"/"+dcols[i]+
               " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
           break;
         case Variant.LONG:
           if (dt == Variant.LONG)
-            dest.setLong(cols[i], source.getLong(cols[i]));
-          else throw new UnsupportedOperationException("Incompatible column: "+cols[i]+
+            dest.setLong(dcols[i], source.getLong(scols[i]));
+          else throw new UnsupportedOperationException("Incompatible column: "+scols[i]+"/"+dcols[i]+
               " (source: "+Variant.typeName(st)+", dest: "+Variant.typeName(dt)+")");
           break;
       }
