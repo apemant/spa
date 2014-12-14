@@ -62,6 +62,8 @@ public class raReportDescriptor {
   private raReportTemplate templateObject;
   private boolean extended, noSignature, isLogoPrinted;
   private JasperHook hook;
+  private Runnable invHook;
+  
   
   private int reportType = TYPE_INVALID;
 //  private boolean isCustomIzlaz, isCustomInter;
@@ -616,6 +618,14 @@ public class raReportDescriptor {
   
   public void adjustJasperDesign(JasperDesign design) {
     if (hook != null) hook.adjustDesign(providerName, design);
+  }
+  
+  public void setInvocationHook(Runnable ihook) {
+  	invHook = ihook;
+  }
+  
+  public void invokeHook() {
+  	if (invHook != null) invHook.run();
   }
 }
 

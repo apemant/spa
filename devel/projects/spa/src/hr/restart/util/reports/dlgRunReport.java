@@ -834,6 +834,7 @@ public class dlgRunReport {
     
     prw.removeDesign();
     if (isElixir()) {
+    	getCurrentDescriptor().invokeHook();
       runElixir(mode);
     } else {
       runMx(mode);
