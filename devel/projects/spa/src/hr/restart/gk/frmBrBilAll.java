@@ -26,6 +26,8 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.raInputDialog;
+import hr.restart.swing.raNumberMask;
 import hr.restart.util.Aus;
 import hr.restart.util.Stopwatch;
 import hr.restart.util.Util;
@@ -35,6 +37,8 @@ import hr.restart.util.raComboBox;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raUpitFat;
+import hr.restart.util.reports.JasperHook;
+import hr.restart.util.reports.dlgRunReport;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.raKonta;
 
@@ -60,6 +64,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRSection;
+import net.sf.jasperreports.engine.design.JRDesignStaticText;
+import net.sf.jasperreports.engine.design.JRDesignTextField;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -2063,11 +2073,55 @@ public class frmBrBilAll extends raUpitFat {
     rcc.setLabelLaF(rnvDoubleClick, enabled); 
   }
   
+  
+  public void addHooks() {
+  	getRepRunner().getReport("repRDG2").setInvocationHook(new Runnable() {
+			public void run() {
+				invokeRecalcOption();
+			}
+		});
+  	getRepRunner().getReport("repRDG2").setJasperHook(new JasperHook() {
+			public void adjustDesign(String reportName, JasperDesign design) {
+				if (reportName.equals("repRDG2")) {
+					JRBand sec = design.getGroups()[0].getGroupHeader();
+					for (int i = 0; i < sec.getElements().length; i++)
+						if (sec.getElements()[i] instanceof JRDesignStaticText &&
+						   ((JRDesignStaticText)	sec.getElements()[i]).getText().equals("RAÈUN DOBITI I GUBITKA"))
+							((JRDesignStaticText)	sec.getElements()[i]).setText("PROJEKCIJA DOBITI I GUBITKA");
+				}
+			}
+		});
+  }
+  
+  raInputDialog multDlg = new raInputDialog();
+  JraTextField mult = new JraTextField();
+  StorageDataSet multData = new StorageDataSet();
+  JPanel multPan = new JPanel(new XYLayout(375, 60));
+  {
+  	multData.setColumns(new Column[] {
+  			dM.createBigDecimalColumn("MULT", 2),
+  	});
+  	multData.open();
+  	mult.setColumnName("MULT");
+  	mult.setDataSet(multData);
+  	multData.setBigDecimal("MULT", Aus.one0);
+  	multPan.add(new JLabel("Faktor prilagodbe (množitelj)"), new XYConstraints(15, 25,-1, -1));
+  	multPan.add(mult, new XYConstraints(250, 25, 100, -1));
+  }
+  
+  void invokeRecalcOption() {
+  	BigDecimal old = multData.getBigDecimal("MULT");
+  	if (!multDlg.show(dlgRunReport.getCurrentDlgRunReport().getDlg(), multPan, "Dodatni parametri ispisa")) 
+  		multData.setBigDecimal("MULT",  old);
+  	
+  }
+  
 
   protected void addingReport(){
     killAllReports();
     this.addReport("hr.restart.gk.repBBNAMEA1", "hr.restart.gk.repBrBilAllSource", "BBNAMEprpsGeneric", "Bruto bilanca, NAZIV, poèetno stanje, promet, saldo"); // ***
     this.addJasper("repRDG", "hr.restart.gk.repBrBillRDG", "rdg.jrxml", "Raèun dobiti i gubitka (bilanca stanja)");
+    this.addJasper("repRDG2", "hr.restart.gk.repBrBillRDG", "rdg.jrxml", "Projekcija raèuna dobiti i gubitka (bilance stanja) za razdoblje");
 //    this.addReport("hr.restart.gk.repBBNAMEA1", "hr.restart.gk.repBrBilAllSource", "BBNAMEprpsWideExtendedTEST", "Bruto bilanca, NAZIV, poèetno stanje, promet, saldo"); // ***
     if (isKompletnaBilanca()) { // kompletna bilanca
       if (stds.getString("PS").equals("D")) { // poèetno stanje + promet
