@@ -45,6 +45,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -86,11 +87,13 @@ public class raTableCopyPopup extends JPopupMenu {
   private Action add, addAll, set, setAll, sub, subAll, reset,
       selClear, selAll, selectCol, fastAdd, filtShow, filtEq, filtNeq, 
       filtRemove, search, searchAll, tabCond, keyCond, inCond, 
-      inColCond, copyAll, clearAll, replaceAll, performAll, performInit, memorize, compare, dups;
+      inColCond, copyAll, clearAll, replaceAll, performAll, performInit, 
+      memorize, compare, dups, copyCol, pasteCol;
   private JMenu calcMenu;
   private JMenu adminMenu;
   
   private Map memo = new HashMap();
+  private StorageDataSet memSet = null;
   
   Interpreter bsh = new Interpreter();
   raCalculator calc = raCalculator.getInstance();
@@ -210,6 +213,12 @@ public class raTableCopyPopup extends JPopupMenu {
       memorize.setEnabled(jt.getRowCount() > 0);
       compare.setEnabled(memo.size() > 0);
       dups.setEnabled(jt.getRowCount() > 0);
+      copyCol.putValue(Action.NAME, selMulti ?
+          "Zapamti sve oznaèene vrijednosti u koloni" :
+          "Zapamti sve vrijednosti u koloni");
+      pasteCol.putValue(Action.NAME, selMulti ?
+          "Ubaci zapamæene vrijednosti u oznaèene redove kolone" :
+          "Ubaci zapamæene vrijednosti u kolonu");
 
       reset.setEnabled(calc.data.getBigDecimal("RESULT").signum() != 0);
       filtShow.setEnabled(extend && dataset && selectable);
@@ -395,7 +404,6 @@ public class raTableCopyPopup extends JPopupMenu {
     });
     adminMenu.add(replaceAll = new AbstractAction("Zamijeni uzorak teksta") {
       public void actionPerformed(ActionEvent e) {
-        
         try {
           replaceAll();
         } catch (RuntimeException e1) {
@@ -403,7 +411,25 @@ public class raTableCopyPopup extends JPopupMenu {
         }
       }
     });
-    
+    adminMenu.addSeparator();
+    adminMenu.add(copyCol = new AbstractAction("Zapamti sve vrijednosti u koloni") {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          copyColumn();
+        } catch (RuntimeException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
+    adminMenu.add(pasteCol = new AbstractAction("Ubaci zapamæene vrijednosti u kolonu") {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          pasteColumn();
+        } catch (RuntimeException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
     adminMenu.add(performAll = new AbstractAction("Izvrši skriptu za sve redove") {
       public void actionPerformed(ActionEvent e) {
         try {
@@ -517,7 +543,7 @@ public class raTableCopyPopup extends JPopupMenu {
     }
     
     if (dups.size() == 0) {
-      JOptionPane.showMessageDialog(null, 
+      JOptionPane.showMessageDialog(jt.getTopLevelAncestor(), 
           "Nema duplikata.", "Duplikati", JOptionPane.INFORMATION_MESSAGE);
       return;
     }
@@ -557,7 +583,7 @@ public class raTableCopyPopup extends JPopupMenu {
   		totalnew += ((Integer) i.next()).intValue();
   	
   	if (total + totalnew == 0) { 
-  	    JOptionPane.showMessageDialog(null, "Kolone su identiène.", "Razlike", JOptionPane.INFORMATION_MESSAGE);
+  	    JOptionPane.showMessageDialog(jt.getTopLevelAncestor(), "Kolone su identiène.", "Razlike", JOptionPane.INFORMATION_MESSAGE);
   		return;
   	}
   	
@@ -751,6 +777,7 @@ public class raTableCopyPopup extends JPopupMenu {
       long[] rows = new long[stm.countSelected()];
       if (stm.isNatural()) {
         Integer[] sel = (Integer[]) stm.getSelection();
+        Arrays.sort(sel);
         for (int i = 0; i < sel.length; i++) {
           ds.goToRow(sel[i].intValue());
           rows[i] = ds.getInternalRow();
@@ -949,6 +976,72 @@ public class raTableCopyPopup extends JPopupMenu {
         }
       });
     }
+  }
+  
+  void copyColumn() {
+  	long[] rows = generateList();
+  	String col = jt.getRealColumnName(selCol);
+    DataSet ds = jt.getDataSet();
+    int row = ds.getRow();
+    
+  	memSet = new StorageDataSet();
+  	memSet.addColumn(ds.getColumn(col).cloneColumn());
+  	memSet.open();
+  	for (int i = 0; i < rows.length; i++) {
+      ds.goToInternalRow(rows[i]);
+      memSet.insertRow(false);
+      dM.copyDestColumns(ds, memSet);
+      memSet.post();
+    }
+  	ds.goToRow(row);
+    ds.enableDataSetEvents(true);
+    jt.startFire();
+  }
+  
+  void pasteColumn() {
+  	if (memSet == null) {
+  		JOptionPane.showMessageDialog(jt.getTopLevelAncestor(), "Nema zapamæenih vrijednosti za ubaciti!", 
+          "Greška", JOptionPane.ERROR_MESSAGE);
+  		return;
+  	}
+  	raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
+  	int num = stm != null && stm.countSelected() > 1 ? stm.countSelected() : jt.getDataSet().rowCount();
+  	
+  	if (num < memSet.rowCount()) {
+  		if (JOptionPane.showConfirmDialog(jt.getTopLevelAncestor(), 
+  				"Zapamæenih vrijednosti ima više nego prostora u odredišnoj koloni!"
+  				+ "\nOdbaciti višak vrijednosti na kraju?", "Višak zapamæenih vrijednosti", 
+  				JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return; 
+  	} else if (num > memSet.rowCount()) {
+  		if (JOptionPane.showConfirmDialog(jt.getTopLevelAncestor(), 
+  				"Zapamæenih vrijednosti ima manje nego prostora u odredišnoj koloni!"
+  				+ "\nUbaciti vrijednosti od poèetka kolone?", "Manjak zapamæenih vrijednosti", 
+  				JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+  	}
+  	
+  	try {
+	  	DataSet ds = jt.getDataSet();
+	  	int row = ds.getRow();
+	  	try {
+	  		long[] rows = generateList();
+		    String[] dcol = {jt.getRealColumnName(selCol)};
+		    String[] scol = memSet.getColumnNames(1);
+		    memSet.first();
+		    for (int i = 0; i < rows.length && memSet.inBounds(); memSet.next(), i++) {
+		      ds.goToInternalRow(rows[i]);
+		      dM.copyColumns(memSet, scol, ds, dcol);
+		      ds.post();
+		    }
+		    ds.goToRow(row);
+	  	} finally {
+	  		ds.enableDataSetEvents(true);
+	      jt.startFire();
+	      jt.fireTableDataChanged();  		
+	  	}
+  	} catch (UnsupportedOperationException e) {
+  		JOptionPane.showMessageDialog(jt.getTopLevelAncestor(), "Odredišna kolona je nekompatibilna izvornoj!", 
+          "Greška", JOptionPane.ERROR_MESSAGE);
+  	}
   }
   
   void replaceAll() {
