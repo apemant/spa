@@ -3,6 +3,7 @@ package hr.restart.util;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Expdata;
 import hr.restart.baza.Exphead;
+import hr.restart.baza.dM;
 import hr.restart.baza.kreator;
 import hr.restart.sisfun.TextFile;
 
@@ -12,8 +13,10 @@ import java.text.SimpleDateFormat;
 
 import javax.swing.JOptionPane;
 
+import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 
 
@@ -48,14 +51,16 @@ public class raExportData {
       String fname = eh.getString("IMEDAT");
       if ("C".equals(eh.getString("TIPDAT")))
         exportFile(new File(dir, fname), 
-            eh.getString("UPIT"), eh.getInt("CREP"));
+            eh.getString("UPIT"), eh.getInt("CREP"),
+            eh.getString("SORTCOL"), eh.getString("SORTLOC").equals("D"));
     }
     JOptionPane.showMessageDialog(null, 
         "Izvoz podataka završen.", 
         "Izvoz podataka", JOptionPane.INFORMATION_MESSAGE);
   }
   
-  public static void exportFile(File f, String upit, int crep) {
+  public static void exportFile(File f, String upit, int crep, 
+      String sort, boolean locale) {
     if (f.exists() && !f.canWrite()) return;
     DataSet ed = Expdata.getDataModule().getTempSet(
         Condition.equal("CREP", crep));
@@ -74,31 +79,46 @@ public class raExportData {
     VarStr line = new VarStr();
     String[] qs = new VarStr(upit).split(';');
     
+    StorageDataSet ds = new StorageDataSet();
+   
     for (int q = 0; q < qs.length; q++) {
-      DataSet ds = Aus.q(qs[q]);
-      for (ds.first(); ds.inBounds(); ds.next()) {
-        line.clear();
-        for (int i = 0; i < cols.length; i++) {
-          int type = ds.getColumn(cols[i].name).getDataType();
-          if (type == Variant.STRING)
-            line.append('"').append(ds.getString(cols[i].name).trim()).
-                append("\",");
-          else if (type == Variant.BIGDECIMAL)
-            line.append('"').append(ds.getBigDecimal(cols[i].name)).
-                append("\",");
-          else if (type == Variant.TIMESTAMP)
-            line.append('"').append(sd.format(
-                ds.getTimestamp(cols[i].name))).append("\",");
-          else if (type == Variant.INT)
-            line.append(ds.getInt(cols[i].name)).append(',');
-          else if (type == Variant.SHORT)
-            line.append(ds.getShort(cols[i].name)).append(',');
-          else if (type == Variant.LONG)
-            line.append(ds.getLong(cols[i].name)).append(',');
-        }
-        line.chop();
-        out.out(line.toString());
+      DataSet dss = Aus.q(qs[q]);
+      if (ds.columnCount() == 0) {
+        Column[] cs = new Column[cols.length];
+        for (int i = 0; i < cols.length; i++)
+          cs[i] = dss.getColumn(cols[i].name).cloneColumn();
+        ds.setColumns(cs);
+        ds.open();
       }
+      for (dss.first(); dss.inBounds(); dss.next()) {
+        ds.insertRow(false);
+        dM.copyDestColumns(dss, ds);
+      }
+    }
+    if (locale) ds.setLocale(Aus.hr);
+    if (sort != null && sort.length() > 0)
+      ds.setSort(new SortDescriptor(new VarStr(sort).splitTrimmed(',')));
+      
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      line.clear();
+      for (int i = 0; i < cols.length; i++) {
+        int type = ds.getColumn(cols[i].name).getDataType();
+        if (type == Variant.STRING)
+          line.append(ds.getString(cols[i].name).trim()).append(';');
+        else if (type == Variant.BIGDECIMAL)
+          line.append(ds.getBigDecimal(cols[i].name)).append(';');
+        else if (type == Variant.TIMESTAMP)
+          line.append(sd.format(
+              ds.getTimestamp(cols[i].name))).append(';');
+        else if (type == Variant.INT)
+          line.append(ds.getInt(cols[i].name)).append(';');
+        else if (type == Variant.SHORT)
+          line.append(ds.getShort(cols[i].name)).append(';');
+        else if (type == Variant.LONG)
+          line.append(ds.getLong(cols[i].name)).append(';');
+      }
+      line.chop();
+      out.out(line.toString());
     }
     out.close();
   }
