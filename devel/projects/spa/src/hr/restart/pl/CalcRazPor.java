@@ -138,7 +138,7 @@ public class CalcRazPor {
     StorageDataSet orgdata = new StorageDataSet();
     QueryDataSet orgdataqry = Util.getNewQueryDataSet(
         "SELECT godobr, mjobr, rbrobr, datumispl, MINPL FROM kumulorgarh WHERE "
-        +Condition.equal("CORG",corg)+" AND "+inqrange
+        +Condition.equal("CORG",corg)+" AND "+inqrange+" AND sati>0"
         );
       orgdata.setColumns(orgdataqry.cloneColumns());
       String oldmonth="##";
