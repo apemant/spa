@@ -214,7 +214,7 @@ public class frmDNR extends raUpitLite {
 //                  " AND radnicipl.corg = kumulorgarh.corg"+
                   " and kumulorgarh.datumispl between '"+ fieldSet.getTimestamp("DATISPLOD") + "' and '" + ut.getLastSecondOfDay(fieldSet.getTimestamp("DATISPLDO")) + "'" +
                   " and (kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulradarh.corg")+" OR kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(frmID.getOjWith()),"kumulradarh.corg")+")";
-    String nadoprc = " and kumulradarh.cradnik between '"+ fieldSet.getInt("CRADNIKOD") + "' and '" + fieldSet.getInt("CRADNIKDO") + "'";
+    String nadoprc = " and kumulradarh.cradnik between '"+ fieldSet.getString("CRADNIKOD") + "' and '" + fieldSet.getString("CRADNIKDO") + "'";
     if (!jlrCradnikOd.getText().equals("")) return qstr.concat(nadoprc);
     qstr+=" ORDER BY radnici.ime, radnici.prezime, radnici.cradnik, kumulorgarh.godobr, kumulorgarh.mjobr, kumulorgarh.rbrobr";
     System.out.println(qstr);
@@ -271,11 +271,11 @@ public class frmDNR extends raUpitLite {
   public void okPress() {
     getOKPanel().jPrekid.requestFocus();
     disejblajPanel();
-    if (fieldSet.getInt("CRADNIKOD") > fieldSet.getInt("CRADNIKDO")){
-      int i= fieldSet.getInt("CRADNIKOD");
-      fieldSet.setInt("CRADNIKOD", fieldSet.getInt("CRADNIKDO"));
+    if (fieldSet.getString("CRADNIKOD").compareTo(fieldSet.getString("CRADNIKDO")) > 0) {
+      String od = fieldSet.getString("CRADNIKOD");
+      fieldSet.setString("CRADNIKOD", fieldSet.getString("CRADNIKDO"));
       jlrCradnikOd.forceFocLost();
-      fieldSet.setInt("CRADNIKDO", i);
+      fieldSet.setString("CRADNIKDO", od);
       jlrCradnikDo.forceFocLost();
     }
     knjigovodstvo = ut.getNewQueryDataSet(getKnjigovodstvoSQL());
@@ -375,8 +375,8 @@ public class frmDNR extends raUpitLite {
     this.addJasper("repDNR","hr.restart.pl.repDNR", "dnr.jrxml", "Obrazac DNR");
 //    this.addReport("hr.restart.pl.repDNR", "DNR", 2);
 
-    colRadnikOd = dm.createIntColumn("CRADNIKOD");
-    colRadnikDo = dm.createIntColumn("CRADNIKDO");
+    colRadnikOd = dm.createStringColumn("CRADNIKOD", 6);
+    colRadnikDo = dm.createStringColumn("CRADNIKDO", 6);
     colDatumOd = dm.createTimestampColumn("DATISPLOD");
     colDatumDo = dm.createTimestampColumn("DATISPLDO");
     colCorg = dm.createStringColumn("CORG",0);
@@ -536,7 +536,7 @@ public class frmDNR extends raUpitLite {
     String a1 = "select count(distinct cradnik) as br " +
                 "from Radnici "+
                 "WHERE (corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")))+")";
-    String a2 = "AND cradnik between '"+ fieldSet.getInt("CRADNIKOD") + "' and '" + fieldSet.getInt("CRADNIKDO") + "'";
+    String a2 = "AND cradnik between '"+ fieldSet.getString("CRADNIKOD") + "' and '" + fieldSet.getString("CRADNIKDO") + "'";
     String a;
     if (!jlrCradnikOd.getText().equals("")) a = a1.concat(a2);
     else a = a1;

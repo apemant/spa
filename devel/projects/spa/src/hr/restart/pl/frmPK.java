@@ -164,11 +164,11 @@ public class frmPK extends frmDNR{
 //    super.okPress();
 //    getOKPanel().jPrekid.requestFocus();
 //    rcc.EnabDisabAll(super.jPanel1, false);
-    if (fieldSet.getInt("CRADNIKOD") > fieldSet.getInt("CRADNIKDO")){
-      int i= fieldSet.getInt("CRADNIKOD");
-      fieldSet.setInt("CRADNIKOD", fieldSet.getInt("CRADNIKDO"));
+    if (fieldSet.getString("CRADNIKOD").compareTo(fieldSet.getString("CRADNIKDO")) > 0) {
+      String od = fieldSet.getString("CRADNIKOD");
+      fieldSet.setString("CRADNIKOD", fieldSet.getString("CRADNIKDO"));
       jlrCradnikOd.forceFocLost();
-      fieldSet.setInt("CRADNIKDO", i);
+      fieldSet.setString("CRADNIKDO", od);
       jlrCradnikDo.forceFocLost();
     }
     knjigovodstvo = Util.getNewQueryDataSet(getKnjigovodstvoSQL());
@@ -186,7 +186,7 @@ public class frmPK extends frmDNR{
       " radnici.ime, radnici.prezime, radnici.cradnik, radnicipl.jmbg, radnicipl.oib,"+
       " radnicipl.adresa," +
       " '' as copcine, CAST (0 as numeric(17,2)) as netopk"+//ip
-      " from radnici,radnicipl where radnici.cradnik = radnicipl.cradnik and radnici.cradnik between '"+ fieldSet.getInt("CRADNIKOD") + "' and '" + fieldSet.getInt("CRADNIKDO") + "'";
+      " from radnici,radnicipl where radnici.cradnik = radnicipl.cradnik and radnici.cradnik between '"+ fieldSet.getString("CRADNIKOD") + "' and '" + fieldSet.getString("CRADNIKDO") + "'";
       System.out.println("goli k: "+qstr);
       repSet = Util.getNewQueryDataSet(qstr);
     } else if (repSet.getRowCount() == 0) {
@@ -310,7 +310,7 @@ public class frmPK extends frmDNR{
       +" AND kumulradarh.corg = kumulorgarh.corg"
       +" and EXTRACT(YEAR FROM kumulorgarh.datumispl)="+getGodPK(repSet)
       +" and (kumulorgarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulorgarh.corg")+") ";
-      String a2 = "AND cradnik between '"+ fieldSet.getInt("CRADNIKOD") + "' and '" + fieldSet.getInt("CRADNIKDO") + "'";
+      String a2 = "AND cradnik between '"+ fieldSet.getString("CRADNIKOD") + "' and '" + fieldSet.getString("CRADNIKDO") + "'";
       String a;
       if (!jlrCradnikOd.getText().equals("")) a = a1.concat(a2);
       else a = a1;
