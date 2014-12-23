@@ -17,20 +17,16 @@
 ****************************************************************************/
 package hr.restart.baza;
 
-import hr.restart.util.Aus;
-import hr.restart.util.Int2;
-import hr.restart.util.ProcessInterruptException;
-import hr.restart.util.Util;
-import hr.restart.util.Valid;
-import hr.restart.util.VarStr;
-import hr.restart.util.lookupData;
-import hr.restart.util.raGlob;
+import hr.restart.util.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Properties;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -99,8 +95,185 @@ public class ConsoleCreator {
 
 	public ConsoleCreator() {
 	}
+	
+	public static void dumpDatabase(String id) {
+	  System.out.println("Scanning base.properties...");
+	  
+	  Properties props = new Properties();
+	  FileHandler.loadProperties("base.properties", props, false);
+	  
+	  boolean any = true;
+	  for (int bi = 1; any; bi++) {
+	    String url = props.getProperty("url" + bi);
+	    any = url != null;
+	    if (url.toLowerCase().indexOf(id.toLowerCase()) > 0) {
+	      System.out.println("Found: " + props.getProperty("name" + bi));
+	      System.out.println("(" + url + ")");
+	      dumpDatabase(id, url, param(props, "tip", bi), param(props, "user", bi), param(props, "pass", bi));
+	      break;
+	    }
+	  }
+	  if (!any) {
+	    System.out.println("Trying restart.properties...");
+	    props.clear();
+	    FileHandler.loadProperties("restart.properties", props, false);
+	    dumpDatabase(id, props.getProperty("url"), props.getProperty("tip"), props.getProperty("user"), props.getProperty("pass"));
+	  }
+	  System.out.println("Over.");
+	}
+	
+	private static String param(Properties props, String param, int bi) {
+	  String val = props.getProperty(param + bi);
+	  if (val != null) return val;
+	  return props.getProperty(param);
+	}
 
-	public static void initDatabase() throws Exception {
+	private static void dumpDatabase(String id, String url, String tip, String user, String pass) {
+      if (url == null || tip == null || user == null || pass == null || !test(url, tip, user, pass)) {
+        System.out.println("Invalid connection params:");
+        System.out.println("url = " + url);
+        System.out.println("tip = " + tip + "   user = " + user + "   pass = " + pass);
+        return;
+      }
+      dM.setMinimalParams(url, tip, user, pass);
+      dM dm = dM.getDataModule();
+
+      String cbdir = IntParam.getTag("console.backup.dir");
+      File bdir = cbdir != null && cbdir.length() > 0 ? new File(cbdir) :
+                    new File(System.getProperty("user.dir")+File.separator+"backups");
+      String sufix = ".zip";
+      String time = new java.sql.Timestamp(System.currentTimeMillis()).toString();
+      String bfname = new VarStr("raBackup-" + time.substring(0,10) + "_" + time.substring(11) + "_" + id).
+                          replace(':', '-').replace('.', '-').toString();
+      int a = 1;
+      File bfile = null;
+      String orgsufix = sufix;
+      while ((bfile = new File(bdir, bfname+sufix)).exists()) {
+        sufix = "_"+a+orgsufix;
+        a++;
+        if (a > 99) break;
+      }
+      if (!bdir.isDirectory()) bdir.delete();
+      if (!bdir.exists()) bdir.mkdirs();
+      System.out.println("Output file: " + bfile.getAbsolutePath());
+      System.out.println();
+      System.out.println("Dumping database tables...");
+      
+      installDumpNotifier();
+      
+      a = 0;
+      File tmpDir = new File("dbcre.tmp");
+      while (tmpDir.exists())
+        tmpDir = new File("dbcre" + (++a) + ".tmp");
+      File dest = tmpDir;
+      dest.mkdir();
+      System.out.println("Temporary folder: " + dest.getAbsolutePath());
+      
+      String[] modules = ConsoleCreator.getModuleClasses();
+      KreirDrop kdp;
+      
+      int errors = 0;
+      for (int i = 0; i < modules.length; i++)
+        try {
+          kdp = KreirDrop.getModule(modules[i].toString());
+          if (kdp == null)
+            kdp = (KreirDrop) Class.forName(modules[i]).newInstance();
+          if (!dumpData(kdp, dest)) ++errors;
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      
+      if (errors > 0) System.out.println("Tables with errors: " + errors);
+      
+      System.out.println("Creating archive...");
+      
+      File[] dats = dest.listFiles();
+      if (!FileHandler.makeZippedFile(dats, bfile))
+        System.out.println("!!! Unsuccessful operation !!!");
+
+      System.out.println("Deleting temporary folder ...");
+      for (int i = 0; i < dats.length; i++)
+        dats[i].delete();
+      dest.delete();
+    }
+	
+	static void installDumpNotifier() {
+	    KreirDrop.installNotifier(new raTransferNotifier() {
+	      private int total;
+	      public void rowTransfered(String table, int action, int row, Object data) {
+	        int ev;
+	        switch (action) {
+	          case raTransferNotifier.DUMP_STARTED:
+	            total = row;
+	            break;
+	          case raTransferNotifier.DUMP_SEGMENT_FINISHED:
+	            System.out.println("...stored " + total + " rows...");
+	            break;
+	        }
+	      }
+	    });
+	  }
+
+	static boolean dumpData(KreirDrop kdp, File dir) {
+	    try {
+	      String tname = kdp.getColumns()[0].getTableName().toLowerCase();
+	      int totalRows = kdp.getRowCount();
+	      if (totalRows * kdp.getColumns().length < ConsoleCreator.maxLoad) {
+	        System.out.println("Opening table " + kdp.Naziv + " ...");
+	        DataSet ds = Util.getNewQueryDataSet("SELECT * FROM " + tname);
+	        if (kdp.dumpTable(ds, dir) > 0 || (ds.close() && false))
+	          System.out.println("Stored " + totalRows + " rows.");
+	        else System.out.println("... empty.");
+	        return true;
+	      }
+	      
+	      System.out.println("Segmentation of large table "+kdp.Naziv+" ...");
+	      Int2 sgt = kdp.findBestKeyForSegments();
+	      if (sgt == null) {
+	        System.out.println("... unsuccessful!");
+	        return false;
+	      }
+	        
+	      String bestCol = kdp.getColumns()[sgt.one].getColumnName().toLowerCase();
+	      int bestNum = sgt.two;
+	      int minSegments = totalRows * kdp.getColumns().length / ConsoleCreator.maxLoad + 2;
+	      if (bestNum / 10 <= minSegments) {
+	        System.out.println("... unsuccessful!");
+	        return false;
+	      }
+
+	      Condition[] conds = kdp.createSegments(bestCol, minSegments);
+	      if (kdp.dumpSegments(dir, conds) > 0) {
+	        System.out.println("Stored a total of " + totalRows + " rows.");
+	        return true;
+	      }
+	      
+	      System.out.println("... error in segmentation!");
+	      return false;
+	    } catch (Exception e) {
+	      System.out.println("Error saving data!");
+	      return false;
+	    }
+	  }
+	
+	
+	static boolean test(String url, String tip, String user, String pass) {
+      try {
+         Class.forName(tip);
+      } catch (ClassNotFoundException e) {
+          e.printStackTrace();
+          return false;
+      }
+      try {
+        DriverManager.getConnection(url, user, pass);
+      } catch(SQLException e) {
+        e.printStackTrace();
+        return false;
+      }
+      return true;
+    }
+
+  public static void initDatabase() throws Exception {
 		dM.setMinimalMode();
 		dM dm = dM.getDataModule();
 		if (dm.conURL == null || dm.conURL.length() == 0
@@ -152,12 +325,21 @@ public class ConsoleCreator {
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("init")) {
 			try {
-				new ConsoleCreator().initDatabase();
+				ConsoleCreator.initDatabase();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			System.exit(0);
 		}
+		
+		if (args.length == 2 && args[0].equalsIgnoreCase("backup")) {
+          try {
+              ConsoleCreator.dumpDatabase(args[1]);
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+          System.exit(0);
+        }
 
 		try {
 			System.out.println("Inicijaliziram datamodule...");
@@ -180,8 +362,8 @@ public class ConsoleCreator {
 		System.out.println("Argumenti:  <naredba> <popis tablica>");
 		System.out.println();
 		System.out.println("Naredbe:");
-		System.out
-				.println("  export - sprema podatke iz tablica na disk (.dat i .def)");
+		System.out.println("  export - sprema podatke iz tablica na disk (.dat i .def)");
+		System.out.println("  backup - stvara backup baze (navesti ime baze, e.g. bazara.fdb)");
 		System.out.println("  import - puni tablice iz .dat i .def datoteka");
 		System.out.println("  delete - brise sve redove iz tablica");
 		System.out.println("  unlock - brise lokk flag u tablicama");

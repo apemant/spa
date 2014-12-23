@@ -137,6 +137,18 @@ public class dM implements DataModule {
   public static void setMinimalMode() {
     safeMode = true;
   }
+  
+  static String minURL;
+  static String minUSER;
+  static String minPASS;
+  static String minTIP;
+  public static void setMinimalParams(String url, String driver, String user, String password) {
+    safeMode = true;
+    minURL = url;
+    minTIP = driver;
+    minUSER = user;
+    minPASS = password;
+  }
 
   public static dM getDataModule() {
     if (myDM == null) {
@@ -380,7 +392,12 @@ public class dM implements DataModule {
   }
   
   void setConnection() {
-    readParams();
+    if (safeMode && minURL != null) {
+      conURL = minURL;
+      conTIP = minTIP;
+      conUSER = minUSER;
+      conPASS = minPASS;
+    } else readParams();
     
     String driverUsed = null;
     
@@ -470,6 +487,7 @@ public class dM implements DataModule {
 
   private void setDatabaseDialect() {
     Dialect definedDialect = null;
+    if (minURL == null)
     try {
       String dcn = IntParam.getTag("dbdialect");
       if (!dcn.equals("")) {
