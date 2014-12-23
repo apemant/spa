@@ -73,6 +73,8 @@ public abstract class KreirDrop {
   protected static HashMap modules = new HashMap(200);
   protected static HashMap moduleNames = new HashMap(400);
   protected QueryDataSet data;
+  
+  boolean oldWay = false;
 
   private static raTransferNotifier track = null;
 
@@ -81,8 +83,11 @@ public abstract class KreirDrop {
   		pkey = ddl.getPrimaryKey();
   		ddl.dispose();
     	data = isAutoRefresh() ? new raDataSet() : new QueryDataSet();
-      modules.put(this.getClass().getName(), this);
-      initModule();
+    	oldWay = (getQueryDataSet() == null);
+    	if (!oldWay) {
+    	  modules.put(this.getClass().getName(), this);
+    	  initModule();
+    	}
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -98,6 +103,10 @@ public abstract class KreirDrop {
   }
   
   protected void initModule() {
+    if (oldWay) {
+      System.out.println(this.getClass().getName() + " warning: non-restructured module!");
+      data = getQueryDataSet();
+    }
     try {
       if (!getDefinition()) setall();
       pkey = ddl.getPrimaryKey();
