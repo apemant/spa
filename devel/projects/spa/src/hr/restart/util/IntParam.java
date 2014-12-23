@@ -107,12 +107,12 @@ javax.swing.JOptionPane.showMessageDialog(null,"Zbog nadogradnje aplikacije star
   }
 
   private static boolean PostojiFile() {
-    File propsfile = new File(PROPSFILENAME);
+    /*File propsfile = new File(PROPSFILENAME);
     if (propsfile.length()==0) {
       File paramap= new File(IME_PARAMETARSKOG_FAJLA);
       initializeProps(paramap.length()>0);
     }
-/*
+
     if ( ! paramap.exists()) {
       try {
         paramap.createNewFile();
