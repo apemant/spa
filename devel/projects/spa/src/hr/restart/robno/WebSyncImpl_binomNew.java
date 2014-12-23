@@ -382,10 +382,30 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
         if (nars+gots > 0) {
           String users = frmParam.getParam("robno", "salepodNotify", "", "Popis korisnika za notifikaciju salepod");
           System.out.println("Users: " + users);
+          
+          VarStr buf = new VarStr();
+          buf.append("<html><p>WEBSHOP:</p>");
+          buf.append("<p>Dohvaæeno " + nars + "narudžbi ");
+          if (nars > 0) 
+            buf.append("(").append(Aus.createLink("Pregled", 
+                "hr.restart.robno.Util.getUtil().showDocs(\""+mskl+
+                "\", \"NKU\", hr.restart.robno.Util.getUtil().findFirstDayOfMonth()," +
+                "hr.restart.robno.Util.getUtil().findLastDayOfMonth())")).append(") ");
+
+          buf.append("i " + gots + " raèuna ");
+          if (gots > 0)
+            buf.append("(").append(Aus.createLink("Pregled", 
+                "hr.restart.robno.Util.getUtil().showDocs(\""+oj+
+                "\", \"GRN\", hr.restart.robno.Util.getUtil().findFirstDayOfMonth()," +
+                "hr.restart.robno.Util.getUtil().findLastDayOfMonth())")).append(") ");
+            
+          buf.append(" s webshop servera.");
+          String msg = buf.toString();
+          
           String[] us = new VarStr(users).split();
           for (int i = 0; i < us.length; i++) {
             System.out.println("Sending to " + us[i]);
-            MsgDispatcher.send("sistem", us[i], "Dohvaæeno " + nars + " narudžbi i " +gots+" racuna s webshop servera.");
+            MsgDispatcher.send("sistem", us[i], msg);
           }
         }
       }
