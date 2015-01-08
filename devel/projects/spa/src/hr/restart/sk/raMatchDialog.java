@@ -363,7 +363,7 @@ public class raMatchDialog {
     upl = "KUP".equalsIgnoreCase(vrdok) || "UPL".equalsIgnoreCase(vrdok) ||
           "IPL".equalsIgnoreCase(vrdok) || "K".equalsIgnoreCase(base.getString("POKRIVENO"));
     kob = "KOB".equalsIgnoreCase(vrdok) || "OKK".equalsIgnoreCase(vrdok) ||
-          "OKD".equalsIgnoreCase(vrdok);
+          "OKD".equalsIgnoreCase(vrdok) || vrdok.length() == 0;
     if (!upl && !kob) throw new IllegalArgumentException("VRDOK nije ni uplata ni K.O!");
     cbase = upl ? "cuplate" : "cracuna";
     cthis = upl ? "cracuna" : "cuplate";
