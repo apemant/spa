@@ -130,7 +130,7 @@ final public class raRAC extends raIzlazTemplate {
 
     public void Funkcija_ispisa_master() {
 
-        dm.getVTText().open();
+        //dm.getVTText().open();
         //dm.getVTText().refresh();
         flipflop = getMasterSet().getString("PARAM").equalsIgnoreCase("_A_");
         if (flipflop) {
@@ -156,7 +156,7 @@ final public class raRAC extends raIzlazTemplate {
     }
 
     public void Funkcija_ispisa_detail() {
-        dm.getVTText().open();
+        //dm.getVTText().open();
         //dm.getVTText().refresh();
         flipflop = getMasterSet().getString("PARAM").equalsIgnoreCase("_A_");
         if (flipflop) {

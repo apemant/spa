@@ -128,7 +128,7 @@ public class raPONOJ extends raIzlazTemplate {
       });
     }
     
-    public boolean dodSaveCopyStavke() {
+/*    public boolean dodSaveCopyStavke() {
       try {
         DataSet vt = VTText.getDataModule().openTempSet(Condition.equal("CKEY", rCD.getKey(pon)));
         if (vt.rowCount() > 0) {
@@ -143,7 +143,7 @@ public class raPONOJ extends raIzlazTemplate {
         return false;
       }
     return true;
-    }
+    }*/
     
 	public void initialiser() {
 		what_kind_of_dokument = "PON";

@@ -412,8 +412,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       lookupData ld = lookupData.getlookupData();
       dM dm = dM.getDataModule();
             
-      DataSet ds = stdoki.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ms));
-      ds.open();
+      DataSet ds = stdoki.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, ms));
 
       //BigDecimal osnpdv = Aus.zero2;
       BigDecimal osnpnp = Aus.zero2;
@@ -474,8 +473,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       }*/
       
       String nacpl = ms.getString("CNACPL");
-      DataSet rate = Rate.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ms));
-      rate.open();
+      DataSet rate = Rate.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, ms));
       if (rate.getRowCount() == 1)
         nacpl = rate.getString("CNACPL");
       else if (rate.getRowCount() > 1)
@@ -584,8 +582,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
          for (int i = 0; i < brdoks.length; i++) {                      
            if (!lD.raLocate(ms, "BRDOK", brdoks[i].toString())) continue;
            
-           DataSet tms = doki.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey,  ms));
-           tms.open();           
+           DataSet tms = doki.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey,  ms));
            if (tms.getString("FOK").equals("D")) continue;
            
            String cOpis = presBlag.getSeqOpis(ms);
@@ -654,8 +651,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         return;
       }
       
-      DataSet tms = doki.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey,  ms));
-      tms.open();
+      DataSet tms = doki.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey,  ms));
       
       if (tms.getString("FOK").equals("D")) {
         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument je veæ zakljuèan!", "Greška", JOptionPane.ERROR_MESSAGE);
@@ -1336,8 +1332,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		  getMasterSet().setBigDecimal("PLATITI",  getMasterSet().getBigDecimal("UIU"));
 		  
 		  String ikey = raControlDocs.getKey(getMasterSet(), "doki");
-          QueryDataSet upls = UplRobno.getDataModule().getTempSet(Condition.equal("CDOC", ikey).and(Condition.equal("RBR", (short) 1)));
-          upls.open();
+          QueryDataSet upls = UplRobno.getDataModule().openTempSet(Condition.equal("CDOC", ikey).and(Condition.equal("RBR", (short) 1)));
           if (upls.rowCount() > 0) {
             upls.setBigDecimal("IZNOS", getMasterSet().getBigDecimal("UIU"));
             upls.setTimestamp("DATUM", getMasterSet().getTimestamp("DATDOK"));
@@ -1353,8 +1348,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
           if (upls.rowCount() > 0)
             raTransaction.saveChanges(upls);
           
-          upls = UplRobno.getDataModule().getTempSet(Condition.equal("CDOC", ikey));
-          upls.open();
+          upls = UplRobno.getDataModule().openTempSet(Condition.equal("CDOC", ikey));
           
           getMasterSet().setBigDecimal("PLATITI", Aus.sum("IZNOS", upls));
           checkPlac();
@@ -1378,9 +1372,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 			}
 		}*/
 
-		QueryDataSet qdsprij = VTprijenos.getDataModule().getTempSet(
+		QueryDataSet qdsprij = VTprijenos.getDataModule().openTempSet(
 				"KEYDEST='" + key4delZag + "'");
-		qdsprij.open();
 		if (qdsprij.getRowCount() != 0) {
 			for (qdsprij.first(); qdsprij.inBounds(); qdsprij.next()) {
 			    /*System.out.println(filter.toString() + qdsprij.getString("KEYSRC") + "'");
@@ -1388,20 +1381,18 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 						filter.toString() + qdsprij.getString("KEYSRC") + "'");
 				zaglavlja.open();*/
 			    String[] vals = new VarStr(qdsprij.getString("KEYSRC")).splitTrimmed('-');
-			    QueryDataSet zaglavlja = doki.getDataModule().getTempSet(
+			    QueryDataSet zaglavlja = doki.getDataModule().openTempSet(
 			        kkey.length > vals.length ? Condition.nil :
 			        Condition.whereAllEqual(kkey, vals));
-			    zaglavlja.open();
-
 				if (zaglavlja.getRowCount()>0) {
 					if (zaglavlja.hasColumn("STATIRA") != null) {
 						zaglavlja.setString("STATIRA", "N");
 						raTransaction.saveChanges(zaglavlja);
 					}
 				} else {
-					QueryDataSet radninal = RN.getDataModule().getTempSet("CFAKTURE='"
+					QueryDataSet radninal = RN.getDataModule().openTempSet("CFAKTURE='"
 						+ keyforRN + "'");
-					radninal.open();
+
 System.out.println(radninal.getQuery().getQueryString());					
 ST.prn(radninal);					
 					if (radninal.getRowCount()>0) {
@@ -1440,12 +1431,15 @@ ST.prn(radninal);
 			revive();
 			/*dm.getVTText().open();
 			dm.getVTText().refresh();*/
-			if (lD.raLocate(dm.getVTText(), new String[] { "CKEY" },
+			if (getrPVT().DeleteVTText(key4delZag))
+			  raMaster.markChange("vttext");
+			
+			/*if (lD.raLocate(dm.getVTText(), new String[] { "CKEY" },
 					new String[] { key4delZag })) {
 				dm.getVTText().deleteRow();
 				raTransaction.saveChanges(dm.getVTText());
 				raMaster.markChange(dm.getVTText());
-			}
+			}*/
 			
 			try {
 			  val.runSQL("DELETE FROM uplrobno WHERE " + Condition.equal("CDOC", key4del));
@@ -1644,8 +1638,7 @@ ST.prn(radninal);
 
 	public void SetFocusNovi() {
 
-		MP.panelDodatni.jrfKO.setRaDataSet(Kosobe.getDataModule().getTempSet(
-				"1=0"));
+		MP.panelDodatni.jrfKO.setRaDataSet(Kosobe.getDataModule().openEmptySet());
 		if (MP.panelBasicExt != null) {
 			MP.panelBasicExt.jrfPJ.setText("");
 			MP.panelBasicExt.jrfNAZPJ.setText("");
@@ -2055,9 +2048,8 @@ ST.prn(radninal);
 	  BigDecimal koliko = Aus.zero3;
       BigDecimal kolDOS = Aus.zero3;
 	  if (idStavke != null && idStavke.trim().length() > 0) {
-		QueryDataSet qds = stdoki.getDataModule().getTempSet(
+		QueryDataSet qds = stdoki.getDataModule().openTempSet(
 		    Condition.equal("VEZA", idStavke));
-		qds.open();
 		for (qds.first(); qds.inBounds(); qds.next()) {
 			qds.setString("VEZA", "");
 			qds.setString("STATUS", "N");
@@ -2151,13 +2143,13 @@ ST.prn(radninal);
 
 	public boolean doWithSaveDetailBrisi() {
 		boolean retValue = true;
-		dm.getVTText().open();
+		/*dm.getVTText().open();
 		if (lD.raLocate(dm.getVTText(), new String[] { "CKEY" },
 				new String[] { key4del })) {
 			dm.getVTText().deleteRow();
 			raTransaction.saveChanges(dm.getVTText());
 			raDetail.markChange(dm.getVTText());
-		}
+		}*/
 
 		if (TD.isDocDiraZalihu(what_kind_of_dokument)) {
 			if (!isUsluga4Delete) {
@@ -2643,9 +2635,8 @@ ST.prn(radninal);
 			// && oldCPAR != getMasterSet().getInt("CPAR")) {
 			if (getMasterSet().getInt("CPAR") != 0
 					&& oldCPAR != getMasterSet().getInt("CPAR")) {
-				QueryDataSet tmpPar = Partneri.getDataModule().getTempSet(
+				QueryDataSet tmpPar = Partneri.getDataModule().openTempSet(
 						"cpar=" + getMasterSet().getInt("CPAR"));
-				tmpPar.open();
 				oldCPAR = getMasterSet().getInt("CPAR");
 				getMasterSet().setBigDecimal("UPRAB",
 						tmpPar.getBigDecimal("prab"));
@@ -2917,9 +2908,8 @@ System.out.println("findCjenik::else :: "+sql);
 				cpara = -98765;
 			}
 
-			QueryDataSet mypart = Partneri.getDataModule().getTempSet(
+			QueryDataSet mypart = Partneri.getDataModule().openTempSet(
 					Condition.equal("CPAR", cpara));
-			mypart.open();
 			// System.out.println("after_lookUpCPAR() MP.panelDodatni "+
 			// mypart.getInt("CPAR"));
 			int cagent = mypart.getInt("CAGENT");
@@ -2938,9 +2928,8 @@ System.out.println("findCjenik::else :: "+sql);
 		}
 
 		if (raMaster.getMode() == 'N' && getMasterSet().getInt("CPAR") != 0 && getMasterSet().getInt("CPAR") != cpar) {
-			QueryDataSet tmpPar = Partneri.getDataModule().getTempSet(
+			QueryDataSet tmpPar = Partneri.getDataModule().openTempSet(
 					"cpar=" + getMasterSet().getInt("CPAR"));
-			tmpPar.open();
 
 			// && !MP.panelBasic.jrfCPAR.getText().equals("")) {
 			if (what_kind_of_dokument.equals("RAC") && frmParam.getParam("robno", "noDospRac", "N",
@@ -3043,9 +3032,8 @@ System.out.println("findCjenik::else :: "+sql);
 	void sendDocImplP() {
 	  DataSet ms = getMasterSet();
       
-      DataSet ds = stdoki.getDataModule().getTempSet(
+      DataSet ds = stdoki.getDataModule().openTempSet(
           Condition.whereAllEqual(Util.mkey, ms));
-      ds.open();
       //BigDecimal iznos = Aus.sum("IPRODSP", ds);
       
       String vr = ms.getString("VRDOK");
@@ -3078,10 +3066,9 @@ System.out.println("findCjenik::else :: "+sql);
         buf.append(getPadded(par.getString("GLN"), 35));
         
         if (ms.getInt("PJ") > 0) {
-          DataSet pj = Pjpar.getDataModule().getTempSet(
+          DataSet pj = Pjpar.getDataModule().openTempSet(
               Condition.equal("CPAR", ms).and(
                   Condition.equal("PJ", ms)));
-          pj.open();
           if (pj.rowCount() == 0)
             err("Neispravna poslovna jedinica dokumenta.");
           
@@ -3167,9 +3154,8 @@ System.out.println("findCjenik::else :: "+sql);
             e.printStackTrace();
           }
           
-          DataSet save = doki.getDataModule().getTempSet(
+          DataSet save = doki.getDataModule().openTempSet(
               Condition.whereAllEqual(Util.mkey, ms));
-          save.open();
           save.setString("STATUS", "P");
           save.saveChanges();
           
@@ -3184,9 +3170,9 @@ System.out.println("findCjenik::else :: "+sql);
 	void sendDocImpl() {
 	  DataSet ms = getMasterSet();
 	  
-	  DataSet ds = stdoki.getDataModule().getTempSet(
+	  DataSet ds = stdoki.getDataModule().openTempSet(
           Condition.whereAllEqual(Util.mkey, ms));
-      ds.open();
+
       BigDecimal iznos = Aus.sum("IPRODSP", ds);
       
       String vr = ms.getString("VRDOK");
@@ -3252,10 +3238,9 @@ System.out.println("findCjenik::else :: "+sql);
         DataSet pj = par;
         
         if (ms.getInt("PJ") > 0) {
-          pj = Pjpar.getDataModule().getTempSet(
+          pj = Pjpar.getDataModule().openTempSet(
               Condition.equal("CPAR", ms).and(
                   Condition.equal("PJ", ms)));
-          pj.open();
           if (pj.rowCount() == 0)
             err("Neispravna poslovna jedinica dokumenta.");
           cp = cp + "-" + pj.getInt("PJ");
@@ -3405,9 +3390,8 @@ System.out.println("findCjenik::else :: "+sql);
           throw new RuntimeException("Greška kod slanja ftp-om!");
         }
         
-        DataSet save = doki.getDataModule().getTempSet(
+        DataSet save = doki.getDataModule().openTempSet(
             Condition.whereAllEqual(Util.mkey, ms));
-        save.open();
         save.setString("STATUS", "P");
         save.saveChanges();
         
@@ -3482,11 +3466,10 @@ System.out.println("findCjenik::else :: "+sql);
 	    return;
 	  }
     
-    DataSet pon = doki.getDataModule().getTempSet(
+    DataSet pon = doki.getDataModule().openTempSet(
     		"vrdok='PON' and god>='" + (Aus.getNumber(val.findYear()) - 1) +
     		"' and ((param='OJ' and " + Condition.in("CSKL", OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "CORG") +
     		") or (param!='OJ' and " + Condition.in("CSKL", util.getSkladFromCorg()) + "))");
-    pon.open();
 
     try {
       lD.saveName = "dohvat-pon-for-copy";
@@ -3508,8 +3491,7 @@ System.out.println("findCjenik::else :: "+sql);
 	
 	void copyStavke(DataSet pon, boolean all) {
 		
-		DataSet single = doki.getDataModule().getTempSet(Condition.whereAllEqual(util.mkey, pon));
-		single.open();
+		DataSet single = doki.getDataModule().openTempSet(Condition.whereAllEqual(util.mkey, pon));
 		
 		final SecondChooser sc = new SecondChooser("") {
 		  public void afterOK() {
@@ -3855,15 +3837,14 @@ System.out.println("findCjenik::else :: "+sql);
 					what_kind_of_dokument.equals("RAC") || what_kind_of_dokument.equals("PON") || 
 					what_kind_of_dokument.equals("POD") || what_kind_of_dokument.equals("ODB"))) {
 				
-				DataSet ds = Rabshema.getDataModule().getTempSet(Condition.equal("CPAR", cpar).and(
+				DataSet ds = Rabshema.getDataModule().openTempSet(Condition.equal("CPAR", cpar).and(
 						Condition.equal("CART", getDetailSet())));
-				ds.open();
 				boolean allgr = false;
 				boolean direct = ds.rowCount() > 0;
 				if (!direct) {
-				  ds = Rabshema.getDataModule().getTempSet(Condition.equal("CPAR", cpar).and(
+				  ds = Rabshema.getDataModule().openTempSet(Condition.equal("CPAR", cpar).and(
 				            Condition.equal("ALLGR", "D")));
-				  ds.open();
+
 				  lD.raLocate(dm.getArtikli(), "CART", Integer.toString(getDetailSet().getInt("CART")));
 				  String gr = dm.getArtikli().getString("CGRART");
 				  
@@ -4413,9 +4394,8 @@ System.out.println("findCjenik::else :: "+sql);
 	StorageDataSet oldfield = new StorageDataSet();
 	JPanel dodpanel;
 	public void setupDod() {
-	  DataSet dsd = dokidod.getDataModule().getTempSet(
+	  DataSet dsd = dokidod.getDataModule().openTempSet(
 	      Condition.equal("BRRAC", "LABEL"));
-	  dsd.open();
 	  if (dsd.rowCount() == 0) return;
 	  
 	  dodpanel = new JPanel(new XYLayout(520, 40 + 25*dsd.rowCount()));
@@ -4451,9 +4431,9 @@ System.out.println("findCjenik::else :: "+sql);
 	void fillDod() {
 	  if (dodfield.getColumnCount() == 0) return;
 	  
-	  DataSet dsd = dokidod.getDataModule().getTempSet(
+	  DataSet dsd = dokidod.getDataModule().openTempSet(
           Condition.equal("BRRAC", repUtil.getFormatBroj(getMasterSet())));
-	  dsd.open();
+
 	  for (dsd.first(); dsd.inBounds(); dsd.next())
 	    oldfield.setString("KOL" + dsd.getInt("RBS"), dsd.getString("VAL"));
 	}
@@ -4463,9 +4443,9 @@ System.out.println("findCjenik::else :: "+sql);
 	  
 	  String brrac = mode == 'B' ? keyfordod : 
 	      repUtil.getFormatBroj(getMasterSet());
-	  QueryDataSet dsd = dokidod.getDataModule().getTempSet(
+	  QueryDataSet dsd = dokidod.getDataModule().openTempSet(
 	    mode == 'N' ? Condition.nil : Condition.equal("BRRAC", brrac));
-	  dsd.open();
+
 	  dsd.deleteAllRows();
 	  raTransaction.saveChanges(dsd);
 	  if (mode == 'B') return;
@@ -4533,10 +4513,10 @@ System.out.println("findCjenik::else :: "+sql);
         
 
 		if (odabrano.equals("RN")) {
-            qDS = RN.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK DATDOK",
+            qDS = RN.getDataModule().openTempSet("CSKL GOD VRDOK BRDOK DATDOK",
                 aSS.getS4raCatchDocRN(year, pressel.getSelRow()
 							.getString("CSKL"), dodatakRN));
-            qDS.open();
+
 		} else {
 
 			dodatak = dodatak(odabrano);
@@ -4593,8 +4573,7 @@ System.out.println("findCjenik::else :: "+sql);
 						.getString("CSKL"), odabrano, dodatak);
 			}
 
-            qDS = doki.getDataModule().getTempSet("CSKL GOD VRDOK BRDOK DATDOK CPAR UIRAC BRDOKIZ BRNARIZ", upit);
-            qDS.open();
+            qDS = doki.getDataModule().openTempSet("CSKL GOD VRDOK BRDOK DATDOK CPAR UIRAC BRDOKIZ BRNARIZ", upit);
             System.out.println(qDS.rowCount());
             System.out.println(qDS.getOriginalQueryString());
             
@@ -5194,8 +5173,7 @@ System.out.println("findCjenik::else :: "+sql);
 					"SELECT * FROM vttext WHERE CKEY='" + cdkey + "'", true);
 			
 			if (tmpVTTEXT.getRowCount() > 0) {
-				vttext = hr.restart.util.Util.getNewQueryDataSet(
-						"SELECT * FROM vttext WHERE 1=0", true);
+				vttext = VTText.getDataModule().openEmptySet();
 				vttext.insertRow(true);
 				vttext.setString("CKEY", rCD.getKey(getDetailSet()));
 				vttext.setString("TEXTFAK", tmpVTTEXT.getString("TEXTFAK"));

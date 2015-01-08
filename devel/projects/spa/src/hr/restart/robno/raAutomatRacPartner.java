@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.VTText;
 import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
@@ -44,6 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -854,16 +856,22 @@ System.out.println("resetInitMeth()");
             zaglav,zaglav.getColumnNames(zaglav.getColumnCount()),allForIspis);
     com.borland.dx.dataset.ReadRow.copyTo(stavke.getColumnNames(stavke.getColumnCount()),
             stavke,stavke.getColumnNames(stavke.getColumnCount()),allForIspis);
-    hr.restart.util.lookupData.getlookupData().raLocate(dm.getVTText(),new String[] {"CKEY"},
+    DataSet vt = VTText.getDataModule().getTempSet(Condition.equal("CKEY", raControlDocs.getKey(stavke)));
+    vt.open();
+    
+    if (vt.rowCount() > 0)
+      com.borland.dx.dataset.ReadRow.copyTo(vt.getColumnNames(vt.getColumnCount()), vt,
+          vt.getColumnNames(vt.getColumnCount()),allForIspis);
+    /*hr.restart.util.lookupData.getlookupData().raLocate(dm.getVTText(),new String[] {"CKEY"},
             new String[] {raControlDocs.getKey(stavke)});
     com.borland.dx.dataset.ReadRow.copyTo(dm.getVTText().getColumnNames(dm.getVTText().getColumnCount()),
-            dm.getVTText(),dm.getVTText().getColumnNames(dm.getVTText().getColumnCount()),allForIspis);  	
+            dm.getVTText(),dm.getVTText().getColumnNames(dm.getVTText().getColumnCount()),allForIspis);*/  	
   	
   }
   
   public void prepareQuery(String dodatak) {
       
-    dm.getVTText().open();
+    //dm.getVTText().open();
     allForIspis.emptyAllRows();
     
     String sqlzaglav =
@@ -900,7 +908,7 @@ System.out.println("resetInitMeth()");
 
 System.err.println("NE SMIJEM BITI TU");  	
   	
-    dm.getVTText().open();
+    //dm.getVTText().open();
     allForIspis.emptyAllRows();
     allForIspis.insertRow(true);
     QueryDataSet zaglav = hr.restart.util.Util.getNewQueryDataSet

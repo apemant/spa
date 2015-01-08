@@ -329,6 +329,15 @@ public class frmArtikli extends raMatPodaci {
 
   frmTableDataView viewReq = new frmTableDataView(false, false, true);
   
+  
+  private raPrenosVT rPVT = null;
+
+  public raPrenosVT getrPVT() {
+      if (rPVT == null) {
+          rPVT = new raPrenosVT();
+      }
+      return rPVT;
+  }
 
   public frmArtikli() {
 //    super(2);
@@ -1090,17 +1099,26 @@ public class frmArtikli extends raMatPodaci {
 /*
 
   */
+  
+  String delKey;
+  public boolean DeleteCheck() {
+    delKey = raControlDocs.getKey(this.getRaQueryDataSet());
+    return true;
+  }
 
 public boolean  doWithSave(char mode) {
 //  raControlDocs rCD = new raControlDocs();
   if (mode=='B') {
-    dm.getVTText().open();
+    if (getrPVT().DeleteVTText(delKey))
+      markChange("vttext");
+    
+    /*dm.getVTText().open();
     if (hr.restart.util.lookupData.getlookupData().raLocate(dm.getVTText(),new String[] {"CKEY"},
                   new String[] {raControlDocs.getKey(this.getRaQueryDataSet())})){
       dm.getVTText().deleteRow();
       raTransaction.saveChanges(dm.getVTText());
       markChange(dm.getVTText());
-    }
+    }*/
   } else {
     if (qdsDodTxt != null) {
 //      if (qdsDodTxt.getRowCount() !=0)

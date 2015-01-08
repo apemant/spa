@@ -21,6 +21,7 @@ import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Partneri;
 import hr.restart.baza.Rate;
+import hr.restart.baza.VTText;
 import hr.restart.baza.VTprijenos;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
@@ -84,6 +85,7 @@ public class SecondChooser extends JraDialog {
 
 	private QueryDataSet findStavkeSet = new QueryDataSet();
 	private QueryDataSet vtrabat = new QueryDataSet();
+	private QueryDataSet vttext = new QueryDataSet();
 
 	private QueryDataSet ZaglavljeSet = new QueryDataSet();
 
@@ -265,9 +267,9 @@ public class SecondChooser extends JraDialog {
              raDateUtil.getraDateUtil().DateDifference(
               rIT.getMasterSet().getTimestamp("DATDOK"),
               rIT.getMasterSet().getTimestamp("DATDOSP")) == 0)) {
-        QueryDataSet tmpPar = Partneri.getDataModule().getTempSet(
+        QueryDataSet tmpPar = Partneri.getDataModule().openTempSet(
           "cpar=" + rIT.getMasterSet().getInt("CPAR"));
-        tmpPar.open();
+
         if (tmpPar.rowCount() > 0) {
           // && !MP.panelBasic.jrfCPAR.getText().equals("")) {
           rIT.getMasterSet().setShort("DDOSP", tmpPar.getShort("DOSP"));
@@ -288,9 +290,9 @@ public class SecondChooser extends JraDialog {
 				} else {
                   if (kupac) rIT.getMasterSet().setInt("CKUPAC", ZaglavljeSet.getInt("CKUPAC"));
                   else {
-                    DataSet par = Partneri.getDataModule().getTempSet(
+                    DataSet par = Partneri.getDataModule().openTempSet(
                         Condition.equal("CPAR", ZaglavljeSet.getInt("CKUPAC")));
-                    par.open();
+
                     if (par.rowCount() == 1)
                       rIT.getMasterSet().setInt("CKUPAC", par.getInt("CKUPAC"));
                   }
@@ -303,9 +305,9 @@ public class SecondChooser extends JraDialog {
 						rIT.getMasterSet().setInt("CPAR", ZaglavljeSet.getInt("CKUPAC"));
 					}
 				} else {
-                  DataSet par = Partneri.getDataModule().getTempSet(
+                  DataSet par = Partneri.getDataModule().openTempSet(
                       Condition.equal("CKUPAC", ZaglavljeSet));
-                  par.open();
+
                   if (par.rowCount() == 1) {
                     rIT.getMasterSet().setInt("CPAR", par.getInt("CPAR"));
                     fixDosp();
@@ -407,6 +409,8 @@ public class SecondChooser extends JraDialog {
        rIT.getMasterSet().setString("OPIS", ZaglavljeSet.getString("OPIS"));
      }
      
+     
+     
         
 		if (transPnbz && ZaglavljeSet.rowCount() == 1 && ZaglavljeSet.getString("VRDOK").equalsIgnoreCase("PON")
 				&& (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase(
@@ -443,11 +447,9 @@ public class SecondChooser extends JraDialog {
             rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("GRN") ||
            (rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase("PRD") &&
                 rIT.getMasterSet().getString("PARAM").equalsIgnoreCase("K")))) {
-         DataSet rate = Rate.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ZaglavljeSet));
-         rate.open();
+         DataSet rate = Rate.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, ZaglavljeSet));
          
-         QueryDataSet copy = Rate.getDataModule().getTempSet("1=0");
-         copy.open();
+         QueryDataSet copy = Rate.getDataModule().openEmptySet();
          
          for (rate.first(); rate.inBounds(); rate.next()) {
            copy.insertRow(false);
@@ -461,6 +463,24 @@ public class SecondChooser extends JraDialog {
          }
          raTransaction.saveChanges(copy);
        }
+		
+		// kopiranje vttext nakon dodjele broja
+		if (rIT.getMasterSet().getString("VRDOK").equals("PON") || 
+	         rIT.getMasterSet().getString("VRDOK").equals(ZaglavljeSet.getString("VRDOK"))) {
+	       try {
+	         System.out.println("Kopiram dodatni tekst");
+	         DataSet vt = VTText.getDataModule().openTempSet(Condition.equal("CKEY", rCD.getKey(ZaglavljeSet, "doki")));
+	         if (vt.rowCount() > 0) {
+	           QueryDataSet copy = VTText.getDataModule().openEmptySet();
+	           copy.insertRow(false);
+	           copy.setString("CKEY", rCD.getKey(rIT.getMasterSet()));
+	           copy.setString("TEXTFAK", vt.getString("TEXTFAK"));
+	           raTransaction.saveChanges(copy);
+	         }
+	       } catch (Exception ex) {
+	         ex.printStackTrace();
+	       }
+	     }
            
 	}
 
@@ -888,8 +908,9 @@ public class SecondChooser extends JraDialog {
 			return true;
 		rIT.getDetailSet().refresh();
 		
-		vtrabat = hr.restart.baza.vtrabat.getDataModule().getTempSet("1=0");
-		vtrabat.open();
+		vtrabat = hr.restart.baza.vtrabat.getDataModule().openEmptySet();
+
+		vttext = hr.restart.baza.VTText.getDataModule().openEmptySet();
 
 		initNormExpansion(); // ab.f ekspanzija normativa
 
@@ -1051,10 +1072,10 @@ System.out.println(StavkeSet.getInt("CARt"));
 		QueryDataSet what = hr.restart.util.Util.getNewQueryDataSet(
 				"SELECT * from vttext where ckey='" + key + "'", true);
 		if (what.getRowCount() != 0) {
-			dm.getVTText().open();
-			dm.getVTText().insertRow(false);
-			dm.getVTText().setString("CKEY", keynew);
-			dm.getVTText().setString("TEXTFAK", what.getString("TEXTFAK"));
+			vttext.open();
+			vttext.insertRow(false);
+			vttext.setString("CKEY", keynew);
+			vttext.setString("TEXTFAK", what.getString("TEXTFAK"));
 		}
 	}
 
@@ -1226,8 +1247,7 @@ System.out.println(StavkeSet.getInt("CARt"));
     					ZaglavljeSetTmp.getString("CSKL"), ZaglavljeSetTmp
     							.getString("VRDOK"), ZaglavljeSetTmp
     							.getString("GOD"), ZaglavljeSetTmp.getInt("BRDOK"));
-                QueryDataSet vtpr = VTprijenos.getDataModule().getTempSet("1=0");
-                vtpr.open();
+                QueryDataSet vtpr = VTprijenos.getDataModule().openEmptySet();
     			rPVT.InsertLink(vtpr, "KEYSRC", keysrc, "KEYDEST",
     					keydest);
 			}
@@ -1349,8 +1369,7 @@ System.out.println(StavkeSet.getInt("CARt"));
       directRNL = false;
       fixDOS = false;
       bprennormativ = false;
-      ZaglavljeSetTmp = doki.getDataModule().getTempSet("1=0");
-      ZaglavljeSetTmp.open();
+      ZaglavljeSetTmp = doki.getDataModule().openEmptySet();
     }
 
 	public void initStavke() {
@@ -1835,7 +1854,7 @@ System.out.println(StavkeSet.getInt("CARt"));
 					return false;
 				}
 				try {
-					raTransaction.saveChanges(dm.getVTText());
+					raTransaction.saveChanges(vttext);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 					return false;

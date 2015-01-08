@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.baza.Condition;
 import hr.restart.baza.RN;
 import hr.restart.baza.RN_subjekt;
+import hr.restart.baza.VTText;
 import hr.restart.baza.dM;
 import hr.restart.baza.dokidod;
 import hr.restart.baza.stdoki;
@@ -835,8 +836,13 @@ public class repIzlazni implements raReportData {
     String ss = rCD.getKey(ds,new String[]{"CSKL","VRDOK","GOD","BRDOK","rbsid"},"stdoki");
 //System.out.println(ss);
 //    return ru.getSomething(new String[] {},dm.getOrgstruktura(),"NAZIV").getString();    
-    if (lD.raLocate(dm.getVTText(),"CKEY",ss))
-      return dm.getVTText().getString("TEXTFAK");
+    
+    DataSet vt = VTText.getDataModule().getTempSet(Condition.equal("CKEY", ss));
+    vt.open();
+    if (vt.rowCount() > 0) return vt.getString("TEXTFAK");
+    
+    /*if (lD.raLocate(dm.getVTText(),"CKEY",ss))
+      return dm.getVTText().getString("TEXTFAK");*/
 
     return null;
   }
@@ -2142,11 +2148,18 @@ public BigDecimal getIPRODSP() {
     String cached = cache.getValue("DODATNIOPIS", dep);
     if (cached != null) return cached;
     String ss = rCD.getKey(ds,new String[]{"CSKL","VRDOK","GOD","BRDOK"},"doki");    
-    if (lD.raLocate(dm.getVTText(),"CKEY",ss)) {
+    
+    DataSet vt = VTText.getDataModule().getTempSet(Condition.equal("CKEY", ss));
+    vt.open();
+    
+    if (vt.rowCount() == 0) return cache.returnValue("");
+    return cache.returnValue(vt.getString("TEXTFAK"));
+    
+    /*if (lD.raLocate(dm.getVTText(),"CKEY",ss)) {
       return cache.returnValue(dm.getVTText().getString("TEXTFAK"));
     } else {
       return cache.returnValue("");
-    }
+    }*/
   }
 
   String ispisPJ = "D";
