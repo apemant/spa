@@ -30,15 +30,7 @@ import hr.restart.gk.jpBrojNaloga;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraButton;
-import hr.restart.util.Aus;
-import hr.restart.util.Int2;
-import hr.restart.util.Util;
-import hr.restart.util.Valid;
-import hr.restart.util.VarStr;
-import hr.restart.util.lookupData;
-import hr.restart.util.raLocalTransaction;
-import hr.restart.util.raProcess;
-import hr.restart.util.raTransaction;
+import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.raKonta;
 
@@ -297,6 +289,22 @@ public class raSaldaKonti {
     return saldo;
   }
   
+  public static void fixPok() {
+    DataSet sk = Skstavke.getDataModule().getTempSet(
+        "CSKSTAVKE DATUMKNJ ID IP VRDOK OZNVAL TECAJ SSALDO SALDO PVSSALDO PVSALDO",
+        Aus.getKnjigCond().and(Condition.where("POKRIVENO", Condition.NOT_EQUAL, "X")));
+    sk.open();
+    System.out.println(sk.rowCount() + " rows in skstavke");
+    
+    Map allSk = new HashMap();
+    for (sk.first(); sk.inBounds(); sk.next())
+      allSk.put(sk.getString("CSKSTAVKE"), simpleDev ? null : new SalDoc(sk));
+
+    raProcess.setMessage("Dohvat veza pokrivanja dokumenata...", true);
+    DataSet pok = Pokriveni.getDataModule().getTempSet();
+    pok.open();
+  }
+  
 
   public static int knjiziStavku(DataSet ds) {
     if (getDokSaldo(ds).signum() != 0) return UNBALANCED;
@@ -506,7 +514,7 @@ public class raSaldaKonti {
           outs.add(new OutDoc(out, pok.getBigDecimal("IZNOS"), vrdok == 1));
         }
       }
-
+    System.out.println(linkDoc);
     System.out.println("Passed pok.");
     // System.out.println(updateRac);
 
@@ -525,6 +533,8 @@ public class raSaldaKonti {
         BigDecimal rtecaj = null;//, rjedval = null;
         if (!isSimple()) {
           rtecaj = calcTecaj(ds);
+          System.out.println("rtecaj="+rtecaj);
+          System.out.println(ds);
           /*rjedval = findJedVal(ds);
           if (rjedval == null) rjedval = Aus.one0;*/
         }
@@ -540,7 +550,8 @@ public class raSaldaKonti {
             /*jedval = findJedVal(out.val);
             if (jedval == null) jedval = Aus.one0;*/
           }
-          
+          System.out.println("tecaj="+tecaj);
+
           // azuriraj saldo na ovom racunu, ovisno o flagu simpleDev.
           if (isSimple())
             modifyMatchSaldo(ds, out.iznos.negate(), racTip == out.racSide);
@@ -549,6 +560,7 @@ public class raSaldaKonti {
               modifyMatchPVSaldo(ds, out.iznos.negate(), racTip == out.racSide);
             BigDecimal domIznos = domVal != isDomVal(out.val) ? out.iznos :
                out.iznos.multiply(tecaj).setScale(2, BigDecimal.ROUND_HALF_UP);
+            System.out.println("iznos="+out.iznos+" "+domIznos);
             modifyMatchSaldo(ds, domIznos.negate(), racTip == out.racSide);
           }
         }
@@ -580,6 +592,9 @@ public class raSaldaKonti {
       tecaj = copy.tecaj;
       iznos = pok;
       racSide = rac;
+    }
+    public String toString() {
+      return "{"+csk+" "+val+" "+tecaj+" "+iznos+" "+racSide+"}";
     }
   }
   
