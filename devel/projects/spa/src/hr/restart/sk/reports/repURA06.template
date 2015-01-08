@@ -2034,7 +2034,7 @@ S POREZOM</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Center</Property>
                <Property Name="Lock">No</Property>
-               <Property Name="Auto Wrap">Yes</Property>
+               <Property Name="Auto Wrap">No</Property>
           </Model>
           <Model Name="Text411">
                <Property Name="Model Name">Text</Property>
@@ -2064,7 +2064,7 @@ S POREZOM</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Right</Property>
                <Property Name="Lock">No</Property>
-               <Property Name="Auto Wrap">Yes</Property>
+               <Property Name="Auto Wrap">No</Property>
           </Model>
           <Model Name="Text412">
                <Property Name="Model Name">Text</Property>
@@ -2094,7 +2094,7 @@ S POREZOM</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Left</Property>
                <Property Name="Lock">No</Property>
-               <Property Name="Auto Wrap">Yes</Property>
+               <Property Name="Auto Wrap">No</Property>
           </Model>
           <Model Name="Text413">
                <Property Name="Model Name">Text</Property>
