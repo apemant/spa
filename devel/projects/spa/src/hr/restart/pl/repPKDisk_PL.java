@@ -109,6 +109,13 @@ public class repPKDisk_PL implements sg.com.elixir.reportwriter.datasource.IData
     ld.raLocate(dm.getLogotipovi(), new String[]{"CORG"}, new String[]{corg});
     return dm.getLogotipovi().getString("TEL1");
   }
+  
+  public String getEmail()
+  {
+    String corg = OrgStr.getKNJCORG();//ds.getString("CORG");
+    ld.raLocate(dm.getLogotipovi(), new String[]{"CORG"}, new String[]{corg});
+    return dm.getLogotipovi().getString("EMAIL");
+  }
 
   public int getBrRad()
   {
