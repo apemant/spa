@@ -1657,6 +1657,9 @@ FKEY;char;30;;;Password
 FPOJED;char;1;;N;Brojaè po fnu 
 FPDV;char;1;;D;Sustav PDV-a
 CCERT;char;12;;;Šifra certifikata
+RDVA;char;1;;N;Porez po naplaæenim raèunima
+UIGODMJ;char;6;;;Zadnji predan porez
+
 
 $Virmani
 LOKK;char;1;;N;Status zauzetosti;*

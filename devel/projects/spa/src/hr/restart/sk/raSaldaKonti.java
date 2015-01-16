@@ -30,6 +30,7 @@ import hr.restart.gk.jpBrojNaloga;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.JraTextField;
 import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.raKonta;
@@ -1784,6 +1785,66 @@ public class raSaldaKonti {
       e.printStackTrace();
     }
     return null;
+  }
+    
+  public static boolean checkTaxAllowance(DataSet sk, String datum) {
+    if (sk == null || datum == null || sk.hasColumn("KNJIG") == null) return true;
+    
+    String knjig = sk.getString("KNJIG");
+    if (!lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(), "CORG", knjig)) {
+      new Throwable("Invalid knjig?!").printStackTrace();
+      return true;
+    }
+    
+    if (dM.getDataModule().getOrgstruktura().hasColumn("UIGODMJ") == null) return true;
+    
+    String uigodmj = dM.getDataModule().getOrgstruktura().getString("UIGODMJ");
+    
+    if (uigodmj == null || uigodmj.length() != 6) return true;
+    
+    String dat = sk.getTimestamp(datum).toString();
+    String godmj = dat.substring(0, 4).concat(dat.substring(5, 6));
+    
+    return godmj.compareTo(uigodmj) > 0;
+  }
+  
+  public static boolean checkTaxAllowance(JraTextField datum, String what) {
+    if (!checkTaxAllowance(datum.getDataSet(), datum.getColumnName())) {
+      JOptionPane.showMessageDialog(datum.getTopLevelAncestor(), 
+          "Datum " + what + " je u periodu koji je zakljuèan!",
+          "Greška", JOptionPane.ERROR_MESSAGE);
+      return false;
+    }
+    return true;
+  }
+  
+  public Condition findPotentialOldUplateCond(String godmj) {
+    Timestamp month = Aus.createTimestamp(Aus.getNumber(godmj.substring(0, 4)), Aus.getNumber(godmj.substring(5, 6)), 1);
+    Timestamp upto = Util.getUtil().getLastSecondOfDay(Util.getUtil().getLastDayOfMonth(month));
+    
+    return Aus.getKnjigCond().and(Aus.getFreeYearCond()).and(Condition.till("DATDOK", upto)).
+        and(Condition.in("VRDOK", "IPL UPL OKK OKD"));
+  }
+  
+  public static boolean checkUplate(String godmj) {
+    if (!lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(), "CORG", OrgStr.getKNJCORG(false))) 
+      return false;
+    
+    if (!dM.getDataModule().getOrgstruktura().getString("RDVA").equals("D")) return true;
+    
+    
+    
+    
+    return true;
+  }
+  
+  public static boolean lockTaxPeriod(String godmj) {
+    if (!lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(), "CORG", OrgStr.getKNJCORG(false))) 
+      return false;
+    
+    dM.getDataModule().getOrgstruktura().setString("UIGODMJ", godmj);
+    dM.getDataModule().getOrgstruktura().saveChanges();
+    return true;
   }
 
   /*public static void fixSkstavkerad() {
