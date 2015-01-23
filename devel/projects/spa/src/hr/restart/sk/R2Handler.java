@@ -164,15 +164,6 @@ public class R2Handler {
         racun = sk2;
       }
     }
-    if (uplata == null || racun == null) {//uplata je okajac
-      if (sk.getString("VRDOK").endsWith("RN")) {
-        uplata = sk2;
-        racun = sk;
-      } else if (sk2.getString("VRDOK").endsWith("RN")) {
-        uplata = sk;
-        racun = sk2;
-      }
-    }
     if (uplata == null || racun == null) {//oboje su okajci jebem mu...
       if (raKonta.isDobavljac(sk.getString("BROJKONTA")) 
           && (sk.getBigDecimal("IP").compareTo(new BigDecimal(0)) == 0)) {//sk je ok na uplatu
