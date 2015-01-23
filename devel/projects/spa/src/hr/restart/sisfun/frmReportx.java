@@ -233,7 +233,8 @@ public class frmReportx extends raMasterDetail {
     JPanel mast = new JPanel(new XYLayout(570, 120));
     
     rcbTip.setRaItems(new String[][] {
-        {"Glavna knjiga", "G"}
+        {"Glavna knjiga - fiksna polja", "G"},
+        {"Glavna knjiga - pomièna polja", "B"},
     }
     );
     rcbTip.setRaColumn("TIP");
@@ -268,7 +269,7 @@ public class frmReportx extends raMasterDetail {
     mast.add(jlrOpis, new XYConstraints(230, 55, 300, -1));
     mast.add(jbSelApp, new XYConstraints(535, 55, 21, 21));
     mast.add(new JLabel("Vrsta"), new XYConstraints(15, 80, -1, -1));
-    mast.add(rcbTip, new XYConstraints(150, 80, 205, -1));
+    mast.add(rcbTip, new XYConstraints(150, 80, 250, -1));
     
     JPanel det = new JPanel(new XYLayout(565, 300));
     
