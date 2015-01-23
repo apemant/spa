@@ -520,13 +520,15 @@ public class frmTableDataView extends JraFrame {
     String sep = ";";
     Object elem;
     if (dump) sep = Aus.getDumpSeparator();
+    VarStr buf = new VarStr();
 
     try {
       for (int i = 0; i < t.getRowCount(); i++) {
         line.clear();
         for (int j = 0; j < t.getColumnCount(); j++) {
           elem = t.getValueAt(i, j);
-          line.append(elem == null ? "" : elem).append(sep);
+          buf.clear().append(elem == null ? "" : elem).replaceAll(sep, "</sep>");
+          line.append(buf).append(sep);
           if (dump) line.replaceAll("\n", "\\n");
         }
         f.out(line.toString());
