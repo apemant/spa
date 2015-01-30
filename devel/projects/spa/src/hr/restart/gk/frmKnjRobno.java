@@ -698,6 +698,12 @@ System.out.println("**** DEVIZNI ANLAGE");
                         .getTimestamp("DATDOSP"));
 
             }
+            if (data.hasColumn("SHEMA") != null) {
+              //                  System.out.println("IMAMO SHEMU");
+              tmpskstavke.setString("CSKL", data.getString("SHEMA"));
+              tmpskstavke.setTimestamp("DATPRI", new Timestamp(cal
+                      .getTime().getTime()));
+            }
             if (!knjiga.equalsIgnoreCase("")) {
 //                tmpskstavke.setString("URAIRA", TD.isDocUlaz(data
 //                        .getString("VRDOK")) ? "U" : "I");
