@@ -322,7 +322,9 @@ public class frmReportxList extends raFrame {
             int beg, end;
             while ((beg = repl.indexOf('[')) >= 0 && (end = repl.indexOf(']')) > beg) {
               String tx = repl.mid(beg + 1, end);
-              repl.replace(beg, end + 1, getMonthVal(gk, konto, Aus.getNumber(tx)).toString());
+              int mon = 0;
+              if (tx.startsWith("M")) mon = Aus.getNumber(tx.substring(1));
+              repl.replace(beg, end + 1, getMonthVal(gk, konto, mon).toString());
             }
             
             Double val = new MathEvaluator(repl.toString()).getValue();
@@ -396,13 +398,13 @@ public class frmReportxList extends raFrame {
   BigDecimal getMonthVal(DataSet gk, String konto, int month) {
     BigDecimal total = Aus.zero0;
     int year = Aus.getNumber(Util.getUtil().getYear(fld.getTimestamp("DATFROM")));
-    Timestamp base = Aus.createTimestamp(year,  month, 1);
+    Timestamp base = Aus.createTimestamp(year,  month == 0 ? 1 : month, 1);
     Timestamp beg = Util.getUtil().getFirstDayOfMonth(base);
     Timestamp end = Util.getUtil().getLastSecondOfDay(Util.getUtil().getLastDayOfMonth(base));
     for (gk.first(); gk.inBounds(); gk.next()) 
       if (gk.getString("BROJKONTA").startsWith(konto)) {
         Timestamp knj = gk.getTimestamp("DATUMKNJ");
-        if (!knj.before(beg) && !knj.after(end))
+        if (month == 0 || (!knj.before(beg) && !knj.after(end)))
           total = total.add(gk.getBigDecimal(gk.getBigDecimal("ID").signum() != 0 ? "ID" : "IP"));
       }
     return total;
