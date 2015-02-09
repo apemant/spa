@@ -3571,7 +3571,7 @@ LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
 CRADNIK;char;6;pkey;;Radnik
 CVRP;short;2;pkey;;Vrsta primanja
-DAN;short;2;pkey;1;Dan
+DAN;short;2;pkey;;Dan
 GRPRIS;char;5;pkey;;Grupa
 SATI;numeric;17,2;;0;Sati;15
 IZNOS;numeric;17,2;;0;Iznos;15
