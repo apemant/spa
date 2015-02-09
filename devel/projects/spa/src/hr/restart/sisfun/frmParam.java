@@ -295,6 +295,7 @@ public class frmParam extends raMatPodaci {
     if (sParam.equals("")) return null;
     try {
       dM dm = dM.getDataModule();
+      if (dM.isMinimal()) return defValue;
       if (grabber != null) grab(sApl, sParam, defValue, defOpis, locpar);
       
       DataRow param = lookupData.getlookupData().raLookup(dm.getParametri(),
