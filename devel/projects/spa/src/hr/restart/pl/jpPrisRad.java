@@ -41,7 +41,7 @@ public class jpPrisRad extends JPanel {
   dM dm = dM.getDataModule();
   Valid vl = Valid.getValid();
 
-  frmPrisRad fPrisRad;
+  frmPrisutnost fPrisRad;
   JPanel jpDetail = new JPanel();
 
   XYLayout lay = new XYLayout();
@@ -55,8 +55,8 @@ public class jpPrisRad extends JPanel {
   JraTextField jraDan = new JraTextField() {
     public void focusLost(FocusEvent e) {
       super.focusLost(e);
-      if (fPrisRad.getRaQueryDataSet().getShort("DAN") > (short)fPrisRad.getMaxDate()){
-        this.setErrText("Nepostoje\u0107i dan");
+      if (fPrisRad.getDetailSet().getShort("DAN") > (short)fPrisRad.getMaxDate()){
+        this.setErrText("Nepostojeæi dan");
         this_ExceptionHandling(new java.lang.Exception());
         jraDan.selectAll();
       }
@@ -74,14 +74,16 @@ public class jpPrisRad extends JPanel {
   };
   JlrNavField jlrNaziv1 = new JlrNavField() {
     public void after_lookUp() {
+    	jlrCgrup.requestFocusLater();
     }
   };
   JlrNavField jlrCvrp = new JlrNavField() {
     public void after_lookUp() {
+    	jlrCgrup.requestFocusLater();
     }
   };
 
-  public jpPrisRad(frmPrisRad f) {
+  public jpPrisRad(frmPrisutnost f) {
     try {
       fPrisRad = f;
       jbInit();
@@ -104,14 +106,14 @@ public class jpPrisRad extends JPanel {
     jlSat.setText("Sati");
 
     jraDan.setColumnName("DAN");
-    jraDan.setDataSet(fPrisRad.getRaQueryDataSet());
+    jraDan.setDataSet(fPrisRad.getDetailSet());
 
     jraSat.setColumnName("SATI");
-    jraSat.setDataSet(fPrisRad.getRaQueryDataSet());
+    jraSat.setDataSet(fPrisRad.getDetailSet());
 
     jlrCgrup.setColumnName("GRPRIS");
     jlrCgrup.setNavColumnName("CSIF");
-    jlrCgrup.setDataSet(fPrisRad.getRaQueryDataSet());
+    jlrCgrup.setDataSet(fPrisRad.getDetailSet());
     jlrCgrup.setColNames(new String[] {"NAZIV"});
     jlrCgrup.setTextFields(new JTextComponent[] {jlrNaziv1});
     jlrCgrup.setVisCols(new int[] {0, 2});
@@ -124,7 +126,7 @@ public class jpPrisRad extends JPanel {
     jlrNaziv1.setSearchMode(1);
 
     jlrCvrp.setColumnName("CVRP");
-    jlrCvrp.setDataSet(fPrisRad.getRaQueryDataSet());
+    jlrCvrp.setDataSet(fPrisRad.getDetailSet());
     jlrCvrp.setColNames(new String[] {"NAZIV"});
     jlrCvrp.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCvrp.setVisCols(new int[] {0, 1});

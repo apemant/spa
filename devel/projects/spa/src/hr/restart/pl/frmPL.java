@@ -714,7 +714,7 @@ public class frmPL extends startFrame {
   }
 
   void jmiPrisRad_actionPerformed(ActionEvent e) {
-    hr.restart.util.PreSelect.showPreselect("hr.restart.pl.presPrisRad","hr.restart.pl.frmPrisRad",jmiPrisRad.getText());
+    hr.restart.util.PreSelect.showPreselect("hr.restart.pl.presPrisutnost","hr.restart.pl.frmPrisutnost",jmiPrisRad.getText());
 //    showFrame("hr.restart.pl.frmPrisRad",jmiPrisRad.getText());
   }
 
