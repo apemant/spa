@@ -98,6 +98,7 @@ public class raDataSet extends QueryDataSet {
    * Oveeridano za provjeru azurnosti dataseta.
    */
   public boolean open() {
+    if (dM.isMinimal()) return super.open();
     /*if (!memorized && (propagateChangesEnabled = (getTableName() != null)))
     remember(getTableName().toLowerCase());
     return super.open();*/
@@ -156,7 +157,8 @@ public class raDataSet extends QueryDataSet {
     try {
       long start = System.currentTimeMillis();
       super.saveChanges();
-      dM.getSynchronizer().propagateChanges(this);
+      if (!dM.isMinimal())
+        dM.getSynchronizer().propagateChanges(this);
       long end = System.currentTimeMillis();
       if (end - start > 500) {
         System.out.println("Saved "+getTableName()+" in "+ (end - start) + "ms");
