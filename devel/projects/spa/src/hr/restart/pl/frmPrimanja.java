@@ -43,7 +43,7 @@ public class frmPrimanja extends raMasterDetail {
       fRSPeriod = frmRSPeriod.go(getDetailSet());
     }
   };
-  raNavAction rnvReCalc  = new raNavAction("Prera\u010Dunaj zarade",raImages.IMGALIGNJUSTIFY,KeyEvent.VK_F7) {
+  raNavAction rnvReCalc  = new raNavAction("Preraèunaj zarade",raImages.IMGALIGNJUSTIFY,KeyEvent.VK_F7) {
     public void actionPerformed(ActionEvent e) {
       reCalc();
     }
