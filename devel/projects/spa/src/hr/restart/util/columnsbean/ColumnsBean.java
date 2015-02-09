@@ -732,6 +732,16 @@ public class ColumnsBean extends JPanel {
         Math.min(scr.width, Math.max(400, width)),
         Math.min(scr.height, Math.max(200, tabheight)));
   }
+  
+  public String getStoredCols() {
+  	return FileHandler.getProperties(PROPERTIESFILE).getProperty(getSaveTag());
+  }
+  
+  public void updateCols(String sett) {
+  	Properties colpr = FileHandler.getProperties(PROPERTIESFILE);
+    colpr.setProperty(getSaveTag(),sett);
+    FileHandler.storeProperties(PROPERTIESFILE,colpr);
+  }
 
   private void loadSettings() {
     if (!usrSaveSettings) return;
@@ -774,7 +784,7 @@ public class ColumnsBean extends JPanel {
   }
   
   private int getColNum(String s) {
-    return raJdbTable.getModelColumnIndex(s) < 0 ? Aus.getNumber(s) : raJdbTable.getModelColumnIndex(s);
+    return raJdbTable.getModelColumnIndex(s) < 0 ? -1 : raJdbTable.getModelColumnIndex(s);
   	//return Aus.isNumber(s) ? Aus.getNumber(s) : raJdbTable.getModelColumnIndex(s);
   }
 
@@ -1225,7 +1235,7 @@ System.out.println(raDataSet.getColumn(i).getWidth());
     //onda dodamo koje su zadane
 
       for (int i=0; i<colIdxList.length; i++) {
-
+      	
         addTableColumn(colIdxList[i], false);
 
       }
