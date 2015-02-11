@@ -3552,14 +3552,11 @@ MJOBR;short;2;pkey;;Mjesec obraèuna
 RBROBR;short;2;pkey;;Redni broj obraèuna
 CRADNIK;char;6;pkey;;Radnik
 CVRP;short;2;pkey;;Vrsta primanja
-DAN;short;2;pkey;1;Dan
+DAN;short;2;pkey;;Dan
 GRPRIS;char;5;pkey;;Grupa
-SATI;numeric;17,2;;0;Sati;15
+SATI;numeric;17,2;;0;Sati;10
 IZNOS;numeric;17,2;;0;Iznos;15
-SATIRADA;numeric;17,2;;0;Fond sati rada;15
-SATIPRAZ;numeric;17,2;;0;Fond sati praznika;15
-IZNOSOBU;numeric;17,2;;0;Iznos obustava;*
-IZNOSP;numeric;17,2;;0;Iznos plaæe;*
+KOL;numeric;17,2;;0;Kolièina;7
 PARAMETRI;char;20;;;Parametri;*
 IDX=mjobr
 IDX=rbrobr
@@ -3573,12 +3570,9 @@ CRADNIK;char;6;pkey;;Radnik
 CVRP;short;2;pkey;;Vrsta primanja
 DAN;short;2;pkey;;Dan
 GRPRIS;char;5;pkey;;Grupa
-SATI;numeric;17,2;;0;Sati;15
+SATI;numeric;17,2;;;Sati;10
 IZNOS;numeric;17,2;;0;Iznos;15
-SATIRADA;numeric;17,2;;0;Fond sati rada;15
-SATIPRAZ;numeric;17,2;;0;Fond sati praznika;15
-IZNOSOBU;numeric;17,2;;0;Iznos obustava;*
-IZNOSP;numeric;17,2;;0;Iznos plaæe;*
+KOL;numeric;17,2;;;Kolièina;7
 PARAMETRI;char;20;;;Parametri;*
 IDX=cradnik
 IDX=dan
