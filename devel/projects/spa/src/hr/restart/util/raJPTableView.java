@@ -36,6 +36,7 @@ import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -303,6 +304,14 @@ public class raJPTableView extends JPanel {
 
     }
 
+  }
+  
+  public Point getViewPosition() {
+    return jScrollPaneTable.getViewport().getViewPosition();
+  }
+  
+  public void setViewPosition(Point loc) {
+    jScrollPaneTable.getViewport().setViewPosition(loc);
   }
 
   public void jbInit() throws Exception {
