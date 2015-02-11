@@ -833,6 +833,16 @@ public class ColumnsBean extends JPanel {
     return retVal;
 
   } */
+  
+  public void resetColumnWidths() {
+    if (cw == null) return;
+    
+    for (int i = 0; i < raJdbTable.getColumnCount(); i++) {
+      String cn = raJdbTable.getRealColumnName(i);
+      int wid = raJdbTable.getColumnModel().getColumn(i).getWidth();
+      if (cw != null) cw.put(cn, wid);
+    }
+  }
 
   private String makeSaveValue() {
     VarStr ret = new VarStr();
