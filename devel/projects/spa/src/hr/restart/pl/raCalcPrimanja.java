@@ -234,6 +234,20 @@ public class raCalcPrimanja {
       ex.printStackTrace();
     }
   }
+  
+  public void calcPrisut(StorageDataSet pris) {
+    System.out.println("pris = "+pris);
+    try {
+      String formula = getFormula(pris.getShort("CVRP"));
+      formula = parseFormula(formula,false);
+      MathEvaluator me = new MathEvaluator(formula);
+      pris.setBigDecimal("IZNOS",Util.getUtil().setScale(new BigDecimal(me.getValue().doubleValue()),2));
+    }
+    catch (Exception ex) {
+      System.out.println("calcPrimanje(StorageDataSet pris) ex: "+ex);
+      ex.printStackTrace();
+    }
+  }
 
   String getFormula(int cvrp) {
     String scvrp = new Integer(cvrp).toString();
