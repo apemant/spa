@@ -60,7 +60,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.TableModelEvent;
 import javax.swing.filechooser.FileFilter;
 
 import com.borland.dx.dataset.Column;
@@ -115,6 +114,7 @@ public class frmTableDataView extends JraFrame {
 
   JFileChooser jf = new JFileChooser();
   private JLabel countLabel = new JLabel();
+  private boolean countEnabled = true;
 
   public OKpanel okp = new OKpanel() {
     public void jBOK_actionPerformed() {
@@ -693,6 +693,8 @@ public class frmTableDataView extends JraFrame {
   }
 
   public void setCount() {
+    if (!countEnabled) return;
+    
     int r = jp.getStorageDataSet().rowCount();
     countLabel.setText(Aus.getNumDep(r, "  Prikazan ", "  Prikazana ", "  Prikazano ")+r+
          Aus.getNumDep(r, " slog.", " sloga.", " slogova."));
@@ -702,7 +704,11 @@ public class frmTableDataView extends JraFrame {
     jp.getColumnsBean().setSaveSettings(true);
     jp.getColumnsBean().setSaveName(name);
   }
-
+  
+  public void setCounterEnabled(boolean enabled) {
+    countEnabled = enabled;
+  }
+     
   public void show() {
 //    if (shown) System.out.println("SHOWN????");
     if (!isShowing()) jp.getNavBar().getColBean().initialize();
