@@ -28,6 +28,9 @@ public class JraFrame extends JFrame {
   }
 
   private boolean showing;
+  private boolean shown;
+  private int pix = 1;
+  public static boolean twitchHack = false;
 
   public JraFrame() {
     super();
@@ -52,6 +55,10 @@ public class JraFrame extends JFrame {
   }
 
   public void show() {
+    if (shown && twitchHack) {
+      setLocation(getX(), getY()+pix);
+      pix = pix * -1;
+    }
     if (!isShowing()) showing = true;
     super.show();
   }
@@ -62,6 +69,7 @@ public class JraFrame extends JFrame {
       raDisabledPopup.hideInstance();
       raDatePopup.hideInstance();
     } catch (Exception e) {}
+    shown = true;
     super.hide();
   }
   
