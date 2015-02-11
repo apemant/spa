@@ -98,7 +98,7 @@ public class frmSIStari extends osTemplate{
 
     if (mode=='I')
     {
-      if( !getMasterSet().getTimestamp("DATLIKVIDACIJE").toString().equals(nullDate.toString()))
+      if( !getMasterSet().isNull("DATLIKVIDACIJE"))
       {
         rcc.EnabDisabAll(jpDetailOS, false);
       }
@@ -161,7 +161,7 @@ public class frmSIStari extends osTemplate{
       dm.getOS_Promjene().open();
     oldOSN = hr.restart.os.osUtil.getUtil().getOldSIOSN(mod);
     oldISP = hr.restart.os.osUtil.getUtil().getOldSIISP(mod);
-    if(!getMasterSet().getTimestamp("DATLIKVIDACIJE").equals(nullDate))
+    if(!getMasterSet().isNull("DATLIKVIDACIJE"))
     {
 
       int compare = getDetailSet().getBigDecimal("OSNPOTRAZUJE").compareTo(new BigDecimal(0));

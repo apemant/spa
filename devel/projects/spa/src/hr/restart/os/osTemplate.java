@@ -141,7 +141,6 @@ public class osTemplate extends raMasterDetail {
   int validYear = 0;
   int tempRBR = 0;
   char mod;
-  Timestamp nullDate = Timestamp.valueOf("1970-01-01 01:00:00.0");
 
   JPanel jpMasterOS = new JPanel();
   JPanel jpDetailOS = new JPanel();
@@ -431,7 +430,7 @@ public class osTemplate extends raMasterDetail {
         oldISP = hr.restart.os.osUtil.getUtil().getOldSIISP(mod);
       }
     }
-    if (mod=='L' || mod=='O') {
+    if (mode=='N' && (mod=='L' || mod=='O')) {
       if (osUtil.getUtil().getSifraObrAmor().equals("")) {
         JOptionPane.showConfirmDialog(jpMasterOS,"Ne postoji definirana vrsta promjene za amortizaciju !","Greška",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
         return false;
@@ -1240,7 +1239,7 @@ public class osTemplate extends raMasterDetail {
     return true;
   }
   public void checkLikvidacija() {
-    if (!getMasterSet().getTimestamp("DATLIKVIDACIJE").equals(nullDate)) {
+    if (!getMasterSet().isNull("DATLIKVIDACIJE")) {
       rcc.EnabDisabAll(jpDetailOS, false);
       int secCompare = getDetailSet().getBigDecimal("OSNPOTRAZUJE").compareTo(new BigDecimal(0));
       if (secCompare==1) {

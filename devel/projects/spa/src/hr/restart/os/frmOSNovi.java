@@ -67,7 +67,7 @@ public class frmOSNovi extends osTemplate{
   }
 
   public void beforeShowDetail() {
-    if(!getMasterSet().getTimestamp("DATLIKVIDACIJE").equals(nullDate)) {
+    if(!getMasterSet().isNull("DATLIKVIDACIJE")) {
       raDetail.disableAdd();
     } else {
       raDetail.enableAdd();
@@ -108,7 +108,7 @@ public class frmOSNovi extends osTemplate{
 
   public void EntryPointDetail(char mode) {
     if (mode=='I') {
-      if( !getMasterSet().getTimestamp("DATLIKVIDACIJE").toString().equals(nullDate.toString())) {
+      if( !getMasterSet().isNull("DATLIKVIDACIJE")) {
         rcc.EnabDisabAll(jpDetailOS, false);
       }
       else {
@@ -161,7 +161,7 @@ public class frmOSNovi extends osTemplate{
 
     oldOSN = hr.restart.os.osUtil.getUtil().getOldOSN(mod);
     oldISP = hr.restart.os.osUtil.getUtil().getOldISP(mod);
-    if(!getMasterSet().getTimestamp("DATLIKVIDACIJE").equals(nullDate))
+    if(!getMasterSet().isNull("DATLIKVIDACIJE"))
     {
 
 //      int compare = getDetailSet().getBigDecimal("OSNPOTRAZUJE").compareTo(new BigDecimal(0));

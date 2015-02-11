@@ -58,7 +58,7 @@ public class frmSILikvi extends osTemplate{
     String qStr ="";
     qStr = rdOSUtil.getUtil().deleteLikvidacija("os_SI", getDetailSet().getString("CORG"), getDetailSet().getString("INVBROJ"));
     getMasterSet().getDatabase().executeStatement(qStr);
-    getMasterSet().setTimestamp("DATLIKVIDACIJE", nullDate);
+    getMasterSet().setAssignedNull("DATLIKVIDACIJE");
     beforeShowDetail();
   }
 
@@ -113,7 +113,7 @@ public class frmSILikvi extends osTemplate{
       rcc.EnabDisabAll(jpDetailOS, false);
     }
     else if (mode=='N') {
-      if (!getMasterSet().getTimestamp("DATLIKVIDACIJE").equals(nullDate)) {
+      if (!getMasterSet().isNull("DATLIKVIDACIJE")) {
        JOptionPane.showConfirmDialog(jpDetailOS,"Inventarski broj veæ likvidiran !","Greška",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
        return;
       }
@@ -123,7 +123,7 @@ public class frmSILikvi extends osTemplate{
   public boolean DeleteCheckDetail() {
     oldOSN = hr.restart.os.osUtil.getUtil().getOldSIOSN(mod);
     oldISP = hr.restart.os.osUtil.getUtil().getOldSIISP(mod);
-    if (!getMasterSet().getTimestamp("DATLIKVIDACIJE").equals(nullDate)) {
+    if (!getMasterSet().isNull("DATLIKVIDACIJE")) {
       int compare = getDetailSet().getBigDecimal("OSNPOTRAZUJE").compareTo(new BigDecimal(0));
       if (compare==0) {
          JOptionPane.showConfirmDialog(jpDetailOS,"Brisanje nije moguæe ! Sredstvo likvidirano !","Greška",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);

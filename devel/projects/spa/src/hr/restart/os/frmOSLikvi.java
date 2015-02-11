@@ -94,7 +94,7 @@ public class frmOSLikvi extends osTemplate {
     String qStr ="";
     qStr = rdOSUtil.getUtil().deleteLikvidacija("os_sredstvo", getDetailSet().getString("CORG"), getDetailSet().getString("INVBROJ"));
     getMasterSet().getDatabase().executeStatement(qStr);
-    getMasterSet().setTimestamp("DATLIKVIDACIJE", nullDate);
+    getMasterSet().setAssignedNull("DATLIKVIDACIJE");
     if (lLikvidacija) {     // Dodano zbog brisanje likvidacije
       lLikvidacija=false;
       hr.restart.os.osUtil.getUtil().afterDeleteOS(/*getDetailSet().getBigDecimal("OSNDUGUJE")*/util.nul, util.nul/*getDetailSet().getBigDecimal("ISPPOTRAZUJE")*/, 'N');
@@ -165,7 +165,7 @@ public class frmOSLikvi extends osTemplate {
       rcc.EnabDisabAll(jpDetailOS, false);
     }
     else if (mode=='N') {
-      if(!getMasterSet().getTimestamp("DATLIKVIDACIJE").equals(nullDate)) {
+      if(!getMasterSet().isNull("DATLIKVIDACIJE")) {
        JOptionPane.showConfirmDialog(this.jpDetailOS,"Inventarski broj veæ likvidiran !","Greška",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
        return;
       }
@@ -183,7 +183,7 @@ public class frmOSLikvi extends osTemplate {
     System.out.println("deletecheckDetail-sa frmOSLikvi");
     oldOSN = hr.restart.os.osUtil.getUtil().getOldOSN(mod);
     oldISP = hr.restart.os.osUtil.getUtil().getOldISP(mod);
-    if(!getMasterSet().getTimestamp("DATLIKVIDACIJE").equals(nullDate)) {
+    if(!getMasterSet().isNull("DATLIKVIDACIJE")) {
       int compare = getDetailSet().getBigDecimal("OSNPOTRAZUJE").compareTo(new BigDecimal(0));
       if(compare==0) {
          JOptionPane.showConfirmDialog(this.jpDetailOS,"Brisanje nije moguæe ! Sredstvo likvidirano !","Greška",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);

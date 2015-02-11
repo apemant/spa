@@ -43,7 +43,7 @@ public class frmSINovi extends osTemplate {
 
   public void beforeShowDetail()
   {
-    if(!getMasterSet().getTimestamp("DATLIKVIDACIJE").equals(nullDate))
+    if(!getMasterSet().isNull("DATLIKVIDACIJE"))
     {
       raDetail.disableAdd();
     }
@@ -116,7 +116,7 @@ public class frmSINovi extends osTemplate {
   {
     if (mode=='I')
     {
-      if( !getMasterSet().getTimestamp("DATLIKVIDACIJE").toString().equals(nullDate.toString()))
+      if( !getMasterSet().isNull("DATLIKVIDACIJE"))
       {
         rcc.EnabDisabAll(jpDetailOS, false);
       }
@@ -173,7 +173,7 @@ public class frmSINovi extends osTemplate {
     oldOSN = hr.restart.os.osUtil.getUtil().getOldSIOSN(mod);
     oldISP = hr.restart.os.osUtil.getUtil().getOldSIISP(mod);
 
-    if(!getMasterSet().getTimestamp("DATLIKVIDACIJE").equals(nullDate)) {
+    if(!getMasterSet().isNull("DATLIKVIDACIJE")) {
       int compare = getDetailSet().getBigDecimal("OSNPOTRAZUJE").compareTo(new BigDecimal(0));
       if(compare==0) {
          JOptionPane.showConfirmDialog(this.jpDetailOS,"Brisanje nije moguæe ! Sredstvo likvidirano !","Greška",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
