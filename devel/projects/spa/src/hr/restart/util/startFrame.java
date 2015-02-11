@@ -1152,6 +1152,9 @@ System.out.println("Nije modal dialog...Vracam false");
 		switchFonts(getFontDelta(), getFontFamily());
     
 		UIManager.put("ComboBox.disabledForeground", UIManager.get("ComboBox.foreground"));
+		
+		if (IntParam.getTag("twitchHack").equals("true")) 
+		  JraFrame.twitchHack = true;
 	
 		
 /*    try {
