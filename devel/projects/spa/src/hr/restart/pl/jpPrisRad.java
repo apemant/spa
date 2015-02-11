@@ -44,11 +44,13 @@ public class jpPrisRad extends JPanel {
   frmPrisutnost fPrisRad;
   JPanel jpDetail = new JPanel();
 
+  JLabel jlSat = new JLabel();
+  JLabel jlKol = new JLabel();
+  JLabel jlIznos = new JLabel();
   XYLayout lay = new XYLayout();
   JLabel jlCsif = new JLabel();
   JLabel jlCvrp = new JLabel();
   JLabel jlDan = new JLabel();
-  JLabel jlSat = new JLabel();
   JraButton jbSelCsif = new JraButton();
   JraButton jbSelCvrp = new JraButton();
 
@@ -63,7 +65,18 @@ public class jpPrisRad extends JPanel {
     }
   };
 
-  JraTextField jraSat = new JraTextField();
+  JraTextField jraSat = new JraTextField() {
+    public void valueChanged() {
+      if (isValueChanged() && !isEmpty()) fPrisRad.reCalc();
+    };
+  };
+  JraTextField jraKol = new JraTextField() {
+    public void valueChanged() {
+      if (isValueChanged() && !isEmpty()) fPrisRad.reCalc();
+    };
+  };
+  JraTextField jraIznos = new JraTextField();
+  
   JlrNavField jlrCgrup = new JlrNavField() {
     public void after_lookUp() {
     }
@@ -80,6 +93,7 @@ public class jpPrisRad extends JPanel {
   JlrNavField jlrCvrp = new JlrNavField() {
     public void after_lookUp() {
     	jlrCgrup.requestFocusLater();
+    	fPrisRad.reCalc();
     }
   };
 
@@ -96,20 +110,32 @@ public class jpPrisRad extends JPanel {
   private void jbInit() throws Exception {
     jpDetail.setLayout(lay);
     lay.setWidth(591);
-    lay.setHeight(110);
+    lay.setHeight(120);
+    
+    //focust
 
     jbSelCsif.setText("...");
     jbSelCvrp.setText("...");
     jlCsif.setText("Grupa primanja");
     jlCvrp.setText("Vrsta primanja");
     jlDan.setText("Dan");
+    
     jlSat.setText("Sati");
+    jlSat.setHorizontalAlignment(JLabel.CENTER);
+    jlKol.setText("Kolièina");
+    jlKol.setHorizontalAlignment(JLabel.CENTER);
+    jlIznos.setText("Iznos");
+    jlIznos.setHorizontalAlignment(JLabel.CENTER);
 
     jraDan.setColumnName("DAN");
     jraDan.setDataSet(fPrisRad.getDetailSet());
 
     jraSat.setColumnName("SATI");
     jraSat.setDataSet(fPrisRad.getDetailSet());
+    jraKol.setColumnName("KOL");
+    jraKol.setDataSet(fPrisRad.getDetailSet());
+    jraIznos.setColumnName("IZNOS");
+    jraIznos.setDataSet(fPrisRad.getDetailSet());
 
     jlrCgrup.setColumnName("GRPRIS");
     jlrCgrup.setNavColumnName("CSIF");
@@ -138,18 +164,24 @@ public class jpPrisRad extends JPanel {
     jlrNaziv.setNavProperties(jlrCvrp);
     jlrNaziv.setSearchMode(1);
 
-    jpDetail.add(jbSelCsif, new XYConstraints(555, 70, 21, 21));
-    jpDetail.add(jbSelCvrp, new XYConstraints(555, 45, 21, 21));
-    jpDetail.add(jlCsif, new XYConstraints(15, 70, -1, -1));
-    jpDetail.add(jlCvrp, new XYConstraints(15, 45, -1, -1));
-    jpDetail.add(jlDan, new XYConstraints(15, 20, -1, -1));
-    jpDetail.add(jlSat, new XYConstraints(360, 20, -1, -1));
-    jpDetail.add(jlrCgrup, new XYConstraints(150, 70, 100, -1));
-    jpDetail.add(jlrCvrp, new XYConstraints(150, 45, 100, -1));
-    jpDetail.add(jlrNaziv, new XYConstraints(255, 45, 295, -1));
-    jpDetail.add(jlrNaziv1, new XYConstraints(255, 70, 295, -1));
-    jpDetail.add(jraDan, new XYConstraints(150, 20, 100, -1));
-    jpDetail.add(jraSat, new XYConstraints(450, 20, 100, -1));
+    
+    jpDetail.add(jlDan, new XYConstraints(15, 30, -1, -1));
+    jpDetail.add(jraDan, new XYConstraints(150, 30, 75, -1));
+    jpDetail.add(jlSat, new XYConstraints(290, 10, 75, -1));
+    jpDetail.add(jraSat, new XYConstraints(290, 30, 75, -1));
+    jpDetail.add(jlKol, new XYConstraints(370, 10, 75, -1));
+    jpDetail.add(jraKol, new XYConstraints(370, 30, 75, -1));
+    jpDetail.add(jlIznos, new XYConstraints(450, 10, 100, -1));
+    jpDetail.add(jraIznos, new XYConstraints(450, 30, 100, -1));
+    
+    jpDetail.add(jlCvrp, new XYConstraints(15, 55, -1, -1));
+    jpDetail.add(jlrCvrp, new XYConstraints(150, 55, 75, -1));
+    jpDetail.add(jlrNaziv, new XYConstraints(230, 55, 320, -1));
+    jpDetail.add(jbSelCvrp, new XYConstraints(555, 55, 21, 21));
+    jpDetail.add(jlCsif, new XYConstraints(15, 80, -1, -1));
+    jpDetail.add(jlrCgrup, new XYConstraints(150, 80, 75, -1));
+    jpDetail.add(jlrNaziv1, new XYConstraints(230, 80, 320, -1));
+    jpDetail.add(jbSelCsif, new XYConstraints(555, 80, 21, 21));
 
     this.add(jpDetail, BorderLayout.CENTER);
   }
