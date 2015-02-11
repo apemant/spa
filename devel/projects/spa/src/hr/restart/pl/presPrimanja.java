@@ -22,6 +22,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.PreSelect;
 import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raAdditionalLookupFilter;
 import hr.restart.util.raCommonClass;
@@ -176,7 +177,9 @@ System.out.println("Nasao?..."+isRPL);
   public boolean applySQLFilter() {
     QueryDataSet myDataSet=(QueryDataSet) getSelDataSet();
     myDataSet.close();
-    myDataSet.setQuery(new QueryDescriptor(myDataSet.getDatabase(), sjQuerys.selectRadniciPl(getSelRow().getString("CORG"), getSelRow().getString("CRADNIK"))));
+    VarStr v = new VarStr(sjQuerys.selectRadniciPl(getSelRow().getString("CORG"), getSelRow().getString("CRADNIK")));
+    myDataSet.setQuery(new QueryDescriptor(myDataSet.getDatabase(), v.toString()));
+    lastFilterQuery = v.from(v.indexOfIgnoreCase(" where ") + 7);
     myDataSet.open();
     return true;
   }
