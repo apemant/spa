@@ -793,7 +793,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
     tabCol.setPreferredWidth(width);
 
-    tabCol.setMaxWidth(width * 5 + 200);
+    tabCol.setMaxWidth(width * 10 + 200);
 
     tabCol.setWidth(width);
 
