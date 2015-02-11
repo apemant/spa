@@ -1082,7 +1082,7 @@ private void testPrintRanges() {
     return orig;
   }
   
-  private String lastFilterQuery = null;
+  protected String lastFilterQuery = null;
   public String getLastFilterQuery() {
     return lastFilterQuery;
   }
