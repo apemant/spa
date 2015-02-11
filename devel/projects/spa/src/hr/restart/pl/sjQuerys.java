@@ -141,11 +141,8 @@ public class sjQuerys {
     return str;
   }
   public static String getPRISUTARH(short god, short mj, short rbr, String corg) {
-    String str="insert into PRISUTARH (GODOBR, MJOBR, RBROBR, CRADNIK, CVRP, DAN, GRPRIS, SATI, IZNOS, "+
-                "SATIRADA, SATIPRAZ, IZNOSOBU, IZNOSP, PARAMETRI) "+
-               "select '"+god+"','"+mj+"','"+rbr+"', CRADNIK, CVRP, DAN, GRPRIS, SATI, IZNOS, "+
-                "SATIRADA, SATIPRAZ, IZNOSOBU, IZNOSP, PARAMETRI "+
-               "from PRISUTOBR";
+    String str="insert into PRISUTARH (GODOBR, MJOBR, RBROBR, CRADNIK, CVRP, DAN, GRPRIS, SATI, IZNOS, KOL, PARAMETRI) "+
+               "select '"+god+"','"+mj+"','"+rbr+"', CRADNIK, CVRP, DAN, GRPRIS, SATI, IZNOS, KOL, PARAMETRI from PRISUTOBR";
     System.out.println("SQL: "+str);
     return str;
   }
