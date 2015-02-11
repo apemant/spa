@@ -763,7 +763,6 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     
     all.setSaveName("Pregled-prisutobr-all");
     all.jp.addTableModifier(weekend);
-    all.jp.setAutoPos(false);
     all.jp.rmKeyListener(all);
     all.jp.getNavBar().addOption(new raNavAction("Prethodni", raImages.IMGBACK, KeyEvent.VK_F3) {
       public void actionPerformed(ActionEvent e) {
