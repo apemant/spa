@@ -229,7 +229,7 @@ public class frmPrisRad extends raMatPodaci implements raPreSelectAware {
     this.addOption(rnvPreselectBotun, 5);
     this.setRaQueryDataSet(dm.getPrisutobr());
     this.setVisibleCols(new int[] {2,3,4});
-    jpDetail = new jpPrisRad(this);
+    //jpDetail = new jpPrisRad(this);
     this.setRaDetailPanel(jpDetail);
     this.getJpTableView().addTableModifier(weekendTableColorModifier);
   }
