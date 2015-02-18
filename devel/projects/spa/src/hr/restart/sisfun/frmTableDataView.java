@@ -700,6 +700,10 @@ public class frmTableDataView extends JraFrame {
          Aus.getNumDep(r, " slog.", " sloga.", " slogova."));
   }
   
+  public void setCounterText(String text) {
+    countLabel.setText(text);
+  }
+  
   public void setSaveName(String name) {
     jp.getColumnsBean().setSaveSettings(true);
     jp.getColumnsBean().setSaveName(name);
