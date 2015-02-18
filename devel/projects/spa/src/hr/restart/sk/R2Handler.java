@@ -58,8 +58,12 @@ public class R2Handler {
 //log
   private static Logger log = Logger.getLogger(R2Handler.class);
 //pamcenje promjena 
-  private static QueryDataSet deletedUIstavke;
-  private static QueryDataSet addedUIstavke;
+  private static DataSet deletedUIstavke;
+  private static DataSet addedUIstavke;
+  
+  private static raPreparedStatement deluistavke = new raPreparedStatement("uistavke",raPreparedStatement.DELETE);
+  private static raPreparedStatement adduistavke = new raPreparedStatement("uistavke",raPreparedStatement.INSERT);
+  
 //markira da na slijedecem pozivu matchPerformed() stavi deletedUIstavke i addedUIstavke na null
   private static boolean clearMatchPerformedData = false;
 //ostalo
@@ -257,10 +261,8 @@ public class R2Handler {
       }
     } else {//ovo je stvarno preknjizavanje 
       QueryDataSet shemeR2 = getStavkeShemeR2();
-      QueryDataSet mozedbiti = UIstavke.getDataModule().getTempSet("0=1");
-      mozedbiti.open();
-      QueryDataSet stornonemozedbiti = UIstavke.getDataModule().getTempSet("0=1");
-      stornonemozedbiti.open();
+      DataSet mozedbiti = UIstavke.getDataModule().getReadonlySet();
+      DataSet stornonemozedbiti = UIstavke.getDataModule().getReadonlySet();
       QueryDataSet uistavke = frmKnjSKRac.getUIStavke(sk);
       if (log.isDebugEnabled()) {
         log.debug("Preknjizavam R2...");
@@ -351,11 +353,14 @@ public class R2Handler {
     if (!unconditionalRemoveR2Prek(sk)) {//nije bilo stavaka preknjizavanja
       																	 //raskriva pokriveno i proknjizeno?
       QueryDataSet uisve = frmKnjSKRac.getUIStavke(sk);
-      QueryDataSet uistorno = UIstavke.getDataModule().getTempSet("0=1");
-      uistorno.open();
+      DataSet uistorno = UIstavke.getDataModule().getReadonlySet();
+
       //zadnji rbs
-      uisve.last();
-      int rbs = uisve.getInt("RBS");
+      int rbs = 0;
+      for (uisve.first(); uisve.inBounds(); uisve.next()) {
+        if (uisve.getInt("RBS") > rbs)
+          rbs = uisve.getInt("RBS");
+      }
       /* 
        * nadji proknjizenu stavku sa shemek.polje like 'R%' po stavci!, pa ako ima stornirati sve,
        * a poslije pri ponovnom pokrivanju opet obrise te stavke (unconditionalRemoveR2Prek) i sve 5
@@ -393,7 +398,7 @@ public class R2Handler {
    * @param sk
    * @return broj konta
    */
-  private static String getNemozeOdbitiKonto(QueryDataSet uistorno, DataSet sk) {
+  private static String getNemozeOdbitiKonto(DataSet uistorno, DataSet sk) {
     QueryDataSet ui = frmKnjSKRac.getUIStavke(sk);
     String col = (uistorno.getBigDecimal("ID").compareTo(new BigDecimal(0)) == 0)?"IP":"ID"; 
     for (ui.first(); ui.inBounds(); ui.next()) {
@@ -453,18 +458,18 @@ public class R2Handler {
    * Ubaci u QueryDataSet za kasnije brisanje 
    * @param uiprek
    */
-  private static void deleteUIStavkeLater(QueryDataSet ui) {
+  private static void deleteUIStavkeLater(DataSet ui) {
     markForLater(ui,getDeletedUIstavke());
   }
   /**
    * Ubaci u QueryDataSet za kasnije dodavanje
    * @param uistorno
    */
-  private static void addUIStavkeLater(QueryDataSet ui) {
+  private static void addUIStavkeLater(DataSet ui) {
     markForLater(ui,getAddedUIstavke());
   }
   
-  private static void markForLater(QueryDataSet ui, QueryDataSet markset) {
+  private static void markForLater(DataSet ui, DataSet markset) {
     for (ui.first(); ui.inBounds(); ui.next()) {
       markset.insertRow(false);
       ui.copyTo(markset);
@@ -536,10 +541,9 @@ public class R2Handler {
    */
   public static void saveR2Changes() throws SQLException {
     clearMatchPerformedData = true;
-    raPreparedStatement deluistavke = new raPreparedStatement("uistavke",raPreparedStatement.DELETE);
-    raPreparedStatement adduistavke = new raPreparedStatement("uistavke",raPreparedStatement.INSERT);
+    
     //deleted
-    QueryDataSet deleted = getDeletedUIstavke();
+    DataSet deleted = getDeletedUIstavke();
     for (deleted.first(); deleted.inBounds(); deleted.next()) {
       if (log.isDebugEnabled()) {
         log.debug("deleting "+deleted);
@@ -548,7 +552,7 @@ public class R2Handler {
       deluistavke.execute();
     }
     // added
-    QueryDataSet added = getAddedUIstavke();
+    DataSet added = getAddedUIstavke();
     for (added.first(); added.inBounds(); added.next()) {
       if (log.isDebugEnabled()) {
         log.debug("adding "+added);
@@ -588,18 +592,14 @@ public class R2Handler {
     return qds;
   }
 
-	private static QueryDataSet getDeletedUIstavke() {
-	  if (deletedUIstavke == null) {
-	    deletedUIstavke = UIstavke.getDataModule().getTempSet("0=1");
-	    deletedUIstavke.open();
-	  }
+	private static DataSet getDeletedUIstavke() {
+	  if (deletedUIstavke == null)
+	    deletedUIstavke = UIstavke.getDataModule().getReadonlySet();
 	  return deletedUIstavke;
 	}
-  private static QueryDataSet getAddedUIstavke() {
-    if (addedUIstavke == null) {
-      addedUIstavke = UIstavke.getDataModule().getTempSet("0=1");
-      addedUIstavke.open();
-    }
+  private static DataSet getAddedUIstavke() {
+    if (addedUIstavke == null)
+      addedUIstavke = UIstavke.getDataModule().getReadonlySet();
     return addedUIstavke;
   }
 
