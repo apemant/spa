@@ -42,7 +42,7 @@ public class HashSum {
   public void add(String key, BigDecimal val) {
     BigDecimal old = (BigDecimal) map.get(key);
     if (old == null) map.put(key, val);
-    else map.put(key, val.add(old));
+    else map.put(key, val == null ? old : val.add(old));
   }
   
   public void add(String key, double val) {
