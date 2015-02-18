@@ -21,6 +21,7 @@ import hr.restart.baza.Shkonta;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
+import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
@@ -696,14 +697,15 @@ System.out.println("**** DEVIZNI ANLAGE");
                 }
                 tmpskstavke.setTimestamp("DATDOSP", data
                         .getTimestamp("DATDOSP"));
-
+                
+                if (data.hasColumn("SHEMA") != null && Aus.getNumber(vl.findYear(data.getTimestamp("DATDOK"))) >= 2015) {
+                  //                  System.out.println("IMAMO SHEMU");
+                  tmpskstavke.setString("CSKL", data.getString("SHEMA"));
+                  tmpskstavke.setTimestamp("DATPRI", new Timestamp(cal
+                          .getTime().getTime()));
+                }
             }
-            if (data.hasColumn("SHEMA") != null) {
-              //                  System.out.println("IMAMO SHEMU");
-              tmpskstavke.setString("CSKL", data.getString("SHEMA"));
-              tmpskstavke.setTimestamp("DATPRI", new Timestamp(cal
-                      .getTime().getTime()));
-            }
+            
             if (!knjiga.equalsIgnoreCase("")) {
 //                tmpskstavke.setString("URAIRA", TD.isDocUlaz(data
 //                        .getString("VRDOK")) ? "U" : "I");
@@ -769,6 +771,7 @@ System.out.println("**** DEVIZNI ANLAGE");
       Timestamp datumknj = dataSet.getTimestamp("DATUMKNJ");
       Timestamp first = null;
       Timestamp last = null;
+      Timestamp fpri = null;
       for (tmpskstavke.first(); tmpskstavke.inBounds(); tmpskstavke.next()) {
         if (tmpskstavke.getBigDecimal("ID").signum() == 0
             && tmpskstavke.getBigDecimal("IP").signum() == 0) continue;
@@ -777,9 +780,24 @@ System.out.println("**** DEVIZNI ANLAGE");
           first = new Timestamp(datdok.getTime());
         if (last == null || last.before(datdok))
           last = new Timestamp(datdok.getTime());
+        
+        Timestamp datpri = tmpskstavke.getTimestamp("DATPRI");
+        if (fpri == null || fpri.after(datpri))
+          fpri = new Timestamp(datpri.getTime());
       }
       if (first == null) first = datumknj;
       if (last == null) last = datumknj; 
+      
+      if (fpri != null && !raSaldaKonti.checkTaxAllowance(fpri)) {
+        JOptionPane.showMessageDialog(this, 
+            new raMultiLineMessage("Knjiženje zahvaæa dokument s datumom "+
+                Aus.formatTimestamp(fpri) + "\nšto je unutar zakljuèanog perioda!"), 
+            "Pogrešan mjesec knjiženja", JOptionPane.ERROR_MESSAGE);
+        
+        getKnjizenje().setErrorMessage("Mjesec knjiženja zakljuèan");
+        return false;
+      }
+      
       if (!Util.getUtil().sameMonth(first, datumknj) ||
           !Util.getUtil().sameMonth(last, datumknj)) {
         clearProcessMessage();
