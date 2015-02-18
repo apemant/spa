@@ -47,6 +47,7 @@ public class frmSK extends startFrame {
   JMenuItem jmiAutoCover = new JMenuItem();
   JMenuItem jmiCSK = new JMenuItem();
   JMenuItem jmiGKSK = new JMenuItem();
+  JMenuItem jmiZak = new JMenuItem();
   JMenu jmUpiti = new JMenu();
   JMenu jmIzvj = new JMenu();
   JMenu jmKnj = new JMenu();
@@ -131,6 +132,7 @@ public class frmSK extends startFrame {
     jmiVrshemek.setText("Vrste shema knjiženja");
     jmiKolone.setText("Kolone knjige");
     jmiShemeveze.setText("Sheme veza");
+    jmiZak.setText("Zakljuèavanje perioda PDV-a");
     jmiBG.setText("Brisanje godine");
     jmiValute.setText("Popravak domicilne valute i teèaja");
     jmiCSK.setText("Napuni CSKSTAVKE");
@@ -171,6 +173,8 @@ public class frmSK extends startFrame {
     jmOsnovni.add(jmiKolone);
     jmOsnovni.add(jmiShemeveze);
     jmOsnovni.add(jmiDefPDV);
+    jmOsnovni.addSeparator();
+    jmOsnovni.add(jmiZak);
     jmUpiti.add(jmiZbirPreg);
     jmUpiti.add(jmiZbirDugPotr);
     jmUpiti.add(jmiPojPreg);
@@ -244,6 +248,12 @@ public class frmSK extends startFrame {
 //        fp.pres.showPreselect(fp, "Pokrivanje");
 //      }
 //    });
+    jmiZak.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        showFrame("hr.restart.sk.frmLockPeriod", 15, jmiZak.getText());
+      }
+    });
+    
     jmiKD.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiKD_actionPerformed();
