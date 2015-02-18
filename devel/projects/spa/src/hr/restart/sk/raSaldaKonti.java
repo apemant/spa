@@ -1622,6 +1622,9 @@ public class raSaldaKonti {
   }
 
   public static boolean matchIfYouCan(ReadRow skstavka, boolean trans) {
+    
+    if (raSaldaKonti.isNaplata() && checkTaxAllowance(skstavka.getTimestamp("DATDOK"))) return false;
+    
     Skstavke.getDataModule().setFilter(
       Condition.whereAllEqual(new String[] {"KNJIG", "CPAR", "BROJKONTA", "BROJDOK", "OZNVAL"}, skstavka));
     QueryDataSet sks = dM.getDataModule().getSkstavke();
@@ -1787,11 +1790,10 @@ public class raSaldaKonti {
     return null;
   }
     
-  public static boolean checkTaxAllowance(DataSet sk, String datum) {
-    if (sk == null || datum == null || sk.hasColumn("KNJIG") == null) return true;
+  public static boolean checkTaxAllowance(Timestamp datum) {
+    if (datum == null) return true;
     
-    String knjig = sk.getString("KNJIG");
-    if (!lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(), "CORG", knjig)) {
+    if (!lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(), "CORG", OrgStr.getKNJCORG(false))) {
       new Throwable("Invalid knjig?!").printStackTrace();
       return true;
     }
@@ -1802,14 +1804,14 @@ public class raSaldaKonti {
     
     if (uigodmj == null || uigodmj.length() != 6) return true;
     
-    String dat = sk.getTimestamp(datum).toString();
-    String godmj = dat.substring(0, 4).concat(dat.substring(5, 6));
+    String dat = datum.toString();
+    String godmj = dat.substring(0, 4).concat(dat.substring(5, 7));
     
     return godmj.compareTo(uigodmj) > 0;
   }
   
   public static boolean checkTaxAllowance(JraTextField datum, String what) {
-    if (!checkTaxAllowance(datum.getDataSet(), datum.getColumnName())) {
+    if (!checkTaxAllowance(datum.getDataSet().getTimestamp(datum.getColumnName()))) {
       JOptionPane.showMessageDialog(datum.getTopLevelAncestor(), 
           "Datum " + what + " je u periodu koji je zakljuèan!",
           "Greška", JOptionPane.ERROR_MESSAGE);
@@ -1818,32 +1820,65 @@ public class raSaldaKonti {
     return true;
   }
   
-  public Condition findPotentialOldUplateCond(String godmj) {
-    Timestamp month = Aus.createTimestamp(Aus.getNumber(godmj.substring(0, 4)), Aus.getNumber(godmj.substring(5, 6)), 1);
+  public static Condition findPotentialOldUplateCond(String godmj) {
+    Timestamp month = Aus.createTimestamp(Aus.getNumber(godmj.substring(0, 4)), Aus.getNumber(godmj.substring(4, 6)), 1);
     Timestamp upto = Util.getUtil().getLastSecondOfDay(Util.getUtil().getLastDayOfMonth(month));
     
     return Aus.getKnjigCond().and(Aus.getFreeYearCond()).and(Condition.till("DATDOK", upto)).
-        and(Condition.in("VRDOK", "IPL UPL OKK OKD"));
+        and(Condition.in("VRDOK", "IPL UPL OKK OKD")).and(Condition.equal("POKRIVENO", "N"));
   }
   
-  public static boolean checkUplate(String godmj) {
-    if (!lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(), "CORG", OrgStr.getKNJCORG(false))) 
+  public static boolean isNaplata() {
+    if (!lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(), "CORG", OrgStr.getKNJCORG(false)))
       return false;
     
+    return dM.getDataModule().getOrgstruktura().getString("RDVA").equals("D");
+  }
+
+  public static boolean checkUplate(JraTextField tgm) {
+    String godmj = tgm.getDataSet().getString(tgm.getColumnName());
+    if (!lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(), "CORG", OrgStr.getKNJCORG(false))) {
+      JOptionPane.showMessageDialog(tgm.getTopLevelAncestor(), 
+          "Nije zadano knjigovodstvo!",
+          "Greška", JOptionPane.ERROR_MESSAGE);
+      return false;
+    }
+
     if (!dM.getDataModule().getOrgstruktura().getString("RDVA").equals("D")) return true;
     
-    
-    
-    
+    System.out.println(findPotentialOldUplateCond(godmj));
+    int rows = Skstavke.getDataModule().getRowCount(findPotentialOldUplateCond(godmj));
+    if (rows > 0) {
+      String[] choices = {"Prikaži", "Prekini", "Zakljuèaj"};
+      int ch = JOptionPane.showOptionDialog(tgm.getTopLevelAncestor(), 
+          "Postoji " + rows + " otvorenih uplata u tom periodu; zakljuèati ipak?", "Otvorene uplate", 
+          JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
+      if (ch == 0) {
+        frmTableDataView frm = new frmTableDataView();
+        frm.setSaveName("pregled-period-pdv-uplate");
+        frm.setDataSet(Skstavke.getDataModule().openTempSet("VRDOK CPAR BROJDOK DATDOK OPIS ID IP SALDO", findPotentialOldUplateCond(godmj)));
+        frm.show();
+        frm.resizeLater();
+        return false;
+      } else if (ch == 1) return false;
+    }
     return true;
   }
   
-  public static boolean lockTaxPeriod(String godmj) {
-    if (!lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(), "CORG", OrgStr.getKNJCORG(false))) 
+  public static boolean lockTaxPeriod(JraTextField tgm) {
+    String godmj = tgm.getDataSet().getString(tgm.getColumnName());
+    if (!lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(), "CORG", OrgStr.getKNJCORG(false))) {
+      JOptionPane.showMessageDialog(tgm.getTopLevelAncestor(), 
+          "Nije zadano knjigovodstvo!",
+          "Greška", JOptionPane.ERROR_MESSAGE);
       return false;
+    }
     
     dM.getDataModule().getOrgstruktura().setString("UIGODMJ", godmj);
     dM.getDataModule().getOrgstruktura().saveChanges();
+    JOptionPane.showMessageDialog(tgm.getTopLevelAncestor(), 
+        "Period do " + godmj.substring(4,6) + ". mjeseca " + godmj.substring(0, 4) + ". godine je zakljuèan.",
+        "Zakljuèavanje", JOptionPane.ERROR_MESSAGE);
     return true;
   }
 
