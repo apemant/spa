@@ -249,6 +249,8 @@ public class frmPregledArhive extends raMasterDetail {
     if (!jpMaster.jraDatdosp.isEnabled() &&
         !Aus.checkSanityRange(jpMaster.jraDatdok)) return false;
     
+    getMasterSet().setString("BROJDOK", getMasterSet().getString("BROJDOK").trim());
+    
     String gks = getMasterSet().getString("CGKSTAVKE");
     if (gks != null && gks.length() > 8) {
       if (!oldDatdok.equals(ut.getFirstSecondOfDay(getMasterSet().getTimestamp("DATDOK")))) {
