@@ -245,7 +245,8 @@ public class raKnjizenjeSK {
           errMessage("Dokument broj "+gk.getString("BROJDOK")+" od partnera "+
                      String.valueOf(gk.getInt("CPAR")) + " je pokriven s nepostojeæim dokumentom");
         } else {
-          raSaldaKonti.matchIznos(sk, psk, pok, pokrad.getBigDecimal("IZNOS"));
+          if (!raSaldaKonti.isNaplata() || raSaldaKonti.checkTaxAllowance(sk.getTimestamp("DATDOK")))
+            raSaldaKonti.matchIznos(sk, psk, pok, pokrad.getBigDecimal("IZNOS"));
         }
       }
       pokrad.deleteAllRows();
