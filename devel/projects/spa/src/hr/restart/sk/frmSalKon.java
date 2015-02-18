@@ -555,6 +555,8 @@ public class frmSalKon extends raMasterDetail {
   boolean virtual;
   public boolean ValidacijaMaster(char mode) {
     getMasterSet().setInt("BROJIZV", getBrojizv()); // hack za odvajanje ur od sk
+    
+    if (mode == 'N') getMasterSet().setString("BROJDOK", getMasterSet().getString("BROJDOK").trim());
     urTransfer = saveRow != null;
     virtual = isKnjigVirtual();
     if (vl.isEmpty(jpMaster.jlrCknjige) || !jpMaster.jpp.Validacija()
@@ -571,6 +573,9 @@ public class frmSalKon extends raMasterDetail {
         "Greška", JOptionPane.ERROR_MESSAGE);
       return false;
     }
+    
+    if (getMasterSet().getString("CGKSTAVKE").equals("D") &&        
+        !raSaldaKonti.checkTaxAllowance(jpMaster.jraDatknj, this instanceof frmSalKonOK ? "knjižne obavijesti" : "raèuna")) return false;
     
     if (!virtual && !checkIznosMaster()) return false;
     if (mode == 'N' && !virtual) {
@@ -599,7 +604,7 @@ public class frmSalKon extends raMasterDetail {
         this.getMasterSet().setString("BROJKONTA", vl.RezSet.getString("BROJKONTA"));
 //      this.getMasterSet().setString("DUGPOT", vl.RezSet.getString("KARAKTERISTIKA"));
       
-      if (isR2CheckKnjig() &&
+      if (!raSaldaKonti.isNaplata() && isR2CheckKnjig() &&
           !ira && ld.raLocate(dm.getPartneri(), "CPAR",
     		  Integer.toString(getMasterSet().getInt("CPAR")))) {
         boolean r2 = R2Handler.isR2Shema(getMasterSet().getString("CSKL"), vrdokSheme);
@@ -637,7 +642,7 @@ public class frmSalKon extends raMasterDetail {
   }
   //false ako ne treba checkirati R2 flag na partneru za to knjigovodstvo
   private boolean isR2CheckKnjig() {
-    return frmParam.getParam("sk", "r2check"+dlgGetKnjig.getKNJCORG(), "D", "Provjeravati R2 flag na partneru za knjigovodstvo "+dlgGetKnjig.getKNJCORG()).equalsIgnoreCase("D");
+    return frmParam.getParam("sk", "r2check"+dlgGetKnjig.getKNJCORG(), "N", "Provjeravati R2 flag na partneru za knjigovodstvo "+dlgGetKnjig.getKNJCORG()).equalsIgnoreCase("D");
   }
   public boolean isNewDetailNeeded() {
     return false;
@@ -1184,6 +1189,8 @@ public class frmSalKon extends raMasterDetail {
         "Greška", JOptionPane.ERROR_MESSAGE);
       return;
     }
+    
+    if (raSaldaKonti.checkTaxAllowance(jpMaster.jraDatknj, this instanceof frmSalKonOK ? "knjižne obavijesti" : "raèuna")) return;
 //    raSaldaKonti.setKumInvalid();
     refilterDetailSet();
     String knjui = getMasterSet().getString("CKNJIGE");
