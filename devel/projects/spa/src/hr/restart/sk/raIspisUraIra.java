@@ -46,6 +46,7 @@ import hr.restart.util.raImages;
 import hr.restart.util.raProcess;
 import hr.restart.util.raTransaction;
 import hr.restart.util.sysoutTEST;
+import hr.restart.util.reports.JasperHook;
 import hr.restart.util.reports.TemplateModifier;
 import hr.restart.util.reports.raElixirProperties;
 import hr.restart.util.reports.raElixirPropertyValues;
@@ -79,6 +80,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
+
+import net.sf.jasperreports.engine.JRAlignment;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRTextElement;
+import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignField;
+import net.sf.jasperreports.engine.design.JRDesignTextField;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import sg.com.elixir.reportwriter.xml.IModel;
 
@@ -325,11 +338,93 @@ public class raIspisUraIra extends raFrame {
           "IRA06", "Ispis knjige IRA");
       getRepRunner().addReport("hr.restart.sk.repIRA", "hr.restart.sk.repIRA",
                                "IRA", "Ispis knjige IRA 2005");
+      getRepRunner().installTemplateModifier(new TemplateModifier() {
+        public void modify(String id, IModel template) {
+          int ext = Aus.getNumber(frmParam.getParam("sk", "ispIRAchars", "0",
+              "Širina broja IRA na ispisu knjige, u znakovima"));
+          if (ext > 0) addNumUra(new raReportSection(
+              template.getModel(raElixirProperties.DETAIL), true), ext);          
+        }
+      });
+      JasperHook jh = new JasperHook() {
+        public void adjustDesign(String reportName, JasperDesign design) {
+          addJaspNum(design);
+        }
+      };
+      int ext = Aus.getNumber(frmParam.getParam("sk", "ispIRAchars", "0",
+          "Širina broja IRA na ispisu knjige, u znakovima"));
+      if (ext > 0) {
+        getRepRunner().addJasperHook("hr.restart.sk.repIRAEUN2", jh);
+        getRepRunner().addJasperHook("hr.restart.sk.repIRAEUN1", jh);
+        getRepRunner().addJasperHook("hr.restart.sk.repIRAEU2", jh);
+        getRepRunner().addJasperHook("hr.restart.sk.repIRAEU1", jh);
+        getRepRunner().addJasperHook("hr.restart.sk.repIRA25", jh);
+        getRepRunner().addJasperHook("hr.restart.sk.repIRA10", jh);
+        getRepRunner().addJasperHook("hr.restart.sk.repIRA09", jh);
+      }
     }
     proc.close();
     if (!proc.isInterrupted())
       getRepRunner().go();
     busy = false;
+  }
+  
+  void addJaspNum(JasperDesign jas) {
+    int ext = Aus.getNumber(frmParam.getParam("sk", "ispIRAchars", "0",
+        "Širina broja IRA na ispisu knjige, u znakovima"));
+    if (ext > 0) {
+      boolean noext = true;
+      JRField[] fld = jas.getFields();
+      for (int i = 0; i < fld.length; i++)
+        if (fld[i].getName().equalsIgnoreCase("EXTBRDOK")) noext = false;
+      if (noext) {
+        JRDesignField field = new JRDesignField();
+        field.setName("EXTBRDOK");
+        field.setDescription("EXTBRDOK");
+        field.setValueClassName("java.lang.String");
+        
+        try {
+          jas.addField(field);
+        } catch (JRException e) {
+          e.printStackTrace();
+        }
+      }
+
+      JRElement[] els = jas.getDetail().getElements();
+      for (int i = 0; i < els.length; i++) 
+        if (els[i] instanceof JRDesignTextField)
+          checkElement(jas, (JRDesignTextField) els[i], ext);
+    }
+  }
+  
+  void checkElement(JasperDesign jas, JRDesignTextField fld, int ext) {
+    String txt = fld.getExpression().getText();
+    if (txt.toUpperCase().indexOf("BROJDOK") >= 0) {
+      JRDesignTextField tf = new JRDesignTextField();
+      JRDesignExpression je = new JRDesignExpression();
+      je.setText("$F{EXTBRDOK}");
+      je.setValueClassName("java.lang.String");
+      tf.setExpression(je);
+      tf.setBlankWhenNull(true);
+      tf.setWrapAllowed(false);
+      tf.setStretchWithOverflow(false);
+      tf.setFontName(fld.getFontName());
+      tf.setFontSize(fld.getFontSize());
+      tf.setForecolor(fld.getForecolor());
+      tf.setBold(fld.isBold());
+      tf.setPdfEncoding(fld.getPdfEncoding());
+      tf.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_RIGHT);
+      tf.setRightPadding(fld.getLeftPadding());
+      tf.setTopPadding(fld.getTopPadding());
+      tf.setVerticalAlignment(fld.getVerticalAlignment());
+      tf.setY(fld.getY());
+      tf.setHeight(fld.getHeight());
+      int total = fld.getWidth();
+      fld.setWidth(total * 12 / (12 + ext));
+      tf.setWidth(total * ext / (12 + ext));
+      tf.setX(fld.getX() + total - tf.getWidth());
+      ((JRDesignBand) jas.getDetail()).addElement(tf);
+    }
   }
   
   void addNumUra(raReportSection detail, int ch) {
