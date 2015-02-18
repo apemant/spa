@@ -51,6 +51,7 @@ public class jpPrisRad extends JPanel {
   JLabel jlCsif = new JLabel();
   JLabel jlCvrp = new JLabel();
   JLabel jlDan = new JLabel();
+  JLabel jlDanTj = new JLabel();
   JraButton jbSelCsif = new JraButton();
   JraButton jbSelCvrp = new JraButton();
 
@@ -63,6 +64,9 @@ public class jpPrisRad extends JPanel {
         jraDan.selectAll();
       }
     }
+    public void valueChanged() {
+      fPrisRad.findDan();
+    };
   };
 
   JraTextField jraSat = new JraTextField() {
@@ -167,6 +171,7 @@ public class jpPrisRad extends JPanel {
     
     jpDetail.add(jlDan, new XYConstraints(15, 30, -1, -1));
     jpDetail.add(jraDan, new XYConstraints(150, 30, 75, -1));
+    jpDetail.add(jlDanTj, new XYConstraints(230, 30, -1, -1));
     jpDetail.add(jlSat, new XYConstraints(290, 10, 75, -1));
     jpDetail.add(jraSat, new XYConstraints(290, 30, 75, -1));
     jpDetail.add(jlKol, new XYConstraints(370, 10, 75, -1));
