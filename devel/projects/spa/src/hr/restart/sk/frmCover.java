@@ -43,9 +43,11 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.HashSet;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.text.JTextComponent;
 
@@ -382,6 +384,7 @@ public class frmCover extends raMatPodaci {
       pd = new dlgCover((Dialog) this.getWindow(), "Djelomièno Pokrivanje");
     else pd = new dlgCover("Djelomièno Pokrivanje");
     if (pd.changePok(rset, uset, pok)) {
+      Timestamp oldpri = new Timestamp(rset.getTimestamp("DATPRI").getTime());
       raSaldaKonti.matchIznos(rset, uset, pok.getBigDecimal("IZNOS").subtract(orig));
       if (pok.getBigDecimal("IZNOS").signum() == 0)
         pok.deleteRow();
@@ -389,9 +392,24 @@ public class frmCover extends raMatPodaci {
 
 //      totalc = totalc.add(orig).subtract(bset.getBigDecimal("SALDO"));
       
-      if (!R2Handler.saveChangesInTransaction(new QueryDataSet[] {bset,view,pok})) {
-        dM.getDataModule().getSynchronizer().markAsDirty("pokriveni");
-      } else refreshBase();
+      boolean r2ok = true;
+      if (!Util.getUtil().sameDay(rset.getTimestamp("DATPRI"), oldpri)) {
+        if (!raSaldaKonti.checkTaxAllowance(rset.getTimestamp("DATPRI"))) {
+          r2ok = false;
+          JOptionPane.showMessageDialog(this.getWindow(), 
+              "Datum plaæanja raèuna je u periodu koji je zakljuèan!",
+              "Greška", JOptionPane.ERROR_MESSAGE);
+        }
+      }
+      
+      if (r2ok && R2Handler.saveChangesInTransaction(new QueryDataSet[] {bset,view,pok})) {
+        //dM.getDataModule().getSynchronizer().markAsDirty("pokriveni");
+        refreshBase();
+      } else {
+        bset.refetchRow(bset);
+        view.refetchRow(view);
+        pok.refresh();
+      }
       getJpTableView().fireTableDataChanged();
 //      base.getJpTableView().fireTableDataChanged();
     } else pok.refresh();
@@ -431,6 +449,8 @@ public class frmCover extends raMatPodaci {
     String salc = tecr ? "SALDO" : salcol;
     BigDecimal bs = bset.getBigDecimal(salc);
     BigDecimal cs = view.getBigDecimal(salc);
+    QueryDataSet rset = raVrdokMatcher.isRacunTip(bset) ? bset : view;
+    Timestamp oldpri = new Timestamp(rset.getTimestamp("DATPRI").getTime());
     if (pokBefore) {
       ts = pok.getBigDecimal("IZNOS").negate();
       if (pok.getString("CRACUNA").equals(bset.getString("CSKSTAVKE")))
@@ -468,11 +488,27 @@ public class frmCover extends raMatPodaci {
 //    raSaldaKonti.setSaldo(view, raSaldaKonti.isKob(view) ? cs.add(ts) : cs.subtract(ts));
 //    bset.setBigDecimal("SALDO", bs.subtract(ts));
 //    view.setBigDecimal("SALDO", cs.subtract(ts));
+    boolean r2ok = true;
+    if (!Util.getUtil().sameDay(rset.getTimestamp("DATPRI"), oldpri)) {
+      if (!raSaldaKonti.checkTaxAllowance(rset.getTimestamp("DATPRI"))) {
+        r2ok = false;
+        JOptionPane.showMessageDialog(this.getWindow(), 
+            "Datum plaæanja raèuna je u periodu koji je zakljuèan!",
+            "Greška", JOptionPane.ERROR_MESSAGE);
+      }
+    }
     
-    if (R2Handler.saveChangesInTransaction(new QueryDataSet[] {bset,view,pok}))
+    if (r2ok && R2Handler.saveChangesInTransaction(new QueryDataSet[] {bset,view,pok})) {
+      //dM.getDataModule().getSynchronizer().markAsDirty("pokriveni");
       refreshBase();
+    } else {
+      bset.refetchRow(bset);
+      view.refetchRow(view);
+      pok.refresh();
+      toNext = false;
+    }
     
-    dM.getDataModule().getSynchronizer().markAsDirty("pokriveni");
+    
 //    base.getJpTableView().fireTableDataChanged();
     if (toNext) {
       if (!view.next()) getJpTableView().fireTableDataChanged();
