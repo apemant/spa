@@ -403,7 +403,7 @@ public class frmCover extends raMatPodaci {
       }
       
       if (r2ok && R2Handler.saveChangesInTransaction(new QueryDataSet[] {bset,view,pok})) {
-        //dM.getDataModule().getSynchronizer().markAsDirty("pokriveni");
+        dM.getDataModule().getSynchronizer().markAsDirty("pokriveni");
         refreshBase();
       } else {
         bset.refetchRow(bset);
@@ -499,7 +499,7 @@ public class frmCover extends raMatPodaci {
     }
     
     if (r2ok && R2Handler.saveChangesInTransaction(new QueryDataSet[] {bset,view,pok})) {
-      //dM.getDataModule().getSynchronizer().markAsDirty("pokriveni");
+      dM.getDataModule().getSynchronizer().markAsDirty("pokriveni");
       refreshBase();
     } else {
       bset.refetchRow(bset);
