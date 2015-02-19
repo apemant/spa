@@ -497,7 +497,15 @@ public class raSaldaKonti {
 
     // otvori set pokrivenih tako da odgovara racunima iz ds. Potencijalno
     // sporo.
-    DataSet pok = dM.getDataModule().getPokriveni();
+    DataSet pok = null;
+    // ako ih ima relativno malo onda bolje ih pješke pokupit
+    if (ds.rowCount() < 200)
+      pok = Pokriveni.getDataModule().getTempSet(
+          Condition.in("CRACUNA", ds, "CSKSTAVKE").or(
+              Condition.in("CUPLATE", ds, "CSKSTAVKE")));
+    else  // inaèe cijeli set
+      pok = dM.getDataModule().getPokriveni();
+    
     pok.open();
     System.out.println("Opened pokriveni. " + pok.rowCount());
 
@@ -1623,7 +1631,7 @@ public class raSaldaKonti {
 
   public static boolean matchIfYouCan(ReadRow skstavka, boolean trans) {
     
-    if (raSaldaKonti.isNaplata() && checkTaxAllowance(skstavka.getTimestamp("DATDOK"))) return false;
+    if (raSaldaKonti.isNaplata() && !checkTaxAllowance(skstavka.getTimestamp("DATDOK"))) return false;
     
     Skstavke.getDataModule().setFilter(
       Condition.whereAllEqual(new String[] {"KNJIG", "CPAR", "BROJKONTA", "BROJDOK", "OZNVAL"}, skstavka));
