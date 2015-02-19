@@ -1190,7 +1190,7 @@ public class frmSalKon extends raMasterDetail {
       return;
     }
     
-    if (raSaldaKonti.checkTaxAllowance(jpMaster.jraDatknj, this instanceof frmSalKonOK ? "knjižne obavijesti" : "raèuna")) return;
+    if (!raSaldaKonti.checkTaxAllowance(jpMaster.jraDatknj, this instanceof frmSalKonOK ? "knjižne obavijesti" : "raèuna")) return;
 //    raSaldaKonti.setKumInvalid();
     refilterDetailSet();
     String knjui = getMasterSet().getString("CKNJIGE");
