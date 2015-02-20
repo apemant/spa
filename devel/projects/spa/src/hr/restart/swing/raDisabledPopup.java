@@ -221,7 +221,7 @@ public class raDisabledPopup extends JPopupMenu {
         s = s.substring(jra.getSelectionStart(), jra.getSelectionEnd());      
       if (phrase) s = "\"" + s + "\"";
       raLiteBrowser.openSystemBrowser(
-          new URL("http://www.pogodak.hr/search.jsp?q="+
+          new URL("http://www.google.hr/search?q="+
               Aus.convertToURLFriendly(s)));
     } catch (MalformedURLException e1) {
       e1.printStackTrace();
