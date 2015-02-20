@@ -49,6 +49,7 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jb.util.TriStateProperty;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Kumulrad;
 import hr.restart.baza.Prisutobr;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.Radnicipl;
@@ -83,7 +84,7 @@ public class frmPrisutnost extends raMasterDetail {
   String[] dtj = {"", "Ned", "Pon", "Uto", "Sri", "Èet", "Pet", "Sub"};
   
   HashDataSet vrprims;
-  HashDataSet grprisut;
+  HashDataSet kumulrad;
   
   raNavAction rnvShowOne  = new raNavAction("Prikaži raspored",raImages.IMGALIGNJUSTIFY,KeyEvent.VK_F7) {
     public void actionPerformed(ActionEvent e) {
@@ -100,6 +101,12 @@ public class frmPrisutnost extends raMasterDetail {
   raNavAction rnvShowAll  = new raNavAction("Prikaži raspored svih radnika",raImages.IMGALIGNJUSTIFY,KeyEvent.VK_F7) {
     public void actionPerformed(ActionEvent e) {
       showAll();
+    }
+  };
+  
+  raNavAction rnvPotpisList  = new raNavAction("Prikaži potpisnu listu",raImages.IMGMOVIE,KeyEvent.VK_F11) {
+    public void actionPerformed(ActionEvent e) {
+      showRadnici();
     }
   };
    
@@ -264,6 +271,70 @@ public class frmPrisutnost extends raMasterDetail {
     return maxDana;
   }
   
+  void showRadnici() {
+    raProcess.runChild(raMaster.getWindow(), new Runnable() {
+      public void run() {
+        long mili = System.currentTimeMillis();
+        StorageDataSet out = new StorageDataSet();
+        out.setColumns(new Column[] {
+            Prisutobr.getDataModule().getColumn("CRADNIK").cloneColumn(),
+            dM.createStringColumn("PRIME", "Prezime i ime", 100).cloneColumn(),
+            dM.createBigDecimalColumn("TOTAL", "Ukupno plaæa", 2),
+            dM.createBigDecimalColumn("PLISTA", "Plaæa s liste", 2),
+            dM.createBigDecimalColumn("RAZLIKA", "Razlika plaæe", 2),
+            dM.createStringColumn("POTPIS", "Potpis primaoca", 20)
+        });
+        out.open();
+        System.out.println("Uèitavanje podataka... " + (System.currentTimeMillis() - mili));
+        List data = loadPrisutnost(Condition.ident, true);
+        System.out.println("Uèitavanje prave plaæe... " + (System.currentTimeMillis() - mili));
+        HashDataSet rads = new HashDataSet(dm.getRadnici(), "CRADNIK");
+        DataSet netods = Kumulrad.getDataModule().getTempSet("CRADNIK NETOPK", Condition.ident);
+        raProcess.openScratchDataSet(netods);
+        System.out.println("Zbrajanje... " + (System.currentTimeMillis() - mili));        
+        HashMap neto = new HashMap();
+        for (netods.first(); netods.inBounds(); netods.next())
+          neto.put(netods.getString("CRADNIK"), netods.getBigDecimal("NETOPK"));
+        
+        HashSum sum = new HashSum();
+        int m = 0;
+        for (Iterator i = data.iterator(); i.hasNext(); ) {
+          if (m++ % 200 == 0) raProcess.checkClosing();
+          PrisData pd = (PrisData) i.next();
+          sum.add(pd.cradnik, pd.iznos);
+        }
+        System.out.println("Punjenje... " + (System.currentTimeMillis() - mili));
+        for (Iterator i = sum.iterator(); i.hasNext(); ) {
+          if (m++ % 100 == 0) raProcess.checkClosing();
+          String key = (String) i.next();
+          out.insertRow(false);
+          out.setString("CRADNIK", key);
+          out.setString("PRIME", rads.get(key).getString("PREZIME") + " " + rads.get(key).getString("IME"));
+          out.setBigDecimal("TOTAL", sum.get(key));
+          out.setBigDecimal("PLISTA", (BigDecimal) neto.get(key));
+          Aus.sub(out, "RAZLIKA", "TOTAL", "PLISTA");
+        }
+        raProcess.yield(out);
+      }
+    });
+    
+    if (!raProcess.isCompleted()) return;
+    StorageDataSet out = (StorageDataSet) raProcess.getReturnValue();
+    if (out == null) return;
+
+    frmTableDataView frm = new frmTableDataView();
+    frm.setDataSet(out);
+    frm.setSaveName("Pregled-prisutobr-radnici-place");
+    frm.setVisibleCols(new int[] {0, 1, 2, 3, 4, 5});
+    frm.setTitle("POTPISNA LISTA  obraèun za " + mje + ". mjesec " + god +".");
+    raExtendedTable t = (raExtendedTable) frm.jp.getMpTable();
+    t.addSort("PRIME", true);
+    t.createSortDescriptor();
+    t.setDrawLines(true);
+    frm.show();
+    frm.resizeLater();
+  }
+  
   void showGrupe() {
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
@@ -294,7 +365,7 @@ public class frmPrisutnost extends raMasterDetail {
         }
         System.out.println("Punjenje... " + (System.currentTimeMillis() - mili));
         for (Iterator i = sums.values().iterator(); i.hasNext(); ) {
-          if (m++ % 200 == 0) raProcess.checkClosing();
+          if (m++ % 100 == 0) raProcess.checkClosing();
           PrisData sum = (PrisData) i.next();
           out.insertRow(false);
           out.setString("CSIF", sum.grpris);
@@ -510,6 +581,18 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     insertSum(sums, "", null, null);
     insertSum(sums, "SVEUKUPNO", totalSati, totalPrim.add(totalNak).add(totalOb));
     
+    String key = ((PrisData) data.get(0)).cradnik;
+    if (kumulrad.has(key)) {
+      insertSum(sums, "", null, null);
+      DataSet kum = kumulrad.get(key);
+      insertSum(sums, "PLAÆA S LISTE", null, kum.getBigDecimal("NETOPK"));
+      insertSum(sums, "RAZLIKA PLAÆE", null, totalPrim.add(totalNak).add(totalOb).subtract(kum.getBigDecimal("NETOPK")));
+      insertSum(sums, "", null, null);
+      insertSum(sums, "", null, null);
+      insertSum(sums, "DOPRINOSI I POREZI", null, kum.getBigDecimal("DOPRINOSI").add(kum.getBigDecimal("PORIPRIR")));
+      insertSum(sums, "BRUTO PLAÆA", null, totalPrim.add(totalNak).add(totalOb).add(kum.getBigDecimal("DOPRINOSI")).add(kum.getBigDecimal("PORIPRIR")));
+    }
+    
     return true;
   }
 
@@ -652,6 +735,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     if (all.isShowing()) all.hide();
     
     vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
+    kumulrad = new HashDataSet(Kumulrad.getDataModule().openTempSet(), "CRADNIK");
     allOut.clear();
     allSums.clear();
     allRad.clear();
@@ -775,6 +859,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
       else others += all.jp.getMpTable().getColumnModel().getColumn(i).getWidth();
     }
     Point old = all.jp.getViewPosition();
+    System.out.println("old pos: " + old);
     setColsAndSums(all, (StorageDataSet) allOut.get(allRbr));
     viscols = all.jp.getMpTable().getColumnCount();
     for (int i = viscols - 1; i >= 0; i--) {
@@ -808,6 +893,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     all.setCounterText("  Radnik " + (allRbr + 1) + " od " + allOut.size());
     setSummary(all, (StorageDataSet) allSums.get(allRbr));
     all.jp.setViewPosition(old);
+    System.out.println("new pos " + all.jp.getViewPosition());
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         all.jp.getColumnsBean().focusCombo();
@@ -870,6 +956,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     StorageDataSet sums = new StorageDataSet();
     
     vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
+    kumulrad = new HashDataSet(Kumulrad.getDataModule().openTempSet(Condition.equal("CRADNIK",  getMasterSet())), "CRADNIK");
 
   	findKum(data, out, sums);
     String[] acols = out.getColumnNames(out.getColumnCount());
@@ -915,6 +1002,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     raMaster.setEnabledNavAction(raMaster.getNavBar().getNavContainer().getNavActions()[3],true);
     raMaster.addOption(rnvShowAll, 5, false);
     raMaster.addOption(rnvGrupe, 6, false);
+    raMaster.addOption(rnvPotpisList, 7, false);
     raDetail.getJpTableView().addTableModifier(
       new hr.restart.swing.raTableColumnModifier("CVRP", new String[] {"CVRP", "NAZIV"}, dm.getVrsteprim())
     );
@@ -947,6 +1035,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     }, 3);
     all.jp.initKeyListener(all);
     all.setCounterEnabled(false);
+    all.jp.setAutoPos(false);
   }
   
   static Collator myCol = Collator.getInstance();
