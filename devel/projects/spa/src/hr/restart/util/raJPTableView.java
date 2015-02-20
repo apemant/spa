@@ -524,6 +524,12 @@ public class raJPTableView extends JPanel {
     navBar.unregisterNavBarKeys(raframe);
     navBar.unregisterNavBarKeys(mpTable);*/
   }
+  
+  private boolean autoPos = true;
+  
+  public void setAutoPos(boolean autoPos) {
+    this.autoPos = autoPos;
+  }
 
   // af.b  ukljucuje ignoriranje repaint poziva
 
@@ -606,7 +612,7 @@ public class raJPTableView extends JPanel {
       try {
       SwingUtilities.invokeAndWait(new Runnable() {
         public void run() {
-          mpTable.pos();
+          if (autoPos) mpTable.pos();
           setIgnoreRepaint(false);
           repaint();
         }
@@ -617,7 +623,7 @@ public class raJPTableView extends JPanel {
     else {
       SwingUtilities.invokeLater(new Runnable() {
         public void run() {
-          mpTable.pos();
+          if (autoPos) mpTable.pos();
           setIgnoreRepaint(false);
           repaint();
         }
