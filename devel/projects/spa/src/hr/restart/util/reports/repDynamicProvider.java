@@ -245,6 +245,7 @@ public class repDynamicProvider implements IDataProvider {
                                                  - 20 * (cols - 1)) / width;
       int w = createHD(ratio, lt.SectionHeader1, lt.TextHeaderValue0) - 20;
       createHD(ratio, lt.Detail, lt.TextDataValue0);
+      if (xt.isDrawLines()) addLine(lt.Detail, lt.Line1, w);
       createFooter(ratio, lt.SectionFooter1, lt.TextSumValue0, "U K U P N O");
 
       if (subtitle.length() == 0)
@@ -288,6 +289,7 @@ public class repDynamicProvider implements IDataProvider {
                                                 - 20 * (cols - 1)) / width;
       int w = createHD(ratio, lt.SectionHeader1, lt.TextHeaderValue0) - 20;
       createHD(ratio, lt.Detail, lt.TextDataValue0);
+      if (xt.isDrawLines()) addLine(lt.Detail, lt.Line1, w);
       createFooter(ratio, lt.SectionFooter1, lt.TextSumValue0, "U K U P N O");
 
       if (subtitle.length() == 0)
@@ -414,6 +416,15 @@ public class repDynamicProvider implements IDataProvider {
       x = defineElem(x, ratio, i, e);
     }
     return (int) x;
+  }
+  
+  private void addLine(raReportSection sect, raReportElement def, int w) {
+    raReportElement e = sect.addModel(ep.LINE, (String[]) def.getDefaults().clone());
+    e.restoreDefaults();
+    e.setWidth(w);
+    e.setTop(300);
+    sect.setProperty(ep.SHRINK, ev.NO);
+    sect.setHeight(360);
   }
   
   private int createSHD(double ratio, raReportSection sect, raReportElement def) {
