@@ -40,6 +40,7 @@ import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StatusListener;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
+import com.borland.dx.sql.dataset.QueryDataSet;
 
 
 
@@ -368,7 +369,12 @@ public class JlrNavField extends JraTextField {
   public void setRaDataSet(com.borland.dx.dataset.DataSet newRaDataSet) {
     raDataSet = newRaDataSet;
   }
-
+  
+  public void refilterRaDataSet(Condition filter) {
+  	if (raDataSet == null || !(raDataSet instanceof QueryDataSet)) return;
+  	Aus.setFilter((QueryDataSet) raDataSet, filter.toString());
+  }
+  
   public void setDataSet(com.borland.dx.dataset.DataSet newDataSet) {
     rmvNavListener();
     super.setDataSet(newDataSet);
