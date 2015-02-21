@@ -32,6 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -543,9 +544,11 @@ public abstract class KreirDrop {
     qds.close();
     qds.setQuery(new QueryDescriptor(dm.getDatabase1(),
                  qds.getQuery().getQueryString(), null, true, Load.ALL));
+    insert = null;
   }
 
   private void reconnectQueryDataSets() {
+  	insert = null;
 //    System.out.print(this.getClass().getName()+":");
     Field[] fields = this.getClass().getDeclaredFields();
 //    System.out.print("("+fields.length+")");
@@ -629,7 +632,46 @@ public abstract class KreirDrop {
   public QueryDataSet getQueryDataSet() {
   	return data;
   }
-
+  
+  
+  private raPreparedStatement insert;
+  
+  public raPreparedStatement getInsertStatement() {
+  	if (insert != null) return insert;
+  	return insert = new raPreparedStatement(data, raPreparedStatement.INSERT);
+  }
+  
+  public raPreparedStatement getInsertStatement(String cols) {
+  	if (cols.indexOf(',') < 0) return getInsertStatement(new VarStr(cols).split()); 
+    return getInsertStatement(new VarStr(cols).splitTrimmed(','));
+  }
+  
+  public raPreparedStatement getInsertStatement(String[] cols) {
+  	return raPreparedStatement.createIndependentInsert(Naziv, cols);
+  }
+  
+  /**
+   * Za brzi insert kompatibilne tablice u ovu. Preferirano u odnosu na getTempSet("1=0") pa onda insertRow i saveChanges.
+   * Ne komita transakciju, tj ovisi o AUTOCOMMIT-u, stoga radi i u transakciji i i izvan nje.
+   * @param ds DataSet iz kojeg se pune podaci
+   */
+  
+  public int insertFrom(DataSet ds) {
+  	getInsertStatement();
+  	int total = 0;
+  	for (ds.first(); ds.inBounds(); ds.next()) {
+  		insert.setValues(ds);
+  		try {
+				total += insert.executeUpdate();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				System.err.println("Dodavanje reda " + ds);
+				e.printStackTrace();
+			}
+  	}
+  	return total;
+  }
+  
   public static void installNotifier(raTransferNotifier tn) {
     track = tn;
   }
