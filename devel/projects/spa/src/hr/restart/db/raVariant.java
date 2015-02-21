@@ -46,6 +46,8 @@ public class raVariant {
 */
   private static boolean debug = false;
   
+  private static Variant v = new Variant();
+  
   public static void setDebug(boolean debug) {
     raVariant.debug = debug;
   }
@@ -66,7 +68,14 @@ public class raVariant {
       return null;
     }
   }
-
+  
+  public static Object getFastDataSetValue(ReadRow ds, String colNm) {
+    Column col = ds.hasColumn(colNm);
+    if (col == null) return null;
+    ds.getVariant(colNm, v);
+    return v.getAsObject();
+  }
+  
   public static void setDataSetValue(ReadWriteRow ds,String colNm,Object value) {
     setDataSetValue(ds,colNm,value,getType(value));
   }
