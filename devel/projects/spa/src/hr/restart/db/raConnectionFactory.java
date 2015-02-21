@@ -218,6 +218,39 @@ public abstract class raConnectionFactory {
     }
     return null;
   }
+  
+  public static int[] getColumnTypes(java.sql.Connection con,String tableName) {
+  	int[] cols = null;
+    try {
+      java.sql.ResultSet rescls = con.getMetaData().getColumns(null,null,tableName,null);
+      java.util.TreeMap cls = new java.util.TreeMap();
+      while (rescls.next()) {
+        cls.put(new Integer(rescls.getInt("ORDINAL_POSITION")),new Integer(rescls.getString("DATA_TYPE")));
+      };
+      cols = new int[cls.size()];
+//      keys = (String[])kys.toArray(keys);
+      Object[] mapKeys = cls.keySet().toArray();
+      for (int i = 0; i < mapKeys.length; i++) {
+        cols[i] = ((Integer) cls.get(mapKeys[i])).intValue();
+      }
+//      return cols;
+    }
+    catch (Exception ex) {
+      cols = null;
+    }
+    if (cols!=null && cols.length > 0) return cols;
+    else {
+      if (!dM.modulesLoaded) dM.getDataModule().loadModules();
+        KreirDrop kd = KreirDrop.getModuleByName(tableName);
+      if (kd != null) {
+      	cols = new int[kd.getColumns().length];
+      	for (int i = 0; i < cols.length; i++)
+      		cols[i] = kd.getColumns()[i].getSqlType();
+        return cols;
+      }
+    }
+    return null;
+  }
 }
 
 class connectionIndex {
