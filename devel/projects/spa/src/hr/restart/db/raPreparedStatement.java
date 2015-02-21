@@ -58,6 +58,7 @@ public class raPreparedStatement {//implements PreparedStatement {
 
   private String[] keyColumnNames;
 
+  private int[] columnTypes;
 
 
   /**
@@ -242,6 +243,8 @@ public class raPreparedStatement {//implements PreparedStatement {
 
       columnNames = getColumnsDB(con, tableName);//raConnectionFactory.getColumns(con,tableName);
 
+      columnTypes = raConnectionFactory.getColumnTypes(con, tableName);
+      
       makeStatmentSql();
 
       makeStatement();
@@ -621,29 +624,41 @@ public class raPreparedStatement {//implements PreparedStatement {
 
 
   public void setValue(String columnName, Object val, boolean where) {
+  	
+  	if (val == null) {
+  		
+  		try {
+				int idx = getParameterIndex(columnName, where);
+				setNull(idx, columnTypes[idx]);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+  		
+  	} else if (val instanceof String) {
 
-    if (val instanceof Short) {
-
-      setShort(columnName,((Short)val).shortValue(),where);
-
-    } else if (val instanceof Integer) {
-
-      setInt(columnName,((Integer)val).intValue(),where);
+      setString(columnName,(String)val,where);
 
     } else if (val instanceof BigDecimal) {
 
       setBigDecimal(columnName,(BigDecimal)val,where);
 
-    } else if (val instanceof String) {
+    } else if (val instanceof Integer) {
 
-      setString(columnName,(String)val,where);
+      setInt(columnName,((Integer)val).intValue(),where);
 
     } else if (val instanceof Timestamp) {
 
       setTimestamp(columnName,(Timestamp)val,where);
 
+    } else if (val instanceof Short) {
+
+      setShort(columnName,((Short)val).shortValue(),where);
+
     } else if (val instanceof Double) {
-      setDouble(columnName, ((Double) val).doubleValue(),where);
+
+    	setDouble(columnName, ((Double) val).doubleValue(),where);
+    	
     }
 
   }
