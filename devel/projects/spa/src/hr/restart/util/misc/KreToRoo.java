@@ -22,7 +22,7 @@ public class KreToRoo {
         ret.append(ktr.createRoo(args[i])).append("\n");
       }
     } else {
-      QueryDataSet tab = Tablice.getDataModule().getFilteredDataSet("");
+      QueryDataSet tab = Tablice.getDataModule().getTempSet();
       tab.open();
       for (tab.first(); tab.inBounds(); tab.next()) {
         ret.append(ktr.createRoo(tab.getString("KLASATAB"))).append("\n");

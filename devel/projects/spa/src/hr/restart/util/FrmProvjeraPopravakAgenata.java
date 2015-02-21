@@ -107,7 +107,7 @@ public class FrmProvjeraPopravakAgenata extends raUpitLite {
     if (jcbCheckNull.isSelected()){
     partneri = dm.getPartneri();
     } else {
-      partneri = Partneri.getDataModule().getFilteredDataSet("cagent > 0");
+      partneri = Partneri.getDataModule().getTempSet("cagent > 0");
     }
     partneri.open();
     

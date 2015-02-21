@@ -200,7 +200,7 @@ public class ImageLoad implements ActionListener{
 	}
 	QueryDataSet set = null;
 	private void load() {
-		set = Imageinfo.getDataModule().getFilteredDataSet("tablica = '"+getTable()+"' AND ckey = '"+getKey()+"'");
+		set = Imageinfo.getDataModule().getTempSet("tablica = '"+getTable()+"' AND ckey = '"+getKey()+"'");
 //		QueryDataSet set1 = Imageinfo.getDataModule().getFilteredDataSet(Condition.equal("tablica", table).and(Condition.equal("CKEY", key)));
 //		QueryDataSet set2 = Imageinfo.getDataModule().getFilteredDataSet(Condition.whereAllEqual(new String[] {"tablica","ckey"}, new String[] {table, key}));
 		set.open();

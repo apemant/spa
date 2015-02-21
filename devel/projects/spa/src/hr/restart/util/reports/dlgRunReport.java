@@ -978,7 +978,7 @@ public class dlgRunReport {
           if (raSectionDesigner.show(prViewDialog.this, name, ds, true)) {
             if (raSectionDesigner.isSaveRequested()) {
               ds.first();
-              QueryDataSet saver = Logodat.getDataModule().getFilteredDataSet(
+              QueryDataSet saver = Logodat.getDataModule().getTempSet(
                   Condition.whereAllEqual(new String[] {"CORG","VRSTA","VRSEC","VRDOK",}, ds));
               saver.open();
               saver.deleteAllRows();

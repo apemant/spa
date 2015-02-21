@@ -863,7 +863,7 @@ public class frmPDV extends raUpitLite {
 
   private JPanel getPanelRow(String ciz, HashMap data) {
     JPanel panelRow = new JPanel(new BorderLayout());
-    QueryDataSet ipdv = IzvjPDV.getDataModule().getFilteredDataSet(Condition.equal("CIZ", ciz));
+    QueryDataSet ipdv = IzvjPDV.getDataModule().getTempSet(Condition.equal("CIZ", ciz));
     ipdv.open(); ipdv.first();
     String jltxt = numbers(ciz) + " " + ipdv.getString("OPIS");
     JLabel jL = new JLabel(jltxt.length()>70?jltxt.substring(0,70):jltxt);

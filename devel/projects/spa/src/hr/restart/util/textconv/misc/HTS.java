@@ -149,7 +149,7 @@ public class HTS {
       };
     });
     frmIzborStavki.proknjizi(
-        Skstavkerad.getDataModule().getFilteredDataSet(Condition.equal("RBS", 1)));
+        Skstavkerad.getDataModule().getTempSet(Condition.equal("RBS", 1)));
     System.out.println("Bravo!");
   }
 

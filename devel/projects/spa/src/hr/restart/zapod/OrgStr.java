@@ -94,8 +94,9 @@ System.out.println("setting filter "+knjigsql+andNotIn);
    * Vraca sve ziro racune od zadanog knjigovodstva u obliku querydataseta
    */
   public com.borland.dx.sql.dataset.QueryDataSet getKnjigziro(String cKnjig) {
-    knjigziro = zirorn.getDataModule().getFilteredDataSet(
+  	if (knjigziro == null) knjigziro = zirorn.getDataModule().getFilteredDataSet(
         Condition.equal("CORG", cKnjig));
+  	else zirorn.getDataModule().setFilter(knjigziro, Condition.equal("CORG", cKnjig));
     knjigziro.open();
     knjigovodstva.open();
     return knjigziro;

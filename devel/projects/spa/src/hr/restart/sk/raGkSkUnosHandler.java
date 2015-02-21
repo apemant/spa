@@ -277,7 +277,7 @@ public class raGkSkUnosHandler {
           BigDecimal sumID = Aus.zero2;
           BigDecimal sumIP = Aus.zero2;
           for (sks.first(); sks.inBounds(); sks.next()) {
-            QueryDataSet sks_details = hr.restart.baza.Skstavkerad.getDataModule().getFilteredDataSet(Condition.whereAllEqual(sks_key, sks));
+            QueryDataSet sks_details = hr.restart.baza.Skstavkerad.getDataModule().getTempSet(Condition.whereAllEqual(sks_key, sks));
             sks_details.setSort(new com.borland.dx.dataset.SortDescriptor(new String[] {"STAVKA"}));
             sks_details.open();
             sks_details.first();

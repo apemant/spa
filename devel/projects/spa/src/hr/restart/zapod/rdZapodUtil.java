@@ -47,7 +47,7 @@ public class rdZapodUtil {
 
   public QueryDataSet getZiroParDS(int cpar)
   {
-    return hr.restart.baza.Ziropar.getDataModule().getFilteredDataSet(Condition.equal("CPAR",cpar));
+    return hr.restart.baza.Ziropar.getDataModule().getTempSet(Condition.equal("CPAR",cpar));
     /*
     String qStr = "select * from ziropar where cpar="+cpar;
     QueryDataSet qds = new QueryDataSet();
@@ -66,7 +66,7 @@ public class rdZapodUtil {
 
   public QueryDataSet getPjDS(int cpar)
   {
-    return hr.restart.baza.Pjpar.getDataModule().getFilteredDataSet(Condition.equal("CPAR",cpar));
+    return hr.restart.baza.Pjpar.getDataModule().getTempSet(Condition.equal("CPAR",cpar));
     /*
     String qStr = "select * from pjpar where cpar="+cpar;
     QueryDataSet qds = new QueryDataSet();

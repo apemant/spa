@@ -163,7 +163,7 @@ public class repDiskZapUN extends repDisk {
   private void getCjelineDS(String ckey)
   {
     String zr="";
-    cjelineDS = hr.restart.baza.Virmani.getDataModule().getFilteredDataSet("1=0");
+    cjelineDS = hr.restart.baza.Virmani.getDataModule().getTempSet("1=0");
     cjelineDS.open();
 
     qds.first();

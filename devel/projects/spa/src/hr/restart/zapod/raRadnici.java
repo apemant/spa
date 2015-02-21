@@ -52,7 +52,9 @@ public class raRadnici {
     }
     corg = co;
     knjig = null;
-    radnici = hr.restart.baza.Radnici.getDataModule().getFilteredDataSet("CORG = '" + co + "'");
+    if (radnici == null)
+    	radnici = hr.restart.baza.Radnici.getDataModule().getFilteredDataSet("CORG = '" + co + "'");
+    else hr.restart.baza.Radnici.getDataModule().setFilter(radnici, "CORG = '" + co + "'");
     return radnici;
   }
 
@@ -67,10 +69,13 @@ public class raRadnici {
     corg = null;
     knjig = knj;
     //String inQuery = OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndKnjig(knj));
-    radnici = hr.restart.baza.Radnici.getDataModule().getFilteredDataSet(
+    if (radnici == null)
+    	radnici = hr.restart.baza.Radnici.getDataModule().getFilteredDataSet(
         Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(knj))
         //"CORG in " + inQuery
         );
+    else hr.restart.baza.Radnici.getDataModule().setFilter(radnici, 
+    		Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(knj)));
     return radnici;
   }
 }

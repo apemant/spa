@@ -357,7 +357,7 @@ public class raSaldaKonti {
 
     sks.insertRow(false);
     DataSet.copyTo(skscols, ds, skscols, sks);
-    DataSet dummysk = Skstavke.getDataModule().getTempSet("1=0");
+    DataSet dummysk = Skstavke.getDataModule().getReadonlySet();
     dummysk.open();
     dummysk.insertRow(false);
     DataSet.copyTo(skscols, ds, skscols, dummysk);
@@ -1536,7 +1536,7 @@ public class raSaldaKonti {
       }
       
       // pronaði sve stavke pokrivene s tekuæom 
-      QueryDataSet pok = Pokriveni.getDataModule().getFilteredDataSet(
+      QueryDataSet pok = Pokriveni.getDataModule().getTempSet(
           Condition.equal(base, sks.getString("CSKSTAVKE")));
       pok.open();
       
@@ -1603,9 +1603,9 @@ public class raSaldaKonti {
 //        Aus.getYearCond("DATUMKNJ", year)).and(
 //        Condition.equal("CPAR", String.valueOf(cpar))));
 //    QueryDataSet sks = dM.getDataModule().getSkstavke();
-    QueryDataSet pok = Pokriveni.getDataModule().getFilteredDataSet("1=0");
+    QueryDataSet pok = Pokriveni.getDataModule().openTempSet(Condition.nil);
 //    sks.open();
-    pok.open();
+    //pok.open();
 
     HashMap dokoz = new HashMap();
     for (sks.first(); sks.inBounds(); sks.next()) {
@@ -1636,9 +1636,9 @@ public class raSaldaKonti {
     Skstavke.getDataModule().setFilter(
       Condition.whereAllEqual(new String[] {"KNJIG", "CPAR", "BROJKONTA", "BROJDOK", "OZNVAL"}, skstavka));
     QueryDataSet sks = dM.getDataModule().getSkstavke();
-    QueryDataSet pok = Pokriveni.getDataModule().getFilteredDataSet("1=0");
+    QueryDataSet pok = Pokriveni.getDataModule().openTempSet(Condition.nil);
     sks.open();
-    pok.open();
+    //pok.open();
     if (!findThisStavka(sks, skstavka)) {
       System.out.println("Silly error?!");
       return false;

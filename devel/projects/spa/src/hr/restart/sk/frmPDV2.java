@@ -59,8 +59,8 @@ public class frmPDV2 extends raUpitFat {
   Valid vl = Valid.getValid();
   QueryDataSet izvjpdv = null;//IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pdv%'");
   private String _izvjpdv_ciz_prefix = "Pdv";
-  QueryDataSet izvjpdv_k = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pok%'");
-  QueryDataSet izvjpdv_k_all = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pdv%' or CIZ like 'Pod%' or CIZ like 'Pok%'");
+  QueryDataSet izvjpdv_k = IzvjPDV.getDataModule().getTempSet("CIZ like 'Pok%'");
+  QueryDataSet izvjpdv_k_all = IzvjPDV.getDataModule().getTempSet("CIZ like 'Pdv%' or CIZ like 'Pod%' or CIZ like 'Pok%'");
   private String opcinarada;
   JOPPDhndlr JOPPD;
   
@@ -636,7 +636,7 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
   }
   private void doPDV_K() {
     _izvjpdv_ciz_prefix = "Pod";
-    izvjpdv = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pod%'");
+    izvjpdv = IzvjPDV.getDataModule().getTempSet("CIZ like 'Pod%'");
     setPDV_K = new StorageDataSet();
     setPDV_K.addColumn(dM.createStringColumn("POZ","Pozicija",200));
     setPDV_K.addColumn(dM.createBigDecimalColumn("OSN", "Osnovica"));
@@ -680,7 +680,7 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
   private void doPDV() {
     try {
       _izvjpdv_ciz_prefix = "Pdv";
-      izvjpdv = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pdv%'");
+      izvjpdv = IzvjPDV.getDataModule().getTempSet("CIZ like 'Pdv%'");
       doPDVcommon();
       addReport("hr.restart.sk.repPDVDisk15", "Datoteka PDV za e-poreznu");
       addReport("hr.restart.sk.repPDVDisk", "Datoteka PDV za e-poreznu (do 2014)");
@@ -692,7 +692,7 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
   private void doPDV13() {
     try {
       _izvjpdv_ciz_prefix = "Pod";
-      izvjpdv = IzvjPDV.getDataModule().getFilteredDataSet("CIZ like 'Pod%'");
+      izvjpdv = IzvjPDV.getDataModule().getTempSet("CIZ like 'Pod%'");
       doPDVcommon();
       addReport("hr.restart.sk.repPDVDisk13", "Datoteka PDV 2013 za e-poreznu");
       setTitle("Obrazac PDV (2013) za period "+raDateUtil.getraDateUtil().dataFormatter(getDatumOd())+" - "+raDateUtil.getraDateUtil().dataFormatter(getDatumDo()));

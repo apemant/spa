@@ -133,7 +133,7 @@ public abstract class DataReceiverUI {
     if (rootAuth()) {
     System.out.println("Options");
     QueryDataSet parametri = Parametri.getDataModule()
-    	.getFilteredDataSet(Condition.equal("APP","sisfun")+" AND "+Condition.in("PARAM",paramkeys));
+    	.getTempSet(Condition.equal("APP","sisfun")+" AND "+Condition.in("PARAM",paramkeys));
     parametri.open();
     if (parametri.getRowCount() != paramkeys.length) {
       //treba dodati parametre

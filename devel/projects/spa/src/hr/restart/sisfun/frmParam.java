@@ -273,7 +273,7 @@ public class frmParam extends raMatPodaci {
    * @return false ako parametar ne postoji u tablici Parametri
    */
   public static boolean setParam(String sApl, String sParam, String defValue) {
-    QueryDataSet parqds = Parametri.getDataModule().getFilteredDataSet(Condition.equal("APP",sApl).and(Condition.equal("PARAM", sParam)));
+    QueryDataSet parqds = Parametri.getDataModule().getTempSet(Condition.equal("APP",sApl).and(Condition.equal("PARAM", sParam)));
     parqds.open();
     if (parqds.getRowCount() == 0) return false;
     if (parqds.getString("SISTEMSKI").equals("L")) {

@@ -74,7 +74,7 @@ public class frmTelemark extends raSifraNaziv {
   }
   
   private void handleTelemarketer(){
-    QueryDataSet zaPoslat = Telehist.getDataModule().getFilteredDataSet("ctel = " + this.getRaDataSet().getInt("CTEL"));
+    QueryDataSet zaPoslat = Telehist.getDataModule().getTempSet("ctel = " + this.getRaDataSet().getInt("CTEL"));
     zaPoslat.open();
     FrmPartneriTelemarketeri fpt = new FrmPartneriTelemarketeri(zaPoslat,this.getRaDataSet().getInt("CTEL"));
     hr.restart.util.startFrame.getStartFrame().centerFrame(fpt,0,"Kupci telemarketera " + getRaQueryDataSet().getString("IME"));

@@ -533,7 +533,7 @@ public class raOptimisticMatch {
           Skstavke.getDataModule().setFilter(Aus.getKnjigCond().and(Aus.getFreeYearCond()).
               and(Condition.equal("CPAR", Aus.getNumber(lastcpar = cpar))));
           sks.open();
-          pok = Pokriveni.getDataModule().getFilteredDataSet("1=0");
+          pok = Pokriveni.getDataModule().getTempSet("1=0");
           pok.open();
         }
         PotentialMatch pm = new PotentialMatch();
