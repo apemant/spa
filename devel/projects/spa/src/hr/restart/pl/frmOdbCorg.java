@@ -75,7 +75,9 @@ public class frmOdbCorg extends raMatPodaci {
   
   public void setCvrodb(short _cvrodb) {
     cvrodb = _cvrodb;
-    setRaQueryDataSet(PVROdbCorg.getDataModule().getFilteredDataSet(Condition.equal("CVRODB",cvrodb)));
+    if (getRaQueryDataSet() != null)
+    	PVROdbCorg.getDataModule().setFilter(getRaQueryDataSet(), Condition.equal("CVRODB",cvrodb));
+    else setRaQueryDataSet(PVROdbCorg.getDataModule().getFilteredDataSet(Condition.equal("CVRODB",cvrodb)));
     jpDetail.BindComponents(getRaQueryDataSet());
     setTitle("Povjerioci za druge OJ - vrsta odbitka: "+cvrodb);
   }

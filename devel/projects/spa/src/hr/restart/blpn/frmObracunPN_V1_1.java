@@ -1086,7 +1086,7 @@ System.out.println("AfterSaveDetail.DATOBR = "+getMasterSet().getTimestamp("DATO
   	    } else return;
   	}
     
-    QueryDataSet checkItOut = Stavkepn.getDataModule().getFilteredDataSet(" knjig='"+this.getMasterSet().getString("CORG")+"' "+
+    QueryDataSet checkItOut = Stavkepn.getDataModule().getTempSet(" knjig='"+this.getMasterSet().getString("CORG")+"' "+
         																						" and godina ="+this.getMasterSet().getShort("GODINA")+" "+
         																						" and broj = "+this.getMasterSet().getInt("BROJ")+" "+
         																						" and indputa = '"+this.getMasterSet().getString("INDPUTA")+"'");

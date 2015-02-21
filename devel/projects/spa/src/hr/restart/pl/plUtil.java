@@ -262,7 +262,7 @@ public class plUtil {
   //**************************************
   public QueryDataSet getDefDS(int vrodb)
   {
-    QueryDataSet qds = Odbici.getDataModule().getFilteredDataSet("cvrodb="+ vrodb);
+    QueryDataSet qds = Odbici.getDataModule().getTempSet("cvrodb="+ vrodb);
     qds.open();
     return qds;
   }
@@ -271,23 +271,23 @@ public class plUtil {
   {
     QueryDataSet qds;
     if(nivoOdb.length()==2)
-      qds = Odbici.getDataModule().getFilteredDataSet("cvrodb="+ vrodb+" and ckey2 =''");
+      qds = Odbici.getDataModule().getTempSet("cvrodb="+ vrodb+" and ckey2 =''");
     else
-      qds = Odbici.getDataModule().getFilteredDataSet("cvrodb="+ vrodb+" and ckey2 != ''");
+      qds = Odbici.getDataModule().getTempSet("cvrodb="+ vrodb+" and ckey2 != ''");
     qds.open();
     return qds;
   }
 
   public QueryDataSet getDefDS(String inStr)
   {
-    QueryDataSet qds = Odbici.getDataModule().getFilteredDataSet("cvrodb in ("+inStr+")");
+    QueryDataSet qds = Odbici.getDataModule().getTempSet("cvrodb in ("+inStr+")");
     qds.open();
     return qds;
   }
 
   public QueryDataSet getvrOdbQDS(String no, String to, String vos, String os)
   {
-    QueryDataSet qds = Vrsteodb.getDataModule().getFilteredDataSet("nivoodb='"+no+"' and tipodb='"+
+    QueryDataSet qds = Vrsteodb.getDataModule().getTempSet("nivoodb='"+no+"' and tipodb='"+
                   to+"' and vrstaosn='"+vos+"' and osnovica ='"+os+"'");
     qds.open();
     return qds;
@@ -461,13 +461,13 @@ public class plUtil {
 
   public QueryDataSet getgrizvPrimDS(short cizv, short cgrizv)
   {
-    QueryDataSet qds = Grizvprim.getDataModule().getFilteredDataSet("cizv ="+cizv+" and cgrizv="+ cgrizv);
+    QueryDataSet qds = Grizvprim.getDataModule().getTempSet("cizv ="+cizv+" and cgrizv="+ cgrizv);
     return qds;
   }
 
   public QueryDataSet getgrizvZnacDS(short cizv, short cgrizv)
   {
-    QueryDataSet qds = GrIzvZnac.getDataModule().getFilteredDataSet("cizv ="+cizv+" and cgrizv="+ cgrizv);
+    QueryDataSet qds = GrIzvZnac.getDataModule().getTempSet("cizv ="+cizv+" and cgrizv="+ cgrizv);
     return qds;
   }
 
@@ -505,7 +505,7 @@ public class plUtil {
 //
   public QueryDataSet getsumePrimDS(short cvrp)
   {
-    QueryDataSet qds = SumePrim.getDataModule().getFilteredDataSet("cvrp ="+cvrp);
+    QueryDataSet qds = SumePrim.getDataModule().getTempSet("cvrp ="+cvrp);
     return qds;
   }
 
@@ -524,14 +524,14 @@ public class plUtil {
 
   public QueryDataSet getosnPrimDS(short cvrp)
   {
-    QueryDataSet qds = Plosnprim.getDataModule().getFilteredDataSet("cvrp ="+cvrp);
+    QueryDataSet qds = Plosnprim.getDataModule().getTempSet("cvrp ="+cvrp);
     return qds;
   }
 
 
   public QueryDataSet getgrizvPrimDS2(short cvrp)
   {
-    QueryDataSet qds = Grizvprim.getDataModule().getFilteredDataSet("cvrp ="+cvrp);
+    QueryDataSet qds = Grizvprim.getDataModule().getTempSet("cvrp ="+cvrp);
     return qds;
   }
 
@@ -1049,8 +1049,8 @@ public class plUtil {
     String inVrOdb = getNoVrOdb(no);
     if(inVrOdb.equals("")) return;
     HashMap nivOd = getMapVrOdb(no);
-    QueryDataSet qdsInit = Odbici.getDataModule().getFilteredDataSet("CVRODB IN ("+inVrOdb + ") and (ckey='$DEF' or ckey2='$DEF')");
-    QueryDataSet testDS =  Odbici.getDataModule().getFilteredDataSet("1=2");
+    QueryDataSet qdsInit = Odbici.getDataModule().getTempSet("CVRODB IN ("+inVrOdb + ") and (ckey='$DEF' or ckey2='$DEF')");
+    QueryDataSet testDS =  Odbici.getDataModule().getTempSet("1=2");
     qdsInit.open();
     qdsInit.first();
     if(!dm.getOdbici().isOpen())

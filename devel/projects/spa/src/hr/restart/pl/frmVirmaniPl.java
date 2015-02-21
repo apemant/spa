@@ -104,7 +104,7 @@ public class frmVirmaniPl extends frmVirmani{
   }
 
   private boolean imaVirmana() {
-    QueryDataSet q = Virmani.getDataModule().getFilteredDataSet("ckey='"+cKey+"'");
+    QueryDataSet q = Virmani.getDataModule().getTempSet("ckey='"+cKey+"'");
     q.open();
     if(q.getRowCount()>0)
       return true;
@@ -113,7 +113,7 @@ public class frmVirmaniPl extends frmVirmani{
 
   private String getCKey() {
     //QueryDataSet q = Orgpl.getDataModule().getFilteredDataSet("corg="+ OrgStr.getKNJCORG());
-    QueryDataSet q = Orgpl.getDataModule().getFilteredDataSet(Condition.equal("CORG", OrgStr.getKNJCORG()));
+    QueryDataSet q = Orgpl.getDataModule().getTempSet(Condition.equal("CORG", OrgStr.getKNJCORG()));
     q.open();
     q.first();
     rbrOdb = q.getShort("RBROBR");
@@ -159,8 +159,8 @@ public class frmVirmaniPl extends frmVirmani{
     if (pvrodbcorg!=null) return;
     OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
       public void knjigChanged(String oldKnjig, String newKnjig) {
-        pvrodbcorg = null;
-        getPvrodbcorg();
+      	hr.restart.baza.PVROdbCorg.getDataModule().setFilter(pvrodbcorg, Condition.equal("CORG",OrgStr.getKNJCORG()));
+      	pvrodbcorg.open();
       }
     });
     pvrodbcorg = hr.restart.baza.PVROdbCorg.getDataModule().getFilteredDataSet(Condition.equal("CORG",OrgStr.getKNJCORG()));
@@ -171,8 +171,8 @@ public class frmVirmaniPl extends frmVirmani{
     String qStr="";
 
     QueryDataSet sumeDS = new QueryDataSet();
-    worker.povDS= Povjerioci.getDataModule().copyDataSet();//getFilteredDataSet("'CPOV'='CPOV'");
-    naTerDS = Orgstruktura.getDataModule().getFilteredDataSet(Condition.equal("CORG",OrgStr.getKNJCORG()));
+    worker.povDS= Povjerioci.getDataModule().getTempSet();//getFilteredDataSet("'CPOV'='CPOV'");
+    naTerDS = Orgstruktura.getDataModule().getTempSet(Condition.equal("CORG",OrgStr.getKNJCORG()));
     getPvrodbcorg();
     worker.povDS.open();
     worker.povDS.first();

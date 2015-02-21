@@ -482,7 +482,7 @@ public class frmKnjizenje extends JraDialog implements ResetEnabled {
     try {
       String cname = this.getClass().getName();
       //executeReport(java.net.URL rep, String title, Window owner)
-      QueryDataSet preloaders = Reportext.getDataModule().getFilteredDataSet(
+      QueryDataSet preloaders = Reportext.getDataModule().getTempSet(
           Condition.whereAllEqual(new String[] {"NASLOV","APP"},new String[] {cname, "sisfun"}));
       preloaders.open();
       if (preloaders.getRowCount() == 0) return true;

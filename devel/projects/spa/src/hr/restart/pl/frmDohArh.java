@@ -139,20 +139,20 @@ public class frmDohArh extends frmIzvjestajiPL {
     String filter2 =  "GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+""+
       " and CRADNIK in (select cradnik from radnicipl where "+sjQuerys.getPripOrg(corg, "", "")+")";
     
-    QueryDataSet orgarh = Kumulorgarh.getDataModule().getFilteredDataSet(filter);
-    QueryDataSet radarh = Kumulradarh.getDataModule().getFilteredDataSet(filter);
-    QueryDataSet primarh = Primanjaarh.getDataModule().getFilteredDataSet(filter);
-    QueryDataSet odbarh = Odbiciarh.getDataModule().getFilteredDataSet(filter2+" AND CKEY2!='$SYS'");
-    QueryDataSet rsarh = RSPeriodarh.getDataModule().getFilteredDataSet(filter2);
+    QueryDataSet orgarh = Kumulorgarh.getDataModule().getTempSet(filter);
+    QueryDataSet radarh = Kumulradarh.getDataModule().getTempSet(filter);
+    QueryDataSet primarh = Primanjaarh.getDataModule().getTempSet(filter);
+    QueryDataSet odbarh = Odbiciarh.getDataModule().getTempSet(filter2+" AND CKEY2!='$SYS'");
+    QueryDataSet rsarh = RSPeriodarh.getDataModule().getTempSet(filter2);
     orgarh.open();
     radarh.open();
     primarh.open();
     odbarh.open();
     rsarh.open();
     //OJ - PARAMETRI - KUMULORG
-    QueryDataSet orgpl = Orgpl.getDataModule().getFilteredDataSet(sjQuerys.getPripOrg(corg, "", ""));
-    QueryDataSet param = Parametripl.getDataModule().copyDataSet();
-    QueryDataSet kumulorg = Kumulorg.getDataModule().getFilteredDataSet(sjQuerys.getPripOrg(corg, "", ""));
+    QueryDataSet orgpl = Orgpl.getDataModule().getTempSet(sjQuerys.getPripOrg(corg, "", ""));
+    QueryDataSet param = Parametripl.getDataModule().getTempSet();
+    QueryDataSet kumulorg = Kumulorg.getDataModule().getTempSet(sjQuerys.getPripOrg(corg, "", ""));
     param.open();
     kumulorg.open();
     orgpl.open();
@@ -180,9 +180,9 @@ public class frmDohArh extends frmIzvjestajiPL {
     }
     
     //radnici - kumulrad
-    QueryDataSet radnicipl = Radnicipl.getDataModule().getFilteredDataSet(sjQuerys.getPripOrg(corg, "", ""));
+    QueryDataSet radnicipl = Radnicipl.getDataModule().getTempSet(sjQuerys.getPripOrg(corg, "", ""));
     radnicipl.open();
-    QueryDataSet kumulrad = Kumulrad.getDataModule().getFilteredDataSet(Condition.in("CRADNIK", radnicipl));
+    QueryDataSet kumulrad = Kumulrad.getDataModule().getTempSet(Condition.in("CRADNIK", radnicipl));
     kumulrad.open();
     
     String[] kumulradcols = new VarStr("CRADNIK, SATI, BRUTO, "+
@@ -210,7 +210,7 @@ public class frmDohArh extends frmIzvjestajiPL {
     
     
     //primanja
-    QueryDataSet primanjaobr = Primanjaobr.getDataModule().getFilteredDataSet(Condition.in("CRADNIK", radarh));
+    QueryDataSet primanjaobr = Primanjaobr.getDataModule().getTempSet(Condition.in("CRADNIK", radarh));
     primanjaobr.open();
     
     String[] primanjaobrcols = new VarStr("CRADNIK, CVRP, RBR, CORG, SATI, "+
@@ -225,9 +225,9 @@ public class frmDohArh extends frmIzvjestajiPL {
     }
     
     //odbici
-    QueryDataSet odbiciobr = Odbiciobr.getDataModule().getFilteredDataSet(Condition.in("CRADNIK", radarh));
-    QueryDataSet odbici = Odbici.getDataModule().getFilteredDataSet("CKEY != '$DEF' AND CKEY2 != '$DEF'");
-    QueryDataSet vrsteodb = Vrsteodb.getDataModule().copyDataSet();
+    QueryDataSet odbiciobr = Odbiciobr.getDataModule().getTempSet(Condition.in("CRADNIK", radarh));
+    QueryDataSet odbici = Odbici.getDataModule().getTempSet("CKEY != '$DEF' AND CKEY2 != '$DEF'");
+    QueryDataSet vrsteodb = Vrsteodb.getDataModule().getTempSet();
     
     odbiciobr.open();
     odbici.open();
@@ -252,9 +252,9 @@ public class frmDohArh extends frmIzvjestajiPL {
       odbici.post();
       //jooj valjda nisu mijenjane vrste odbitaka
     }
-    QueryDataSet vrsteodbRA = Vrsteodb.getDataModule().getFilteredDataSet(Condition.equal("nivoodb", "RA"));
+    QueryDataSet vrsteodbRA = Vrsteodb.getDataModule().getTempSet(Condition.equal("nivoodb", "RA"));
     vrsteodbRA.open();
-    QueryDataSet odbiciRA = Odbici.getDataModule().getFilteredDataSet(Condition.in("CVRODB", vrsteodbRA).and(Condition.in("CKEY", radarh,"CRADNIK")));
+    QueryDataSet odbiciRA = Odbici.getDataModule().getTempSet(Condition.in("CVRODB", vrsteodbRA).and(Condition.in("CKEY", radarh,"CRADNIK")));
     odbiciRA.open();
     
     for (odbiciRA.first(); odbiciRA.inBounds(); odbiciRA.next()) {
@@ -268,9 +268,9 @@ public class frmDohArh extends frmIzvjestajiPL {
     
     //rsperiod 
     
-    QueryDataSet rs = RSPeriod.getDataModule().getFilteredDataSet(Condition.in("CRADNIK", radarh));
+    QueryDataSet rs = RSPeriod.getDataModule().getTempSet(Condition.in("CRADNIK", radarh));
     rs.open();
-    QueryDataSet rso = RSPeriodobr.getDataModule().getFilteredDataSet(Condition.in("CRADNIK", radarh));
+    QueryDataSet rso = RSPeriodobr.getDataModule().getTempSet(Condition.in("CRADNIK", radarh));
     rso.open();
     rs.deleteAllRows();
     rso.deleteAllRows();

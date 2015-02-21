@@ -233,11 +233,11 @@ public class PNBKontoZiroParDlg extends JraDialog {
   }
   private void findRelated(ReadRow set) {
     if (ziropar != null && zirokonto != null && pnbkonto != null) return;
-    ziropar = Ziropar.getDataModule().getFilteredDataSet(Condition.equal("ZIRO", row).and(Condition.equal("CPAR", set)));
+    ziropar = Ziropar.getDataModule().getTempSet(Condition.equal("ZIRO", row).and(Condition.equal("CPAR", set)));
     ziropar.open();
-    zirokonto = PNBKonto.getDataModule().getFilteredDataSet(Condition.equal("PNB", row.getString("ZIRO")).and(Condition.equal("BROJKONTA", set)));
+    zirokonto = PNBKonto.getDataModule().getTempSet(Condition.equal("PNB", row.getString("ZIRO")).and(Condition.equal("BROJKONTA", set)));
     zirokonto.open();
-    pnbkonto = PNBKonto.getDataModule().getFilteredDataSet(Condition.equal("PNB", row.getString("PNBZ")).and(Condition.equal("BROJKONTA", set)));
+    pnbkonto = PNBKonto.getDataModule().getTempSet(Condition.equal("PNB", row.getString("PNBZ")).and(Condition.equal("BROJKONTA", set)));
     pnbkonto.open();
     
     //debug

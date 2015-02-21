@@ -22,7 +22,7 @@ public class DlgRadplSifre {
     dlg.show();
   }
   public static JraDialog getDialog(String cr) {
-    final QueryDataSet set = Radplsifre.getDataModule().getFilteredDataSet(Condition.equal("CRADNIK", cr));
+    final QueryDataSet set = Radplsifre.getDataModule().getTempSet(Condition.equal("CRADNIK", cr));
     set.open();
     if (set.rowCount() == 0) {
       set.insertRow(false);

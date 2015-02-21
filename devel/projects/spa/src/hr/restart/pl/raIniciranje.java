@@ -115,7 +115,7 @@ public class raIniciranje {
       }
     }
     if (cond == null) return null;
-    QueryDataSet inipr = Iniprim.getDataModule().getFilteredDataSet(cond+" AND "+Condition.equal("AKTIV","D"));
+    QueryDataSet inipr = Iniprim.getDataModule().getTempSet(cond+" AND "+Condition.equal("AKTIV","D"));
 System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
     inipr.open();
     if (inipr.getRowCount() == 0) return null;

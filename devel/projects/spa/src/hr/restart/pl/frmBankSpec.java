@@ -327,7 +327,7 @@ System.out.println("BankSpec.qStr = "+qStr);
     frmVirmani fV = frmVirmani.getInstance();  
     fV.getRaQueryDataSet().emptyAllRows();
     fV.setKeys("zapod", OrgStr.getKNJCORG(), ckey);
-    QueryDataSet naTDS = Orgstruktura.getDataModule().getFilteredDataSet(Condition.equal("CORG",OrgStr.getKNJCORG()));
+    QueryDataSet naTDS = Orgstruktura.getDataModule().getTempSet(Condition.equal("CORG",OrgStr.getKNJCORG()));
     naTDS.open();
     raIniciranje.getInstance().posOrgsPl(OrgStr.getOrgStr().getKNJCORG());
     Timestamp datTS = dm.getOrgpl().getTimestamp("DATUMISPL");

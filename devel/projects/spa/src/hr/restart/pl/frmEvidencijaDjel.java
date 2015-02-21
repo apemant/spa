@@ -127,14 +127,14 @@ public class frmEvidencijaDjel extends raFrame {
   public static StorageDataSet getZR4Set(String cradnik) {
 //    String cznacs = "15,20,30,52,54,60,70,74,120,122,123,124,125,126,127,128,129,190,250,210,270,280";
     String cznacs = "126,280,74,380,135,410,285,127,330,72,134,320,300,390,120,310,133,70,20,271,125,400,136,54,340,131,210,122,129,52,370,123,250,128,30,124,360,270,132,350,190,121,60,15";
-    QueryDataSet znac = PlZnacRad.getDataModule().getFilteredDataSet("CZNAC in ("+cznacs+") ORDER by SRT");
+    QueryDataSet znac = PlZnacRad.getDataModule().getTempSet("CZNAC in ("+cznacs+") ORDER by SRT");
     znac.open();
-    QueryDataSet znacdat = PlZnacRadData.getDataModule().getFilteredDataSet(Condition.equal("CRADNIK", cradnik));
+    QueryDataSet znacdat = PlZnacRadData.getDataModule().getTempSet(Condition.equal("CRADNIK", cradnik));
     znacdat.open();
-    QueryDataSet radnik = Radnici.getDataModule().getFilteredDataSet(Condition.equal("CRADNIK", cradnik));
+    QueryDataSet radnik = Radnici.getDataModule().getTempSet(Condition.equal("CRADNIK", cradnik));
     radnik.open();
     radnik.first();
-    QueryDataSet radnikpl = Radnicipl.getDataModule().getFilteredDataSet(Condition.equal("CRADNIK", cradnik));
+    QueryDataSet radnikpl = Radnicipl.getDataModule().getTempSet(Condition.equal("CRADNIK", cradnik));
     radnikpl.open();
     radnikpl.first();
     

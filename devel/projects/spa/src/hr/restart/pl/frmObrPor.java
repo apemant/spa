@@ -161,7 +161,7 @@ public class frmObrPor extends frmObradaPL {
     if (frmcrp!=null && frmcrp.getCRP() !=null) {//obr.prvo normalno onda razliku poreza
       succ = obracun.obracun(jcbDopr.isSelected(),jcbPor.isSelected(),jcbKred.isSelected(),jcbPrir.isSelected(),jcbLimitsPOR.isSelected(),jcbLimitsDOP.isSelected(),false);
       if (succ) {
-        frmcrp.getCRP().setRadnici(Radnicipl.getDataModule().getFilteredDataSet(Condition.equal("AKTIV","D")+" AND "+Condition.in("CORG",obracun.orgs)));
+        frmcrp.getCRP().setRadnici(Radnicipl.getDataModule().getTempSet(Condition.equal("AKTIV","D")+" AND "+Condition.in("CORG",obracun.orgs)));
         frmcrp.getCRP().calcRazl();
         if (frmcrp.getCRP().isPreview()) {
           //TODO preview

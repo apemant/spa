@@ -144,7 +144,7 @@ public class frmKnjBlag extends frmKnjizenje {
       cond = cond.and(Condition.equal("CBLAG", viewSet.getInt("CBLAG")));
     }
     System.out.println(cond);
-    izvjestaji = Blagizv.getDataModule().getFilteredDataSet(cond);
+    izvjestaji = Blagizv.getDataModule().getTempSet(cond);
 //      Util.getNewQueryDataSet("SELECT * FROM Blagizv WHERE status = 'Z' and knjig = '"+hr.restart.zapod.OrgStr.getKNJCORG(false)+
 //        "' and datdo < '"+new java.sql.Date(Util.getUtil().addDays(dataSet.getTimestamp("DATUMDO"),1).getTime()).toString()+"'");
     izvjestaji.open();

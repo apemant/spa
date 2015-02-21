@@ -1619,7 +1619,7 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
       _drbsplus = gkQuerys.getMaxGkstavke___RBS(nalogdoknjiz.getString("KNJIG"), 
           nalogdoknjiz.getString("GOD"), nalogdoknjiz.getString("CVRNAL"), 
           nalogdoknjiz.getInt("RBR"),"gkstavke");
-      QueryDataSet updZag = Nalozi.getDataModule().getFilteredDataSet(
+      QueryDataSet updZag = Nalozi.getDataModule().getTempSet(
           Condition.equal("CNALOGA", _cnalstav));
       updZag.open();
       updZag.setBigDecimal("ID",updZag.getBigDecimal("ID").add(getMasterSet().getBigDecimal("ID")));
@@ -1785,7 +1785,7 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
     }
     if (updateNalog) nalog.setTimestamp("DATUMKNJ", newDatum);
 
-    QueryDataSet stavke = hr.restart.baza.Gkstavkerad.getDataModule().getFilteredDataSet(
+    QueryDataSet stavke = hr.restart.baza.Gkstavkerad.getDataModule().getTempSet(
       Condition.whereAllEqual(new String[] {"KNJIG","GOD","CVRNAL","RBR"},nalog));
     stavke.open();
     if (stavke.getRowCount() > 0) {

@@ -144,8 +144,11 @@ public class frmBlag extends raMatPodaci {
     });
   }
   public static QueryDataSet getBlagajneKnjig() {
-    if (blagajneknjig == null || dirty) {
+    if (blagajneknjig == null) {
       blagajneknjig = Blagajna.getDataModule().getFilteredDataSet("knjig in "+
+          OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(),"knjig"));
+    } else if (dirty) {
+    	Blagajna.getDataModule().setFilter(blagajneknjig, "knjig in "+
           OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(),"knjig"));
     }
     return blagajneknjig;

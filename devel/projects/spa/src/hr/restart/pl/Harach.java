@@ -33,8 +33,8 @@ public class Harach {
   public static boolean createHarachOsnPod(String harachCVRODB, String harachCPOV) {
     boolean odbicichanged = false;
     if (!harachOsnPodCreated) {
-      QueryDataSet vrsteodb = Vrsteodb.getDataModule().getFilteredDataSet(Condition.equal("CVRODB", Short.parseShort(harachCVRODB)));
-      QueryDataSet povjerioci = Povjerioci.getDataModule().getFilteredDataSet(Condition.equal("CPOV", Integer.parseInt(harachCPOV)));
+      QueryDataSet vrsteodb = Vrsteodb.getDataModule().getTempSet(Condition.equal("CVRODB", Short.parseShort(harachCVRODB)));
+      QueryDataSet povjerioci = Povjerioci.getDataModule().getTempSet(Condition.equal("CPOV", Integer.parseInt(harachCPOV)));
       vrsteodb.open();
       povjerioci.open();
       if (vrsteodb.getRowCount() == 0) {
@@ -206,9 +206,9 @@ public class Harach {
     ArrayList transactsets = new ArrayList();
     QueryDataSet kumorgs;
     if (corg!=null) {
-      kumorgs = Kumulorgarh.getDataModule().getFilteredDataSet("GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+" and "+sjQuerys.getPripOrg(corg, "", ""));
+      kumorgs = Kumulorgarh.getDataModule().getTempSet("GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+" and "+sjQuerys.getPripOrg(corg, "", ""));
     } else {
-      kumorgs = Kumulorgarh.getDataModule().getFilteredDataSet("GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr);
+      kumorgs = Kumulorgarh.getDataModule().getTempSet("GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr);
     }
     kumorgs.open();
     for (kumorgs.first(); kumorgs.inBounds(); kumorgs.next()) {

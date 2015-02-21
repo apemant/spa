@@ -110,7 +110,7 @@ public class IzvodFromFile {
     helperset.addColumn(dM.createStringColumn("SALDAK","Kup/Dob",1));
     helperset.open();
     
-    QueryDataSet gksr = Gkstavkerad.getDataModule().getFilteredDataSet(Condition.nil);
+    QueryDataSet gksr = Gkstavkerad.getDataModule().getTempSet(Condition.nil);
     gksr.open();
     int rbs = 0;
     for (Iterator iter = parsed.keySet().iterator(); iter.hasNext();) {
@@ -224,7 +224,7 @@ public class IzvodFromFile {
           );
     }
     fvirmani.save();
-    setShowSet(Virmani.getDataModule().getFilteredDataSet("app='zapod' and ckey='"+fvirmani.ckey+"'"));
+    setShowSet(Virmani.getDataModule().getTempSet("app='zapod' and ckey='"+fvirmani.ckey+"'"));
 //    fvirmani.setRaQueryDataSet(Virmani.getDataModule()
 //        .getFilteredDataSet("app='zapod' and ckey='"+fvirmani.ckey+"'"));
 //    fvirmani.getRaQueryDataSet().open();

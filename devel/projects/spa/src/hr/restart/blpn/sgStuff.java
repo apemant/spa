@@ -552,7 +552,7 @@ public class sgStuff {
     vl.execSQL(qstr);
     vl.RezSet.open();
     if (vl.RezSet.getInt("BRIZV") < 1) {
-      QueryDataSet blags = Blagajna.getDataModule().getFilteredDataSet(Condition.whereAllEqual(new String[] {"KNJIG","CBLAG","OZNVAL"}, presset));
+      QueryDataSet blags = Blagajna.getDataModule().getTempSet(Condition.whereAllEqual(new String[] {"KNJIG","CBLAG","OZNVAL"}, presset));
       blags.open();
       if (blags.getRowCount() == 0) {
         System.out.println("!!!ERRROR: Nema blagajne!!!");
@@ -1705,7 +1705,7 @@ System.out.println(qstr);
   }
 
   public QueryDataSet stavblagFilteredForRazlikaPN(String cradnik, String cpn){
-    QueryDataSet rds = Stavblag.getDataModule().getFilteredDataSet("STAVBLAG.CRADNIK = '" + cradnik +
+    QueryDataSet rds = Stavblag.getDataModule().getTempSet("STAVBLAG.CRADNIK = '" + cradnik +
                   "' AND STAVBLAG.CPN = '" + cpn +
                   "' AND STAVBLAG.CSKL = '6' AND STAVBLAG.STAVKA = '2'");
     rds.open();

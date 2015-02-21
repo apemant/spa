@@ -39,6 +39,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 
 public class frmIniciranje extends frmObradaPL {
@@ -74,7 +75,8 @@ public class frmIniciranje extends frmObradaPL {
     String oj4 = frmParam.getParam("pl", "plOOJFor"+OrgStr.getKNJCORG(), "", "Za koju org jedinicu se radi obracun place na knjigovodstvu "+OrgStr.getKNJCORG()+" (prazno za norm.op.)").trim();
     if ("".equals(oj4)) return "";
     if (orgpl4 == null || !oj4.equals(orgpl4.getString("CORG")) ) {
-      orgpl4 = Orgpl.getDataModule().getFilteredDataSet(Condition.equal("CORG", oj4));
+      if (orgpl4 == null) orgpl4 = Orgpl.getDataModule().getFilteredDataSet(Condition.equal("CORG", oj4));
+      else Orgpl.getDataModule().setFilter((QueryDataSet) orgpl4, Condition.equal("CORG", oj4));
       orgpl4.open();
       if (orgpl4.getRowCount() == 0) {
         System.err.println("Neispravan parametar plOOJFor - ne postoji oj "+oj4+" u orgpl!");

@@ -205,7 +205,7 @@ public class frmPregledArhive extends raFrame {
       */
       String filter="godobr="+jptv.getDataSet().getShort("GODOBR")+" and mjobr="+jptv.getDataSet().getShort("MJOBR")+" and rbrobr="+jptv.getDataSet().getShort("RBROBR")+" and knjig= '"+dlgGetKnjig.getKNJCORG()+"'";
       System.out.println("Filter: "+filter);
-      qds = hr.restart.baza.Kumulorgarh.getDataModule().getFilteredDataSet(filter);
+      qds = hr.restart.baza.Kumulorgarh.getDataModule().getTempSet(filter);
       qds.open();
       hr.restart.pl.frmPregledArhive fpa = new hr.restart.pl.frmPregledArhive(qds, 2, "Pregled kumulativa po org. jedinicama i vrstama rada", "");
       startFrame.getStartFrame().showFrame(fpa);
@@ -213,7 +213,7 @@ public class frmPregledArhive extends raFrame {
     else if (mod==2) { // Pregled po radnicima
       String filter="godobr="+jptv.getDataSet().getShort("GODOBR")+" and mjobr="+jptv.getDataSet().getShort("MJOBR")+" and rbrobr="+jptv.getDataSet().getShort("RBROBR")+" and corg='"+jptv.getDataSet().getString("CORG")+"'";
       System.out.println("Filter 2: "+filter);
-      qds = hr.restart.baza.Kumulradarh.getDataModule().getFilteredDataSet(filter);
+      qds = hr.restart.baza.Kumulradarh.getDataModule().getTempSet(filter);
       qds.open();
       hr.restart.pl.frmPregledArhive fpa = new hr.restart.pl.frmPregledArhive(qds, 3, "Pregled radnika", "");
       startFrame.getStartFrame().showFrame(fpa);
@@ -221,7 +221,7 @@ public class frmPregledArhive extends raFrame {
     else if (mod==3) { // Pregled zarada
       String filter="godobr="+jptv.getDataSet().getShort("GODOBR")+" and mjobr="+jptv.getDataSet().getShort("MJOBR")+" and rbrobr="+jptv.getDataSet().getShort("RBROBR")+" and cradnik='"+jptv.getDataSet().getString("CRADNIK")+"'";
       System.out.println("Filter 3: "+filter);
-      qds = hr.restart.baza.Primanjaarh.getDataModule().getFilteredDataSet(filter);
+      qds = hr.restart.baza.Primanjaarh.getDataModule().getTempSet(filter);
       qds.open();
       hr.restart.pl.frmPregledArhive fpa = new hr.restart.pl.frmPregledArhive(qds, 4, "Pregled primanja", "");
       startFrame.getStartFrame().showFrame(fpa);

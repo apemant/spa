@@ -311,14 +311,14 @@ public class jpDistart extends JPanel {
 
 
   private DataSet getPjpar() {
-    pjp = Pjpar.getDataModule().getFilteredDataSet(Condition.nil);
-    return pjp;
+    return pjp = Pjpar.getDataModule().getFilteredDataSet(Condition.nil);
   }
   private DataSet filterPjpar(int cpar) {
     if (pjp != null && lastcpar == cpar) {
       return pjp;
     } 
-    pjp = Pjpar.getDataModule().getFilteredDataSet(Condition.equal("CPAR", cpar));
+    if (pjp == null) pjp = Pjpar.getDataModule().getFilteredDataSet(Condition.equal("CPAR", cpar));
+    else Pjpar.getDataModule().setFilter(pjp, Condition.equal("CPAR", cpar));
     pjp.open();
     lastcpar = cpar;
     return pjp;

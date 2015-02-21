@@ -327,7 +327,7 @@ public class jpKontakt extends JPanel {
     dsp.setString("CUSER", raUser.getInstance().getUser());
     dsp.setTimestamp("DATUM", new Timestamp(System.currentTimeMillis()));
     jlrAgent.forceFocLost();
-    jlrKosoba.setRaDataSet(Kontosobe.getDataModule().getFilteredDataSet(Condition.equal("CKLIJENT", frm.getRaQueryDataSet())));
+    jlrKosoba.refilterRaDataSet(Condition.equal("CKLIJENT", frm.getRaQueryDataSet()));
     if (rcbKanal.getSelectedIndex() < 0)
       rcbKanal.setSelectedIndex(0);
     rcbKanal.this_itemStateChanged();

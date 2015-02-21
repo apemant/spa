@@ -94,7 +94,7 @@ public class CalcRazPor {
   public CalcRazPor(int godina) {
     this();
     setGodina(godina);
-    setRadnici(Radnici.getDataModule().getFilteredDataSet(Condition.equal("CORG",OrgStr.getKNJCORG())));
+    setRadnici(Radnici.getDataModule().getTempSet(Condition.equal("CORG",OrgStr.getKNJCORG())));
     //calcRazl();    
 //    Radnici.getDataModule().getFilteredDataSet(Condition.equal("CORG",OrgStr.getKNJCORG())),godina);
   }

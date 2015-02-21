@@ -373,12 +373,12 @@ public class frmUplIspl extends raMasterDetail {
     return getSkStavkerad(getBLUID());
   }
   public static QueryDataSet getSkStavkerad(String blid) {
-    QueryDataSet _set = Skstavkerad.getDataModule().getFilteredDataSet(Condition.equal("ZIRO", blid));
+    QueryDataSet _set = Skstavkerad.getDataModule().getTempSet(Condition.equal("ZIRO", blid));
     _set.open();
     return _set;
   }
   public static QueryDataSet getSkUIStavke(String blid) {
-    QueryDataSet sks = Skstavke.getDataModule().getFilteredDataSet(Condition.equal("ZIRO", blid));
+    QueryDataSet sks = Skstavke.getDataModule().getTempSet(Condition.equal("ZIRO", blid));
     sks.open();
     QueryDataSet uis = UIstavke.getDataModule().getTempSet(Condition.nil);
     uis.open();
