@@ -107,7 +107,7 @@ public class upPregledKol extends raUpitFat {
     String cskling = ""; // "stanje.cskl = " + rpcskl.getCSKL() + " and "+
     
     if (rpcskl.getCSKL().equals("")){
-      QueryDataSet csklovi = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet("Knjig = '"+hr.restart.zapod.OrgStr.getKNJCORG()+"'");
+      QueryDataSet csklovi = hr.restart.baza.Sklad.getDataModule().getTempSet("Knjig = '"+hr.restart.zapod.OrgStr.getKNJCORG()+"'");
       csklovi.open();
       csklovi.first();
       cskling = "stanje.cskl in (";

@@ -385,7 +385,8 @@ public class Util {
  * Dataset za dohvat maloprodajnog skladista
  */
   public static com.borland.dx.sql.dataset.QueryDataSet getMPSklDataset() {
-    QueryDataSet qdsVrati;
+  	return getMatSkladFromCorg();
+    /*QueryDataSet qdsVrati;
     hr.restart.zapod.OrgStr or = hr.restart.zapod.OrgStr.getOrgStr();
     hr.restart.baza.Sklad skl = hr.restart.baza.Sklad.getDataModule();
     String q;
@@ -393,7 +394,7 @@ public class Util {
     System.out.println("getMPSklDataset q::: "+q);
     qdsVrati.open();
     return qdsVrati;
-
+*/
 /*    if (qdsMPSkl==null) {
       qdsMPSkl=new com.borland.dx.sql.dataset.QueryDataSet();
       qdsMPSkl.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(), "select * from sklad where vrzal=\'M\'", null, true, com.borland.dx.sql.dataset.Load.ALL));

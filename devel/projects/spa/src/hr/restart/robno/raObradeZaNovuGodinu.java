@@ -774,7 +774,7 @@ public abstract class raObradeZaNovuGodinu extends raUpitLite {
 
   public void godina(boolean lukap){
 
-    knjigodSet = hr.restart.baza.Knjigod.getDataModule().getFilteredDataSet("CORG='" + fieldSet.getString("CORG") + "' AND APP='robno'");
+    knjigodSet = hr.restart.baza.Knjigod.getDataModule().getTempSet("CORG='" + fieldSet.getString("CORG") + "' AND APP='robno'");
     knjigodSet.open();
 
 //    sysoutTEST syst = new sysoutTEST(false);

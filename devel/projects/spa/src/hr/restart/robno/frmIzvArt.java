@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Artikli;
+import hr.restart.baza.Condition;
 import hr.restart.baza.Vrart;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraTextField;
@@ -481,23 +482,31 @@ public class frmIzvArt extends raUpitLite {
   
   private void vrArtChanged(){
     System.out.println("Vrsta artikla promjenjena"); //XDEBUG delete when no more needed
-    DataSet vrstaArtikalaDohvatFilterSet = null;
+    //DataSet vrstaArtikalaDohvatFilterSet = null;
+    Condition cond = null;
     String vra = tds2.getString("VRART");
     
     System.out.println("Vrsta artikala = "+ vra); //XDEBUG delete when no more needed
     
     rpcart.clearFields();
     if (vra.equals("X") || vra.equals(""))
-      vrstaArtikalaDohvatFilterSet = dm.getArtikli();
+      //vrstaArtikalaDohvatFilterSet = dm.getArtikli();
+    	cond = Condition.ident;
     else {
-      vrstaArtikalaDohvatFilterSet = Artikli.getDataModule().getFilteredDataSet("VRART='"+vra+"'");
+      //vrstaArtikalaDohvatFilterSet = Artikli.getDataModule().getFilteredDataSet("VRART='"+vra+"'");
+    	cond = Condition.equal("VRART", vra);
     }
     
-    rpcart.jrfCART.setRaDataSet(vrstaArtikalaDohvatFilterSet);
+    /*rpcart.jrfCART.setRaDataSet(vrstaArtikalaDohvatFilterSet);
     rpcart.jrfCART1.setRaDataSet(vrstaArtikalaDohvatFilterSet);
     rpcart.jrfBC.setRaDataSet(vrstaArtikalaDohvatFilterSet);
     rpcart.jrfNAZART.setRaDataSet(vrstaArtikalaDohvatFilterSet);
-    rpcart.jrfJM.setRaDataSet(vrstaArtikalaDohvatFilterSet);
+    rpcart.jrfJM.setRaDataSet(vrstaArtikalaDohvatFilterSet);*/
+    rpcart.jrfCART.refilterRaDataSet(cond);
+    rpcart.jrfCART1.refilterRaDataSet(cond);
+    rpcart.jrfBC.refilterRaDataSet(cond);
+    rpcart.jrfNAZART.refilterRaDataSet(cond);
+    rpcart.jrfJM.refilterRaDataSet(cond);
   }
   
   

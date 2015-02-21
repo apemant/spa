@@ -121,7 +121,7 @@ public class jpMoreCsklad extends JPanel{
     QueryDataSet skls;
     
 //    if (!knjig.equalsIgnoreCase("") && !oj.equalsIgnoreCase("")){
-      skls = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet("knjig = '"+knjig+"'");
+      skls = hr.restart.baza.Sklad.getDataModule().getTempSet("knjig = '"+knjig+"'");
       
       System.out.println(skls.getQuery().toString());
 //    } else {

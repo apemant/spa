@@ -120,7 +120,7 @@ public class upProdajaPoAgentima extends upProdajaPoDucanima {
   
   public String getCskl(){
 //    System.out.println("getCskl u po AGENTIMA knjig = '"+fieldSet.getString("CORG")+"'");
-    QueryDataSet skls = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet("knjig = '"+fieldSet.getString("CORG")+"'");
+    QueryDataSet skls = hr.restart.baza.Sklad.getDataModule().getTempSet("knjig = '"+fieldSet.getString("CORG")+"'");
     skls.open();
 //    sysoutTEST syst = new sysoutTEST(false);
 //    syst.prn(skls);

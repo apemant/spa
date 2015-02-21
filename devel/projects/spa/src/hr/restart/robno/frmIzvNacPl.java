@@ -340,7 +340,7 @@ public class frmIzvNacPl extends raUpitLite {
   }
 
   private void setCBNacPlItems() {
-    QueryDataSet qds = hr.restart.baza.nacpl.getDataModule().getFilteredDataSet("1=1");
+    QueryDataSet qds = hr.restart.baza.nacpl.getDataModule().getTempSet();
     qds.open();
     qds.first();
     int rows = qds.getRowCount();

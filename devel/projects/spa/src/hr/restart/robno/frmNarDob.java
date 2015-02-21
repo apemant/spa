@@ -537,7 +537,7 @@ System.out.println("key4del "+ key4del);
     if (getMasterSet().getInt("CPAR") != lastCpar || force) {
       lastCpar = getMasterSet().getInt("CPAR");
       if (lastCpar == 0) jpMaster.jp2.jrfPJ.setRaDataSet(null);
-      else jpMaster.jp2.jrfPJ.setRaDataSet(Pjpar.getDataModule().getFilteredDataSet(
+      else jpMaster.jp2.jrfPJ.setRaDataSet(Pjpar.getDataModule().getTempSet(
           Condition.equal("CPAR", lastCpar)));
       jpMaster.jp2.jrfPJ.setText("");
       jpMaster.jp2.jrfPJ.forceFocLost();

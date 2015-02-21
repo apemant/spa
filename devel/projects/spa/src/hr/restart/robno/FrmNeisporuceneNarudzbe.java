@@ -135,7 +135,7 @@ public class FrmNeisporuceneNarudzbe extends raUpitFat {
     
     if (fieldSet.getString("CSKL").equals("")){
       
-    QueryDataSet tempSkl = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet("Knjig='"+hr.restart.zapod.OrgStr.getKNJCORG()+"'");
+    QueryDataSet tempSkl = hr.restart.baza.Sklad.getDataModule().getTempSet("Knjig='"+hr.restart.zapod.OrgStr.getKNJCORG()+"'");
     tempSkl.open();
     tempSkl.first();
     String skls = "(";

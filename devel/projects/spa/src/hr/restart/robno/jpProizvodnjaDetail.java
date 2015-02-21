@@ -46,11 +46,11 @@ public class jpProizvodnjaDetail extends JPanel {
   JraTextField jraKol = new JraTextField();
 
   protected rapancart rpc = new rapancart() {
+  	QueryDataSet rds = Artikli.getDataModule().getFilteredDataSet(raVart.getProizvodCond());
     public QueryDataSet getRaDataSet(){
-      return Artikli.getDataModule().getFilteredDataSet(
-          raVart.getProizvodCond());
+      return rds;
     }
-
+    
     public void metToDo_after_lookUp() {
       if (!rpcLostFocus && fProizvodnja.raDetail.getMode() == 'N') {
         rpcLostFocus = true;

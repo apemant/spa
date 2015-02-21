@@ -199,7 +199,7 @@ public class UpUlaziZavTr extends raUpitLite {
       dc += "='"+tds.getString("CSKL")+"'";
     } else {
       
-      QueryDataSet tempSkl = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet("Knjig='"+hr.restart.zapod.OrgStr.getKNJCORG()+"'");
+      QueryDataSet tempSkl = hr.restart.baza.Sklad.getDataModule().getTempSet("Knjig='"+hr.restart.zapod.OrgStr.getKNJCORG()+"'");
       tempSkl.open();
       tempSkl.first();
       String skls = "(";
@@ -232,7 +232,7 @@ public class UpUlaziZavTr extends raUpitLite {
     if (!cskl.equals("")) _cskl += "= '"+cskl+"'";
     else {
       
-      QueryDataSet tempSkl = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet("Knjig='"+hr.restart.zapod.OrgStr.getKNJCORG()+"'");
+      QueryDataSet tempSkl = hr.restart.baza.Sklad.getDataModule().getTempSet("Knjig='"+hr.restart.zapod.OrgStr.getKNJCORG()+"'");
       tempSkl.open();
       tempSkl.first();
       String skls = "(";

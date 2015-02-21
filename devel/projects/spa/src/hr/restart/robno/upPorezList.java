@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.Vrdokum;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
@@ -498,7 +499,7 @@ public class upPorezList extends raUpitLite {
       filterForCorgSet = Aus.getKnjigCond().and(jpc.getCondition()).toString();
     }
     
-    QueryDataSet tempSkl = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet(filterForCorgSet);
+    QueryDataSet tempSkl = hr.restart.baza.Sklad.getDataModule().getTempSet(filterForCorgSet);
     
     tempSkl.open();
 
@@ -514,10 +515,10 @@ public class upPorezList extends raUpitLite {
     //or vrdok = 'IZD'
     
     
-    QueryDataSet allUlazS = Vrdokum.getDataModule().getFilteredDataSet("VRSDOK = 'U' and TIPDOK in ('SF') and APP = 'robno'");
-    QueryDataSet allIzlazS = Vrdokum.getDataModule().getFilteredDataSet("VRSDOK = 'I' and TIPDOK in ('SF') and APP in ('robno','rac','pos','mp') or vrdok = 'IZD'");
-    QueryDataSet allUlazF = Vrdokum.getDataModule().getFilteredDataSet("VRSDOK = 'U' and TIPDOK in ('F') and APP = 'robno'");
-    QueryDataSet allIzlazF = Vrdokum.getDataModule().getFilteredDataSet("VRSDOK = 'I' and TIPDOK in ('F') and APP in ('robno','rac','pos','mp')");
+    QueryDataSet allUlazS = Vrdokum.getDataModule().getTempSet("VRSDOK = 'U' and TIPDOK in ('SF') and APP = 'robno'");
+    QueryDataSet allIzlazS = Vrdokum.getDataModule().getTempSet("VRSDOK = 'I' and TIPDOK in ('SF') and APP in ('robno','rac','pos','mp') or vrdok = 'IZD'");
+    QueryDataSet allUlazF = Vrdokum.getDataModule().getTempSet("VRSDOK = 'U' and TIPDOK in ('F') and APP = 'robno'");
+    QueryDataSet allIzlazF = Vrdokum.getDataModule().getTempSet("VRSDOK = 'I' and TIPDOK in ('F') and APP in ('robno','rac','pos','mp')");
 
     allUlazS.open();
     allIzlazS.open();
@@ -829,14 +830,16 @@ public class upPorezList extends raUpitLite {
 
   void ulazSelected() {
     enabSkladCorg(true, true);
-    jlrDok.setRaDataSet(Vrdokum.getDataModule().getFilteredDataSet("VRSDOK = 'U' and TIPDOK in ('F','SF') and APP = 'robno' order by vrdok"));
+    jlrDok.refilterRaDataSet(Condition.raw("VRSDOK = 'U' and TIPDOK in ('F','SF') and APP = 'robno' order by vrdok"));
+    //jlrDok.setRaDataSet(Vrdokum.getDataModule().getFilteredDataSet("VRSDOK = 'U' and TIPDOK in ('F','SF') and APP = 'robno' order by vrdok"));
 //    jlrDok.setText("");
 //    jlrDok.emptyTextFields();
   }
 
   void izlazSelected() {
     enabSkladCorg(true, true);
-    jlrDok.setRaDataSet(Vrdokum.getDataModule().getFilteredDataSet("VRSDOK = 'I' and TIPDOK in ('F','SF') and APP in ('robno','rac','pos','mp') or vrdok = 'IZD' order by vrdok"));
+    jlrDok.refilterRaDataSet(Condition.raw("VRSDOK = 'I' and TIPDOK in ('F','SF') and APP in ('robno','rac','pos','mp') or vrdok = 'IZD' order by vrdok"));
+    //jlrDok.setRaDataSet(Vrdokum.getDataModule().getFilteredDataSet("VRSDOK = 'I' and TIPDOK in ('F','SF') and APP in ('robno','rac','pos','mp') or vrdok = 'IZD' order by vrdok"));
 //    jlrDok.setText("");
 //    jlrDok.emptyTextFields();
   }

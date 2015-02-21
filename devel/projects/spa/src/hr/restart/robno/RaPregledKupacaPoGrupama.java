@@ -136,7 +136,7 @@ public class RaPregledKupacaPoGrupama extends raUpitFat {
       dblclckname = "Promet";
       viscols = new int[] {0,1,2};
       partIzGrup = new HashMap();
-      QueryDataSet filtPart = Partneri.getDataModule().getFilteredDataSet("CGRPAR = '"+tds.getString("GRUPPART")+"'");
+      QueryDataSet filtPart = Partneri.getDataModule().getTempSet("CGRPAR = '"+tds.getString("GRUPPART")+"'");
       filtPart.open();
       sysoutTEST st = new sysoutTEST(false); //XDEBUG delete when no more needed
       st.prn(filtPart.getQuery().toString());

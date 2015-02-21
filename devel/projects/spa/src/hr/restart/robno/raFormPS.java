@@ -165,7 +165,7 @@ public class raFormPS extends raObradeZaNovuGodinu{
 
   public void skladische(){
     try {
-      knjigodSet = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet("CSKL='" + fieldSet.getString("CSKL")+"'");
+      knjigodSet = hr.restart.baza.Sklad.getDataModule().getTempSet("CSKL='" + fieldSet.getString("CSKL")+"'");
       knjigodSet.open();
     }
     catch (Exception ex) {

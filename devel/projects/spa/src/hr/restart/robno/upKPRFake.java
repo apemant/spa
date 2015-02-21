@@ -212,7 +212,7 @@ public class upKPRFake extends raUpit {
 	private void makeSet() {
 
 		String corg;
-		knjiga = KPR.getDataModule().getFilteredDataSet("1=0");
+		knjiga = KPR.getDataModule().getTempSet("1=0");
 		knjiga.getColumn("CSKL").setVisible(TriStateProperty.FALSE);
 		knjiga.getColumn("GOD").setVisible(TriStateProperty.FALSE);
 		knjiga.getColumn("KLJUC").setVisible(TriStateProperty.FALSE);

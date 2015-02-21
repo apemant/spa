@@ -1863,7 +1863,7 @@ public class rdUtil {
 //      tds.next();
 //    }
 
-    QueryDataSet qds = hr.restart.baza.Sklad.getDataModule().getFilteredDataSet("CSKL ='" + cSklStr + 
+    QueryDataSet qds = hr.restart.baza.Sklad.getDataModule().getTempSet("CSKL ='" + cSklStr + 
         //"' AND CORG IN" + in
         "' AND "+Condition.in("CORG", hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(cOrgStr))
         );

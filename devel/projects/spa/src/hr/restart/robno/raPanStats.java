@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Artikli;
+import hr.restart.baza.Condition;
 import hr.restart.baza.Pjpar;
 import hr.restart.baza.Vrart;
 import hr.restart.baza.dM;
@@ -458,7 +459,7 @@ public abstract class raPanStats extends raUpitFat {
     rcmbVrArt.setRaItems(exvr, "CVRART", "NAZVRART");
     rcmbVrArt.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent e) {
-        vrArtChanged();
+        setRapancartDataset();
       }
     });
     
@@ -673,28 +674,6 @@ public abstract class raPanStats extends raUpitFat {
     return -1;
   }
   
-  private void vrArtChanged(){
-    System.out.println("Vrsta artikla promjenjena"); //XDEBUG delete when no more needed
-    DataSet vrstaArtikalaDohvatFilterSet = null;
-    fieldSet.open();
-    String vra = fieldSet.getString("VRART");
-    
-    System.out.println("Vrsta artikala = "+ vra); //XDEBUG delete when no more needed
-    
-    rpcart.clearFields();
-    if (vra.equals("@") || vra.equals(""))
-      vrstaArtikalaDohvatFilterSet = dm.getArtikli();
-    else {
-      vrstaArtikalaDohvatFilterSet = Artikli.getDataModule().getFilteredDataSet("VRART='"+vra+"'");
-    }
-    
-    rpcart.jrfCART.setRaDataSet(vrstaArtikalaDohvatFilterSet);
-    rpcart.jrfCART1.setRaDataSet(vrstaArtikalaDohvatFilterSet);
-    rpcart.jrfBC.setRaDataSet(vrstaArtikalaDohvatFilterSet);
-    rpcart.jrfNAZART.setRaDataSet(vrstaArtikalaDohvatFilterSet);
-    rpcart.jrfJM.setRaDataSet(vrstaArtikalaDohvatFilterSet);
-  }
-  
   public boolean isInGroup(String[] grupe, String grupa){
     for (int i = 0; i < grupe.length; i++) {
       if (grupe[i].equals(grupa)) return true;
@@ -704,23 +683,32 @@ public abstract class raPanStats extends raUpitFat {
   
   public void setRapancartDataset(){
     System.out.println("Vrsta artikla promjenjena"); //XDEBUG delete when no more needed
-    DataSet vrstaArtikalaDohvatFilterSet = null;
+    //DataSet vrstaArtikalaDohvatFilterSet = null;
     String vra = fieldSet.getString("VRART");
+    Condition cond = null;
     
     System.out.println("Vrsta artikala = "+ vra); //XDEBUG delete when no more needed
     
     rpcart.clearFields();
     if (vra.equals("@") || vra.equals(""))
-      vrstaArtikalaDohvatFilterSet = dm.getArtikli();
+      //vrstaArtikalaDohvatFilterSet = dm.getArtikli();
+    	cond = Condition.ident;
     else {
-      vrstaArtikalaDohvatFilterSet = Artikli.getDataModule().getFilteredDataSet("VRART='"+vra+"'");
+      // vrstaArtikalaDohvatFilterSet = Artikli.getDataModule().getFilteredDataSet("VRART='"+vra+"'");
+    	cond = Condition.equal("VRART", vra);
     }
     
-    rpcart.jrfCART.setRaDataSet(vrstaArtikalaDohvatFilterSet);
+    /*rpcart.jrfCART.setRaDataSet(vrstaArtikalaDohvatFilterSet);
     rpcart.jrfCART1.setRaDataSet(vrstaArtikalaDohvatFilterSet);
     rpcart.jrfBC.setRaDataSet(vrstaArtikalaDohvatFilterSet);
     rpcart.jrfNAZART.setRaDataSet(vrstaArtikalaDohvatFilterSet);
-    rpcart.jrfJM.setRaDataSet(vrstaArtikalaDohvatFilterSet);
+    rpcart.jrfJM.setRaDataSet(vrstaArtikalaDohvatFilterSet);*/
+    rpcart.jrfCART.refilterRaDataSet(cond);
+    rpcart.jrfCART1.refilterRaDataSet(cond);
+    rpcart.jrfBC.refilterRaDataSet(cond);
+    rpcart.jrfNAZART.refilterRaDataSet(cond);
+    rpcart.jrfJM.refilterRaDataSet(cond);
+    
   }
 
 
