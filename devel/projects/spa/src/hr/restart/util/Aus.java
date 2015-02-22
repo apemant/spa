@@ -752,6 +752,31 @@ public class Aus {
   }
   
   /**
+   * Join condition dvije tablice po kolonama 'cols' (split)
+   */
+  public static String join(String tab1, String tab2, String cols) {
+  	return join(tab1, tab2, new VarStr(cols).split());
+  }
+  
+  /**
+   * Join condition dvije tablice po kolonama cols
+   */
+  public static String join(String tab1, String tab2, String[] cols) {
+  	return join(tab1, cols, tab2, cols);
+  }
+  
+  /**
+   * Join condition dvije tablice po kolonama cols1 i cols2, respektivno.
+   */
+  public static String join(String tab1, String[] cols1, String tab2, String[] cols2) {
+  	VarStr v = new VarStr().append(' ');
+  	for (int i = 0; i < cols1.length; i++) 
+  		v.append(tab1).append('.').append(cols1[i]).append(" = ").append(tab2).append('.').append(cols2[i]).append(" AND ");
+  	
+  	return v.chop(4).toString();
+  }
+  
+  /**
    * Metoda daje najraniju knjigovodstvenu godinu u kojoj je dopuštena izmjena podataka.
    */
   public static String getFreeYear() {
