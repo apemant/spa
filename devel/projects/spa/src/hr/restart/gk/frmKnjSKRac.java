@@ -30,6 +30,8 @@ import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.layout.raXYConstraints;
 import hr.restart.swing.layout.raXYLayout;
 import hr.restart.util.Aus;
+import hr.restart.util.HashDataSet;
+import hr.restart.util.Stopwatch;
 import hr.restart.util.Util;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
@@ -39,6 +41,9 @@ import hr.restart.zapod.OrgStr;
 import java.awt.BorderLayout;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -53,11 +58,13 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class frmKnjSKRac extends frmKnjizenje {
   QueryDataSet skstavke;
-  StorageDataSet saveui;
+  StorageDataSet saveui, savesk;
   raComboBox jcbVrDok;
-  raPreparedStatement ps_updstavkeUI;
-  String[] skstavkeKeys = new String[] {"KNJIG", "CPAR", "STAVKA", "CSKL", "VRDOK", "BROJDOK", "BROJIZV"};
-  String[] uistavkeKeys = new String[] {"KNJIG", "CPAR", "STAVKA", "CSKL", "VRDOK", "BROJDOK", "RBS"};
+  raPreparedStatement ps_updstavkeUI, ps_updstavkeSK;
+  
+  HashDataSet partneri;
+  //String[] skstavkeKeys = new String[] {"KNJIG", "CPAR", "STAVKA", "CSKL", "VRDOK", "BROJDOK", "BROJIZV"};
+  //String[] uistavkeKeys = new String[] {"KNJIG", "CPAR", "STAVKA", "CSKL", "VRDOK", "BROJDOK", "RBS"};
   private boolean prijenosUQNX = false;
   /**
    * Kolone koje su veza izmedju skstavaka i uistavaka.
@@ -74,10 +81,17 @@ public class frmKnjSKRac extends frmKnjizenje {
     nego samo po odredjenoj skstavci pa ih dodajem u posebnu tabelu (saveui) koju raKnjizenje azurira
     i nakon toga azuriram prave uistavke preko te tabele.
      */
-    ps_updstavkeUI = new raPreparedStatement("uistavke",raPreparedStatement.UPDATE);
-    saveui = new StorageDataSet();
+    
+    ps_updstavkeUI = raPreparedStatement.createIndependentUpdate("uistavke", new String[] {"CGKSTAVKE"}); 
+    saveui = UIstavke.getDataModule().getReadonlySet();
+    
+    ps_updstavkeSK = raPreparedStatement.createIndependentUpdate("skstavke", new String[] {"CGKSTAVKE"});
+    savesk = Skstavke.getDataModule().getReadonlySet();
+    //		new raPreparedStatement("uistavke",raPreparedStatement.UPDATE);
+    
+    /*saveui = new StorageDataSet();
     saveui.setColumns(dm.getUIstavke().cloneColumns());
-    saveui.open();
+    saveui.open();*/
   }
 
   public boolean Validacija() {
@@ -98,50 +112,80 @@ public class frmKnjSKRac extends frmKnjizenje {
     }
     return super.Validacija();
   }
-
   
-  private String getSKStavkeQuery() {
-    return "SELECT * FROM skstavke WHERE KNJIG = '"+OrgStr.getKNJCORG(false)
-    +"' AND (cgkstavke is null or cgkstavke = '') AND " +
-    		//"DATUMKNJ < '" + knjdo + "'" +
-        Condition.where("DATUMKNJ", Condition.BEFORE, new Timestamp(knjdo.getTime())) + 
-    		getVrdokQuery();
+  private Condition getSKCond() {
+  	return Aus.getKnjigCond().and(Condition.emptyString("CGKSTAVKE", false)).
+  			and(Condition.where("DATUMKNJ", Condition.BEFORE, knjdo)).and(getVrdokCond());
+  }
+  
+  private VarStr kv = new VarStr();
+  private String getKey(DataSet skui) {
+  	kv.clear();
+  	kv.append(skui.getString("KNJIG")).append('|');
+  	kv.append(skui.getInt("CPAR")).append('|');
+  	kv.append(skui.getString("VRDOK")).append('|');
+  	kv.append(skui.getString("BROJDOK")).append('|');
+  	kv.append(skui.getString("CKNJIGE")).append('|');
+  	return kv.toString();
   }
 
-  Date knjdo;
+  Timestamp knjdo;
   public boolean okPress() throws Exception {
     
-	Timestamp kdat = ut.getFirstSecondOfDay(dataSet.getTimestamp("DATUMDO"));
-	String kyear = ut.getYear(kdat);
-	  
-    //knjdo = new Date(Util.getUtil().getLastSecondOfDay(dataSet.getTimestamp("DATUMDO")).getTime());
-    knjdo = new Date(Util.getUtil().addDays(kdat, 1).getTime());
+  	Timestamp kdat = ut.getFirstSecondOfDay(dataSet.getTimestamp("DATUMDO"));
+  	String kyear = ut.getYear(kdat);
+		
+		Stopwatch.setActive(true);
+		Stopwatch sw = Stopwatch.start("BEGIN KNJ");
+    knjdo = Util.getUtil().getFirstSecondOfDay(new Timestamp(Util.getUtil().addDays(kdat, 1).getTime()));
     
-    skstavke = Util.getNewQueryDataSet(getSKStavkeQuery());
+    System.out.println(getSKCond());
+    skstavke = Skstavke.getDataModule().openTempSet(getSKCond());
+    
     System.out.println(skstavke.getQuery().getQueryString());
-    R2Handler.beginKnjizenje(getVrdokQuery(), knjdo);
+    sw.report("Loaded SK");
+    R2Handler.beginKnjizenje(getVrdokCond(), knjdo);
+    sw.report("Loaded R2");
     if ((skstavke.getRowCount()+R2Handler.getR2KnjizenjeCount()) == 0) {
       getKnjizenje().setErrorMessage("Nema podataka za knjiženje");
       throw new Exception("Nema podataka za knjiženje"); // nema nista za knjizenje
     }
     //tablica u koju dodajem stavke koje se prenose u gk i preko koje ce azurirati cgkstavke
     saveui.empty();
+    savesk.empty();
     //pocetak knjizenja
     if (!getKnjizenje().startKnjizenje(this)) return false;
     getKnjizenje().setSKRacKnj(false);
-    //setiranje transfer infa
-    getKnjizenje().setTransferSet(saveui);
-    getKnjizenje().setInfoKeys(uistavkeKeys);
-    getKnjizenje().setInfColName("CGKSTAVKE"); // default je CNALOGA
-    //petlja-nje
+    
+    partneri = new HashDataSet(dm.getPartneri(), "CPAR");
+    
+    sw.report("Partneri cached");
+    QueryDataSet uistavke = Aus.q("SELECT uistavke.* FROM uistavke INNER JOIN skstavke ON"+
+    			Aus.join("skstavke", "uistavke", skuilinkcols) +
+    		"WHERE " + getSKCond().qualified("skstavke"));
+    sw.report("Loaded UI");
+    System.out.println(uistavke.getQuery().getQueryString());
+    
+    // proleti kroz uistavke i napravi mapu lista uistavaka, za kljuc skstavke!
+    HashMap md = new HashMap();
+    for (uistavke.first(); uistavke.inBounds(); uistavke.next()) {
+    	String key = getKey(uistavke);
+    	ArrayList nums = (ArrayList) md.get(key);
+    	if (nums == null) md.put(key, nums = new ArrayList());
+    	nums.add(Integer.valueOf(uistavke.getRow()));
+    }
+    sw.report("Partitioned UI");
+    
     if (sortExt) skstavke.setSort(new SortDescriptor(new String[] {"EXTBRDOK"}));
     else skstavke.setSort(new SortDescriptor(new String[] {"DATPRI"}));
     
-    skstavke.first();
-    do {
-      QueryDataSet uistavke = getUIStavke(skstavke);
+    for (skstavke.first(); skstavke.inBounds(); skstavke.next()) {
+    	ArrayList nums = (ArrayList) md.get(getKey(skstavke));
+      //QueryDataSet uistavke = getUIStavke(skstavke);
+
       boolean r2checked = false;
-      if (uistavke.getRowCount() > 0) {
+      //if (uistavke.getRowCount() > 0) {
+      if (nums != null && nums.size() > 0) {
           // :spank: Provjera trivijalnog podatka kao što je GODINA 
           //  kad dokument treba biti knjižen!! $&#$%&$#%
        	String ty = ut.getYear(skstavke.getTimestamp("DATUMKNJ"));
@@ -153,8 +197,13 @@ public class frmKnjSKRac extends frmKnjizenje {
         }
         // provjera mjeseca primitka <=> mjesec knjizenja. Ako je ukljucena opcija.
         checkMonthDok(kdat, "DATUMKNJ", "Dokument");
+        
+        savesk.insertRow(false);
+        skstavke.copyTo(savesk);
 
-        do {
+        for (Iterator i = nums.iterator(); i.hasNext(); ) {
+        	uistavke.goToRow(((Integer) i.next()).intValue());
+        //do {
         	// ako je uistavka R2 preknjizavanje a datum primitka u mjesecu ispred
         	// onda javi grešku ako je opcija ukljuèena. Ali samo jednom.
         	if (!r2checked && uistavke.getString("CSKL").startsWith("R") &&
@@ -163,18 +212,20 @@ public class frmKnjSKRac extends frmKnjizenje {
         		checkMonthDok(kdat, "DATPRI", "R2 preknjižavanje za dokument");
         	r2checked = true;
         	
+        	boolean r2s = uistavke.getString("CSKL").startsWith("R");
           // ako je uistavka R2 preknjizavanje a datum primitka IZA
           // datuma do kojeg se knjizi, onda PRESKOCI tu uistavku.
-          if (!uistavke.getString("CSKL").startsWith("R") ||
-              skstavke.getTimestamp("DATPRI").before(knjdo)) {
+          if (!r2s || skstavke.getTimestamp("DATPRI").before(knjdo)) {
             //dodajem u set za prijenos
             saveui.insertRow(false);
             uistavke.copyTo(saveui);
             R2Handler.handleSaveui(saveui);
             saveui.post();
-            if (!knjiziUIStavku(uistavke)) return false;
+            if (!knjiziUIStavku(uistavke, r2s ? R2Handler.r2opis : null)) return false;
+            if (uistavke.getInt("RBS") == 1) savesk.setString("CGKSTAVKE", getKnjizenje().cGK);
+            saveui.setString("CGKSTAVKE", getKnjizenje().cGK);
             //azurira transfer info
-            if (uistavke.getInt("RBS") == 1) {
+            /*if (uistavke.getInt("RBS") == 1) {
               //ako smo na skstavki napuni info
               getKnjizenje().setTransferSet(skstavke);
               getKnjizenje().setInfoKeys(skstavkeKeys);
@@ -182,16 +233,18 @@ public class frmKnjSKRac extends frmKnjizenje {
               //vracanje set infa uistavaka
               getKnjizenje().setTransferSet(saveui);
               getKnjizenje().setInfoKeys(uistavkeKeys);
-            }
+            }*/
           }
-        } while (uistavke.next());
+        }
       }
-    } while (skstavke.next());
+    }
+    sw.report("Over mainloop");
     skstavke.setSort(null);
     skstavke = null;
     Condition lastc = null;
     R2Handler.getR2KnjizenjeSet().setSort(new SortDescriptor(new String[] {"CPAR", "VRDOK", "BROJDOK"}));
     
+   
     //Handlanje R2:
     if (R2Handler.getR2KnjizenjeCount() > 0) {
       for (R2Handler.getR2KnjizenjeSet().first(); R2Handler.getR2KnjizenjeSet().inBounds(); R2Handler.getR2KnjizenjeSet().next()) {
@@ -203,9 +256,10 @@ public class frmKnjSKRac extends frmKnjizenje {
 	        lastc = newc;
        		checkMonthDok(kdat, "DATPRI", "R2 preknjižavanje za dokument");
       	}
-        if (!knjiziUIStavku(R2Handler.getR2KnjizenjeSet(), r2opis)) return false;
+        if (!knjiziUIStavku(R2Handler.getR2KnjizenjeSet(), R2Handler.r2opis)) return false;
       }
     }
+    sw.report("Over R2");
     transfer2zim();
     return getKnjizenje().saveAll();
   }
@@ -253,7 +307,6 @@ public class frmKnjSKRac extends frmKnjizenje {
   }
   
   String[] skuiCols = {"KNJIG","CPAR","VRDOK","BROJDOK","CKNJIGE"};
-  String r2opis = "R2 preknjižavanje - ";
   
   private boolean knjiziUIStavku(QueryDataSet uistavke) {
     return knjiziUIStavku(uistavke, null);
@@ -262,21 +315,18 @@ public class frmKnjSKRac extends frmKnjizenje {
     //nova stavka
     StorageDataSet stavka;
     if (uistavke.getInt("RBS") == 1) {
-  	stavka = getKnjizenje().getNewStavka(uistavke.getString("BROJKONTA"),uistavke.getString("CORG"));
-  } else {
-  	String kto = uistavke.getString("BROJKONTA");
-    if (kto.length() == 0) kto = getKnjizenje().getKonto(
-        uistavke.getString("VRDOK"), uistavke.getString("CSKL"), uistavke.getShort("STAVKA")+"");
-  	if (kto.length() == 0 && uistavke.getString("VRDOK").equals("OKD")) {
-	  kto = getKnjizenje().getKonto("URN", uistavke.getString("CSKL"), uistavke.getShort("STAVKA")+"");
-	} else if (kto.length() == 0 && uistavke.getString("VRDOK").equals("OKK")) {
-  	  kto = getKnjizenje().getKonto("IRN", uistavke.getString("CSKL"), uistavke.getShort("STAVKA")+"");
-	}
-	/*if (kto.equals("")) {
-	  kto = uistavke.getString("BROJKONTA");
-	}*/
-	stavka = getKnjizenje().getNewStavka(kto, uistavke.getString("CORG"));
-  }
+  	  stavka = getKnjizenje().getNewStavka(uistavke.getString("BROJKONTA"),uistavke.getString("CORG"));
+    } else {
+	  	String kto = uistavke.getString("BROJKONTA");
+	    if (kto.length() == 0) kto = getKnjizenje().getKonto(
+	        uistavke.getString("VRDOK"), uistavke.getString("CSKL"), uistavke.getShort("STAVKA")+"");
+	  	if (kto.length() == 0 && uistavke.getString("VRDOK").equals("OKD")) {
+		    kto = getKnjizenje().getKonto("URN", uistavke.getString("CSKL"), uistavke.getShort("STAVKA")+"");
+		  } else if (kto.length() == 0 && uistavke.getString("VRDOK").equals("OKK")) {
+	  	  kto = getKnjizenje().getKonto("IRN", uistavke.getString("CSKL"), uistavke.getShort("STAVKA")+"");
+		  }
+	  	stavka = getKnjizenje().getNewStavka(kto, uistavke.getString("CORG"));
+    }
     //punjenje nove stavke
     stavka.setTimestamp("DATDOK",skstavke.getTimestamp("DATDOK"));
     stavka.setTimestamp("DATDOSP",skstavke.getTimestamp("DATDOSP"));
@@ -285,7 +335,7 @@ public class frmKnjSKRac extends frmKnjizenje {
     stavka.setString("EXTBRDOK",skstavke.getString("EXTBRDOK"));
     stavka.setInt("CPAR",uistavke.getInt("CPAR"));
     VarStr opis = new VarStr();
-    if (opis_to_override == null || r2opis.equals(opis_to_override)) {
+    if (opis_to_override == null || R2Handler.r2opis.equals(opis_to_override)) {
         if (opis_to_override != null) opis.append(opis_to_override);
 	    if (skstavke.getString("VRDOK").equalsIgnoreCase("URN") ||
 	        skstavke.getString("VRDOK").equalsIgnoreCase("OKD")) {
@@ -297,9 +347,8 @@ public class frmKnjSKRac extends frmKnjizenje {
 	        opis.replaceAll("$C", Integer.toString(skstavke.getInt("CPAR")));
 	        if (opis.indexOf("$P") >= 0) {
 	          String nazpar = "";
-	          if (lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", 
-	              Integer.toString(skstavke.getInt("CPAR"))))
-	                nazpar = dm.getPartneri().getString("NAZPAR");
+	          if (partneri.has(skstavke, "CPAR"))
+	          	nazpar = partneri.get(skstavke, "CPAR").getString("NAZPAR");
 	          opis.replaceAll("$P", nazpar);          
 	        }
 	      } else opis.append(skstavke.getString("OPIS"));
@@ -312,9 +361,8 @@ public class frmKnjSKRac extends frmKnjizenje {
 	        opis.replaceAll("$C", Integer.toString(skstavke.getInt("CPAR")));
 	        if (opis.indexOf("$P") >= 0) {
 	          String nazpar = "";
-	          if (lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", 
-	              Integer.toString(skstavke.getInt("CPAR"))))
-	                nazpar = dm.getPartneri().getString("NAZPAR");
+	          if (partneri.has(skstavke, "CPAR"))
+	          	nazpar = partneri.get(skstavke, "CPAR").getString("NAZPAR");
 	          opis.replaceAll("$P", nazpar);
 	        }
 	      } else opis.append(skstavke.getString("OPIS"));
@@ -349,10 +397,10 @@ public class frmKnjSKRac extends frmKnjizenje {
     super.commitTransfer();
 //    return new raLocalTransaction() {
 //      public boolean transaction() throws Exception {
+    System.out.println("Saveui " + saveui.rowCount());
         for (saveui.first(); saveui.inBounds(); saveui.next()) {
           
           try {
-            System.out.println(saveui);
             ps_updstavkeUI.setKeys(saveui);
             ps_updstavkeUI.setValues(saveui);
             ps_updstavkeUI.execute();
@@ -363,6 +411,22 @@ public class frmKnjSKRac extends frmKnjizenje {
             return false;
           }
         }
+    
+        System.out.println("Savesk " + savesk.rowCount());
+        for (savesk.first(); savesk.inBounds(); savesk.next()) {
+          
+          try {
+            ps_updstavkeSK.setKeys(savesk);
+            ps_updstavkeSK.setValues(savesk);
+            ps_updstavkeSK.execute();
+          }
+          catch (Exception ex) {
+            ex.printStackTrace();
+            //throw ex; kad je u svojoj transakciji
+            return false;
+          }
+        }
+        
         return R2Handler.commitTransferR2();
 //      }}.execTransaction();
   }
@@ -449,7 +513,7 @@ public class frmKnjSKRac extends frmKnjizenje {
     return false;
   }
 
-  private String getVrdokQuery() {
+  /*private String getVrdokQuery() {
     String vrdok = dataSet.getString("VRDOK");
     if (vrdok.equals("SVI") || vrdok.equals("")) return "";
     String vq = " AND VRDOK ";
@@ -471,6 +535,14 @@ public class frmKnjSKRac extends frmKnjizenje {
       vq = vq + "='"+vrdok+"'";
     }
     return vq;
+  }*/
+  
+  private Condition getVrdokCond() {
+  	String vrdok = dataSet.getString("VRDOK");
+    if (vrdok.equals("SVI") || vrdok.equals("")) return Condition.none;
+    if (vrdok.equals("SVIU")) return Condition.in("VRDOK", "URN OKD");
+    if (vrdok.equals("SVII")) return Condition.in("VRDOK", "IRN OKK");
+    return Condition.equal("VRDOK", vrdok);
   }
   
   boolean sortExt, checkMonth;
