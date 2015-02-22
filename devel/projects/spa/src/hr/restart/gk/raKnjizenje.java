@@ -1356,8 +1356,7 @@ public class raKnjizenje {
       if (skstavke.getString("CGKSTAVKE").equals(""))
         addsk.setString("CGKSTAVKE", originalCNALOGA, false);
       if (skstavke.getString("CSKSTAVKE").equals(""))
-        addsk.setString("CSKSTAVKE", hr.restart.sk.raSaldaKonti
-            .findCSK(skstavke), false);
+        addsk.setString("CSKSTAVKE", hr.restart.sk.raSaldaKonti.findCSK(skstavke), false);
       if (!raKonta.isSaldak(skstavke.getString("BROJKONTA"))) {
         addsk.setString("PVPOK", "X", false);
         addsk.setString("POKRIVENO", "X", false);
