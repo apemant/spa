@@ -19,6 +19,7 @@ package hr.restart.gk;
 import hr.restart.baza.*;
 import hr.restart.robno.raRobno;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sk.R2Handler;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.raTableColumnModifier;
@@ -1471,6 +1472,34 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
         if (sk.getBigDecimal("SALDO").compareTo(sk.getBigDecimal("SSALDO")) != 0) pok = true;
       
       if (pok) {
+      	raProcess.runChild("Provjera", "Provjera knjiženja iz robnog...", new Runnable() {
+          public void run() {
+          	String god = getMasterSet().getString("GOD").substring(2, 4);
+            String vrnal = getMasterSet().getString("CVRNAL");
+            String rbr = vl.maskZeroInteger(new Integer(getMasterSet().getInt("RBR")), 4);
+            String brnal = god.concat(vrnal).concat(rbr);
+            
+          	int totrobno = doki.getDataModule().getRowCount(Condition.equal("BRNAL",  brnal)) +
+          			Doku.getDataModule().getRowCount(Condition.equal("BRNAL",  brnal)) +
+          			Meskla.getDataModule().getRowCount(Condition.equal("BRNAL",  brnal)) +
+          			Meskla.getDataModule().getRowCount(Condition.equal("BRNALU",  brnal));
+          	raProcess.yield(new Boolean(totrobno > 0));
+          }
+      	});
+      	Boolean ret = (Boolean) raProcess.getReturnValue();
+      	pok = ret.booleanValue();
+      }
+      
+      boolean r2 = false;
+      if (!pok) {
+      	DataSet det = Gkstavke.getDataModule().openTempSet("RBS", Condition.whereAllEqual(keys, getMasterSet()) +
+      			" AND opis LIKE '" + R2Handler.r2opis + "%'");
+      	if (det.rowCount() > 0) r2 = true;
+      }
+      
+      if (r2) {
+      	msgObr = "Nalog je nemoguæe rasknjižiti jer sadrži R2 preknjižavanje!";
+      } else if (pok) {
         msgObr = "Nalog je nemoguæe rasknjižiti jer sadrži stavke sada konti koje su pokrivene!";
       } else if (askDialog("Nalog je obraðen. Želite li poništiti obradu?")) {
         startProcessMessage();
@@ -1480,7 +1509,7 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
         String god = getMasterSet().getString("GOD").substring(2, 4);
         String vrnal = getMasterSet().getString("CVRNAL");
         String rbr = vl.maskZeroInteger(new Integer(getMasterSet().getInt("RBR")), 4);
-        String brnal = god.concat(vrnal).concat(rbr); 
+        String brnal = god.concat(vrnal).concat(rbr);
         
         DataSet di = doki.getDataModule().getTempSet(Condition.equal("BRNAL",  brnal));
         di.open();
@@ -1505,14 +1534,13 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
             ui.open();
             if (ui.rowCount() > 0 && !robno) {
               for (sk.first(); sk.inBounds(); sk.next()) sk.setString("CGKSTAVKE", "");
-              raTransaction.saveChanges((QueryDataSet) sk);
+              for (ui.first(); ui.inBounds(); ui.next()) ui.setString("CGKSTAVKE", "");
             } else {
               ui.deleteAllRows();
               sk.deleteAllRows();
-              
-              raTransaction.saveChanges((QueryDataSet) sk);
-              raTransaction.saveChanges((QueryDataSet) ui);
             }
+            raTransaction.saveChanges((QueryDataSet) sk);
+            raTransaction.saveChanges((QueryDataSet) ui);
           } 
           if (robno) {
             for (di.first(); di.inBounds(); di.next()) {
