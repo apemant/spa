@@ -44,10 +44,8 @@ public class RaLogicStanjeSkladiste {
   
 
   public QueryDataSet datasetZaEkran(String cskl, String cart, String grupa, boolean podGrupe, String god, boolean kol0, String partArtikl, String partCart1, boolean all) {
-    Stopwatch st = Stopwatch.start("artikli stanje");
     QueryDataSet data = ut.getNewQueryDataSet(queryString(cskl, cart, god, kol0));
 
-    st.report("got data");
     if (data.rowCount() < 1)
       return null;
 
@@ -130,14 +128,12 @@ public class RaLogicStanjeSkladiste {
       }
     } while (data.next());
 
-    st.report("fill data");
     if (!partArtikl.equals("")){
       mainDataSet = refilter(mainDataSet, "NAZART", partArtikl);
     } else if (!partCart1.equals("")){
       mainDataSet = refilter(mainDataSet, "CART1", partCart1);
     }
 
-    st.report("refilter data");
     if (cart.equalsIgnoreCase("") && !grupa.equals("")) {
       return refilterSet(mainDataSet, grupa, podGrupe);
     }

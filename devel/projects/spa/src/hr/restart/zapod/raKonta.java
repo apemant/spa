@@ -65,14 +65,12 @@ public class raKonta {
     initRaKonta(vl.RezSet);*/
     int nowSerial = dM.getSynchronizer().getSerialNumber("Konta");
     if (nowSerial != serialKonto || konta == null) {
-      Stopwatch st = Stopwatch.start("loading konta");
       DataSet ds = Konta.getDataModule().getTempSet();
       ds.open();
       serialKonto = nowSerial;
       konta = new HashMap();
       for (ds.first(); ds.inBounds(); ds.next())
         konta.put(ds.getString("BROJKONTA"), new Konto(ds));
-      st.report("loaded");
     }
     
     current = (Konto) konta.get(brKonta);

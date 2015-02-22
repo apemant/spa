@@ -29,7 +29,6 @@ import javax.swing.event.InternalFrameEvent;
  */
 
 public class raFrame extends java.awt.Container implements raFrameInterface {
-  protected Stopwatch initSW = Stopwatch.startInit(this);
 //sysoutTEST ST= new sysoutTEST(false);
   private int frameMode=0;
   public static final int FRAME = 0;

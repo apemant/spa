@@ -411,11 +411,9 @@ public class frmBrBilAll extends raUpitFat {
   }
 
   boolean entered = false;
-  Stopwatch sok = null;
   public void okPress() {
     bbKum = stds.getString("MODE").equals("BB");
     
-    sok = Stopwatch.start("okPress");
     entered = true;
     corgRemember = kontoPanel.getCorg(); //hr.restart.zapod.OrgStr.getOrgStr().getPripKnjig(kontoPanel.getCorg());
 
@@ -423,7 +421,6 @@ public class frmBrBilAll extends raUpitFat {
 //    QueryDataSet qds2 = util.getNewQueryDataSet(getQdsString(hr.restart.zapod.OrgStr.getOrgStr().getPripKnjig(kontoPanel.getCorg())));
     checkClosing();
     List data = loadQuery(getQdsString(OrgStr.getOrgStr().getPripKnjig(kontoPanel.getCorg())));
-    sok.report("opened data");
 
     if (data.size() == 0)
       setNoDataAndReturnImmediately();
@@ -456,7 +453,6 @@ public class frmBrBilAll extends raUpitFat {
       setDataSetAndSums(prik, new String[] {"POCID","POCIP","SALPS","ID","IP","SALPROM","DUG","POT","SALDO"});
     }
     setTitlePer();
-    sok.report("over");
   }
   
 
@@ -540,7 +536,6 @@ public class frmBrBilAll extends raUpitFat {
   private void okPressActions(List data) {
     QueryDataSet jptvov = deriveRawSetShifts(data, kontoPanel.getBrKonLength() + 1, false);
     checkClosing();
-    sok.report("after derived");
     
     if (!doubleClicked) {
 
@@ -548,25 +543,21 @@ public class frmBrBilAll extends raUpitFat {
       if (isKompletnaBilanca()){
         repKontaSet = makeSetForNewIspis(data);
         repKontaSet.setSort(new SortDescriptor(new String[] {"CORG", "BROJKONTA"}));
-        sok.report("after kompl bilanca");
 //        st.showInFrame(repKontaSet,"KONTA SET");
       } else {
         repSintetikAnalitikSet = getClassedBilance(sumKontaCorg(data, 0, false));
         repSintetikAnalitikSet.setSort(new SortDescriptor(new String[] {"CORG", "BROJKONTA"}));
-        sok.report("after classed bilanca");
 //        st.showInFrame(repSintetikAnalitikSet,"KLASSED SET");
       }
       
       if (!bbKum) {
         repPoNalozimaSet = valutaConvertedSet(makeSetIspisPoNalozima(data));
         repPoNalozimaSet.setSort(new SortDescriptor(new String[] {"CORG", "BROJKONTA"}));
-        sok.report("after po nalozima bilanca");
       }
       
       if (kontoPanel.jlrKontoBroj.getText().length() < sind) { // rekapitulacija
         repRekapitulacijaSet = valutaConvertedSet(makeRekapitulacija(data));
         repRekapitulacijaSet.setSort(new SortDescriptor(new String[] {"CORG", "BROJKONTA"}));
-        sok.report("after rekap bilanca");
       }
     }
     

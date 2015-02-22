@@ -182,17 +182,13 @@ public class ispStatPar extends raPanStats {
   }
   
   public void okPress() {
-    Stopwatch sw = Stopwatch.start("okPress");
     //tim = System.currentTimeMillis();
 //    System.out.println("1 - OK PRESSED " + (System.currentTimeMillis()-tim)); //XDEBUG delete when no more needed
 //    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
 //    syst.prn(fieldSet);
     PartnerCache pca = new PartnerCache(true);
-    sw.report("partner caching");
     isIspis = true;
     QueryDataSet temporarySet = getRawSet(util.getTimestampValue(fieldSet.getTimestamp("pocDatum"), 0), util.getTimestampValue(fieldSet.getTimestamp("zavDatum"), 1));
-
-    sw.report("dohvat");
 
     if (temporarySet == null || temporarySet.rowCount() == 0)
       setNoDataAndReturnImmediately();
@@ -256,7 +252,6 @@ public class ispStatPar extends raPanStats {
       
       temporarySet.setSort(new SortDescriptor(new String[] {"VRDOK", "CSKL", "GOD", "BRDOK"}));
       temporarySet.first();
-      sw.report("sorted");
       String brdok = "";
       String oldBrdok = "";
 //      System.out.println("2 - PRIKAZ = IR prije petlje " + (System.currentTimeMillis()-tim)); //XDEBUG delete when no more needed
@@ -365,7 +360,6 @@ public class ispStatPar extends raPanStats {
         temporarySet.setSort(new SortDescriptor(new String[] {"CPAR","PJ"}));
       else temporarySet.setSort(new SortDescriptor(new String[] {"CPAR"}));
       temporarySet.first();
-      sw.report("sorted");
       
 //      String brdok;
       int cpar = -1027, pj = -1027;
@@ -464,7 +458,6 @@ public class ispStatPar extends raPanStats {
       
       temporarySet.setSort(new SortDescriptor(new String[] {"CGRART", "CPAR"}));
       temporarySet.first();
-      sw.report("sorted");
       String cgr = "xnat1027";
       do {
         checkClosing();
@@ -699,7 +692,6 @@ public class ispStatPar extends raPanStats {
       monthSet.setTableName("MJ");
       setDataSetAndSums(monthSet, prikaz);//new String[]{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "UKUPNO"}); 2004-09-14 16:54:48.000
     }
-    sw.report("over");
   }
 
   private QueryDataSet detaljnoPoArtiklima(QueryDataSet tmpSet, PartnerCache pca) {

@@ -103,7 +103,6 @@ public class raSubjektColumnModifier extends raTableModifier {
   }
   
   void preCacheValues() {
-    Stopwatch tim = Stopwatch.start("caching");
     
     int serVrsub = -1, serSif, serSub, serZnac;
     boolean needRemap = oldCache == null;
@@ -138,9 +137,7 @@ public class raSubjektColumnModifier extends raTableModifier {
     serZnac = dm.getSynchronizer().getSerialNumber("RN_znacsub");
     if (serZnac != serialZnac) needRemap = true;
     serialZnac = serZnac;
-    
-    tim.report("checked: " + needRemap);
-    
+        
     if (!needRemap) return;
 
     Map newCache = new HashMap();
@@ -155,8 +152,6 @@ public class raSubjektColumnModifier extends raTableModifier {
     	vrsubj.put(subj.getString("CSUBRN"), new Short(subj.getShort("CVRSUBJ")));
     }
     
-    tim.report("subjekt finished");
-
     StorageDataSet znac = RN_znacsub.getDataModule().getReadonlySet();
     Util.fillAsyncData(znac, "SELECT * FROM RN_znacsub");
     for (znac.first(); znac.inBounds(); znac.next()) {
@@ -173,7 +168,6 @@ public class raSubjektColumnModifier extends raTableModifier {
     		newCache.put(getZnacKey(znac), val);
       }
     }
-    tim.report("finished caching");
     oldCache = newCache;
   }
   
