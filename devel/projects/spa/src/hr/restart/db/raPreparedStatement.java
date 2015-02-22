@@ -213,6 +213,23 @@ public class raPreparedStatement {//implements PreparedStatement {
       return null;
     }
   }
+  
+  public static raPreparedStatement createIndependentUpdate(String _table, String[] cols) {
+    try {
+      raPreparedStatement stm = new raPreparedStatement();
+      stm.tableName = _table;
+      stm.mode = UPDATE;
+      stm.connection = hr.restart.baza.dM.getDatabaseConnection();
+      stm.keyColumnNames = stm.getKeyColumnsDB(stm.connection, _table);
+      stm.columnNames = cols;  // zbog ovog mi treba: nepotpuni insert ako se tablica izmijeni
+      stm.makeStatmentSql();
+      stm.makeStatement();
+      return stm;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
 
   private String[] getKeyColumnsDB(Connection c, String t) {
     String[] ante = raConnectionFactory.getKeyColumns(c,t);
