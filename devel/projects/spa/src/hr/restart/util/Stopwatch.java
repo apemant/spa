@@ -85,4 +85,8 @@ public class Stopwatch {
     String sw = IntParam.getTag("stopwatch");
     active = sw != null && sw.equalsIgnoreCase("on");
   }
+  
+  public static void setActive(boolean act) {
+  	active = act;
+  }
 }
