@@ -52,7 +52,7 @@ public abstract class Condition {
    * Koliko maksimalno smije biti clanova u in (cl1, cl2, cl3, ... clN)
    * prije nego presjece sa OR polje in (clN+1, clN+2 ...)
    */
-  public static final int MAXINQUERY = 200;
+  public static final int MAXINQUERY = 255;
   
   /**
    * Konstanta koja oznacava operaciju =.
@@ -260,7 +260,7 @@ public abstract class Condition {
   
   public static Condition emptyString(String colname, boolean key) {
     if (key) return Condition.emptyString(colname);
-    return where(colname, EQUAL, "").or(where(colname, EQUAL, (String) null));
+    return where(colname, EQUAL, "").orNull();
   }
 
   public static Condition equal(String colname, String value) {
