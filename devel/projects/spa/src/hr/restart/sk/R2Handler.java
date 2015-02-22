@@ -27,6 +27,7 @@ import hr.restart.db.raPreparedStatement;
 import hr.restart.db.raVariant;
 import hr.restart.gk.frmKnjSKRac;
 import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
@@ -69,6 +70,9 @@ public class R2Handler {
 //ostalo
   private static String[] skvrdoks = {"URN","IRN","OKD","OKK"};
   public static Timestamp endofmankind;
+  
+  public static String r2opis = "R2 preknjižavanje - ";
+  
   private static QueryDataSet uistavke_knjizenje;
   static {
     	Calendar cal = Calendar.getInstance();
@@ -609,7 +613,7 @@ public class R2Handler {
    * @param vrdokQuery
    * @param date
    */
-  public static void beginKnjizenje(String vrdokQuery, Date date) {
+  public static void beginKnjizenje(Condition vrdokQuery, Timestamp date) {
     if (getStavkeShemeR2().rowCount() == 0)
       uistavke_knjizenje = UIstavke.getDataModule().getTempSet("1=0");
     else uistavke_knjizenje = UIstavke.getDataModule().
@@ -619,19 +623,12 @@ public class R2Handler {
     	    +"AND KNJIG||'#'||CPAR||'#'||VRDOK||'#'||BROJDOK||'#' in (SELECT KNJIG||'#'||CPAR||'#'||VRDOK||'#'||BROJDOK||'#' FROM skstavke WHERE skstavke.datpri < '"
     	    +date+"' "+vrdokQuery+") "
 */    	   //ovo ispod bi trebalo biti brze... isprobati!
-    	    +" AND EXISTS (SELECT * FROM skstavke where uistavke.knjig = skstavke.knjig "
-    	                                        +" AND uistavke.cpar = skstavke.cpar"
-    	                                        +" AND uistavke.vrdok = skstavke.vrdok"
-    	                                        +" AND uistavke.brojdok = skstavke.brojdok"
-                     +" AND skstavke.cgkstavke is not null and skstavke.cgkstavke != ''"
-    	                   +" AND " +
-    	                   	//	"skstavke.datpri < '"+date+"'" +
-    	                   
-    	                   Condition.where("DATPRI",Condition.BEFORE,new Timestamp(date.getTime()))+
-    	                   				" "+vrdokQuery+") "
-    	    +vrdokQuery);//racunam da puni cgkstavke pri knjizenju
+    	    +" AND EXISTS (SELECT * FROM skstavke where " + Aus.join("uistavke", "skstavke", frmKnjSKRac.skuilinkcols) 
+                     + " AND skstavke.cgkstavke is not null and skstavke.cgkstavke != '' AND " +
+    	                   Condition.where("DATPRI",Condition.BEFORE,new Timestamp(date.getTime())).and(
+    	                   				vrdokQuery).qualified("skstavke")+") ");//racunam da puni cgkstavke pri knjizenju
     
-    log.debug(uistavke_knjizenje.getQuery().getQueryString());
+    System.out.println(uistavke_knjizenje.getQuery().getQueryString());
 
     uistavke_knjizenje.open();
     if (log.isDebugEnabled()) {
