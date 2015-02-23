@@ -22,6 +22,7 @@ package hr.restart.sk;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Shkonta;
+import hr.restart.baza.Skstavke;
 import hr.restart.baza.UIstavke;
 import hr.restart.db.raPreparedStatement;
 import hr.restart.db.raVariant;
@@ -29,6 +30,7 @@ import hr.restart.gk.frmKnjSKRac;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raTransaction;
@@ -65,6 +67,8 @@ public class R2Handler {
   private static raPreparedStatement deluistavke = new raPreparedStatement("uistavke",raPreparedStatement.DELETE);
   private static raPreparedStatement adduistavke = new raPreparedStatement("uistavke",raPreparedStatement.INSERT);
   
+  private static raPreparedStatement ps_updstavkeUI = raPreparedStatement.createIndependentUpdate("uistavke", new String[] {"CSKL"});
+  
 //markira da na slijedecem pozivu matchPerformed() stavi deletedUIstavke i addedUIstavke na null
   private static boolean clearMatchPerformedData = false;
 //ostalo
@@ -73,7 +77,7 @@ public class R2Handler {
   
   public static String r2opis = "R2 preknjižavanje - ";
   
-  private static QueryDataSet uistavke_knjizenje;
+  private static StorageDataSet uistavke_knjizenje;
   static {
     	Calendar cal = Calendar.getInstance();
     	cal.set(9999,8,9);//09-09-9999
@@ -607,39 +611,75 @@ public class R2Handler {
     return addedUIstavke;
   }
 
+  private static VarStr kv = new VarStr();
+  public static String getKey(DataSet skui) {
+    kv.clear();
+    kv.append(skui.getString("KNJIG")).append('|');
+    kv.append(skui.getInt("CPAR")).append('|');
+    kv.append(skui.getString("VRDOK")).append('|');
+    kv.append(skui.getString("BROJDOK")).append('|');
+    kv.append(skui.getString("CKNJIGE")).append('|');
+    return kv.toString();
+  }
+  
   /**
    * Inicijalizacija knjizenja R2 u frmKnjSKRac:
    * nadje sve uistavke proknjizenih dokumenata sa csheme like '%R'
    * @param vrdokQuery
    * @param date
    */
-  public static void beginKnjizenje(Condition vrdokQuery, Timestamp date) {
-    if (getStavkeShemeR2().rowCount() == 0)
-      uistavke_knjizenje = UIstavke.getDataModule().getTempSet("1=0");
-    else uistavke_knjizenje = UIstavke.getDataModule().
+  public static void beginKnjizenje(Condition vrdokQuery) {
+    uistavke_knjizenje = UIstavke.getDataModule().getReadonlySet();
+    if (getStavkeShemeR2().rowCount() > 0) {
+      
+      DataSet uir2 = UIstavke.getDataModule().openTempSet(Aus.getKnjigCond().and(vrdokQuery)+" AND CSKL LIKE 'R%' ");
+      
+      if (uir2.rowCount() == 0) return;
+      
+      DataSet sk = Skstavke.getDataModule().openTempSet("KNJIG CPAR VRDOK BROJDOK CKNJIGE",
+          Aus.getKnjigCond().and(Condition.emptyString("CGKSTAVKE", false).and(vrdokQuery)));
+      
+      HashSet unknj = new HashSet();
+      for (sk.first(); sk.inBounds(); sk.next())
+        unknj.add(getKey(sk));
+      
+      for (uir2.first(); uir2.inBounds(); uir2.next())
+        if (!unknj.contains(getKey(uir2))) {
+          uistavke_knjizenje.insertRow(false);
+          uir2.copyTo(uistavke_knjizenje);
+        }
+      
+      System.out.println("R2 stavaka, proknjizenih: " + uistavke_knjizenje.rowCount());
+      
+      /*
+      uistavke_knjizenje = UIstavke.getDataModule().
+    
     	getTempSet(Condition.equal("KNJIG",OrgStr.getKNJCORG())+
     	    " AND CSKL LIKE 'R%' "
-/*  //ovo tak vrhunski zakolje situaciju ...
-    	    +"AND KNJIG||'#'||CPAR||'#'||VRDOK||'#'||BROJDOK||'#' in (SELECT KNJIG||'#'||CPAR||'#'||VRDOK||'#'||BROJDOK||'#' FROM skstavke WHERE skstavke.datpri < '"
-    	    +date+"' "+vrdokQuery+") "
-*/    	   //ovo ispod bi trebalo biti brze... isprobati!
+  //ovo tak vrhunski zakolje situaciju ...
+//    	    +"AND KNJIG||'#'||CPAR||'#'||VRDOK||'#'||BROJDOK||'#' in (SELECT KNJIG||'#'||CPAR||'#'||VRDOK||'#'||BROJDOK||'#' FROM skstavke WHERE skstavke.datpri < '"
+//    	    +date+"' "+vrdokQuery+") "
+    	   //ovo ispod bi trebalo biti brze... isprobati!
     	    +" AND EXISTS (SELECT * FROM skstavke where " + Aus.join("uistavke", "skstavke", frmKnjSKRac.skuilinkcols) 
                      + " AND skstavke.cgkstavke is not null and skstavke.cgkstavke != '' AND " +
     	                   Condition.where("DATPRI",Condition.BEFORE,new Timestamp(date.getTime())).and(
     	                   				vrdokQuery).qualified("skstavke")+") ");//racunam da puni cgkstavke pri knjizenju
     
-    System.out.println(uistavke_knjizenje.getQuery().getQueryString());
+    System.out.println(uistavke_knjizenje.getQuery().getQueryString());*/
+      
+      
 
-    uistavke_knjizenje.open();
-    if (log.isDebugEnabled()) {
-      log.debug("R2Handler - pocinjem knjizenje");
-      log.debug(" query je "+uistavke_knjizenje.getQuery().getQueryString());
-      log.debug("*** pronadjene uistavke");
-      for (uistavke_knjizenje.first(); uistavke_knjizenje.inBounds(); uistavke_knjizenje.next()) {
-        log.debug(uistavke_knjizenje);
-      }
-      log.debug("*******");
-      uistavke_knjizenje.first();
+      /*uistavke_knjizenje.open();
+      if (log.isDebugEnabled()) {
+        log.debug("R2Handler - pocinjem knjizenje");
+        log.debug(" query je "+uistavke_knjizenje.getQuery().getQueryString());
+        log.debug("*** pronadjene uistavke");
+        for (uistavke_knjizenje.first(); uistavke_knjizenje.inBounds(); uistavke_knjizenje.next()) {
+          log.debug(uistavke_knjizenje);
+        }
+        log.debug("*******");
+        uistavke_knjizenje.first();
+      }*/
     }
     
   }
@@ -655,7 +695,7 @@ public class R2Handler {
   /**
    * @return querydataset pripremljen sa beginKnjizenje
    */
-  public static QueryDataSet getR2KnjizenjeSet() {
+  public static StorageDataSet getR2KnjizenjeSet() {
     return uistavke_knjizenje;
   }
 
@@ -668,8 +708,18 @@ public class R2Handler {
     for (uistavke_knjizenje.first(); uistavke_knjizenje.inBounds(); uistavke_knjizenje.next()) {
       handleSaveui(uistavke_knjizenje);
       uistavke_knjizenje.post();
+      try {
+        ps_updstavkeUI.setKeys(uistavke_knjizenje);
+        ps_updstavkeUI.setValues(uistavke_knjizenje);
+        ps_updstavkeUI.execute();
+      }
+      catch (Exception ex) {
+        ex.printStackTrace();
+        //throw ex; kad je u svojoj transakciji
+        return false;
+      }
     }
-    raTransaction.saveChanges(uistavke_knjizenje);
+    //raTransaction.saveChanges(uistavke_knjizenje);
     return true;
   }
 
@@ -678,14 +728,16 @@ public class R2Handler {
    * poziva se u frmKnjSKRac.okPress()
    * @param saveui
    */
-  public static void handleSaveui(StorageDataSet saveui) {
+  public static boolean handleSaveui(StorageDataSet saveui) {
     if (saveui.getString("CSKL").startsWith("R")) {
       String cskl = saveui.getString("CSKL").substring(1);
       if (log.isDebugEnabled()) {
         log.debug("mijenjam cskl iz "+saveui.getString("CSKL")+" u "+cskl);
       }
       saveui.setString("CSKL",cskl);
+      return true;
     }
+    return false;
   }
 
   /**
