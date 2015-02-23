@@ -50,6 +50,7 @@ import com.borland.jb.util.TriStateProperty;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Kumulrad;
+import hr.restart.baza.Odbiciobr;
 import hr.restart.baza.Prisutobr;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.Radnicipl;
@@ -289,8 +290,9 @@ public class frmPrisutnost extends raMasterDetail {
         List data = loadPrisutnost(Condition.ident, true);
         System.out.println("Uèitavanje prave plaæe... " + (System.currentTimeMillis() - mili));
         HashDataSet rads = new HashDataSet(dm.getRadnici(), "CRADNIK");
-        DataSet netods = Kumulrad.getDataModule().getTempSet("CRADNIK NETOPK", Condition.ident);
+        DataSet netods = Kumulrad.getDataModule().getTempSet("CRADNIK NETOPK", Condition.ident);        
         raProcess.openScratchDataSet(netods);
+        
         System.out.println("Zbrajanje... " + (System.currentTimeMillis() - mili));        
         HashMap neto = new HashMap();
         for (netods.first(); netods.inBounds(); netods.next())
@@ -729,13 +731,32 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     return parts;
   }
   
+  void generateKums(Condition cond, boolean proc) {
+    System.out.println("Kumulativi iz plaæe...");
+    String[] odbns = raOdbici.getInstance().getVrsteOdbKeysQuery("POVR", "S", "1", "1", true);
+    short[] odbn = new short[odbns.length];
+    for (int i = 0; i < odbns.length; i++) odbn[i] = (short) Aus.getNumber(odbns[i]);
+    
+    DataSet dopna = Odbiciobr.getDataModule().getTempSet("CRADNIK OBRIZNOS", Condition.in("CVRODB", odbn).and(cond));
+    if (!proc) dopna.open(); 
+    else raProcess.openScratchDataSet(dopna);
+    System.out.println(((QueryDataSet) dopna).getQuery().getQueryString());
+    
+    kumulrad = new HashDataSet(Kumulrad.getDataModule().openTempSet(cond), "CRADNIK");
+    for (dopna.first(); dopna.inBounds(); dopna.next()) {
+      if (kumulrad.has(dopna))
+        Aus.add(kumulrad.get(dopna), "DOPRINOSI", dopna, "OBRIZNOS");
+      else
+        System.out.println("Nema radnika! " + dopna);
+    }
+    System.out.println("Gotovo.");
+  }
+  
   void showAll() {
     if (getMasterSet().rowCount() == 0) return;
     
     if (all.isShowing()) all.hide();
     
-    vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
-    kumulrad = new HashDataSet(Kumulrad.getDataModule().openTempSet(), "CRADNIK");
     allOut.clear();
     allSums.clear();
     allRad.clear();
@@ -743,6 +764,8 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
         long mili = System.currentTimeMillis();
+        vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
+        generateKums(Condition.none, true);
         QueryDataSet radnici = Radnicipl.getDataModule().getTempSet(getPreSelect().getLastFilterQuery());
         System.out.println("Otvaranje radnika... " + (System.currentTimeMillis() - mili));
         raProcess.openScratchDataSet(radnici);
@@ -806,6 +829,11 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
 
     if (!raProcess.isCompleted()) return;
     System.out.println("Prikaz:");
+    
+    if (allOut.size() == 0) {
+      JOptionPane.showMessageDialog(raMaster.getWindow(), "Nije unesen nijedan radnik!", "Greška", JOptionPane.WARNING_MESSAGE);
+      return;
+    }
     
     allRbr = 0;
     setColsAndSums(all, (StorageDataSet) allOut.get(allRbr));
@@ -956,7 +984,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     StorageDataSet sums = new StorageDataSet();
     
     vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
-    kumulrad = new HashDataSet(Kumulrad.getDataModule().openTempSet(Condition.equal("CRADNIK",  getMasterSet())), "CRADNIK");
+    generateKums(Condition.equal("CRADNIK",  getMasterSet()), false);
 
   	findKum(data, out, sums);
     String[] acols = out.getColumnNames(out.getColumnCount());
