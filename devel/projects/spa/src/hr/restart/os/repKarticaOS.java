@@ -242,8 +242,9 @@ public class repKarticaOS implements sg.com.elixir.reportwriter.datasource.IData
 
   public String getDatLikvidacije()
   {
-    if(rdu.dataFormatter(ds.getTimestamp("datlikvidacije")).equals("01.01.1970"))
-      return"";
+    if (ds.isNull("datlikvidacije")) return "";
+    /*if(rdu.dataFormatter(ds.getTimestamp("datlikvidacije")).equals("01.01.1970"))
+      return"";*/
     return rdu.dataFormatter(ds.getTimestamp("datlikvidacije"));
   }
 

@@ -41,7 +41,7 @@ import com.borland.dx.dataset.DataSet;
 
 public class osUtil {
   hr.restart.util.sysoutTEST st = new hr.restart.util.sysoutTEST(false);
-  public java.sql.Timestamp nulDate = new java.sql.Timestamp(0);
+  //public java.sql.Timestamp nulDate = new java.sql.Timestamp(0);
   Calendar cal = Calendar.getInstance();
   public java.math.BigDecimal sto = new java.math.BigDecimal(100);
   public java.math.BigDecimal nul = new java.math.BigDecimal(0);
@@ -134,6 +134,7 @@ public class osUtil {
       qdsMaster.setBigDecimal("ISPDUGUJE", qdsDetail.getBigDecimal("ISPDUGUJE"));
       qdsMaster.setBigDecimal("ISPPOTRAZUJE", util.negateValue(qdsMaster.getBigDecimal("ISPPOTRAZUJE"), oldIspravak));
       qdsMaster.setTimestamp("DATLIKVIDACIJE", qdsDetail.getTimestamp("DATPROMJENE"));
+      qdsMaster.setString("VRLIK", qdsDetail.getString("CPROMJENE"));
       qdsMaster.setBigDecimal("OSNOVICA", util.sumValue(qdsMaster.getBigDecimal("OSNDUGUJE"), qdsMaster.getBigDecimal("OSNPOCETAK"), qdsMaster.getBigDecimal("OSNPOTRAZUJE").negate()));
       qdsMaster.setBigDecimal("ISPRAVAK", util.sumValue(qdsMaster.getBigDecimal("ISPPOTRAZUJE"), qdsMaster.getBigDecimal("ISPPOCETAK"), qdsMaster.getBigDecimal("ISPDUGUJE").negate())
                               .add(qdsMaster.getBigDecimal("AMORTIZACIJA")));
@@ -196,14 +197,15 @@ public class osUtil {
       qdsMaster.setBigDecimal("OSNPOCETAK", nul);
       qdsMaster.setBigDecimal("ISPPOCETAK", nul);
       qdsMaster.setString("DOKUMENT", "");
-      qdsMaster.setTimestamp("DATPROMJENE", nulDate);
+      qdsMaster.setAssignedNull("DATPROMJENE");
     }
     else if (mode=='L') {
-      System.out.println("Likvidacija: "+nulDate);
+      System.out.println("Likvidacija: ");
       qdsMaster.setString("AKTIV", "D");
       qdsMaster.setBigDecimal("OSNPOTRAZUJE", qdsMaster.getBigDecimal("OSNPOTRAZUJE").subtract(oldOsnovica));
       qdsMaster.setBigDecimal("ISPDUGUJE", qdsMaster.getBigDecimal("ISPDUGUJE").subtract(oldIspravak));
-      qdsMaster.setTimestamp("DATLIKVIDACIJE", nulDate);
+      qdsMaster.setAssignedNull("DATLIKVIDACIJE");
+      qdsMaster.setAssignedNull("VRLIK");
       qdsMaster.setBigDecimal("AMORTIZACIJA", nul);
       qdsMaster.setBigDecimal("PAMORTIZACIJA", nul);
     }

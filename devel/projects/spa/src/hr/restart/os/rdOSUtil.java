@@ -1125,9 +1125,11 @@ public class rdOSUtil {
 
     public boolean checkLikvidacija(QueryDataSet qds)
     {
-      if (qds.getTimestamp("DATLIKVIDACIJE").after(java.sql.Timestamp.valueOf("1970-01-01 01:00:00.0")))
+      return !qds.isNull("DATLIKVIDACIJE");
+
+      /*if (qds.getTimestamp("DATLIKVIDACIJE").after(java.sql.Timestamp.valueOf("1970-01-01 01:00:00.0")))
         return true;
-      return false;
+      return false;*/
     }
 
     public boolean checkLokacijePK(String cOrg, String cLokacije, String cObjekt)

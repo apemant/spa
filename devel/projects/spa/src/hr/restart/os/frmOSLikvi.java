@@ -95,6 +95,7 @@ public class frmOSLikvi extends osTemplate {
     qStr = rdOSUtil.getUtil().deleteLikvidacija("os_sredstvo", getDetailSet().getString("CORG"), getDetailSet().getString("INVBROJ"));
     getMasterSet().getDatabase().executeStatement(qStr);
     getMasterSet().setAssignedNull("DATLIKVIDACIJE");
+    getMasterSet().setAssignedNull("VRLIK");
     if (lLikvidacija) {     // Dodano zbog brisanje likvidacije
       lLikvidacija=false;
       hr.restart.os.osUtil.getUtil().afterDeleteOS(/*getDetailSet().getBigDecimal("OSNDUGUJE")*/util.nul, util.nul/*getDetailSet().getBigDecimal("ISPPOTRAZUJE")*/, 'N');

@@ -59,6 +59,7 @@ public class frmSILikvi extends osTemplate{
     qStr = rdOSUtil.getUtil().deleteLikvidacija("os_SI", getDetailSet().getString("CORG"), getDetailSet().getString("INVBROJ"));
     getMasterSet().getDatabase().executeStatement(qStr);
     getMasterSet().setAssignedNull("DATLIKVIDACIJE");
+    getMasterSet().setAssignedNull("VRLIK");
     beforeShowDetail();
   }
 

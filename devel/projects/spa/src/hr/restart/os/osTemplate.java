@@ -1507,6 +1507,7 @@ public class osTemplate extends raMasterDetail {
       Timestamp dat=getMasterSet().getTimestamp("DATNABAVE");
 
       getMasterSet().setTimestamp("DATLIKVIDACIJE", hr.restart.util.Util.getUtil().clearTime(vl.getToday()));
+      getMasterSet().setString("VRLIK", vrPr);
 
       getMasterSet().insertRow(true);
       getMasterSet().setString("OLDCORG", getDetailSet().getString("CORG2"));
