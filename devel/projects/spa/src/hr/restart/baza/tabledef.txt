@@ -3336,6 +3336,7 @@ ISPRAVAK;numeric;17,2;;0;Ispravak;15
 OLDCORG;char;12;;;Stara OJ;6
 STARISTATUS;char;1;;;Stari status;*
 OJINV;char;22;;;Ojin;*
+VRLIK;char;3;;;Vrsta likvidacije
 IDX=invbroj
 
 $OS_StSI
