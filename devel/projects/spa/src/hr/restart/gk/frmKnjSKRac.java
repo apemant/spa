@@ -117,17 +117,6 @@ public class frmKnjSKRac extends frmKnjizenje {
   	return Aus.getKnjigCond().and(Condition.emptyString("CGKSTAVKE", false)).
   			and(Condition.where("DATUMKNJ", Condition.BEFORE, knjdo)).and(getVrdokCond());
   }
-  
-  private VarStr kv = new VarStr();
-  private String getKey(DataSet skui) {
-  	kv.clear();
-  	kv.append(skui.getString("KNJIG")).append('|');
-  	kv.append(skui.getInt("CPAR")).append('|');
-  	kv.append(skui.getString("VRDOK")).append('|');
-  	kv.append(skui.getString("BROJDOK")).append('|');
-  	kv.append(skui.getString("CKNJIGE")).append('|');
-  	return kv.toString();
-  }
 
   Timestamp knjdo;
   public boolean okPress() throws Exception {
@@ -144,7 +133,7 @@ public class frmKnjSKRac extends frmKnjizenje {
     
     System.out.println(skstavke.getQuery().getQueryString());
     sw.report("Loaded SK");
-    R2Handler.beginKnjizenje(getVrdokCond(), knjdo);
+    R2Handler.beginKnjizenje(getVrdokCond());
     sw.report("Loaded R2");
     if ((skstavke.getRowCount()+R2Handler.getR2KnjizenjeCount()) == 0) {
       getKnjizenje().setErrorMessage("Nema podataka za knjiženje");
@@ -169,7 +158,7 @@ public class frmKnjSKRac extends frmKnjizenje {
     // proleti kroz uistavke i napravi mapu lista uistavaka, za kljuc skstavke!
     HashMap md = new HashMap();
     for (uistavke.first(); uistavke.inBounds(); uistavke.next()) {
-    	String key = getKey(uistavke);
+    	String key = R2Handler.getKey(uistavke);
     	ArrayList nums = (ArrayList) md.get(key);
     	if (nums == null) md.put(key, nums = new ArrayList());
     	nums.add(Integer.valueOf(uistavke.getRow()));
@@ -180,7 +169,7 @@ public class frmKnjSKRac extends frmKnjizenje {
     else skstavke.setSort(new SortDescriptor(new String[] {"DATPRI"}));
     
     for (skstavke.first(); skstavke.inBounds(); skstavke.next()) {
-    	ArrayList nums = (ArrayList) md.get(getKey(skstavke));
+    	ArrayList nums = (ArrayList) md.get(R2Handler.getKey(skstavke));
       //QueryDataSet uistavke = getUIStavke(skstavke);
 
       boolean r2checked = false;
@@ -240,6 +229,7 @@ public class frmKnjSKRac extends frmKnjizenje {
     }
     sw.report("Over mainloop");
     skstavke.setSort(null);
+    skstavke.empty();
     skstavke = null;
     Condition lastc = null;
     R2Handler.getR2KnjizenjeSet().setSort(new SortDescriptor(new String[] {"CPAR", "VRDOK", "BROJDOK"}));
@@ -311,7 +301,7 @@ public class frmKnjSKRac extends frmKnjizenje {
   private boolean knjiziUIStavku(QueryDataSet uistavke) {
     return knjiziUIStavku(uistavke, null);
   }
-  private boolean knjiziUIStavku(QueryDataSet uistavke, String opis_to_override) {
+  private boolean knjiziUIStavku(DataSet uistavke, String opis_to_override) {
     //nova stavka
     StorageDataSet stavka;
     if (uistavke.getInt("RBS") == 1) {
@@ -427,6 +417,8 @@ public class frmKnjSKRac extends frmKnjizenje {
           }
         }
         
+        savesk.empty();
+        saveui.empty();
         return R2Handler.commitTransferR2();
 //      }}.execTransaction();
   }
