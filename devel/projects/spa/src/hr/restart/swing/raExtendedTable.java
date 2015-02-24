@@ -236,7 +236,9 @@ public class raExtendedTable extends JraTable2 {
       if (sds.getLocale() == null) sds.setLocale(Locale.getDefault());
     }*/
     int idx = getTableHeader().columnAtPoint(e.getPoint());
-    clickCol = getRealColumnName(getTableHeader().columnAtPoint(e.getPoint()));
+    if (idx < 0) return;
+    
+    clickCol = getRealColumnName(idx);
     ColumnInfo ci = ColumnInfo.get(clickCol);
     if (group.contains(ci))
       ((ColumnInfo) group.get(group.indexOf(ci))).toggle();
@@ -250,12 +252,12 @@ public class raExtendedTable extends JraTable2 {
     }
     getColumnModel().getSelectionModel().setSelectionInterval(idx, idx);
     createSortDescriptor();
-    String newcolname = getColumnModel().getColumn(getTableHeader().columnAtPoint(e.getPoint())).getHeaderValue().toString();
+    String newcolname = getColumnModel().getColumn(idx).getHeaderValue().toString();
 
     //raExtendedTable.this.firePropertyChange(COLNAMEPROPERTY,oldcolname,newcolname);
     fireColumnChanged(oldcolname, newcolname);
     oldcolname = newcolname;
-    setSpeedColumn(getTableHeader().columnAtPoint(e.getPoint()));
+    setSpeedColumn(idx);
   }
 
   private void generateSort(DataSet ds) {
