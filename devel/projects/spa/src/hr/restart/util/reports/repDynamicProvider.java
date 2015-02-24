@@ -236,13 +236,21 @@ public class repDynamicProvider implements IDataProvider {
     raReportTemplate temp;
     int width = model.getTotalColumnWidth();
     int cols = model.getColumnCount();
+    int sw = 0, sc = 0;
+    if (xt.getOwner() != null &&
+        xt.getOwner().getSummary() instanceof JraTable2) {
+      sw = ((JraTable2) xt.getOwner().getSummary()).getColumnModel().getTotalColumnWidth();
+      sc = ((JraTable2) xt.getOwner().getSummary()).getColumnModel().getColumnCount();
+    }
 
-    double ratio;
+    double ratio, sratio = 15;
     if ((cols > 7) || (width > 800)) {
       repLandscapeTableTemplate lt = new repLandscapeTableTemplate();
       temp = lt;
       ratio = ((double) lt.PageSetup.getHeight() - lt.PageSetup.getLeft() * 2
                                                  - 20 * (cols - 1)) / width;
+      sratio = ((double) lt.PageSetup.getHeight() - lt.PageSetup.getLeft() * 2
+                                                          - 20 * (sc - 1)) / width;
       int w = createHD(ratio, lt.SectionHeader1, lt.TextHeaderValue0) - 20;
       createHD(ratio, lt.Detail, lt.TextDataValue0);
       if (xt.isDrawLines()) addLine(lt.Detail, lt.Line1, w);
@@ -266,13 +274,13 @@ public class repDynamicProvider implements IDataProvider {
           lt.Line6.setWidth(w);
         } else if (xt.getOwner() != null &&
             xt.getOwner().getSummary() instanceof JraTable2) {
-          defineSummary(15, 0, lt.Section0, lt.SectionFooter0,
+          defineSummary(sratio, 0, lt.Section0, lt.SectionFooter0,
               lt.TextHeaderValue0, lt.TextDataValue0);
         } else lt.SectionFooter0.setTransparent(true);
         
       } else if (xt.getOwner() != null &&
           xt.getOwner().getSummary() instanceof JraTable2) {
-        defineSummary(15, 300, lt.Section0, lt.SectionFooter0,
+        defineSummary(sratio, 300, lt.Section0, lt.SectionFooter0,
             lt.TextHeaderValue0, lt.TextDataValue0);
       } else lt.SectionFooter0.setTransparent(true);
 
@@ -287,6 +295,8 @@ public class repDynamicProvider implements IDataProvider {
       temp = lt;
       ratio = ((double) lt.PageSetup.getWidth() - lt.PageSetup.getLeft() * 2
                                                 - 20 * (cols - 1)) / width;
+      sratio = ((double) lt.PageSetup.getWidth() - lt.PageSetup.getLeft() * 2
+                                              - 20 * (sc - 1)) / width;
       int w = createHD(ratio, lt.SectionHeader1, lt.TextHeaderValue0) - 20;
       createHD(ratio, lt.Detail, lt.TextDataValue0);
       if (xt.isDrawLines()) addLine(lt.Detail, lt.Line1, w);
@@ -309,12 +319,12 @@ public class repDynamicProvider implements IDataProvider {
           lt.Line6.setWidth(w);
         } else if (xt.getOwner() != null &&
             xt.getOwner().getSummary() instanceof JraTable2) {
-          defineSummary(15, 0, lt.Section0, lt.SectionFooter0,
+          defineSummary(sratio, 0, lt.Section0, lt.SectionFooter0,
               lt.TextHeaderValue0, lt.TextDataValue0);
         } else lt.SectionFooter0.setTransparent(true);
       } else if (xt.getOwner() != null &&
           xt.getOwner().getSummary() instanceof JraTable2) {
-        defineSummary(15, 300, lt.Section0, lt.SectionFooter0,
+        defineSummary(sratio, 300, lt.Section0, lt.SectionFooter0,
             lt.TextHeaderValue0, lt.TextDataValue0);
       } else lt.SectionFooter0.setTransparent(true);
 
