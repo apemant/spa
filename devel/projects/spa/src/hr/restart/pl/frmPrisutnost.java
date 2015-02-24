@@ -21,6 +21,9 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -40,6 +43,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
+import javax.swing.plaf.basic.BasicTableUI;
+import javax.swing.table.TableColumnModel;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -54,6 +63,7 @@ import hr.restart.baza.Odbiciobr;
 import hr.restart.baza.Prisutobr;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.Radnicipl;
+import hr.restart.baza.Vrsteprim;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraTable2;
@@ -111,9 +121,15 @@ public class frmPrisutnost extends raMasterDetail {
     }
   };
    
-  raNavAction rnvGrupe  = new raNavAction("Rekapitulacija po grupama",raImages.IMGHISTORY,KeyEvent.VK_F11) {
+  raNavAction rnvGrupe  = new raNavAction("Rekapitulacija po grupama",raImages.IMGPREFERENCES,KeyEvent.VK_F8, KeyEvent.SHIFT_MASK) {
     public void actionPerformed(ActionEvent e) {
       showGrupe();
+    }
+  };
+  
+  raNavAction rnvPrim  = new raNavAction("Rekapitulacija po vrstama zarada",raImages.IMGHISTORY,KeyEvent.VK_F8) {
+    public void actionPerformed(ActionEvent e) {
+      showPrim();
     }
   };
   
@@ -328,6 +344,7 @@ public class frmPrisutnost extends raMasterDetail {
     frm.setDataSet(out);
     frm.setSaveName("Pregled-prisutobr-radnici-place");
     frm.setVisibleCols(new int[] {0, 1, 2, 3, 4, 5});
+    frm.setSums(new String[] {"TOTAL", "PLISTA", "RAZLIKA"});
     frm.setTitle("POTPISNA LISTA  obraèun za " + mje + ". mjesec " + god +".");
     raExtendedTable t = (raExtendedTable) frm.jp.getMpTable();
     t.addSort("PRIME", true);
@@ -335,6 +352,163 @@ public class frmPrisutnost extends raMasterDetail {
     t.setDrawLines(true);
     frm.show();
     frm.resizeLater();
+  }
+  
+  void showPrim() {
+    final PrisData zarade = new PrisData();
+    final PrisData naknade = new PrisData();
+    final PrisData obustave = new PrisData();
+    raProcess.runChild(raMaster.getWindow(), new Runnable() {
+      public void run() {
+        long mili = System.currentTimeMillis();
+        StorageDataSet out = new StorageDataSet();
+        out.setColumns(new Column[] {
+          Prisutobr.getDataModule().getColumn("CVRP").cloneColumn(),
+          Vrsteprim.getDataModule().getColumn("NAZIV").cloneColumn(),
+          Prisutobr.getDataModule().getColumn("SATI").cloneColumn(),
+          Prisutobr.getDataModule().getColumn("IZNOS").cloneColumn()
+        });
+        out.getColumn("CVRP").setCaption("Vrsta");
+        out.getColumn("NAZIV").setCaption("Naziv primanja");
+        out.open();
+        System.out.println("Keširanje kumulativa... " + (System.currentTimeMillis() - mili));
+        vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
+        generateKums(Condition.none, true);
+        
+        HashMap sums = new HashMap();
+        System.out.println("Uèitavanje podataka... " + (System.currentTimeMillis() - mili));
+        List data = loadPrisutnost(Condition.ident, true);
+        System.out.println("Zbrajanje... " + (System.currentTimeMillis() - mili));
+        int m = 0;
+        for (Iterator i = data.iterator(); i.hasNext(); ) {
+          if (m++ % 200 == 0) raProcess.checkClosing();
+          PrisData pd = (PrisData) i.next();
+          String key = String.valueOf(pd.cvrp);
+          PrisData sum = (PrisData) sums.get(key);
+          if (sum == null) sums.put(key, pd);
+          else sum.add(pd);
+          if (pd.sati != null && pd.sati.signum() > 0) zarade.add(pd);
+          else if (pd.iznos != null && pd.iznos.signum() > 0) naknade.add(pd);
+          else obustave.add(pd);
+        }
+        System.out.println("Punjenje... " + (System.currentTimeMillis() - mili));
+        for (Iterator i = sums.values().iterator(); i.hasNext(); ) {
+          if (m++ % 100 == 0) raProcess.checkClosing();
+          PrisData sum = (PrisData) i.next();
+          out.insertRow(false);
+          out.setShort("CVRP", (short) sum.cvrp);
+          out.setString("NAZIV", vrprims.get(String.valueOf(sum.cvrp)).getString("NAZIV"));
+          out.setBigDecimal("SATI", sum.sati == null ? Aus.zero0 : sum.sati);
+          out.setBigDecimal("IZNOS", sum.iznos == null ? Aus.zero0 : sum.iznos);
+        }
+        raProcess.yield(out);
+      }
+    });
+    
+    if (!raProcess.isCompleted()) return;
+    StorageDataSet out = (StorageDataSet) raProcess.getReturnValue();
+    if (out == null) return;
+    
+    StorageDataSet sums = new StorageDataSet();
+    sums.setColumns(new Column[] {
+        dM.createStringColumn("PRIM", "Primanje", 50),
+        dM.createColumn("SATI", "Sati", null, Variant.BIGDECIMAL, 2, 10, 2),
+        dM.createColumn("IZNOS", "Iznos", null, Variant.BIGDECIMAL, 2, 10, 2)
+    });
+    sums.open();
+    
+    insertSum(sums, "UKUPNO ZARADE", zarade.sati, zarade.iznos);
+    insertSum(sums, "NAKNADE", null, naknade.iznos);
+    insertSum(sums, "OBUSTAVE", null, obustave.iznos);
+    insertSum(sums, "ZA ISPLATU", null, zarade.iznos.add(naknade.iznos).add(obustave.iznos));
+    BigDecimal doppor = Aus.zero0;
+    for (kumulrad.get().first(); kumulrad.get().inBounds(); kumulrad.get().next())
+      doppor = doppor.add(kumulrad.get().getBigDecimal("DOPRINOSI")).add(kumulrad.get().getBigDecimal("PORIPRIR"));
+    insertSum(sums, "DOPRINOSI I POREZI", null, doppor);
+    insertSum(sums, "SVEUKUPNO", zarade.sati, zarade.iznos.add(naknade.iznos).add(obustave.iznos).add(doppor));
+
+    frmTableDataView frm = new frmTableDataView();
+    frm.setDataSet(out);
+    frm.setSaveName("Pregled-prisutobr-primanja");
+    frm.setVisibleCols(new int[] {0, 1, 2, 3});
+    frm.setSums(new String[] {"SATI", "IZNOS"});
+    frm.setTitle("Rekapitulacija plaæe po vrstama zarada" +
+                  "  obraèun za " + mje + ". mjesec " + god +".");
+    setSummary(frm, sums);    
+    MyTableSyncAdapter sync = new MyTableSyncAdapter(frm.jp);
+    frm.jp.getMpTable().addComponentListener(sync);
+    frm.jp.getMpTable().getColumnModel().addColumnModelListener(sync);
+    frm.setCounterEnabled(false);
+    frm.show();
+    frm.resizeLater();
+    sync.alignLater();
+  }
+  
+  static class MyTableSyncAdapter extends ComponentAdapter implements TableColumnModelListener {
+    private raJPTableView jp;
+    public MyTableSyncAdapter(raJPTableView owner) {
+      this.jp = owner;
+      
+    } 
+    public void componentResized(ComponentEvent e) {
+      alignTables();
+    }
+    public void columnSelectionChanged(ListSelectionEvent e) { 
+    }
+    public void columnRemoved(TableColumnModelEvent e) {
+      alignTables();
+    }    
+    public void columnMoved(TableColumnModelEvent e) {
+      alignTables();
+    }
+    public void columnMarginChanged(ChangeEvent e) {
+      alignTables();
+    }
+    public void columnAdded(TableColumnModelEvent e) {
+      alignTables();
+    }
+    
+    int defer = 0;
+    public void alignLater() {
+      defer = 0;
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          alignImpl();
+        }
+      });
+    }
+    
+    void alignImpl() {
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          if (++defer < 5) alignImpl();
+          else alignTables();
+        }
+      });
+    }
+    
+    void alignTables() {
+      raExtendedTable src = (raExtendedTable) jp.getMpTable();
+      raExtendedTable summ = (raExtendedTable) jp.getSummary();
+      if (src.getDataSet() == null) return;
+      
+      int prim = 0, sati = 0, iznos = 0, wid = 0;
+      
+      for (int i = 0; i < src.getColumnCount(); i++) {
+        wid = src.getColumnModel().getColumn(i).getWidth();
+        if (src.getRealColumnName(i).equalsIgnoreCase("SATI")) sati = wid;
+        else if (src.getRealColumnName(i).equalsIgnoreCase("IZNOS")) iznos = wid;
+        else prim += wid;
+      }
+      for (int i = 0; i < summ.getColumnCount(); i++) {
+        if (summ.getRealColumnName(i).equalsIgnoreCase("PRIM")) wid = prim;
+        else if (summ.getRealColumnName(i).equalsIgnoreCase("SATI")) wid = sati;
+        else if (summ.getRealColumnName(i).equalsIgnoreCase("IZNOS")) wid = iznos;
+        else wid = 0;
+        if (wid > 0) 
+          summ.getColumnModel().getColumn(i).setPreferredWidth(wid);
+      }
+    }
   }
   
   void showGrupe() {
@@ -388,12 +562,14 @@ public class frmPrisutnost extends raMasterDetail {
     frm.setSaveName("Pregled-prisutobr-grupe");
     frm.setVisibleCols(new int[] {1, 2, 3, 4});
     frm.setSums(new String[] {"SATI", "IZNOS"});
-    frm.setTitle("Rekapitulacija plaæe po grupama - " + jpDetail.jlCsif.getText());
+    frm.setTitle("Rekapitulacija plaæe po grupama - " + jpDetail.jlCsif.getText() +
+        "  obraèun za " + mje + ". mjesec " + god +".");
     frm.jp.addTableModifier(
        new hr.restart.swing.raTableColumnModifier("CVRP", new String[] {"CVRP", "NAZIV"}, dm.getVrsteprim()));
     raExtendedTable t = (raExtendedTable) frm.jp.getMpTable();
     t.addToGroup("CSIF", true, new String[] {"#", "CSIF", "NAZIV"}, jpDetail.jlrCgrup.getRaDataSet(), true);
     t.createSortDescriptor();
+    frm.setCounterEnabled(false);
     frm.show();
     frm.resizeLater();
   }
@@ -840,7 +1016,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     if (ld.raLocate(dm.getRadnici(), "CRADNIK", (String) allRad.get(allRbr))) {
       String radname = dm.getRadnici().getString("CRADNIK") + " - " +
               dm.getRadnici().getString("IME") + " " + dm.getRadnici().getString("PREZIME");
-      all.setTitle("Prikaz primanja radnika " + radname);
+      all.setTitle("Prikaz primanja radnika " + radname + "  obraèun za " + mje + ". mjesec " + god +".");
     }
     all.setCounterText("  Radnik " + (allRbr + 1) + " od " + allOut.size());
     setSummary(all, (StorageDataSet) allSums.get(allRbr)); 
@@ -916,7 +1092,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     if (ld.raLocate(dm.getRadnici(), "CRADNIK", (String) allRad.get(allRbr))) {
       String radname = dm.getRadnici().getString("CRADNIK") + " - " +
               dm.getRadnici().getString("IME") + " " + dm.getRadnici().getString("PREZIME");
-      all.setTitle("Prikaz primanja radnika " + radname);
+      all.setTitle("Prikaz primanja radnika " + radname + "  obraèun za " + mje + ". mjesec " + god +".");
     }
     all.setCounterText("  Radnik " + (allRbr + 1) + " od " + allOut.size());
     setSummary(all, (StorageDataSet) allSums.get(allRbr));
@@ -994,7 +1170,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     frmTableDataView frm = new frmTableDataView();
     frm.setSaveName("Pregled-prisutobr");
     setColsAndSums(frm, out);
-    frm.setTitle(raDetail.getTitle());
+    frm.setTitle(raDetail.getTitle() + "  obraèun za " + mje + ". mjesec " + god +".");
     frm.jp.addTableModifier(weekend);
     frm.jp.addTableModifier(primmod);
     setSummary(frm, sums);
@@ -1029,8 +1205,9 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     raMaster.setEditEnabled(false);
     raMaster.setEnabledNavAction(raMaster.getNavBar().getNavContainer().getNavActions()[3],true);
     raMaster.addOption(rnvShowAll, 5, false);
-    raMaster.addOption(rnvGrupe, 6, false);
-    raMaster.addOption(rnvPotpisList, 7, false);
+    raMaster.addOption(rnvPrim, 6, false);
+    raMaster.addOption(rnvGrupe, 7, false);
+    raMaster.addOption(rnvPotpisList, 8, false);
     raDetail.getJpTableView().addTableModifier(
       new hr.restart.swing.raTableColumnModifier("CVRP", new String[] {"CVRP", "NAZIV"}, dm.getVrsteprim())
     );
@@ -1135,6 +1312,11 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
       sati = ds.getBigDecimal("SATI");
       if (ds.isNull("SATI")) sati = null;
       iznos = ds.getBigDecimal("IZNOS");
+    }
+    
+    public PrisData() {
+      sati = Aus.zero0;
+      iznos = Aus.zero0;
     }
     
     public void add(PrisData other) {
