@@ -72,6 +72,10 @@ public class HashDataSet {
     return has(s.chop().toString());
   }
   
+  public DataSet get() {
+    return ds;
+  }
+  
   public DataSet get(String key) {
     Integer idx = (Integer) index.get(key);
     if (idx != null) ds.goToRow(idx.intValue());
