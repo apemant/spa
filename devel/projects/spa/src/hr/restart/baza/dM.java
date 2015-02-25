@@ -138,6 +138,10 @@ public class dM implements DataModule {
     safeMode = true;
   }
   
+  public static void setNormalMode() {
+    safeMode = false;
+  }
+  
   static String minURL;
   static String minUSER;
   static String minPASS;
