@@ -398,7 +398,7 @@ public class frmPrisutnost extends raMasterDetail {
           out.insertRow(false);
           out.setShort("CVRP", (short) sum.cvrp);
           out.setString("NAZIV", vrprims.get(String.valueOf(sum.cvrp)).getString("NAZIV"));
-          out.setBigDecimal("SATI", sum.sati == null ? Aus.zero0 : sum.sati);
+          if (sum.sati != null) out.setBigDecimal("SATI", sum.sati);
           out.setBigDecimal("IZNOS", sum.iznos == null ? Aus.zero0 : sum.iznos);
         }
         raProcess.yield(out);
@@ -421,9 +421,12 @@ public class frmPrisutnost extends raMasterDetail {
     insertSum(sums, "NAKNADE", null, naknade.iznos);
     insertSum(sums, "OBUSTAVE", null, obustave.iznos);
     insertSum(sums, "ZA ISPLATU", null, zarade.iznos.add(naknade.iznos).add(obustave.iznos));
-    BigDecimal doppor = Aus.zero0;
-    for (kumulrad.get().first(); kumulrad.get().inBounds(); kumulrad.get().next())
+    BigDecimal doppor = Aus.zero0, plista = Aus.zero0;
+    for (kumulrad.get().first(); kumulrad.get().inBounds(); kumulrad.get().next()) {
       doppor = doppor.add(kumulrad.get().getBigDecimal("DOPRINOSI")).add(kumulrad.get().getBigDecimal("PORIPRIR"));
+      plista = plista.add(kumulrad.get().getBigDecimal("NETOPK"));
+    }
+    insertSum(sums, "PLAÆA S LISTE", null, plista);
     insertSum(sums, "DOPRINOSI I POREZI", null, doppor);
     insertSum(sums, "SVEUKUPNO", zarade.sati, zarade.iznos.add(naknade.iznos).add(obustave.iznos).add(doppor));
 
@@ -526,6 +529,16 @@ public class frmPrisutnost extends raMasterDetail {
         out.open();
         String[] okey = {"CSIF", "CVRP"};
         
+        System.out.println("Keširanje kumulativa... " + (System.currentTimeMillis() - mili));
+        generateKums(Condition.none, true);
+        PrisData total = new PrisData();
+        HashSum grupe = new HashSum();
+        BigDecimal doppor = Aus.zero0, plista = Aus.zero0;
+        for (kumulrad.get().first(); kumulrad.get().inBounds(); kumulrad.get().next()) {
+          doppor = doppor.add(kumulrad.get().getBigDecimal("DOPRINOSI")).add(kumulrad.get().getBigDecimal("PORIPRIR"));
+          plista = plista.add(kumulrad.get().getBigDecimal("NETOPK"));
+        }
+
         HashMap sums = new HashMap();
         System.out.println("Uèitavanje podataka... " + (System.currentTimeMillis() - mili));
         List data = loadPrisutnost(Condition.ident, true);
@@ -538,6 +551,8 @@ public class frmPrisutnost extends raMasterDetail {
           PrisData sum = (PrisData) sums.get(key);
           if (sum == null) sums.put(key, pd);
           else sum.add(pd);
+          total.add(pd);
+          grupe.add(pd.grpris, pd.iznos);
         }
         System.out.println("Punjenje... " + (System.currentTimeMillis() - mili));
         for (Iterator i = sums.values().iterator(); i.hasNext(); ) {
@@ -546,7 +561,7 @@ public class frmPrisutnost extends raMasterDetail {
           out.insertRow(false);
           out.setString("CSIF", sum.grpris);
           out.setShort("CVRP", (short) sum.cvrp);
-          out.setBigDecimal("SATI", sum.sati == null ? Aus.zero0 : sum.sati);
+          if (sum.sati != null) out.setBigDecimal("SATI", sum.sati);
           out.setBigDecimal("IZNOS", sum.iznos == null ? Aus.zero0 : sum.iznos);
         }
         raProcess.yield(out);
