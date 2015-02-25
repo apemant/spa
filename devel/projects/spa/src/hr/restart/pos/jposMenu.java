@@ -158,7 +158,7 @@ public class jposMenu extends JMenu {
     jmZakljucak.setText("Zakljuèak blagajne");
     jmZakljucak.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        raPOS.zakljucak();
+        jmZakljucak_actionPerformed(e);
       }
     });
     jmKPR.setText("Formiranje KPR");
@@ -258,5 +258,8 @@ public class jposMenu extends JMenu {
   }
   public void jmPregledKPR_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upKPR_NextGeneration", jmKPR.getText());
+  }
+  public void jmZakljucak_actionPerformed(ActionEvent e) {
+    raPOS.zakljucak();
   }
 }
