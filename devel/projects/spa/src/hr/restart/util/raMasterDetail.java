@@ -2143,7 +2143,8 @@ sysoutTEST sT = new sysoutTEST(false);
 
           if (raDetail.isShowing()) {
 
-            if (getMasterSet().getStatus() == com.borland.dx.dataset.RowStatus.INSERTED) return;
+            if (getMasterSet().getStatus() == com.borland.dx.dataset.RowStatus.INSERTED 
+                && getMasterSet().saveChangesSupported()) return;
 
             try {
 
