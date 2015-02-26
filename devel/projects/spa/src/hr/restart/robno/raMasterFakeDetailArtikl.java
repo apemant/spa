@@ -23,12 +23,14 @@ import hr.restart.util.raCommonClass;
 import hr.restart.util.raMasterDetail;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
 
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.borland.dx.dataset.NavigationEvent;
+import com.borland.dx.dataset.RowStatus;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 /**
@@ -124,12 +126,27 @@ public abstract class raMasterFakeDetailArtikl extends raMasterDetail {
     super.AfterAfterSaveMaster(mode);
     raDetail.setLockedMode('0');
   }*/
+  
+  public boolean doWithSaveMaster(char mode) {
+    if (mode == 'N') {
+      getMasterSet().post();
+    }
+    return true;
+  }
 
   public void ZatvoriOstaloDetail() {
-    int row = this.getMasterSet().getRow();
-      this.getMasterSet().refresh();
+      /*int row = this.getMasterSet().getRow();
+      Point p = raMaster.getJpTableView().getViewPosition();
+      try {
+        raMaster.getJpTableView().enableEvents(false);
+        this.getMasterSet().refetchRow(getMasterSet());
+      } finally {
+        raMaster.getJpTableView().enableEvents(true);
+      }
       raMaster.getJpTableView().fireTableDataChanged();
       this.getMasterSet().goToClosestRow(row);
+      raMaster.getJpTableView().setViewPosition(p);*/
+    //this.getMasterSet().refetchRow(getMasterSet());
   }
 
   public void EntryPointDetail(char mode) {
