@@ -522,14 +522,18 @@ public class frmPrisutnost extends raMasterDetail {
         out.setColumns(new Column[] {
           dM.createStringColumn("CSIF", jpDetail.jlCsif.getText(), 5),
           Prisutobr.getDataModule().getColumn("CVRP").cloneColumn(),
+          Vrsteprim.getDataModule().getColumn("NAZIV").cloneColumn(),
           Prisutobr.getDataModule().getColumn("SATI").cloneColumn(),
-          Prisutobr.getDataModule().getColumn("IZNOS").cloneColumn()
+          Prisutobr.getDataModule().getColumn("IZNOS").cloneColumn(),
+          dM.createBigDecimalColumn("UNC", 2)
         });
-        out.getColumn("CVRP").setCaption("Vrsta primanja");
+        out.getColumn("CVRP").setCaption("Vrsta");
+        out.getColumn("NAZIV").setCaption("Naziv primanja");
+        out.getColumn("UNC").setVisible(TriStateProperty.FALSE);
         out.open();
-        String[] okey = {"CSIF", "CVRP"};
         
         System.out.println("Keširanje kumulativa... " + (System.currentTimeMillis() - mili));
+        vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
         generateKums(Condition.none, true);
         PrisData total = new PrisData();
         HashSum grupe = new HashSum();
@@ -561,8 +565,28 @@ public class frmPrisutnost extends raMasterDetail {
           out.insertRow(false);
           out.setString("CSIF", sum.grpris);
           out.setShort("CVRP", (short) sum.cvrp);
+          if (vrprims.has(String.valueOf(sum.cvrp)))
+            out.setString("NAZIV", vrprims.get(String.valueOf(sum.cvrp)).getString("NAZIV"));
           if (sum.sati != null) out.setBigDecimal("SATI", sum.sati);
           out.setBigDecimal("IZNOS", sum.iznos == null ? Aus.zero0 : sum.iznos);
+          Aus.set(out, "UNC", "IZNOS");
+        }
+        if (total.iznos.signum() > 0) {
+          for (Iterator i = grupe.iterator(); i.hasNext(); ) {
+            String key = (String) i.next();
+            out.insertRow(false);
+            out.setString("CSIF", key);
+            out.setShort("CVRP", (short) 1000);
+            out.setString("NAZIV", "Doprinosi i porezi");
+            out.setBigDecimal("IZNOS", doppor.multiply(grupe.get(key)).divide(total.iznos, 2, BigDecimal.ROUND_HALF_UP));
+            Aus.set(out, "UNC", "IZNOS");
+            
+            out.insertRow(false);
+            out.setString("CSIF", key);
+            out.setShort("CVRP", (short) 1001);
+            out.setString("NAZIV", "Plaæa s liste (nije u zbroju)");
+            out.setBigDecimal("UNC", plista.multiply(grupe.get(key)).divide(total.iznos, 2, BigDecimal.ROUND_HALF_UP));
+          }
         }
         raProcess.yield(out);
       }
@@ -579,10 +603,27 @@ public class frmPrisutnost extends raMasterDetail {
     frm.setSums(new String[] {"SATI", "IZNOS"});
     frm.setTitle("Rekapitulacija plaæe po grupama - " + jpDetail.jlCsif.getText() +
         "  obraèun za " + mje + ". mjesec " + god +".");
-    frm.jp.addTableModifier(
-       new hr.restart.swing.raTableColumnModifier("CVRP", new String[] {"CVRP", "NAZIV"}, dm.getVrsteprim()));
+    /*frm.jp.addTableModifier(
+       new hr.restart.swing.raTableColumnModifier("CVRP", new String[] {"CVRP", "NAZIV"}, dm.getVrsteprim()));*/
+    frm.jp.addTableModifier(new raTableModifier() {
+      Column dsCol;
+      Variant v = new Variant();
+      public void modify() {
+        dsCol.getDataSet().getVariant("UNC", getRow(), v);
+        ((JLabel) this.renderComponent).setText(dsCol.format(v));
+      }
+      public boolean doModify() {
+        if (getTable() instanceof JraTable2) {
+          dsCol = ((JraTable2) getTable()).getDataSetColumn(getColumn());
+          if (dsCol == null) return false;
+          return dsCol.getColumnName().equalsIgnoreCase("IZNOS");
+        }
+        return false;
+      }
+    });
     raExtendedTable t = (raExtendedTable) frm.jp.getMpTable();
     t.addToGroup("CSIF", true, new String[] {"#", "CSIF", "NAZIV"}, jpDetail.jlrCgrup.getRaDataSet(), true);
+    t.addSort("CVRP", true);
     t.createSortDescriptor();
     frm.setCounterEnabled(false);
     frm.show();
