@@ -301,6 +301,7 @@ public class frmPrisutnost extends raMasterDetail {
             dM.createBigDecimalColumn("RAZLIKA", "Razlika plaæe", 2),
             dM.createStringColumn("POTPIS", "Potpis primaoca", 20)
         });
+        out.setLocale(Aus.hr);
         out.open();
         System.out.println("Uèitavanje podataka... " + (System.currentTimeMillis() - mili));
         List data = loadPrisutnost(Condition.ident, true);
@@ -368,6 +369,7 @@ public class frmPrisutnost extends raMasterDetail {
           Prisutobr.getDataModule().getColumn("SATI").cloneColumn(),
           Prisutobr.getDataModule().getColumn("IZNOS").cloneColumn()
         });
+        out.setLocale(Aus.hr);
         out.getColumn("CVRP").setCaption("Vrsta");
         out.getColumn("NAZIV").setCaption("Naziv primanja");
         out.open();
@@ -527,6 +529,7 @@ public class frmPrisutnost extends raMasterDetail {
           Prisutobr.getDataModule().getColumn("IZNOS").cloneColumn(),
           dM.createBigDecimalColumn("UNC", 2)
         });
+        out.setLocale(Aus.hr);
         out.getColumn("CVRP").setCaption("Vrsta");
         out.getColumn("NAZIV").setCaption("Naziv primanja");
         out.getColumn("UNC").setVisible(TriStateProperty.FALSE);
@@ -756,6 +759,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     
     lgr.add("UK");
     
+    out.setLocale(Aus.hr);
     out.setColumns(cols);
     out.open();
     
