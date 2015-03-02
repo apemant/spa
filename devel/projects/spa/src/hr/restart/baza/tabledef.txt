@@ -1830,6 +1830,16 @@ ZAPOSINV;numeric;17,2;;0;VI.4.2.Zapošljavanje osoba s invaliditetom
 ZAPOSPOD;numeric;17,2;;0;VI.4.3.Zapošljavanje - poduzetnici
 NEOP;numeric;17,2;;0;Neoporezivi primici
 KAMATA;numeric;17,2;;0;Kamata MO2
+PORPRIRKAM;numeric;17,2;;0;V.6.Por.i.prir.na kamate
+MIO1SD;numeric;17,2;;0;VI.1.7.MIO 1.stup samostalna djelatnost
+MIO2SD;numeric;17,2;;0;VI.2.6.MIO 2.stup samostalna djelatnost
+ZDRSD;numeric;17,2;;0;VI.3.11.Zdravstveno os. samostalna djelatnost
+ZASNRSD;numeric;17,2;;0;VI.3.12.Zaštita na radu samostalna djelatnost
+ZAPOSSD;numeric;17,2;;0;VI.4.4.Zapošljavanje - samostalna djelatnost
+NEOPNO;numeric;17,2;;0;XI.Neoporezivi primici - neprofitne
+BROJINV;int;6;;;X.1.Broj invalida
+IZNOSINV;numeric;17,2;;0;X.2.Iznos naknade za invalide
+
 
 $JoppdB
 IDIZV;char;30;pkey;;ID Izvješæa (OIB-oznaka-vrsta)
@@ -1870,7 +1880,7 @@ NEOP;numeric;17,2;;0;15.2. Iznos neoporezivog primitka
 JNI;char;1;;;16.1. Oznaka naèina isplate
 NETOPK;numeric;17,2;;0;16.2. Iznos za isplatu
 BRUTOOBR;numeric;17,2;;0;17. Obraèunata plaæa
-
+NSATI;int;6;;;10.Neodraðeni sati rada
 
 ### sve ostale tablice
 
@@ -4334,6 +4344,7 @@ STAVKA;char;8;;;Veza sa kontom CSKL=1 APP=pl VRDOK=PL
 CPOV;int;6;;;Povjerioc
 KOEF;numeric;9,5;;100;Koeficijent
 PARAMETRI;char;20;;;Parametri;*
+NEOD;char;1;;N;Neodraðeni sati
 
 $Vrstesif
 LOKK;char;1;;N;Status zauzetosti;*

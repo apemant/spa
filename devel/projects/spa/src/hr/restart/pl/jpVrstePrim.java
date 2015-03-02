@@ -104,6 +104,8 @@ public class jpVrstePrim extends JPanel {
   JraCheckBox jcbRegres = new JraCheckBox();
 
   JraCheckBox jcbRnalog = new JraCheckBox();
+  
+  JraCheckBox jcbNeod = new JraCheckBox();
 
   JraTextField jraCvrp = new JraTextField();
 
@@ -351,7 +353,15 @@ public class jpVrstePrim extends JPanel {
     jcbRnalog.setText("Unos radnog naloga");
 
     jcbRnalog.setUnselectedDataValue("N");
-
+    
+    
+    jcbNeod.setColumnName("NEOD");
+    jcbNeod.setDataSet(fVrstePrim.getRaQueryDataSet());
+    jcbNeod.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbNeod.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbNeod.setSelectedDataValue("D");
+    jcbNeod.setText("Neodraðeni sati");
+    jcbNeod.setUnselectedDataValue("N");
 
 
     jcbAktiv.setColumnName("AKTIV");
@@ -681,6 +691,8 @@ public class jpVrstePrim extends JPanel {
     jpDetail.add(jlPovjerioc,    new XYConstraints(15, 240, -1, -1));
 
     jpDetail.add(jraKoef,    new XYConstraints(150, 265, 100, -1));
+    
+    jpDetail.add(jcbNeod,    new XYConstraints(255, 265, 300, -1));
 
     jpDetail.add(jlKoef,    new XYConstraints(15, 265, -1, -1));
 

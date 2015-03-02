@@ -146,17 +146,26 @@ public class JOPPDhndlr {
       strAset.addColumn(dM.createBigDecimalColumn("PORPRIRIMO","V.3.Por.i.prir.na imovinu"));
       strAset.addColumn(dM.createBigDecimalColumn("PORPRIROS","V.4.Por.i.prir.na osiguranje"));
       strAset.addColumn(dM.createBigDecimalColumn("PORPRIRDD","V.5.Por.i.prir.na drugi dohodak"));
+      
+      strAset.addColumn(dM.createBigDecimalColumn("PORPRIRKAM","V.6.Por.i.prir.na dohodak od kamata"));
+      
       strAset.addColumn(dM.createBigDecimalColumn("MIO1PL","VI.1.1.MIO 1.stup na plaæu"));
       strAset.addColumn(dM.createBigDecimalColumn("MIO1DD","VI.1.2.MIO 1.stup na drugi dohodak"));
       strAset.addColumn(dM.createBigDecimalColumn("MIO1POD","VI.1.3.MIO 1.stup na poduzetnièku plaæu"));
       strAset.addColumn(dM.createBigDecimalColumn("MIO1PP","VI.1.4.MIO 1.stup posebni propisi"));
       strAset.addColumn(dM.createBigDecimalColumn("MIO1OO","VI.1.5.MIO 1.stup odreðene okolnosti"));
       strAset.addColumn(dM.createBigDecimalColumn("MIO1STAZ","VI.1.6.MIO 1.stup ben.staž"));
+      
+      strAset.addColumn(dM.createBigDecimalColumn("MIO1SD","VI.1.7.MIO 1.stup samostalna djelatnost"));
+      
       strAset.addColumn(dM.createBigDecimalColumn("MIO2PL","VI.2.1.MIO 2.stup na plaæu"));
       strAset.addColumn(dM.createBigDecimalColumn("MIO2DD","VI.2.2.MIO 2.stup na drugi dohodak"));
       strAset.addColumn(dM.createBigDecimalColumn("MIO2POD","VI.2.3.MIO 2.stup na poduzetnièku plaæu"));
       strAset.addColumn(dM.createBigDecimalColumn("MIO2PP","VI.2.4.MIO 2.stup posebni propisi"));
       strAset.addColumn(dM.createBigDecimalColumn("MIO2STAZ","VI.2.5.MIO 2.stup ben.staž"));
+      
+      strAset.addColumn(dM.createBigDecimalColumn("MIO2SD","VI.2.6.MIO 2.stup samostalna djelatnost"));
+      
       strAset.addColumn(dM.createBigDecimalColumn("ZDRPL","VI.3.1.Zdravstveno os. iz plaæe"));
       strAset.addColumn(dM.createBigDecimalColumn("ZASNRPL","VI.3.2.Zaštita na radu iz plaæe"));
       strAset.addColumn(dM.createBigDecimalColumn("ZDRPOD","VI.3.3.Zdravstveno os. iz poduzetnièke plaæe"));
@@ -167,23 +176,39 @@ public class JOPPDhndlr {
       strAset.addColumn(dM.createBigDecimalColumn("ZDRPP","VI.3.8.Zdravstveno os. posebni propisi"));
       strAset.addColumn(dM.createBigDecimalColumn("ZASNRPP","VI.3.9.Zaštita na radu posebni propisi"));
       strAset.addColumn(dM.createBigDecimalColumn("ZASNROO","VI.3.10.Zaštita na radu odreðene okolnosti"));
+      
+      strAset.addColumn(dM.createBigDecimalColumn("ZDRSD","VI.3.11.Zdravstveno os. za samostalnu djelatnost"));
+      strAset.addColumn(dM.createBigDecimalColumn("ZASNRSD","VI.3.12.Zaštita na radu za samostalnu djelatnost"));
+      
       strAset.addColumn(dM.createBigDecimalColumn("ZAP","VI.4.1.Zapošljavanje na plaæe"));
       strAset.addColumn(dM.createBigDecimalColumn("ZAPOSINV","VI.4.2.Zapošljavanje osoba s invaliditetom"));
       strAset.addColumn(dM.createBigDecimalColumn("ZAPOSPOD","VI.4.3.Zapošljavanje poduzetnièka plaæa"));
-      strAset.addColumn(dM.createBigDecimalColumn("NEOP","Neoporezivi primici"));
-      strAset.addColumn(dM.createBigDecimalColumn("KAMATA","Kamata MO2"));
+      
+      strAset.addColumn(dM.createBigDecimalColumn("ZAPOSSD","VI.4.3.Zapošljavanje samostalna djelatnost"));
+      
+      strAset.addColumn(dM.createBigDecimalColumn("NEOP","VII. Neoporezivi primici"));
+      strAset.addColumn(dM.createBigDecimalColumn("KAMATA","VIII. Kamata MO2"));
+      
+      strAset.addColumn(dM.createBigDecimalColumn("NEOPNO","IX. Neoporezivi primici od neprofitnih organizacija"));
+      
+      strAset.addColumn(dM.createIntColumn("BROJINV", "X.1. Minimalni broj invalida za zaposliti"));
+      strAset.addColumn(dM.createBigDecimalColumn("IZNOSINV","X.2. Iznos obraèunate naknade"));
+      
       strAset.open();
     }
     return strAset;
   }
 
   public int getBrojOsoba() {
-    getJPTV().enableEvents(false);
-    oibs.clear();
-    for (strBset.first();strBset.inBounds(); strBset.next()) {
-       oibs.add(strBset.getString("OIB"));
+    try {
+      getJPTV().enableEvents(false);
+      oibs.clear();
+      for (strBset.first();strBset.inBounds(); strBset.next()) {
+         oibs.add(strBset.getString("OIB"));
+      }
+    } finally {
+      getJPTV().enableEvents(true);
     }
-    getJPTV().enableEvents(true);
     return oibs.size();
   }
   
@@ -217,6 +242,7 @@ public class JOPPDhndlr {
       addBigDec(strAset, strBset, new String[] {"PORPRIRIMO","POR","PRIR"}, "JOS=2001-2009;");
       addBigDec(strAset, strBset, new String[] {"PORPRIRIOS","POR","PRIR"}, "JOS=3001-3009;");
       addBigDec(strAset, strBset, new String[] {"PORPRIRIDD","POR","PRIR"}, "JOS=4001-4009,5501;");
+      addBigDec(strAset, strBset, new String[] {"PORPRIRKAM","POR","PRIR"}, "JOS=1101-1109;");
 
       addBigDec(strAset, strBset, new String[] {"MIO1PL","MIO1"}, "JOS=0001-0003,0005-0009,0021-0029,5701-5799;");
       addBigDec(strAset, strBset, new String[] {"MIO1DD","MIO1"}, "JOS=0201,4002;");
@@ -224,12 +250,14 @@ public class JOPPDhndlr {
       addBigDec(strAset, strBset, new String[] {"MIO1PP","MIO1"}, "JOS=5401-5403,5608;");
       addBigDec(strAset, strBset, new String[] {"MIO1OO","MIO1"}, "JOS= 5302,5501,5604,5606,5607;");
       addBigDec(strAset, strBset, new String[] {"MIO1STAZ","MIO1STAZ"}, "");
+      addBigDec(strAset, strBset, new String[] {"MIO1SD","MIO1"}, "JOS=0041-0049;");
 
       addBigDec(strAset, strBset, new String[] {"MIO2PL","MIO2"}, "JOS=0001-0003,0005-0009,0021-0029,5701-5799;");
       addBigDec(strAset, strBset, new String[] {"MIO2DD","MIO2"}, "JOS=0201,4002;");
       addBigDec(strAset, strBset, new String[] {"MIO2POD","MIO2"}, "JOS=0031-0039;");
       addBigDec(strAset, strBset, new String[] {"MIO2PP","MIO2"}, "JOS=5101-5103,5201-5299,5301,5401-5403,5608;");
       addBigDec(strAset, strBset, new String[] {"MIO2STAZ","MIO2STAZ"}, "");
+      addBigDec(strAset, strBset, new String[] {"MIO2SD","MIO2"}, "JOS=0041-0049;");
 
       addBigDec(strAset, strBset, new String[] {"ZDRPL","ZDR"}, "JOS=0001,0005,0008,0009,0021-0029,5701;");
       addBigDec(strAset, strBset, new String[] {"ZASNRPL","ZASNR"}, "JOS=0001,0005,0008,0009,0021-0029,5701;");
@@ -243,6 +271,13 @@ public class JOPPDhndlr {
       addBigDec(strAset, strBset, new String[] {"ZASNROO","ZASNR"}, "JOS=5302,5501,5604,5606,5607;");
       addBigDec(strAset, strBset, new String[] {"ZAP","ZAP"}, "");
       addBigDec(strAset, strBset, new String[] {"ZAPOSINV","ZAPOSINV"}, "");
+      addBigDec(strAset, strBset, new String[] {"ZDRSD","ZDR"}, "JOS=0041-0049;");
+      addBigDec(strAset, strBset, new String[] {"ZASNRSD","ZASNR"}, "JOS=0041-0049;");
+      
+      addBigDec(strAset, strBset, new String[] {"ZAPOSPOD","ZAP"}, "JOS=0031-0039;");
+      addBigDec(strAset, strBset, new String[] {"ZAPOSSD","ZAP"}, "JOS=0041-0049;");
+      Aus.sub(strAset, "ZAP", "ZAPOSPOD");
+      Aus.sub(strAset, "ZAP", "ZAPOSSD");
 
       addBigDec(strAset, strBset, new String[] {"NEOP","NEOP"}, "");
       addBigDec(strAset, strBset, new String[] {"KAMATA","MIO2","MIO2STAZ"}, "JOP=5271;");
@@ -305,10 +340,13 @@ public class JOPPDhndlr {
   private void allZero(StorageDataSet s, String[] cols2zero) {
     Column[] c = s.getColumns();
     for (int i = 0; i < c.length; i++) {
-      if (c[i].getDataType() == Variant.BIGDECIMAL && (cols2zero==null || Arrays.asList(cols2zero).contains(c[i].getColumnName()))) {
+      if (c[i].getDataType() == Variant.BIGDECIMAL && 
+          (cols2zero==null || Arrays.asList(cols2zero).contains(c[i].getColumnName()))) {
         s.setBigDecimal(c[i].getColumnName(), Aus.zero2);
       }
     }
+   if (s.hasColumn("BROJINV") != null)
+     s.setInt("BROJINV", 0);
     s.post();
   }
 
@@ -329,6 +367,7 @@ public class JOPPDhndlr {
       strBset.addColumn(dM.createStringColumn("JOM","8.Oznaka prvog/zadnjeg mj.u osig.po istoj osnovi",1));
       strBset.addColumn(dM.createStringColumn("JRV","9.Oznaka punog/nepunog radnog vremena",1));
       strBset.addColumn(dM.createIntColumn("SATI", "10.Sati rada"));
+      strBset.addColumn(dM.createIntColumn("NSATI", "10.0.Neodraðeni sati"));
       strBset.addColumn(dM.createTimestampColumn("ODJ", "10.1.Razdoblje obr. od"));
       strBset.addColumn(dM.createTimestampColumn("DOJ", "10.2.Razdoblje obr. do"));
 
@@ -381,6 +420,8 @@ public class JOPPDhndlr {
    * The ... gulp!
    */
   void doJOPPD() {
+    
+    boolean iszapinv = isZapInv();
     multipliers.clear();
     multipliers.put("BRUTO", "BRUTOMJ");
     multipliers.put("OSNDOP", "BRUTO");
@@ -437,7 +478,7 @@ public class JOPPDhndlr {
         _datum = getDatum(rs, "ODDANA")+"";
       }
       
-      
+      System.out.println(_jmbg + ", " + _jos + ", " + _jop + ", " + _job + ", " + _joz + ", " + _jom + ", " + _jrv + ", " + _jnp + ", " + _datum);
       
       if (lookupData.getlookupData().raLocate(strBset, new String[] {"OIB","JOS","JOP","JOB","JOZ","JOM","JRV",/*"JNI",*/"JNP","ODJ"}, 
           new String[] {_jmbg, _jos, _jop, _job, _joz, _jom, _jrv,/*_jni,*/_jnp, _datum})) {
@@ -449,6 +490,12 @@ public class JOPPDhndlr {
         }
         addStrBSet("BRUTO", rs.getBigDecimal("PBTO"));
         strBset.setInt("SATI", (strBset.getInt("SATI")+rs.getBigDecimal("SATIVP").intValue()));
+        
+        if (lookupData.getlookupData().raLocate(dM.getDataModule().getVrsteprim(), "CVRP", rs.getShort("CVRP")+"") &&
+            dM.getDataModule().getVrsteprim().getString("NEOD").equalsIgnoreCase("D"))
+          strBset.setInt("NSATI", (strBset.getInt("NSATI")+rs.getBigDecimal("SATIVP").intValue()));
+        
+        
         if (samojedna) {
           strBset.setBigDecimal("OSNDOP", rs.getBigDecimal("BRUTO"));
 //          addStrBSet("OSNDOP", rs.getBigDecimal("BRUTO"));
@@ -461,7 +508,7 @@ public class JOPPDhndlr {
         //temp hack
         if (rs.getBigDecimal("ZO").signum() != 0) {
           zasnr = rs.getBigDecimal(samojedna?"BRUTOMJ":"PBTO").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
-          zapinv = isZapInv()?
+          zapinv = iszapinv ?
               rs.getBigDecimal(samojedna?"BRUTOMJ":"PBTO").multiply(new BigDecimal("0.001")).setScale(2,BigDecimal.ROUND_HALF_UP)
               :Aus.zero2;
         }
@@ -523,6 +570,11 @@ public class JOPPDhndlr {
         strBset.setString("JOM", _jom);
         strBset.setString("JRV", _jrv);
         strBset.setInt("SATI", rs.getBigDecimal("SATIVP").intValue());
+        if (lookupData.getlookupData().raLocate(dM.getDataModule().getVrsteprim(), "CVRP", rs.getShort("CVRP")+"") &&
+            dM.getDataModule().getVrsteprim().getString("NEOD").equalsIgnoreCase("D"))
+          strBset.setInt("NSATI", rs.getBigDecimal("SATIVP").intValue());
+        else strBset.setInt("NSATI", 0);
+        
         strBset.setTimestamp("ODJ", getDatum(rs, "ODDANA"));
         strBset.setTimestamp("DOJ", getDatum(rs, "DODANA"));
         strBset.setBigDecimal("BRUTO", rs.getBigDecimal("PBTO"));
@@ -537,7 +589,7 @@ public class JOPPDhndlr {
         if (rs.getBigDecimal("ZO").signum() != 0) {
           zasnr = strBset.getBigDecimal("BRUTO").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
 //          zasnr = rs.getBigDecimal(samojedna?"BRUTO":"PBTO").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
-          zapinv = isZapInv()?
+          zapinv = iszapinv ?
               strBset.getBigDecimal("BRUTO").multiply(new BigDecimal("0.001")).setScale(2,BigDecimal.ROUND_HALF_UP)
               :Aus.zero2;
 
@@ -640,7 +692,6 @@ public class JOPPDhndlr {
   }
 
   private boolean isZapInv() {
-    // TODO Auto-generated method stub
     return frmParam.getParam("pl", "jzapinv"+hr.restart.zapod.OrgStr.getKNJCORG(), "N", "Ukljuèiti doprinos za zap.inv. u JOPPD za "+hr.restart.zapod.OrgStr.getKNJCORG()).equalsIgnoreCase("D");
   }
   private String getKnjCurrOIB() {
@@ -685,11 +736,12 @@ public class JOPPDhndlr {
     return null;
   }
   // da li je RS00 na 
-  private boolean isOOmatch(ReadRow rs) {
+  private boolean isOOmatch(ReadWriteRow rs) {
     try {
       String rs_OO = rs.getString("RSOO");
       String vp_OO = getVrstaPrim(rs.getShort("CVRP")).getString("RSOO");
       if (vp_OO.trim().equals("")) vp_OO = "10";
+      //rs.setString("RSOO",  vp_OO);
       return rs_OO.equals(vp_OO);
     } catch (Exception e) {
       e.printStackTrace();
@@ -865,10 +917,13 @@ System.err.println(
         set.post();
         int pos = set.getRow();
         if (recalc) {
-          getJPTV().enableEvents(false);
-          if (!isAutoSumLimit()) sumStrA();
-          set.goToRow(pos);
-          getJPTV().enableEvents(true);          
+          try {
+            getJPTV().enableEvents(false);
+            if (!isAutoSumLimit()) sumStrA();
+            set.goToRow(pos);
+          } finally {
+            getJPTV().enableEvents(true);
+          }
         } else {
           saveJOPPD();
           fPDV2.getJPTV().fireTableDataChanged();
@@ -1041,6 +1096,13 @@ System.err.println(
   public BigDecimal getSumPorPrirDD() {
     return strAset.getBigDecimal("PORPRIRDD");
   }
+  
+  /**
+   * porez i prirez na kamate /A.P6
+   */
+  public BigDecimal getSumPorPrirKam() {
+    return strAset.getBigDecimal("PORPRIRKAM");
+  }
 
   /**
    * doprinos za MIO1 plaæe /A.gen.P1
@@ -1080,6 +1142,13 @@ System.err.println(
   }
   
   /**
+   * doprinos za MIO1 samostalna djelatnost /A.gen.P7
+   */
+  public BigDecimal getSumMIO1SD() {
+    return strAset.getBigDecimal("MIO1SD");
+  }
+  
+  /**
    * doprinos za MIO2 plaæe /A.kap.P1
    */
   public BigDecimal getSumMIO2Pl() {
@@ -1109,6 +1178,14 @@ System.err.println(
   public BigDecimal getSumMIO2Staz() {
     return strAset.getBigDecimal("MIO2STAZ");  
   }
+  
+  /**
+   * doprinos za MIO2 samostalna djelatnost /A.gen.P7
+   */
+  public BigDecimal getSumMIO2SD() {
+    return strAset.getBigDecimal("MIO2SD");
+  }
+  
   /**
    * doprinos zdravstvo plaæe /A.zos.P1
    */
@@ -1169,6 +1246,15 @@ System.err.println(
   public BigDecimal getSumZasNROO() {
     return strAset.getBigDecimal("ZASNROO");  
   }
+  
+  public BigDecimal getSumZdrSD() {
+    return strAset.getBigDecimal("ZDRSD");  
+  }
+  
+  public BigDecimal getSumZasSD() {
+    return strAset.getBigDecimal("ZASNRSD");  
+  }
+  
   /**
    * doprinos za zaposljavanje /A.zap.P1
    */
@@ -1185,6 +1271,11 @@ System.err.println(
   public BigDecimal getSumZapPoduz() {
     return strAset.getBigDecimal("ZAPOSPOD");
   }
+  
+  public BigDecimal getSumZapSD() {
+    return strAset.getBigDecimal("ZAPOSSD");
+  }
+  
   /**
    * isplaceni neoporezivi primici
    */
@@ -1197,6 +1288,19 @@ System.err.println(
   public BigDecimal getKamataMO2() {
     return strAset.getBigDecimal("KAMATA");  
   }
+  
+  public BigDecimal getNeopNeprofit() {
+    return strAset.getBigDecimal("NEOPNO");  
+  }
+  
+  public int getBrojInvalida() {
+    return strAset.getInt("BROJINV");
+  }
+  
+  public BigDecimal getIznosInv() {
+    return strAset.getBigDecimal("IZNOSINV");  
+  }
+  
   void jbGet_action() {
       QueryDataSet getSet = Aus.q("SELECT IDIZV, DATUM from JoppdA order by idizv");
       lookupFrame lf = lookupFrame.getLookupFrame(fPDV2.getJframe(), getSet, new int[] {0,1});
@@ -1207,11 +1311,19 @@ System.err.println(
       }
   }
   void jbA_action() {
-    if (isAutoSumLimit()) {
+    /*if (isAutoSumLimit()) {
       if (JOptionPane.showConfirmDialog(null, "Prezbrojiti podatke sa strane B", "Pitanje", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
         sumStrA();
       }
+    }*/
+    
+    try {
+      getJPTV().enableEvents(false);
+      sumStrA();
+    } finally {
+      getJPTV().enableEvents(true);
     }
+    
     strAset.setString("OZNIZV", getOZNJOPPD(fPDV2.getDatumOd()));
     getJOPPD_ADialog().show();
   }
@@ -1239,31 +1351,37 @@ System.err.println(
     boolean isNew = qsA.getRowCount() == 0;
     String message = isNew?"Pohraniti izvješæe "+idizv+" ?":"Zamijeniti postojeæe izvješæe "+idizv+" ?";
     if (JOptionPane.showConfirmDialog(null, message, "Potvrda", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-      QueryDataSet qsB = JoppdB.getDataModule().getTempSet(Condition.nil);
-      qsB.open();
-      for (strBset.first();strBset.inBounds(); strBset.next()) {
-        qsB.insertRow(false);
-        strBset.copyTo(qsB);
-        qsB.setString("IDIZV", idizv);
-        qsB.post();
-      }
-      qsA.insertRow(false);
-      strAset.copyTo(qsA);
-      qsA.setString("IDIZV", idizv);
-      qsA.setTimestamp("DATUM", fPDV2.getDatumOd());
-      qsA.post();
-      if (!isNew) {
-        Valid.getValid().runSQL("DELETE FROM joppda where IDIZV = '"+idizv+"'");
-        Valid.getValid().runSQL("DELETE FROM joppdb where IDIZV = '"+idizv+"'");
-      }
-      if (raTransaction.saveChangesInTransaction(new QueryDataSet[] {qsA,qsB})) {
-        JOptionPane.showMessageDialog(null, "Snimanje uspješno!");
-      } else {
-        JOptionPane.showMessageDialog(null, "Transakcija neuspješna! Ponovite postupak");
+      try {
+        getJPTV().enableEvents(false);
+        QueryDataSet qsB = JoppdB.getDataModule().getTempSet(Condition.nil);
+        qsB.open();
+        for (strBset.first();strBset.inBounds(); strBset.next()) {
+          qsB.insertRow(false);
+          dM.copyColumns(strBset, qsB);
+          qsB.setString("IDIZV", idizv);
+          qsB.post();
+        }
+        qsA.insertRow(false);
+        dM.copyColumns(strAset, qsA);
+        qsA.setString("IDIZV", idizv);
+        qsA.setTimestamp("DATUM", fPDV2.getDatumOd());
+        qsA.post();
+        if (!isNew) {
+          Valid.getValid().runSQL("DELETE FROM joppda where IDIZV = '"+idizv+"'");
+          Valid.getValid().runSQL("DELETE FROM joppdb where IDIZV = '"+idizv+"'");
+        }
+        if (raTransaction.saveChangesInTransaction(new QueryDataSet[] {qsA,qsB})) {
+          JOptionPane.showMessageDialog(null, "Snimanje uspješno!");
+        } else {
+          JOptionPane.showMessageDialog(null, "Transakcija neuspješna! Ponovite postupak");
+        }
+      } finally {
+        getJPTV().enableEvents(true);
       }
     }
   }
   private void loadJOPPD(String idizv) {
+    fPDV2.setDataSet(null);
     getStrAset();
     getStrBset();
     strAset.empty();
@@ -1273,13 +1391,13 @@ System.err.println(
     qsA.open();
     qsA.first();
     strAset.insertRow(false);
-    qsA.copyTo(strAset);
+    dM.copyDestColumns(qsA, strAset);
     strAset.post();
     
     qsB.open();
     for (qsB.first(); qsB.inBounds(); qsB.next()) {
       strBset.insertRow(false);
-      qsB.copyTo(strBset);
+      dM.copyDestColumns(qsB, strBset);
       strBset.post();
     }
     StringTokenizer toib = new StringTokenizer(idizv,"-");
@@ -1401,12 +1519,15 @@ System.err.println(
     strBset.getVariant(colname, value);
     int answ = JOptionPane.showConfirmDialog(fPDV2.getWindow(), "Promijeniti u svim redovima "+colcaption+" u "+value.toString()+"?");
     if (answ == JOptionPane.OK_OPTION) {
-      fPDV2.getJPTV().enableEvents(false);
-      for (strBset.first(); strBset.inBounds(); strBset.next()) {
-        strBset.setVariant(colname, value);
-        strBset.post();
+      try {
+        fPDV2.getJPTV().enableEvents(false);
+        for (strBset.first(); strBset.inBounds(); strBset.next()) {
+          strBset.setVariant(colname, value);
+          strBset.post();
+        }
+      } finally {
+        fPDV2.getJPTV().enableEvents(true);
       }
-      fPDV2.getJPTV().enableEvents(true);
       fPDV2.getJPTV().fireTableDataChanged();
       
     }
@@ -1417,13 +1538,16 @@ System.err.println(
     if (answ == JOptionPane.OK_OPTION) {
       strBset.setSort(null);
       ((raExtendedTable) fPDV2.getJPTV().getMpTable()).resetSortColumns();
-      fPDV2.getJPTV().enableEvents(false);
-      int rbr=1;
-      for (strBset.first(); strBset.inBounds(); strBset.next()) {
-        strBset.setInt("RBR", rbr++);
-        strBset.post();
+      try {
+        fPDV2.getJPTV().enableEvents(false);
+        int rbr=1;
+        for (strBset.first(); strBset.inBounds(); strBset.next()) {
+          strBset.setInt("RBR", rbr++);
+          strBset.post();
+        }
+      } finally {
+        fPDV2.getJPTV().enableEvents(true);
       }
-      fPDV2.getJPTV().enableEvents(true);
       fPDV2.getJPTV().fireTableDataChanged();
     }
   }
