@@ -253,7 +253,9 @@ public class lookupFrame extends JraDialog {
     //this.columnsBean1.rnvRefresh.actionPerformed(null);
     if (first) jdbTable1.getDataSet().first();
     try {
-    	Column col = jdbTable1.getDataSet().getColumn(lookupData.getlookupData().getCOLNAMES()[0]);
+    	Column col = lookupData.getlookupData().getCOLNAMES() != null ?
+    	    jdbTable1.getDataSet().getColumn(lookupData.getlookupData().getCOLNAMES()[0]) :
+    	      jdbTable1.getDataSet().getColumn(0);
     	if (col.getVisible() != 0) columnsBean1.setComboSelectedItem(col.getCaption());
     	else columnsBean1.setFirstItem();
     } catch (Exception e) {
