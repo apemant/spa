@@ -582,6 +582,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                 .getString("BRRAC").equalsIgnoreCase("") ? opisstavke : data
                 .getString("BRRAC")) : getPNBZ2Prefix()+data.getString("PNBZ2") + 
                 (pnbzgod ? "-"+ut.getYear(data.getTimestamp("DATDOK")) : "");
+        brojdok = brojdok.trim();
         String ident = null;
         if (data.hasColumn("CPAR") != null) {
             ident = brojdok
@@ -645,14 +646,14 @@ System.out.println("**** DEVIZNI ANLAGE");
             //					.getString("VRDOK")) ? "U" : "I");
             //			
             if (TD.isDocUlaz(data.getString("VRDOK"))) {
-                tmpskstavke.setString("BROJDOK", data.getString("BRRAC"));
+                tmpskstavke.setString("BROJDOK", data.getString("BRRAC").trim());
                 tmpskstavke.setString("IDENT", ident);
                 tmpskstavke.setTimestamp("DATDOSP", data
                         .getTimestamp("DATDOSP"));
                 if (data.getString("BRRAC").equalsIgnoreCase("")) {
                     // ako nema brrac moramo forsati !!!
                     //					tmpskstavke.setString()
-                    tmpskstavke.setString("BROJDOK", opisstavke);
+                    tmpskstavke.setString("BROJDOK", opisstavke.trim());
                     tmpskstavke.setString("IDENT", (tmpskstavke
                             .getString("BROJDOK")
                             + "-" + data.getInt("CPAR")));
@@ -683,8 +684,8 @@ System.out.println("**** DEVIZNI ANLAGE");
                  */
             } else {
                 try {
-                    tmpskstavke.setString("BROJDOK", getPNBZ2Prefix()+data.getString("PNBZ2") + 
-                        (pnbzgod ? "-"+ut.getYear(data.getTimestamp("DATDOK")) : ""));
+                    tmpskstavke.setString("BROJDOK", (getPNBZ2Prefix()+data.getString("PNBZ2") + 
+                        (pnbzgod ? "-"+ut.getYear(data.getTimestamp("DATDOK")) : "")).trim());
                     tmpskstavke.setString("IDENT", ident);
                     tmpskstavke.setString("EXTBRDOK", String.valueOf(data
                             .getInt("BRDOK")));
