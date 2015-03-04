@@ -91,11 +91,10 @@ public class frmPrisutnost extends raMasterDetail {
   int god, mje;
   String[] key = new String[] {"CRADNIK"};
   String[] allkey = new String[] {"CRADNIK", "DAN", "CVRP", "GRPRIS"};
-  
-  String[] dtj = {"", "Ned", "Pon", "Uto", "Sri", "Èet", "Pet", "Sub"};
-  
+    
   HashDataSet vrprims;
-  HashDataSet kumulrad;
+  //HashDataSet kumulrad;
+  HashMap kumulrad;
   
   raNavAction rnvShowOne  = new raNavAction("Prikaži raspored",raImages.IMGALIGNJUSTIFY,KeyEvent.VK_F7) {
     public void actionPerformed(ActionEvent e) {
@@ -230,7 +229,7 @@ public class frmPrisutnost extends raMasterDetail {
       cal.set(cal.MONTH, mje - 1);
       cal.set(cal.DATE, dan);
       
-      jpDetail.jlDanTj.setText(dtj[cal.get(cal.DAY_OF_WEEK)]);
+      jpDetail.jlDanTj.setText(Sih.dtj[cal.get(cal.DAY_OF_WEEK)]);
     }
   }
   
@@ -291,49 +290,7 @@ public class frmPrisutnost extends raMasterDetail {
   void showRadnici() {
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
-        long mili = System.currentTimeMillis();
-        StorageDataSet out = new StorageDataSet();
-        out.setColumns(new Column[] {
-            Prisutobr.getDataModule().getColumn("CRADNIK").cloneColumn(),
-            dM.createStringColumn("PRIME", "Prezime i ime", 100).cloneColumn(),
-            dM.createBigDecimalColumn("TOTAL", "Ukupno plaæa", 2),
-            dM.createBigDecimalColumn("PLISTA", "Plaæa s liste", 2),
-            dM.createBigDecimalColumn("RAZLIKA", "Razlika plaæe", 2),
-            dM.createStringColumn("POTPIS", "Potpis primaoca", 20)
-        });
-        out.setLocale(Aus.hr);
-        out.open();
-        System.out.println("Uèitavanje podataka... " + (System.currentTimeMillis() - mili));
-        List data = loadPrisutnost(Condition.ident, true);
-        System.out.println("Uèitavanje prave plaæe... " + (System.currentTimeMillis() - mili));
-        HashDataSet rads = new HashDataSet(dm.getRadnici(), "CRADNIK");
-        DataSet netods = Kumulrad.getDataModule().getTempSet("CRADNIK NETOPK", Condition.ident);        
-        raProcess.openScratchDataSet(netods);
-        
-        System.out.println("Zbrajanje... " + (System.currentTimeMillis() - mili));        
-        HashMap neto = new HashMap();
-        for (netods.first(); netods.inBounds(); netods.next())
-          neto.put(netods.getString("CRADNIK"), netods.getBigDecimal("NETOPK"));
-        
-        HashSum sum = new HashSum();
-        int m = 0;
-        for (Iterator i = data.iterator(); i.hasNext(); ) {
-          if (m++ % 200 == 0) raProcess.checkClosing();
-          PrisData pd = (PrisData) i.next();
-          sum.add(pd.cradnik, pd.iznos);
-        }
-        System.out.println("Punjenje... " + (System.currentTimeMillis() - mili));
-        for (Iterator i = sum.iterator(); i.hasNext(); ) {
-          if (m++ % 100 == 0) raProcess.checkClosing();
-          String key = (String) i.next();
-          out.insertRow(false);
-          out.setString("CRADNIK", key);
-          out.setString("PRIME", rads.get(key).getString("PREZIME") + " " + rads.get(key).getString("IME"));
-          out.setBigDecimal("TOTAL", sum.get(key));
-          out.setBigDecimal("PLISTA", (BigDecimal) neto.get(key));
-          Aus.sub(out, "RAZLIKA", "TOTAL", "PLISTA");
-        }
-        raProcess.yield(out);
+        raProcess.yield(Sih.generatePotpisList(Condition.none));
       }
     });
     
@@ -356,81 +313,17 @@ public class frmPrisutnost extends raMasterDetail {
   }
   
   void showPrim() {
-    final PrisData zarade = new PrisData();
-    final PrisData naknade = new PrisData();
-    final PrisData obustave = new PrisData();
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
-        long mili = System.currentTimeMillis();
-        StorageDataSet out = new StorageDataSet();
-        out.setColumns(new Column[] {
-          Prisutobr.getDataModule().getColumn("CVRP").cloneColumn(),
-          Vrsteprim.getDataModule().getColumn("NAZIV").cloneColumn(),
-          Prisutobr.getDataModule().getColumn("SATI").cloneColumn(),
-          Prisutobr.getDataModule().getColumn("IZNOS").cloneColumn()
-        });
-        out.setLocale(Aus.hr);
-        out.getColumn("CVRP").setCaption("Vrsta");
-        out.getColumn("NAZIV").setCaption("Naziv primanja");
-        out.open();
-        System.out.println("Keširanje kumulativa... " + (System.currentTimeMillis() - mili));
-        vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
-        generateKums(Condition.none, true);
-        
-        HashMap sums = new HashMap();
-        System.out.println("Uèitavanje podataka... " + (System.currentTimeMillis() - mili));
-        List data = loadPrisutnost(Condition.ident, true);
-        System.out.println("Zbrajanje... " + (System.currentTimeMillis() - mili));
-        int m = 0;
-        for (Iterator i = data.iterator(); i.hasNext(); ) {
-          if (m++ % 200 == 0) raProcess.checkClosing();
-          PrisData pd = (PrisData) i.next();
-          String key = String.valueOf(pd.cvrp);
-          PrisData sum = (PrisData) sums.get(key);
-          if (sum == null) sums.put(key, pd);
-          else sum.add(pd);
-          if (pd.sati != null && pd.sati.signum() > 0) zarade.add(pd);
-          else if (pd.iznos != null && pd.iznos.signum() > 0) naknade.add(pd);
-          else obustave.add(pd);
-        }
-        System.out.println("Punjenje... " + (System.currentTimeMillis() - mili));
-        for (Iterator i = sums.values().iterator(); i.hasNext(); ) {
-          if (m++ % 100 == 0) raProcess.checkClosing();
-          PrisData sum = (PrisData) i.next();
-          out.insertRow(false);
-          out.setShort("CVRP", (short) sum.cvrp);
-          out.setString("NAZIV", vrprims.get(String.valueOf(sum.cvrp)).getString("NAZIV"));
-          if (sum.sati != null) out.setBigDecimal("SATI", sum.sati);
-          out.setBigDecimal("IZNOS", sum.iznos == null ? Aus.zero0 : sum.iznos);
-        }
-        raProcess.yield(out);
+        raProcess.yield(Sih.generatePrimanjaIzvj(Condition.none));
       }
     });
-    
     if (!raProcess.isCompleted()) return;
-    StorageDataSet out = (StorageDataSet) raProcess.getReturnValue();
-    if (out == null) return;
+    StorageDataSet[] ret = (StorageDataSet[]) raProcess.getReturnValue();
+    if (ret == null || ret[0] == null) return;
     
-    StorageDataSet sums = new StorageDataSet();
-    sums.setColumns(new Column[] {
-        dM.createStringColumn("PRIM", "Primanje", 50),
-        dM.createColumn("SATI", "Sati", null, Variant.BIGDECIMAL, 2, 10, 2),
-        dM.createColumn("IZNOS", "Iznos", null, Variant.BIGDECIMAL, 2, 10, 2)
-    });
-    sums.open();
-    
-    insertSum(sums, "UKUPNO ZARADE", zarade.sati, zarade.iznos);
-    insertSum(sums, "NAKNADE", null, naknade.iznos);
-    insertSum(sums, "OBUSTAVE", null, obustave.iznos);
-    insertSum(sums, "ZA ISPLATU", null, zarade.iznos.add(naknade.iznos).add(obustave.iznos));
-    BigDecimal doppor = Aus.zero0, plista = Aus.zero0;
-    for (kumulrad.get().first(); kumulrad.get().inBounds(); kumulrad.get().next()) {
-      doppor = doppor.add(kumulrad.get().getBigDecimal("DOPRINOSI")).add(kumulrad.get().getBigDecimal("PORIPRIR"));
-      plista = plista.add(kumulrad.get().getBigDecimal("NETOPK"));
-    }
-    insertSum(sums, "PLAÆA S LISTE", null, plista);
-    insertSum(sums, "DOPRINOSI I POREZI", null, doppor);
-    insertSum(sums, "SVEUKUPNO", zarade.sati, zarade.iznos.add(naknade.iznos).add(obustave.iznos).add(doppor));
+    StorageDataSet out = ret[0];
+    StorageDataSet sums = ret[1];
 
     frmTableDataView frm = new frmTableDataView();
     frm.setDataSet(out);
@@ -519,79 +412,7 @@ public class frmPrisutnost extends raMasterDetail {
   void showGrupe() {
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
-        long mili = System.currentTimeMillis();
-        StorageDataSet out = new StorageDataSet();
-        out.setColumns(new Column[] {
-          dM.createStringColumn("CSIF", jpDetail.jlCsif.getText(), 5),
-          Prisutobr.getDataModule().getColumn("CVRP").cloneColumn(),
-          Vrsteprim.getDataModule().getColumn("NAZIV").cloneColumn(),
-          Prisutobr.getDataModule().getColumn("SATI").cloneColumn(),
-          Prisutobr.getDataModule().getColumn("IZNOS").cloneColumn(),
-          dM.createBigDecimalColumn("UNC", 2)
-        });
-        out.setLocale(Aus.hr);
-        out.getColumn("CVRP").setCaption("Vrsta");
-        out.getColumn("NAZIV").setCaption("Naziv primanja");
-        out.getColumn("UNC").setVisible(TriStateProperty.FALSE);
-        out.open();
-        
-        System.out.println("Keširanje kumulativa... " + (System.currentTimeMillis() - mili));
-        vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
-        generateKums(Condition.none, true);
-        PrisData total = new PrisData();
-        HashSum grupe = new HashSum();
-        BigDecimal doppor = Aus.zero0, plista = Aus.zero0;
-        for (kumulrad.get().first(); kumulrad.get().inBounds(); kumulrad.get().next()) {
-          doppor = doppor.add(kumulrad.get().getBigDecimal("DOPRINOSI")).add(kumulrad.get().getBigDecimal("PORIPRIR"));
-          plista = plista.add(kumulrad.get().getBigDecimal("NETOPK"));
-        }
-
-        HashMap sums = new HashMap();
-        System.out.println("Uèitavanje podataka... " + (System.currentTimeMillis() - mili));
-        List data = loadPrisutnost(Condition.ident, true);
-        System.out.println("Zbrajanje... " + (System.currentTimeMillis() - mili));
-        int m = 0;
-        for (Iterator i = data.iterator(); i.hasNext(); ) {
-          if (m++ % 200 == 0) raProcess.checkClosing();
-          PrisData pd = (PrisData) i.next();
-          String key = pd.grpris+"|"+pd.cvrp;
-          PrisData sum = (PrisData) sums.get(key);
-          if (sum == null) sums.put(key, pd);
-          else sum.add(pd);
-          total.add(pd);
-          grupe.add(pd.grpris, pd.iznos);
-        }
-        System.out.println("Punjenje... " + (System.currentTimeMillis() - mili));
-        for (Iterator i = sums.values().iterator(); i.hasNext(); ) {
-          if (m++ % 100 == 0) raProcess.checkClosing();
-          PrisData sum = (PrisData) i.next();
-          out.insertRow(false);
-          out.setString("CSIF", sum.grpris);
-          out.setShort("CVRP", (short) sum.cvrp);
-          if (vrprims.has(String.valueOf(sum.cvrp)))
-            out.setString("NAZIV", vrprims.get(String.valueOf(sum.cvrp)).getString("NAZIV"));
-          if (sum.sati != null) out.setBigDecimal("SATI", sum.sati);
-          out.setBigDecimal("IZNOS", sum.iznos == null ? Aus.zero0 : sum.iznos);
-          Aus.set(out, "UNC", "IZNOS");
-        }
-        if (total.iznos.signum() > 0) {
-          for (Iterator i = grupe.iterator(); i.hasNext(); ) {
-            String key = (String) i.next();
-            out.insertRow(false);
-            out.setString("CSIF", key);
-            out.setShort("CVRP", (short) 1000);
-            out.setString("NAZIV", "Doprinosi i porezi");
-            out.setBigDecimal("IZNOS", doppor.multiply(grupe.get(key)).divide(total.iznos, 2, BigDecimal.ROUND_HALF_UP));
-            Aus.set(out, "UNC", "IZNOS");
-            
-            out.insertRow(false);
-            out.setString("CSIF", key);
-            out.setShort("CVRP", (short) 1001);
-            out.setString("NAZIV", "Plaæa s liste (nije u zbroju)");
-            out.setBigDecimal("UNC", plista.multiply(grupe.get(key)).divide(total.iznos, 2, BigDecimal.ROUND_HALF_UP));
-          }
-        }
-        raProcess.yield(out);
+        raProcess.yield(Sih.generateGrupeIzvj(jpDetail.jlCsif.getText(), Condition.none));
       }
     });
     
@@ -651,301 +472,6 @@ public class frmPrisutnost extends raMasterDetail {
     rcp.addCalcSet(getDetailSet(), "prisutobr");
     rcp.addCalcSet(getMasterSet(), "radnicipl");
     rcp.calcPrisut(getDetailSet());
-    
-  	/*DataSet ds = getDetailSet();
-  	if (ds.rowCount() == 0) return;
-  	
-    int row = ds.getRow();
-    raDetail.getJpTableView().getMpTable().stopFire();
-    ds.enableDataSetEvents(false);
-    try {
-    	
-    	QueryDataSet rads = Radnicipl.getDataModule().openTempSet(Condition.equal("CRADNIK", getMasterSet()));    	
-    	QueryDataSet prim = Primanjaobr.getDataModule().openTempSet(Condition.equal("CRADNIK", rads));
-    	int rbr = 0;
-    	
-    	for (ds.first(); ds.inBounds(); ds.next()) {
-    		if (ld.raLocate(prim, "CVRP", "" + ds.getShort("CVRP"))) {
-    			Aus.add(prim, "SATI", ds);
-    			Aus.add(prim, "NETO", ds, "IZNOS");
-    		} else {
-    			prim.insertRow(false);
-    			prim.setShort("RBR", (short) ++rbr);
-    			prim.setShort("CVRP", ds.getShort("CVRP"));
-    			prim.setString("CRADNIK", ds.getString("CRADNIK"));
-    			prim.setString("CORG", rads.getString("CORG"));
-    			prim.setBigDecimal("KOEF", Aus.one0.movePointRight(2));
-    			prim.setBigDecimal("SATI", ds.getBigDecimal("SATI"));
-    			prim.setBigDecimal("NETO", ds.getBigDecimal("IZNOS"));
-    		}
-    	}
-    	
-    	frmTableDataView frm = new frmTableDataView();
-    	frm.setDataSet(prim);
-    	frm.setSaveName("Pregled-prisutobr-prim");
-    	frm.setVisibleCols(new int[] {1, 4, 8});
-    	frm.setSums(new String[] {"SATI", "NETO"});
-    	frm.setTitle("Primanja radnika " + radnikFull);
-    	frm.jp.addTableModifier(
-    	   new hr.restart.swing.raTableColumnModifier("CVRP", new String[] {"CVRP", "NAZIV"}, dm.getVrsteprim()));
-    	frm.show();
-    	frm.resizeLater();
-    	
-    } finally {Sati
-    	ds.goToRow(row);
-    	ds.enableDataSetEvents(true);
-    	raDetail.getJpTableView().getMpTable().startFire();
-    	raDetail.getJpTableView().fireTableDataChanged();
-    }*/
-  }
-  
-boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
-    
-    if (data.size() == 0) return false;
-    
-    Calendar cal = Calendar.getInstance();
-    cal.set(cal.YEAR, god);
-    cal.set(cal.MONTH, mje - 1);    
-    
-    sums.setColumns(new Column[] {
-        dM.createStringColumn("PRIM", "Primanje", 50),
-        dM.createColumn("SATI", "Sati", null, Variant.BIGDECIMAL, 2, 10, 2),
-        dM.createColumn("IZNOS", "Iznos", null, Variant.BIGDECIMAL, 2, 10, 2)
-    });
-    sums.open();
-    HashSum primsati = new HashSum();
-    HashSum primiznos = new HashSum();
-    
-    HashSet grs = new HashSet();
-    HashSum[] dani = new HashSum[maxDana];
-    VarStr[] mods = new VarStr[maxDana];
-    for (int i = 0; i < maxDana; i++) {
-      dani[i] = new HashSum();
-      mods[i] = new VarStr();
-    }
-    for (Iterator i = data.iterator(); i.hasNext(); ) {
-      PrisData pd = (PrisData) i.next();
-      grs.add(pd.grpris);
-      if (pd.dan > maxDana) {
-        System.out.println("Weird bug! dan = " + pd.dan);
-        pd.dan = maxDana;
-      }
-      if (pd.dan > 0 && pd.sati != null && pd.sati.signum() > 0) {
-        dani[pd.dan - 1].add(pd.grpris, pd.sati);
-        String old = mods[pd.dan - 1].extract(pd.grpris+":", "|");
-        if (old == null) mods[pd.dan - 1].append(pd.grpris).append(':').
-          append(vrprims.get(Integer.toString(pd.cvrp)).getString("CGRPRIM")).append('|');
-        else {
-          int beg = mods[pd.dan - 1].indexOf(pd.grpris+":");
-          int end = mods[pd.dan - 1].indexOf('|', beg);
-          mods[pd.dan - 1].replace(beg, end, pd.grpris+":"+old+","+
-              vrprims.get(Integer.toString(pd.cvrp)).getString("CGRPRIM"));
-        }
-      }
-      primsati.add(Integer.toString(pd.cvrp), pd.sati);
-      primiznos.add(Integer.toString(pd.cvrp), pd.iznos);
-    }
-    
-    Column[] cols = new Column[grs.size() + 4];
-    cols[0] = dM.createStringColumn("MOD", "Modif", 500);
-    cols[0].setVisible(TriStateProperty.FALSE);
-    cols[1] = dM.createIntColumn("DAN", "Dan");
-    cols[2] = dM.createStringColumn("DTJE", "Tje", 3);
-    cols[3] = dM.createColumn("UK", "Ukupno", null, Variant.BIGDECIMAL, 2, 6, 2);
-    ArrayList lgr = new ArrayList(grs);
-    Collections.sort(lgr);
-    for (int i = 0; i < lgr.size(); i++)
-        cols[i+4] = dM.createColumn((String) lgr.get(i), (String) lgr.get(i), null, Variant.BIGDECIMAL, 2, 6, 2);
-    
-    lgr.add("UK");
-    
-    out.setLocale(Aus.hr);
-    out.setColumns(cols);
-    out.open();
-    
-    for (int i = 0; i < maxDana; i++) {
-        out.insertRow(false);
-        out.setString("MOD", mods[i].toString());
-        out.setInt("DAN", i + 1);
-        cal.set(cal.DATE, i + 1);
-        out.setString("DTJE", dtj[cal.get(cal.DAY_OF_WEEK)]);
-        
-        for (Iterator g = dani[i].iterator(); g.hasNext(); ) {
-            String gr = (String) g.next();
-            out.setBigDecimal(gr, (BigDecimal) dani[i].get(gr));
-            Aus.add(out, "UK", gr);
-        }
-    }
-    
-    // primanja
-    BigDecimal totalPrim = Aus.zero0;
-    BigDecimal totalSati = Aus.zero0;
-    for (Iterator i = primiznos.iterator(); i.hasNext(); ) {
-      String key = (String) i.next();
-      if (primsati.get(key) != null && primsati.get(key).signum() > 0) {
-        insertSum(sums, key, primsati.get(key), primiznos.get(key));
-        totalPrim = totalPrim.add(primiznos.get(key));
-        totalSati = totalSati.add(primsati.get(key));
-      }
-    }
-    insertSum(sums, "UKUPNO", totalSati, totalPrim);
-    
-    // naknade
-    BigDecimal totalNak = Aus.zero0;
-    for (Iterator i = primiznos.iterator(); i.hasNext(); ) {
-      String key = (String) i.next();
-      if ((primsati.get(key) == null || primsati.get(key).signum() == 0) 
-          && primiznos.get(key).signum() > 0) {
-        insertSum(sums, key, null, primiznos.get(key));
-        totalNak = totalNak.add(primiznos.get(key));
-      }
-    }
-    if (totalNak.signum() > 0)
-      insertSum(sums, "NAKNADE", null, totalNak);
-    
-    // obustave
-    BigDecimal totalOb = Aus.zero0;
-    for (Iterator i = primiznos.iterator(); i.hasNext(); ) {
-      String key = (String) i.next();
-      if ((primsati.get(key) == null || primsati.get(key).signum() == 0) 
-          && primiznos.get(key).signum() < 0) {
-        insertSum(sums, key, null, primiznos.get(key));
-        totalOb = totalOb.add(primiznos.get(key));
-      }
-    }
-    if (totalOb.signum() > 0)
-      insertSum(sums, "OBUSTAVE", null, totalOb);
-    
-    insertSum(sums, "", null, null);
-    insertSum(sums, "SVEUKUPNO", totalSati, totalPrim.add(totalNak).add(totalOb));
-    
-    String key = ((PrisData) data.get(0)).cradnik;
-    if (kumulrad.has(key)) {
-      insertSum(sums, "", null, null);
-      DataSet kum = kumulrad.get(key);
-      insertSum(sums, "PLAÆA S LISTE", null, kum.getBigDecimal("NETOPK"));
-      insertSum(sums, "RAZLIKA PLAÆE", null, totalPrim.add(totalNak).add(totalOb).subtract(kum.getBigDecimal("NETOPK")));
-      insertSum(sums, "", null, null);
-      insertSum(sums, "", null, null);
-      insertSum(sums, "DOPRINOSI I POREZI", null, kum.getBigDecimal("DOPRINOSI").add(kum.getBigDecimal("PORIPRIR")));
-      insertSum(sums, "BRUTO PLAÆA", null, totalPrim.add(totalNak).add(totalOb).add(kum.getBigDecimal("DOPRINOSI")).add(kum.getBigDecimal("PORIPRIR")));
-    }
-    
-    return true;
-  }
-
-  /*boolean findKum(DataSet ds, StorageDataSet out, StorageDataSet sums) {
-    
-    if (ds.rowCount() == 0) return false;
-    
-    Calendar cal = Calendar.getInstance();
-    cal.set(cal.YEAR, god);
-    cal.set(cal.MONTH, mje - 1);
-    String[] dt = {"", "Ned", "Pon", "Uto", "Sri", "Èet", "Pet", "Sub"};
-    
-    sums.setColumns(new Column[] {
-        dM.createStringColumn("PRIM", "Primanje", 50),
-        dM.createColumn("SATI", "Sati", null, Variant.BIGDECIMAL, 2, 10, 2),
-        dM.createColumn("IZNOS", "Iznos", null, Variant.BIGDECIMAL, 2, 10, 2)
-    });
-    sums.open();
-    HashSum primsati = new HashSum(ds, "CVRP", "SATI");
-    HashSum primiznos = new HashSum(ds, "CVRP", "IZNOS");
-    
-    HashSet grs = new HashSet();
-    HashSum[] dani = new HashSum[maxDana];
-    for (int i = 0; i < maxDana; i++)
-        dani[i] = new HashSum(ds, "GRPRIS", "SATI");
-    for (ds.first(); ds.inBounds(); ds.next()) {
-        grs.add(ds.getString("GRPRIS"));
-        int dan = ds.getShort("DAN");
-        if (dan > maxDana) {
-            System.out.println("Weird bug! dan = " + dan);
-            dan = maxDana;
-        }
-        if (ds.getBigDecimal("SATI") != null && ds.getBigDecimal("SATI").signum() > 0)
-          dani[dan - 1].add();
-        primsati.add();
-        primiznos.add();
-    }
-    
-    Column[] cols = new Column[grs.size() + 3];
-    cols[0] = dM.createIntColumn("DAN", "Dan");
-    cols[1] = dM.createStringColumn("DTJE", "Tje", 3);
-    cols[2] = dM.createColumn("UK", "Ukupno", null, Variant.BIGDECIMAL, 2, 6, 2);
-    ArrayList lgr = new ArrayList(grs);
-    Collections.sort(lgr);
-    for (int i = 0; i < lgr.size(); i++)
-        cols[i+3] = dM.createColumn((String) lgr.get(i), (String) lgr.get(i), null, Variant.BIGDECIMAL, 2, 6, 2);
-    
-    lgr.add("UK");
-    
-    out.setColumns(cols);
-    out.open();
-    
-    for (int i = 0; i < maxDana; i++) {
-        out.insertRow(false);
-        out.setInt("DAN", i + 1);
-        cal.set(cal.DATE, i + 1);
-        out.setString("DTJE", dt[cal.get(cal.DAY_OF_WEEK)]);
-        
-        for (Iterator g = dani[i].iterator(); g.hasNext(); ) {
-            String       gr = (String) g.next();
-            out.setBigDecimal(gr, (BigDecimal) dani[i].get(gr));
-            Aus.add(out, "UK", gr);
-        }
-    }
-    
-    // primanja
-    BigDecimal totalPrim = Aus.zero0;
-    BigDecimal totalSati = Aus.zero0;
-    for (Iterator i = primiznos.iterator(); i.hasNext(); ) {
-      String key = (String) i.next();
-      if (primsati.getBigDecimal(key).signum() > 0) {
-        insertSum(sums, key, primsati.getBigDecimal(key), primiznos.getBigDecimal(key));
-        totalPrim = totalPrim.add(primiznos.getBigDecimal(key));
-        totalSati = totalSati.add(primsati.getBigDecimal(key));
-      }
-    }
-    insertSum(sums, "UKUPNO", totalSati, totalPrim);
-    
-    // naknade
-    BigDecimal totalNak = Aus.zero0;
-    for (Iterator i = primiznos.iterator(); i.hasNext(); ) {
-      String key = (String) i.next();
-      if (primsati.getBigDecimal(key).signum() == 0 && primiznos.getBigDecimal(key).signum() > 0) {
-        insertSum(sums, key, null, primiznos.getBigDecimal(key));
-        totalNak = totalNak.add(primiznos.getBigDecimal(key));
-      }
-    }
-    if (totalNak.signum() > 0)
-      insertSum(sums, "NAKNADE", null, totalNak);
-    
-    // obustave
-    BigDecimal totalOb = Aus.zero0;
-    for (Iterator i = primiznos.iterator(); i.hasNext(); ) {
-      String key = (String) i.next();
-      if (primsati.getBigDecimal(key).signum() == 0 && primiznos.getBigDecimal(key).signum() < 0) {
-        insertSum(sums, key, null, primiznos.getBigDecimal(key));
-        totalOb = totalOb.add(primiznos.getBigDecimal(key));
-      }
-    }
-    if (totalOb.signum() > 0)
-      insertSum(sums, "OBUSTAVE", null, totalOb);
-    
-    insertSum(sums, "", null, null);
-    insertSum(sums, "SVEUKUPNO", totalSati, totalPrim.add(totalNak).add(totalOb));
-    
-    return true;
-  }*/
-  
-  void insertSum(StorageDataSet sums, String key, BigDecimal sati, BigDecimal iznos) {
-    sums.insertRow(false);
-    if (vrprims.has(key))
-      sums.setString("PRIM", vrprims.get(key).getString("NAZIV"));
-    else sums.setString("PRIM", key);
-    if (sati != null) sums.setBigDecimal("SATI", sati);
-    if (iznos != null) sums.setBigDecimal("IZNOS", iznos);
   }
   
   HashMap createPartition(DataSet radnici, List allData) {
@@ -956,7 +482,7 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
       rads.add(radnici.getString("CRADNIK"));
     
     for (Iterator i = allData.iterator(); i.hasNext(); ) {
-      PrisData pd = (PrisData) i.next();
+      Sih.Data pd = (Sih.Data) i.next();
       if (rads.contains(pd.cradnik)) {
         List part = (List) parts.get(pd.cradnik);
         if (part == null) parts.put(pd.cradnik, part = new ArrayList());
@@ -965,27 +491,6 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     }
     
     return parts;
-  }
-  
-  void generateKums(Condition cond, boolean proc) {
-    System.out.println("Kumulativi iz plaæe...");
-    String[] odbns = raOdbici.getInstance().getVrsteOdbKeysQuery("POVR", "S", "1", "1", true);
-    short[] odbn = new short[odbns.length];
-    for (int i = 0; i < odbns.length; i++) odbn[i] = (short) Aus.getNumber(odbns[i]);
-    
-    DataSet dopna = Odbiciobr.getDataModule().getTempSet("CRADNIK OBRIZNOS", Condition.in("CVRODB", odbn).and(cond));
-    if (!proc) dopna.open(); 
-    else raProcess.openScratchDataSet(dopna);
-    System.out.println(((QueryDataSet) dopna).getQuery().getQueryString());
-    
-    kumulrad = new HashDataSet(Kumulrad.getDataModule().openTempSet(cond), "CRADNIK");
-    for (dopna.first(); dopna.inBounds(); dopna.next()) {
-      if (kumulrad.has(dopna))
-        Aus.add(kumulrad.get(dopna), "DOPRINOSI", dopna, "OBRIZNOS");
-      else
-        System.out.println("Nema radnika! " + dopna);
-    }
-    System.out.println("Gotovo.");
   }
   
   void showAll() {
@@ -999,26 +504,24 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
     
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
-        long mili = System.currentTimeMillis();
+        Sih.start();
         vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
-        generateKums(Condition.none, true);
         QueryDataSet radnici = Radnicipl.getDataModule().getTempSet(getPreSelect().getLastFilterQuery());
-        System.out.println("Otvaranje radnika... " + (System.currentTimeMillis() - mili));
+        Sih.report("Otvaranje radnika...");
         raProcess.openScratchDataSet(radnici);
-        List allData = null;
-        System.out.println("Uèitavanje podataka... " + (System.currentTimeMillis() - mili));
+        Condition cond = Condition.none;
         if (radnici.rowCount() < Radnicipl.getDataModule().getRowCount() / 3)
-          allData = loadPrisutnost(Condition.in("CRADNIK", radnici));
-        else allData = loadPrisutnost(Condition.ident, true);
+          cond = Condition.in("CRADNIK", radnici);
+        List allData = Sih.loadPrisutobr(cond);
         
         ArrayList newOut = new ArrayList();
         ArrayList newSums = new ArrayList();
         ArrayList newRad = new ArrayList();
         
-        System.out.println("Particioniranje... " + (System.currentTimeMillis() - mili));
+        Sih.report("Particioniranje...");
         HashMap parts = createPartition(radnici, allData);
         radnici.close();
-        System.out.println("Sortiranje... " + (System.currentTimeMillis() - mili));
+        Sih.report("Sortiranje...");
         ArrayList arad = new ArrayList(parts.keySet());
         Collections.sort(arad, new Comparator() {
           HashMap prime = new HashMap();
@@ -1035,31 +538,31 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
             return pi1.compareTo(pi2);
           }
         });
-        System.out.println("Kumuliranje... " + (System.currentTimeMillis() - mili));
+        HashSum[] netodopp = Sih.loadNetoDopp(cond);
+        Sih.report("Kumuliranje...");
         for (Iterator i = arad.iterator(); i.hasNext(); ) {
           String cradnik = (String) i.next();
           List data = (List) parts.get(cradnik);
           if (data.size() > 0) {
             raProcess.checkClosing();
-            StorageDataSet out = new StorageDataSet();
-            StorageDataSet sums = new StorageDataSet();
-            if (findKum(data, out, sums)) {
-              newOut.add(out);
-              out.first();
-              newSums.add(sums);
+            StorageDataSet[] ret = Sih.findKumRad(data, god, mje, vrprims, netodopp[0], netodopp[1]);
+            if (ret[0].rowCount() > 0) {
+              newOut.add(ret[0]);
+              ret[0].first();
+              newSums.add(ret[1]);
               newRad.add(cradnik);
             }
           }
         }
         raProcess.checkClosing();
-        System.out.println("Finaliziranje... " + (System.currentTimeMillis() - mili));
+        Sih.report("Finaliziranje...");
         allOut.clear();
         allOut.addAll(newOut);
         allSums.clear();
         allSums.addAll(newSums);
         allRad.clear();
         allRad.addAll(newRad);
-        System.out.println("Gotovo. " + (System.currentTimeMillis() - mili));
+        Sih.report("Gotovo.");
       }
     });
 
@@ -1215,14 +718,15 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
   	DataSet ds = getDetailSet();
   	if (ds.rowCount() == 0) return;
   	
-  	List data = fillPrisutnost();
-    StorageDataSet out = new StorageDataSet();
-    StorageDataSet sums = new StorageDataSet();
+  	Condition cond = Condition.equal("CRADNIK",  getMasterSet());
     
     vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
-    generateKums(Condition.equal("CRADNIK",  getMasterSet()), false);
+    HashSum[] netodopp = Sih.loadNetoDopp(Condition.equal("CRADNIK",  getMasterSet()));
+    
+    StorageDataSet[] ret = Sih.findKumRad(Sih.loadPrisutobr(cond), god, mje, vrprims, netodopp[0], netodopp[1]);
+    StorageDataSet out = ret[0];
+    StorageDataSet sums = ret[1];
 
-  	findKum(data, out, sums);
     String[] acols = out.getColumnNames(out.getColumnCount());
     String[] cols = new String[acols.length - 2];
     System.arraycopy(acols, 2, cols, 0, cols.length);
@@ -1304,86 +808,4 @@ boolean findKum(List data, StorageDataSet out, StorageDataSet sums) {
   }
   
   static Collator myCol = Collator.getInstance();
-  
-  List loadPrisutnost(Condition cond) {
-    return loadPrisutnost(cond, false);
-  }
-  
-  List loadPrisutnost(Condition cond, boolean proc) {
-    List ret = new ArrayList();
-    ResultSet rs = Util.openQuickSet("SELECT cradnik,cvrp,dan,grpris,sati,iznos FROM prisutobr WHERE " + cond);
-    int i = 0;
-    try {
-      while (rs.next()) {
-        if (proc && (i++ % 17 == 0)) raProcess.checkClosing();
-        ret.add(new PrisData(rs));
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    Util.closeQuickSet(rs);
-    return ret;
-  }
-  
-  List fillPrisutnost() {
-    List ret = new ArrayList();
-    DataSet ds = getDetailSet();
-    if (ds.rowCount() == 0) return ret;
-    int row = ds.getRow();
-    raDetail.getJpTableView().getMpTable().stopFire();
-    ds.enableDataSetEvents(false);
-    try {
-      for (ds.first(); ds.inBounds(); ds.next())
-        ret.add(new PrisData(ds));
-    } finally {
-      ds.goToRow(row);
-      ds.enableDataSetEvents(true);
-      raDetail.getJpTableView().getMpTable().startFire();
-    }
-    return ret;
-  }
-  
-  static class PrisData {
-    String cradnik;
-    int dan;
-    int cvrp;
-    String grpris;
-    BigDecimal sati;
-    BigDecimal iznos;
-    public PrisData(ResultSet row) {
-      try {
-        cradnik = row.getString(1).trim();
-        cvrp = row.getShort(2);
-        dan = row.getShort(3);
-        grpris = row.getString(4).trim();
-        sati = new BigDecimal(row.getDouble(5)).setScale(2, BigDecimal.ROUND_HALF_UP);
-        if (row.wasNull()) sati = null;
-        iznos = new BigDecimal(row.getDouble(6)).setScale(2, BigDecimal.ROUND_HALF_UP);
-      } catch (SQLException e) {
-        e.printStackTrace();
-        throw new RuntimeException("Error loading main query data");
-      }
-    }
-    public PrisData(DataSet ds) {
-      cradnik = ds.getString("CRADNIK");
-      cvrp = ds.getShort("CVRP");
-      dan = ds.getShort("DAN");
-      grpris = ds.getString("GRPRIS");
-      sati = ds.getBigDecimal("SATI");
-      if (ds.isNull("SATI")) sati = null;
-      iznos = ds.getBigDecimal("IZNOS");
-    }
-    
-    public PrisData() {
-      sati = Aus.zero0;
-      iznos = Aus.zero0;
-    }
-    
-    public void add(PrisData other) {
-      if (other.sati != null)
-        sati = sati == null ? other.sati : sati.add(other.sati);
-      if (other.iznos != null)
-        iznos = iznos == null ? other.iznos : iznos.add(other.iznos);
-    }
-  }
 }
