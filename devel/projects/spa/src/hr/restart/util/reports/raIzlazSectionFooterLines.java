@@ -133,8 +133,8 @@ public class raIzlazSectionFooterLines extends raReportSection {
   public raReportElement LabelUkupno_s_porezom;
   private String[] LabelUkupno_s_porezomProps = new String[] {"Ukupno s porezom", "", "6860",
      "1300", "2180", "240", "", "", "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right"};
-  public raReportElement Line3;
-  private String[] Line3Props = new String[] {"", "No", "420", "1740", "5080", "0", "", "", ""};
+  //public raReportElement Line3;
+  //private String[] Line3Props = new String[] {"", "No", "420", "1740", "5080", "0", "", "", ""};
   public raReportElement Line4;
   private String[] Line4Props = new String[] {"", "No", "460", "960", "5040", "0", "", "", ""};
   
@@ -173,38 +173,38 @@ public class raIzlazSectionFooterLines extends raReportSection {
   
   public raReportElement TextPOPNASLOV;
   private String[] TextPOPNASLOVProps = new String[] {"POPNASLOV", "", "", "",
-     "", "", "Yes", "", "440", "1260", "5020", "240", "", "Light Gray", "", "", "", "",
+     "", "", "Yes", "", "440", "1160", "5020", "240", "", "Light Gray", "", "", "", "",
      "Lucida Bright", "9", "", "", "", "Center", ""};
   
   public raReportElement TextPOPPOST;
   private String[] TextPOPPOSTProps = new String[] {"POPPOST", "", "",
-     "Number|false|1|309|2|2|true|3|false", "", "", "Yes", "", "2000", "1540", "720", "20", "",
+     "Number|false|1|309|2|2|true|3|false", "", "", "Yes", "", "2000", "1440", "720", "20", "",
      "Light Gray", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
   public raReportElement TextPOPCRTICA;
   private String[] TextPOPCRTICAProps = new String[] {"POPCRTICA", "", "",
-     "", "", "", "Yes", "", "1800", "1540", "180", "20", "", "Light Gray", "", "", "", "",
+     "", "", "", "Yes", "", "1800", "1440", "180", "20", "", "Light Gray", "", "", "", "",
      "Lucida Bright", "8", "", "", "", "", ""};
   public raReportElement TextPOPNAZ;
   private String[] TextPOPNAZProps = new String[] {"POPNAZ", "", "", "",
-     "", "", "Yes", "", "460", "1540", "1200", "20", "", "Light Gray", "", "", "", "",
+     "", "", "Yes", "", "460", "1440", "1200", "20", "", "Light Gray", "", "", "", "",
      "Lucida Bright", "8", "", "", "", "", ""};
   public raReportElement TextPOPIZNOS;
   private String[] TextPOPIZNOSProps = new String[] {"POPIZNOS", "", "",
-     "Number|false|1|309|2|2|true|3|false", "", "", "Yes", "", "4200", "1540", "1300", "20", "",
+     "Number|false|1|309|2|2|true|3|false", "", "", "Yes", "", "4200", "1440", "1300", "20", "",
      "Light Gray", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
   public raReportElement TextPOPOSN;
   private String[] TextPOPOSNProps = new String[] {"POPOSN", "", "",
-     "Number|false|1|309|2|2|true|3|false", "", "", "Yes", "", "2800", "1540", "1300", "20", "",
+     "Number|false|1|309|2|2|true|3|false", "", "", "Yes", "", "2800", "1440", "1300", "20", "",
      "Light Gray", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
   
   public raReportElement Line5;
-  private String[] Line5Props = new String[] {"", "No", "460", "1600", "5040", "0", "", "", ""};
+  private String[] Line5Props = new String[] {"", "No", "460", "1480", "5040", "0", "", "", ""};
   
   public raReportElement TextSLOVIMA;
   private String[] TextSLOVIMAProps = new String[] {"SLOVIMA", "", "", "", "", "", "Yes", "", "900",
-     "1800", "5240", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+     "1720", "5240", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
   public raReportElement LabelSlovima_;
-  private String[] LabelSlovima_Props = new String[] {"Slovima :", "", "", "1800", "840", "220", "",
+  private String[] LabelSlovima_Props = new String[] {"Slovima :", "", "", "1720", "840", "220", "",
      "", "", "", "", "", "Lucida Bright", "8", "", "", "", ""};  
 
   public raIzlazSectionFooterLines(raReportTemplate owner) {
@@ -257,7 +257,7 @@ public class raIzlazSectionFooterLines extends raReportSection {
     Textv9 = addModel(ep.TEXT, Textv9Props);
     LabelUkupno_s_porezom = addModel(ep.LABEL, LabelUkupno_s_porezomProps);
     Line2 = addModel(ep.LINE, Line2Props);
-    Line3 = addModel(ep.LINE, Line3Props);
+    //Line3 = addModel(ep.LINE, Line3Props);
     Line4 = addModel(ep.LINE, Line4Props);
     TextPOPNASLOV = addModel(ep.TEXT, TextPOPNASLOVProps);
     TextPOPPOST = addModel(ep.TEXT, TextPOPPOSTProps);
@@ -303,6 +303,12 @@ public class raIzlazSectionFooterLines extends raReportSection {
       Textv5.setVisible(false);
       Textv7.setVisible(false);
       Textv9.setVisible(false);
+    }
+    if (!frmParam.getParam("robno", "showPopust", "N",
+        "Prikazati rekapitulaciju popusta na izlaznim raèunima (D,N)").equals("D")) {
+      removeModels(new raReportElement[] {TextPOPNASLOV, TextPOPPOST, TextPOPCRTICA, TextPOPNAZ, TextPOPIZNOS, TextPOPOSN, Line5});
+      LabelSlovima_.setTop(1200);
+      TextSLOVIMA.setTop(1200);
     }
   }
 }
