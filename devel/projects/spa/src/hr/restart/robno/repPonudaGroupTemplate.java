@@ -75,6 +75,7 @@ public class repPonudaGroupTemplate extends repIzlazGroupOrigTemplate {
 
   public raReportSection createSectionHeader1() {
     raIzlazSectionHeaderLines sh = new raIzlazSectionHeaderLines(this); // return new raIzlazSectionHeader(this);
+    sh.defaultAltererSect().setHeight(680);
     long rbrGain = sh.LabelSifra.defaultAlterer().getLeft() - sh.LabelRbr.defaultAlterer().getLeft();
     long kolGain = sh.LabelKolicina.defaultAlterer().getWidth() * 4 / 10;
         
