@@ -507,8 +507,7 @@ public class ElixirToJasperConverter {
     }
     if (tf.getHeight() <= tf.getFontSize()+2)
       tf.setStretchWithOverflow(true);
-    System.out.println(tf.getExpression().getText() + " = " + tf.getHeight() + ", " + tf.getFontSize());
-      
+    System.out.println(tf.getExpression().getText() + " = (" + tf.getX() + ", " + tf.getY() + ") " + tf.getHeight() + ", " + tf.getFontSize());    
     return tf;
   }
 
