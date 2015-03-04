@@ -26,6 +26,7 @@ import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raAdditionalLookupFilter;
 import hr.restart.util.raCommonClass;
+import hr.restart.zapod.OrgStr;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -93,13 +94,16 @@ System.out.println("Nasao?..."+isRPL);
 
   public void SetFokus() {
     System.out.println("setFokus");
-    getSelDataSet().setString("CRADNIK","");
+    getSelRow().setString("CRADNIK","");
+    
     jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    getSelRow().setString("CORG", OrgStr.getKNJCORG(false));
     jlrCorg.forceFocLost();
     jlrCradnik.setRaDataSet(hr.restart.zapod.raRadnici.getRadniciFromKnjig(hr.restart.zapod.OrgStr.getKNJCORG()));
     jlrIme.setRaDataSet(hr.restart.zapod.raRadnici.getRadniciFromKnjig(hr.restart.zapod.OrgStr.getKNJCORG()));
     jlrPrezime.setRaDataSet(hr.restart.zapod.raRadnici.getRadniciFromKnjig(hr.restart.zapod.OrgStr.getKNJCORG()));
     jlrCorg.requestFocus();
+    
   }
 
   public boolean Validacija() {
