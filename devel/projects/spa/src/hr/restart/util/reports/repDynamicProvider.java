@@ -87,14 +87,16 @@ public class repDynamicProvider implements IDataProvider {
   public String getGroupCaption(int n) {
     if (xt != null && n < xt.getTotalGroupCount() && n >= 0) {
       return xt.getDataSet().hasColumn(xt.getGroup(n)).getCaption().concat(":");
-    } else return "";
+    } 
+    return "";
   }
 
   public String getGroup(int row, int n) {
     if (xt != null && n < xt.getTotalGroupCount() && n >= 0) {
       xt.getDataSet().getVariant(xt.getGroup(n), row, v);
       return v.toString().toUpperCase();
-    } else return "";
+    } 
+    return "";
   }
 
   public String getGroupValue(int row, int n) {
@@ -103,16 +105,21 @@ public class repDynamicProvider implements IDataProvider {
           (xt.getGroupGet(n) == null && xt.getGroupGetDs(n) == null) ||
           (xt.getGroupGet(n) != null && xt.getGroupGet(n).length() > 0 && !dM.isDataSetGetter(xt.getGroupGet(n)))) 
         return getGroup(row, n);
-      xt.getDataSet().getVariant(xt.getGroup(n), row, v);
+      
       DataSet ds = null;
+      boolean fake = xt.getDataSet().hasColumn(xt.getGroup(n)) == null;
       if (xt.getGroupGet(n) == null || xt.getGroupGet(n).length() > 0)
         ds = xt.getGroupGetDs(n) != null ? xt.getGroupGetDs(n) :
           dM.getDataByName(xt.getGroupGet(n));
-      if (ds != null) {
-        ds.open();
-        lookupData.getlookupData().raLocate(ds, xt.getGroup(n), v.toString());
+      
+      if (!fake) {
+        xt.getDataSet().getVariant(xt.getGroup(n), row, v);        
+        if (ds != null) {
+          ds.open();
+          lookupData.getlookupData().raLocate(ds, xt.getGroup(n), v.toString());
+        }
       }
-      VarStr full = new VarStr(xt.getDataSet().getColumn(xt.getGroup(n)).format(v));
+      VarStr full = new VarStr(fake ? "" : xt.getDataSet().getColumn(xt.getGroup(n)).format(v));
       for (int i = 0; i < xt.getGroupDesc(n).length; i++) {
       	if (xt.getGroupDesc(n)[i].equals("#")) full.clear();
       	else if (xt.getGroupDesc(n)[i].startsWith("#"))
@@ -242,6 +249,7 @@ public class repDynamicProvider implements IDataProvider {
       sw = ((JraTable2) xt.getOwner().getSummary()).getColumnModel().getTotalColumnWidth();
       sc = ((JraTable2) xt.getOwner().getSummary()).getColumnModel().getColumnCount();
     }
+    boolean fakeGroup = xt.getTotalGroupCount() == 1 && xt.getDataSet().hasColumn(xt.getGroup(0)) == null;
 
     double ratio, sratio = 15;
     if ((cols > 7) || (width > 800)) {
@@ -266,7 +274,7 @@ public class repDynamicProvider implements IDataProvider {
         	lt.SectionHeader0.setProperty(ep.FORCE_NEW, ev.BEFORE);
         	lt.SectionFooter1.setProperty(ep.FORCE_NEW, ev.AFTER);
         }
-        if (sums && !(xt != null && xt.isForcePage())) {
+        if (sums && !fakeGroup && !(xt != null && xt.isForcePage())) {
           lt.Section0.setProperty(ep.GROUP_FOOTER, ev.YES);
           createFooter(ratio, lt.SectionFooter0, lt.TextTSumValue0, "S V E U K U P N O");
           lt.SectionFooter0.setHeight(400);
@@ -311,7 +319,7 @@ public class repDynamicProvider implements IDataProvider {
         	lt.SectionHeader0.setProperty(ep.FORCE_NEW, ev.BEFORE);
         	lt.SectionFooter1.setProperty(ep.FORCE_NEW, ev.AFTER);
         }
-        if (sums && !(xt != null && xt.isForcePage())) {
+        if (sums && !fakeGroup && !(xt != null && xt.isForcePage())) {
           lt.Section0.setProperty(ep.GROUP_FOOTER, ev.YES);
           createFooter(ratio, lt.SectionFooter0, lt.TextTSumValue0, "S V E U K U P N O");
           lt.SectionFooter0.setHeight(400);
