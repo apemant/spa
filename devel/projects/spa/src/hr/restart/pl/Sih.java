@@ -189,32 +189,32 @@ public class Sih {
   }
   
   
-  public static StorageDataSet generateArhCorgGrupeIzvj(String nazGrupe, int god, int mj, Condition cond) {
+  public static StorageDataSet generateArhCorgGrupeIzvj(String nazGrupe, Condition cond, HashSet rads) {
     start();
-    HashSum[] netodopp = loadArhNetoDopp(god, mj, cond);
-    return generateGrupeIzvj(nazGrupe, loadPrisutarh(god, mj, cond), createOjMap(), netodopp[0], netodopp[1]);
+    HashSum[] netodopp = loadArhNetoDopp(cond, rads);
+    return generateGrupeIzvj(nazGrupe, loadPrisutarh(cond, rads), createOjMap(), netodopp[0], netodopp[1]);
   }
   
-  public static StorageDataSet generateCorgGrupeIzvj(String nazGrupe, Condition cond) {
+  public static StorageDataSet generateCorgGrupeIzvj(String nazGrupe, Condition cond, HashSet rads) {
     start();
-    HashSum[] netodopp = loadNetoDopp(cond);
-    return generateGrupeIzvj(nazGrupe, loadPrisutobr(cond), createOjMap(), netodopp[0], netodopp[1]);
+    HashSum[] netodopp = loadNetoDopp(cond, rads);
+    return generateGrupeIzvj(nazGrupe, loadPrisutobr(cond, rads), createOjMap(), netodopp[0], netodopp[1]);
   }
   
-  public static StorageDataSet generateArhGrupeIzvj(String nazGrupe, int god, int mj, Condition cond) {
+  public static StorageDataSet generateArhGrupeIzvj(String nazGrupe, Condition cond, HashSet rads) {
     start();
-    HashSum[] netodopp = loadArhNetoDopp(god, mj, cond);
-    return generateGrupeIzvj(nazGrupe, loadPrisutarh(god, mj, cond), null, netodopp[0], netodopp[1]);
+    HashSum[] netodopp = loadArhNetoDopp(cond, rads);
+    return generateGrupeIzvj(nazGrupe, loadPrisutarh(cond, rads), null, netodopp[0], netodopp[1]);
   }
   
-  public static StorageDataSet generateGrupeIzvj(String nazGrupe, Condition cond) {
+  public static StorageDataSet generateGrupeIzvj(String nazGrupe, Condition cond, HashSet rads) {
     start();
-    HashSum[] netodopp = loadNetoDopp(cond);
-    return generateGrupeIzvj(nazGrupe, loadPrisutobr(cond), null, netodopp[0], netodopp[1]);
+    HashSum[] netodopp = loadNetoDopp(cond, rads);
+    return generateGrupeIzvj(nazGrupe, loadPrisutobr(cond, rads), null, netodopp[0], netodopp[1]);
   }
   
   static HashMap createOjMap() {
-    DataSet ds = Radnicipl.getDataModule().getTempSet("CRADNIK CORG");
+    DataSet ds = Radnicipl.getDataModule().getTempSet("CRADNIK CORG", "");
     raProcess.openScratchDataSet(ds);
     HashMap ret = new HashMap();
     for (ds.first(); ds.inBounds(); ds.next())
@@ -316,16 +316,16 @@ public class Sih {
     return out;
   }
   
-  public static StorageDataSet[] generateArhPrimanjaIzvj(int god, int mj, Condition cond) {
+  public static StorageDataSet[] generateArhPrimanjaIzvj(Condition cond, HashSet rads) {
     start();
-    HashSum[] netodopp = loadArhNetoDopp(god, mj, cond);
-    return generatePrimanjaIzvj(loadPrisutarh(god, mj, cond), netodopp[0].total(), netodopp[1].total());
+    HashSum[] netodopp = loadArhNetoDopp(cond, rads);
+    return generatePrimanjaIzvj(loadPrisutarh(cond, rads), netodopp[0].total(), netodopp[1].total());
   }
   
-  public static StorageDataSet[] generatePrimanjaIzvj(Condition cond) {
+  public static StorageDataSet[] generatePrimanjaIzvj(Condition cond, HashSet rads) {
     start();
-    HashSum[] netodopp = loadNetoDopp(cond);
-    return generatePrimanjaIzvj(loadPrisutobr(cond), netodopp[0].total(), netodopp[1].total());
+    HashSum[] netodopp = loadNetoDopp(cond, rads);
+    return generatePrimanjaIzvj(loadPrisutobr(cond, rads), netodopp[0].total(), netodopp[1].total());
   }
   
   public static StorageDataSet[] generatePrimanjaIzvj(List data, BigDecimal neto, BigDecimal dopp) {
@@ -403,14 +403,22 @@ public class Sih {
     if (iznos != null) sums.setBigDecimal("IZNOS", iznos);
   }
   
-  public static StorageDataSet generateArhPotpisList(int god, int mj, Condition cond) {
-    start();
-    return generatePotpisList(loadPrisutarh(god, mj, cond), loadArhNeto(god, mj, cond));
+  public static HashSet createRads(Condition cond) {
+    DataSet ds = Radnicipl.getDataModule().openTempSet("CRADNIK", cond.and(Condition.equal("AKTIV", "D")));
+    HashSet rads = new HashSet();
+    for (ds.first(); ds.inBounds(); ds.next())
+      rads.add(ds.getString("CRADNIK"));
+    return rads;
   }
   
-  public static StorageDataSet generatePotpisList(Condition cond) {
+  public static StorageDataSet generateArhPotpisList(Condition cond, HashSet rads) {
     start();
-    return generatePotpisList(loadPrisutobr(cond), loadNeto(cond));
+    return generatePotpisList(loadPrisutarh(cond, rads), loadArhNeto(cond, rads));
+  }
+  
+  public static StorageDataSet generatePotpisList(Condition cond, HashSet rads) {
+    start();
+    return generatePotpisList(loadPrisutobr(cond, rads), loadNeto(cond, rads));
   }
   
   public static StorageDataSet generatePotpisList(List data, HashSum neto) {
@@ -450,20 +458,20 @@ public class Sih {
     return out;
   }
   
-  public static HashSum[] loadArhNetoDopp(int god, int mj, Condition cond) {
-    return loadNetoDopp(Kumulrad.getDataModule().getTempSet("CRADNIK NETOPK DOPRINOSI PORIPRIR", cond.and(getArhCond(god, mj))),
-        Odbiciobr.getDataModule().getTempSet("CRADNIK OBRIZNOS", getDoprNaCond().and(cond).and(getArhCond(god, mj))));
-  }
-  
-  public static HashSum[] loadNetoDopp(Condition cond) {
+  public static HashSum[] loadArhNetoDopp(Condition cond, HashSet rads) {
     return loadNetoDopp(Kumulrad.getDataModule().getTempSet("CRADNIK NETOPK DOPRINOSI PORIPRIR", cond),
-        Odbiciobr.getDataModule().getTempSet("CRADNIK OBRIZNOS", getDoprNaCond().and(cond)));
+        Odbiciobr.getDataModule().getTempSet("CRADNIK OBRIZNOS", getDoprNaCond().and(cond)), rads);
   }
   
-  public static Condition getArhCond(int god, int mj) {
+  public static HashSum[] loadNetoDopp(Condition cond, HashSet rads) {
+    return loadNetoDopp(Kumulrad.getDataModule().getTempSet("CRADNIK NETOPK DOPRINOSI PORIPRIR", cond),
+        Odbiciobr.getDataModule().getTempSet("CRADNIK OBRIZNOS", getDoprNaCond().and(cond)), rads);
+  }
+  
+/*  public static Condition getArhCond(int god, int mj) {
     return Condition.equal("GODOBR", god).and(Condition.equal("MJOBR", mj));
   }
-  
+*/  
   public static Condition getDoprNaCond() {
     String[] odbns = raOdbici.getInstance().getVrsteOdbKeysQuery("POVR", "S", "1", "1", true);
     short[] odbn = new short[odbns.length];
@@ -473,18 +481,19 @@ public class Sih {
   }
   
   // netods: netopk, doprinosi,poriprir;  dopna: obriznos
-  public static HashSum[] loadNetoDopp(DataSet netods, DataSet dopna) {
+  public static HashSum[] loadNetoDopp(DataSet netods, DataSet dopna, HashSet rads) {
     report("Dohvat kumulativa...");
     if (!raProcess.isRunning()) netods.open();
     else raProcess.openScratchDataSet(netods);
     
     HashSum retn = new HashSum(netods, "CRADNIK", "NETOPK");
     HashSum retd = new HashSum(netods, "CRADNIK", "DOPRINOSI");
-    for (netods.first(); netods.inBounds(); netods.next()) {
-      retn.add();
-      retd.add();
-      retd.addVal("PORIPRIR");
-    }
+    for (netods.first(); netods.inBounds(); netods.next())
+      if (rads == null || rads.contains(netods.getString("CRADNIK"))) {
+        retn.add();
+        retd.add();
+        retd.addVal("PORIPRIR");
+      }
 
     report("Dohvat odbitaka...");
     if (!raProcess.isRunning()) dopna.open(); 
@@ -492,41 +501,43 @@ public class Sih {
     
     retd.set(dopna, "OBRIZNOS");
     for (dopna.first(); dopna.inBounds(); dopna.next()) 
-      retd.add();
+      if (rads == null || rads.contains(dopna.getString("CRADNIK")))
+        retd.add();
     
     return new HashSum[] {retn, retd};
   }
   
-  public static HashSum loadArhNeto(int god, int mj, Condition cond) {
-    return loadNeto(Kumulradarh.getDataModule().getTempSet("CRADNIK NETOPK", cond.and(getArhCond(god, mj))));
+  public static HashSum loadArhNeto(Condition cond, HashSet rads) {
+    return loadNeto(Kumulradarh.getDataModule().getTempSet("CRADNIK NETOPK", cond), rads);
   }
   
-  public static HashSum loadNeto(Condition cond) {
-    return loadNeto(Kumulrad.getDataModule().getTempSet("CRADNIK NETOPK", cond));        
+  public static HashSum loadNeto(Condition cond, HashSet rads) {
+    return loadNeto(Kumulrad.getDataModule().getTempSet("CRADNIK NETOPK", cond), rads);        
   }
   
-  public static HashSum loadNeto(DataSet netods) {
+  public static HashSum loadNeto(DataSet netods, HashSet rads) {
     report("Dohvat kumulativa...");
     if (!raProcess.isRunning()) netods.open();
     else raProcess.openScratchDataSet(netods);
     
     HashSum ret = new HashSum(netods, "CRADNIK", "NETOPK");
     for (netods.first(); netods.inBounds(); netods.next())
-      ret.add();
+      if (rads == null || rads.contains(netods.getString("CRADNIK")))
+        ret.add();
     return ret;
   }
 
-  public static List loadPrisutarh(int god, int mj, Condition cond) {
-    return loadPrisutnost("SELECT cradnik,cvrp,dan,grpris,sati,iznos FROM prisutarh WHERE " + cond.and(getArhCond(god, mj)));
+  public static List loadPrisutarh(Condition cond, HashSet rads) {
+    return loadPrisutnost("SELECT cradnik,cvrp,dan,grpris,sati,iznos FROM prisutarh WHERE " + cond, rads);
   }
   
-  public static List loadPrisutobr(Condition cond) {
+  public static List loadPrisutobr(Condition cond, HashSet rads) {
     return loadPrisutnost("SELECT cradnik,cvrp,dan,grpris,sati,iznos FROM prisutobr"
-        + (cond == Condition.none || cond == Condition.ident ? "" : " WHERE " + cond));
+        + (cond == Condition.none || cond == Condition.ident ? "" : " WHERE " + cond), rads);
   }
   
   // cradnik,cvrp,dan,grpris,sati,iznos
-  public static List loadPrisutnost(String query) {
+  public static List loadPrisutnost(String query, HashSet rads) {
     report("Uèitavanje prisutnosti...");
     List ret = new ArrayList();
     ResultSet rs = Util.openQuickSet(query);
@@ -534,7 +545,8 @@ public class Sih {
     try {
       while (rs.next()) {
         if (i++ % 200 == 0) raProcess.checkClosing();
-        ret.add(new Data(rs));
+        Data d = new Data(rs, rads);
+        if (d.cradnik != null) ret.add(d);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -550,9 +562,13 @@ public class Sih {
     String grpris;
     BigDecimal sati;
     BigDecimal iznos;
-    public Data(ResultSet row) {
+    public Data(ResultSet row, HashSet rads) {
       try {
         cradnik = row.getString(1).trim();
+        if (rads != null && !rads.contains(cradnik)) {
+          cradnik = null;
+          return;
+        }
         cvrp = row.getShort(2);
         dan = row.getShort(3);
         grpris = row.getString(4).trim();

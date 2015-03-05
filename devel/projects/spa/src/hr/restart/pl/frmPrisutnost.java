@@ -17,17 +17,24 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Orgstruktura;
+import hr.restart.baza.Prisutobr;
+import hr.restart.baza.Radnici;
+import hr.restart.baza.Radnicipl;
+import hr.restart.baza.dM;
+import hr.restart.sisfun.frmTableDataView;
+import hr.restart.swing.*;
+import hr.restart.util.*;
+
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.CollationKey;
 import java.text.Collator;
 import java.util.ArrayList;
@@ -42,34 +49,21 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
-import javax.swing.plaf.basic.BasicTableUI;
-import javax.swing.table.TableColumnModel;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.jb.util.TriStateProperty;
-
-import hr.restart.baza.Condition;
-import hr.restart.baza.Kumulrad;
-import hr.restart.baza.Odbiciobr;
-import hr.restart.baza.Prisutobr;
-import hr.restart.baza.Radnici;
-import hr.restart.baza.Radnicipl;
-import hr.restart.baza.Vrsteprim;
-import hr.restart.baza.dM;
-import hr.restart.sisfun.frmTableDataView;
-import hr.restart.swing.JraTable2;
-import hr.restart.swing.raExtendedTable;
-import hr.restart.swing.raTableModifier;
-import hr.restart.util.*;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 
 public class frmPrisutnost extends raMasterDetail {
@@ -120,15 +114,15 @@ public class frmPrisutnost extends raMasterDetail {
     }
   };
    
-  raNavAction rnvGrupe  = new raNavAction("Rekapitulacija po grupama",raImages.IMGPREFERENCES,KeyEvent.VK_F8, KeyEvent.SHIFT_MASK) {
+  /*raNavAction rnvGrupe  = new raNavAction("Rekapitulacija po grupama",raImages.IMGPREFERENCES,KeyEvent.VK_F8, KeyEvent.SHIFT_MASK) {
     public void actionPerformed(ActionEvent e) {
       showGrupe();
     }
-  };
+  };*/
   
-  raNavAction rnvPrim  = new raNavAction("Rekapitulacija po vrstama zarada",raImages.IMGHISTORY,KeyEvent.VK_F8) {
+  raNavAction rnvRekap  = new raNavAction("Rekapitulacije",raImages.IMGHISTORY,KeyEvent.VK_F8) {
     public void actionPerformed(ActionEvent e) {
-      showPrim();
+      showRekap();
     }
   };
   
@@ -290,7 +284,8 @@ public class frmPrisutnost extends raMasterDetail {
   void showRadnici() {
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
-        raProcess.yield(Sih.generatePotpisList(Condition.none));
+        HashSet rads = Sih.createRads(Aus.getCorgInCond(getPreSelect().getSelRow().getString("CORG")));
+        raProcess.yield(Sih.generatePotpisList(Condition.none, rads));
       }
     });
     
@@ -311,11 +306,13 @@ public class frmPrisutnost extends raMasterDetail {
     frm.show();
     frm.resizeLater();
   }
+ 
   
-  void showPrim() {
+  void showPrim(final Condition cond, final Condition arh, String title, String corg) {
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
-        raProcess.yield(Sih.generatePrimanjaIzvj(Condition.none));
+        HashSet rads = Sih.createRads(cond);
+        raProcess.yield(arh != null ? Sih.generateArhPrimanjaIzvj(arh, rads) : Sih.generatePrimanjaIzvj(Condition.none, rads));
       }
     });
     if (!raProcess.isCompleted()) return;
@@ -330,8 +327,12 @@ public class frmPrisutnost extends raMasterDetail {
     frm.setSaveName("Pregled-prisutobr-primanja");
     frm.setVisibleCols(new int[] {0, 1, 2, 3});
     frm.setSums(new String[] {"SATI", "IZNOS"});
-    frm.setTitle("Rekapitulacija plaæe po vrstama zarada" +
-                  "  obraèun za " + mje + ". mjesec " + god +".");
+    //frm.setTitle("Rekapitulacija plaæe po vrstama zarada" +
+    //              "  obraèun za " + mje + ". mjesec " + god +".");
+    frm.setTitle(title);
+    raExtendedTable xt = (raExtendedTable) frm.jp.getMpTable();
+    xt.addToGroup("CORG", true, new String[] {"#\nOrg. jedinica:       ", "CORG", "#  - ", "NAZIV"}, 
+        Orgstruktura.getDataModule().openTempSet(Condition.equal("CORG", corg)), true);
     setSummary(frm, sums);    
     MyTableSyncAdapter sync = new MyTableSyncAdapter(frm.jp);
     frm.jp.getMpTable().addComponentListener(sync);
@@ -409,24 +410,36 @@ public class frmPrisutnost extends raMasterDetail {
     }
   }
   
-  void showGrupe() {
+  void showGrupe(final Condition cond, final Condition arh, final String corg, String title) {
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
-        raProcess.yield(Sih.generateGrupeIzvj(jpDetail.jlCsif.getText(), Condition.none));
+        HashSet rads = Sih.createRads(cond);
+        if (corg == null)
+          raProcess.yield(arh != null ?
+              Sih.generateArhCorgGrupeIzvj(jpDetail.jlCsif.getText(), arh, rads) : 
+                Sih.generateCorgGrupeIzvj(jpDetail.jlCsif.getText(), Condition.none, rads));
+        raProcess.yield(arh != null ? 
+            Sih.generateArhGrupeIzvj(jpDetail.jlCsif.getText(), arh, rads) : 
+              Sih.generateGrupeIzvj(jpDetail.jlCsif.getText(), Condition.none, rads));
       }
     });
     
     if (!raProcess.isCompleted()) return;
     StorageDataSet out = (StorageDataSet) raProcess.getReturnValue();
     if (out == null) return;
-
+    
     frmTableDataView frm = new frmTableDataView();
     frm.setDataSet(out);
-    frm.setSaveName("Pregled-prisutobr-grupe");
-    frm.setVisibleCols(new int[] {1, 2, 3, 4});
+    if (corg == null) {
+      frm.setSaveName("Pregled-prisutobr-corg-grupe");
+      frm.setVisibleCols(new int[] {2, 3, 4, 5});
+    } else {
+      frm.setSaveName("Pregled-prisutobr-grupe");
+      frm.setVisibleCols(new int[] {1, 2, 3, 4});
+    }
     frm.setSums(new String[] {"SATI", "IZNOS"});
-    frm.setTitle("Rekapitulacija plaæe po grupama - " + jpDetail.jlCsif.getText() +
-        "  obraèun za " + mje + ". mjesec " + god +".");
+    frm.setTitle(title);
+    
     /*frm.jp.addTableModifier(
        new hr.restart.swing.raTableColumnModifier("CVRP", new String[] {"CVRP", "NAZIV"}, dm.getVrsteprim()));*/
     frm.jp.addTableModifier(new raTableModifier() {
@@ -446,10 +459,15 @@ public class frmPrisutnost extends raMasterDetail {
       }
     });
     raExtendedTable t = (raExtendedTable) frm.jp.getMpTable();
+    if (corg == null) t.addToGroup("CORG", true, new String[] {"#", "CORG", "NAZIV"}, dM.getDataModule().getOrgstruktura(), true);
+    else t.addToGroup("CORG", true, new String[] {"#\nOrg. jedinica:       ", "CORG", "#  - ", "NAZIV", "#\n"}, 
+        Orgstruktura.getDataModule().openTempSet(Condition.equal("CORG", corg)), true);
     t.addToGroup("CSIF", true, new String[] {"#", "CSIF", "NAZIV"}, jpDetail.jlrCgrup.getRaDataSet(), true);
     t.addSort("CVRP", true);
-    t.createSortDescriptor();
+    if (corg == null) t.createSortDescriptor();
+    else out.setSort(new SortDescriptor(new String[] {"CSIF", "CVRP"}));
     frm.setCounterEnabled(false);
+    t.setForcePage(corg == null);
     frm.show();
     frm.resizeLater();
   }
@@ -474,12 +492,8 @@ public class frmPrisutnost extends raMasterDetail {
     rcp.calcPrisut(getDetailSet());
   }
   
-  HashMap createPartition(DataSet radnici, List allData) {
+  HashMap createPartition(HashSet rads, List allData) {
     HashMap parts = new HashMap();
-    
-    HashSet rads = new HashSet();
-    for (radnici.first(); radnici.inBounds(); radnici.next())
-      rads.add(radnici.getString("CRADNIK"));
     
     for (Iterator i = allData.iterator(); i.hasNext(); ) {
       Sih.Data pd = (Sih.Data) i.next();
@@ -509,18 +523,20 @@ public class frmPrisutnost extends raMasterDetail {
         QueryDataSet radnici = Radnicipl.getDataModule().getTempSet(getPreSelect().getLastFilterQuery());
         Sih.report("Otvaranje radnika...");
         raProcess.openScratchDataSet(radnici);
-        Condition cond = Condition.none;
-        if (radnici.rowCount() < Radnicipl.getDataModule().getRowCount() / 3)
-          cond = Condition.in("CRADNIK", radnici);
-        List allData = Sih.loadPrisutobr(cond);
+        HashSet rads = new HashSet();
+        for (radnici.first(); radnici.inBounds(); radnici.next())
+          rads.add(radnici.getString("CRADNIK"));
+        radnici.close();
+
+        List allData = Sih.loadPrisutobr(Condition.none, rads);
         
         ArrayList newOut = new ArrayList();
         ArrayList newSums = new ArrayList();
         ArrayList newRad = new ArrayList();
         
         Sih.report("Particioniranje...");
-        HashMap parts = createPartition(radnici, allData);
-        radnici.close();
+        HashMap parts = createPartition(rads, allData);
+        
         Sih.report("Sortiranje...");
         ArrayList arad = new ArrayList(parts.keySet());
         Collections.sort(arad, new Comparator() {
@@ -538,7 +554,7 @@ public class frmPrisutnost extends raMasterDetail {
             return pi1.compareTo(pi2);
           }
         });
-        HashSum[] netodopp = Sih.loadNetoDopp(cond);
+        HashSum[] netodopp = Sih.loadNetoDopp(Condition.none, rads);
         Sih.report("Kumuliranje...");
         for (Iterator i = arad.iterator(); i.hasNext(); ) {
           String cradnik = (String) i.next();
@@ -721,9 +737,9 @@ public class frmPrisutnost extends raMasterDetail {
   	Condition cond = Condition.equal("CRADNIK",  getMasterSet());
     
     vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
-    HashSum[] netodopp = Sih.loadNetoDopp(Condition.equal("CRADNIK",  getMasterSet()));
+    HashSum[] netodopp = Sih.loadNetoDopp(cond, null);
     
-    StorageDataSet[] ret = Sih.findKumRad(Sih.loadPrisutobr(cond), god, mje, vrprims, netodopp[0], netodopp[1]);
+    StorageDataSet[] ret = Sih.findKumRad(Sih.loadPrisutobr(cond, null), god, mje, vrprims, netodopp[0], netodopp[1]);
     StorageDataSet out = ret[0];
     StorageDataSet sums = ret[1];
 
@@ -742,6 +758,62 @@ public class frmPrisutnost extends raMasterDetail {
     out.first();
     frm.show();
     frm.resizeLater();
+  }
+  
+  raInputDialog dlg = new raInputDialog() {
+    protected boolean checkOk() {
+      if (Valid.getValid().isEmpty(jpc.corg)) return false;
+      if (!jcbArh.isSelected()) return true;
+      if (Valid.getValid().isEmpty(jraGod)) return false;
+      int god = sds.getShort("GODOBR");
+      if (god < 1990 || god > 2100) {
+        jraGod.requestFocus();
+        JOptionPane.showMessageDialog(jraGod, "Pogrešna godina!", "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+      if (!jraMj.isEmpty()) {
+        int mj = sds.getShort("MJOBR");
+        if (mj < 1 || mj > 12) {
+          jraGod.requestFocus();
+          JOptionPane.showMessageDialog(jraGod, "Pogrešan mjesec!", "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+      }
+      return true;
+    };
+  };
+  JraPanel pan = new JraPanel();
+  StorageDataSet sds = new StorageDataSet();
+  jpCorg jpc = new jpCorg(100, 350, true);
+  raButtonGroup bg = new raButtonGroup();
+  JraRadioButton jrbP = new JraRadioButton();
+  JraRadioButton jrbG = new JraRadioButton();
+  JraRadioButton jrbOJG = new JraRadioButton();
+  JraCheckBox jcbArh = new JraCheckBox();
+  JraTextField jraGod = new JraTextField();
+  JraTextField jraMj = new JraTextField();
+  
+  void showRekap() {
+    checkGodMj();
+    if (jpc.corg.isEmpty())
+      jpc.setCorg(getPreSelect().getSelRow().getString("CORG"));
+    if (dlg.show(raMaster.getWindow(), pan, "Rekapitulacije")) {
+      Condition arh = null;
+      String ob = "  obraèun za " + mje + ". mjesec " + god + ".";
+      if (jcbArh.isSelected()) {
+        arh = jraMj.isEmpty() ? Condition.equal("GODOBR", sds) : Condition.whereAllEqual(new String[] {"GODOBR", "MJOBR"}, sds);
+        ob = jraMj.isEmpty() ? "  obraèun za " + jraGod.getText() + ". godinu" : 
+          "  obraèun za " + jraMj.getText() + ". mjesec " + jraGod.getText() + ".";
+      }
+      System.out.println(jpc.getCondition());
+      if (jrbP.isSelected()) {
+        showPrim(jpc.getCondition(), arh, "Rekapitulacija plaæe po vrstama zarada" + ob, jpc.getCorg()); 
+      } else if (jrbG.isSelected()) {
+        showGrupe(jpc.getCondition(), arh, jpc.getCorg(), "Rekapitulacija plaæe po grupama - " + jpDetail.jlCsif.getText() + ob);
+      } else if (jrbOJG.isSelected()) {
+        showGrupe(jpc.getCondition(), arh, null, "Rekapitulacija plaæe po org. jedinicama" + ob);
+      }
+    }
   }
   
   private void jbInit() throws Exception {
@@ -769,9 +841,9 @@ public class frmPrisutnost extends raMasterDetail {
     raMaster.setEditEnabled(false);
     raMaster.setEnabledNavAction(raMaster.getNavBar().getNavContainer().getNavActions()[3],true);
     raMaster.addOption(rnvShowAll, 5, false);
-    raMaster.addOption(rnvPrim, 6, false);
-    raMaster.addOption(rnvGrupe, 7, false);
-    raMaster.addOption(rnvPotpisList, 8, false);
+    raMaster.addOption(rnvRekap, 6, false);
+    //raMaster.addOption(rnvGrupe, 7, false);
+    raMaster.addOption(rnvPotpisList, 7, false);
     raDetail.getJpTableView().addTableModifier(
       new hr.restart.swing.raTableColumnModifier("CVRP", new String[] {"CVRP", "NAZIV"}, dm.getVrsteprim())
     );
@@ -805,6 +877,54 @@ public class frmPrisutnost extends raMasterDetail {
     all.jp.initKeyListener(all);
     all.setCounterEnabled(false);
     all.jp.setAutoPos(false);
+    
+    pan.setLayout(new XYLayout(645, 100));
+    sds.setColumns(new Column[] {
+        Orgstruktura.getDataModule().getColumn("CORG").cloneColumn(),
+        dM.createStringColumn("VRSTA", "Vrsta izvješæa", 1),
+        dM.createStringColumn("ARH", "Arhiva", "N", 1),
+        dM.createShortColumn("GODOBR", "Godina"),
+        dM.createShortColumn("MJOBR", "Mjesec")
+    });
+    bg.setColumnName("VRSTA");
+    bg.setDataSet(sds);
+    bg.add(jrbP, " Po primanjima ", "P");
+    bg.add(jrbG, " Po grupama ", "G");
+    bg.add(jrbOJG, " Po jedinicama i grupama ", "O");
+    bg.setHorizontalTextPosition(SwingConstants.TRAILING);
+    bg.setHorizontalAlignment(SwingConstants.LEADING);
+    bg.setSelected(jrbP);
+    jcbArh.setText(" Dohvat arhive: ");
+    jcbArh.setDataSet(sds);
+    jcbArh.setColumnName("ARH");
+    jcbArh.setSelectedDataValue("D");
+    jcbArh.setUnselectedDataValue("N");
+    jcbArh.setHorizontalTextPosition(SwingConstants.TRAILING);
+    jcbArh.setHorizontalAlignment(SwingConstants.LEADING);
+    jraGod.setDataSet(sds);
+    jraGod.setColumnName("GODOBR");
+    jraMj.setDataSet(sds);
+    jraMj.setColumnName("MJOBR");
+    
+    pan.add(jpc, new XYConstraints(0, 20, -1, -1));
+    pan.add(new JLabel("Vrsta izvješæa"), new XYConstraints(15, 45, -1, -1));
+    pan.add(jrbP, new XYConstraints(150, 45, -1, -1));
+    pan.add(jrbG, new XYConstraints(285, 45, -1, -1));
+    pan.add(jrbOJG, new XYConstraints(405, 45, -1, -1));
+    pan.add(jcbArh, new XYConstraints(150, 70, -1, -1));
+    pan.add(jraGod, new XYConstraints(285, 70, 50, -1));
+    pan.add(jraMj, new XYConstraints(340, 70, 50, -1));
+    
+    jcbArh.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        checkGodMj();
+      }
+    });
+  }
+  
+  void checkGodMj() {
+    rcc.setLabelLaF(jraGod, jcbArh.isSelected());
+    rcc.setLabelLaF(jraMj, jcbArh.isSelected());
   }
   
   static Collator myCol = Collator.getInstance();
