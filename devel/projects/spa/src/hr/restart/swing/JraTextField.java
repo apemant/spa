@@ -19,6 +19,7 @@ package hr.restart.swing;
 
 import hr.restart.baza.Condition;
 import hr.restart.util.Aus;
+import hr.restart.util.IntParam;
 import hr.restart.util.Valid;
 import hr.restart.util.raMatPodaci;
 
@@ -116,7 +117,8 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
       setPreferredSize(new java.awt.Dimension(100,21));
       raDisabledPopup.installFor(this);
       this.setEnablePopupMenu(false);
-      installTouchKeyboard();
+      if (!IntParam.getTag("swing.touch").equalsIgnoreCase("false"))
+        installTouchKeyboard();
     }
     public void installTouchKeyboard() {
       try {
