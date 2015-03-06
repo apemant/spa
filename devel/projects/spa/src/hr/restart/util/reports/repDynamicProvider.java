@@ -253,7 +253,6 @@ public class repDynamicProvider implements IDataProvider {
       sw = ((JraTable2) xt.getOwner().getSummary()).getColumnModel().getTotalColumnWidth();
       sc = ((JraTable2) xt.getOwner().getSummary()).getColumnModel().getColumnCount();
     }
-    boolean fakeGroup = xt.isGroupFake(0);
 
     double ratio, sratio = 15;
     if ((cols > 7) || (width > 800)) {
@@ -281,7 +280,7 @@ public class repDynamicProvider implements IDataProvider {
         if (sums && xt.getGroupSums(0) != null) {
         	defineSumFooter(ratio, w, lt.SectionFooter1, lt.TextDataValue0);
         	lt.SectionFooter0.setTransparent(true);
-        } else if (sums && !fakeGroup && !(xt != null && xt.isForcePage())) {
+        } else if (sums && !xt.isGroupFake(0) && !(xt != null && xt.isForcePage())) {
           lt.Section0.setProperty(ep.GROUP_FOOTER, ev.YES);
           createFooter(ratio, lt.SectionFooter0, lt.TextTSumValue0, "S V E U K U P N O");
           lt.SectionFooter0.setHeight(400);
@@ -329,7 +328,7 @@ public class repDynamicProvider implements IDataProvider {
         if (sums && xt.getGroupSums(0) != null) {
         	defineSumFooter(ratio, w, lt.SectionFooter1, lt.TextDataValue0);
         	lt.SectionFooter0.setTransparent(true);
-        } else if (sums && !fakeGroup && !(xt != null && xt.isForcePage())) {
+        } else if (sums && !xt.isGroupFake(0) && !(xt != null && xt.isForcePage())) {
           lt.Section0.setProperty(ep.GROUP_FOOTER, ev.YES);
           createFooter(ratio, lt.SectionFooter0, lt.TextTSumValue0, "S V E U K U P N O");
           lt.SectionFooter0.setHeight(400);
