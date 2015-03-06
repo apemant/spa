@@ -1147,10 +1147,20 @@ System.out.println("Nije modal dialog...Vracam false");
    * </pre>
    */
   public static void raLookAndFeel() {
+    
+    String aa = IntParam.getTag("swing.antialias");
+    if (aa == null || aa.length() == 0) 
+      IntParam.setTag("swing.antialias", aa = "true");
+
+    if (aa.equals("true")) {
+      System.setProperty("awt.useSystemAAFontSettings", "lcd");
+      System.setProperty("swing.aatext", "true");
+    }
+    
     raSkinDialog.makeLookAndFeel();
 
 		switchFonts(getFontDelta(), getFontFamily());
-    
+		    
 		UIManager.put("ComboBox.disabledForeground", UIManager.get("ComboBox.foreground"));
 		
 		if (IntParam.getTag("twitchHack").equals("true")) 
