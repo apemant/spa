@@ -73,6 +73,10 @@ public class HashDataSet {
     return s.chop().toString();
   }
   
+  public boolean has(Object key) {
+    return index.containsKey(key.toString());
+  }
+  
   public boolean has(String key) {
     return index.containsKey(key);
   }
@@ -104,6 +108,10 @@ public class HashDataSet {
   
   public DataSet get() {
     return ds;
+  }
+    
+  public DataSet get(Object key) {
+    return get(key.toString());
   }
   
   public DataSet get(String key) {
