@@ -2731,7 +2731,7 @@ class PropsDialog {
     } else {
       data.setString("KOLONE", "");
       data.setString("VISKOL", "");
-      data.setInt("WIDTH", 0);
+      //data.setInt("WIDTH", 0);
     }
     return true;
   }
