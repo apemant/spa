@@ -85,13 +85,13 @@ public class frmRadnici extends raMatPodaci {
   public boolean Validacija(char mode) {
     chOrgStr = false;
     if (mode == 'I') {
-      if (hr.restart.pl.raIniciranje.getInstance().isInitObr(getRaQueryDataSet().getString("CORG"))) {
-        JOptionPane.showMessageDialog(getWindow(), "Nije moguæe promijeniti org. jedinicu u "
-        +getRaQueryDataSet().getString("CORG")
-        +" jer je za nju inicirana obrada!", "Greška", JOptionPane.ERROR_MESSAGE);
-        return false;
-      }
       if (corgBefore != null && !corgBefore.equals(getRaQueryDataSet().getString("CORG"))) {
+        if (hr.restart.pl.raIniciranje.getInstance().isInitObr(getRaQueryDataSet().getString("CORG"))) {
+          JOptionPane.showMessageDialog(getWindow(), "Nije moguæe promijeniti org. jedinicu u "
+          +getRaQueryDataSet().getString("CORG")
+          +" jer je za nju inicirana obrada!", "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
         int odg = JOptionPane.showConfirmDialog(getWindow(),"Promjena org.jedinice radnika iz "+corgBefore
         +" u "+getRaQueryDataSet().getString("CORG")+" izvršit æe se i na podacima za plaæu! Nastaviti?",
         "Pozor!",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
