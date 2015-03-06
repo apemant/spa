@@ -17,15 +17,26 @@
 ****************************************************************************/
 package hr.restart.zapod;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
 import hr.restart.baza.Condition;
 import hr.restart.baza.Orgstruktura;
+import hr.restart.baza.dM;
 import hr.restart.baza.zirorn;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
+import hr.restart.util.HashDataSet;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.StorageDataSet;
 
 
 /**
@@ -155,6 +166,7 @@ System.out.println("setting filter "+knjigsql+andNotIn);
     }
     return porgs;
   }
+  
   private void addOrgToPorgs(String corg) {
     if (LD.raLocate(porgs,new String[] {"CORG"},new String[] {corg})) return;
     if (LD.raLocate(dm.getOrgstruktura(),new String[] {"CORG"},new String[] {corg})) {
@@ -365,5 +377,133 @@ e.printStackTrace();
     String[] ing = OrgStr.getBranchCorgs("1");
     hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(false);
     ST.prn(ing);
+  }
+  
+  public static StorageDataSet getTempOrgs(String corg) {
+    Tree t = getOrgTree(corg);
+    
+    HashDataSet ho = new HashDataSet(dM.getDataModule().getOrgstruktura(), "CORG");
+    
+    StorageDataSet out = Orgstruktura.getDataModule().getReadonlySet();
+    
+    if (t != null) {
+      ArrayList all = new ArrayList();
+      t.sortDeep();
+      t.fill(all);
+      for (Iterator i = all.iterator(); i.hasNext(); ) {
+        out.insertRow(false);
+        ho.get(i.next()).copyTo(out);
+      }
+    }
+    return out;
+  }
+  
+  public static StorageDataSet getTempOrgsKnjig() {
+    return getTempOrgs(dlgGetKnjig.getKNJCORG(false));
+  }
+  
+  public static Tree getOrgTree(String root) {
+    DataSet org = dM.getDataModule().getOrgstruktura();
+    org.open();
+    
+    HashMap prips = new HashMap();
+    for (org.first(); org.inBounds(); org.next()) {
+      String prip = org.getString("PRIPADNOST");
+      String corg = org.getString("CORG");
+      
+      Tree t = new Tree(corg);
+      prips.put(corg, t);
+
+      if (prip.equals(corg)) continue;
+      
+      Tree sub = (Tree) prips.get(prip);
+      if (sub == null) prips.put(prip, sub = new Tree(prip));
+      sub.addBranch(t);    
+    }
+    
+    return (Tree) prips.get(root);
+  }
+  
+  public static HashMap getPripMap() {
+    DataSet org = dM.getDataModule().getOrgstruktura();
+    org.open();
+    
+    HashMap prips = new HashMap();
+    for (org.first(); org.inBounds(); org.next()) 
+      prips.put(org.getString("CORG"), org.getString("PRIPADNOST"));
+    
+    return prips;
+  }
+  
+  public static HashSet getCorgSet(String root) {
+    HashSet ret = new HashSet();
+    Tree t = getOrgTree(root);
+    
+    if (t != null) t.fill(ret);
+    return ret;
+  }
+  
+  public static HashSet getCorgSetKnjig() {
+    return getCorgSet(dlgGetKnjig.getKNJCORG(false));
+  }
+  
+  public static class Tree implements Comparable {
+    public String corg;
+    public ArrayList branches;
+    public Tree(String root) {
+      corg = root;
+      branches = null;
+    }
+    
+    public void addBranch(Tree branch) {
+      if (branches == null) branches = new ArrayList();
+      branches.add(branch);
+    }
+    
+    public List getBranches() {
+      return branches;
+    }
+    
+    public boolean isLeaf() {
+      return branches == null || branches.size() == 0;
+    }
+    
+    public void fill(Collection ret) {
+      ret.add(corg);
+      if (branches != null)
+        for (Iterator i = branches.iterator(); i.hasNext(); )
+          ((Tree) i.next()).fill(ret);
+    }
+    
+    public void sortDeep() {
+      if (branches != null) {
+        Collections.sort(branches);
+        for (Iterator i = branches.iterator(); i.hasNext(); )
+          ((Tree) i.next()).sortDeep();
+      }
+    }
+    
+    public void dump() {
+      System.out.print(corg);
+      if (!isLeaf()) {
+        System.out.print(": [");
+        for (Iterator i = branches.iterator(); i.hasNext(); )
+          ((Tree) i.next()).dump();
+        System.out.print("]");
+      }
+      System.out.print(", ");
+    }
+    
+    public boolean equals(Object obj) {
+      return (obj instanceof Tree && ((Tree) obj).corg.equals(corg));
+    }
+    
+    public int hashCode() {
+      return corg.hashCode();
+    }
+    
+    public int compareTo(Object o) {
+      return corg.compareTo(((Tree) o).corg);
+    }
   }
 }
