@@ -82,6 +82,15 @@ public class raDynamicTableData {
       return 0;
     }
   }
+  
+  public double getExtNum(int col) {
+    try {
+      return dp.getExtNumber(currentRow, col);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return 0;
+    }
+  }
 
   public String getHeaderValue(int col) {
     if (col >= dp.jt.getColumnCount()) return "";
