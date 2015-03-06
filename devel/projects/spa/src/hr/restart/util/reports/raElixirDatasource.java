@@ -122,6 +122,9 @@ public class raElixirDatasource {
     for (int i = 0; i < 16; i++)
       m.addDetail("DataNum" + i, "getDataNum", new String[] {"int"},
                   new String[] {String.valueOf(i)}, "double");
+    for (int i = 0; i < 8; i++)
+      m.addDetail("ExtNum" + i, "getExtNum", new String[] {"int"},
+                  new String[] {String.valueOf(i)}, "double");
     dsm.addUserDSN(dsi);
     dsm.addDataProvider(raReportDescriptor.DYNAMIC_NAME, repDynamicProvider.getInstance());
   }
