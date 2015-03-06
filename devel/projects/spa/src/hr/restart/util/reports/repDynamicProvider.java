@@ -146,6 +146,10 @@ public class repDynamicProvider implements IDataProvider {
       return ((Number) o).doubleValue();
     else return 0;
   }
+  
+  public double getExtNumber(int row, int sn) {
+  	return ((raExtendedTable) jt).getExtNumber(row, sn);
+  }
 
   private boolean isRowNumberSum(int col) {
     dataSetTableModel m = (dataSetTableModel) table.getModel();
@@ -249,7 +253,7 @@ public class repDynamicProvider implements IDataProvider {
       sw = ((JraTable2) xt.getOwner().getSummary()).getColumnModel().getTotalColumnWidth();
       sc = ((JraTable2) xt.getOwner().getSummary()).getColumnModel().getColumnCount();
     }
-    boolean fakeGroup = xt.getTotalGroupCount() == 1 && xt.getDataSet().hasColumn(xt.getGroup(0)) == null;
+    boolean fakeGroup = xt.isGroupFake(0);
 
     double ratio, sratio = 15;
     if ((cols > 7) || (width > 800)) {
@@ -272,9 +276,12 @@ public class repDynamicProvider implements IDataProvider {
         if (xt.isForcePage()) {
         	lt.SectionHeader0.setProperty(ep.REPEAT, ev.YES);
         	lt.SectionHeader0.setProperty(ep.FORCE_NEW, ev.BEFORE);
-        	lt.SectionFooter1.setProperty(ep.FORCE_NEW, ev.AFTER);
+        	//lt.SectionFooter1.setProperty(ep.FORCE_NEW, ev.AFTER);
         }
-        if (sums && !fakeGroup && !(xt != null && xt.isForcePage())) {
+        if (sums && xt.getGroupSums(0) != null) {
+        	defineSumFooter(ratio, w, lt.SectionFooter1, lt.TextDataValue0);
+        	lt.SectionFooter0.setTransparent(true);
+        } else if (sums && !fakeGroup && !(xt != null && xt.isForcePage())) {
           lt.Section0.setProperty(ep.GROUP_FOOTER, ev.YES);
           createFooter(ratio, lt.SectionFooter0, lt.TextTSumValue0, "S V E U K U P N O");
           lt.SectionFooter0.setHeight(400);
@@ -319,7 +326,10 @@ public class repDynamicProvider implements IDataProvider {
         	lt.SectionHeader0.setProperty(ep.FORCE_NEW, ev.BEFORE);
         	lt.SectionFooter1.setProperty(ep.FORCE_NEW, ev.AFTER);
         }
-        if (sums && !fakeGroup && !(xt != null && xt.isForcePage())) {
+        if (sums && xt.getGroupSums(0) != null) {
+        	defineSumFooter(ratio, w, lt.SectionFooter1, lt.TextDataValue0);
+        	lt.SectionFooter0.setTransparent(true);
+        } else if (sums && !fakeGroup && !(xt != null && xt.isForcePage())) {
           lt.Section0.setProperty(ep.GROUP_FOOTER, ev.YES);
           createFooter(ratio, lt.SectionFooter0, lt.TextTSumValue0, "S V E U K U P N O");
           lt.SectionFooter0.setHeight(400);
@@ -345,6 +355,44 @@ public class repDynamicProvider implements IDataProvider {
     }
 //    hr.restart.util.Aus.dumpModel(temp.getReportTemplate(), 0);
     return temp;
+  }
+  
+  private void defineSumFooter(double ratio, int w, raReportSection foot, raReportElement def) {
+  	String[] sums = xt.getGroupSums(0);
+  	int y = 0;
+  	int width = model.getColumn(model.getColumnCount() - 1).getWidth();
+  	int max = 0;
+  	for (int i = 0; i < sums.length; i++)
+  		if (sums[i].length() > max) max = sums[i].length();
+  	int nw = width / 12 * max;
+  	
+  	for (int i = 0; i < sums.length; i++) {
+  		raReportElement e = foot.addModel(ep.TEXT, (String[]) def.getDefaults().clone());
+  		e.restoreDefaults();
+  		e.setWidth((long) (width * ratio));
+  		e.setTop(y);
+  		e.setLeft(w - e.getWidth());
+  		e.setControlSource("=(dsum \"ExtNum"+i+"\")");
+  		e.setProperty(ep.FORMAT, "Number|false|1|309|2|2|true|3|false");
+  		  		
+  		raReportElement ne = foot.addModel(ep.TEXT, (String[]) def.getDefaults().clone());
+  		ne.restoreDefaults();
+  		ne.setWidth((long) (nw * ratio));
+  		ne.setTop(y);
+  		ne.setLeft(e.getLeft() - ne.getWidth());
+  		if (ne.getLeft() < 0) {
+  			ne.setWidth(ne.getWidth() + ne.getLeft());
+  			ne.setLeft(0);
+  		}
+  		ne.setProperty(ep.ALIGN, ev.LEFT);
+  		if (sums[i].indexOf("[CAPTION]") >= 0 || sums[i].indexOf("[VALUE]") >= 0) {
+  			VarStr v = new VarStr(sums[i]);
+  			v.replace("[CAPTION]", "\" [GroupCaption0] \"");
+  			v.replace("[VALUE]", "\" [GroupValue0] \"");
+  			ne.setControlSource("=(string-append \"" + v + "\")");
+  		} else ne.setControlSource("=(if (= 1 1) \""+sums[i]+"\")");
+  		y += 240;
+  	}
   }
   
   private void defineSummary(double ratio, int y, raReportElement sect, 
