@@ -459,15 +459,48 @@ public class frmPrisutnost extends raMasterDetail {
       }
     });
     raExtendedTable t = (raExtendedTable) frm.jp.getMpTable();
-    if (corg == null) t.addToGroup("CORG", true, new String[] {"#", "CORG", "NAZIV"}, dM.getDataModule().getOrgstruktura(), true);
-    else t.addToGroup("CORG", true, new String[] {"#\nOrg. jedinica:       ", "CORG", "#  - ", "NAZIV", "#\n"}, 
-        Orgstruktura.getDataModule().openTempSet(Condition.equal("CORG", corg)), true);
-    t.addToGroup("CSIF", true, new String[] {"#", "CSIF", "NAZIV"}, jpDetail.jlrCgrup.getRaDataSet(), true);
+    String[] exts = {"PRIMANJA", "NAKNADE", "OBUSTAVE", "UKUPNO", 
+    		"PLAÆA S LISTE", "DOPRINOSI I POREZI", corg == null ? "SVEUKUPNO [VALUE]" : "SVEUKUPNO"};
+    if (corg == null) t.addToGroup("CORG", "NAZIV", dM.getDataModule().getOrgstruktura(), exts);
+    else t.addToGroup("CORG", "#\nOrg. jedinica:    |CORG|NAZIV|#\n", 
+        Orgstruktura.getDataModule().openTempSet(Condition.equal("CORG", corg)), exts);
+    t.addToGroup("CSIF", "NAZIV", jpDetail.jlrCgrup.getRaDataSet());
     t.addSort("CVRP", true);
-    if (corg == null) t.createSortDescriptor();
-    else out.setSort(new SortDescriptor(new String[] {"CSIF", "CVRP"}));
+    t.createSortDescriptor();
     frm.setCounterEnabled(false);
-    t.setForcePage(corg == null);
+//    if (corg == null) {
+    	t.setForcePage(true);
+    	t.setExtNumber(new ExtNumber() {
+    		Variant v = new Variant();
+				public double getNumber(raExtendedTable t, int row, int sn) {
+					if (sn == 6) return getReal(t, row, "IZNOS");
+					
+					t.getDataSet().getVariant("CVRP", row, v);
+					boolean plista = v.getShort() == Sih.cPrimPlista;
+					boolean doppor = v.getShort() == Sih.cPrimDopPor;
+					if (sn == 3)
+						return doppor ? 0 : getReal(t, row, "IZNOS");					
+					if (sn == 0 || sn == 1 || sn == 2) {
+						if (doppor || plista) return 0;
+						t.getDataSet().getVariant("SATI", row, v);
+						boolean no = v.getBigDecimal().signum() == 0;
+						t.getDataSet().getVariant("IZNOS", row, v);
+						boolean poz = v.getBigDecimal().signum() > 0;
+						if ((no && poz && sn == 1) || (no && !poz && sn == 2) || (!no && sn == 0)) 
+							return v.getAsDouble();
+						return 0;
+					}
+					if (sn == 4 && plista) return getReal(t, row, "UNC");
+					if (sn == 5 && doppor) return getReal(t, row, "IZNOS");
+					
+					return 0;
+				}
+				public double getReal(raExtendedTable t, int row, String col) {
+					t.getDataSet().getVariant(col, row, v);
+					return v.getAsDouble();
+				}
+			});
+    //}
     frm.show();
     frm.resizeLater();
   }
