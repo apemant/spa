@@ -37,6 +37,9 @@ import hr.restart.zapod.OrgStr;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import com.borland.dx.sql.dataset.QueryDataSet;
 
@@ -61,7 +64,21 @@ public class raIniciranje {
   public void checkObr(String corg) {
     iniCount = 0;
     obrCount = 0;
-    qds = Util.getNewQueryDataSet(sjQuerys.selectOrgStr(corg));
+    
+    HashMap prips = OrgStr.getPripMap();
+    
+    HashSet corgs = OrgStr.getCorgSet(corg);
+    
+    dm.getOrgpl().open();
+    dm.getOrgpl().refresh();
+    for (Iterator i = corgs.iterator(); i.hasNext(); ) {
+      if (findOrgPl((String) i.next(), prips)) {
+        if (raParam.getParam(dm.getOrgpl(), 1).equals("I")) iniCount++;
+        else if (raParam.getParam(dm.getOrgpl(), 1).equals("O")) obrCount++;
+      }
+    }
+    
+    /*qds = Util.getNewQueryDataSet(sjQuerys.selectOrgStr(corg));
     qds.first();
     dm.getOrgpl().open();
     dm.getOrgpl().refresh();
@@ -70,7 +87,7 @@ public class raIniciranje {
         if (raParam.getParam(dm.getOrgpl(), 1).equals("I")) iniCount++;
         else if (raParam.getParam(dm.getOrgpl(), 1).equals("O")) obrCount++;
       }
-    } while(qds.next());
+    } while(qds.next());*/
   }
   public boolean isInitObr(hr.restart.pl.frmObradaPL ekr) {
     return isInitObr(ekr.tds.getString("CORG"));
@@ -317,6 +334,16 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
     }
     return raTransaction.saveChangesInTransaction(new QueryDataSet[] {erpl,erad,eodb});
   }
+  
+  public boolean findOrgPl(String corg, HashMap prips) {
+    while (!ld.raLocate(dm.getOrgpl(), "CORG", corg)) {
+      String prip = (String) prips.get(corg);
+      if (corg.equals(prip) || prip == null) return false;
+      corg = prip;
+    }
+    return true;
+  }
+  
   public boolean posOrgsPl(String corg) {
     if (!ld.raLocate(dm.getOrgpl(), new String[] {"CORG"}, new String[] {corg})) {
       ld.raLocate(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), new String[] {"CORG"}, new String[] {corg});
@@ -331,13 +358,27 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
                                        hr.restart.zapod.OrgStr.getKNJCORG()+"' AND GODINA = "+
                                        ds.getShort("GODINA")+" AND MJESEC = "
                                        +ds.getShort("MJESEC"));
+    
+    if (fondsati.rowCount() == 0) return false;
+    
+    HashMap prips = OrgStr.getPripMap();
+    
+    HashSet corgs = OrgStr.getCorgSet(ds.getString("CORG"));
+    
+    for (Iterator i = corgs.iterator(); i.hasNext(); ) {
+      String corg = (String) i.next();
+      if (findOrgPl(corg, prips))
+        mySaveORGPL(ds);
+      else return false;
+    }
 
-    qds = Util.getNewQueryDataSet(sjQuerys.selectOrgStr(ds.getString("CORG")));
+    /*qds = Util.getNewQueryDataSet(sjQuerys.selectOrgStr(ds.getString("CORG")));
     qds.first();
     do {
       posOrgsPl(qds.getString("CORG"));
       mySaveORGPL(ds);
-    } while(qds.next());
+    } while(qds.next());*/
+
     if (iniPrim) savePRIMANJAOBR(ds.getString("CORG"));
     return true;
   }
