@@ -88,6 +88,8 @@ public class raExtendedTable extends JraTable2 {
   String lastAddedSort;
   boolean forcePage, drawLines;
   
+  ExtNumber hook;
+  
   raJPTableView owner;
 
   public raExtendedTable() {
@@ -284,13 +286,17 @@ public class raExtendedTable extends JraTable2 {
       if (isShowing()) getTableHeader().repaint();
       return;
     }
-    String[] names = new String[countGroups() + sort.size()];
-    boolean[] asc = new boolean[countGroups() + sort.size()];
+    int fakes = 0;
+    for (int i = 0; i < group.size(); i++)
+    	if (isRealGroup(i) && isGroupFake(i)) ++fakes;
+    
+    String[] names = new String[countGroups() + sort.size() - fakes];
+    boolean[] asc = new boolean[countGroups() + sort.size() - fakes];
     int ng = 0;
     for (int i = 0; i < group.size(); i++)
-      if (i == 0 || ((ColumnInfo) group.get(i - 1)).numgroup != ((ColumnInfo) group.get(i)).numgroup) {
-        names[ng] = ((ColumnInfo) group.get(i)).colname;
-        asc[ng++] = !((ColumnInfo) group.get(i)).ascending;
+      if (isRealGroup(i) && !isGroupFake(i)) {
+        names[ng] = getGroup(i);
+        asc[ng++] = isGroupDescending(i);
       }
     for (int i = 0; i < sort.size(); i++) {
       names[i + ng] = ((ColumnInfo) sort.get(i)).colname;
@@ -302,20 +308,35 @@ public class raExtendedTable extends JraTable2 {
     if (stm != null && stm.isNatural()) stm.clearSelection();
     getDataSet().setSort(sd);
   }
+  
+  public void addToGroup(String name, String descs, String get) {
+  	addToGroup(name, true, new VarStr(descs).split('|'), get, null, null, true);
+  }
+  
+  public void addToGroup(String name, String descs, DataSet getDs) {
+  	addToGroup(name, true, new VarStr(descs).split('|'), null, getDs, null, true);
+  }
+  
+  public void addToGroup(String name, String descs, DataSet getDs, String[] sums) {
+  	addToGroup(name, true, new VarStr(descs).split('|'), null, getDs, sums, true);
+  }
 
   public void addToGroup(String name, boolean asc, String[] descs, String get, boolean newGroup) {
+  	addToGroup(name, asc, descs, get, null, null, newGroup);
+  }
+  
+  public void addToGroup(String name, boolean asc, String[] descs, DataSet getDs, boolean newGroup) {
+  	addToGroup(name, asc, descs, null, getDs, null, newGroup);
+  }
+  
+  public void addToGroup(String name, boolean asc, String[] descs, String get, DataSet getDs, String[] sums, boolean newGroup) {
     ColumnInfo ci = new ColumnInfo(name, countGroups() + (newGroup ? 1 : 0));
     ci.ascending = asc;
     ci.descs = descs;
     ci.get = get;
-    group.add(ci);
-  }
-  
-  public void addToGroup(String name, boolean asc, String[] descs, DataSet getDs, boolean newGroup) {
-    ColumnInfo ci = new ColumnInfo(name, countGroups() + (newGroup ? 1 : 0));
-    ci.ascending = asc;
-    ci.descs = descs;
     ci.getDs = getDs;
+    ci.sums = sums;
+    ci.fake = getDataSet().hasColumn(name) == null;
     group.add(ci);
   }
 
@@ -333,14 +354,18 @@ public class raExtendedTable extends JraTable2 {
   SortDescriptor original = null;
   
   public void resetSortColumns() {
-	group.clear();
-	sort.clear();
-	if (getDataSet() != null) {
-	  original = getDataSet().getSort();
-	  generateSort(getDataSet());
-	} else original = null;
-	lastAddedSort = null;
-	if (isShowing()) getTableHeader().repaint();
+		group.clear();
+		sort.clear();
+		if (getDataSet() != null) {
+		  original = getDataSet().getSort();
+		  generateSort(getDataSet());
+		} else original = null;
+		lastAddedSort = null;
+		if (isShowing()) getTableHeader().repaint();
+  }
+  
+  public void setExtNumber(ExtNumber hook) {
+  	this.hook = hook;
   }
   
   public boolean isCustomSort() {
@@ -395,6 +420,10 @@ public class raExtendedTable extends JraTable2 {
   public boolean isRealGroup(int n) {
     return (n == 0 || ((ColumnInfo) group.get(n)).numgroup != ((ColumnInfo) group.get(n - 1)).numgroup);
   }
+  
+  public boolean isGroupFake(int n) {
+  	return ((ColumnInfo) group.get(n)).fake;
+  }
 
   public boolean isGroupDescending(int n) {
     return !((ColumnInfo) group.get(n)).ascending;
@@ -407,6 +436,10 @@ public class raExtendedTable extends JraTable2 {
   public String[] getGroupDesc(int n) {
     return ((ColumnInfo) group.get(n)).descs;
   }
+  
+  public String[] getGroupSums(int n) {
+    return ((ColumnInfo) group.get(n)).sums;
+  }
 
   public String getGroupGet(int n) {
     return ((ColumnInfo) group.get(n)).get;
@@ -414,6 +447,12 @@ public class raExtendedTable extends JraTable2 {
   
   public DataSet getGroupGetDs(int n) {
     return ((ColumnInfo) group.get(n)).getDs;
+  }
+  
+  public double getExtNumber(int row, int sn) {
+  	if (hook == null || getGroupSums(0) == null) return 0;
+  	if (sn < 0 || sn >= getGroupSums(0).length) return 0;
+  	return hook.getNumber(this, row, sn);
   }
   
   public boolean isForcePage() {
@@ -774,9 +813,11 @@ public class raExtendedTable extends JraTable2 {
   static class ColumnInfo {
     String colname;
     String[] descs;
+    String[] sums;
     String get;
     DataSet getDs;
     boolean ascending;
+    boolean fake;
     int numgroup;
     static ColumnInfo dummy = new ColumnInfo("");
 
