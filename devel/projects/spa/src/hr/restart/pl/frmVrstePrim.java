@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Vrsteprim;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.swing.raTableColumnModifier;
@@ -135,7 +137,7 @@ public class frmVrstePrim extends raMatPodaci {
 
 // init
   private void jbInit() throws Exception {
-    this.setRaQueryDataSet(dm.getVrsteprim());
+    this.setRaQueryDataSet(Vrsteprim.getDataModule().copyDataSet());
     this.setVisibleCols(new int[] {0, 1, 2});
     jpDetail = new jpVrstePrim(this);
     this.addOption(rnvSume,4);
