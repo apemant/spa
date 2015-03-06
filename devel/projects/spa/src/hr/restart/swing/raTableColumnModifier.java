@@ -16,6 +16,7 @@
 **
 ****************************************************************************/
 package hr.restart.swing;
+import hr.restart.util.HashDataSet;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 
@@ -34,7 +35,8 @@ public class raTableColumnModifier extends raTableModifier {
   private String[] dsColsReplace;
   private String[] dsColsKey;
   private String[] dsColsKeyS;
-  private DataSet dsToSearch;
+  private HashDataSet dsToSearch;
+  
   protected Variant shared = new Variant();
   protected VarStr replacement = new VarStr();
   public String veznik = " - ", ostaliVeznici = " - "; 
@@ -54,7 +56,9 @@ public class raTableColumnModifier extends raTableModifier {
                       DataSet setToSearch) {
     dsColName = columnToModify;
     dsColsReplace = columnsReplace;
-    dsToSearch = setToSearch;
+    if (setToSearch != null)
+    	dsToSearch = keyColumns.length == 1 ? new HashDataSet(setToSearch, keyColumnsSearch[0]) : new HashDataSet(setToSearch, keyColumnsSearch);
+    
     dsColsKey = keyColumns;
     dsColsKeyS = keyColumnsSearch;
   }
@@ -89,7 +93,7 @@ public class raTableColumnModifier extends raTableModifier {
       dsCol = jtab.getDataSetColumn(getColumn());
       if (dsCol == null) return false;
       tableDs = dsCol.getDataSet();
-      if (dsToSearch != null) dsToSearch.open();
+      //if (dsToSearch != null) dsToSearch.open();
       return dsCol.getColumnName().equals(dsColName);
     }
     return false;
@@ -141,9 +145,12 @@ public class raTableColumnModifier extends raTableModifier {
     lookupData ld = lookupData.getlookupData();
     DataSet ds = dsCol.getDataSet();
 //    Variant[] vars = prepareVariants();
-    DataRow dr = ld.raLookup(dsToSearch, dsColsKeyS, ds, dsColsKey, getRow());
+    String key = dsColsKey.length == 1 ? dsToSearch.key(ds, getRow(), dsColsKey[0]) : dsToSearch.key(ds, getRow(), dsColsKey);
+    if (!dsToSearch.has(key)) return;
+    DataSet dr = dsToSearch.get(key);
+    //DataRow dr = ld.raLookup(dsToSearch, dsColsKeyS, ds, dsColsKey, getRow());
 //    if (!ld.raLocate(dsToSearch,dsColsKeyS,vars)) return;
-    if (dr == null) return;
+    //if (dr == null) return;
     replacement.clear();
     for (int i=0;i<dsColsReplace.length;i++) {
       if (dr.hasColumn(dsColsReplace[i]) != null) {
@@ -191,7 +198,7 @@ public class raTableColumnModifier extends raTableModifier {
   public int getMaxModifiedTextLength() {
     int ret = 0;
     for (int i = 0; i < dsColsReplace.length; i++) {
-      Column col = (dsToSearch!=null)?dsToSearch.hasColumn(dsColsReplace[i]):null;
+      Column col = (dsToSearch!=null)?dsToSearch.get().hasColumn(dsColsReplace[i]):null;
       if (col == null) {
         ret = ret + dsColsReplace[i].length();
       } else {
