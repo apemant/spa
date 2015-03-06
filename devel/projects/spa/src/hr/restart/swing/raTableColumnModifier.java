@@ -16,6 +16,7 @@
 **
 ****************************************************************************/
 package hr.restart.swing;
+import hr.restart.baza.dM;
 import hr.restart.util.HashDataSet;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
@@ -36,6 +37,7 @@ public class raTableColumnModifier extends raTableModifier {
   private String[] dsColsKey;
   private String[] dsColsKeyS;
   private HashDataSet dsToSearch;
+  private int dsSerial = -1;
   
   protected Variant shared = new Variant();
   protected VarStr replacement = new VarStr();
@@ -142,8 +144,14 @@ public class raTableColumnModifier extends raTableModifier {
    */
   public void replaceValues() {
     String lastVeznik = veznik;
-    lookupData ld = lookupData.getlookupData();
+
     DataSet ds = dsCol.getDataSet();
+    if (dsToSearch.get().getTableName() != null) {
+      int now = dM.getSynchronizer().getSerialNumber(dsToSearch.get().getTableName());
+      if (now != dsSerial)
+        dsToSearch = dsColsKeyS.length == 1 ? new HashDataSet(dsToSearch.get(), dsColsKeyS[0]) : new HashDataSet(dsToSearch.get(), dsColsKeyS);
+      dsSerial = now;
+    }
 //    Variant[] vars = prepareVariants();
     String key = dsColsKey.length == 1 ? dsToSearch.key(ds, getRow(), dsColsKey[0]) : dsToSearch.key(ds, getRow(), dsColsKey);
     if (!dsToSearch.has(key)) return;
@@ -178,6 +186,7 @@ public class raTableColumnModifier extends raTableModifier {
 /*  public Variant[] prepareVariants() {
     Variant[] vars = new Variant[dsColsKey.length];
     for (int i=0;i<dsColsKey.length;i++) {
+
       Variant v = new Variant();
       tableDs.getVariant(dsColsKey[i],getRow(),v);
       vars[i] = v;
