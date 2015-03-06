@@ -45,6 +45,34 @@ public class HashDataSet {
       }
   }
   
+  public String key(ReadRow src, String skeyCol) {
+    src.getVariant(skeyCol, v);
+    return v.toString();
+  }
+  
+  public String key(ReadRow src, String[] skeyCols) {
+  	s.clear();
+    for (int i = 0; i < keyCols.length; i++) {
+      src.getVariant(keyCols[i], v);
+      s.append(v).append("|");
+    }
+    return s.chop().toString();
+  }
+  
+  public String key(DataSet src, int row, String skeyCol) {
+    src.getVariant(skeyCol, row, v);
+    return v.toString();
+  }
+  
+  public String key(DataSet src, int row, String[] skeyCols) {
+  	s.clear();
+    for (int i = 0; i < keyCols.length; i++) {
+      src.getVariant(keyCols[i], row, v);
+      s.append(v).append("|");
+    }
+    return s.chop().toString();
+  }
+  
   public boolean has(String key) {
     return index.containsKey(key);
   }
@@ -59,17 +87,19 @@ public class HashDataSet {
   }
   
   public boolean has(ReadRow src, String skeyCol) {
-    src.getVariant(skeyCol, v);
-    return has(v.toString());
+  	return has(key(src, skeyCol));
   }
   
   public boolean has(ReadRow src, String[] skeyCols) {
-    s.clear();
-    for (int i = 0; i < skeyCols.length; i++) {
-      src.getVariant(skeyCols[i], v);
-      s.append(v).append("|");
-    }
-    return has(s.chop().toString());
+    return has(key(src, skeyCols));
+  }
+  
+  public boolean has(DataSet src, int row, String skeyCol) {
+  	return has(key(src, skeyCol));
+  }
+  
+  public boolean has(DataSet src, int row, String[] skeyCols) {
+  	return has(key(src, skeyCols));
   }
   
   public DataSet get() {
@@ -90,18 +120,20 @@ public class HashDataSet {
     if (keyCol != null) return get(src, keyCol);
     return get(src, keyCols);
   }
-  
+    
   public DataSet get(ReadRow src, String skeyCol) {
-    src.getVariant(skeyCol, v);
-    return get(v.toString());
+    return get(key(src, skeyCol));
   }
   
   public DataSet get(ReadRow src, String[] skeyCols) {
-    s.clear();
-    for (int i = 0; i < keyCols.length; i++) {
-      src.getVariant(keyCols[i], v);
-      s.append(v).append("|");
-    }
-    return get(s.chop().toString());
+  	return get(key(src, skeyCols));
+  }
+  
+  public DataSet get(DataSet src, int row, String skeyCol) {
+  	return get(key(src, skeyCol));
+  }
+  
+  public DataSet get(DataSet src, int row, String[] skeyCols) {
+  	return get(key(src, skeyCols));
   }
 }
