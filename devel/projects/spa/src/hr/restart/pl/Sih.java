@@ -3,6 +3,7 @@ package hr.restart.pl;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Kumulrad;
 import hr.restart.baza.Kumulradarh;
+import hr.restart.baza.Odbiciarh;
 import hr.restart.baza.Odbiciobr;
 import hr.restart.baza.Prisutobr;
 import hr.restart.baza.Radnicipl;
@@ -464,8 +465,8 @@ public class Sih {
   }
   
   public static HashSum[] loadArhNetoDopp(Condition cond, HashSet rads) {
-    return loadNetoDopp(Kumulrad.getDataModule().getTempSet("CRADNIK NETOPK DOPRINOSI PORIPRIR", cond),
-        Odbiciobr.getDataModule().getTempSet("CRADNIK OBRIZNOS", getDoprNaCond().and(cond)), rads);
+    return loadNetoDopp(Kumulradarh.getDataModule().getTempSet("CRADNIK NETOPK DOPRINOSI PORIPRIR", cond),
+        Odbiciarh.getDataModule().getTempSet("CRADNIK OBRIZNOS", getDoprNaCond().and(cond)), rads);
   }
   
   public static HashSum[] loadNetoDopp(Condition cond, HashSet rads) {
