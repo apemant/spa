@@ -41,6 +41,9 @@ public class Sih {
   
   public static String[] dtj = {"", "Ned", "Pon", "Uto", "Sri", "Èet", "Pet", "Sub"};
   
+  public static short cPrimPlista = 1001;
+  public static short cPrimDopPor = 1000;
+  
   private Sih() {
     // static class
   }
@@ -287,9 +290,11 @@ public class Sih {
         for (Iterator r = rg.iterator(); r.hasNext(); ) {
           String rad = (String) r.next();
           if (neto.get(rad) == null) continue;
-          if (rads.get(rad).signum() == 0 && zeros.add(rad)) {
-            doppor = doppor.add(dopp.get(rad));
-            plista = plista.add(neto.get(rad));
+          if (rads.get(rad).signum() == 0) {
+          	if (zeros.add(rad)) {
+          		doppor = doppor.add(dopp.get(rad));
+          		plista = plista.add(neto.get(rad));
+          	}
           } else {
             doppor = doppor.add(dopp.get(rad).multiply(grads.get(new Key(gr, rad))).divide(rads.get(rad), 2, BigDecimal.ROUND_HALF_UP));
             plista = plista.add(neto.get(rad).multiply(grads.get(new Key(gr, rad))).divide(rads.get(rad), 2, BigDecimal.ROUND_HALF_UP));
@@ -299,7 +304,7 @@ public class Sih {
         out.insertRow(false);
         if (radoj != null) out.setString("CORG", ((Key) k).s1);
         out.setString("CSIF", gr);
-        out.setShort("CVRP", (short) 1000);
+        out.setShort("CVRP", cPrimDopPor);
         out.setString("NAZIV", "Doprinosi i porezi");
         out.setBigDecimal("IZNOS", doppor);
         Aus.set(out, "UNC", "IZNOS");
@@ -307,7 +312,7 @@ public class Sih {
         out.insertRow(false);
         if (radoj != null) out.setString("CORG", ((Key) k).s1);
         out.setString("CSIF", gr);
-        out.setShort("CVRP", (short) 1001);
+        out.setShort("CVRP", cPrimPlista);
         out.setString("NAZIV", "Plaæa s liste (nije u zbroju)");
         out.setBigDecimal("UNC", plista);
       }
