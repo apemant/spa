@@ -2413,7 +2413,7 @@ sysoutTEST ST = new sysoutTEST(false);
 
     raQueryDataSet.cancel();
 
-    if (raQueryDataSet.getStatus()==com.borland.dx.dataset.RowStatus.INSERTED&&saveChanges) {
+    if (raQueryDataSet.getStatus()==com.borland.dx.dataset.RowStatus.INSERTED&&saveChanges && raQueryDataSet.saveChangesSupported()) {
 
 //stanoviti bug fix kod borlanda (valjda)
 
