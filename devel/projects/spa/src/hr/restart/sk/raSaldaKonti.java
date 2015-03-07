@@ -191,14 +191,6 @@ public class raSaldaKonti {
 //    return vrsk;
 //  }
 
- public static String getCorgAndPripCondition(String corg) {
-    StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
-    if (corgs.rowCount() == 0) return "";
-    else if (corgs.rowCount() == 1) return " AND corg = '" + corg + "'";
-    else return " AND " + Condition.in("corg", corgs); 
-    //" AND corg in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs);
-  }
-
   public static boolean isDomVal(ReadRow row) {
     return isDomVal(row.getString("OZNVAL"));
   }

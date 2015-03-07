@@ -538,8 +538,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		jrfCORG.setVisCols(new int[] { 0, 1, 2 });
 		jrfCORG
 				.setTextFields(new javax.swing.text.JTextComponent[] { jrfNAZORG });
-		jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr()
-				.getOrgstrAndCurrKnjig());//dm.getOrgstruktura());
+		jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
 		jrfNAZORG.setColumnName("NAZIV");
 		jrfNAZORG.setSearchMode(1);
 		jrfNAZORG.setNavProperties(jrfCORG);
@@ -613,14 +612,6 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		panel_za_upit.add(jtfZavDatum, new XYConstraints(255, 115, 100, -1));
 		this.setJPan(panel_za_upit);
 		initMiniPanel();
-
-		hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(
-				new hr.restart.zapod.raKnjigChangeListener() {
-					public void knjigChanged(String oldKnj, String newKnj) {
-						jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr
-								.getOrgStr().getOrgstrAndCurrKnjig());
-					}
-				});
 		
 		installResetButton();
 	}
@@ -647,7 +638,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		if (jrfCSKL.getText().equalsIgnoreCase("")
 				&& jrfCORG.getText().equalsIgnoreCase("")) {
             sqlpitanje = sqlpitanje + "(" + svd.and(Condition.in("CSKL", Util.getSkladFromCorg())).or(
-              fvd.and(Condition.in("CSKL", OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "CORG"))).qualified("doki") + ")";
+              fvd.and(OrgStr.getCorgsKnjigCond("CSKL"))).qualified("doki") + ")";
           /*sqlpitanje = sqlpitanje + "doki.vrdok in ('ROT','POD','RAC','TER','ODB', 'PRD')";*/ 
            
 		} else if (!jrfCSKL.getText().equalsIgnoreCase("")

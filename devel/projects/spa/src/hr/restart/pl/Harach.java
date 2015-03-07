@@ -163,10 +163,9 @@ public class Harach {
     }
     if (cradnik == null) {
       if (godmj==null || godmj.trim().length()!=6) {
-        radnik = "AND (radnici.corg in "+OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndKnjig(corg), "radnici.cradnik")+")";
+        radnik = "AND " + OrgStr.getCorgsCond(corg).qualified("radnici");
       } else {
-        OrgStr ors = OrgStr.getOrgStr();
-        radnik = "AND (kumulradarh.corg in "+ors.getInQuery(ors.getOrgstrAndCurrKnjig(),"kumulradarh.corg")+")";
+      	radnik = "AND " + OrgStr.getCorgsKnjigCond().qualified("kumulradarh");
       }
     } else {
       radnik = "AND "+t+".cradnik = '" + cradnik + "'";
@@ -206,7 +205,7 @@ public class Harach {
     ArrayList transactsets = new ArrayList();
     QueryDataSet kumorgs;
     if (corg!=null) {
-      kumorgs = Kumulorgarh.getDataModule().getTempSet("GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+" and "+sjQuerys.getPripOrg(corg, "", ""));
+      kumorgs = Kumulorgarh.getDataModule().getTempSet("GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+" and "+OrgStr.getCorgsCond(corg));
     } else {
       kumorgs = Kumulorgarh.getDataModule().getTempSet("GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr);
     }

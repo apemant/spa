@@ -28,6 +28,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raImages;
 import hr.restart.util.raUpit;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -586,9 +587,7 @@ public class frmBrBilancaPer extends raUpit {
     if (stds.getString("ORGSTR").equals("1")){ //jrbOdabrana.isSelected()) {
       sqlCorgString = table+".CORG ='" + kontoPanel.getCorg() + "'";
     } else {
-      StorageDataSet ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(kontoPanel.getCorg());
-      if (ojs.rowCount()==1) return table+".CORG ='" + ojs.getString("CORG").trim() + "'";
-      sqlCorgString = Condition.in("CORG",ojs).qualified(table).toString();
+    	sqlCorgString = Condition.in("CORG", OrgStr.getCorgSet(kontoPanel.getCorg().trim())).qualified(table).toString();
     }
     return sqlCorgString;
   }

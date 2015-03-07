@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Radnicipl;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.util.JlrNavField;
@@ -33,7 +35,6 @@ import javax.swing.JPanel;
 import javax.swing.text.JTextComponent;
 
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.dx.sql.dataset.QueryDescriptor;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 
@@ -74,7 +75,7 @@ public class presPrimanja extends PreSelect {
       jlrCorg_after_lookUp();
     }
   };
-  raAdditionalLookupFilter radniciplLookupFilter = new raAdditionalLookupFilter() {
+  /*raAdditionalLookupFilter radniciplLookupFilter = new raAdditionalLookupFilter() {
     public boolean isRow(com.borland.dx.dataset.ReadRow row) {
 System.out.println("trazim za "+row.getString("CRADNIK"));
       boolean isRPL = lookupData.getlookupData().raLocate(
@@ -82,7 +83,7 @@ System.out.println("trazim za "+row.getString("CRADNIK"));
 System.out.println("Nasao?..."+isRPL);
       return isRPL;
     }
-  };
+  };*/
   public presPrimanja() {
     try {
       jbInit();
@@ -96,7 +97,7 @@ System.out.println("Nasao?..."+isRPL);
     System.out.println("setFokus");
     getSelRow().setString("CRADNIK","");
     
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     getSelRow().setString("CORG", OrgStr.getKNJCORG(false));
     jlrCorg.forceFocLost();
     jlrCradnik.setRaDataSet(hr.restart.zapod.raRadnici.getRadniciFromKnjig(hr.restart.zapod.OrgStr.getKNJCORG()));
@@ -147,13 +148,11 @@ System.out.println("Nasao?..."+isRPL);
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1}); /**@todo: Dodati visible cols za lookup frame */
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
     hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(
         new hr.restart.zapod.raKnjigChangeListener() {
       public void knjigChanged(String novi, String stari) {
-        System.out.println("knhjig chage listener");
-        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
         getSelDataSet().setString("CORG","");
         jlrCradnik.setRaDataSet(hr.restart.zapod.raRadnici.getRadniciFromKnjig(getSelDataSet().getString("CORG")));
         jlrIme.setRaDataSet(hr.restart.zapod.raRadnici.getRadniciFromKnjig(getSelDataSet().getString("CORG")));
@@ -181,9 +180,17 @@ System.out.println("Nasao?..."+isRPL);
   public boolean applySQLFilter() {
     QueryDataSet myDataSet=(QueryDataSet) getSelDataSet();
     myDataSet.close();
-    VarStr v = new VarStr(sjQuerys.selectRadniciPl(getSelRow().getString("CORG"), getSelRow().getString("CRADNIK")));
-    myDataSet.setQuery(new QueryDescriptor(myDataSet.getDatabase(), v.toString()));
-    lastFilterQuery = v.from(v.indexOfIgnoreCase(" where ") + 7);
+    
+    Condition c = Condition.equal("AKTIV", "D").and(Condition.in("CORG", OrgStr.getCorgSet(getSelRow().getString("CORG"))));
+    if (getSelRow().getString("CRADNIK").length() > 0)
+    	c = c.and(Condition.equal("CRADNIK", getSelRow()));
+    
+    Radnicipl.getDataModule().setFilter(myDataSet, c);
+    
+    //VarStr v = new VarStr(sjQuerys.selectRadniciPl(getSelRow().getString("CORG"), getSelRow().getString("CRADNIK")));
+    //myDataSet.setQuery(new QueryDescriptor(myDataSet.getDatabase(), v.toString()));
+    //lastFilterQuery = v.from(v.indexOfIgnoreCase(" where ") + 7);
+    lastFilterQuery = c.toString();
     myDataSet.open();
     return true;
   }

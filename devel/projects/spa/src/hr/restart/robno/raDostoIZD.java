@@ -148,12 +148,5 @@ public class raDostoIZD extends raUpitLite {
     mainPanel.add(jlDatum,    new XYConstraints(15, 55, -1, -1));
     mainPanel.add(jraDATUM,    new XYConstraints(150, 55, 100, -1));
 
-
-
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jlrCskl.setRaDataSet(Util.getSkladFromCorg());
-      }
-    });
   }
 }

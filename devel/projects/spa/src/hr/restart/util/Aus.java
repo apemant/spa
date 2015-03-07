@@ -734,9 +734,9 @@ public class Aus {
   }
 
   public static Condition getCorgInCond(String corg) {
-    DataSet ds = OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
-    if (ds.rowCount() == 0) return Condition.ident;
-    return Condition.in("CORG", ds);
+  	Condition c = OrgStr.getCorgsCond(corg);
+  	if (c != Condition.nil) return c;
+  	return Condition.ident;
   }
   
   public static Condition getCorgInKnjigCorg() {

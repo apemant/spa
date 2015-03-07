@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
@@ -205,9 +206,9 @@ public class upRekapTros extends raUpitLite {
 
     String acorg = "AND doki.corg ='" + corg + "' ";
 
-    String bcorg = "AND (doki.corg in " + OrgStr.getOrgStr().getInQuery(jlrCorg.getRaDataSet(),"doki.corg") + ") ";
+    String bcorg = "AND " + OrgStr.getCorgsKnjigCond().qualified("doki") + " ";
 
-    String nadopr = "AND doki.datdok between '" + god + "-01-01 00:00:00.0' and '" + god + "-12-31 23:59:59.0' "+
+    String nadopr = "AND " + Condition.between("DATDOK", ut.getYearBegin(god), ut.getYearEnd(god)).qualified("doki") +" "+
                     "ORDER BY doki.corg";
 
     if(corg.equals("")){
@@ -282,7 +283,7 @@ public class upRekapTros extends raUpitLite {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrNaziv.setColumnName("NAZIV");
@@ -302,12 +303,6 @@ public class upRekapTros extends raUpitLite {
     jpDetail.add(jraGodina, new XYConstraints(150,45,50,-1));
 
     mainPanel.add(jpDetail, BorderLayout.CENTER);
-
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
   }
 
   private void setTempStds() {

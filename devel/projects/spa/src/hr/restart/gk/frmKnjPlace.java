@@ -109,8 +109,8 @@ public class frmKnjPlace extends frmKnjizenje {
       }
     }
     
-    String cnd = Condition.whereAllEqual(new String[] {"GODOBR","MJOBR","RBROBR"}, viewSet)
-      +" AND (corg in "+OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig())+")";
+    String cnd = Condition.whereAllEqual(new String[] {"GODOBR","MJOBR","RBROBR"}, viewSet).
+    		and(OrgStr.getCorgsKnjigCond()).toString();
 //System.out.println(cnd);
     StorageDataSet kumorg = Kumulorgarh.getDataModule().getTempSet(cnd);
     kumorg.open();

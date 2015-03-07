@@ -141,7 +141,7 @@ hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(false);
     jcbREVAAMOR.setColumnName("REVAAMOR");
     jrfCORG.setColumnName("CORG");
     jrfCORG.setDataSet(dm.getOS_Metaobrada());
-    jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCORG.setVisCols(new int[] {0,1});
     jrfCORG.setSearchMode(0);
     jrfCORG.setColNames(new String[] {"NAZIV"});
@@ -828,8 +828,7 @@ hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(false);
       knjigs.open();
       if (knjigs.getRowCount() == 1) return "0=0";
     }
-    com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(jrfCORG.getText());
-    return Condition.in("CORG2", tds, "CORG").qualified("OS_SREDSTVO").toString();
+    return Condition.in("CORG2", OrgStr.getCorgSet(jrfCORG.getText())).qualified("OS_SREDSTVO").toString();
 //    int i=0;
 //    String cVrati="OS_SREDSTVO.CORG2 in (";
 //    com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(jrfCORG.getText());

@@ -110,9 +110,7 @@ public class frmArhiviranje extends frmObradaPL {
         vrsteodb.open();
         
         try {
-          QueryDataSet kumulorg = Kumulorg.getDataModule()
-                    .getTempSet("CORG in "+OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig()));
-          kumulorg.open();
+          QueryDataSet kumulorg = Kumulorg.getDataModule().openTempSet(OrgStr.getCorgsKnjigCond());
           for (kumulorg.first(); kumulorg.inBounds(); kumulorg.next()) {//loop kumulorg
             String currcorg = kumulorg.getString("CORG");
             raIniciranje.getInstance().posOrgsPl(kumulorg.getString("CORG"));//pos orgpl

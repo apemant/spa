@@ -28,6 +28,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.*;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.dlgGetKnjig;
 import hr.restart.zapod.frmUgovori;
 
@@ -274,15 +275,6 @@ public class raAutomatRac extends raFrame {
         });
 
         rr.setOwner(this, getClass().getName());
-        hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(
-                new hr.restart.zapod.raKnjigChangeListener() {
-                    public void knjigChanged(String oldKnjig, String newKnjig) {
- //                       jlrCORG.getRaDataSet().refresh();
-                      jlrCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr()
-                          .getOrgstrAndCurrKnjig());
-                        jlrNAZIV.setRaDataSet(jlrCORG.getRaDataSet());
-                    }
-                });
 
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent e) {
@@ -363,8 +355,7 @@ public class raAutomatRac extends raFrame {
         jlrCORG.setVisCols(new int[] { 0, 1, 2 });
         jlrCORG
                 .setTextFields(new javax.swing.text.JTextComponent[] { jlrNAZIV });
-        jlrCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr()
-                .getOrgstrAndCurrKnjig());
+        jlrCORG.setRaDataSet(OrgStr.getSharedKnjig());
         jlrNAZIV.setColumnName("NAZIV");
         jlrNAZIV.setSearchMode(1);
         jlrNAZIV.setNavProperties(jlrCORG);

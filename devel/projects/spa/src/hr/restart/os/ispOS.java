@@ -26,6 +26,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raIspisDialog;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -852,7 +853,7 @@ public class ispOS extends raIspisDialog{
   {
     jrfCOrg.setDataSet(fake);
     jrfCOrg.setNavButton(this.jbCOrg);
-    jrfCOrg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCOrg.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCOrg.setVisCols(new int[]{0,1});
     jrfCOrg.setColNames(new String[] {"NAZIV"});
     jrfCOrg.setTextFields(new javax.swing.text.JTextComponent[] {jrfCOrgNaz});

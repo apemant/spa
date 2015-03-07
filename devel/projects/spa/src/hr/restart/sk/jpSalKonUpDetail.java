@@ -22,6 +22,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raCommonClass;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 
@@ -142,7 +143,7 @@ public class jpSalKonUpDetail extends JPanel {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrNaziv.setColumnName("NAZIV");

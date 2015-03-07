@@ -196,7 +196,7 @@ public class jpRadniNalog extends JPanel {
         Condition.in("STATUS", new String[] {"P", "F"}) : Condition.equal("STATUS", "O");
     if (mode.equalsIgnoreCase("P") && lazyIZDpre) 
         status = Condition.in("STATUS", new String[] {"P", "O"});
-    Condition corgs = Condition.in("CSKL", OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "CORG");
+    Condition corgs = OrgStr.getCorgsKnjigCond("CSKL");
     rnls = RN.getDataModule().getFilteredDataSet(corgs.and(status));
 /*      
     if (mode.toUpperCase().equals("I")) rnls = dm.getRNp();

@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.Condition;
 import hr.restart.zapod.OrgStr;
 
 import java.sql.Timestamp;
@@ -44,37 +45,37 @@ public class sjQuerys {
 
   public static String delKUMULORGARH(short god, short mj, short rbr, String corg) {
     String str="delete from KUMULORGARH where GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+""+
-               " and "+getPripOrg(corg, "", "");
+               " and "+OrgStr.getCorgsCond(corg);
     System.out.println("SQL: "+str);
     return str;
   }
   public static String delKUMULRADARH(short god, short mj, short rbr, String corg) {
     String str="delete from KUMULRADARH where GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+""+
-               " and "+getPripOrg(corg, "", "");
+               " and "+OrgStr.getCorgsCond(corg);
     System.out.println("SQL: "+str);
     return str;
   }
   public static String delPRIMANJAARH(short god, short mj, short rbr, String corg) {
     String str="delete from PRIMANJAARH where GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+""+
-               " and "+getPripOrg(corg, "", "");
+               " and "+OrgStr.getCorgsCond(corg);
     System.out.println("SQL: "+str);
     return str;
   }
   public static String delODBICIARH(short god, short mj, short rbr, String corg) {
     String str="delete from ODBICIARH where GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+""+
-               " and CRADNIK in (select cradnik from radnicipl where "+getPripOrg(corg, "", "")+")";
+               " and CRADNIK in (select cradnik from radnicipl where "+OrgStr.getCorgsCond(corg)+")";
     System.out.println("SQL: "+str);
     return str;
   }
   public static String delPRISUTARH(short god, short mj, short rbr, String corg) {
     String str="delete from PRISUTARH where GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+""+
-               " and CRADNIK in (select cradnik from radnicipl where "+getPripOrg(corg, "", "")+")";
+               " and CRADNIK in (select cradnik from radnicipl where "+OrgStr.getCorgsCond(corg)+")";
     System.out.println("SQL: "+str);
     return str;
   }
   public static String delRSPERIODARH(short god, short mj, short rbr, String corg) {
     String str="delete from RSPERIODARH where GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+""+
-               " and CRADNIK in (select cradnik from radnicipl where "+getPripOrg(corg, "", "")+")";
+               " and CRADNIK in (select cradnik from radnicipl where "+OrgStr.getCorgsCond(corg)+")";
     System.out.println("SQL: "+str);
     return str;
   }
@@ -96,7 +97,7 @@ public class sjQuerys {
                 "ORGPL.OSNKOEF, ORGPL.SATNORMA, ORGPL.BROJDANA, ORGPL.STOPAK, '"+dan+"' "+
                "from KUMULORG, PARAMETRIPL, ORGPL "+
 //               "where orgpl.corg=kumulorg.corg and "+getPripOrg(corg, "", "");
-               "where "+getPripOrg(corg, "", "") + " and kumulorg.corg=orgpl.corg";
+               "where "+OrgStr.getCorgsCond(corg) + " and kumulorg.corg=orgpl.corg";
     System.out.println("SQL: "+str);
     return str;
   }
@@ -112,7 +113,7 @@ public class sjQuerys {
                 "RSINV, RSOO, BRUTOSN, BRUTDOD, BRUTMR, BRUTUK, GODSTAZ, STOPASTAZ, DATSTAZ, PODSTAZ, "+
                 "DATPODSTAZ, NACOBRB, KOEF, KOEFZAR, OLUK, OLOS, CLANOMF, CORG, PARAMETRI "+
                "from KUMULRAD, RADNICIPL "+
-               "where KUMULRAD.CRADNIK=RADNICIPL.CRADNIK and "+getPripOrg(corg, "", "");
+               "where KUMULRAD.CRADNIK=RADNICIPL.CRADNIK and "+OrgStr.getCorgsCond(corg);
     System.out.println("SQL: "+str);
     return str;
   }
@@ -165,7 +166,8 @@ public class sjQuerys {
 
 
   public static String selectRadniciPl(String corg, String radnik) {
-    String str="select * from RADNICIPL where radnicipl.AKTIV='D' and "+getPripOrg(corg, radnik, "RADNICIPL.");
+    String str="select * from RADNICIPL where " +	Condition.equal("AKTIV", "D").
+    			and(OrgStr.getCorgsCond(corg)).and(Condition.equal("RADNIK", radnik)).qualified("radnicipl");
     System.out.println("SQL: "+str);
     return str;
   }
@@ -175,48 +177,30 @@ public class sjQuerys {
     return str;
   }
   public static String selectOrgStr(String corg) {
-    String str="select * from ORGSTRUKTURA where "+getPripOrg(corg, "", "");
+    String str="select * from ORGSTRUKTURA where "+OrgStr.getCorgsCond(corg);
     System.out.println("SQL: "+str);
     return str;
   }
   public static String selectOrgPl(String corg) {
-    String str="select * from ORGPL where "+getPripOrg(corg, "", "");
+    String str="select * from ORGPL where "+OrgStr.getCorgsCond(corg);
     System.out.println("SQL: "+str);
     return str;
   }
   public static String delPrimanjaObr(String corg) {
-    String str="delete from PRIMANJAOBR where PRIMANJAOBR.CRADNIK in (Select RADNICIPL.CRADNIK from radnicipl where "+getPripOrg(corg, "", "RADNICIPL.")+")";
+    String str="delete from PRIMANJAOBR where PRIMANJAOBR.CRADNIK in "
+    		+ "(Select RADNICIPL.CRADNIK from radnicipl where "+OrgStr.getCorgsCond(corg).qualified("radnicipl")+")";
     System.out.println("SQL: "+str);
     return str;
   }
   public static String delRSPeriod(String corg) {
-    String str="delete from RSPERIOD where RSPERIOD.CRADNIK in (Select RADNICIPL.CRADNIK from radnicipl where "+getPripOrg(corg, "", "RADNICIPL.")+")";
+    String str="delete from RSPERIOD where RSPERIOD.CRADNIK in "
+    		+ "(Select RADNICIPL.CRADNIK from radnicipl where "+OrgStr.getCorgsCond(corg).qualified("radnicipl")+")";
     System.out.println("SQL: "+str);
     return str;
   }
   public static String selectRadnici(String corg) {
-    String str="select * from RADNICI where "+getPripOrg(corg, "", "");
+    String str="select * from RADNICI where "+OrgStr.getCorgsCond(corg);
     System.out.println("SQL: "+str);
     return str;
-  }
-  static String getPripOrg(String corg, String radnik, String baza) {
-    int i=0;
-    String cVrati="("+baza+"CORG in ";
-    com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
-//    tds.first();
-//    do {
-//      if (i>0) {
-//        cVrati=cVrati+',';
-//      }
-//      i++;
-//      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-//      tds.next();
-//    } while (tds.inBounds());
-//    cVrati=cVrati+")";
-    cVrati = cVrati + OrgStr.getOrgStr().getInQuery(tds, baza+"CORG")+") ";
-    if (!radnik.equals("")) {
-      cVrati=cVrati+" and "+baza+"CRADNIK='"+radnik+"'";
-    }
-    return cVrati;
   }
 }

@@ -279,7 +279,7 @@ public class frmBankSpec extends frmIzvjestajiPL{
     String arhiva ="";
 
     if(jlrCorg.getText().equals(""))
-      cOrgAdd = getPripOrg(hr.restart.zapod.OrgStr.getKNJCORG(), "RADNICIPL");
+    	cOrgAdd = OrgStr.getCorgsKnjigCond().qualified("radnicipl").toString();
     else
       cOrgAdd = "radnicipl.corg='"+jlrCorg.getText()+"'";
 
@@ -465,27 +465,6 @@ private String getArhRangeQuery() {
       return false;
     else
       return firstesc;
-  }
-
-  public String getPripOrg(String str, String corgTable)
-  {
-//    int i = 0;
-//    String cVrati;
-//    cVrati=" "+corgTable.trim()+".CORG in (";
-//    com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
-//    tds.first();
-//    do
-//    {
-//      if (i>0) {
-//        cVrati=cVrati+',';
-//      }
-//      i++;
-//      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-//      tds.next();
-//    } while (tds.inBounds());
-//    cVrati=cVrati+")";
-//    return cVrati;
-    return " "+Condition.in("CORG", hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str)).qualified(corgTable);
   }
 
   public void setDifolt(){

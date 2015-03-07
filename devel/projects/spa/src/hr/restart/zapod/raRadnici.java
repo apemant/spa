@@ -70,12 +70,8 @@ public class raRadnici {
     knjig = knj;
     //String inQuery = OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndKnjig(knj));
     if (radnici == null)
-    	radnici = hr.restart.baza.Radnici.getDataModule().getFilteredDataSet(
-        Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(knj))
-        //"CORG in " + inQuery
-        );
-    else hr.restart.baza.Radnici.getDataModule().setFilter(radnici, 
-    		Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(knj)));
+    	radnici = hr.restart.baza.Radnici.getDataModule().getFilteredDataSet(OrgStr.getCorgsCond(knj));
+    else hr.restart.baza.Radnici.getDataModule().setFilter(radnici, OrgStr.getCorgsCond(knj));
     return radnici;
   }
 }

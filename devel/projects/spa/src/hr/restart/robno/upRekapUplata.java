@@ -28,6 +28,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
+import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
 
@@ -423,7 +424,7 @@ public class upRekapUplata extends raUpitLite {
     jraZavDat.setColumnName("DATUMDO");
 
     jlrCorg.setDataSet(fieldSet);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setSearchMode(0);
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazOrg});

@@ -23,6 +23,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
+import hr.restart.zapod.OrgStr;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -232,7 +233,7 @@ public class frmInventuraCekova extends raUpitLite {
     jrfCORG.setTextFields(new JTextComponent[] {jrfNAZORG});
     jrfCORG.setVisCols(new int[] {0, 1});
     jrfCORG.setSearchMode(0);
-    jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCORG.setNavButton(jbCORG);
 
     jrfNAZORG.setColumnName("NAZIV");

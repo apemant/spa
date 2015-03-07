@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.dM;
 import hr.restart.robno.raDateUtil;
@@ -383,9 +384,8 @@ public class frmIspList extends frmIzvjestajiPL {
       jlrCradnikOd.forceFocLost();
 //      jlrCradnikOd.requestFocus();
       oldcorg = jlrCorg.getText();
-      corgradnici.close();
-      Radnici.getDataModule().setFilter(corgradnici,
-                                        "radnici.aktiv='D' AND corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(oldcorg)));
+      //corgradnici.close();
+      Radnici.getDataModule().setFilter(corgradnici, Condition.equal("AKTIV", "D").and(OrgStr.getCorgsCond(oldcorg)));
       corgradnici.open();
     }
   }

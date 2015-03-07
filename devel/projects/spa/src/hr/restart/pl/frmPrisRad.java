@@ -84,8 +84,6 @@ public class frmPrisRad extends raMatPodaci implements raPreSelectAware {
   };
 
   public void beforeShow(){
-    String inQuery = " ("+hr.restart.zapod.OrgStr.getOrgStr().getInQuery(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig("1"))+") ";
-
     stds = getPreSelect().getSelRow();
     startFrame.getStartFrame().centerFrame(this, 0 ,"");
     lookupData.getlookupData().raLocate(dm.getRadnici(),"CRADNIK",stds.getString("CRADNIK"));

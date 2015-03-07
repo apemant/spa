@@ -30,6 +30,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
 import hr.restart.util.sysoutTEST;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.dlgGetKnjig;
 
 import java.awt.BorderLayout;
@@ -533,8 +534,7 @@ System.err.println(rzsql);
       neki = neki.concat(raPlObrRange.getInQueryIsp(godina, mjesec, godina, mjesec, table.trim(), knjig)) + " and ";
 //      System.out.println("\nNeki poslje : " + neki);
     }
-    return neki.concat(" (corg in ").concat(
-        hr.restart.zapod.OrgStr.getOrgStr().getInQuery(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(knjig))+")");
+    return neki + " " + OrgStr.getCorgsCond(knjig);
   }
 
   private String odbiciWh(short[] id){

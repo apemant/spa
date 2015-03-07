@@ -18,7 +18,9 @@
 package hr.restart.robno;
 
 
+import hr.restart.baza.Condition;
 import hr.restart.util.lookupData;
+import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
 
@@ -424,11 +426,14 @@ public class upStatsMonths extends raPanStats {
 //    }
 
 
-    String inq;
+    Condition cin = OrgStr.getCorgsCond("CSKL", fieldSet.getString("CORG")).qualified("doki");
+    String inq = cin == Condition.nil ? "1=1" : cin.toString();
+    
+    /*String inq;
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(fieldSet.getString("CORG"));
     if (corgs.rowCount() == 0) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + fieldSet.getString("CORG") + "'";
-    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+" AND DOKI.CSKL = '"+getCskl()+"')) ";
 

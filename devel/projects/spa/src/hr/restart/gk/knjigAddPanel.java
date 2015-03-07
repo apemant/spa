@@ -26,6 +26,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.Util;
 import hr.restart.util.raComboBox;
 import hr.restart.util.sysoutTEST;
+import hr.restart.zapod.OrgStr;
 
 import java.util.ArrayList;
 
@@ -188,7 +189,7 @@ public class knjigAddPanel extends JPanel {
     jlrCORG.setColNames(new String[] {"NAZIV"});
     jlrCORG.setVisCols(new int[]{0,1,2});
     jlrCORG.setTextFields(new javax.swing.text.JTextComponent[] {jlrNAZORG});
-    jlrCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jlrNAZORG.setColumnName("NAZIV");
     jlrNAZORG.setSearchMode(1);
     jlrNAZORG.setNavProperties(jlrCORG);
@@ -216,12 +217,6 @@ public class knjigAddPanel extends JPanel {
       add(new JLabel("Nalog ") , new XYConstraints(360 ,75,  100, -1));
       add(jraBrnal, new XYConstraints(420, 75, 100, -1));
     }
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldknjig, String newknjig) {
-        jlrCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-        jlrNAZORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
   }
 
   private void clearAllArrayList(){
@@ -304,14 +299,7 @@ System.out.println(sqlupit);
   	
   	ArrayList al = new ArrayList();
   	if (jlrCORG.getText().equalsIgnoreCase("")) {
-  		StorageDataSet dswa  = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
-  		jlrCORG.getRaDataSet().open();
-        DataSetView  dsw = dswa.cloneDataSetView();
-        for (dsw.first();dsw.inBounds();dsw.next()) {
-          al.add(dsw.getString("CORG"));
-        }
-        dsw.removeRowFilterListener(null);
-        dsw.close();
+  		al.addAll(OrgStr.getCorgKnjigSet());
       } else {
       	al.add(jlrCORG.getText());
       }
@@ -351,10 +339,7 @@ System.out.println(sqlupit);
     }
 // raspodjela orgjedinica
     if (jlrCORG.getText().equalsIgnoreCase("")) {
-      StorageDataSet dsw  = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
-      for (dsw.first();dsw.inBounds();dsw.next()) {
-        Acorgovi.add(dsw.getString("CORG"));
-      }
+    	Acorgovi.addAll(OrgStr.getCorgKnjigSet());
     }
     else {
       Acorgovi.add(jlrCORG.getText());

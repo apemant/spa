@@ -30,6 +30,7 @@ import hr.restart.util.raJPTableView;
 import hr.restart.util.raMatPodaci;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raTransaction;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -153,7 +154,7 @@ public class frmRadnicipl extends raMatPodaci {
   private void jbInit() throws Exception {
 //
 //    bind();
-    String cond = plUtil.getPlUtil().getRadCurKnjig();
+    String cond = OrgStr.getCorgsKnjigCond().toString();
     String cond2 = " AND EXISTS (SELECT * FROM radnici where radnicipl.cradnik=radnici.cradnik and radnici.aktiv='D')";
     this.setRaQueryDataSet(Radnicipl.getDataModule().getFilteredDataSet(cond+cond2));
     this.setVisibleCols(new int[] {0});
@@ -234,8 +235,7 @@ public class frmRadnicipl extends raMatPodaci {
   private void bind()
   {
     getOKpanel().jPrekid_actionPerformed();
-    String cond = plUtil.getPlUtil().getRadCurKnjig();
-    Radnicipl.getDataModule().setFilter(this.getRaQueryDataSet(), cond);
+    Radnicipl.getDataModule().setFilter(this.getRaQueryDataSet(), OrgStr.getCorgsKnjigCond());
     jpDetail.jlrCradnik.setRaDataSet(hr.restart.zapod.raRadnici.getRadniciFromCurrentKnjig());
     jpDetail.jlrRadNaziv.setRaDataSet(hr.restart.zapod.raRadnici.getRadniciFromCurrentKnjig());
     jpDetail.jlrRadIme.setRaDataSet(hr.restart.zapod.raRadnici.getRadniciFromCurrentKnjig());

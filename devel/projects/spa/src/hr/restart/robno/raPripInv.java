@@ -297,11 +297,6 @@ public class raPripInv extends raUpitLite {
     panel01.add(jrbPripremaInventure, new XYConstraints(15, 0, -1, -1));
     panel01.add(jrbPonistenjeInventure,  new XYConstraints(215, 0, -1, -1));
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jlrCskl.setRaDataSet(Util.getSkladFromCorg());
-      }
-    });
   }
 
   void onAndOffPanel(boolean ocul){

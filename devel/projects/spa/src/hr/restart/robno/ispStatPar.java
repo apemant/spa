@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sk.PartnerCache;
@@ -26,6 +27,7 @@ import hr.restart.util.Stopwatch;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.JasperHook;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -1015,14 +1017,17 @@ public class ispStatPar extends raPanStats {
     }
 */
       
-    String inq;
+    Condition cin = OrgStr.getCorgsCond("CSKL", fieldSet.getString("CORG")).qualified("doki");
+    String inq = cin == Condition.nil ? "1=1" : cin.toString();
+    
+    /*String inq;
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(fieldSet.getString("CORG"));
     if (corgs.rowCount() == 0)
       inq = "1=1";
     else if (corgs.rowCount() == 1)
       inq = "DOKI.CSKL = '" + fieldSet.getString("CORG") + "'";
     else
-      inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs, "DOKI.CSKL")+") ";
+      inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs, "DOKI.CSKL")+") ";*/
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND ((" + oj + " AND " + inq + ") OR (" + oj.not() + cskls + ")) ";//"
                                                                                                                // AND

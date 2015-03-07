@@ -724,8 +724,7 @@ SwingUtilities.invokeLater(new Runnable(){
 			jrfCORG.setVisCols(new int[] { 0, 1, 2 });
 			jrfCORG
 					.setTextFields(new javax.swing.text.JTextComponent[] { jrfNAZORG });
-			jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr()
-					.getOrgstrAndCurrKnjig());
+			jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
 
 			jrfNAZORG.setColumnName("NAZIV");
 			jrfNAZORG.setSearchMode(1);
@@ -1966,18 +1965,9 @@ SwingUtilities.invokeLater(new Runnable(){
         jrfCORG.setColumnName("CORG");
         jrfCORG.setColNames(new String[] { "NAZIV" });
         jrfCORG.setVisCols(new int[] { 0, 1, 2 });
-        jrfCORG
-                .setTextFields(new javax.swing.text.JTextComponent[] { jrfNAZORG });
-        jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr()
-                .getOrgstrAndCurrKnjig());
-        hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(
-                new hr.restart.zapod.raKnjigChangeListener() {
-                    public void knjigChanged(String oldKnjig,
-                            String newKnjig) {
-                        jrfCORG.getRaDataSet().refresh();
-                        jrfNAZORG.getRaDataSet().refresh();
-                    }
-                });
+        jrfCORG.setTextFields(new javax.swing.text.JTextComponent[] { jrfNAZORG });
+        jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
+        
 
         jrfNAZORG.setColumnName("NAZIV");
         jrfNAZORG.setSearchMode(1);
@@ -2150,16 +2140,7 @@ SwingUtilities.invokeLater(new Runnable(){
 			jrfCORG.setVisCols(new int[] { 0, 1, 2 });
 			jrfCORG
 					.setTextFields(new javax.swing.text.JTextComponent[] { jrfNAZORG });
-			jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr()
-					.getOrgstrAndCurrKnjig());
-			hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(
-					new hr.restart.zapod.raKnjigChangeListener() {
-						public void knjigChanged(String oldKnjig,
-								String newKnjig) {
-							jrfCORG.getRaDataSet().refresh();
-							jrfNAZORG.getRaDataSet().refresh();
-						}
-					});
+			jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
 
 			jrfNAZORG.setColumnName("NAZIV");
 			jrfNAZORG.setSearchMode(1);

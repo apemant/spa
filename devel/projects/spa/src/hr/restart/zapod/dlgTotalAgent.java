@@ -162,7 +162,7 @@ public class dlgTotalAgent {
     raProcess.setMessage("Dohvat raèuna ...", false);
     DataSet skl = rut.getSkladFromCorg();
     raProcess.checkClosing();
-    DataSet knj = OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
+    DataSet knj = OrgStr.getSharedKnjig();
     
     Condition sklDok = Condition.in("VRDOK", new String[] {"ROT", "GOT"});
     Condition orgDok = Condition.in("VRDOK", new String[] {"RAC", "GRN"});

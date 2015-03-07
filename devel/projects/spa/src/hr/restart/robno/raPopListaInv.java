@@ -266,11 +266,6 @@ public class raPopListaInv extends raUpitLite {
     jlrNazskl.setNavProperties(jlrCskl);
     jlrNazskl.setSearchMode(1);
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jlrCskl.setRaDataSet(Util.getSkladFromCorg());
-      }
-    });
   }
 
   public void setReportProviders(){

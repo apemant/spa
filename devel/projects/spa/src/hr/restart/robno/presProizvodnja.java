@@ -120,7 +120,7 @@ public class presProizvodnja extends PreSelect {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1}); /**@todo: Dodati visible cols za lookup frame */
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrNaziv.setColumnName("NAZIV");
@@ -141,12 +141,7 @@ public class presProizvodnja extends PreSelect {
     jpDetail.add(jraDatumfrom, new XYConstraints(150, 70, 100, -1));
     jpDetail.add(jraDatumto, new XYConstraints(255, 70, 100, -1));
     jpDetail.add(jraSerpr, new XYConstraints(360, 70, 5, -1));
-
-    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
-      public void knjigChanged(String oldk, String newk) {
-        jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
+    
     installResetButton();
     this.addSelRange(jraDatumfrom, jraDatumto);
     this.setSelPanel(jpDetail);

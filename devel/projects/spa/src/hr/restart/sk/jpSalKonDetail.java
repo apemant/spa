@@ -212,7 +212,7 @@ public class jpSalKonDetail extends JPanel {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrNaziv.setColumnName("NAZIV");
@@ -247,11 +247,7 @@ public class jpSalKonDetail extends JPanel {
     jpDetail.add(jlrNaziv, new XYConstraints(255, 45, 245, -1));
     jpDetail.add(jlrNazivkolone, new XYConstraints(255, 70, 245, -1));    
 
-    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
-      public void knjigChanged(String oldk, String newk) {
-        jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
+
     this.add(jpDetail, BorderLayout.CENTER);
   }
 }

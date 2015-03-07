@@ -42,6 +42,7 @@ import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raTransaction;
 import hr.restart.util.startFrame;
+import hr.restart.zapod.OrgStr;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -135,9 +136,9 @@ public class frmDohArh extends frmIzvjestajiPL {
 
   public static void dohvatArhive(String corg, short god, short mj, short rbr, boolean chparam) {
     String filter = "GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+""+
-                    " and "+sjQuerys.getPripOrg(corg, "", "");
+                    " and "+OrgStr.getCorgsCond(corg);
     String filter2 =  "GODOBR="+god+" and MJOBR="+mj+" and RBROBR="+rbr+""+
-      " and CRADNIK in (select cradnik from radnicipl where "+sjQuerys.getPripOrg(corg, "", "")+")";
+      " and CRADNIK in (select cradnik from radnicipl where "+OrgStr.getCorgsCond(corg)+")";
     
     QueryDataSet orgarh = Kumulorgarh.getDataModule().getTempSet(filter);
     QueryDataSet radarh = Kumulradarh.getDataModule().getTempSet(filter);
@@ -150,9 +151,9 @@ public class frmDohArh extends frmIzvjestajiPL {
     odbarh.open();
     rsarh.open();
     //OJ - PARAMETRI - KUMULORG
-    QueryDataSet orgpl = Orgpl.getDataModule().getTempSet(sjQuerys.getPripOrg(corg, "", ""));
+    QueryDataSet orgpl = Orgpl.getDataModule().getTempSet(OrgStr.getCorgsCond(corg));
     QueryDataSet param = Parametripl.getDataModule().getTempSet();
-    QueryDataSet kumulorg = Kumulorg.getDataModule().getTempSet(sjQuerys.getPripOrg(corg, "", ""));
+    QueryDataSet kumulorg = Kumulorg.getDataModule().getTempSet(OrgStr.getCorgsCond(corg));
     param.open();
     kumulorg.open();
     orgpl.open();
@@ -180,7 +181,7 @@ public class frmDohArh extends frmIzvjestajiPL {
     }
     
     //radnici - kumulrad
-    QueryDataSet radnicipl = Radnicipl.getDataModule().getTempSet(sjQuerys.getPripOrg(corg, "", ""));
+    QueryDataSet radnicipl = Radnicipl.getDataModule().getTempSet(OrgStr.getCorgsCond(corg));
     radnicipl.open();
     QueryDataSet kumulrad = Kumulrad.getDataModule().getTempSet(Condition.in("CRADNIK", radnicipl));
     kumulrad.open();

@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.blpn;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
@@ -217,8 +218,8 @@ public class presPN extends PreSelect {
   private static StorageDataSet radnici;
   public static StorageDataSet getRadnici() {
     if (radnici == null) {
-      radnici = Radnici.getDataModule().getFilteredDataSet(" radnici.aktiv='D' AND (radnici.corg in "+
-          OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "radnici.corg")+")");
+      radnici = Radnici.getDataModule().getFilteredDataSet(
+      		Condition.equal("AKTIV", "D").and(OrgStr.getCorgsKnjigCond()));
     }
     return radnici;
   }

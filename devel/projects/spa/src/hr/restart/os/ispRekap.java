@@ -27,6 +27,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.raIspisDialog;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -447,11 +448,11 @@ public class ispRekap extends raIspisDialog {
 //    qds.close();
 
     if (jrfCOrg.getText().trim().equals(""))
-      knjSDS = knjOrgStr.getOrgstrFromCurrKnjig();
+      knjSDS = knjOrgStr.getTempOrgsKnjig();
     else
-      knjSDS = knjOrgStr.getOrgstrAndKnjig(jrfCOrg.getText().trim());
+      knjSDS = knjOrgStr.getTempOrgs(jrfCOrg.getText().trim());
     if(knjSDS.getRowCount()==0)
-      knjSDS = knjOrgStr.getOrgstrAndKnjig(jrfCOrg.getText().trim());
+      knjSDS = knjOrgStr.getTempOrgs(jrfCOrg.getText().trim());
     if(knjSDS.getRowCount()==0)
       return null;
 
@@ -674,7 +675,7 @@ public class ispRekap extends raIspisDialog {
 
   private void bindCorg() {
     jrfCOrg.setDataSet(fake);
-    jrfCOrg.setRaDataSet(rdOSUtil.getUtil().getOrgStruktura(hr.restart.zapod.OrgStr.getKNJCORG()));
+    jrfCOrg.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCOrg.setVisCols(new int[]{0,1});
     jrfCOrg.setColNames(new String[] {"NAZIV"});
     jrfCOrg.setTextFields(new javax.swing.text.JTextComponent[] {jrfCOrgNaz});

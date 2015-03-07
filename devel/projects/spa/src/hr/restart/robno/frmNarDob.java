@@ -122,7 +122,7 @@ public class frmNarDob extends raMasterDetail {
   public void beforeShowMaster() {
     setPreselectValues();
     setTitleMaster();
-    jpMaster.jp1.jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndKnjig(corg));
+    jpMaster.jp1.jlrCorg.setRaDataSet(OrgStr.getTempOrgs(corg));
   }
   
   public void beforeShowDetail() {

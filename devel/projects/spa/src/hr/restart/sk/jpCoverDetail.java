@@ -159,7 +159,7 @@ public class jpCoverDetail extends JPanel {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1}); /**@todo: Dodati visible cols za lookup frame */
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrNaziv.setColumnName("NAZIV");
@@ -194,11 +194,6 @@ public class jpCoverDetail extends JPanel {
     jpDetail.add(jraSaldo, new XYConstraints(150, 205, 100, -1));
     jpDetail.add(jraSsaldo, new XYConstraints(360, 205, 100, -1));
 
-    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
-      public void knjigChanged(String oldk, String newk) {
-        jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
 //    BindComponents(fCover.getDetailSet());
     /**@todo: Odkomentirati sljedeæu liniju :) */
     this.add(jpDetail, BorderLayout.CENTER);

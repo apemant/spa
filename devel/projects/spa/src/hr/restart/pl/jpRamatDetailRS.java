@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.Sifrarnici;
 import hr.restart.baza.dM;
@@ -25,6 +26,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 
@@ -311,8 +313,8 @@ public class jpRamatDetailRS extends JPanel {
     jlrCradnik.setTextFields(new JTextComponent[] {jlrIme, jlrPrezime});
     jlrCradnik.setVisCols(new int[] {0, 1, 2});
     jlrCradnik.setSearchMode(0);
-    jlrCradnik.setRaDataSet(Radnici.getDataModule().getTempSet("LOKK='N' and AKTIV='D' and (CORG in " +
-        orgStr.getInQuery(orgStr.getOrgstrAndCurrKnjig())+")"));
+    jlrCradnik.setRaDataSet(Radnici.getDataModule().getTempSet(
+    		Condition.equal("AKTIV", "D").and(OrgStr.getCorgsKnjigCond())));
     jlrCradnik.setNavButton(jbSelCradnik);
 
     jlrIme.setColumnName("IME");

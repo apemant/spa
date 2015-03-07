@@ -113,7 +113,7 @@ public class upProdaja extends raUpitLite {
     jrfCSKL.setColNames(new String[] {"NAZIV"});
     jrfCSKL.setVisCols(new int[]{2,3});
     jrfCSKL.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZSKL});
-    jrfCSKL.setRaDataSet(OrgStr.getOrgStr().getOrgstrFromCurrKnjig());
+    jrfCSKL.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCSKL.setDataSet(tds);
     jrfCSKL.setSearchMode(0);
     jrfCSKL.setNavButton(jbCSKL);
@@ -137,11 +137,6 @@ public class upProdaja extends raUpitLite {
     
     new raDateRange(jtfPocDatum, jtfZavDatum);
     
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jrfCSKL.setRaDataSet(OrgStr.getOrgStr().getOrgstrFromCurrKnjig());
-      }
-    });
   }
   
 	
@@ -158,12 +153,11 @@ public class upProdaja extends raUpitLite {
 
 	public void okPress() {
 		if (izv.getSelectedIndex() == 0) {
-			DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
+			Condition cc = OrgStr.getCorgsCond("CSKL", tds.getString("CORG"));
 			
 			String q = "SELECT rate.cskl, rate.cnacpl, rate.cbanka, rate.irata from pos,rate "+
 	    						"WHERE " + Util.getUtil().getDoc("pos", "rate") + " and " +
-	    						Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-	    						Condition.in("CSKL", corgs, "CORG")).qualified("pos");
+	    						Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(cc).qualified("pos");
 			
 	    DataSet ds = Aus.q(q.toString());
 	    ds.setSort(new SortDescriptor(new String[] {"CSKL", "CNACPL", "CBANKA"}));
@@ -211,12 +205,11 @@ public class upProdaja extends raUpitLite {
 	    t.addToGroup("CORG", true, new String[] {"#", "NAZIVLOG", "#\n", "ADRESA", "#,", "PBR", "MJESTO", "#, OIB", "OIB"}, 
 	    		dM.getDataModule().getLogotipovi(), true);
 		} else if (izv.getSelectedIndex() == 1) {
-			DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
+			Condition cc = OrgStr.getCorgsCond("CSKL", tds.getString("CORG"));
 			
 			String q = "SELECT stpos.cskl, stpos.cart1, stpos.nazart, stpos.kol, stpos.mc, stpos.neto from pos,stpos "+
 	    						"WHERE " + Util.getUtil().getDoc("pos", "stpos") + " and " +
-	    						Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-	    						Condition.in("CSKL", corgs, "CORG")).qualified("pos");
+	    						Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(cc).qualified("pos");
 			
 	    DataSet ds = Aus.q(q.toString());
 	    ds.setSort(new SortDescriptor(new String[] {"CSKL", "CART1"}));
@@ -311,12 +304,11 @@ public class upProdaja extends raUpitLite {
 	    		dm.getPartneri(), true);
 	    
 		} else if (izv.getSelectedIndex() == 3) {
-          DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
+			Condition cc = OrgStr.getCorgsCond("CSKL", tds.getString("CORG"));
           
           String q = "SELECT stpos.cskl, stpos.cart1, stpos.nazart, stpos.kol, stpos.mc, stpos.ppopust1, stpos.ukupno, stpos.neto from pos,stpos "+
                               "WHERE " + Util.getUtil().getDoc("pos", "stpos") + " and " +
-                              Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-                              Condition.in("CSKL", corgs, "CORG")).qualified("pos");
+                              Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(cc).qualified("pos");
           
       DataSet ds = Aus.q(q.toString());
       ds.setSort(new SortDescriptor(new String[] {"CSKL", "PPOPUST1", "CART1"}));
@@ -373,12 +365,11 @@ public class upProdaja extends raUpitLite {
 	    
 		} else if (izv.getSelectedIndex() == 4) {
 		  boolean single = tds.getString("CORG").length() == 4;
-          DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
+			Condition cc = OrgStr.getCorgsCond("CSKL", tds.getString("CORG"));
           
           String q = "SELECT pos.cskl,pos.brdok,pos.datdok,pos.ukupno,pos.neto,rate.cnacpl, " +
           		  "rate.cbanka, rate.irata from pos,rate WHERE " + Util.getUtil().getDoc("pos", "rate") + " and " +
-                              Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-                              Condition.in("CSKL", corgs, "CORG")).qualified("pos");
+                              Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(cc).qualified("pos");
           
       DataSet ds = Aus.q(q.toString());
       ds.setSort(new SortDescriptor(new String[] {"CSKL", "BRDOK"}));
@@ -485,12 +476,11 @@ public class upProdaja extends raUpitLite {
       }
       
       } else if (izv.getSelectedIndex() == 5) {
-        DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
+  			Condition cc = OrgStr.getCorgsCond("CSKL", tds.getString("CORG"));
         
         String q = "SELECT rate.cskl, rate.cnacpl, rate.cbanka, rate.irata from pos,rate "+
                             "WHERE " + Util.getUtil().getDoc("pos", "rate") + " and " +
-                            Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-                            Condition.in("CSKL", corgs, "CORG")).qualified("pos");          
+                            Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(cc).qualified("pos");          
         
         DataSet ds = Aus.q(q);
         ds.setSort(new SortDescriptor(new String[] {"CNACPL", "CBANKA", "CSKL"}));
@@ -558,12 +548,11 @@ public class upProdaja extends raUpitLite {
                   Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
         ret.setVisibleCols(new int[] {0, 1, 2});
       } else if (izv.getSelectedIndex() == 6) {
-        DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
+  			Condition cc = OrgStr.getCorgsCond("CSKL", tds.getString("CORG"));
         
         String q = "SELECT rate.cskl, rate.cnacpl, rate.irata from pos,rate "+
                             "WHERE " + Util.getUtil().getDoc("pos", "rate") + " and " +
-                            Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-                            Condition.in("CSKL", corgs, "CORG")).qualified("pos");          
+                            Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(cc).qualified("pos");          
         
         DataSet ds = Aus.q(q);
         ds.setSort(new SortDescriptor(new String[] {"CNACPL", "CSKL"}));
@@ -632,15 +621,15 @@ public class upProdaja extends raUpitLite {
                   Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
         ret.setVisibleCols(new int[] {0, 1, 2});
       } else if (izv.getSelectedIndex() == 7) {
-      	DataSet corgs = OrgStr.getOrgStr().getOrgstrAndKnjig(tds.getString("CORG"));
+  			Condition cc = OrgStr.getCorgsCond("CSKL", tds.getString("CORG"));
+
       	Timestamp poc = ut.getFirstSecondOfDay(tds.getTimestamp("pocDatum"));
       	String py = vl.getKnjigYear("robno");
       	tds.setTimestamp("pocDatum", ut.getYearBegin(py));
       	
       	String us = "SELECT doku.cskl, doku.vrdok, doku.datdok, stdoku.inab, stdoku.izad, stdoku.porav " +
     		"FROM doku, stdoku WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " and " + uldok + " and " +
-    		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-    				Condition.in("CSKL", corgs, "CORG")).qualified("doku");
+    		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(cc).qualified("doku");
       	System.out.println(us);
       	DataSet du = Aus.q(us);
       	du.setSort(new SortDescriptor(new String[] {"CSKL"}));
@@ -648,8 +637,7 @@ public class upProdaja extends raUpitLite {
       	String is = "SELECT doki.cskl, doki.vrdok, doki.datdok, stdoki.inab, stdoki.iraz, " +
     		"stdoki.uirab, stdoki.iprodbp, stdoki.iprodsp, stdoki.veza, stdoki.id_stavka FROM doki,stdoki WHERE " +
     		Util.getUtil().getDoc("doki", "stdoki") + " and " + izdok + " and " +
-    		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(
-    				Condition.in("CSKL", corgs, "CORG")).qualified("doki");
+    		Condition.between("DATDOK", tds, "pocDatum", "zavDatum").and(cc).qualified("doki");
       	System.out.println(is);
       	DataSet di = Aus.q(is);
       	di.setSort(new SortDescriptor(new String[] {"CSKL"}));

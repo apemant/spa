@@ -209,11 +209,7 @@ public class raMatObracun extends JraDialog {
   }
 
   void jbInit() throws Exception {
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldKnjig, String newKnjig) {
-        rpcskl.jrfCSKL.setRaDataSet(hr.restart.robno.Util.getSkladFromCorg());
-      }
-    });
+    
     this.addComponentListener(new java.awt.event.ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
         componentShow();

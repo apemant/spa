@@ -25,6 +25,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.jpGetValute;
 
 import java.math.BigDecimal;
@@ -730,7 +731,7 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     jlrOrg.setColNames(new String[] {"NAZIV"});
     jlrOrg.setSearchMode(0);
     jlrOrg.setDataSet(this.getMasterSet());
-    jlrOrg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig()); // TODO handle orgJed iz skladista
+    jlrOrg.setRaDataSet(OrgStr.getSharedKnjig()); // TODO handle orgJed iz skladista
     jlrOrg.setVisCols(new int[] {0,1});
     jlrOrg.setNavButton(jbSelOrg);
 

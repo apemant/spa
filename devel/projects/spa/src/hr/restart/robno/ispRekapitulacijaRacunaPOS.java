@@ -987,7 +987,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     jrfCSKL.setColNames(new String[] {"NAZSKL"});
     jrfCSKL.setVisCols(new int[]{2,3});
     jrfCSKL.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZSKL});
-    jrfCSKL.setRaDataSet(Sklad.getDataModule().getTempSet(Aus.getKnjigCond()));
+    jrfCSKL.setRaDataSet(Util.getSkladFromCorg());
     jrfCSKL.setDataSet(tds);
     jrfCSKL.setSearchMode(0);
     jrfCSKL.setNavButton(jbCSKL);
@@ -1111,11 +1111,6 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     rcc.setLabelLaF(jtfPocBroj,false);
     rcc.setLabelLaF(jtfZavBroj,false);
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jrfCSKL.setRaDataSet(Sklad.getDataModule().getTempSet(Aus.getKnjigCond()));
-      }
-    });
   }
 
   public com.borland.dx.sql.dataset.QueryDataSet getProdMjZaSklad(){

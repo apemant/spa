@@ -259,13 +259,7 @@ public class raAutomatRacPartner extends raFrame {
   private void jbInit() throws Exception {
 
     rr.setOwner(this,getClass().getName());
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldKnjig,String newKnjig) {
-        jlrCORG.getRaDataSet().refresh();
-        jlrNAZIV.getRaDataSet().refresh();
-      }
-    });
-
+    
     this.addComponentListener(new java.awt.event.ComponentAdapter() {
       public void componentShown(java.awt.event.ComponentEvent e) {
         componentShow();
@@ -331,7 +325,7 @@ public class raAutomatRacPartner extends raFrame {
     jlrCORG.setColNames(new String[] {"NAZIV"});
     jlrCORG.setVisCols(new int[]{0,1,2});
     jlrCORG.setTextFields(new javax.swing.text.JTextComponent[] {jlrNAZIV});
-    jlrCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jlrNAZIV.setColumnName("NAZIV");
     jlrNAZIV.setSearchMode(1);
     jlrNAZIV.setNavProperties(jlrCORG);

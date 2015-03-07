@@ -274,8 +274,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
   public QueryDataSet findDataSetForIspis(String oznaka, boolean corg) { //String cskl, String corg) {
     String dodatak = "";
     if (corg) {
-      dodatak = Condition.in("CSKL", Sklad.getDataModule().getTempSet(Condition.in("CORG", 
-          OrgStr.getOrgStr().getOrgstrAndKnjig(oznaka)))).qualified("doki").toString();
+      dodatak = Condition.in("CSKL", Sklad.getDataModule().getTempSet(OrgStr.getCorgsCond(oznaka))).qualified("doki").toString();
       /*dodatak = "doki.cskl in (";
       QueryDataSet qds = Util.getUtil().getSkladFromCorg(); 
       
@@ -517,7 +516,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
       if (comboIzbor.getSelectedIndex() == 0) {
         jnfCORG.setDataSet(fieldSet);
         jnfCORG.setColumnName("CSKLCORG");
-        jnfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+        jnfCORG.setRaDataSet(OrgStr.getSharedKnjig());
         jnfCORG.setNavColumnName("CORG");
         jnfCORG.setColNames(new String[]{"NAZIV"});
         jnfCORG.setVisCols(new int[]{0, 1, 2});

@@ -151,7 +151,7 @@ public class ispRekapNew extends raUpitLite {
     jrfCSKL.setColNames(new String[] {"NAZIV"});
     jrfCSKL.setVisCols(new int[]{2,3});
     jrfCSKL.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZSKL});
-    jrfCSKL.setRaDataSet(OrgStr.getOrgStr().getOrgstrFromCurrKnjig());
+    jrfCSKL.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCSKL.setDataSet(tds);
     jrfCSKL.setSearchMode(0);
     jrfCSKL.setNavButton(jbCSKL);
@@ -170,11 +170,6 @@ public class ispRekapNew extends raUpitLite {
     mainPanel.add(jtfPocDatum, new XYConstraints(150, 45, 100, -1));
     mainPanel.add(jtfZavDatum, new XYConstraints(255, 45, 100, -1));
     
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jrfCSKL.setRaDataSet(OrgStr.getOrgStr().getOrgstrFromCurrKnjig());
-      }
-    });
   }
   
   public void componentShow() {
@@ -219,11 +214,7 @@ public class ispRekapNew extends raUpitLite {
   }
   
   void multiplePrint() {
-		DataSet allc = OrgStr.getOrgStr().getOrgstrFromKnjig(tds.getString("CORG"));
-		HashSet hc = new HashSet();
-		for (allc.first(); allc.inBounds(); allc.next()) {
-			hc.add(allc.getString("CORG"));
-		}
+		HashSet hc = OrgStr.getCorgSet(tds.getString("CORG"));
 		System.out.println(hc);
 		
 		String q = "SELECT cskl FROM pos WHERE pos.vrdok = 'GRC' and " +

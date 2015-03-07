@@ -23,6 +23,7 @@ import hr.restart.util.raImages;
 import hr.restart.util.raMatPodaci;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raNavBar;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -83,7 +84,7 @@ public class frmVerifyAmor extends raMatPodaci {
     jLabel1.setText("Datum (od - do)");
     jp.setLayout(xYLayout1);
 
-    jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCORG.setVisCols(new int[]{0,1});
     jrfCORG.setColNames(new String[] {"NAZIV"});
     jrfCORG.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZORG});

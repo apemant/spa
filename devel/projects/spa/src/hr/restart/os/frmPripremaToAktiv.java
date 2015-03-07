@@ -23,6 +23,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
 import hr.restart.util.sysoutTEST;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.event.FocusEvent;
 
@@ -239,7 +240,7 @@ public class frmPripremaToAktiv extends raUpitLite {
     jtfDatum.setColumnName("DATAKTIVIRANJA");
 
     //org. jedinica na masteru
-    jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCORG.setVisCols(new int[]{0,1});
     jrfCORG.setColNames(new String[] {"NAZIV"});
     jrfCORG.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZORG});

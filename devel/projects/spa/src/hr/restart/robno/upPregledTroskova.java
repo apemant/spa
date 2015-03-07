@@ -302,8 +302,8 @@ public class upPregledTroskova extends raUpitLite {
     jraCORG.setTextFields(new javax.swing.text.JTextComponent[] {jraNAZORG});
     jraCORG.setVisCols(new int[]{0,1});
     jraCORG.setSearchMode(0);
-    jraCORG.setDataSet(sgQuerys.getSgQuerys().getMjestoTroska());
-    jraCORG.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+//    jraCORG.setDataSet(sgQuerys.getSgQuerys().getMjestoTroska());
+    jraCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jraCORG.setNavButton(jraDohvatOGR);
 
 
@@ -357,12 +357,6 @@ public class upPregledTroskova extends raUpitLite {
     jpMainPanel.add(jpContainPanel, BorderLayout.SOUTH);
     raLLFrames.getRaLLFrames().getMsgStartFrame().centerFrame(this,0,getTitle());
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jraCORG.setDataSet(sgQuerys.getSgQuerys().getMjestoTroska());
-        jraCORG.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
   }
 
   void showDefaultValues() {

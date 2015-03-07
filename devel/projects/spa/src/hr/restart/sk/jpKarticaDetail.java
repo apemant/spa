@@ -149,7 +149,7 @@ public class jpKarticaDetail extends JPanel {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1}); /**@todo: Dodati visible cols za lookup frame */
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrNaziv.setColumnName("NAZIV");
@@ -180,12 +180,6 @@ public class jpKarticaDetail extends JPanel {
     jpDetail.add(jraId, new XYConstraints(150, 185, 100, -1));
     jpDetail.add(jraOpis, new XYConstraints(150, 160, 455, -1));
     jpDetail.add(jraSaldo, new XYConstraints(505, 185, 100, -1));
-
-    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
-      public void knjigChanged(String oldk, String newk) {
-        jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
 
 //    BindComponents(fKartica.getDetailSet());
     /**@todo: Odkomentirati sljedeæu liniju :) */

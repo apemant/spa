@@ -22,6 +22,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raCommonClass;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 
@@ -149,7 +150,7 @@ public class jpPrimanjaDetail extends JPanel {
     jlrCorg.setDataSet(fPrimanja.getDetailSet());
     jlrCorg.setVisCols(new int[] {0, 1}); /**@todo: Dodati visible cols za lookup frame */
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrCvrp.setColumnName("CVRP");

@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
@@ -26,8 +27,10 @@ import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
+import java.util.HashSet;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -191,6 +194,10 @@ public class frmDNR extends raUpitLite {
   }
 
   public String getRepQdsString() {
+  	HashSet orgs = OrgStr.getCorgSet(fieldSet.getString("CORG"));
+  	String wc = frmID.getOjWith();
+  	if (wc.length() > 0) orgs.addAll(OrgStr.getCorgSet(wc));
+  	
     String qstr = "select kumulorgarh.godobr, kumulorgarh.mjobr, kumulorgarh.rbrobr,"+
                   " kumulorgarh.datumispl, kumulradarh.bruto, kumulradarh.doprinosi,"+ // odakle se vade ( i zbrajaju ) doprinosi???
                   " kumulradarh.iskneop, kumulradarh.porosn,"+
@@ -213,7 +220,7 @@ public class frmDNR extends raUpitLite {
 //                  " AND radnicipl.cvro = kumulorgarh.cvro"+
 //                  " AND radnicipl.corg = kumulorgarh.corg"+
                   " and kumulorgarh.datumispl between '"+ fieldSet.getTimestamp("DATISPLOD") + "' and '" + ut.getLastSecondOfDay(fieldSet.getTimestamp("DATISPLDO")) + "'" +
-                  " and (kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulradarh.corg")+" OR kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(frmID.getOjWith()),"kumulradarh.corg")+")";
+                  " and " + Condition.in("CORG", orgs).qualified("kumulradarh") + " ";
     String nadoprc = " and kumulradarh.cradnik between '"+ fieldSet.getString("CRADNIKOD") + "' and '" + fieldSet.getString("CRADNIKDO") + "'";
     if (!jlrCradnikOd.getText().equals("")) return qstr.concat(nadoprc);
     qstr+=" ORDER BY radnici.ime, radnici.prezime, radnici.cradnik, kumulorgarh.godobr, kumulorgarh.mjobr, kumulorgarh.rbrobr";
@@ -404,7 +411,7 @@ public class frmDNR extends raUpitLite {
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazorg});
     jlrCorg.setVisCols(new int[] {0, 1, 2});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrNazorg.setSearchMode(1);
@@ -534,9 +541,8 @@ public class frmDNR extends raUpitLite {
 
   public void setBrojRadnika(){
     String a1 = "select count(distinct cradnik) as br " +
-                "from Radnici "+
-                "WHERE (corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")))+")";
-    String a2 = "AND cradnik between '"+ fieldSet.getString("CRADNIKOD") + "' and '" + fieldSet.getString("CRADNIKDO") + "'";
+                "from Radnici WHERE "+ Condition.in("CORG", OrgStr.getCorgSet(fieldSet.getString("CORG")));
+    String a2 = " AND cradnik between '"+ fieldSet.getString("CRADNIKOD") + "' and '" + fieldSet.getString("CRADNIKDO") + "'";
     String a;
     if (!jlrCradnikOd.getText().equals("")) a = a1.concat(a2);
     else a = a1;
@@ -553,10 +559,8 @@ public class frmDNR extends raUpitLite {
       jlrCradnikDo.setText("");
       jlrCradnikOd.setText("");
       oldcorg = jlrCorg.getText();
-      corgradnici.close();
-      Radnici.getDataModule().setFilter(corgradnici,
-        "corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(oldcorg))
-      );
+      
+      Radnici.getDataModule().setFilter(corgradnici, Condition.in("CORG", OrgStr.getCorgSet(oldcorg)));
       corgradnici.open();
     }
   }

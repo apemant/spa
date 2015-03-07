@@ -19,6 +19,7 @@ package hr.restart.pl;
 
 import hr.restart.baza.Condition;
 import hr.restart.util.Util;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.dlgGetKnjig;
 
 import java.sql.Timestamp;
@@ -174,7 +175,7 @@ public class raPlObrRange {
     Condition datisplbetween = Condition.between("kumulorgarh.datumispl", cdod, Util.getUtil().getLastDayOfMonth(new java.sql.Timestamp(d.getTime())));
     String qry = "SELECT kumulorgarh.godobr,kumulorgarh.mjobr,kumulorgarh.rbrobr FROM kumulorgarh where " + datisplbetween
  //           "kumulorgarh.datumispl between '"+datod+"' AND '"+datdo
-    +" AND (kumulorgarh.corg in "+ors.getInQuery(ors.getOrgstrAndKnjig(knjig),"kumulorgarh.corg")+") "
+    +" AND " + OrgStr.getCorgsCond(knjig).qualified("kumulorgarh") 
     +" group by kumulorgarh.godobr,kumulorgarh.mjobr,kumulorgarh.rbrobr";
 System.out.println(qry);
     qdsQueryIsp = Util.getNewQueryDataSet(qry);

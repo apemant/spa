@@ -24,6 +24,7 @@ import hr.restart.swing.raTableColumnModifier;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raMatPodaci;
+import hr.restart.zapod.OrgStr;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -215,7 +216,7 @@ public class frmOsObjekti extends raMatPodaci {
     jrfCOrg.setTextFields(new javax.swing.text.JTextComponent[] {jrfCOrgNaz});
     jrfCOrg.setColNames(new String[] {"NAZIV"});
     jrfCOrg.setVisCols(new int[]{0,1});
-    jrfCOrg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCOrg.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCOrg.setDataSet(getRaQueryDataSet());
     jrfCOrgNaz.setColumnName("NAZIV");
     jrfCOrgNaz.setSearchMode(1);

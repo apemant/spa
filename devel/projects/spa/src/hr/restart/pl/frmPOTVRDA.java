@@ -26,6 +26,7 @@ import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 
@@ -229,7 +230,7 @@ public class frmPOTVRDA extends raUpitLite {
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazorg});
     jlrCorg.setVisCols(new int[] {0, 1, 2});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrNazorg.setSearchMode(1);
@@ -279,11 +280,6 @@ public class frmPOTVRDA extends raUpitLite {
     jPanel1.add(jlrPrezime, new XYConstraints(255,65,150,-1));
     jPanel1.add(jbSelCradnik, new XYConstraints(560, 65, 21, 21));
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
   }
 
   public boolean Validacija(){
@@ -298,10 +294,8 @@ public class frmPOTVRDA extends raUpitLite {
       jlrCradnik.setText("");
       jlrCradnik.emptyTextFields();
       oldcorg = fieldSet.getString("CORG");
-      corgradnici.close();
-      Radnici.getDataModule().setFilter(corgradnici,
-        "corg in" + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(oldcorg))
-      );
+      //corgradnici.close();
+      Radnici.getDataModule().setFilter(corgradnici, OrgStr.getCorgsCond(oldcorg));
       corgradnici.open();
     }
   }

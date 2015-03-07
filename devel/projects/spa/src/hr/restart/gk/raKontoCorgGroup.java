@@ -118,18 +118,13 @@ public class raKontoCorgGroup {
     jlrCORG.setColNames(new String[] {"NAZIV"});
     jlrCORG.setVisCols(new int[] {0,1});
     jlrCORG.setTextFields(new javax.swing.text.JTextComponent[] {jlrNAZIVORG});
-    jlrCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig()/*dm.getOrgstruktura()*/);
+    jlrCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCORG.setSearchMode(0);
     jlrNAZIVORG.setColumnName("NAZIV");
     jlrNAZIVORG.setSearchMode(1);
     jlrNAZIVORG.setNavProperties(jlrCORG);
     jlrCORG.setNavButton(jbGetCorg);
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnjig, String newKnjig) {
-        jlrCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-        jlrNAZIVORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      };
-    });
+    
   }
   public char getMode() {
     if (raMP == null) return 'N';
@@ -204,9 +199,10 @@ public class raKontoCorgGroup {
         clrCORG();
       }
       if (isKnjigWithOrgs_konto_orgstr()) {
-        setCORGDataSet(Ojs.getOrgstrAndCurrKnjig());
+        setCORGDataSet(OrgStr.getSharedKnjig());
       } else {
-        setCORGDataSet(Ojs.getOrgstrFromCurrKnjig());
+      	setCORGDataSet(OrgStr.getSharedKnjig());
+        //setCORGDataSet(Ojs.getOrgstrFromCurrKnjig());
       }
     } else {
       setCORGDataSet(dm.getOrgstruktura());

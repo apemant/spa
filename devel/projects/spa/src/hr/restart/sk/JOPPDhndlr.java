@@ -857,8 +857,8 @@ System.err.println(
           "Pronaðen je obraèun za "+range.getMJOBRfrom()+". mjesec "+range.getGODOBRfrom()+". godine. Izraditi obrazac za taj obraèun?",
           "Pitanje",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
         qry = "SELECT rsperiodarh.*, radnici.corg, radnici.ime, radnici.prezime, kumulradarh.sati as satiuk, kumulradarh.naknade, Primanjaarh.cvrp, Primanjaarh.bruto as PBTO, Primanjaarh.sati as sativp FROM rsperiodarh, radnici, kumulradarh, primanjaarh where "+
-            " radnici.cradnik = rsperiodarh.cradnik AND kumulradarh.cradnik = rsperiodarh.cradnik AND Primanjaarh.cradnik = rsperiodarh.cradnik AND (radnici.corg in "+
-            OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(),"radnici.corg")+") "
+            " radnici.cradnik = rsperiodarh.cradnik AND kumulradarh.cradnik = rsperiodarh.cradnik AND Primanjaarh.cradnik = rsperiodarh.cradnik AND "
+        		+ OrgStr.getCorgsKnjigCond().qualified("radnici") 
             +" AND rsperiodarh.godobr="+range.getGODOBRfrom()
             +" AND rsperiodarh.mjobr="+range.getMJOBRfrom()
             +" AND rsperiodarh.rbrobr="+range.getRBROBRfrom()
@@ -881,12 +881,10 @@ System.err.println(
 
   private String getOrgqrs() {
     String orgqrs = "(";
-    orgqrs = orgqrs + "(radnici.corg in "+
-        OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(),"radnici.corg")+") ";
+    orgqrs = orgqrs + OrgStr.getCorgsKnjigCond().qualified("radnici");
     String joincorg = frmParam.getParam("pl", "jopjoin"+OrgStr.getKNJCORG(), "", "Koju još O.J. spojiti na isti joppd");
     if (!joincorg.equals("")) {
-      orgqrs = orgqrs + " OR " + "(radnici.corg in "+
-          OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndKnjig(joincorg),"radnici.corg")+") ";
+      orgqrs = orgqrs + " OR " + OrgStr.getCorgsCond(joincorg).qualified("radnici");
     }
     orgqrs = orgqrs + ")";
     return orgqrs;
@@ -1008,7 +1006,8 @@ System.err.println(
       b = new JraButton();
       b.setText("...");
       final QueryDataSet radnici = Aus.q("SELECT radnici.cradnik, radnici.ime, radnici.prezime, radnicipl.oib, radnicipl.copcine "
-          + "FROM radnici, radnicipl where radnici.cradnik = radnicipl.cradnik and radnici."+plUtil.getPlUtil().getRadCurKnjig());
+          + "FROM radnici, radnicipl where radnici.cradnik = radnicipl.cradnik and "
+          + OrgStr.getCorgsKnjigCond().qualified("radnici"));
       
       radnici.open();
       b.addActionListener(new ActionListener() {

@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Kampanje;
+import hr.restart.baza.Sklad;
 import hr.restart.crm.frmKampanje;
 import hr.restart.crm.presKampanje;
 import hr.restart.sisfun.frmParam;
@@ -899,12 +900,10 @@ public class Util {
 
   public static com.borland.dx.sql.dataset.QueryDataSet getMatSkladFromCorg() {
     if (matSkladFromCorg==null) {
-      final hr.restart.zapod.OrgStr or = hr.restart.zapod.OrgStr.getOrgStr();
-      final hr.restart.baza.Sklad skl = hr.restart.baza.Sklad.getDataModule();
-      matSkladFromCorg = skl.getFilteredDataSet("tipskl='M' and (corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig())+")");
+      matSkladFromCorg = Sklad.getDataModule().getFilteredDataSet(Condition.equal("TIPSKL", "M").and(OrgStr.getCorgsKnjigCond()));
       hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
         public void knjigChanged(String a1, String a2) {
-          skl.setFilter(matSkladFromCorg, "tipskl='M' and (corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig())+")");
+        	Sklad.getDataModule().setFilter(matSkladFromCorg, Condition.equal("TIPSKL", "M").and(OrgStr.getCorgsKnjigCond()));
           matSkladFromCorg.open();
         }
       });
@@ -917,12 +916,10 @@ public class Util {
 
   public static com.borland.dx.sql.dataset.QueryDataSet getSkladFromCorg() {
     if (skladFromCorg==null) {
-      final hr.restart.zapod.OrgStr or = hr.restart.zapod.OrgStr.getOrgStr();
-      final hr.restart.baza.Sklad skl = hr.restart.baza.Sklad.getDataModule();
-      skladFromCorg = skl.getFilteredDataSet("corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig()));
+      skladFromCorg = Sklad.getDataModule().getFilteredDataSet(OrgStr.getCorgsKnjigCond());
       hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
         public void knjigChanged(String a1, String a2) {
-          skl.setFilter(skladFromCorg, "corg in "+or.getInQuery(or.getOrgstrAndCurrKnjig()));
+        	Sklad.getDataModule().setFilter(skladFromCorg, OrgStr.getCorgsKnjigCond());
           skladFromCorg.open();
         }
       });
@@ -972,23 +969,6 @@ public class Util {
     vl.execSQL(sjQuerys.getNaplac(qds.getString("CSKL"), qds.getString("VRDOK"), qds.getString("GOD"), qds.getInt("BRDOK")));
     vl.RezSet.open();
     return (vl.RezSet.getBigDecimal(0));
-  }
-  public String getPripCorg(String org) {
-    System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjj");
-    StorageDataSet sDS = new StorageDataSet();
-    sDS = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(org);
-    String corg = "('";
-
-    sDS.first();
-    while (sDS.inBounds())
-    {
-      if(sDS.getRow()< sDS.getRowCount()-1)
-        corg += sDS.getString("CORG") + "', '";
-      else
-        corg += sDS.getString("CORG") + "')";
-      sDS.next();
-    }
-    return corg;
   }
   
   public void showKartica(raMasterDetail md) {

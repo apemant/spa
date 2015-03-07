@@ -25,6 +25,7 @@ import hr.restart.swing.raDateRange;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raUpitLite;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Color;
 import java.sql.Timestamp;
@@ -260,7 +261,7 @@ public class frmSpecKart extends raUpitLite {
     jrfCORG.setTextFields(new JTextComponent[]{jrfNAZORG});
     jrfCORG.setVisCols(new int[]{0, 1});
     jrfCORG.setSearchMode(0);
-    jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCORG.setNavButton(jbCORG);
     jrfNAZORG.setColumnName("NAZIV");
     jrfNAZORG.setNavProperties(jrfCORG);
@@ -305,14 +306,7 @@ public class frmSpecKart extends raUpitLite {
     jp.add(jlSpecifikacija, new XYConstraints(15, 127, -1, -1)); // was 112
     
     this.setJPan(jp);
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldKnj, String newKnj) {
-        jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-        jrfCORG.setDataSet(tds);
-        jrfCSKL.setRaDataSet(hr.restart.robno.Util.getSkladFromCorg());
-        jrfCSKL.setDataSet(tds);
-      }
-    });
+    
   }
 
   public void componentShow() {

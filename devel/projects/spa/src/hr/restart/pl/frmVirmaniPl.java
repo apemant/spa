@@ -182,8 +182,8 @@ public class frmVirmaniPl extends frmVirmani{
       if(worker.povDS.getString("NACISP").equals("2")) {
         if(!inCvrodb.equals("")) {
           qStr = "select sum(odbiciobr.obriznos) as obriznos,max(odbiciobr.cvrodb) as cvrodb, max(radnici.cradnik)as cradnik, max('2')as param from "+
-                 "odbiciobr,radnici where odbiciobr.cradnik = radnici.cradnik and radnici.corg in "+getKnj()+" "+
-                 "and odbiciobr.cvrodb in("+inCvrodb+") group by odbiciobr.cvrodb, radnici.cradnik";
+                 "odbiciobr,radnici where odbiciobr.cradnik = radnici.cradnik and " + OrgStr.getCorgsKnjigCond().qualified("radnici") +
+                 " and odbiciobr.cvrodb in("+inCvrodb+") group by odbiciobr.cvrodb, radnici.cradnik";
           sumeDS.close();
           sumeDS.setQuery(new QueryDescriptor(dm.getDatabase1(),qStr));
           if(!sumeDS.isOpen()) sumeDS.open();
@@ -193,8 +193,8 @@ public class frmVirmaniPl extends frmVirmani{
         if(!inCvrodb.equals("")) {
           qStr = "select sum(odbiciobr.obriznos) as obriznos, max(odbiciobr.cvrodb) as cvrodb, " + 
           "max(radnici.cradnik) as cradnik, max('3')as param, odbiciobr.rbrodb as rbrodb from "+
-                 "odbiciobr,radnici where odbiciobr.cradnik = radnici.cradnik and radnici.corg in "+getKnj()+" "+
-                 "and odbiciobr.cvrodb in("+inCvrodb+") group by odbiciobr.cradnik, odbiciobr.rbrodb";
+                 "odbiciobr,radnici where odbiciobr.cradnik = radnici.cradnik and " + OrgStr.getCorgsKnjigCond().qualified("radnici") +
+                 " and odbiciobr.cvrodb in("+inCvrodb+") group by odbiciobr.cradnik, odbiciobr.rbrodb";
           sumeDS.close();
           sumeDS.setQuery(new QueryDescriptor(dm.getDatabase1(),qStr));
           if(!sumeDS.isOpen()) sumeDS.open();
@@ -321,7 +321,7 @@ public class frmVirmaniPl extends frmVirmani{
       kumulDS.open();
   }
 
-  private String getKnj() {
+/*  private String getKnj() {
     String cVrati = "(";
     int i=0;
     com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(OrgStr.getKNJCORG());
@@ -337,7 +337,7 @@ public class frmVirmaniPl extends frmVirmani{
       cVrati=cVrati+")";
       return cVrati;
   }
-
+*/
   private void saveCreatedVir() {
     // ???????? frmVirmani.getInstance().setKeys("pl", OrgStr.getKNJCORG(),cKey);
     this.setKeys("pl", OrgStr.getKNJCORG(),cKey);

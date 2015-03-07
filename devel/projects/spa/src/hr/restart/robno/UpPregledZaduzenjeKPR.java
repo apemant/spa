@@ -25,6 +25,7 @@ import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.lookupData;
 import hr.restart.util.sysoutTEST;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
@@ -325,7 +326,7 @@ public class UpPregledZaduzenjeKPR extends hr.restart.util.raUpitLite {
 		jrfCORG.setColNames(new String[] { "NAZIV" });
 		jrfCORG.setVisCols(new int[] { 0, 1, 2 });
 		jrfCORG.setTextFields(new javax.swing.text.JTextComponent[] { jrfNAZORG });
-		jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+		jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
 		jrfNAZORG.setColumnName("NAZIV");
 		jrfNAZORG.setSearchMode(1);
 		jrfNAZORG.setNavProperties(jrfCORG);

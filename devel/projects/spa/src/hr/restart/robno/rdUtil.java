@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.baza.Condition;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
+import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -1865,7 +1866,7 @@ public class rdUtil {
 
     QueryDataSet qds = hr.restart.baza.Sklad.getDataModule().getTempSet("CSKL ='" + cSklStr + 
         //"' AND CORG IN" + in
-        "' AND "+Condition.in("CORG", hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(cOrgStr))
+        "' AND "+ OrgStr.getCorgsCond(cOrgStr)
         );
     qds.open();
 

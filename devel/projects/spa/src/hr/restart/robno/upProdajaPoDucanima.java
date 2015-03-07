@@ -21,12 +21,14 @@ package hr.restart.robno;
 
 //import hr.restart.util.lookupData;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.lookupData;
 import hr.restart.util.sysoutTEST;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -615,14 +617,17 @@ protected QueryDataSet racunica(QueryDataSet origigi/*, String sto*/) {
       csklc = " AND stdoki.csklart " + cskls;
     }
 
-    String inq;
+    Condition cin = OrgStr.getCorgsCond("CSKL", fieldSet.getString("CORG")).qualified("doki");
+    String inq = cin == Condition.nil ? "1=1" : cin.toString();
+    
+    /*String inq;
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(fieldSet.getString("CORG"));
     if (corgs.rowCount() == 0)
       inq = "1=1";
     else if (corgs.rowCount() == 1)
       inq = "DOKI.CSKL = '" + fieldSet.getString("CORG") + "'";
     else
-      inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
+      inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     
     String dokumsi;

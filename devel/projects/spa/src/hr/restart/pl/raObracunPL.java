@@ -1340,7 +1340,7 @@ sysoutTEST ST = new sysoutTEST(false);
   }
 
   public void initOrgs() {
-    com.borland.dx.dataset.StorageDataSet orgset = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
+    com.borland.dx.dataset.StorageDataSet orgset = OrgStr.getTempOrgs(corg);
     orgs = new String[orgset.getRowCount()];
     int i = 0;
     orgset.first();

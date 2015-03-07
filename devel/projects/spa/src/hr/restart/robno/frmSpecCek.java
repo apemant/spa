@@ -27,6 +27,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Color;
 import java.sql.Timestamp;
@@ -213,7 +214,7 @@ public class frmSpecCek extends raUpitLite {
     jrfCORG.setTextFields(new JTextComponent[] {jrfNAZORG});
     jrfCORG.setVisCols(new int[] {0, 1});
     jrfCORG.setSearchMode(0);
-    jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCORG.setNavButton(jbCORG);
     
     jrfNAZORG.setColumnName("NAZIV");
@@ -269,12 +270,7 @@ public class frmSpecCek extends raUpitLite {
     
     this.addReport("hr.restart.robno.repSpecCekB","Specifikacija \u010Dekova - ZAP format",2);
     this.addReport("hr.restart.robno.repSpecCek", "Specifikacija \u010Dekova",2);
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jrfCSKL.setRaDataSet(hr.restart.robno.Util.getSkladFromCorg());
-        jrfCSKL.setDataSet(tds);
-      }
-    });
+   
   }
 
   public void componentShow() {

@@ -23,6 +23,7 @@ import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.sysoutTEST;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.dlgGetKnjig;
 
 import java.math.BigDecimal;
@@ -309,7 +310,8 @@ public class frmPK extends frmDNR{
       +" AND kumulradarh.rbrobr = kumulorgarh.rbrobr"
       +" AND kumulradarh.corg = kumulorgarh.corg"
       +" and EXTRACT(YEAR FROM kumulorgarh.datumispl)="+getGodPK(repSet)
-      +" and (kumulorgarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulorgarh.corg")+") ";
+      
+      +" and " + OrgStr.getCorgsCond(fieldSet.getString("CORG")).qualified("kumulorgarh") + " ";
       String a2 = "AND cradnik between '"+ fieldSet.getString("CRADNIKOD") + "' and '" + fieldSet.getString("CRADNIKDO") + "'";
       String a;
       if (!jlrCradnikOd.getText().equals("")) a = a1.concat(a2);

@@ -155,8 +155,7 @@ public class frmIzvArtObRac extends frmIzvArt {
         jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] { jlrNaziv });
         jlrCorg.setVisCols(new int[] { 0, 1 });
         jlrCorg.setSearchMode(0);
-        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr()
-                .getOrgstrAndCurrKnjig());
+        jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
         jlrCorg.setNavButton(jbSelCorg);
 
         jlrNaziv.setColumnName("NAZIV");

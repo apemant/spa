@@ -35,6 +35,7 @@ import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpit;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -384,7 +385,7 @@ System.out.println(sqlupit);
 		jrfCORG.setColNames(new String[] { "NAZIV" });
 		jrfCORG.setVisCols(new int[] { 0, 1, 2 });
 		jrfCORG.setTextFields(new javax.swing.text.JTextComponent[] { jrfNAZORG });
-		jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+		jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
 		jrfNAZORG.setColumnName("NAZIV");
 		jrfNAZORG.setSearchMode(1);
 		jrfNAZORG.setNavProperties(jrfCORG);

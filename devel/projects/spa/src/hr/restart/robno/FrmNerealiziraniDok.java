@@ -24,6 +24,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raUpit;
+import hr.restart.zapod.OrgStr;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -129,14 +130,8 @@ public class FrmNerealiziraniDok extends raUpit {
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazOrg});
     jlrCorg.setVisCols(new int[] {0,1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbCorg);
-
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String newk, String oldk) {
-        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
 
     jlrNazOrg.setColumnName("NAZIV");
     jlrNazOrg.setNavProperties(jlrCorg);

@@ -1213,7 +1213,7 @@ public class plUtil {
     return vrati;
   }
 
-  public String getRadCurKnjig()
+ /* public String getRadCurKnjig()
   {
     String in = "CORG IN('";
     StorageDataSet sds = OrgStr.getOrgStr().getOrgstrAndKnjig(OrgStr.getOrgStr().getKNJCORG());
@@ -1234,5 +1234,5 @@ public class plUtil {
     return in;
 
 
-  }
+  }*/
 }

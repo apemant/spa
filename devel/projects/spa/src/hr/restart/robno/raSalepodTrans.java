@@ -177,7 +177,7 @@ public class raSalepodTrans {
     sk.setSort(new SortDescriptor(new String[] {"CPAR", "DATDOK"}));
     
     DataSet skl = Util.getSkladFromCorg();
-    DataSet knj = OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
+    DataSet knj = OrgStr.getSharedKnjig();
     Condition sklDok = Condition.in("VRDOK", new String[] {"ROT", "POD"});
     Condition orgDok = Condition.in("VRDOK", new String[] {"RAC", "TER", "ODB"});
     Condition period = Condition.between("DATDOK",

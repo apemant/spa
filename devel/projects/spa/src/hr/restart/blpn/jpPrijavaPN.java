@@ -144,8 +144,6 @@ public class jpPrijavaPN extends JPanel {
         jlrCradnik.setRaDataSet(presPN.getRadnici());
         jlrIme.setRaDataSet(presPN.getRadnici());
         jlrPrezime.setRaDataSet(presPN.getRadnici());
-        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-        jlrNaziv1.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
       }
     });
     jpDetail.setLayout(lay);
@@ -241,7 +239,7 @@ public class jpPrijavaPN extends JPanel {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv1});
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
     jlrNaziv1.setColumnName("NAZIV");
     jlrNaziv1.setNavProperties(jlrCorg);

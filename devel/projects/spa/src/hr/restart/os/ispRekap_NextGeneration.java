@@ -333,11 +333,11 @@ System.out.println("IspisRekap_7");
     QueryDataSet finalSet = new QueryDataSet();
     QueryDataSet tempDnSet = new QueryDataSet();
     if (jpC.getCorg().equals(""))
-      knjSDS = knjOrgStr.getOrgstrFromCurrKnjig();
+      knjSDS = knjOrgStr.getTempOrgsKnjig();
     else
-      knjSDS = knjOrgStr.getOrgstrAndKnjig(jpC.getCorg());
+      knjSDS = knjOrgStr.getTempOrgs(jpC.getCorg());
     if(knjSDS.getRowCount()==0)
-      knjSDS = knjOrgStr.getOrgstrAndKnjig(jpC.getCorg());
+      knjSDS = knjOrgStr.getTempOrgs(jpC.getCorg());
     if(knjSDS.getRowCount()==0)
       return null;
 

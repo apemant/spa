@@ -248,7 +248,7 @@ public class raPopravakRezKol extends raUpitLite {
     jlrKnjig.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazKnjig});
     jlrKnjig.setVisCols(new int[] {0, 1});
     jlrKnjig.setSearchMode(0);
-    jlrKnjig.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrKnjig.setRaDataSet(OrgStr.getSharedKnjig());
     jlrKnjig.setNavButton(jbSelKnjig);
 
     jlrNazKnjig.setColumnName("NAZIV");

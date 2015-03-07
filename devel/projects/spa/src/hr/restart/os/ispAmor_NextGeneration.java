@@ -24,10 +24,12 @@ import hr.restart.swing.jpCorg;
 import hr.restart.swing.raButtonGroup;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raUpitLite;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.sql.Timestamp;
+import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -172,7 +174,7 @@ public class ispAmor_NextGeneration extends raUpitLite {
     String group1, group2, group3;
 
     if (isPripOrgJed()) {
-      StorageDataSet ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(mainStorage.getString("CORG"));
+    	HashSet ojs = OrgStr.getCorgSet(mainStorage.getString("CORG"));
       corging += Condition.in("CORG",ojs).qualified("OS_OBRADA2").toString();
     } else
       corging += "OS_OBRADA2.CORG = '" + mainStorage.getString("CORG").trim() + "'";
@@ -195,7 +197,7 @@ public class ispAmor_NextGeneration extends raUpitLite {
     String qStr = "";
 
     if (isPripOrgJed()) {
-      StorageDataSet ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(mainStorage.getString("CORG"));
+    	HashSet ojs = OrgStr.getCorgSet(mainStorage.getString("CORG"));
       corging += Condition.in("CORG",ojs).qualified("OS_OBRADA4").toString();
     } else {
       corging += "OS_OBRADA4.CORG = '" + mainStorage.getString("CORG").trim() + "'";

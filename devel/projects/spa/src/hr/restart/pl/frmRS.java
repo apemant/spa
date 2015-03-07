@@ -1,4 +1,4 @@
-/****license*****************************************************************
+/****license****************************************************************
 **   file: frmRS.java
 **   Copyright 2006 Rest Art
 **
@@ -390,9 +390,7 @@ public class frmRS extends raUpitLite {
     }
     if (rsmode.equals("O")) {
       //  azuriraj dm.getOrgPL
-      QueryDataSet orgpl = Util.getNewQueryDataSet("SELECT * FROM orgpl where corg in "
-          .concat(orgStr.getInQuery(orgStr.getOrgstrAndCurrKnjig()))
-          );
+      QueryDataSet orgpl = Orgpl.getDataModule().openTempSet(OrgStr.getCorgsKnjigCond());
       orgpl.first();
       do {
         orgpl.setString("RSIND",jpHead.headerRS.getString("IDENTIFIKATOR"));
@@ -467,8 +465,8 @@ public class frmRS extends raUpitLite {
     String ret = " FROM "
                .concat(getTableName())
                .concat(",radnici where radnici.cradnik = ")
-               .concat(getTableName()).concat(".cradnik AND (radnici.corg in ")
-               .concat(orgStr.getInQuery(orgStr.getOrgstrAndCurrKnjig(),"radnici.corg")+") ");
+               .concat(getTableName()).concat(".cradnik AND ")
+               .concat(OrgStr.getCorgsKnjigCond().qualified("radnici").toString());
     if (rsmode.equals("A")) {
       ret = ret.concat(" AND ").concat(getTableName()).concat(".IDENTIFIKATOR = '")
           .concat(jpHead.headerRS.getString("IDENTIFIKATOR"))
@@ -487,8 +485,8 @@ public class frmRS extends raUpitLite {
                  +getTableName()+" WHERE "+getTableName()+".IDENTIFIKATOR = '"+IND+"' " +
                  (frmParam.getParam("pl", "corginopt", "D", "Optimizirati in query u frmIzvjestajiPL (D/N").equalsIgnoreCase("D")
                      ?"":
-                 		"AND EXISTS (SELECT * FROM radnici WHERE radnici.cradnik="+getTableName()+".cradnik and radnici.corg in "
-                 		    +OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "radnici.corg")+")"
+                 		"AND EXISTS (SELECT * FROM radnici WHERE radnici.cradnik="+getTableName()+".cradnik and "
+                 		+ OrgStr.getCorgsKnjigCond().qualified("radnici") +")"
                  	);
       System.out.println("qry focLost : " + qry);
       QueryDataSet qds = Util.getNewQueryDataSet(qry);

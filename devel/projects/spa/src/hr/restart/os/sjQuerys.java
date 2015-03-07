@@ -19,6 +19,7 @@ package hr.restart.os;
 
 import hr.restart.baza.Condition;
 import hr.restart.util.Aus;
+import hr.restart.zapod.OrgStr;
 
 /**
  * <p>Title: Robno poslovanje</p>
@@ -136,7 +137,7 @@ public class sjQuerys {
     return str;
   }
   public static String getOSFromCorg(String corg, char mode, String aktiv) {
-    String str="select * from OS_SREDSTVO where "+getPripOrg(corg, "CORG2")+checkMode(mode)+checkAktiv(aktiv);
+    String str="select * from OS_SREDSTVO where "+Condition.in("CORG2", OrgStr.getCorgSet(corg))+checkMode(mode)+checkAktiv(aktiv);
     System.out.println("SQL: "+str);
     return str;
   }
@@ -146,7 +147,7 @@ public class sjQuerys {
     return str;
   }
   public static String getSIFromCorg(String corg, String aktiv) {
-    String str="select * from OS_SI where "+getPripOrg(corg, "CORG2")+checkAktiv(aktiv);
+    String str="select * from OS_SI where "+Condition.in("CORG2", OrgStr.getCorgSet(corg))+checkAktiv(aktiv);
     System.out.println("SQL: "+str);
     return str;
   }
@@ -154,22 +155,6 @@ public class sjQuerys {
     String str="select * from OS_SI where CORG2='"+corg+"'"+checkAktiv(aktiv);
     System.out.println("SQL: "+str);
     return str;
-  }
-  static String getPripOrg(String corg, String tekst) {
-    com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
-    return Condition.in(tekst, tds, "corg").toString();
-//    int i=0;
-//    String cVrati=tekst+" in (";
-//    tds.first();
-//    do {
-//      if (i>0) {
-//        cVrati=cVrati+',';
-//      }
-//      i++;
-//      cVrati=cVrati+"'"+tds.getString("CORG")+"'";
-//    } while (tds.next());
-//    cVrati=cVrati+")";
-//    return cVrati;
   }
   static String checkMode(char mode) {
     if (mode=='P') {

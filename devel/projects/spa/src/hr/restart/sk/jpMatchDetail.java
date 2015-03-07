@@ -150,7 +150,7 @@ public class jpMatchDetail extends JPanel {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
 
     jlrNaziv.setColumnName("NAZIV");
     jlrNaziv.setNavProperties(jlrCorg);
@@ -176,11 +176,6 @@ public class jpMatchDetail extends JPanel {
     jpDetail.add(jraOpis, new XYConstraints(140, 60, 485, -1));
     jpDetail.add(jraVrdok, new XYConstraints(140, 35, 110, -1));
 
-    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
-      public void knjigChanged(String oldk, String newk) {
-        jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
     /**@todo: Odkomentirati sljedeæu liniju :) */
     this.add(jpDetail, BorderLayout.CENTER);
   }

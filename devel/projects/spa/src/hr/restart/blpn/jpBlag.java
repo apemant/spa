@@ -24,6 +24,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -158,7 +159,7 @@ public class jpBlag extends JPanel {
     jlrKnjig.setTextFields(new JTextComponent[] {jlrNazknjig});
     jlrKnjig.setVisCols(new int[] {0, 1});
     jlrKnjig.setSearchMode(0);
-    jlrKnjig.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrKnjig.setRaDataSet(OrgStr.getOrgStr().getKnjigovodstva());
     jlrKnjig.setNavButton(jbSelKnjig);
 
     jlrNazknjig.setColumnName("NAZIV");

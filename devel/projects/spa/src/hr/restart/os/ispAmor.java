@@ -23,6 +23,7 @@ import hr.restart.swing.JraCheckBox;
 import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raIspisDialog;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -687,7 +688,7 @@ public class ispAmor extends raIspisDialog{
   {
     jrfCOrg.setDataSet(fake);
     jrfCOrg.setVisCols(new int[]{0,1});
-    jrfCOrg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCOrg.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCOrg.setColNames(new String[] {"NAZIV"});
     jrfCOrg.setTextFields(new javax.swing.text.JTextComponent[] {jrfCOrgNaz});
     jrfCOrg.setColumnName("CORG");

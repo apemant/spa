@@ -35,6 +35,7 @@ import hr.restart.util.raImages;
 import hr.restart.util.raMasterDetail;
 import hr.restart.util.raUpit;
 import hr.restart.util.raUpitFat;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.Tecajevi;
 
 import java.awt.Dimension;
@@ -984,10 +985,7 @@ System.out.println(queryString);
     if (stds.getString("ORGSTR").equals("1")){ //jrbOdabrana.isSelected()) {
       sqlCorgString = table+".CORG ='" + kontoPanel.getCorg() + "'";
     } else {
-      StorageDataSet ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(kontoPanel.getCorg());
-//      st.prn(ojs);
-      if (ojs.rowCount()==1) return table+".CORG ='" + ojs.getString("CORG").trim() + "'";
-      sqlCorgString = Condition.in("CORG",ojs).qualified(table).toString();
+    	sqlCorgString = Condition.in("CORG", OrgStr.getCorgSet(kontoPanel.getCorg().trim())).qualified(table).toString();
     }
 //    System.out.println("CONDITION = " + sqlCorgString);
     return sqlCorgString;

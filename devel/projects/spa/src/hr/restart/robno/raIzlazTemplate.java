@@ -3468,7 +3468,7 @@ System.out.println("findCjenik::else :: "+sql);
     
     DataSet pon = doki.getDataModule().openTempSet(
     		"vrdok='PON' and god>='" + (Aus.getNumber(val.findYear()) - 1) +
-    		"' and ((param='OJ' and " + Condition.in("CSKL", OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "CORG") +
+    		"' and ((param='OJ' and " + OrgStr.getCorgsKnjigCond("CSKL") +
     		") or (param!='OJ' and " + Condition.in("CSKL", util.getSkladFromCorg()) + "))");
 
     try {
@@ -4541,24 +4541,18 @@ System.out.println("findCjenik::else :: "+sql);
                     "IZD") && odabrano.equalsIgnoreCase("RAC"))
 					|| (getMasterSet().getString("VRDOK").equalsIgnoreCase(
 							"OTP") && odabrano.equalsIgnoreCase("POS"))) {
-				VarStr vs = new VarStr("");
-				StorageDataSet stt = OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
-				for (stt.first(); stt.inBounds(); stt.next()) {
-					vs.append("'").append(stt.getString("CORG")).append("',");
-				}
-				vs.chopRight(1);
-
+				
 				upit = "statira='N' and god = '"
 						+ year + "' and vrdok= '" + odabrano.toUpperCase() + "'" + dodatak
-						+ " and cskl in (" + vs + ")"; // samo
+						+ " and " + OrgStr.getCorgsKnjigCond("CSKL"); // samo
 			} else if (getMasterSet().getString("VRDOK").equalsIgnoreCase("PRD") && 
 			    bPonudaZaKupca && "PON|PRD".indexOf(odabrano) >= 0) {
 			  upit = yc+" vrdok= '" + odabrano + "'" + dodatak + " and statira='N' and cskl in ('"
                 + pressel.getSelRow().getString("CSKL") + "')"; // samo
 			} else if (getMasterSet().getString("VRDOK").equals(odabrano)) {
 			  if (TD.isDocOJ(getMasterSet().getString("VRDOK"))) {
-			    upit = yc+" vrdok='"+odabrano+"'"+dodatak+" and (cskl in " + 
-			        OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "cskl") + ")"; 
+			    upit = yc+" vrdok='"+odabrano+"'"+dodatak+" and "
+			    		+ OrgStr.getCorgsKnjigCond("CSKL"); 
 			  } else {
 			    String cskl = pressel.getSelRow().getString("CSKL");
 			    upit = yc+" vrdok='"+odabrano+"'"+dodatak+" and cskl in (select cskl from sklad where sklad.corg in ('"+cskl+"') "+

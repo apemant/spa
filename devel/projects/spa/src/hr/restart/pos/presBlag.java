@@ -396,8 +396,7 @@ public class presBlag extends PreSelect {
     if (corg == null || corg.length() == 0)
       corg = OrgStr.getKNJCORG(false);
 
-    jrfCSKL.setRaDataSet(Sklad.getDataModule().getFilteredDataSet(
-        Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(corg))));
+    jrfCSKL.setRaDataSet(Sklad.getDataModule().getFilteredDataSet(OrgStr.getCorgsCond(corg)));
   }
   
   static DataSet myskl = Sklad.getDataModule().copyDataSet();

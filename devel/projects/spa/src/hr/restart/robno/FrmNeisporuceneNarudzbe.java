@@ -241,12 +241,6 @@ public class FrmNeisporuceneNarudzbe extends raUpitFat {
     jlrNazskl.setNavProperties(jlrCskl);
     jlrNazskl.setSearchMode(1);
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String newk, String oldk) {
-        jlrCskl.setRaDataSet(rutil.getSkladFromCorg());
-      }
-    });
-
     xYLayout3.setWidth(650);
     xYLayout3.setHeight(85);
     jp.setLayout(xYLayout3);

@@ -1343,7 +1343,7 @@ public class frmServis extends frmRadniNalog {
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazorg});
     jlrCorg.setVisCols(new int[] {0,1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrNazorg.setSearchMode(1);
@@ -1640,11 +1640,6 @@ public class frmServis extends frmRadniNalog {
       }
     });
 
-    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
-      public void knjigChanged(String oldk, String newk) {
-        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
     raDetail.removeRnvCopyCurr();
     initRpcart();
     rpc.addSkladField(hr.restart.robno.Util.getSkladFromCorg());

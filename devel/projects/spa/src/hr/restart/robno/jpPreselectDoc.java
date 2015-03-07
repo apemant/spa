@@ -24,6 +24,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.PreSelect;
 import hr.restart.util.raMasterDetail;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.dlgGetKnjig;
 
 import java.awt.Font;
@@ -113,23 +114,6 @@ abstract public class jpPreselectDoc extends PreSelect {
   }
   
   private void jbInit() throws Exception {
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldKnjig, String newKnjig) {
-        if (skl=='D') {
-          jrfCSKL.setRaDataSet(hr.restart.robno.Util.getSkladFromCorg());
-        }
-        else if (skl=='M') {
-          jrfCSKL.setRaDataSet(hr.restart.robno.Util.getMatSkladFromCorg());
-        }
-        else {
-          jrfCSKL.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-        }
-        if (par!='D') {
-          jrfCPAR.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-        }
-      }
-    });
-
 
     defaultMatDocAllowed();
     defaultMatDocAllowedifObrac();
@@ -180,7 +164,7 @@ abstract public class jpPreselectDoc extends PreSelect {
       jrfCSKL.setColNames(new String[] {"NAZIV"});
       jrfCSKL.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZSKL});
       jrfCSKL.setVisCols(new int[]{0,1});
-      jrfCSKL.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+      jrfCSKL.setRaDataSet(OrgStr.getSharedKnjig());
       jrfNAZSKL.setColumnName("NAZIV");
       jrfNAZSKL.setSearchMode(1);
       jrfNAZSKL.setNavProperties(jrfCSKL);
@@ -214,7 +198,7 @@ abstract public class jpPreselectDoc extends PreSelect {
       jrfCPAR.setColNames(new String[] {"NAZIV"});
       jrfCPAR.setVisCols(new int[]{0,1,2});
       jrfCPAR.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZPAR});
-      jrfCPAR.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+      jrfCPAR.setRaDataSet(OrgStr.getSharedKnjig());
       jrfNAZPAR.setColumnName("NAZIV");
       jrfNAZPAR.setSearchMode(1);
       jrfNAZPAR.setNavProperties(jrfCPAR);

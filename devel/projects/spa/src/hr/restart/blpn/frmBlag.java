@@ -113,12 +113,6 @@ public class frmBlag extends raMatPodaci {
 //        new String[] {"OZNVAL"},
 //        dm.getValute()
 //        ));
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnjig, String newKnjig) {
-        detailPanel.jlrKnjig.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-        detailPanel.jlrNazknjig.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      };
-    });
   }
 
   protected void enableDisableSaldo(boolean bezgotovinska){
@@ -145,11 +139,9 @@ public class frmBlag extends raMatPodaci {
   }
   public static QueryDataSet getBlagajneKnjig() {
     if (blagajneknjig == null) {
-      blagajneknjig = Blagajna.getDataModule().getFilteredDataSet("knjig in "+
-          OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(),"knjig"));
+      blagajneknjig = Blagajna.getDataModule().getFilteredDataSet(OrgStr.getCorgsKnjigCond("knjig"));
     } else if (dirty) {
-    	Blagajna.getDataModule().setFilter(blagajneknjig, "knjig in "+
-          OrgStr.getOrgStr().getInQuery(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(),"knjig"));
+    	Blagajna.getDataModule().setFilter(blagajneknjig, OrgStr.getCorgsKnjigCond("knjig"));
     }
     return blagajneknjig;
   }

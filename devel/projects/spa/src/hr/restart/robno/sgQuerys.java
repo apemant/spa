@@ -18,12 +18,14 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Artikli;
+import hr.restart.baza.Condition;
 import hr.restart.baza.Pjpar;
 import hr.restart.baza.dM;
 import hr.restart.sk.PartnerCache;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
+import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
 import java.util.Locale;
@@ -684,12 +686,15 @@ System.out.println("QS : " + queryString);
       ckupca = ckupca + "and dob_art.cpar = '" + cpartner + "' and dob_art.cart = stdoki.cart ";
       caprDobart = ", dob_art.cpar as dcp";
     }
+    
+    Condition cin = OrgStr.getCorgsCond("CSKL", corg).qualified("doki");
+    String inq = cin == Condition.nil ? "1=1" : cin.toString();
 
-    String inq;
+   /* String inq;
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
     if (corgs.rowCount() == 0) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
-    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+" AND DOKI.CSKL = '"+cskl+"'))";
 
@@ -807,11 +812,14 @@ System.out.println("QS : " + queryString);
       caprDobart = ", dob_art.cpar as dcp";
     }
 
-    String inq;
+    Condition cin = OrgStr.getCorgsCond("CSKL", corg).qualified("doki");
+    String inq = cin == Condition.nil ? "1=1" : cin.toString();
+    
+    /*String inq;
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
     if (corgs.rowCount() == 0) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
-    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+" AND DOKI.CSKL = '"+cskl+"'))";
 
@@ -937,11 +945,14 @@ System.out.println("QS : " + queryString);
       sklad = " AND DOKI.CSKL = '"+cskl+"'";
     }
     
-    String inq;
+    Condition cin = OrgStr.getCorgsCond("CSKL", corg).qualified("doki");
+    String inq = cin == Condition.nil ? "1=1" : cin.toString();
+    
+    /*String inq;
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
     if (corgs.rowCount() == 0 || corg.equals("")) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
-    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+"))";
 
@@ -1168,11 +1179,15 @@ System.out.println("QS : " + queryString);
       sklad = " AND DOKI.CSKL = '"+cskl+"'";
     }
     
-    String inq;
+    
+    Condition cin = OrgStr.getCorgsCond("CSKL", corg).qualified("doki");
+    String inq = cin == Condition.nil ? "1=1" : cin.toString();
+    
+    /*String inq;
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
     if (corgs.rowCount() == 0) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
-    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+"))";
 

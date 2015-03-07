@@ -76,13 +76,6 @@ public class jpSelectMeskla extends PreSelect {
 
   private void jbInit() throws Exception {
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldKnjig, String newKnjig) {
-        rpcskliz.jrfCSKL.setRaDataSet(hr.restart.robno.Util.getSkladFromCorg());
-        rpcsklul.jrfCSKL.setRaDataSet(hr.restart.robno.Util.getSkladFromCorg());
-      }
-    });
-
     jpSelDoc.setLayout(xYLayout1);
     xYLayout1.setHeight(155);
     rpcskliz.jlCSKL.setText("Izlazno skladište");

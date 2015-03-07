@@ -208,7 +208,7 @@ public class upKarticaKupca extends raUpitFat {
     jlrNazskl.setColumnName("NAZSKL");
     jLabel1.setText("Dokumenti");
     jlrCorg.setNavButton(jbSelCorg);
-    jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setSearchMode(0);
     jlrCorg.setVisCols(new int[] {0,1});
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNaziv});

@@ -133,8 +133,7 @@ public class dlgSubjektHandler {
   }
   
   public void showHistory(String csubrn) {
-    QueryDataSet rns = RN.getDataModule().getTempSet(
-        Condition.in("CSKL", OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "CORG").
+    QueryDataSet rns = RN.getDataModule().getTempSet(OrgStr.getCorgsKnjigCond("CSKL").
         and(Condition.equal("CSUBRN", csubrn)));
     rns.open();
     

@@ -25,6 +25,7 @@ import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raFrame;
 import hr.restart.util.raUpitLite;
+import hr.restart.zapod.OrgStr;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -131,12 +132,8 @@ public class frmObradaPL extends raUpitLite {
   private void jbInit() throws Exception {
     this.getJdialog().setModal(true);
     jlrCorg.setNavButton(jbSelCorg);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldKnjig, String newKnjig) {
-        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
+    
     jlrCorg.setSearchMode(0);
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});

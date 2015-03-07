@@ -330,12 +330,6 @@ public class ispPOS_Total extends raUpitLite { //raFlatIspis {
     rcc.setLabelLaF(jtfPocBroj,false);
     rcc.setLabelLaF(jtfZavBroj,false);
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jrfCSKL.setRaDataSet(hr.restart.robno.Util.getUtil().getMPSklDataset());
-        jrfCSKL.setDataSet(tds);
-      }
-    });
   }
 
   private String provider;

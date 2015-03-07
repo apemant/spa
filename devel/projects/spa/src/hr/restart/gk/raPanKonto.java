@@ -22,6 +22,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
@@ -124,7 +125,7 @@ public class raPanKonto extends JPanel {
     jlCorg.setText("Org. jedinica");
 
     jlrCorg.setDataSet(qdsDohvatKnjigovodstva);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.getDataSet().open();
     jlrCorg.setSearchMode(0);
     jlrCorg.setVisCols(new int[] {0, 1});
@@ -133,7 +134,7 @@ public class raPanKonto extends JPanel {
     jlrCorg.setColumnName("CORG");
     jlrCorg.setNavButton(jbSelCorg);
 
-    gotOrgStrukturu = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig().rowCount() > 1;
+    gotOrgStrukturu = jlrCorg.getRaDataSet().rowCount() > 1;
 //    System.out.println("gotOrgStrukturu - " + gotOrgStrukturu);
 
     jlrNazorg.setSearchMode(1);
@@ -171,11 +172,10 @@ public class raPanKonto extends JPanel {
     this.add(jlrCorg, new XYConstraints(135, 25, 100, -1));
     hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
       public void knjigChanged(String oldKnj, String newKnj){
-        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
         if (isVisible()) {
           setcORG(hr.restart.zapod.OrgStr.getOrgStr().getKNJCORG());
         }
-        gotOrgStrukturu = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig().rowCount() > 1;
+        gotOrgStrukturu = jlrCorg.getRaDataSet().rowCount() > 1;
 //        System.out.println("Knjig change listener: gotOrgStrukturu - " + gotOrgStrukturu);
       }
     });
@@ -189,7 +189,7 @@ public class raPanKonto extends JPanel {
     jlCorg.setText("Org. jedinica");
 
     jlrCorg.setDataSet(qdsDohvatKnjigovodstva);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setSearchMode(0);
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazorg});
@@ -228,11 +228,10 @@ public class raPanKonto extends JPanel {
     this.add(jlrCorg, new XYConstraints(135, 0, 100, -1));
     hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
       public void knjigChanged(String oldKnj, String newKnj){
-        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
         if (isVisible()) {
           setcORG(hr.restart.zapod.OrgStr.getOrgStr().getKNJCORG());
         }
-        gotOrgStrukturu = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig().rowCount() > 1;
+        gotOrgStrukturu = jlrCorg.getRaDataSet().rowCount() > 1;
 //        System.out.println("Knjig change listener: gotOrgStrukturu - " + gotOrgStrukturu);
 
 //        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
@@ -307,13 +306,5 @@ public class raPanKonto extends JPanel {
   public void setcORG(String cor){
     qdsDohvatKnjigovodstva.setString("CORG",cor);
     jlrCorg.forceFocLost();
-  }
-  public boolean getStructure() {
-    return (hr.restart.zapod.OrgStr.getOrgStr().getOrgstrFromKnjig(getBrojKonta()).rowCount() > 1);
-  }
-  public boolean getIsOrgstr() {
-    StorageDataSet ojs;
-    ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(jlrCorg.getText());
-    return (ojs.getRowCount() > 1);
   }
 }

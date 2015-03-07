@@ -337,7 +337,7 @@ public class RaUgostiteljstvoPorez extends raUpitLite {
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazivOrg});
     jlrCorg.setVisCols(new int[] {0,1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrFromCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelOrg);
     jlrCorg.setDataSet(this.tds);
     

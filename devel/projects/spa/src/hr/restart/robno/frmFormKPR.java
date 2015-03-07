@@ -24,6 +24,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.*;
+import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -198,7 +199,7 @@ public class frmFormKPR extends raUpitLite {
     /*updateDokiPOS = "update doki set stat_kpr='D' where cskl='" + hr.restart.zapod.OrgStr.getOrgStr().getKNJCORG() + "' "+
     				"and god = '"+knjigodina+"' and datdok <= '"+ut.getLastSecondOfDay(tds.getTimestamp("zavDatum"))+"'";*/
     
-    updateDokiPOS = "update doki set stat_kpr='D' where "+Condition.in("CSKL", hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "CORG")+
+    updateDokiPOS = "update doki set stat_kpr='D' where "+OrgStr.getCorgsKnjigCond("CSKL")+
       " and god = '"+knjigodina+"' and datdok <= '"+ut.getLastSecondOfDay(tds.getTimestamp("zavDatum"))+"'";
 
     updateDoku = "update doku set stat_kpr='D' where cskl='" + tds.getString("CSKL") + "' "+//"' and vrdok = 'POS' "+

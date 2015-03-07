@@ -198,7 +198,7 @@ public class dlgTotalPromet {
     }
 
     DataSet skl = hr.restart.robno.Util.getSkladFromCorg();
-    DataSet knj = OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
+    DataSet knj = OrgStr.getSharedKnjig();
     Condition sklDok = Condition.in("VRDOK", new String[] {"ROT", "POD"});
     Condition orgDok = Condition.in("VRDOK", new String[] {"RAC", "TER", "ODB"});
     String query = "SELECT SUM(uirac) AS uirac FROM doki WHERE "+
@@ -261,7 +261,7 @@ public class dlgTotalPromet {
     raProcess.setMessage("Priprema raèuna ...", false);
     DataSet skl = rut.getSkladFromCorg();
     raProcess.checkClosing();
-    DataSet knj = OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
+    DataSet knj = OrgStr.getSharedKnjig();
 //    ArrayList orgList = new ArrayList();
 //    for (knj.first(); knj.inBounds(); knj.next())
 //      orgList.add(knj.getString("CORG"));

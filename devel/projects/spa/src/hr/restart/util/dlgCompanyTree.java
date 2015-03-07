@@ -128,7 +128,7 @@ public class dlgCompanyTree {
   }
 
    void initStructure(String knj) {
-    DataSet ds = OrgStr.getOrgStr().getOrgstrAndKnjig(knj);
+    DataSet ds = OrgStr.getTempOrgs(knj);
     ds.setSort(new SortDescriptor(new String[] {"PRIPADNOST"}));
     ld.raLocate(ds, "CORG", knj);
     DefaultMutableTreeNode root = new DefaultMutableTreeNode(new Node(ds));

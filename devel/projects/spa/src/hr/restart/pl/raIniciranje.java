@@ -287,8 +287,7 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
     String oj4 = frmIniciranje.getOJFor();
     if ("".equals(oj4)) return true;
     QueryDataSet rpl = Radnicipl.getDataModule().getTempSet(
-          Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(oj4))
-          .and(Condition.equal("AKTIV", "D"))
+    		OrgStr.getCorgsCond(oj4).and(Condition.equal("AKTIV", "D"))
         );
     return cpOFR(rpl, ds.getString("CORG"), oj4);
     
@@ -346,8 +345,8 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
   
   public boolean posOrgsPl(String corg) {
     if (!ld.raLocate(dm.getOrgpl(), new String[] {"CORG"}, new String[] {corg})) {
-      ld.raLocate(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), new String[] {"CORG"}, new String[] {corg});
-      String prip = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig().getString("PRIPADNOST");
+      ld.raLocate(OrgStr.getSharedKnjig(), new String[] {"CORG"}, new String[] {corg});
+      String prip = OrgStr.getSharedKnjig().getString("PRIPADNOST");
       if (corg.equals(prip)) return false;
       posOrgsPl(prip);
     }

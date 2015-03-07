@@ -25,6 +25,7 @@ import hr.restart.util.JlrNavField;
 import hr.restart.util.PreSelect;
 import hr.restart.util.Valid;
 import hr.restart.util.raTwoTableChooser;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 import java.awt.event.ComponentEvent;
@@ -160,7 +161,7 @@ public class frmStatTemplate extends JraDialog {
 
     // binding
     jrfCOrg.setVisCols(new int[]{0,1});
-    jrfCOrg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCOrg.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCOrg.setColNames(new String[] {"NAZIV"});
     jrfCOrg.setTextFields(new javax.swing.text.JTextComponent[] {jrfNazCorg});
     jrfCOrg.setColumnName("CORG");

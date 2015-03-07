@@ -596,7 +596,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
                  "(VRDOK='UPL' OR (VRDOK='OKK' AND (IP > 0 OR ID < 0)))" :    
                  "(VRDOK='IPL' OR (VRDOK='OKD' AND (ID > 0 OR IP < 0)))")+
              " AND skstavke.cskstavke = pokriveni.cuplate AND skstavke.datdok <= '"+
-             datumDo+"'"+raSaldaKonti.getCorgAndPripCondition(corg)+
+             datumDo+"' "+ OrgStr.getCorgsCond(corg).qualified("skstavke")+
              " UNION ALL "+
              "SELECT skstavke.brojdok, skstavke.datdok, skstavke.oznval, "+
              " pokriveni.iznos, pokriveni.cuplate as cracuna, skstavke.ssaldo as signi, " +
@@ -606,7 +606,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
                  "(VRDOK='UPL' OR (VRDOK='OKK' AND (IP > 0 OR ID < 0)))" :    
                  "(VRDOK='IPL' OR (VRDOK='OKD' AND (ID > 0 OR IP < 0)))")+
              " AND skstavke.cskstavke = pokriveni.cracuna AND skstavke.datdok <= '"+
-             datumDo+"'"+raSaldaKonti.getCorgAndPripCondition(corg)+
+             datumDo+"' "+OrgStr.getCorgsCond(corg).qualified("skstavke")+
              " ORDER BY 5, 2", true);
   }
 
@@ -628,7 +628,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
                  "(VRDOK='IRN' OR (VRDOK='OKK' AND ID > 0))" :
                    "(VRDOK='URN' OR (VRDOK='OKD' AND IP > 0))"
                  ) + " AND skstavke.datdosp < '"+
-             ut.getFirstSecondOfDay(datumDo)+"'"+raSaldaKonti.getCorgAndPripCondition(corg)+
+             ut.getFirstSecondOfDay(datumDo)+"' "+OrgStr.getCorgsCond(corg)+
             " ORDER BY cpar,datdosp", true);
   }
 
@@ -860,7 +860,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbCorg);
 
     jlrNaziv.setDataSet(fset);
@@ -953,12 +953,6 @@ public class raObrKamata extends raFrame implements ResetEnabled {
 
     jpDetail.add(jpC, new XYConstraints(0, 45, -1, -1));
     jpDetail.add(jpO, new XYConstraints(0, 70 + dkAdd, -1, -1));
-
-    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
-      public void knjigChanged(String oldk, String newk) {
-        jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
 
     new raDateRange(jraOd, jraDo);
 

@@ -32,11 +32,7 @@ import hr.restart.zapod.raKnjigChangeListener;
 
 public class frmShemeKontaRac extends frmShemeKonta {
   public frmShemeKontaRac() {
-    super(OrgStr.getOrgStr().getOrgstrAndCurrKnjig(), "Org. jedinica", "CORG", "NAZIV", "rac");
-    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
-      public void knjigChanged(String oldk, String newk) {
-        jlrSkl.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
+    super(OrgStr.getSharedKnjig(), "Org. jedinica", "CORG", "NAZIV", "rac");
+    
   }
 }

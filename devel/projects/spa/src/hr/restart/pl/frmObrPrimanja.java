@@ -16,6 +16,7 @@
 **
 ****************************************************************************/
 package hr.restart.pl;
+import hr.restart.baza.Radnicipl;
 import hr.restart.util.Util;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.zapod.OrgStr;
@@ -54,8 +55,7 @@ public class frmObrPrimanja extends frmObradaPL {
   public void okPress() {
     succ = new raLocalTransaction() {
       public boolean transaction() throws Exception {
-        QueryDataSet radpl = Util.getNewQueryDataSet("SELECT * FROM radnicipl where corg in "+
-            ors.getInQuery(ors.getOrgstrAndKnjig(corg)));
+        QueryDataSet radpl = Radnicipl.getDataModule().openTempSet(OrgStr.getCorgsCond(corg));
         raCalcPrimanja.getRaCalcPrimanja().calcPrimanja(radpl,null,true);
         return true;
       }

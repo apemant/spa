@@ -454,11 +454,7 @@ public class upKPR extends raUpit {
     jPanel3.add(jtfRbr, new XYConstraints(150, 30, 50, -1));
     jPanel3.add(jlRbr, new XYConstraints(15, 30, -1, -1));
     jp.add(jPanel3, BorderLayout.SOUTH);
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldKnjig, String newKnjig) {
-        rpcskl.jrfCSKL.setRaDataSet(hr.restart.robno.Util.getUtil().getMPSklDataset());
-      }
-    });
+    
   }
 
 //-> dodjela naziva vrsti dokumenta

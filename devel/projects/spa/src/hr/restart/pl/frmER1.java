@@ -476,7 +476,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazorg});
     jlrCorg.setVisCols(new int[] {0, 1, 2});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
 
     jlrNazorg.setSearchMode(1);

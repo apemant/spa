@@ -36,6 +36,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raProcess;
 import hr.restart.util.raTransaction;
+import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -155,7 +156,7 @@ public class raGkSkUnosHandler {
     fNalozi.raDetail.getOKpanel().jPrekid_actionPerformed();
     fNalozi.raMaster.setEnabled(false);
     fNalozi.raDetail.setEnabled(false);
-    hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
+    OrgStr.getSharedKnjig();
     fakePreselect(fSalKon.pres);
     fSalKon.show();
     afterShow();

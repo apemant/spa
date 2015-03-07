@@ -20,6 +20,7 @@ import hr.restart.db.raPreparedStatement;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raMasterDetail;
+import hr.restart.zapod.OrgStr;
 
 import javax.swing.JOptionPane;
 
@@ -83,7 +84,7 @@ public class raAutomatikaPL {
       loopSet = dm.getOpcine();
     } else if (nivoToChange.equals("OJ")) {
       nivoKeyCol = "CORG";
-      loopSet = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
+      loopSet = OrgStr.getSharedKnjig();
     } else if (nivoToChange.equals("VR")) {
       nivoKeyCol = "CVRO";
       loopSet = dm.getVrodn();

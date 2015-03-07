@@ -23,6 +23,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.PreSelect;
 import hr.restart.util.raMasterDetail;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Font;
 import java.sql.Timestamp;
@@ -89,12 +90,6 @@ public class jpSelectRevers extends PreSelect {
 
   private void jbInit() throws Exception {
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldKnjig, String newKnjig) {
-        rpcskl.jrfCSKL.setRaDataSet(hr.restart.robno.Util.getSkladFromCorg());
-      }
-    });
-
     jpSelDoc.setLayout(xYLayout1);
     xYLayout1.setHeight(185);
     xYLayout1.setWidth(565);
@@ -121,13 +116,7 @@ public class jpSelectRevers extends PreSelect {
     jrfCORG.setColNames(new String[] {"NAZIV"});
     jrfCORG.setVisCols(new int[]{0,1,2});
     jrfCORG.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZORG});
-    jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldKnjig,String newKnjig) {
-        jrfCORG.getRaDataSet().refresh();
-        jrfNAZORG.getRaDataSet().refresh();
-      }
-    });
+    jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jrfNAZORG.setColumnName("NAZIV");
     jrfNAZORG.setSearchMode(1);
     jrfNAZORG.setNavProperties(jrfCORG);

@@ -28,6 +28,7 @@ import hr.restart.util.raCommonClass;
 import hr.restart.util.raMasterDetail;
 import hr.restart.util.raUpitFat;
 import hr.restart.util.sysoutTEST;
+import hr.restart.zapod.OrgStr;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -235,14 +236,8 @@ public class upNezaracunatiDokumentiObrRac extends raUpitFat {
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0,1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
-
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String newk, String oldk) {
-        jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
 
     jlrNaziv.setColumnName("NAZIV");
     jlrNaziv.setNavProperties(jlrCorg);

@@ -28,6 +28,7 @@ import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitLite;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 import java.sql.Timestamp;
@@ -159,12 +160,12 @@ public class frmIzvjestajiPL extends raUpitLite {
   }
   public String getWhereQuery() {
     if (!inQueryNeeded()) return "corg = corg " + getBetweenAhrQuery();
-    return   "(corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG"))) +") "+ getBetweenAhrQuery();
+    return  OrgStr.getCorgsCond(fieldSet.getString("CORG")) + getBetweenAhrQuery();
   }
 
   public String getWhereQuery(String tabela) {
     if (!inQueryNeeded()) return tabela+".corg = "+tabela+".corg"+getBetweenAhrQuery(tabela);
-    return   "("+tabela+".corg in" + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),tabela+".corg") +") "+ getBetweenAhrQuery(tabela);
+    return OrgStr.getCorgsCond(fieldSet.getString("CORG")).qualified(tabela) + getBetweenAhrQuery(tabela);
   }
 
   public boolean Validacija(){
@@ -256,7 +257,7 @@ public class frmIzvjestajiPL extends raUpitLite {
     jbSelCorg.setText("...");
 
     jlrCorg.setDataSet(fieldSet);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setSearchMode(0);
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazorg});

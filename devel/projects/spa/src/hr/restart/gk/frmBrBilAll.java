@@ -1761,9 +1761,7 @@ public class frmBrBilAll extends raUpitFat {
     if (stds.getString("ORGSTR").equals("1")){
       sqlCorgString = table+".CORG ='" + kontoPanel.getCorg() + "'";
     } else {
-      StorageDataSet ojs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(kontoPanel.getCorg());
-      if (ojs.rowCount()==1) return table+".CORG ='" + ojs.getString("CORG").trim() + "'";
-      sqlCorgString = Condition.in("CORG",ojs).qualified(table).toString();
+    	sqlCorgString = Condition.in("CORG", OrgStr.getCorgSet(kontoPanel.getCorg().trim())).qualified(table).toString();
     }
     return sqlCorgString;
   }

@@ -33,6 +33,7 @@ import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raProcess;
 import hr.restart.util.raTransaction;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 import java.math.BigDecimal;
@@ -308,7 +309,7 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
     jrfCORG.setColNames(new String[] {"NAZIV"});
     jrfCORG.setVisCols(new int[]{0,1,2});
     jrfCORG.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZORG});
-    jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());//dm.getOrgstruktura());
+    jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jrfNAZORG.setColumnName("NAZIV");
     jrfNAZORG.setSearchMode(1);
     jrfNAZORG.setNavProperties(jrfCORG);
@@ -356,11 +357,6 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
     initMiniPanel();
     inst = this;
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener(){
-      public void knjigChanged(String oldKnj, String newKnj){
-        jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
   }
 
   public static frmIsplataAgenta getInstance(){

@@ -96,7 +96,7 @@ public class jpCorg extends JPanel {
     corg.setTextFields(new JTextComponent[] {naziv});
     corg.setVisCols(new int[] {0, 1});
     corg.setSearchMode(0);
-    corg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    corg.setRaDataSet(OrgStr.getSharedKnjig());
     corg.setNavButton(but);
 
     naziv.setColumnName("NAZIV");
@@ -123,12 +123,6 @@ public class jpCorg extends JPanel {
     this.add(corg, new XYConstraints(150, 0, wcorg, -1));
     this.add(naziv, new XYConstraints(155 + wcorg, 0, wnaziv, -1));
     this.add(but, new XYConstraints(160 + wcorg + wnaziv, 0, 21, 21));
-
-    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
-      public void knjigChanged(String oldk, String newk) {
-        corg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
   }
 
   public void bind(DataSet ds) {
@@ -192,7 +186,7 @@ public class jpCorg extends JPanel {
   }
 
   public Condition getRecursiveCondition() {
-    return Condition.in("CORG", OrgStr.getOrgStr().getOrgstrAndKnjig(corg.getText()));
+    return OrgStr.getCorgsCond(corg.getText());
   }
 
   public void afterLookUp(boolean succ) {}

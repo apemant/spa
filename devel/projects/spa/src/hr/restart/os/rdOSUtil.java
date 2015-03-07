@@ -28,8 +28,10 @@ import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.lookupData;
+import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import com.borland.dx.dataset.Column;
@@ -78,15 +80,6 @@ public class rdOSUtil {
 
     }
 
-    public StorageDataSet getOrgStruktura(String corg)
-    {
-      StorageDataSet qds = new StorageDataSet();
-      hr.restart.zapod.OrgStr knjOrgStr = hr.restart.zapod.OrgStr.getOrgStr();
-      qds = knjOrgStr.getOrgstrAndKnjig(corg);
-      qds.setSort(new SortDescriptor(new String[]{"CORG"}));
-      return qds;
-    }
-
   public boolean checkObjektStavke(String corg, String cobjekt)
   {
     String qStr = "corg = '"+corg+"' and cobjekt = '"+cobjekt+"'";
@@ -127,7 +120,7 @@ public class rdOSUtil {
     {
       QueryDataSet qds = new QueryDataSet();
       StorageDataSet sDS = new StorageDataSet();
-      sDS = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
+      sDS = OrgStr.getTempOrgsKnjig();
       String corg = "('";
 
       sDS.first();
@@ -192,7 +185,7 @@ public class rdOSUtil {
     {
       QueryDataSet qds = new QueryDataSet();
       StorageDataSet sDS = new StorageDataSet();
-      sDS = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig();
+      sDS = OrgStr.getTempOrgsKnjig();
       String corg = "('";
 
       sDS.first();
@@ -1195,8 +1188,8 @@ public class rdOSUtil {
    int i=0;
    String cVrati;
    if (mode==8) {
-     com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
-     cVrati = " "+Condition.in("CORG2", tds, "CORG").qualified(corgTable);
+  	
+     cVrati = " "+OrgStr.getCorgsCond("CORG2", str).qualified(corgTable);
 //     cVrati=" "+corgTable.trim()+".CORG2 in (";
 //     com.borland.dx.dataset.StorageDataSet tds =  hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(str);
 //     tds.first();

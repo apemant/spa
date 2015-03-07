@@ -157,9 +157,6 @@ public class jpUplIsplDetail extends JPanel {
         public void knjigChanged(String oldKnjig, String newKnjig) {
           jlrCradnik.setRaDataSet(presPN.getRadnici());
           jlrPrezime.setRaDataSet(presPN.getRadnici());
-          jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-          jlrNaziv.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-
         }
       });
     }
@@ -235,7 +232,7 @@ public class jpUplIsplDetail extends JPanel {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
     jlrNaziv.setColumnName("NAZIV");
     jlrNaziv.setNavProperties(jlrCorg);
@@ -303,7 +300,7 @@ public class jpUplIsplDetail extends JPanel {
     jlrCorg.setTextFields(new JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0, 1}); /**@todo: Dodati visible cols za lookup frame */
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
         
     jlrNaziv.setColumnName("NAZIV");

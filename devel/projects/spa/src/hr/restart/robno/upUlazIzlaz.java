@@ -464,14 +464,8 @@ public class upUlazIzlaz extends raUpitFat {
     jlrCorg.setTextFields(new javax.swing.text.JTextComponent[] {jlrNaziv});
     jlrCorg.setVisCols(new int[] {0,1});
     jlrCorg.setSearchMode(0);
-    jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jlrCorg.setRaDataSet(OrgStr.getSharedKnjig());
     jlrCorg.setNavButton(jbSelCorg);
-
-    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
-      public void knjigChanged(String newk, String oldk) {
-        jlrCorg.setRaDataSet(OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
 
     jlrNaziv.setColumnName("NAZIV");
     jlrNaziv.setNavProperties(jlrCorg);
@@ -727,11 +721,14 @@ public class upUlazIzlaz extends raUpitFat {
   String getCsklOrCorg() {
     if (!corgEnab) return " AND "+getDokiCskl()+" ";
     
-    String inq;
+    Condition cin = OrgStr.getCorgsCond("CSKL", getCorg()).qualified("doki");
+    String inq = cin == Condition.nil ? "1=1" : cin.toString();
+    
+    /*String inq;
     StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(getCorg());
     if (corgs.rowCount() == 0) inq = "1=1";
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + getCorg() + "'";
-    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getInQuery(corgs,"DOKI.CSKL")+") ";
+    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
     if (!csklEnab) return " AND "+inq;
     
     Condition oj = Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);

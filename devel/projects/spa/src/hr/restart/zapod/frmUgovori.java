@@ -1545,8 +1545,7 @@ System.out.println("jlrCPAR_after_lookUp()");
 			// u
 			// text
 			// field
-			jlrCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr()
-					.getOrgstrAndCurrKnjig()); // trazenje po datasetu
+			jlrCORG.setRaDataSet(OrgStr.getSharedKnjig());
 			jlrNAZORG.setColumnName("NAZIV");
 			jlrNAZORG.setSearchMode(1);
 			jlrNAZORG.setNavProperties(jlrCORG);
@@ -1660,8 +1659,8 @@ System.out.println("jlrCPAR_after_lookUp()");
 			jlrCNAMJ.setDataSet(ds);
 			jdbZIRO.setDataSet(ds);
 
-            jlrCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig()); 
-            jlrNAZORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+            jlrCORG.setRaDataSet(OrgStr.getSharedKnjig());
+            jlrNAZORG.setRaDataSet(OrgStr.getSharedKnjig());
 		}
 	}
 

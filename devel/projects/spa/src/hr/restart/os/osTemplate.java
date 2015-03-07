@@ -29,6 +29,7 @@ import hr.restart.util.raCommonClass;
 import hr.restart.util.raImages;
 import hr.restart.util.raMasterDetail;
 import hr.restart.util.raNavAction;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -774,7 +775,7 @@ public class osTemplate extends raMasterDetail {
     //org. jedinica na masteru
     jrfCORG2.setColumnName("CORG2");
     jrfCORG2.setNavColumnName("CORG");
-    jrfCORG2.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(presCorg.getText()));
+    jrfCORG2.setRaDataSet(OrgStr.getTempOrgs(presCorg.getText()));
     jrfCORG2.setVisCols(new int[]{0,1});
     jrfCORG2.setColNames(new String[] {"NAZIV"});
     jrfCORG2.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZORG2});
@@ -917,7 +918,7 @@ public class osTemplate extends raMasterDetail {
     // Org. jedinica na stavci
     jrfCORG.setColumnName("CORG2");
     jrfCORG.setNavColumnName("CORG");
-    jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
     jrfCORG.setVisCols(new int[]{0,1});
     jrfCORG.setColNames(new String[] {"NAZIV"});
     jrfCORG.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZORG});
@@ -1102,11 +1103,6 @@ public class osTemplate extends raMasterDetail {
 
   private void jbInit() throws Exception {
 
-    hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
-      public void knjigChanged(String oldKnjig, String newKnjig) {
-        presCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
-      }
-    });
 //    this.setMasterDeleteMode(this.DELDETAIL);
     this.setValidateRange(false);
 //    this.setVisibleColsMaster(new int[] {3,4,2,33,0,30});
@@ -1137,7 +1133,7 @@ public class osTemplate extends raMasterDetail {
     jbCOrg.setText("...");
     presCorg.setColumnName("CORG2");
     presCorg.setNavColumnName("CORG");
-    presCorg.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+    presCorg.setRaDataSet(OrgStr.getSharedKnjig());
     presCorg.setVisCols(new int[]{0,1});
     presCorg.setColNames(new String[] {"NAZIV"});
     presCorg.setTextFields(new javax.swing.text.JTextComponent[] {presNazOrg});

@@ -20,6 +20,7 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 
@@ -92,7 +93,7 @@ public class jpMasterPanelPRE extends JPanel {
       jrfCORG.setColNames(new String[] {"NAZIV"});
       jrfCORG.setVisCols(new int[]{0,1,2});
       jrfCORG.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZORG});
-      jrfCORG.setRaDataSet(hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndCurrKnjig());
+      jrfCORG.setRaDataSet(OrgStr.getSharedKnjig());
 
       jrfNAZORG.setColumnName("NAZIV");
       jrfNAZORG.setSearchMode(1);
