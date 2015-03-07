@@ -24,6 +24,7 @@ import hr.restart.util.VarStr;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.ReadRow;
@@ -202,6 +203,14 @@ public abstract class Condition {
     if (Array.getLength(array) == 1)
       return new SimpleCondition(EQUAL, colname, Array.get(array, 0));
     return new SimpleCondition(IN_LIST, colname, array);
+  }
+  
+  public static Condition in(String colname, Collection c) {
+  	if (c.size() == 0) 
+  		return nil;
+  	if (c.size() == 1)
+  		return new SimpleCondition(EQUAL, colname, c.iterator().next());
+  	return new SimpleCondition(IN_LIST, colname, c.toArray());
   }
 
   public static Condition where(String colname, int condition, Object value) {
