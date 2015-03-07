@@ -27,6 +27,7 @@ import java.util.List;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Orgstruktura;
+import hr.restart.baza.Sklad;
 import hr.restart.baza.dM;
 import hr.restart.baza.zirorn;
 import hr.restart.sisfun.raUser;
@@ -133,16 +134,18 @@ System.out.println("setting filter "+knjigsql+andNotIn);
     }
     return orgstr2;
   }
+ 
 
-  public com.borland.dx.dataset.StorageDataSet getOrgstrFromCurrKnjig() {
+  /*public com.borland.dx.dataset.StorageDataSet getOrgstrFromCurrKnjig() {
     String strKNJIG = dlgGetKnjig.getKNJCORG();
     return getOrgstrFromKnjig(strKNJIG);
-  }
-  public com.borland.dx.dataset.StorageDataSet getOrgstrAndCurrKnjig() {
-    String strKNJIG = dlgGetKnjig.getKNJCORG();
-    return getOrgstrAndKnjig(strKNJIG);
-  }
-  public com.borland.dx.dataset.StorageDataSet getOrgstrFromKnjig(String knjig) {
+  }*/
+  //public com.borland.dx.dataset.StorageDataSet getOrgstrAndCurrKnjig() {
+    /*String strKNJIG = dlgGetKnjig.getKNJCORG();
+    return getOrgstrAndKnjig(strKNJIG);*/
+  	//return getTempOrgsKnjig();
+  //}
+  /*public com.borland.dx.dataset.StorageDataSet getOrgstrFromKnjig(String knjig) {
     return getOrgstrFromKnjig(knjig,false);
   }
   public com.borland.dx.dataset.StorageDataSet getOrgstrAndKnjig(String knjig) {
@@ -165,7 +168,7 @@ System.out.println("setting filter "+knjigsql+andNotIn);
       rmvOrgFromPorgs(knjig);
     }
     return porgs;
-  }
+  }*/
   
   private void addOrgToPorgs(String corg) {
     if (LD.raLocate(porgs,new String[] {"CORG"},new String[] {corg})) return;
@@ -181,16 +184,12 @@ System.out.println("setting filter "+knjigsql+andNotIn);
     }
   }
   
-  public String getInQuery(com.borland.dx.dataset.DataSet _orgs) {
+  /*public String getInQuery(com.borland.dx.dataset.DataSet _orgs) {
     return getInQuery(_orgs, "corg");
   }
 
   public String getInQuery(com.borland.dx.dataset.DataSet _orgs, String col) {
-      /*
-      SQL error code = -901
-      Implementation limit exceeded
-      too many values (more than 1500) in member list to match against
-      */
+ 
       int cnt = 1;
       String in = "(";
       _orgs.first();
@@ -205,7 +204,7 @@ System.out.println("setting filter "+knjigsql+andNotIn);
       in = in.substring(0,in.length()-1)+")";
 //      System.err.println("*** I N *** "+in);
       return in;
-  }
+  }*/
 
   private void addPripOrgs(com.borland.dx.dataset.StorageDataSet prgs,String corg,com.borland.dx.dataset.Column[] cols) {
     com.borland.dx.sql.dataset.QueryDataSet pomset = new com.borland.dx.sql.dataset.QueryDataSet();
@@ -379,12 +378,44 @@ e.printStackTrace();
     ST.prn(ing);
   }
   
-  public static StorageDataSet getTempOrgs(String corg) {
-    Tree t = getOrgTree(corg);
+  public static Condition getCorgsKnjigCond() {
+  	return Condition.in("CORG", getCorgKnjigSet());
+  }
+  
+  public static Condition getCorgsKnjigCond(String col) {
+  	return Condition.in(col, getCorgKnjigSet());
+  }
+  
+  public static Condition getCorgsCond(String corg) {
+  	return Condition.in("CORG", getCorgSet(corg));
+  }
+  
+  public static Condition getCorgsCond(String col, String corg) {
+  	return Condition.in(col, getCorgSet(corg));
+  }
+  
+  
+  static StorageDataSet sharedKnjig;
+  
+  public static StorageDataSet getSharedKnjig() {
+    if (sharedKnjig == null) {
+    	sharedKnjig = Orgstruktura.getDataModule().getReadonlySet();
+    	sharedKnjig.setTableName("ORGSTRUKTURA");
+    	fillOrgSet(sharedKnjig, dlgGetKnjig.getKNJCORG(false));
+      OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
+        public void knjigChanged(String a1, String a2) {
+        	sharedKnjig.empty();
+        	fillOrgSet(sharedKnjig, dlgGetKnjig.getKNJCORG(false));
+        }
+      });
+    }
+    return sharedKnjig;
+  }
+  
+  private static void fillOrgSet(StorageDataSet out, String corg) {
+  	Tree t = getOrgTree(corg);
     
     HashDataSet ho = new HashDataSet(dM.getDataModule().getOrgstruktura(), "CORG");
-    
-    StorageDataSet out = Orgstruktura.getDataModule().getReadonlySet();
     
     if (t != null) {
       ArrayList all = new ArrayList();
@@ -395,6 +426,12 @@ e.printStackTrace();
         ho.get(i.next()).copyTo(out);
       }
     }
+  }
+  
+  public static StorageDataSet getTempOrgs(String corg) {
+    StorageDataSet out = Orgstruktura.getDataModule().getReadonlySet();
+    out.setTableName("ORGSTRUKTURA");
+    fillOrgSet(out, corg);
     return out;
   }
   
@@ -443,7 +480,7 @@ e.printStackTrace();
     return ret;
   }
   
-  public static HashSet getCorgSetKnjig() {
+  public static HashSet getCorgKnjigSet() {
     return getCorgSet(dlgGetKnjig.getKNJCORG(false));
   }
   
