@@ -103,7 +103,7 @@ public class frmEvidencijaDjel extends raFrame {
     getRepRunner().clearAllCustomReports();
     dM.getDataModule().getAllMjesta().open();
     dM.getDataModule().getAllZpZemlje().open();
-    dM.getDataModule().getAllOrgstruktura().open();
+    dM.getDataModule().getOrgstruktura().open();
     dM.getDataModule().getRadMJ().open();
     dM.getDataModule().getVrodn().open();
     getRepRunner().addReport("hr.restart.pl.repMatKnjigDjel1","hr.restart.pl.repMatKnjigDjel","MatKnjigDjelLeftSide","Matièna knjiga djelatnika - lijeva strana");

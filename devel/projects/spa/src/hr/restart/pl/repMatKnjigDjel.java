@@ -123,8 +123,8 @@ public class repMatKnjigDjel implements raReportData {
   }
 
   public String get6_1(){
-     if (lookupData.getlookupData().raLocate(dM.getDataModule().getAllOrgstruktura(),"CORG",ds.getString("CORG"))) {
-       return dM.getDataModule().getAllOrgstruktura().getString("MJESTO");
+     if (lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(),"CORG",ds.getString("CORG"))) {
+       return dM.getDataModule().getOrgstruktura().getString("MJESTO");
      } else return "";
   }
 
@@ -186,8 +186,8 @@ public class repMatKnjigDjel implements raReportData {
 
   public String get13(){
      //return ds.getString("");
-    lookupData.getlookupData().raLocate(dM.getDataModule().getAllOrgstruktura(),"CORG",hr.restart.zapod.OrgStr.getKNJCORG());
-    return dM.getDataModule().getAllOrgstruktura().getString("NAZIV");
+    lookupData.getlookupData().raLocate(dM.getDataModule().getOrgstruktura(),"CORG",hr.restart.zapod.OrgStr.getKNJCORG());
+    return dM.getDataModule().getOrgstruktura().getString("NAZIV");
   }
 
   public String get14(){

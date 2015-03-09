@@ -74,7 +74,7 @@ public class frmPregledArhive extends raFrame {
             frmPregledArhive.this.jptv_doubleClick(2);
           }
         });
-        jptv.addTableModifier(new hr.restart.swing.raTableColumnModifier("CORG", new String[] {"CORG", "NAZIV"}, dm.getAllOrgstruktura()));
+        jptv.addTableModifier(new hr.restart.swing.raTableColumnModifier("CORG", new String[] {"CORG", "NAZIV"}, dm.getOrgstruktura()));
         jptv.setKumTak(true);
         jptv.setStoZbrojiti(new String[] {"SATI", "BRUTO", "DOPRINOSI", "NETO", "NEOP", "ISKNEOP", "POROSN", "POR1", "POR2", "POR3", "PRIR", "NETO2", "NAKNADE", "NETOPK", "KREDITI", "NARUKE"});
         jptv.setNaslovi(new String[] {"Sati", "Bruto", "Doprinosi", "Dohodak", "Neoporezivo", "Iskorišteni neoporezivi", "Por. osnovica", "Porez 1", "Porez 2", "Porez 3", "Prirez", "Iznos nakon oporezivanja", "Naknade", "Iznos prije kredita", "Krediti", "Za isplatu"});
@@ -106,7 +106,7 @@ public class frmPregledArhive extends raFrame {
             frmPregledArhive.this.jptv_doubleClick(3);
           }
         });
-        jptv.addTableModifier(new hr.restart.swing.raTableColumnModifier("CRADNIK", new String[] {"CRADNIK", "IME", "PREZIME"}, dm.getAllRadnici()));
+        jptv.addTableModifier(new hr.restart.swing.raTableColumnModifier("CRADNIK", new String[] {"CRADNIK", "IME", "PREZIME"}, dm.getRadnici()));
         jptv.setKumTak(true);
         jptv.setStoZbrojiti(new String[] {"SATI", "BRUTO", "DOPRINOSI", "NETO", "NEOP", "ISKNEOP", "POROSN", "POR1", "POR2", "POR3", "PRIR", "NETO2", "NAKNADE", "NETOPK", "KREDITI", "NARUKE"});
         jptv.setNaslovi(new String[] {"Sati", "Bruto", "Doprinosi", "Dohodak", "Neoporezivo", "Iskorišteni neoporezivi", "Por. osnovica", "Porez 1", "Porez 2", "Porez 3", "Prirez", "Iznos nakon oporezivanja", "Naknade", "Iznos prije kredita", "Krediti", "Za isplatu"});

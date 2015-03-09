@@ -162,7 +162,7 @@ public class frmRadnicipl extends raMatPodaci {
 
     this.addOption(rnvVrOdb, 4);
     getJpTableView().addTableModifier(
-      new raTableColumnModifier("CRADNIK", new String[] {"CRADNIK", "IME", "PREZIME"}, dm.getAllRadnici())
+      new raTableColumnModifier("CRADNIK", new String[] {"CRADNIK", "IME", "PREZIME"}, dm.getRadnici())
     );
 
     this.addOption(rnvIzvProm,4);
