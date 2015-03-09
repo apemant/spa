@@ -46,8 +46,10 @@ public class jpProizvodnjaDetail extends JPanel {
   JraTextField jraKol = new JraTextField();
 
   protected rapancart rpc = new rapancart() {
-  	QueryDataSet rds = Artikli.getDataModule().getFilteredDataSet(raVart.getProizvodCond());
+  	QueryDataSet rds;
     public QueryDataSet getRaDataSet(){
+      if (rds == null) 
+        rds = Artikli.getDataModule().getFilteredDataSet(raVart.getProizvodCond());
       return rds;
     }
     
