@@ -1858,7 +1858,7 @@ System.out.println(qstr);
         }
         ret.append(val).append(" ");
       } else if (ds.hasColumn("CPAR") != null) {
-        QueryDataSet ppar = dM.getDataModule().getAllPartneri();
+        QueryDataSet ppar = dM.getDataModule().getPartneri();
         ppar.open();
         if (ppar.hasColumn(colnme) != null) {
           if (lookupData.getlookupData().raLocate(ppar, "CPAR", ""+ds.getInt("CPAR"))) {

@@ -319,7 +319,7 @@ public class frmPDV2 extends raUpitFat {
     setZP.setTableName("setZP");
     setDataSetAndSums(setZP, new String[] {"I1","I2","I3","I4"});
     getJPTV().addTableModifier(
-        new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, new String[] {"CPAR"}, new String[] {"CPAR"}, dM.getDataModule().getAllPartneri()));
+        new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, new String[] {"CPAR"}, new String[] {"CPAR"}, dM.getDataModule().getPartneri()));
     killAllReports();
     addReport("hr.restart.sk.repZPDisk", "Datoteka ZP za e-poreznu");
     setTitle("Obrazac ZP za period "+raDateUtil.getraDateUtil().dataFormatter(getDatumOd())+" - "+raDateUtil.getraDateUtil().dataFormatter(getDatumDo()));
@@ -345,7 +345,7 @@ public class frmPDV2 extends raUpitFat {
     setPPO.setTableName("setPPO");
     setDataSetAndSums(setPPO, new String[] {"VRI"});
     getJPTV().addTableModifier(
-        new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, new String[] {"CPAR"}, new String[] {"CPAR"}, dM.getDataModule().getAllPartneri()));
+        new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, new String[] {"CPAR"}, new String[] {"CPAR"}, dM.getDataModule().getPartneri()));
     killAllReports();
     addReport("hr.restart.sk.repPPO20132014Disk", "Datoteka PPO za e-poreznu");
     setTitle("Obrazac PPO za period "+raDateUtil.getraDateUtil().dataFormatter(getDatumOd())+" - "+raDateUtil.getraDateUtil().dataFormatter(getDatumDo()));
@@ -357,12 +357,12 @@ public class frmPDV2 extends raUpitFat {
     String orovi = getOrovi(param);
     if (orovi == null) return;
     QueryDataSet upitP = Aus.q(qrycommon + orovi);
-    dm.getAllPartneri().open();
+    dm.getPartneri().open();
     int rbr = 0;
     for (upitP.first(); upitP.inBounds(); upitP.next()) {
       if (!lookupData.getlookupData().raLocate(setPPO, new String[]{"CPAR","DATUMOD"}, new String[]{upitP.getInt("CPAR")+"",Util.getUtil().getFirstDayOfMonth(upitP.getTimestamp("DATPRI")).toString()})) {//TU PO cpar i datumOD
-        if (lookupData.getlookupData().raLocate(dm.getAllPartneri(), "CPAR", upitP.getInt("CPAR")+"")) {
-          String oib =  dm.getAllPartneri().getString("OIB");
+        if (lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", upitP.getInt("CPAR")+"")) {
+          String oib =  dm.getPartneri().getString("OIB");
           setPPO.insertRow(false);
           rbr++;
           setPPO.setInt("RBR", rbr);
@@ -416,7 +416,7 @@ public class frmPDV2 extends raUpitFat {
     setPDVS.setTableName("setPDVS");
     setDataSetAndSums(setPDVS, new String[] {"I1","I2"});
     getJPTV().addTableModifier(
-        new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, new String[] {"CPAR"}, new String[] {"CPAR"}, dM.getDataModule().getAllPartneri()));
+        new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, new String[] {"CPAR"}, new String[] {"CPAR"}, dM.getDataModule().getPartneri()));
     killAllReports();
     addReport("hr.restart.sk.repPDVSDisk", "Datoteka PDV-S za e-poreznu");
     setTitle("Obrazac PDV-S za period "+raDateUtil.getraDateUtil().dataFormatter(getDatumOd())+" - "+raDateUtil.getraDateUtil().dataFormatter(getDatumDo()));
@@ -427,12 +427,12 @@ public class frmPDV2 extends raUpitFat {
     String orovi = getOrovi(param);
     if (orovi == null) return;
     QueryDataSet upitP = Aus.q(qrycommon + orovi);
-    dm.getAllPartneri().open();
+    dm.getPartneri().open();
     int rbr = 0;
     for (upitP.first(); upitP.inBounds(); upitP.next()) {
       if (!lookupData.getlookupData().raLocate(setP, "CPAR", upitP.getInt("CPAR")+"")) {
-        if (lookupData.getlookupData().raLocate(dm.getAllPartneri(), "CPAR", upitP.getInt("CPAR")+"")) {
-          String oib =  dm.getAllPartneri().getString("OIB");
+        if (lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", upitP.getInt("CPAR")+"")) {
+          String oib =  dm.getPartneri().getString("OIB");
           setP.insertRow(false);
           rbr++;
           setP.setInt("RBR", rbr);
@@ -885,8 +885,8 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
       }
     };
     XYLayout xyl = new XYLayout(420, 205);
-    lookupData.getlookupData().raLocate(dM.getDataModule().getAllPartneri(), "CPAR", setZP.getInt("CPAR")+"");
-    String capt = dM.getDataModule().getAllPartneri().getString("OIB")+" - "+dM.getDataModule().getAllPartneri().getString("NAZPAR");
+    lookupData.getlookupData().raLocate(dM.getDataModule().getPartneri(), "CPAR", setZP.getInt("CPAR")+"");
+    String capt = dM.getDataModule().getPartneri().getString("OIB")+" - "+dM.getDataModule().getPartneri().getString("NAZPAR");
     JLabel jlCaption = new JLabel(capt);
     JLabel jlKODDRZ = new JLabel("Kod države");
     JLabel jlPDVID = new JLabel("Porezni broj");
@@ -958,8 +958,8 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
       }
     };
     XYLayout xyl = new XYLayout(420, 150);
-    lookupData.getlookupData().raLocate(dM.getDataModule().getAllPartneri(), "CPAR", setPDVS.getInt("CPAR")+"");
-    String capt = dM.getDataModule().getAllPartneri().getString("OIB")+" - "+dM.getDataModule().getAllPartneri().getString("NAZPAR");
+    lookupData.getlookupData().raLocate(dM.getDataModule().getPartneri(), "CPAR", setPDVS.getInt("CPAR")+"");
+    String capt = dM.getDataModule().getPartneri().getString("OIB")+" - "+dM.getDataModule().getPartneri().getString("NAZPAR");
     JLabel jlCaption = new JLabel(capt);
     JLabel jlKODDRZ = new JLabel("Kod države");
     JLabel jlPDVID = new JLabel("Porezni broj");
