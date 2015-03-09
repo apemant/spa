@@ -119,7 +119,7 @@ public class frmSkladiste extends raMatPodaci {
     jtfDATINV.setColumnName("DATINV");
     jrfCORG.setColumnName("CORG");
     jrfCORG.setDataSet(getRaQueryDataSet());
-    jrfCORG.setRaDataSet(dM.getDataModule().getAllOrgstruktura());
+    jrfCORG.setRaDataSet(dM.getDataModule().getOrgstruktura());
     jrfCORG.setVisCols(new int[] {0,1});
     jrfCORG.setSearchMode(0);
     jrfCORG.setColNames(new String[] {"NAZIV"});

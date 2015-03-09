@@ -135,7 +135,7 @@ public class frmPRI extends hr.restart.util.raMasterDetail {
 		this.raMaster.getJpTableView().addTableModifier(
 				new hr.restart.swing.raTableColumnModifier("CORG",
 						new String[] { "CORG", "NAZIV" }, dm
-								.getAllOrgstruktura()));
+								.getOrgstruktura()));
 		this.raMaster.getJpTableView().addTableModifier(
 				new hr.restart.swing.raTableColumnModifier("CPAR",
 						new String[] { "CPAR", "NAZPAR" }, dm.getPartneri()));
