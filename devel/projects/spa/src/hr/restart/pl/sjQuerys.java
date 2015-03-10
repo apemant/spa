@@ -186,6 +186,12 @@ public class sjQuerys {
     System.out.println("SQL: "+str);
     return str;
   }
+  public static String delPrisutObr(String corg) {
+    String str="delete from PRISUTOBR where PRISUTOBR.CRADNIK in "
+            + "(Select RADNICIPL.CRADNIK from radnicipl where "+OrgStr.getCorgsCond(corg).qualified("radnicipl")+")";
+    System.out.println("SQL: "+str);
+    return str;
+  }
   public static String delPrimanjaObr(String corg) {
     String str="delete from PRIMANJAOBR where PRIMANJAOBR.CRADNIK in "
     		+ "(Select RADNICIPL.CRADNIK from radnicipl where "+OrgStr.getCorgsCond(corg).qualified("radnicipl")+")";

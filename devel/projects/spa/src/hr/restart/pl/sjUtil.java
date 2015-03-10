@@ -100,6 +100,7 @@ public class sjUtil {
         } while (orgspl.next());
         raTransaction.saveChanges(orgspl);
         raTransaction.runSQL(sjQuerys.delPrimanjaObr(corg));
+        raTransaction.runSQL(sjQuerys.delPrisutObr(corg));
         raTransaction.runSQL(sjQuerys.delRSPeriod(corg));
         return true;
       }
