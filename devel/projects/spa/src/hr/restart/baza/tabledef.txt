@@ -841,6 +841,7 @@ JIR;char;40;;;JIR
 FOK;char;1;;N;Fiskalizitan;*
 FPP;char;20;;;Poslovni prostor
 FNU;int;6;;;Broj naplatnog ureðaja
+CGKSTAVKE;text;38;idx;;Stavka naloga
 IDX=cpar
 
 $stdoki
@@ -1058,6 +1059,7 @@ DEVIZN;numeric;15,2;;0;Devizni iznos;8
 UIPRPOR2;numeric;15,2;;0;Iznos pretporeza 2
 RANDMAN;numeric;17,6;;0;Randman
 UIPRPOR3;numeric;15,2;;0;Iznos pretporeza 3
+CGKSTAVKE;text;38;idx;;Stavka naloga
 
 
 $Stdoku
@@ -1326,6 +1328,8 @@ STAT_KPR;char;1;;N;Stat KPR
 BRNALU;char;8;;;Nalog ulaz
 DATKNJU;date;;;;Datum knjiženja ul;10
 CPAR;int;6;;;Partner
+CGKSTAVKEI;text;38;idx;;Stavka naloga
+CGKSTAVKEU;text;38;idx;;Stavka naloga
 
 
 $Stanje
@@ -2734,6 +2738,7 @@ STATUS;char;1;;;Status
 DATUM;date;;;;Datum;10
 PICK;char;1;;;Indikator za odabire;*
 SALDO;numeric;17,2;;0;Saldo;15
+SRC;char;1;;;Izvor
 IDX=rbr
 
 $namjena
