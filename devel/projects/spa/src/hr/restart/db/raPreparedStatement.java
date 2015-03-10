@@ -133,7 +133,7 @@ public class raPreparedStatement {//implements PreparedStatement {
 
   }
 
-
+N
 
   /**
 
@@ -646,7 +646,7 @@ public class raPreparedStatement {//implements PreparedStatement {
   		
   		try {
 				int idx = getParameterIndex(columnName, where);
-				setNull(idx, columnTypes[idx]);
+				setNull(idx, columnTypes[idx-1]);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
