@@ -45,6 +45,10 @@ public class HashDataSet {
       }
   }
   
+  public String key(ReadRow src) {
+    return key(src, keyCols);
+  }
+  
   public String key(ReadRow src, String skeyCol) {
     src.getVariant(skeyCol, v);
     return v.toString();
@@ -99,11 +103,11 @@ public class HashDataSet {
   }
   
   public boolean has(DataSet src, int row, String skeyCol) {
-  	return has(key(src, skeyCol));
+  	return has(key(src, row, skeyCol));
   }
   
   public boolean has(DataSet src, int row, String[] skeyCols) {
-  	return has(key(src, skeyCols));
+  	return has(key(src, row, skeyCols));
   }
   
   public DataSet get() {
@@ -138,10 +142,45 @@ public class HashDataSet {
   }
   
   public DataSet get(DataSet src, int row, String skeyCol) {
-  	return get(key(src, skeyCol));
+  	return get(key(src, row, skeyCol));
   }
   
   public DataSet get(DataSet src, int row, String[] skeyCols) {
-  	return get(key(src, skeyCols));
+  	return get(key(src, row, skeyCols));
+  }
+  
+  public boolean loc(Object key) {
+    return loc(key.toString());
+  }
+  
+  public boolean loc(String key) {
+    Integer idx = (Integer) index.get(key);
+    if (idx != null) ds.goToRow(idx.intValue());
+    return idx != null;
+  }
+  
+  public boolean loc(String[] keys) {
+    return loc(VarStr.join(keys, '|').toString());
+  }
+  
+  public boolean loc(ReadRow src) {
+    if (keyCol != null) return loc(src, keyCol);
+    return loc(src, keyCols);
+  }
+    
+  public boolean loc(ReadRow src, String skeyCol) {
+    return loc(key(src, skeyCol));
+  }
+  
+  public boolean loc(ReadRow src, String[] skeyCols) {
+    return loc(key(src, skeyCols));
+  }
+  
+  public boolean loc(DataSet src, int row, String skeyCol) {
+    return loc(key(src, row, skeyCol));
+  }
+  
+  public boolean loc(DataSet src, int row, String[] skeyCols) {
+    return loc(key(src, row, skeyCols));
   }
 }
