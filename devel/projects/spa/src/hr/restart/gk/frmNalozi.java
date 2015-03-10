@@ -542,6 +542,7 @@ public class frmNalozi extends raMasterDetail {
       rCC.setLabelLaF(jpMaster.jtDATUMKNJ,true);
       getMasterSet().setTimestamp("DATUMKNJ",pressNal.getDefaultDate());
       //AI555 set status da nakon knjizenja kad unese novi nalog enabla za unos
+      getMasterSet().setString("SRC",raKnjizenje.TEM);
       getMasterSet().setString("STATUS","N");
       if (pressNal.isVrnalEntered()) jpMaster.jtDATUMKNJ.requestFocus();
       else jpMaster.jpGetVrnal.jlrCVRNAL.requestFocus();
@@ -1392,12 +1393,15 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
   }
 
   boolean obrNaloga_inThread(boolean silent, boolean defaultPokriv, boolean autoRepairUniqueSK, boolean batch) {
+  	String strSRC = getMasterSet().getString("SRC");
     String strSTATUS = getMasterSet().getString("STATUS");
     String strCNAL = getMasterSet().getString("CNALOGA");
     String msgObr = "";
     boolean isObrNalogaSucc = false;
     if (strSTATUS.equals("N")) {
       msgObr = "Nalog nije spreman za obradu!";
+    } else if (strSRC.equalsIgnoreCase(raKnjizenje.RASK)) {
+    	msgObr = "Nalog je nastao ireverzibilnim rasknjižavanjem; moguæe ga je samo pobrisati!";
     }
     //Obrada
     else if (strSTATUS.equals("S")) {
@@ -1455,73 +1459,46 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
       }
     }
     //Rasknji?avanje
-    else if (strSTATUS.equals("K")) {
+    else if (strSTATUS.equals("K") && strSRC.length() == 0) {
+    	msgObr = "Nalog nemoguæe rasknjižiti - nepoznat izvor!";
+    } else if (strSTATUS.equals("K") && strSRC.equalsIgnoreCase(raKnjizenje.POC)) {
+    	msgObr = "Nalog godišnje obrade se ne može rasknjižiti!";
+    } else if (strSTATUS.equals("K") && strSRC.equalsIgnoreCase(raKnjizenje.OS)) {
+    	msgObr = "Nalog iz osnovnih sredstava se (zasada) ne može rasknjižiti!";
+    } else if (strSTATUS.equals("K") && strSRC.equalsIgnoreCase(raKnjizenje.PN)) {
+    	msgObr = "Nalog iz putnih naloga se (zasada) ne može rasknjižiti!";
+    } else if (strSTATUS.equals("K") && strSRC.equalsIgnoreCase(raKnjizenje.BL)) {
+    	msgObr = "Nalog iz blagajne se (zasada) ne može rasknjižiti!";
+    } else if (strSTATUS.equals("K") && strSRC.equalsIgnoreCase(raKnjizenje.PL)) {
+    	msgObr = "Nalog iz plaæa se (zasada) ne može rasknjižiti!";
+    } else if (strSTATUS.equals("K")) {
       System.out.println("cgkstavke like '"+getMasterSet().getString("CNALOGA")+"%'");
+      if (strSRC.equalsIgnoreCase(raKnjizenje.SK)) {
+      	DataSet det = Gkstavke.getDataModule().openTempSet("RBS", Condition.whereAllEqual(keys, getMasterSet()) +
+      			" AND opis LIKE '" + R2Handler.r2opis + "%'");
+      	if (det.rowCount() > 0) 
+      		msgObr = "Nalog je nemoguæe rasknjižiti jer sadrži R2 preknjižavanje!";
+      } 
       raProcess.runChild("Provjera", "Provjera salda konti stavaka...", new Runnable() {
-        public void run() {
-          DataSet ds = Skstavke.getDataModule().getTempSet("cgkstavke like '"+getMasterSet().getString("CNALOGA")+"%'");
-          ds.open();
-          raProcess.yield(ds);
-        }
+      	public void run() {
+      		DataSet ds = Skstavke.getDataModule().getTempSet("cgkstavke like '"+getMasterSet().getString("CNALOGA")+"%'");
+      		ds.open();
+      		raProcess.yield(ds);
+      	}
       });
       DataSet sk = (DataSet) raProcess.getReturnValue();
       DataSet ui = UIstavke.getDataModule().getTempSet(Condition.in("CSKSTAVKE",  sk));
       
-      boolean pok = false;
-      for (sk.first(); sk.inBounds(); sk.next())
-        if (sk.getBigDecimal("SALDO").compareTo(sk.getBigDecimal("SSALDO")) != 0) pok = true;
-      
-      if (pok) {
-      	raProcess.runChild("Provjera", "Provjera knjiženja iz robnog...", new Runnable() {
-          public void run() {
-          	String god = getMasterSet().getString("GOD").substring(2, 4);
-            String vrnal = getMasterSet().getString("CVRNAL");
-            String rbr = vl.maskZeroInteger(new Integer(getMasterSet().getInt("RBR")), 4);
-            String brnal = god.concat(vrnal).concat(rbr);
-            
-          	int totrobno = doki.getDataModule().getRowCount(Condition.equal("BRNAL",  brnal)) +
-          			Doku.getDataModule().getRowCount(Condition.equal("BRNAL",  brnal)) +
-          			Meskla.getDataModule().getRowCount(Condition.equal("BRNAL",  brnal)) +
-          			Meskla.getDataModule().getRowCount(Condition.equal("BRNALU",  brnal));
-          	raProcess.yield(new Boolean(totrobno > 0));
-          }
-      	});
-      	Boolean ret = (Boolean) raProcess.getReturnValue();
-      	pok = ret.booleanValue();
+      if (!strSRC.equalsIgnoreCase(raKnjizenje.SK)) {
+      	boolean pok = false;
+      	for (sk.first(); sk.inBounds(); sk.next())
+      		if (sk.getBigDecimal("SALDO").compareTo(sk.getBigDecimal("SSALDO")) != 0) pok = true;
+      	if (pok)
+      		msgObr = "Nalog je nemoguæe rasknjižiti jer sadrži stavke salda konti koje su pokrivene!";
       }
       
-      boolean r2 = false;
-      if (!pok) {
-      	DataSet det = Gkstavke.getDataModule().openTempSet("RBS", Condition.whereAllEqual(keys, getMasterSet()) +
-      			" AND opis LIKE '" + R2Handler.r2opis + "%'");
-      	if (det.rowCount() > 0) r2 = true;
-      }
-      
-      if (r2) {
-      	msgObr = "Nalog je nemoguæe rasknjižiti jer sadrži R2 preknjižavanje!";
-      } else if (pok) {
-        msgObr = "Nalog je nemoguæe rasknjižiti jer sadrži stavke sada konti koje su pokrivene!";
-      } else if (askDialog("Nalog je obraðen. Želite li poništiti obradu?")) {
+      if (msgObr.length() == 0 && askDialog("Nalog je obraðen. Želite li poništiti obradu?")) {
         startProcessMessage();
-        
-        rdw.setMessage("Provjera knjiženja iz robnog ...");
-        
-        String god = getMasterSet().getString("GOD").substring(2, 4);
-        String vrnal = getMasterSet().getString("CVRNAL");
-        String rbr = vl.maskZeroInteger(new Integer(getMasterSet().getInt("RBR")), 4);
-        String brnal = god.concat(vrnal).concat(rbr);
-        
-        DataSet di = doki.getDataModule().getTempSet(Condition.equal("BRNAL",  brnal));
-        di.open();
-        DataSet du = Doku.getDataModule().getTempSet(Condition.equal("BRNAL",  brnal));
-        du.open();
-        DataSet mi = Meskla.getDataModule().getTempSet(Condition.equal("BRNAL",  brnal));
-        mi.open();
-        DataSet mu = Meskla.getDataModule().getTempSet(Condition.equal("BRNALU",  brnal));
-        mu.open();
-        boolean robno = di.rowCount() > 0 || du.rowCount() > 0 || mi.rowCount() > 0 || mu.rowCount() > 0;
-        
-        System.out.println("Rasknj: saldak = " + sk.rowCount() + "  robno: " + robno);
         
         rdw.setMessage("Rasknjižavanje naloga ...");
         obradaInProgress = true;
@@ -1532,7 +1509,7 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
           if (sk.rowCount() > 0) {
             rdw.setMessage("Ažuriranje statusa salda konti stavaka ...");
             ui.open();
-            if (ui.rowCount() > 0 && !robno) {
+            if (strSRC.equalsIgnoreCase(raKnjizenje.SK)) {
               for (sk.first(); sk.inBounds(); sk.next()) sk.setString("CGKSTAVKE", "");
               for (ui.first(); ui.inBounds(); ui.next()) ui.setString("CGKSTAVKE", "");
             } else {
@@ -1542,31 +1519,42 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
             raTransaction.saveChanges((QueryDataSet) sk);
             raTransaction.saveChanges((QueryDataSet) ui);
           } 
-          if (robno) {
-            for (di.first(); di.inBounds(); di.next()) {
+          if (strSRC.equalsIgnoreCase(raKnjizenje.ROB)) {
+          	String god = getMasterSet().getString("GOD").substring(2, 4);
+            String vrnal = getMasterSet().getString("CVRNAL");
+            String rbr = vl.maskZeroInteger(new Integer(getMasterSet().getInt("RBR")), 4);
+            String brnal = god.concat(vrnal).concat(rbr);
+            
+            QueryDataSet di = doki.getDataModule().openTempSet(Condition.equal("BRNAL",  brnal));
+          	for (di.first(); di.inBounds(); di.next()) {
               di.setString("BRNAL", "");
               di.setAssignedNull("DATKNJ");
               di.setString("STATKNJ", "N");
             }
+          	raTransaction.saveChanges(di);
+          	
+          	QueryDataSet du = Doku.getDataModule().openTempSet(Condition.equal("BRNAL",  brnal));
             for (du.first(); du.inBounds(); du.next()) {
               du.setString("BRNAL", "");
               du.setAssignedNull("DATKNJ");
               du.setString("STATKNJ", "N");
             }
-            for (mi.first(); mi.inBounds(); mi.next()) {
-              mi.setString("BRNAL", "");
-              mi.setAssignedNull("DATKNJ");
-              mi.setString("STATKNJI", "N");
+            raTransaction.saveChanges(du);
+            
+            QueryDataSet mes = Meskla.getDataModule().openTempSet(Condition.equal("BRNAL",  brnal).or(Condition.equal("BRNALU",  brnal)));
+            for (mes.first(); mes.inBounds(); mes.next()) {
+            	if (mes.getString("BRNAL").equals(brnal)) {
+            		mes.setString("BRNAL", "");
+            		mes.setAssignedNull("DATKNJ");
+            		mes.setString("STATKNJI", "N");
+            	}
+            	if (mes.getString("BRNALU").equals(brnal)) {
+            		mes.setString("BRNALU", "");
+            		mes.setAssignedNull("DATKNJU");
+            		mes.setString("STATKNJU", "N");
+            	}
             }
-            for (mu.first(); mu.inBounds(); mu.next()) {
-              mi.setString("BRNALU", "");
-              mi.setAssignedNull("DATKNJU");
-              mi.setString("STATKNJU", "N");
-            }
-            raTransaction.saveChanges((QueryDataSet) di);
-            raTransaction.saveChanges((QueryDataSet) du);
-            raTransaction.saveChanges((QueryDataSet) mi);
-            raTransaction.saveChanges((QueryDataSet) mu);
+            raTransaction.saveChanges(mes);
           }
           
           isObrNalogaSucc = true;

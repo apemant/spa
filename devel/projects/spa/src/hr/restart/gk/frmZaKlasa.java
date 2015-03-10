@@ -60,6 +60,7 @@ public class frmZaKlasa extends frmKnjizenje {
   }
 
   private void init() throws Exception {
+  	srcTem = raKnjizenje.ZAK;
     jpCommon.remove(jlDATUMKNJ);
     jpCommon.remove(jtDATUMKNJ);
     jpCommon.remove(jlDATUMDO);

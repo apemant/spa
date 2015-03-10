@@ -113,6 +113,7 @@ public class frmKnjRobno extends frmKnjizenje {
     private String tmpskssort;
     public frmKnjRobno() {
 
+    	srcTem = raKnjizenje.ROB;
         dm.getVrtros().open();
         dm.getKonta_par().open();
         dm.getPartneri().open();

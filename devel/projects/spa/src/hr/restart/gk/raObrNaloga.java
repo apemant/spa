@@ -150,6 +150,8 @@ public class raObrNaloga {
       
 //TODO TU UGLAVI RASKNJIZAVANJE SK
 //status na spremno
+      if (qdsNalog.getString("SRC").equals(raKnjizenje.ROB))
+      	qdsNalog.setString("SRC",raKnjizenje.RASK);
       qdsNalog.setString("STATUS","S");
 //snimi sve
       saveAllQds();

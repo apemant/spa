@@ -75,6 +75,7 @@ public class frmKnjSKRac extends frmKnjizenje {
   public static String[] skuilinkcols = {"KNJIG", "CPAR", "VRDOK", "BROJDOK", "CKNJIGE"};
   
   public frmKnjSKRac() {
+  	srcTem = raKnjizenje.SK;
     initVrDok();
     /*
     Prepared statement za naknadno updatanje cgkstavke u uistavke jer ne mogu dobiti kompletan set za transfer

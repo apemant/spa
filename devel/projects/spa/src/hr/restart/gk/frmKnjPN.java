@@ -29,6 +29,7 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 public class frmKnjPN extends frmKnjizenje {
   QueryDataSet pnalozi;
   public frmKnjPN() {
+  	srcTem = raKnjizenje.PN;
   }
 
   public boolean okPress() {

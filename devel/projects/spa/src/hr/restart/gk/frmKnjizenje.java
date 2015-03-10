@@ -86,6 +86,7 @@ public class frmKnjizenje extends JraDialog implements ResetEnabled {
   };
   JButton jbIspis = new JButton("Ispis",raImages.getImageIcon(raImages.IMGPRINT));
   private boolean fake;
+  String srcTem = "";
 /**
   * ekran za knjizenje koji se extenda i onda se u toj klasi pripremaju podaci za glavnu knjigu i to ovako:
   * <pre>
@@ -501,7 +502,8 @@ public class frmKnjizenje extends JraDialog implements ResetEnabled {
   }
   class knjizThread extends Thread {
     public void run() {
-      setEnabled(false);      
+      setEnabled(false);
+      frmNalozi.getFrmNalozi().getMasterSet().setString("SRC", srcTem);
       getStatus().startTask(progSteps,"Knjiženje u tijeku ...");
       setProcessMessage("Knjiženje u tijeku ...");
       getKnjizenje().kSk.clearErrors();

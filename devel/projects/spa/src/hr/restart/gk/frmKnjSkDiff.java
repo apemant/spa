@@ -81,6 +81,7 @@ public class frmKnjSkDiff extends frmKnjizenje {
   JraTextField jraMaxSal = new JraTextField();
 	
 	public frmKnjSkDiff() {
+		srcTem = raKnjizenje.TEM;
 		dataSet.addColumn(dM.createStringColumn("BROJKONTA", "Konto", 8));
 		dataSet.addColumn(dM.createIntColumn("CPAR", "Partner"));
 		dataSet.addColumn(dM.createBigDecimalColumn("MAXSAL", "Maksimalni saldo", 2));

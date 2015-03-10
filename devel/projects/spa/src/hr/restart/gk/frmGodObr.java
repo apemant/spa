@@ -113,6 +113,7 @@ public class frmGodObr extends frmKnjizenje {
   }
 
   private void jbInit() throws Exception {
+  	srcTem = raKnjizenje.POC;
     jpCommon.remove(jlDATUMDO);
     jtDATUMDO.setVisible(false);
     jtDATUMDO.setEnabled(false);

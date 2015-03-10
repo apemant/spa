@@ -381,6 +381,9 @@ public class frmIzvodi extends raMasterDetail {
     // kasnije koristi member knjizenje
     try {
       if (getKnjizenje().startKnjizenje()) {
+      	if (dm.getNalozi().getString("SRC").length() == 0)
+      		dm.getNalozi().setString("SRC", raKnjizenje.IZV);
+      	else System.err.println("SRC naloga?? " + dm.getNalozi());
         raTransaction.saveChanges(dm.getNalozi());
         return true;
       } else

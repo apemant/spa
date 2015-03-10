@@ -59,6 +59,7 @@ public class frmKnjPlace extends frmKnjizenje {
   }
 
   private void initUI() {
+  	srcTem = raKnjizenje.PL;
     viewSet.addColumn(dM.createShortColumn("GODOBR"));
     viewSet.addColumn(dM.createShortColumn("MJOBR"));
     viewSet.addColumn(dM.createShortColumn("RBROBR"));

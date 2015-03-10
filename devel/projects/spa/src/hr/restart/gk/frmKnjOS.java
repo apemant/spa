@@ -127,6 +127,7 @@ public class frmKnjOS extends frmKnjizenje {
     super.SetFokus();
   }
   private void jbInit() throws Exception {
+  	srcTem = raKnjizenje.OS;
     jpan.setLayout(xYLayout1);
     jcbAMOR.setText("Amortizacija i revalorizacija");
     jcbLIK.setText("Likvidacija osnovnog sredstva");

@@ -68,6 +68,24 @@ public class raKnjizenje {
    * Odlucuje izmedju CNALMODE i CNALMODE_RBS ovisno o tome da li je Konta.NACPR
    * zbirno ili poredinacno
    */
+  
+  /*
+   * Oznake vrsta temeljnica
+   */
+  public static final String POC = "G";
+  public static final String TEM = "T";
+  public static final String ROB = "R";
+  public static final String OS = "O";
+  public static final String PL = "P";
+  public static final String IZV = "I";
+  public static final String SK = "S";
+  public static final String BL = "B";
+  public static final String PN = "N";
+  public static final String ZAK = "Z";
+  
+  public static final String RASK = "X";
+  
+  
   public static int CNALMODE_KONTO_NACPR = 4;
   private int cnalogaMode = CNALMODE_KONTO_NACPR;
   private StorageDataSet stavke_add = new StorageDataSet();

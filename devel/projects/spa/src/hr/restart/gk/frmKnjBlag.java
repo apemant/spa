@@ -83,6 +83,7 @@ public class frmKnjBlag extends frmKnjizenje {
     return viewSet;
   }
   private void initblp() {
+  	srcTem = raKnjizenje.BL;
     jpDetail.setLayout(lay);
 //    lay.setWidth(591);
     lay.setHeight(50);
