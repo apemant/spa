@@ -251,7 +251,7 @@ public class FileHandler {
     return readFile(filename,null);
   }
 
-  public static String convert(String str, String enc) {
+/*  public static String convert(String str, String enc) {
     try {
       byte[] bytes = sun.io.CharToByteConverter.getConverter(enc).convertAll(str.toCharArray());
       return new String(bytes);
@@ -259,7 +259,7 @@ public class FileHandler {
 //      System.out.println("Conversion failed Exeption: "+e);
       return str;
     }
-  }
+  }*/
 /**
  * Napuni propertiese zadane drugim parametrom iz filea zadanog prvim parametrom
  */
