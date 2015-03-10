@@ -16,18 +16,25 @@
 **
 ****************************************************************************/
 package hr.restart.swing;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+
 import hr.restart.baza.dM;
+import hr.restart.baza.raDataSet;
+import hr.restart.robno.Util;
+import hr.restart.util.Aus;
 import hr.restart.util.HashDataSet;
+import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
-import hr.restart.util.lookupData;
 
 import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
 
 import com.borland.dx.dataset.Column;
-import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.Variant;
+import com.borland.dx.sql.dataset.QueryDataSet;
 public class raTableColumnModifier extends raTableModifier {
   private JraTable2 jtab;
   private Column dsCol;
@@ -58,12 +65,38 @@ public class raTableColumnModifier extends raTableModifier {
                       DataSet setToSearch) {
     dsColName = columnToModify;
     dsColsReplace = columnsReplace;
-    if (setToSearch != null)
-    	dsToSearch = keyColumns.length == 1 ? new HashDataSet(setToSearch, keyColumnsSearch[0]) : new HashDataSet(setToSearch, keyColumnsSearch);
+    if (setToSearch != null) {
+      setToSearch = getScopedSet(setToSearch, keyColumnsSearch, columnsReplace);
+      if (setToSearch instanceof raDataSet) ((raDataSet) setToSearch).enableSync(false);
+      dsToSearch = keyColumns.length == 1 ? new HashDataSet(setToSearch, keyColumnsSearch[0]) : new HashDataSet(setToSearch, keyColumnsSearch);
+      if (setToSearch instanceof raDataSet) ((raDataSet) setToSearch).enableSync(true);
+    }
     
     dsColsKey = keyColumns;
     dsColsKeyS = keyColumnsSearch;
   }
+  
+  private DataSet getScopedSet(DataSet orig, String[] keys, String[] replaces) {
+    if (orig instanceof QueryDataSet && ((QueryDataSet) orig).getOriginalQueryString() != null) {
+      String oq = ((QueryDataSet) orig).getOriginalQueryString();
+      int wp = oq.toLowerCase().indexOf(" from ");
+      if (wp > 0) {
+        ArrayList cols = new ArrayList(Arrays.asList(keys));
+        HashSet others = new HashSet(Arrays.asList(replaces));
+        others.removeAll(cols);
+        cols.addAll(others);
+
+        String nq = "SELECT " + VarStr.join(cols, ", ") + oq.substring(wp);
+        if (orig instanceof raDataSet) orig = new raDataSet();
+        else orig = new QueryDataSet();
+        Aus.setFilter((QueryDataSet) orig, nq);
+        System.out.println(nq);
+      }
+    }
+    
+    return orig;
+  }
+  
 /**
  * @param columnToModify ime kolone u datasetu umjesto kojeg prikazujemo druge vrijednosti
  * @param columnsReplace imena kolona cijim vrijednostima mijenjamo columnToModify
