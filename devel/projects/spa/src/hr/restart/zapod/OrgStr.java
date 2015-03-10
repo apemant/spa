@@ -455,8 +455,8 @@ e.printStackTrace();
       String prip = org.getString("PRIPADNOST");
       String corg = org.getString("CORG");
       
-      Tree t = new Tree(corg);
-      prips.put(corg, t);
+      Tree t = (Tree) prips.get(corg);
+      if (t == null) prips.put(corg, t = new Tree(corg));
 
       if (prip.equals(corg)) continue;
       
