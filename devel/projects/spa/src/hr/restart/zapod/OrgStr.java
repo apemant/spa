@@ -134,7 +134,14 @@ System.out.println("setting filter "+knjigsql+andNotIn);
     }
     return orgstr2;
   }
- 
+  
+  public com.borland.dx.dataset.StorageDataSet getOrgstrAndKnjig(String knjig) {
+    return getTempOrgs(knjig);
+  }
+  
+  public com.borland.dx.dataset.StorageDataSet getOrgstrAndCurrKnjig() {
+    return getTempOrgsKnjig();
+  }
 
   /*public com.borland.dx.dataset.StorageDataSet getOrgstrFromCurrKnjig() {
     String strKNJIG = dlgGetKnjig.getKNJCORG();
@@ -170,7 +177,7 @@ System.out.println("setting filter "+knjigsql+andNotIn);
     return porgs;
   }*/
   
-  private void addOrgToPorgs(String corg) {
+/*  private void addOrgToPorgs(String corg) {
     if (LD.raLocate(porgs,new String[] {"CORG"},new String[] {corg})) return;
     if (LD.raLocate(dm.getOrgstruktura(),new String[] {"CORG"},new String[] {corg})) {
       porgs.insertRow(false);
@@ -182,7 +189,7 @@ System.out.println("setting filter "+knjigsql+andNotIn);
     if (LD.raLocate(porgs,new String[] {"CORG"},new String[] {corg})) {
       porgs.deleteRow();
     }
-  }
+  }*/
   
   /*public String getInQuery(com.borland.dx.dataset.DataSet _orgs) {
     return getInQuery(_orgs, "corg");
@@ -206,7 +213,7 @@ System.out.println("setting filter "+knjigsql+andNotIn);
       return in;
   }*/
 
-  private void addPripOrgs(com.borland.dx.dataset.StorageDataSet prgs,String corg,com.borland.dx.dataset.Column[] cols) {
+/*  private void addPripOrgs(com.borland.dx.dataset.StorageDataSet prgs,String corg,com.borland.dx.dataset.Column[] cols) {
     com.borland.dx.sql.dataset.QueryDataSet pomset = new com.borland.dx.sql.dataset.QueryDataSet();
     Aus.setFilter(pomset, "SELECT * FROM orgstruktura where PRIPADNOST = '"+corg+"' order by corg");    
     pomset.setColumns(cols);
@@ -223,7 +230,7 @@ System.out.println("setting filter "+knjigsql+andNotIn);
     pomset.close();
     pomset = null;
   }
-
+*/
   private boolean addZiroQuestion(String strCKnjig, String strZiro) {
     int answ = javax.swing.JOptionPane.showOptionDialog(
       null,
