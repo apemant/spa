@@ -30,10 +30,14 @@ import hr.restart.baza.Vrsteodb;
 import hr.restart.baza.Vrsteprim;
 import hr.restart.db.raPreparedStatement;
 import hr.restart.db.raVariant;
+import hr.restart.util.Aus;
+import hr.restart.util.HashDataSet;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
+import hr.restart.util.raProcess;
 import hr.restart.util.raTransaction;
 import hr.restart.zapod.OrgStr;
+import hr.restart.zapod.raRadnici;
 
 import javax.swing.JOptionPane;
 
@@ -41,6 +45,7 @@ import hr.restart.util.VarStr;
 
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.dx.dataset.DataSet;
 
 /**
  * <p>Title: Robno poslovanje</p>
@@ -60,6 +65,8 @@ public class frmArhiviranje extends frmObradaPL {
   raPreparedStatement addODBICIARH = new raPreparedStatement("odbiciarh", raPreparedStatement.INSERT);
   raPreparedStatement addPRISUTARH = new raPreparedStatement("prisutarh", raPreparedStatement.INSERT);
   raPreparedStatement addRSPERIODARH = new raPreparedStatement("rsperiodarh", raPreparedStatement.INSERT);
+  raPreparedStatement updODBICI = raPreparedStatement.createIndependentUpdate("odbici",  new String[] {"SALDO"});
+  
   public frmArhiviranje() {
     
   }
@@ -79,40 +86,55 @@ public class frmArhiviranje extends frmObradaPL {
     raObracunPL obracun = raObracunPL.getInstance();
     raIniciranje rin = raIniciranje.getInstance();
 
+    raProcess.setMessage("Sreðivanje obraèuna...", false);
     obracun.initObracun(tds.getShort("GODINA"),tds.getShort("MJESEC"),tds.getShort("RBR"),tds.getString("CORG"),tds.getTimestamp("DATUM"));
     boolean ponsucc = obracun.ponobracun();
+    raProcess.setMessage("Sreðivanje primanja...", false);
     rin.ponistavanje(tds.getString("CORG"));
     dm.getOrgpl().refresh();
   }
   private boolean makeTransaction() {
     raLocalTransaction trans = new raLocalTransaction() {
+      String locRadnik(HashDataSet radnici, DataSet ds) throws Exception {
+        String cradnik = ds.getString("CRADNIK");
+        if (!radnici.loc(cradnik)) 
+          throw new Exception("Nepoznati radnik "+cradnik);
+        return cradnik;
+      }
       public boolean transaction() throws Exception {
+        raProcess.setMessage("Arhiviranje plaæe...", false);
         //polja za arhiviranjee iz drugih tabela
-        String[] orgsplCols = new String[] {"copcine", "nacobrs", "nacobrb", 
+        String[] orgsplCols = {"copcine", "nacobrs", "nacobrb", 
           "satimj", "osnkoef", "satnorma", "datumispl", "brojdana", "stopak", "parametri"};
-        String[] parametriplCols = new String[] {"minpl", "minosdop", "osnpor1",
+        String[] parametriplCols = {"minpl", "minosdop", "osnpor1",
           "osnpor2", "osnpor3", "osnpor4", "osnpor5"};
-        String[] radniciplCols = new String[] {"cradmj", "css", "cvro", "cisplmj",
+        String[] radniciplCols = {"cradmj", "css", "cvro", "cisplmj",
           "copcine", "rsinv", "rsoo", "brutosn", "brutdod", "brutmr", "brutuk", 
           "godstaz", "stopastaz", "datstaz", "podstaz", "datpodstaz", "nacobrb", 
           "koef", "koefzar", "oluk", "olos", "clanomf", "corg", "parametri"};
-        String[] vrsteprimCols = new String[] {"cobr", "cosn", "rsoo", "rnalog", 
+        String[] vrsteprimCols = {"cobr", "cosn", "rsoo", "rnalog",
           "regres", "cgrprim", "cvrparh", "stavka", "parametri"};
-        String[] odbiciKey = new String[] {"cvrodb", "ckey", "ckey2", "rbrodb"};
-        String[] odbiciCols = new String[] {"pnb1", "pnb2", "iznos", "stopa", 
+        String[] odbiciKey = {"cvrodb", "ckey", "ckey2", "rbrodb"};
+        String[] odbiciCols = {"pnb1", "pnb2", "iznos", "stopa", 
           "datpoc", "datzav", "glavnica", "rata", "saldo", "stavka"};
-        String[] vrsteodbCols = new String[] {"nivoodb", "tipodb", "vrstaosn", 
+        String[] vrsteodbCols = {"nivoodb", "tipodb", "vrstaosn", 
           "osnovica", "cpov", "parametri"};
+        String[] kumOrg = {"CORG", "CVRO"};
         //tabele
-        QueryDataSet vrsteprim = Vrsteprim.getDataModule().getTempSet();
+        HashDataSet vrsteprim = new HashDataSet(Vrsteprim.getDataModule().getTempSet(), "CVRP");
+        HashDataSet vrsteodb =  new HashDataSet(Vrsteodb.getDataModule().getTempSet(), "CVRODB");
+
+        /*QueryDataSet vrsteprim = Vrsteprim.getDataModule().getTempSet();
         vrsteprim.open();
         QueryDataSet vrsteodb = Vrsteodb.getDataModule().getTempSet();
-        vrsteodb.open();
+        vrsteodb.open();*/
         
         try {
-          QueryDataSet kumulorg = Kumulorg.getDataModule().openTempSet(OrgStr.getCorgsKnjigCond());
+          QueryDataSet kumulorg = Kumulorg.getDataModule().openTempSet(OrgStr.getCorgsCond(tds.getString("CORG")));
           for (kumulorg.first(); kumulorg.inBounds(); kumulorg.next()) {//loop kumulorg
-            String currcorg = kumulorg.getString("CORG");
+            String currcorg = kumulorg.getString("CORG");            
+            raProcess.setMessage("Arhiviranje OJ "+currcorg + "...", false);
+            
             raIniciranje.getInstance().posOrgsPl(kumulorg.getString("CORG"));//pos orgpl
             dm.getParametripl().open();
             dm.getParametripl().first(); //pos parametripl
@@ -126,7 +148,95 @@ public class frmArhiviranje extends frmObradaPL {
             setOjFor(addKUMULORGARH,null,1);
             addKUMULORGARH.execute();
             
-            //kumulradarh
+            
+            HashDataSet radnici = new HashDataSet(Radnicipl.getDataModule().openTempSet(
+                Condition.whereAllEqual(kumOrg, kumulorg)), "CRADNIK");
+            Condition radCond = Condition.in("CRADNIK", radnici.get());
+            
+            raProcess.setMessage("Arhiviranje OJ "+currcorg + " (kumulativi)...", false);
+            
+            QueryDataSet kum = Kumulrad.getDataModule().openTempSet(radCond);
+            for (kum.first(); kum.inBounds(); kum.next()) {
+              String cradnik = locRadnik(radnici, kum);
+
+              addKUMULRADARH.setValues(kum);
+              setValuesObrada(addKUMULRADARH);
+              setValues(addKUMULRADARH, radniciplCols, radnici.get());
+              setOjFor(addKUMULRADARH, cradnik, 2);
+              addKUMULRADARH.execute();
+              addKUMULRADARH.clearParameters();
+            }
+            
+            raProcess.setMessage("Arhiviranje OJ "+currcorg + " (primanja)...", false);
+            
+            QueryDataSet prim = Primanjaobr.getDataModule().openTempSet(radCond);
+            for (prim.first(); prim.inBounds(); prim.next()) {
+              String cradnik = locRadnik(radnici, prim);
+              
+              if (!vrsteprim.loc(prim))
+                throw new Exception("Nepoznata vrsta primanja "+prim.getShort("CVRP"));
+              addPRIMANJAARH.setValues(prim);
+              setValuesObrada(addPRIMANJAARH);
+              //setValues(addPRIMANJAARH, vrsteprimCols, primanjaobr);//UFF!
+              setValues(addPRIMANJAARH, vrsteprimCols, vrsteprim.get());
+              setOjFor(addPRIMANJAARH, cradnik, 3);
+              addPRIMANJAARH.execute();
+              addPRIMANJAARH.clearParameters();
+            }
+            
+            raProcess.setMessage("Arhiviranje OJ "+currcorg + " (odbici)...", false);
+            
+            QueryDataSet odb = Odbiciobr.getDataModule().openTempSet(radCond);
+            HashDataSet odb1 = new HashDataSet(Odbici.getDataModule().openTempSet(Condition.in("CKEY", radnici.get(), "CRADNIK")), odbiciKey);
+            for (odb.first(); odb.inBounds(); odb.next()) {
+              String cradnik = locRadnik(radnici, odb);
+              
+              if (!vrsteodb.loc(odb))
+                throw new Exception("Nepoznata vrsta odbitka "+odb.getShort("CVRODB"));
+              addODBICIARH.setValues(odb);
+              setValuesObrada(addODBICIARH);
+              setValues(addODBICIARH, vrsteodbCols, vrsteodb.get());
+              
+              if (odb1.loc(odb)) {
+                updODBICI.setKeys(odb);
+                updODBICI.setValues(odb);
+                updODBICI.execute();
+                Aus.set(odb1.get(), "SALDO", odb);              
+                setValues(addODBICIARH, odbiciCols, odb1.get());
+              }
+              
+              setOjFor(addODBICIARH, cradnik, 4);
+              setOjForOdbici(addODBICIARH, cradnik, vrsteodb.get().getString("NIVOODB"));
+              addODBICIARH.execute();
+            }
+            
+            raProcess.setMessage("Arhiviranje OJ "+currcorg + " (prisutnost)...", false);
+            
+            QueryDataSet pris = Prisutobr.getDataModule().openTempSet(radCond);
+            for (pris.first(); pris.inBounds(); pris.next()) {
+              String cradnik = locRadnik(radnici, pris);
+              
+              if (!vrsteprim.loc(pris))
+                throw new Exception("Nepoznata vrsta primanja "+pris.getShort("CVRP"));
+              addPRISUTARH.setValues(pris);
+              setValuesObrada(addPRISUTARH);
+              setOjFor(addPRISUTARH, cradnik, 5);
+              addPRISUTARH.execute();
+            }
+            
+            raProcess.setMessage("Arhiviranje OJ "+currcorg + " (RS period)...", false);
+            
+            QueryDataSet rs = RSPeriodobr.getDataModule().openTempSet(radCond);
+            for (rs.first(); rs.inBounds(); rs.next()) {
+              String cradnik = locRadnik(radnici, pris);
+              
+              addRSPERIODARH.setValues(rs);
+              setValuesObrada(addRSPERIODARH);
+              setOjFor(addRSPERIODARH, cradnik, 6);
+              addRSPERIODARH.execute();
+            }
+            
+            /*//kumulradarh
             QueryDataSet radnicipl = Radnicipl.getDataModule().getTempSet(Condition.equal("CORG", currcorg)+" AND cvro = '"+kumulorg.getString("CVRO")+"'");
             radnicipl.open();
             for (radnicipl.first(); radnicipl.inBounds(); radnicipl.next()) {
@@ -198,7 +308,7 @@ public class frmArhiviranje extends frmObradaPL {
                 addRSPERIODARH.execute();
               }
             }//radnicipl for
-          }//kumulorg for
+*/          }//kumulorg for
           
           return true;
         }
@@ -271,13 +381,13 @@ public class frmArhiviranje extends frmObradaPL {
     }
   }
   private void setValuesObrada(raPreparedStatement ps) {
-    System.out.println("setValuesObrada "+ dm.getOrgpl());
+    //System.out.println("setValuesObrada "+ dm.getOrgpl());
     setValues(ps, new String[] {"godobr", "mjobr", "rbrobr"}, dm.getOrgpl());
   }
   
   private void setValues(raPreparedStatement ps, String[] cols, ReadRow row) {
     for (int i=0; i<cols.length; i++) {
-      System.out.println("setValues: "+cols[i].toUpperCase()+" = "+raVariant.getDataSetValue(row, cols[i].toUpperCase()));
+      //System.out.println("setValues: "+cols[i].toUpperCase()+" = "+raVariant.getDataSetValue(row, cols[i].toUpperCase()));
       ps.setValue(cols[i].toUpperCase(), raVariant.getDataSetValue(row, cols[i].toUpperCase()),false);
     }
   }
