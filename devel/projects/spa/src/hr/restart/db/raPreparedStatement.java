@@ -133,8 +133,6 @@ public class raPreparedStatement {//implements PreparedStatement {
 
   }
 
-N
-
   /**
 
    * kreira statement koji sadzi query na tablici _tableName ovisno o parametru _mode u zadanoj bazi
