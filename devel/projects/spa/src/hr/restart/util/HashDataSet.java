@@ -39,13 +39,14 @@ public class HashDataSet {
         s.clear();
         for (int i = 0; i < keyCols.length; i++) {
           ds.getVariant(keyCols[i], ds.getRow(), v);
-          s.append(v).append("|");
+          s.append(v).append("-|-");
         }
         index.put(s.chop().toString(), new Integer(ds.getRow()));
       }
   }
   
   public String key(ReadRow src) {
+    if (keyCol != null) return key(src, keyCol);
     return key(src, keyCols);
   }
   
@@ -56,9 +57,9 @@ public class HashDataSet {
   
   public String key(ReadRow src, String[] skeyCols) {
   	s.clear();
-    for (int i = 0; i < keyCols.length; i++) {
-      src.getVariant(keyCols[i], v);
-      s.append(v).append("|");
+    for (int i = 0; i < skeyCols.length; i++) {
+      src.getVariant(skeyCols[i], v);
+      s.append(v).append("-|-");
     }
     return s.chop().toString();
   }
@@ -70,9 +71,9 @@ public class HashDataSet {
   
   public String key(DataSet src, int row, String[] skeyCols) {
   	s.clear();
-    for (int i = 0; i < keyCols.length; i++) {
-      src.getVariant(keyCols[i], row, v);
-      s.append(v).append("|");
+    for (int i = 0; i < skeyCols.length; i++) {
+      src.getVariant(skeyCols[i], row, v);
+      s.append(v).append("-|-");
     }
     return s.chop().toString();
   }
@@ -86,12 +87,11 @@ public class HashDataSet {
   }
   
   public boolean has(String[] keys) {
-    return has(VarStr.join(keys, '|').toString());
+    return has(VarStr.join(keys, "-|-").toString());
   }
   
   public boolean has(ReadRow src) {
-    if (keyCol != null) return has(src, keyCol);
-    return has(src, keyCols);
+    return has(key(src));
   }
   
   public boolean has(ReadRow src, String skeyCol) {
@@ -129,8 +129,7 @@ public class HashDataSet {
   }
   
   public DataSet get(ReadRow src) {
-    if (keyCol != null) return get(src, keyCol);
-    return get(src, keyCols);
+    return get(key(src));
   }
     
   public DataSet get(ReadRow src, String skeyCol) {
@@ -164,8 +163,7 @@ public class HashDataSet {
   }
   
   public boolean loc(ReadRow src) {
-    if (keyCol != null) return loc(src, keyCol);
-    return loc(src, keyCols);
+    return loc(key(src));
   }
     
   public boolean loc(ReadRow src, String skeyCol) {
