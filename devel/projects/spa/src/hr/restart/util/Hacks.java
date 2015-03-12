@@ -1,19 +1,37 @@
 package hr.restart.util;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Doku;
+import hr.restart.baza.Gkstavke;
+import hr.restart.baza.Meskla;
+import hr.restart.baza.Nalozi;
+import hr.restart.baza.Pos;
 import hr.restart.baza.Rate;
+import hr.restart.baza.Sklad;
+import hr.restart.baza.Skstavke;
+import hr.restart.baza.Stdoku;
+import hr.restart.baza.Stmeskla;
+import hr.restart.baza.Stpos;
+import hr.restart.baza.UIstavke;
 import hr.restart.baza.dM;
+import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
+import hr.restart.baza.stdokitmp;
+import hr.restart.gk.frmKnjSKRac;
+import hr.restart.pos.frmMasterBlagajna;
 import hr.restart.robno.Aut;
 import hr.restart.robno.Util;
 import hr.restart.robno.raControlDocs;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 
@@ -22,6 +40,9 @@ public class Hacks {
   static QueryDataSet rate;
   static lookupData ld = lookupData.getlookupData();
   static String[] ikey = {"cskl", "vrdok", "god", "brdok", "rbsid"};
+  
+  public static Object obj;
+  
 
   static class Entry {
     static BigDecimal two = new BigDecimal(2);
@@ -243,5 +264,108 @@ public class Hacks {
        }
     }
     zag.saveChanges();
+  }
+  
+  // gala
+  public static QueryDataSet findMesTem(DataSet mes) {
+  	String cskliz = mes.getString("CSKLIZ");
+  	String csklul = mes.getString("CSKLUL");
+  	
+  	String brnali = mes.getString("BRNAL");
+  	String brnalu = mes.getString("BRNALU");
+  	
+  	String corgi = Sklad.getDataModule().openTempSet(Condition.equal("CSKL", cskliz)).getString("CORG");
+  	String corgu = Sklad.getDataModule().openTempSet(Condition.equal("CSKL", csklul)).getString("CORG");
+  	
+  	Condition kon = Condition.in("BROJKONTA", "6600 6590");
+  	Condition knj = Condition.in("KNJIG", "01");
+  	
+  	Condition cgi = Condition.equal("GOD", "20" + brnali.substring(0, 2));
+  	Condition cvi = Condition.equal("CVRNAL", brnali.substring(2, 4));
+  	Condition cbi = Condition.equal("RBR", Aus.getNumber(brnali.substring(4, 8)));
+  	Condition cci = Condition.equal("CORG", corgi);
+  	Condition ci = cci.and(cgi).and(cvi).and(cbi);
+  	
+  	Condition cgu = Condition.equal("GOD", "20" + brnalu.substring(0, 2));
+  	Condition cvu = Condition.equal("CVRNAL", brnalu.substring(2, 4));
+  	Condition cbu = Condition.equal("RBR", Aus.getNumber(brnalu.substring(4, 8)));
+  	Condition ccu = Condition.equal("CORG", corgu);
+  	Condition cu = ccu.and(cgu).and(cvu).and(cbu);
+  	
+  	return Gkstavke.getDataModule().openTempSet(knj.and(kon).and(ci.or(cu)));
+  }
+  
+  public static QueryDataSet updateMesTem(DataSet mes, BigDecimal diff) {
+  	QueryDataSet ds = findMesTem(mes);
+  	
+  	for (ds.first(); ds.inBounds(); ds.next()) {
+  		if (ds.getBigDecimal("ID").signum() != 0)
+  			Aus.add(ds, "ID", diff);
+  		else Aus.add(ds, "IP", diff);
+  	}
+  	return ds;
+  }
+  
+  public static QueryDataSet findStav(ReadRow zag) {
+  	HashSet cols = new HashSet(Arrays.asList(zag.getColumnNames(zag.getColumnCount())));
+  	
+  	String[] mesk = {"CSKLIZ", "CSKLUL", "VRDOK", "GOD", "BRDOK"};
+  	if (cols.containsAll(Arrays.asList(mesk)))
+  		return Stmeskla.getDataModule().openTempSet(Condition.whereAllEqual(mesk, zag));
+  	
+  	if (cols.containsAll(Arrays.asList(Util.mkey))) {
+  		if (cols.contains("UIKAL") || cols.contains("UINAB") || cols.contains("IZAD"))
+  			return Stdoku.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, zag));
+  		
+  		if (cols.contains("UIRAC") || cols.contains("IRAZ"))
+  			return stdoki.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, zag));
+  		
+  		if (cols.contains("CPRODMJ"))
+  			return Stpos.getDataModule().openTempSet(Condition.whereAllEqual(frmMasterBlagajna.key, zag));
+  		
+  		return null;
+  	}
+  	
+  	if (cols.contains("NOVOSTANJE") && cols.contains("CNALOGA"))
+  		return Gkstavke.getDataModule().openTempSet(Condition.equal("CNALOGA", zag));
+  	
+  	String[] gk = new String[] {"KNJIG", "GOD", "CVRNAL", "RBR"}; 	
+  	if (cols.containsAll(Arrays.asList(gk)))
+  		return Gkstavke.getDataModule().openTempSet(Condition.whereAllEqual(gk, zag));
+  	
+  	if (cols.containsAll(Arrays.asList(frmKnjSKRac.skuilinkcols)) && cols.contains("CSKSTAVKE"))
+  		return UIstavke.getDataModule().openTempSet(Condition.whereAllEqual(frmKnjSKRac.skuilinkcols, zag));
+  	
+  	return null;
+  }
+  
+  public static QueryDataSet findZag(ReadRow stav) {
+  	HashSet cols = new HashSet(Arrays.asList(stav.getColumnNames(stav.getColumnCount())));
+  	
+  	String[] mesk = {"CSKLIZ", "CSKLUL", "VRDOK", "GOD", "BRDOK"};
+  	if (cols.containsAll(Arrays.asList(mesk)))
+  		return Meskla.getDataModule().openTempSet(Condition.whereAllEqual(mesk, stav));
+  	
+  	if (cols.containsAll(Arrays.asList(Util.mkey))) {
+  		if (cols.contains("UIKAL") || cols.contains("UINAB") || cols.contains("IZAD"))
+  		  return Doku.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, stav));
+  		
+  		if (cols.contains("UIRAC") || cols.contains("IRAZ"))
+  			return doki.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, stav));
+  		
+  		if (cols.contains("CPRODMJ"))
+  			return Pos.getDataModule().openTempSet(Condition.whereAllEqual(frmMasterBlagajna.key, stav));
+  		
+  		return null;
+  	}
+  	
+  	String[] gk = {"KNJIG", "GOD", "CVRNAL", "RBR"}; 	
+  	if (cols.containsAll(Arrays.asList(gk)))
+  		return Nalozi.getDataModule().openTempSet(Condition.whereAllEqual(gk, stav));
+  	
+  	if (cols.containsAll(Arrays.asList(frmKnjSKRac.skuilinkcols)) && cols.contains("CSKSTAVKE"))
+  		return Skstavke.getDataModule().openTempSet(Condition.whereAllEqual(frmKnjSKRac.skuilinkcols, stav));
+  	
+  	return null;
   }
 }
