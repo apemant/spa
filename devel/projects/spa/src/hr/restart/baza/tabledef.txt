@@ -2765,6 +2765,7 @@ NAZART;char;50;;;Naziv;30
 JM;char;3;;;JM
 KOL;numeric;15,6;;0;Kolièina;10
 IDX=cart
+IDX=cartnor
 
 $Odbici
 LOKK;char;1;;N;Status zauzetosti;*
