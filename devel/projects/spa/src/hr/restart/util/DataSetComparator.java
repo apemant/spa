@@ -144,6 +144,12 @@ public class DataSetComparator {
           returnSet.setString("KOLONA", cname);
           returnSet.setString("VRI1", v1.toString());
           returnSet.setString("VRI2", v2.toString());
+          if (v1.getType() == Variant.BIGDECIMAL)
+            returnSet.setString("RAZ", v1.getBigDecimal().subtract(v2.getBigDecimal()).toString());
+          else if (v1.getType() == Variant.DOUBLE)
+            returnSet.setString("RAZ", String.valueOf(v1.getDouble() - v2.getDouble()));
+          else if (v1.getType() == Variant.FLOAT)
+            returnSet.setString("RAZ", String.valueOf(v1.getFloat() - v2.getFloat()));
           returnSet.post();
         }
       }
@@ -183,7 +189,7 @@ public class DataSetComparator {
     return "Opis razlike";
   }
   
-  static final String[] otherCols = {"KOLONA", "VRI1", "VRI2"};
+  static final String[] otherCols = {"KOLONA", "VRI1", "VRI2", "RAZ"};
   public static String[] getOtherColumns() {
     return otherCols;
   }
@@ -195,6 +201,7 @@ public class DataSetComparator {
         dM.createStringColumn("KOLONA", "Kolona", 20),
         dM.createStringColumn("VRI1", "Prvi set", MAX_VALUE_LENGTH),
         dM.createStringColumn("VRI2", "Drugi set", MAX_VALUE_LENGTH),
+        dM.createStringColumn("RAZ", "Razlika", MAX_VALUE_LENGTH)
     });
     ret.open();
     return ret;
