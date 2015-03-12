@@ -24,6 +24,7 @@ import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raPilot;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
+import hr.restart.util.Hacks;
 import hr.restart.util.IntParam;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
@@ -88,7 +89,7 @@ public class raTableCopyPopup extends JPopupMenu {
       selClear, selAll, selectCol, fastAdd, filtShow, filtEq, filtNeq, 
       filtRemove, search, searchAll, tabCond, keyCond, inCond, 
       inColCond, copyAll, clearAll, replaceAll, performAll, performInit, 
-      memorize, compare, dups, copyCol, pasteCol;
+      memorize, compare, dups, copyCol, pasteCol, findZag, findStav;
   private JMenu calcMenu;
   private JMenu adminMenu;
   
@@ -389,6 +390,17 @@ public class raTableCopyPopup extends JPopupMenu {
     adminMenu.add(inColCond = new AbstractAction("Generiraj upit za isjeèak kolone") {
       public void actionPerformed(ActionEvent e) {
         setupInColCond();
+      }
+    });
+    adminMenu.addSeparator();
+    adminMenu.add(findZag = new AbstractAction("Prikaži zaglavlje dokumenta") {
+      public void actionPerformed(ActionEvent e) {
+        showZag();
+      }
+    });
+    adminMenu.add(findStav = new AbstractAction("Prikaži stavke dokumenta") {
+      public void actionPerformed(ActionEvent e) {
+      	showStav();
       }
     });
     adminMenu.addSeparator();
@@ -767,6 +779,28 @@ public class raTableCopyPopup extends JPopupMenu {
     }
   }
   
+  void showZag() {
+  	try {
+      DataRow dr = new DataRow(jt.getDataSet());
+      jt.getDataSet().getDataRow(selRow, dr);
+      QueryDataSet ds = Hacks.findZag(dr);
+      showSet(ds, "Zaglavlje dokumenta");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
+  void showStav() {
+  	try {
+      DataRow dr = new DataRow(jt.getDataSet());
+      jt.getDataSet().getDataRow(selRow, dr);
+      QueryDataSet ds = Hacks.findStav(dr);
+      showSet(ds, "Stavke dokumenta");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
   long[] generateList() {
     raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
     DataSet ds = jt.getDataSet();
@@ -833,6 +867,18 @@ public class raTableCopyPopup extends JPopupMenu {
     jt.fireTableDataChanged();
   }
   
+  void showSet(StorageDataSet ds, String title) {
+  	ds.open();
+  	for (int i = 0; i < ds.getColumnCount(); i++)
+  		ds.getColumn(i).setCaption(ds.getColumn(i).getColumnName());
+  	boolean q = ds instanceof QueryDataSet;
+  	frmTableDataView frm = new frmTableDataView(q, q, false);
+    frm.setDataSet(ds);
+    frm.setTitle(title);
+    frm.show();
+    frm.resizeLater();
+  }
+  
   void performInit() {
     if (initDlg.show(jt.getTopLevelAncestor(), 
         initDlg.pan, "Izvrši skriptu")) {
@@ -847,7 +893,10 @@ public class raTableCopyPopup extends JPopupMenu {
             "import com.borland.jb.util.*;" +
             "import java.math.BigDecimal;"
         );
-        bsh.eval(initDlg.query.getText());
+        bsh.set("ds", jt.getDataSet());
+        Object ret = bsh.eval(initDlg.query.getText());
+        if (ret instanceof StorageDataSet)
+        	showSet((StorageDataSet) ret, "Rezultat");
       } catch (EvalError e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(jt.getTopLevelAncestor(), "Greška: " + e.getMessage(), 
