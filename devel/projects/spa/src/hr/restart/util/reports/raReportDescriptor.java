@@ -488,6 +488,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repRacuniMetro", "ROT", "D", ""},
       {"hr.restart.robno.repRacuniEAN", "ROT", "D", ""},
       {"hr.restart.robno.repRacuniF", "ROT", "D", ""},
+      {"hr.restart.robno.repRacuniFV", "ROT", "D", ""},
       {"hr.restart.robno.repRacuniSKL", "ROT", "D", ""},
       {"hr.restart.robno.repRacuniSKLVri", "ROT", "D", ""},
       {"hr.restart.robno.repRacuniPnPOtp", "ROT", "D", ""},

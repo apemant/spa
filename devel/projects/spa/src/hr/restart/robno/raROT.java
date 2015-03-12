@@ -293,6 +293,7 @@ public class raROT extends raIzlazTemplate  {
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniSKL","hr.restart.robno.repIzlazni","OTP2","Otpremnica dvije jedinice mjere");
      
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniF","hr.restart.robno.repIzlazni","RacuniF","Raèun");
+     raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniFV","hr.restart.robno.repIzlazni","RacuniF","Raèun u valuti");
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniEAN","hr.restart.robno.repIzlazni","RacuniEAN",ReportValuteTester.titleROT1R + " (s EAN kodom)");
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniPnP","hr.restart.robno.repRacuniPnP","RacuniVelikiKupci","Raèun sa šifrom kupca");
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniSKLVri","hr.restart.robno.repRacuniPnP","OtpSpecialCase03","Otpremnica sa šifrom kupca");
@@ -356,6 +357,7 @@ System.err.println("getMasterSet().getInt(FBR) = "+getMasterSet().getInt("FBR"))
      
 //     raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniSKL","hr.restart.robno.repIzlazni","RacuniSKL",ReportValuteTester.titleROTSKL);
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniF","hr.restart.robno.repIzlazni","RacuniF","Raèun");
+     raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniFV","hr.restart.robno.repIzlazni","RacuniF","Raèun u valuti");
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniEAN","hr.restart.robno.repIzlazni","RacuniEAN",ReportValuteTester.titleROT1R + " (s EAN kodom)");
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniPnP","hr.restart.robno.repRacuniPnP","RacuniVelikiKupci","Raèun sa šifrom kupca");
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniSKLVri","hr.restart.robno.repRacuniPnP","OtpSpecialCase03","Otpremnica sa šifrom kupca");
