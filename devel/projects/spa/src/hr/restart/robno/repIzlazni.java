@@ -119,6 +119,7 @@ public class repIzlazni implements raReportData {
 
     return (descriptor.equals("hr.restart.robno.repPredracuniV")
             || descriptor.equals("hr.restart.robno.repRacuniV")
+            || descriptor.equals("hr.restart.robno.repRacuniFV")
             || descriptor.equals("hr.restart.robno.repPredracuni2V")
             || descriptor.equals("hr.restart.robno.repRacuni2V")
             || descriptor.equals("hr.restart.robno.repRac2V")
