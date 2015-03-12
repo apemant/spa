@@ -856,7 +856,7 @@ public class checkKartica {
     		BigDecimal ainab = karticatmp.getBigDecimal("INAB_TRENUTNO");
     		BigDecimal akol = karticatmp.getBigDecimal("KOL_TRENUTNO");
     		
-    		if (kartica.getBigDecimal("INAB").signum() > 0 && kartica.getBigDecimal("KOL").signum() > 0) {    		  
+    		if (ainab.signum() > 0 && akol.signum() > 0) {    		  
     		// ako smo bili u minusu:
               /*if (kartica.getBigDecimal("KOL").compareTo(akol) > 0) {
                 karticatmp.setBigDecimal("NC_GOOD", kartica.getBigDecimal("NC").add(
@@ -911,7 +911,7 @@ public class checkKartica {
 		    BigDecimal aizad = karticatmp.getBigDecimal("IZAD_TRENUTNO");
 	        BigDecimal akol = karticatmp.getBigDecimal("KOL_TRENUTNO");
 	        
-	        if (kartica.getBigDecimal("IZAD").signum() > 0 && kartica.getBigDecimal("KOL").signum() > 0) {
+	        if (aizad.signum() > 0 && akol.signum() > 0) {
 	          
 	          /*if (kartica.getBigDecimal("KOL").compareTo(akol) > 0) {
                 karticatmp.setBigDecimal("ZC_GOOD", kartica.getBigDecimal("ZC").add(
