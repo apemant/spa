@@ -278,8 +278,10 @@ public class frmKartica extends raMatPodaci {
   }
 
   public void table2Clicked() {
-    if (getRaQueryDataSet().getBigDecimal("SALDO").signum() != 0)
+    if (getRaQueryDataSet().getBigDecimal("SALDO").signum() != 0) {
       stavke.toMatch = true;
+      stavke.toMatchAll = true;
+    }
     startFrame.getStartFrame().showFrame(stavke);
   }
 
