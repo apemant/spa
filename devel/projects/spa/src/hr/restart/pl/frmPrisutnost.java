@@ -28,6 +28,7 @@ import hr.restart.swing.*;
 import hr.restart.util.*;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
@@ -48,6 +49,7 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -92,7 +94,13 @@ public class frmPrisutnost extends raMasterDetail {
   
   raNavAction rnvShowOne  = new raNavAction("Prikaži raspored",raImages.IMGALIGNJUSTIFY,KeyEvent.VK_F7) {
     public void actionPerformed(ActionEvent e) {
-      showOne();
+      showOne(false, god, mje);
+    }
+  };
+  
+  raNavAction rnvShowOneArh  = new raNavAction("Raspored iz arhive",raImages.IMGHISTORY,KeyEvent.VK_F8) {
+    public void actionPerformed(ActionEvent e) {
+      showOneArh();
     }
   };
   
@@ -187,6 +195,14 @@ public class frmPrisutnost extends raMasterDetail {
   	if (!ld.raLocate(dm.getOrgpl(),"CORG",corg)) maxDana=31;
   	god = dm.getOrgpl().getShort("GODOBR");
     mje = dm.getOrgpl().getShort("MJOBR");
+    
+    if (mje == 1) {
+      sds.setShort("GODOBR", (short) (god - 1));
+      sds.setShort("MJOBR", (short) 12);
+    } else {
+      sds.setShort("GODOBR", (short) god);
+      sds.setShort("MJOBR", (short) (mje - 1));
+    }
     
     Calendar cal = Calendar.getInstance();
     cal.setTime(Aus.createTimestamp(god, mje, 1));
@@ -763,16 +779,57 @@ public class frmPrisutnost extends raMasterDetail {
     }
   }
   
-  void showOne() {
-  	DataSet ds = getDetailSet();
-  	if (ds.rowCount() == 0) return;
+  void showOneArh() {
+    raInputDialog ad = new raInputDialog() {
+      JraPanel apan = new JraPanel();
+      JraTextField jtfGod = new JraTextField();
+      JraTextField jtfMj = new JraTextField(); 
+      {
+        apan.setLayout(new XYLayout(275, 60));
+        apan.add(new JLabel("Godina i mjesec"), new XYConstraints(15, 20, -1, -1));
+        apan.add(jtfGod, new XYConstraints(150, 20, 50, -1));
+        apan.add(jtfMj, new XYConstraints(205, 20, 50, -1));
+        jtfGod.setDataSet(sds);
+        jtfGod.setColumnName("GODOBR");
+        jtfMj.setDataSet(sds);
+        jtfMj.setColumnName("MJOBR");
+      }
+      public boolean show(Container parent, JPanel content, String title) {
+        return super.show(parent, apan, title);
+      }
+      protected boolean checkOk() {
+        if (Valid.getValid().isEmpty(jtfGod)) return false;
+        int god = sds.getShort("GODOBR");
+        if (god < 1990 || god > 2100) {
+          jtfGod.requestFocus();
+          JOptionPane.showMessageDialog(jraGod, "Pogrešna godina!", "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+        int mj = sds.getShort("MJOBR");
+        if (mj < 1 || mj > 12) {
+          jtfGod.requestFocus();
+          JOptionPane.showMessageDialog(jraGod, "Pogrešan mjesec!", "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+        return true;
+      };
+    };
+    
+    if (ad.show(raDetail.getWindow(), null, "Dohvat iz arhive")) 
+      showOne(true, sds.getShort("GODOBR"), sds.getShort("MJOBR"));
+  }
+  
+  void showOne(boolean arh, int ogod, int omje) {
+  	//if (!arh && getDetailSet().rowCount() == 0) return;
   	
   	Condition cond = Condition.equal("CRADNIK",  getMasterSet());
+  	Condition arhc = Condition.whereAllEqual(new String[] {"GODOBR", "MJOBR"}, sds);
     
     vrprims = new HashDataSet(dm.getVrsteprim(), "CVRP");
-    HashSum[] netodopp = Sih.loadNetoDopp(cond, null);
+    HashSum[] netodopp = !arh ? Sih.loadNetoDopp(cond, null) : Sih.loadArhNetoDopp(cond.and(arhc), null);
     
-    StorageDataSet[] ret = Sih.findKumRad(Sih.loadPrisutobr(cond, null), god, mje, vrprims, netodopp[0], netodopp[1]);
+    StorageDataSet[] ret = Sih.findKumRad(arh ? Sih.loadPrisutarh(cond.and(arhc), null) : Sih.loadPrisutobr(cond, null), 
+        ogod, omje, vrprims, netodopp[0], netodopp[1]);
     StorageDataSet out = ret[0];
     StorageDataSet sums = ret[1];
 
@@ -783,7 +840,7 @@ public class frmPrisutnost extends raMasterDetail {
     frmTableDataView frm = new frmTableDataView();
     frm.setSaveName("Pregled-prisutobr");
     setColsAndSums(frm, out);
-    frm.setTitle(raDetail.getTitle() + "  obraèun za " + mje + ". mjesec " + god +".");
+    frm.setTitle(raDetail.getTitle() + "  obraèun za " + omje + ". mjesec " + ogod +".");
     frm.jp.addTableModifier(weekend);
     frm.jp.addTableModifier(primmod);
     setSummary(frm, sums);
@@ -881,7 +938,8 @@ public class frmPrisutnost extends raMasterDetail {
       new hr.restart.swing.raTableColumnModifier("CVRP", new String[] {"CVRP", "NAZIV"}, dm.getVrsteprim())
     );
     raDetail.addOption(rnvShowOne, 4, false);
-    raDetail.addOption(rnvReCalc, 5, false);
+    raDetail.addOption(rnvShowOneArh, 5, false);
+    raDetail.addOption(rnvReCalc, 6, false);
     
     all.setSaveName("Pregled-prisutobr-all");
     all.jp.addTableModifier(weekend);
@@ -919,6 +977,7 @@ public class frmPrisutnost extends raMasterDetail {
         dM.createShortColumn("GODOBR", "Godina"),
         dM.createShortColumn("MJOBR", "Mjesec")
     });
+    sds.open();
     bg.setColumnName("VRSTA");
     bg.setDataSet(sds);
     bg.add(jrbP, " Po primanjima ", "P");
