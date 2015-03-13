@@ -178,8 +178,8 @@ public class Sih {
     insertSum(sums, vrprims, "", null, null);
     insertSum(sums, vrprims, "SVEUKUPNO", totalSati, totalPrim.add(totalNak).add(totalOb));
     
-    String key = ((Data) data.get(0)).cradnik;
-    if (neto.get(key) != null) {
+    String key = data.size() == 0 ? null : ((Data) data.get(0)).cradnik;
+    if (key != null && neto.get(key) != null) {
       insertSum(sums, vrprims, "", null, null);
       insertSum(sums, vrprims, "PLAÆA S LISTE", null, neto.get(key));
       insertSum(sums, vrprims, "RAZLIKA PLAÆE", null, totalPrim.add(totalNak).add(totalOb).subtract(neto.get(key)));
@@ -410,7 +410,7 @@ public class Sih {
   }
   
   public static HashSet createRads(Condition cond) {
-    DataSet ds = Radnicipl.getDataModule().openTempSet("CRADNIK", cond.and(Condition.equal("AKTIV", "D")));
+    DataSet ds = Radnicipl.getDataModule().openTempSet("CRADNIK");
     HashSet rads = new HashSet();
     for (ds.first(); ds.inBounds(); ds.next())
       rads.add(ds.getString("CRADNIK"));
