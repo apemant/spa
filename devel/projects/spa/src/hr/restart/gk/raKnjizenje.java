@@ -105,6 +105,7 @@ public class raKnjizenje {
   public String originalCNALOGA = "";
   boolean fake;
   String cGK = null;
+  String longcGK = null;
   raKnjizenjeSK kSk;
 
   //
@@ -631,6 +632,10 @@ public class raKnjizenje {
       } else {
         local_cnalogaMode = cnalogaMode;
       }
+      
+      longcGK = isLastKontoZbirni() ? fnalozi.jpMaster.jpBrNal.getCNaloga() :
+          fnalozi.jpMaster.jpBrNal.getCNaloga() + "-" + fnalozi.jpDetail.jpBrNal.rbs;
+      
       if (local_cnalogaMode == CNALMODE_RBS) {
         //vidi raSaldaKonti.copyStavka(
         cgkstavke = fnalozi.jpMaster.jpBrNal.getCNaloga() + "-"
@@ -988,6 +993,7 @@ public class raKnjizenje {
         uistavke.setShort("CKOLONE", ckolone);
         uistavke.setString("URAIRA", getStavkaSK().getString("URAIRA"));
         uistavke.setString("DUGPOT", dugpot);
+        uistavke.setString("CGKSTAVKE", getStavkaSK().getString("CGKSTAVKE"));
         uistavke.post();
         }
       }
