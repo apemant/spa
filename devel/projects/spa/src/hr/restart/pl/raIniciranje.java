@@ -139,7 +139,7 @@ System.out.println("inipr.query = "+inipr.getQuery().getQueryString());
     return inipr;
   }
   public boolean savePRIMANJAOBR(String corg) throws Exception {
-    qds = Util.getNewQueryDataSet(sjQuerys.selectRadniciPl(corg,""));
+    qds = Util.getNewQueryDataSet(sjQuerys.selectRadniciPl(corg));
     dm.getIniprim().open();
     if (dm.getIniprim().getRowCount() == 0) return true;
     dm.getPrimanjaobr().open();

@@ -410,7 +410,7 @@ public class Sih {
   }
   
   public static HashSet createRads(Condition cond) {
-    DataSet ds = Radnicipl.getDataModule().openTempSet("CRADNIK");
+    DataSet ds = Radnicipl.getDataModule().openTempSet("CRADNIK", cond);
     HashSet rads = new HashSet();
     for (ds.first(); ds.inBounds(); ds.next())
       rads.add(ds.getString("CRADNIK"));
