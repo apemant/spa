@@ -167,7 +167,7 @@ public class sjQuerys {
 
   public static String selectRadniciPl(String corg, String radnik) {
     String str="select * from RADNICIPL where " +	Condition.equal("AKTIV", "D").
-    			and(OrgStr.getCorgsCond(corg)).and(Condition.equal("RADNIK", radnik)).qualified("radnicipl");
+    			and(OrgStr.getCorgsCond(corg)).and(Condition.equal("CRADNIK", radnik)).qualified("radnicipl");
     System.out.println("SQL: "+str);
     return str;
   }
