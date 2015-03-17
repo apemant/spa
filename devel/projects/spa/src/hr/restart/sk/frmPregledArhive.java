@@ -57,6 +57,7 @@ import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.sun.deploy.uitoolkit.impl.fx.ui.UITextArea;
 
 /**
  * <p>Title: </p>
@@ -273,8 +274,8 @@ public class frmPregledArhive extends raMasterDetail {
   }
   
   public boolean DeleteCheckMaster() {
-    if (raDetail.isShowing()) raDetail.setVisible(false);
-    if (checkDetailFilter()) return false;
+/*    if (raDetail.isShowing()) raDetail.setVisible(false);
+    if (checkDetailFilter()) return false;*/
     String gks = getMasterSet().getString("CGKSTAVKE");
     if (gks != null && gks.length() > 8) {
       String cnaloga = gks.substring(0, gks.lastIndexOf('-'));
@@ -304,8 +305,14 @@ public class frmPregledArhive extends raMasterDetail {
         delStavka.setBigDecimal("ID", delStavka.getBigDecimal("ID").negate());
         delStavka.setBigDecimal("IP", delStavka.getBigDecimal("IP").negate());
         raSaldaKonti.addToKumulativ(delStavka);*/
-        getDetailSet().deleteAllRows();
-        raTransaction.saveChanges(getDetailSet());
+        /*getDetailSet().deleteAllRows();
+        raTransaction.saveChanges(getDetailSet());*/
+        
+        //QueryDataSet uiUIstavke.getDataModule().getTempSet(Condition.whereAllEqual(new String[] {"KNJIG", "CPAR", "VRDOK", "BROJDOK", "CKNJIGE"}, delStavka));
+        
+        raTransaction.runSQL("DELETE FROM uistavke WHERE " +
+            Condition.whereAllEqual(new String[] {"KNJIG", "CPAR", "VRDOK", "BROJDOK", "CKNJIGE"}, delStavka));
+        
         if (autoinc) {
         	int next = Valid.getValid().findSeqInt(OrgStr.getKNJCORG(false) +
         			(kupci ? "IRA-" : "URA-") +
@@ -318,7 +325,7 @@ public class frmPregledArhive extends raMasterDetail {
 	    	  raTransaction.saveChanges(dm.getSeq());
 	    	}
         }
-        //raTransaction.saveChanges(dm.getSkkumulativi());
+
         delStavka.clearValues();
         delStavka = null;
       } catch (Exception e) {
@@ -407,8 +414,8 @@ public class frmPregledArhive extends raMasterDetail {
   }
 
   public void deArchive() {
-    if (raDetail.isShowing()) raDetail.setVisible(false);
-    if (checkDetailFilter()) return;
+    /*if (raDetail.isShowing()) raDetail.setVisible(false);
+    if (checkDetailFilter()) return;*/
     raVrdokMatcher vm = new raVrdokMatcher(getMasterSet());
     if (!vm.isKob() && !vm.isRacun()) {
       JOptionPane.showMessageDialog(jpMaster, "Poništiti se mogu samo dokumenti nastali u modulu SK!", "Greška",
@@ -428,8 +435,10 @@ public class frmPregledArhive extends raMasterDetail {
                                     "Greška", JOptionPane.ERROR_MESSAGE);
       return;
     }
-    this.refilterDetailSet();
-    if (getDetailSet().rowCount() == 0) {
+    final QueryDataSet ui = UIstavke.getDataModule().openTempSet(
+        Condition.whereAllEqual(new String[] {"KNJIG", "CPAR", "VRDOK", "BROJDOK", "CKNJIGE"}, getMasterSet()));
+    
+    if (ui.rowCount() == 0) {
       JOptionPane.showMessageDialog(jpMaster, "Ne postoje odgovarajuæe UI stavke za "+
           (vm.isKob() ? "ovu knjižnu obavijest" : " ovaj raèun"), "Greška", JOptionPane.ERROR_MESSAGE);
       return;
@@ -479,24 +488,24 @@ public class frmPregledArhive extends raMasterDetail {
         extrask.open();
         
         //raSaldaKonti.setKumInvalid();
-        for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next()) {
+        for (ui.first(); ui.inBounds(); ui.next()) {
           radne.insertRow(false);
           dM.copyColumns(getMasterSet(), radne, skscols);
-          dM.copyColumns(getDetailSet(), radne, uiscols);
+          dM.copyColumns(ui, radne, uiscols);
           radne.setTimestamp("DATPRI", getMasterSet().getTimestamp("DATUMKNJ"));
-          radne.setString("CGKSTAVKE", getDetailSet().getString("CGKSTAVKE").equals("#") ? "N" : "D");
-          if (getDetailSet().getInt("RBS") != 1 && getDetailSet().getString("BROJKONTA").
+          radne.setString("CGKSTAVKE", ui.getString("CGKSTAVKE").equals("#") ? "N" : "D");
+          if (ui.getInt("RBS") != 1 && ui.getString("BROJKONTA").
               equals(getMasterSet().getString("BROJKONTA")))
-            radne.setString("BROJKONTA", raSaldaKonti.getKonto(getDetailSet()));
-          radne.setBigDecimal("PVID", getDetailSet().getBigDecimal("ID"));
-          radne.setBigDecimal("PVIP", getDetailSet().getBigDecimal("IP"));
+            radne.setString("BROJKONTA", raSaldaKonti.getKonto(ui));
+          radne.setBigDecimal("PVID", ui.getBigDecimal("ID"));
+          radne.setBigDecimal("PVIP", ui.getBigDecimal("IP"));
           if (raSaldaKonti.isDomVal(getMasterSet())) {
-            radne.setBigDecimal("ID", getDetailSet().getBigDecimal("ID"));
-            radne.setBigDecimal("IP", getDetailSet().getBigDecimal("IP"));
+            radne.setBigDecimal("ID", ui.getBigDecimal("ID"));
+            radne.setBigDecimal("IP", ui.getBigDecimal("IP"));
           } else {
-            radne.setBigDecimal("ID", getDetailSet().getBigDecimal("ID").
+            radne.setBigDecimal("ID", ui.getBigDecimal("ID").
               divide(raSaldaKonti.calcTecaj(getMasterSet()), 2, BigDecimal.ROUND_HALF_UP));
-            radne.setBigDecimal("IP", getDetailSet().getBigDecimal("IP").
+            radne.setBigDecimal("IP", ui.getBigDecimal("IP").
               divide(raSaldaKonti.calcTecaj(getMasterSet()), 2, BigDecimal.ROUND_HALF_UP));
           }
           if (radne.getInt("RBS") != 1)
@@ -513,11 +522,11 @@ public class frmPregledArhive extends raMasterDetail {
           raSaldaKonti.addToKumulativ(extrask);*/
           extrask.deleteAllRows();
         }
-        getDetailSet().deleteAllRows();
+        ui.deleteAllRows();
         getMasterSet().deleteRow();
         raTransaction.saveChanges(radne);
         raTransaction.saveChanges(getMasterSet());
-        raTransaction.saveChanges(getDetailSet());
+        raTransaction.saveChanges(ui);
         raTransaction.saveChanges(extrask);
 //        raTransaction.saveChanges(dm.getSkkumulativi());
         return true;

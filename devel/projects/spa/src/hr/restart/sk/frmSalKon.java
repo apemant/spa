@@ -681,14 +681,20 @@ public class frmSalKon extends raMasterDetail {
     try {
 //      this.getDetailSet().open();
       if (mode == 'B') {
-        for (getDetailSet().first(); getDetailSet().inBounds();) {
+        /*for (getDetailSet().first(); getDetailSet().inBounds();) {
           if (getDetailSet().getInt("RBS") == 1) getDetailSet().next();
           else getDetailSet().deleteRow();
         }
 //      } else {
 //        if (mode == 'N') fillStavkeSheme();
 //        calcAllVeze((short) 1);
-        raTransaction.saveChanges(this.getDetailSet());
+        raTransaction.saveChanges(this.getDetailSet());*/
+        
+        raTransaction.runSQL("DELETE FROM skstavkerad WHERE " + Condition.whereAllEqual(mkey, delStavka));
+        delStavka.clearValues();
+        delStavka = null;
+        
+        
         if (allowVirt) {
           if (oldUuid != null && oldUuid.length() > 0)
             raTransaction.runSQL("UPDATE urdok SET statknj='N' WHERE uuid = '" + oldUuid + "'");
@@ -1024,6 +1030,8 @@ public class frmSalKon extends raMasterDetail {
 //    calcAllVeze(this.getDetailSet().getShort("STAVKA"));
 //    this.getDetailSet().refresh();
 //  }
+  
+  private DataRow delStavka;
 
   public boolean DeleteCheckMaster() {
     oldCpar = getMasterSet().getInt("CPAR");
@@ -1033,6 +1041,8 @@ public class frmSalKon extends raMasterDetail {
 	  ut.getYear(getMasterSet().getTimestamp("DATPRI")) +
 	  (bookDependant ? "-" + getMasterSet().getString("CKNJIGE") : "");
     oldExt = getMasterSet().getString("EXTBRDOK");
+    delStavka = new DataRow(getMasterSet());
+    getMasterSet().copyTo(delStavka);
     return true;
   }
   
