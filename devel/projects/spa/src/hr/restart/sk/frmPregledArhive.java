@@ -57,7 +57,6 @@ import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.sun.deploy.uitoolkit.impl.fx.ui.UITextArea;
 
 /**
  * <p>Title: </p>
