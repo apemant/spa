@@ -228,7 +228,7 @@ public class frmArhiviranje extends frmObradaPL {
             
             QueryDataSet rs = RSPeriodobr.getDataModule().openTempSet(radCond);
             for (rs.first(); rs.inBounds(); rs.next()) {
-              String cradnik = locRadnik(radnici, pris);
+              String cradnik = locRadnik(radnici, rs);
               
               addRSPERIODARH.setValues(rs);
               setValuesObrada(addRSPERIODARH);
