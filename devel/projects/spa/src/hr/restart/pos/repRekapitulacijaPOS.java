@@ -367,16 +367,16 @@ public class repRekapitulacijaPOS extends mxReport {
     
     String ret = getDoubleLineLength() + "<$newline$>" +
         "<#REKAPITULACIJA PO DANIMA|"+width+"|center#><$newline$><$newline$>" +
-        "DATUM" + Aus.spc(width - 5 - ss * 3) + ms + "    PROMET" + ms + "     REPR." + ms + "    UKUPNO<$newline$>"+
+        "DATUM" + Aus.spc(width - 3 - ss * 3) + ms + "     PROMET" + ms + "     REPR." + ms + "     UKUPNO<$newline$>"+
        getSinglLineLength() + "<$newline$>";
     
     for (dani.first(); dani.inBounds(); dani.next()) {
       ret = ret + "<#" + raDateUtil.getraDateUtil().dataFormatter(dani.getTimestamp("DATUM")) 
-                + "|"  + (width - ss * 3) + "|left#><#" +
-                sgq.format(dani.getBigDecimal("PROMET"), 2) + "|" + ss + "|right#><#" +
+                + "|"  + (width - ss * 3 - 2) + "|left#><#" +
+                sgq.format(dani.getBigDecimal("PROMET"), 2) + "|" + (ss + 1) + "|right#><#" +
                 sgq.format(dani.getBigDecimal("REPR"), 2) + "|" + ss + "|right#><#" +
                 sgq.format(dani.getBigDecimal("PROMET").add(dani.getBigDecimal("REPR")), 2) 
-                + "|" + ss + "|right#><$newline$>";
+                + "|" + (ss + 1) + "|right#><$newline$>";
     }
     return ret+"<$newline$><$newline$>";
   }
