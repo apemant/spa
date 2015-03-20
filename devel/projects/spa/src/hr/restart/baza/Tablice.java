@@ -17,14 +17,11 @@
 ****************************************************************************/
 package hr.restart.baza;
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.sql.dataset.QueryDataSet;
-
 
 
 public class Tablice extends KreirDrop implements DataModule {
 
   private static Tablice inst = new Tablice();
-
 
 
   public static Tablice getDataModule() {
