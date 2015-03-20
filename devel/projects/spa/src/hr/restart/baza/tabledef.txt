@@ -3986,6 +3986,29 @@ CKOLONE;short;2;;;Kolona
 SQLCONDITION;char;3072;;;SQL upit na bazu;*
 IDX=stavka
 
+$RobSheme
+LOKK;char;1;;N;Status zauzetosti;*
+AKTIV;char;1;;D;Aktivan - neaktivan;*
+RBR;int;6;pkey;;Rbr sheme
+CVRDOK;char;200;;;Kriterij vrste dok
+CCSKL;char;200;;;Kriterij cskl/corg
+ZAGKEY;char;120;;;Kolone kljuèa zag
+QZAG;char;2000;;;Skripta dohvata zaglavlja
+QUPD;char;2000;;;Skripta azuriranja zaglavlja
+QSTAV;char;2000;;;Skripta dohvata stavki
+
+
+$StRobSheme
+RBR;int;6;pkey;;Rbr sheme
+RBS;int;6;pkey;;Rbr stavke
+POLJE;char;20;;;Polje u datasetu
+BROJKONTA;char;8;;;Konto
+UVJET;char;100;;;Uvjet
+ZAG;char;1;;N;Zaglavlje SK dok.
+CKNJIGE;char;5;;;Oznaka knjige
+CKOLONE;short;2;;;Broj kolone
+
+
 $shrab
 LOKK;char;1;;N;LOKK;*
 AKTIV;char;1;;D;AKTIV;*
@@ -4440,6 +4463,10 @@ IDX=cradnal
 $VTText
 CKEY;char;60;pkey;;Kljuè izvornog dokumenta;30
 TEXTFAK;char;4000;;;Tekst stavke;30
+
+$Skripte
+CKEY;char;12;pkey;;Kljuè skripte
+TEKST;char;4000;;;Tekst skripte
 
 $vtzavtr
 LOKK;char;1;;N;LOKK;*
