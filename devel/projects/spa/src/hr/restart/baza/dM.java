@@ -1159,6 +1159,19 @@ public class dM implements DataModule {
   public com.borland.dx.sql.dataset.QueryDataSet getAllNapomene() {
     return napomene.getDataModule().getQueryDataSet();
   }
+  
+  public com.borland.dx.sql.dataset.QueryDataSet getRobSheme() {
+    return RobSheme.getDataModule().getQueryDataSet();
+  }
+  
+  public com.borland.dx.sql.dataset.QueryDataSet getStRobSheme() {
+    return StRobSheme.getDataModule().getQueryDataSet();
+  }
+  
+  public com.borland.dx.sql.dataset.QueryDataSet getSkripte() {
+    return Skripte.getDataModule().getQueryDataSet();
+  }
+  
   public com.borland.dx.sql.dataset.QueryDataSet getAplikacija() {
     return Aplikacija.getDataModule().getQueryDataSet();
   }
