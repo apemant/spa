@@ -2144,6 +2144,12 @@ public BigDecimal getIPRODSP() {
     return "";
   }
   
+  public String getCDOC() {
+    return "Racun;" + rm.getLogoOIB() + ";" + presBlag.getFiskPP(ds) + ";" + 
+          getSYSDAT().toString().replace(' ', 'T') + ";" + getFormatBroj() + ";" +
+          Aus.formatBigDecimal2(diprodsp) + ";" + getCCUSER();
+  }
+  
   public String getDODATNIOPIS() {
     String dep = ds.getString("CSKL")+ds.getString("VRDOK")+ds.getString("GOD")+ds.getInt("BRDOK");
     String cached = cache.getValue("DODATNIOPIS", dep);
