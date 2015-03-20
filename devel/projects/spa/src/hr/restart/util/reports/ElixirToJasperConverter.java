@@ -280,7 +280,10 @@ public class ElixirToJasperConverter {
     JRDesignExpression exp = new JRDesignExpression();
     exp.setValueClassName("java.awt.Image");
 
-    exp.addTextChunk("hr.restart.util.reports.Bc.getImg(");
+    if (getter.startsWith("PDF417_")) {
+      exp.addTextChunk("hr.restart.util.reports.Bc.getPDF417(");
+      getter = getter.substring("PDF417_".length());
+    } else exp.addTextChunk("hr.restart.util.reports.Bc.getImg(");
     if (data.isGetter(getter)) {
       exp.addFieldChunk(getter);
       data.setUsedGetter(getter);
