@@ -64,6 +64,7 @@ public class frmSistem extends hr.restart.util.startFrame {
   JMenuItem jSisMnuUsr = new JMenuItem();
 //  JMenuItem jSisTest = new JMenuItem();
   JMenuItem jSisMnuTab = new JMenuItem();
+  JMenuItem jSisMnuScr = new JMenuItem();
   JMenuItem jSisMnuVrdok = new JMenuItem();
   JMenuItem jSisMnuRep = new JMenuItem();
   JMenuItem jSisMnuRepx = new JMenuItem();
@@ -166,6 +167,12 @@ public class frmSistem extends hr.restart.util.startFrame {
     jSisMnuTab.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jSisMnuTab_actionPerformed(e);
+      }
+    });
+    jSisMnuScr.setText("Skripte");
+    jSisMnuScr.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jSisMnuScr_actionPerformed(e);
       }
     });
     jSisMnuPrn.setText("Definicija štampa\u010Da");
@@ -350,6 +357,7 @@ public class frmSistem extends hr.restart.util.startFrame {
     jSisPod.add(jSisMnuProg);
     jSisPod.add(jSisMnuFunc);
     jSisPod.add(jSisMnuTab);
+    jSisPod.add(jSisMnuScr);
     jSisPod.add(jSisMnuVrdok);
     jSisPod.add(jSisMnuVrart);
 
@@ -482,6 +490,11 @@ public class frmSistem extends hr.restart.util.startFrame {
   void jSisMnuTab_actionPerformed(ActionEvent e) {
     if (busy()) return;
     showFrame("hr.restart.sisfun.frmTablice",jSisMnuTab.getText());
+  }
+  
+  void jSisMnuScr_actionPerformed(ActionEvent e) {
+    if (busy()) return;
+    showFrame("hr.restart.sisfun.frmSkripte",jSisMnuScr.getText());
   }
 
   void jSisMnuVrdok_actionPerformed(ActionEvent e) {
