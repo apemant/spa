@@ -187,7 +187,16 @@ public class frmMessages extends raMatPodaci {
         ((JraTable2) getTable()).getDataSet().getVariant("MTEXT", getRow(), v);
         String text = v.getString().trim();
         int nl = text.indexOf('\n');
-        if (nl > 0) setComponentText(text.substring(0, nl));
+        if (nl > 0) {
+          text = text.substring(0, nl);
+          String tl = text.toLowerCase();
+          if (tl.startsWith("<html>")) {
+            int p = tl.indexOf("<p>");
+            if (p > 0) text = text.substring(0, p);
+            text = text.concat("</html>");
+          }
+          setComponentText(text);
+        }
       }
     });
   }
