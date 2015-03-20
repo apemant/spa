@@ -83,6 +83,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   QueryDataSet grupeSet = new QueryDataSet();
   QueryDataSet grupePorSet = new QueryDataSet();
   QueryDataSet porezSet = new QueryDataSet();
+  QueryDataSet daniSet = new QueryDataSet();
 
   JPanel mainPanel = new JPanel();
   XYLayout mainXYLayout = new XYLayout();
@@ -92,7 +93,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   JLabel jlSmjena = new JLabel();
   JraCheckBox jcbPoArtiklima = new JraCheckBox();
   JraCheckBox jcbPoSmjenama = new JraCheckBox();
-  JraCheckBox jcbPoKonobarima = new JraCheckBox();
+  JraCheckBox jcbPoDanima = new JraCheckBox();
   JraTextField jtfPocDatum = new JraTextField();
   JraTextField jtfZavDatum = new JraTextField();
   JraTextField jtfPocBroj = new JraTextField();
@@ -152,7 +153,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     jrfNazivBlagajnika.setText("");
     jcbPoArtiklima.setSelected(true);
     jcbPoSmjenama.setSelected(true);
-    jcbPoKonobarima.setSelected(false);
+    jcbPoDanima.setSelected(false);
     if (presBlag.isUserOriented() && !raUser.getInstance().isSuper()) {
       jrfCBlagajnik.setText(raUser.getInstance().getUser());
       jrfCBlagajnik.forceFocLost();
@@ -437,6 +438,10 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
   public QueryDataSet getPorezi() {
     return porezSet;
   }
+  
+  public QueryDataSet getPoDanima() {
+    return daniSet;
+  }
 
   public QueryDataSet getWhatSoEver(){
 //    sysoutTEST st = new sysoutTEST(false); //XDEBUG delete when no more needed
@@ -449,9 +454,13 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 //    st.showInFrame(artikliReportQDS,"Dataset Test Frame");
     return artikliReportQDS;
   }
-
+  
   public boolean getRekapitulacijaPoAretiklima(){
     return jcbPoArtiklima.isSelected();
+  }
+  
+  public boolean ispisPoDanima(){
+    return jcbPoDanima.isSelected();
   }
 
   public String getPocetniDatum(){
@@ -516,6 +525,38 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 //    System.out.println("finalSet");
 //    sysoutTEST syst = new sysoutTEST(false);
 //    syst.prn(finalSet);
+    
+    if (ispisPoDanima()) {
+      
+      String upitString = "SELECT (RATE.irata) as irata, (RATE.cnacpl) as cnacpl, pos.datdok as datdok "+
+          "FROM pos, rate "+
+          "WHERE pos.cskl = rate.cskl "+
+          "AND pos.vrdok = rate.vrdok "+
+          "AND pos.god = rate.god "+
+          "AND pos.brdok = rate.brdok "+
+          "AND pos.cprodmj = rate.cprodmj "+
+          "and pos.vrdok = 'GRC' "+kondishnBlag()+
+          "and pos.cskl = '"+tds.getString("CSKL")+"' "+
+          "and "+kondishnDatumOrBroj()+ kondishnOperater()/*+*/ // kondishnOperator diprektid...
+          /*" group by cnacpl"*/;
+      
+      System.out.println("\n"+upitString);
+
+      QueryDataSet qds = ut.getNewQueryDataSet(upitString);
+      qds.setSort(new SortDescriptor(new String[] {"DATDOK"}));
+      daniSet.open();
+      daniSet.empty();
+      Timestamp oldd = null;
+      for (qds.first(); qds.inBounds(); qds.next()) {
+        if (oldd == null || !ut.sameDay(oldd, qds.getTimestamp("DATDOK"))) {
+          daniSet.insertRow(false);
+          daniSet.setTimestamp("DATUM", oldd = new Timestamp(qds.getTimestamp("DATDOK").getTime()));
+        }
+        if (!qds.getString("CNACPL").equalsIgnoreCase("R"))
+          Aus.add(daniSet, "PROMET", qds, "IRATA");
+        else Aus.add(daniSet, "REPR", qds, "IRATA");
+      }
+    }
 
     if (getRekapitulacijaPoAretiklima()){
 //      artikliReportQDS.open();
@@ -792,7 +833,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
       rcc.setLabelLaF(jrfNAZBLAG,true);
       rcc.setLabelLaF(jbCBLAG,true);
       rcc.setLabelLaF(jcbPoArtiklima, true);
-      rcc.setLabelLaF(jcbPoKonobarima, true);
+      rcc.setLabelLaF(jcbPoDanima, true);
       rcc.setLabelLaF(jcbPoSmjenama, true);
       rcc.setLabelLaF(jtfPocDatum, jrbDatum.isSelected());
       rcc.setLabelLaF(jtfZavDatum, jrbDatum.isSelected());
@@ -898,6 +939,12 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
         dm.createBigDecimalColumn("STOPA"),
         dm.createBigDecimalColumn("IZNOS")
     });
+    
+    daniSet.setColumns(new Column[] {
+        dm.createTimestampColumn("DATUM"),
+        dm.createBigDecimalColumn("PROMET"),
+        dm.createBigDecimalColumn("REPR")
+    });
 
     artikliReportQDS.setColumns(new Column[]{(Column)dm.getArtikli().getColumn("CART").clone(),
                                 (Column)dm.getArtikli().getColumn("CART1").clone(),
@@ -919,7 +966,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
                                  dm.createIntColumn("zavBroj", "Krajnji Broj"),
                                  dm.createStringColumn("IspisRek","Ispis rekapitulacije",1),
                                  dm.createStringColumn("IspisSmje","Ispis po smjenama",1),
-                                 dm.createStringColumn("IspisKon","Ispis po konobarima",1),
+                                 dm.createStringColumn("IspisKon","Ispis po danima",1),
                                  });
 
     jlSkladiste.setText("Skladište");
@@ -944,13 +991,13 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     jcbPoSmjenama.setDataSet(tds);
     jcbPoSmjenama.setColumnName("IspisSmje");
 
-    jcbPoKonobarima.setText("Ispis rekapitulacije po konobarima");
-    jcbPoKonobarima.setSelectedDataValue("D");
-    jcbPoKonobarima.setUnselectedDataValue("N");
-    jcbPoKonobarima.setHorizontalTextPosition(SwingConstants.LEFT);
-    jcbPoKonobarima.setHorizontalAlignment(SwingConstants.RIGHT);
-    jcbPoKonobarima.setDataSet(tds);
-    jcbPoKonobarima.setColumnName("IspisKon");
+    jcbPoDanima.setText("Ispis rekapitulacije po danima");
+    jcbPoDanima.setSelectedDataValue("D");
+    jcbPoDanima.setUnselectedDataValue("N");
+    jcbPoDanima.setHorizontalTextPosition(SwingConstants.LEFT);
+    jcbPoDanima.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbPoDanima.setDataSet(tds);
+    jcbPoDanima.setColumnName("IspisKon");
     
     jtfPocDatum.setHorizontalAlignment(SwingConstants.CENTER);
     jtfPocDatum.setColumnName("pocDatum");
@@ -1106,7 +1153,7 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
 
     mainPanel.add(jcbPoArtiklima, new XYConstraints(250, 170/*120*/, 300, -1));
     mainPanel.add(jcbPoSmjenama, new XYConstraints(250, 195/*120*/, 300, -1));
-    mainPanel.add(jcbPoKonobarima, new XYConstraints(250, 220/*120*/, 300, -1));
+    mainPanel.add(jcbPoDanima, new XYConstraints(250, 220/*120*/, 300, -1));
 
     rcc.setLabelLaF(jtfPocBroj,false);
     rcc.setLabelLaF(jtfZavBroj,false);

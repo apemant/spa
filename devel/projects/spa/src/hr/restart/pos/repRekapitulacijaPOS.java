@@ -18,6 +18,7 @@
 package hr.restart.pos;
 
 import hr.restart.robno.Aut;
+import hr.restart.robno.raDateUtil;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
@@ -344,7 +345,7 @@ public class repRekapitulacijaPOS extends mxReport {
   }
 
   private String footer(){
-    String rgp = getRekapGrupePorez();
+    String rgp = getRekapGrupePorez() + getPoDanima();
     if (irrpos.getRekapitulacijaPoAretiklima()){
       BigDecimal kol = Aus.sum("KOL", getDataSet());
       rgp = getSinglLineLength()+"<$newline$>Ukupno kolièina:  " + sgq.format(kol, 3) + "<$newline$><$newline$>" + rgp;
@@ -354,6 +355,32 @@ public class repRekapitulacijaPOS extends mxReport {
     }
     return rgp;
   }
+  
+  
+  private String getPoDanima() {
+    if (!irrpos.ispisPoDanima()) return "";
+
+    DataSet dani = irrpos.getPoDanima();
+    if (dani.rowCount() == 0) return "";
+    String ms = width >= 44 ? " " : "";
+    int ss = width >= 44 ? 11 : 10;
+    
+    String ret = getDoubleLineLength() + "<$newline$>" +
+        "<#REKAPITULACIJA PO DANIMA|"+width+"|center#><$newline$><$newline$>" +
+        "DATUM" + Aus.spc(width - 5 - ss * 3) + ms + "    PROMET" + ms + "     REPR." + ms + "    UKUPNO<$newline$>"+
+       getSinglLineLength() + "<$newline$>";
+    
+    for (dani.first(); dani.inBounds(); dani.next()) {
+      ret = ret + "<#" + raDateUtil.getraDateUtil().dataFormatter(dani.getTimestamp("DATUM")) 
+                + "|"  + (width - ss * 3) + "|left#><#" +
+                sgq.format(dani.getBigDecimal("PROMET"), 2) + "|" + ss + "|right#><#" +
+                sgq.format(dani.getBigDecimal("REPR"), 2) + "|" + ss + "|right#><#" +
+                sgq.format(dani.getBigDecimal("PROMET").add(dani.getBigDecimal("REPR")), 2) 
+                + "|" + ss + "|right#><$newline$>";
+    }
+    return ret+"<$newline$><$newline$>";
+  }
+
   
   private String getRekapGrupePorez() {
     DataSet gr = irrpos.getGrupePor();
