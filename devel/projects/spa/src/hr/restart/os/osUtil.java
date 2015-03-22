@@ -22,6 +22,7 @@ import hr.restart.baza.KreirDrop;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
+import hr.restart.util.raTransaction;
 import hr.restart.zapod.OrgStr;
 
 import java.util.Calendar;
@@ -539,7 +540,7 @@ public class osUtil {
       dm.getOS_Obrada4().setString("Mjesec", String.valueOf(mjesecL+1));
     }
    dm.getOS_Obrada4().post();
-   dm.getOS_Obrada4().saveChanges();
+   raTransaction.saveChanges(dm.getOS_Obrada4());
   }
   public void deleteObrada4(com.borland.dx.sql.dataset.QueryDataSet qds) {
     vl.runSQL(sjQuerys.deleteOBR4(qds.getString("INVBROJ"), qds.getString("CORG2")));

@@ -263,6 +263,8 @@ public class osTemplate extends raMasterDetail {
 
     setMasterKey(key);
     setDetailKey(key2);
+    
+    raMaster.installSelectionTracker("INVBROJ");
 
     xYLayout2.setWidth(650);
     xYLayout2.setHeight(220);

@@ -17,9 +17,25 @@
 ****************************************************************************/
 package hr.restart.os;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.OS_Promjene;
+import hr.restart.util.Aus;
+import hr.restart.util.lookupData;
+import hr.restart.util.raImages;
+import hr.restart.util.raNavAction;
+import hr.restart.util.raProcess;
+import hr.restart.util.sysoutTEST;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 import javax.swing.JOptionPane;
+
+import com.borland.dx.dataset.DataRow;
+import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 
 /**
  * <p>Title: </p>
@@ -40,6 +56,13 @@ public class frmOSLikvi extends osTemplate {
       ex.printStackTrace();
     }
   }
+  
+  raNavAction rnvLikAll = new raNavAction("Likvidiraj oznaèena sredstva",
+      raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
+    public void actionPerformed(ActionEvent e) {
+      masLikvid();
+    }
+  };
 
   private void jbInit() throws Exception {
     dm.getOS_Sredstvo().open();
@@ -49,6 +72,7 @@ public class frmOSLikvi extends osTemplate {
     pres.setSelDataSet(this.getMasterSet());
     pres.setSelPanel(this.jpSel);
     super.jbInitA();
+    raMaster.addOption(rnvLikAll, 6, false);
     setJPanelMaster(jpMasterOS);
     setJPanelDetail(jpDetailOS);
     this.setNaslovMaster("Likvidacija osnovnog sredstva");
@@ -213,6 +237,88 @@ public class frmOSLikvi extends osTemplate {
     return super.ValidacijaDetail(mode);
   }
 
+  
+  void masLikvid() {
+  	if (raMaster.getSelectionTracker().countSelected() < 2) return;
+  	
+  	DataSet mas = Aus.q(getMasterSet().getOriginalQueryString() + " AND " +	raMaster.getSelectionTracker().getSelectionCondition());
+  	int lik = 0, na = 0;
+  	String linv = null, vrlik = null;
+  	for (mas.first(); mas.inBounds(); mas.next()) {
+  		if (!mas.isNull("DATLIKVIDACIJE")) {
+  			++lik;
+  			linv = mas.getString("INVBROJ");
+  			vrlik = mas.getString("VRLIK");
+  		}
+  		if (!mas.getString("STATUS").equals("A")) ++na;
+  	}
+  	
+  	if (na > 0) {
+  		JOptionPane.showMessageDialog(raMaster.getWindow(), "Ne mogu se likvidirati neaktivna sredstva!", 
+  				"Greška", JOptionPane.WARNING_MESSAGE);
+  		return;
+  	}
+  	
+  	if (lik != 1) {
+  		JOptionPane.showMessageDialog(raMaster.getWindow(), "Potrebno je oznaèiti toèno jedno likvidirano sredstvo kao kalup za ostala!", 
+  				"Greška", JOptionPane.WARNING_MESSAGE);
+  		return;
+  	}
+  	
+  	if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Jeste li sigurni da želite likvidirati " + 
+  			(mas.getRowCount() - 1) + " oznaèenih sredstava?", "Višestruka likvidacija", 
+  				JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+  	
+  	
+  	DataSet prom = OS_Promjene.getDataModule().openTempSet(Condition.equal("INVBROJ", linv));
+  	prom.setSort(new SortDescriptor(new String[] {"DATPROMJENE"}));
+  	final DataRow lprom = new DataRow(prom);
+  	for (prom.last(); prom.inBounds(); prom.prior()) 
+  		if (prom.getString("CPROMJENE").equals(vrlik))
+  			prom.copyTo(lprom);
+  	
+  	if (!lprom.getString("CPROMJENE").equals(vrlik)) {
+  		JOptionPane.showMessageDialog(raMaster.getWindow(), "Greška pri traženju vrste promjene kalupa za likvidaciju!", 
+  				"Greška", JOptionPane.WARNING_MESSAGE);
+  		return;
+  	}
+  	
+  	raProcess.runChild(new Runnable() {
+			public void run() {
+				masLikvid_impl(lprom);
+			}
+		});
+  	
+  	JOptionPane.showMessageDialog(raMaster.getWindow(), "Višestruka likvidacija završena!", 
+				"Poruka", JOptionPane.INFORMATION_MESSAGE);
+  	raMaster.getJpTableView().fireTableDataChanged();
+  }
+  
+  void masLikvid_impl(DataRow lprom) {
+  	String[] invs = (String[]) raMaster.getSelectionTracker().getSelection();
+  	Arrays.sort(invs);
+  	
+  	for (int i = 0; i < invs.length; i++) {
+  		if (!lookupData.getlookupData().raLocate(getMasterSet(), "INVBROJ", invs[i])) {
+  			System.err.println("Nisam našao " + invs[i] + "?!!");
+  			continue;
+  		}
+  		if (!getMasterSet().isNull("DATLIKVIDACIJE")) continue;
+  		refilterDetailSet();
+  		getDetailSet().insertRow(false);
+  		lprom.copyTo(getDetailSet());
+  		validDate = true;
+  		if (!kontrolaDatUnosa()) {
+  			getDetailSet().cancel();
+  			System.err.println("Sredstvo " + invs[i] + " datum neispravan!");
+  			continue;
+  		}  		
+  		insertStavke('L');
+  		hr.restart.os.osUtil.getUtil().afterUpdateOS(Aus.zero0, Aus.zero0, mod);
+      hr.restart.util.raTransaction.saveChanges(getMasterSet());
+  	}
+  }
+  
 //  public void prepareAmorStavka()
 //  {
 //    dm.getOS_Promjene().insertRow(false);
