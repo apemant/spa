@@ -3990,6 +3990,7 @@ $RobSheme
 LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
 RBR;int;6;pkey;;Rbr sheme
+OPIS;char;60;;;Opis sheme
 CVRDOK;char;200;;;Kriterij vrste dok
 CCSKL;char;200;;;Kriterij cskl/corg
 ZAGKEY;char;120;;;Kolone kljuèa zag
