@@ -181,7 +181,7 @@ System.out.println("Nasao?..."+isRPL);
     QueryDataSet myDataSet=(QueryDataSet) getSelDataSet();
     myDataSet.close();
     
-    Condition c = Condition.equal("AKTIV", "D").and(Condition.in("CORG", OrgStr.getCorgSet(getSelRow().getString("CORG"))));
+    Condition c = Condition.equal("AKTIV", "D").and(OrgStr.getCorgsCond(getSelRow().getString("CORG")));
     if (getSelRow().getString("CRADNIK").length() > 0)
     	c = c.and(Condition.equal("CRADNIK", getSelRow()));
     
