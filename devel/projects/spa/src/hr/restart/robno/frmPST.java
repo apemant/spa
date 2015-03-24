@@ -81,7 +81,7 @@ public class frmPST extends frmUlazTemplate {
     return (super.ValidacijaMaster(mode));
   }
   public boolean ValidacijaDetail(char mode) {
-    if (vl.isEmpty(jpDetail.jtfKOL))
+    if (jpDetail.jtfKOL.getText().trim().length() == 0 && vl.isEmpty(jpDetail.jtfKOL))
       return false;
     if (vl.isEmpty(jpDetail.jtfNC))
       return false;
