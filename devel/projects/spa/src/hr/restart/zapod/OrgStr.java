@@ -38,6 +38,7 @@ import hr.restart.util.lookupData;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 
 
 /**
@@ -386,21 +387,46 @@ e.printStackTrace();
   }
   
   public static Condition getCorgsKnjigCond() {
-  	return Condition.in("CORG", getCorgKnjigSet());
+  	return getCorgsCond("CORG", getCorgKnjigSet());
   }
   
   public static Condition getCorgsKnjigCond(String col) {
-  	return Condition.in(col, getCorgKnjigSet());
+  	return getCorgsCond(col, getCorgKnjigSet());
   }
   
   public static Condition getCorgsCond(String corg) {
-  	return Condition.in("CORG", getCorgSet(corg));
+  	return getCorgsCond("CORG", getCorgSet(corg));
   }
   
   public static Condition getCorgsCond(String col, String corg) {
-  	return Condition.in(col, getCorgSet(corg));
+  	return getCorgsCond(col, getCorgSet(corg));
   }
   
+  private static Condition getCorgsCond(String col, HashSet orgs) {
+    if (orgs.size() > 10 && getAllOrg().rowCount() - orgs.size() < orgs.size() / 2) {
+      HashSet non = getAllCorgs();
+      non.removeAll(orgs);
+      return Condition.in(col, non).not();
+    }
+    return Condition.in(col, orgs);
+  }
+
+  
+  static QueryDataSet allCorg;
+
+  private static QueryDataSet getAllOrg() {
+    if (allCorg == null) allCorg = Orgstruktura.getDataModule().copyDataSet();
+    allCorg.open();
+    return allCorg;
+  }
+  
+  private static HashSet getAllCorgs() {
+    DataSet ds = getAllOrg();
+    HashSet corgs = new HashSet();
+    for (ds.first(); ds.inBounds(); ds.next())
+      corgs.add(ds.getString("CORG"));
+    return corgs;
+  }
   
   static StorageDataSet sharedKnjig;
   
