@@ -1760,8 +1760,10 @@ public class frmBrBilAll extends raUpitFat {
     String sqlCorgString = "";
     if (stds.getString("ORGSTR").equals("1")){
       sqlCorgString = table+".CORG ='" + kontoPanel.getCorg() + "'";
-    } else {
-    	sqlCorgString = Condition.in("CORG", OrgStr.getCorgSet(kontoPanel.getCorg().trim())).qualified(table).toString();
+    } else {        
+    	sqlCorgString = OrgStr.getCorgsCond(kontoPanel.getCorg().trim()).qualified(table).toString();
+    	    
+    	    //Condition.in("CORG", OrgStr.getCorgSet(kontoPanel.getCorg().trim())).qualified(table).toString();
     }
     return sqlCorgString;
   }
