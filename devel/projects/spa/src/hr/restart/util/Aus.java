@@ -67,6 +67,7 @@ import javax.swing.KeyStroke;
 import sg.com.elixir.reportwriter.xml.IModel;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.MetaDataUpdate;
 import com.borland.dx.dataset.ReadRow;
@@ -1253,6 +1254,34 @@ public class Aus {
       }
     }
     return s;
+  }
+  
+  public static Variant max(DataSet ds, String col) {
+  	Variant v = new Variant();
+  	Variant max = new Variant();
+  	
+  	ds.getVariant(col, max);
+  	
+  	for (int i = 0; i < ds.rowCount(); i++) {
+  		ds.getVariant(col, i, v);
+  		if (v.compareTo(max) > 0)
+  			ds.getVariant(col, i, max);
+  	}
+  	return max;
+  }
+  
+  public static Variant min(DataSet ds, String col) {
+  	Variant v = new Variant();
+  	Variant min = new Variant();
+  	
+  	ds.getVariant(col, min);
+  	
+  	for (int i = 0; i < ds.rowCount(); i++) {
+  		ds.getVariant(col, i, v);
+  		if (v.compareTo(min) < 0)
+  			ds.getVariant(col, i, min);
+  	}
+  	return min;
   }
   
   public static QueryDataSet q(String query) {
