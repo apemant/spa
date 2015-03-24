@@ -19,17 +19,23 @@ package hr.restart.robno;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.RN;
+import hr.restart.baza.Sklad;
+import hr.restart.baza.Stanje;
 import hr.restart.baza.VTRnl;
 import hr.restart.baza.dM;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
+import hr.restart.util.raImages;
+import hr.restart.util.raNavAction;
 import hr.restart.util.raTransaction;
 import hr.restart.util.startFrame;
 
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,6 +64,13 @@ public class raIZD extends raIzlazTemplate  {
   private boolean indikator = true;
   private hr.restart.util.raCommonClass rcc = hr.restart.util.raCommonClass.getraCommonClass();
   private boolean okSnimiti = false;
+  
+  raNavAction rnvNull = new raNavAction("Poravnavanje nul artikala",
+      raImages.IMGPREFERENCES, java.awt.event.KeyEvent.VK_F8, java.awt.event.KeyEvent.SHIFT_MASK) {
+    public void actionPerformed(ActionEvent e) {
+      keyNull();
+    }
+  };
 
   private void initRealStavke(){
     realStavke = new QueryDataSet();
@@ -158,6 +171,7 @@ public class raIZD extends raIzlazTemplate  {
     MP.BindComp();
     DP.BindComp();
     ConfigViewOnTable();
+    raDetail.addOption(rnvNull, 5, false);
     //raMaster.addOption(rnvFisk, 5, false);
   }
 	public void ConfigViewOnTable() {
@@ -392,6 +406,82 @@ public class raIZD extends raIzlazTemplate  {
     upit = upit+") ";
     return upit;
   }
+  
+  void keyNull() {
+  	
+  	QueryDataSet skladiste = Sklad.getDataModule().openTempSet(Condition.equal("CSKL", getMasterSet()));
+  	if (!skladiste.getString("VRZAL").equalsIgnoreCase("N")) {
+  		JOptionPane.showMessageDialog(raDetail.getWindow(),
+          "Operacija je moguæa samo za zalihu po srednjim nabavnim cijenama!",           
+              "Poruka", JOptionPane.INFORMATION_MESSAGE);
+  		return;
+  	}
+  	
+  	String[] skey = {"CSKL", "GOD"};
+  	String[] idkey = {"CSKL", "VRDOK", "GOD", "BRDOK", "RBSID"};
+  	QueryDataSet sta = Stanje.getDataModule().openTempSet(Condition.whereAllEqual(skey, getMasterSet()).
+  									and(Condition.equal("KOL", 0)).and(Condition.diff("VRI", 0)));
+  	
+  	if (sta.rowCount() == 0) {
+  		JOptionPane.showMessageDialog(raDetail.getWindow(),
+          "Nema razlika po zaokruženju na ovom skladištu!",           
+              "Poruka", JOptionPane.INFORMATION_MESSAGE);
+  		return;
+  	}
+  	
+  	if (JOptionPane.showConfirmDialog(raDetail.getWindow(), 
+  			"Jeste li sigurni da želite poravnati " + sta.rowCount() + " artikala sa stanjem nula?",
+  			"Razlike", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+  	  	
+  	getDetailSet().open();
+  	int myrbs = Aus.max(getDetailSet(), "RBSID").getInt(); 
+  	short myrbr = Aus.max(getDetailSet(), "RBR").getShort();
+  	
+  	for (sta.first(); sta.inBounds(); sta.next()) {
+  		rKD.stanje.Init();
+      lc.TransferFromDB2Class(sta,rKD.stanje);
+      rKD.stanje.sVrSklad=skladiste.getString("VRZAL");
+      rKD.stavkaold.Init();
+      rKD.stavka.Init();
+      
+      getDetailSet().insertRow(false);
+      getDetailSet().setString("CSKL",getMasterSet().getString("CSKL"));
+      getDetailSet().setString("CSKLART",getMasterSet().getString("CSKL"));
+      getDetailSet().setString("GOD",getMasterSet().getString("GOD"));
+      getDetailSet().setString("VRDOK",getMasterSet().getString("VRDOK"));
+      getDetailSet().setInt("BRDOK",getMasterSet().getInt("BRDOK"));
+      getDetailSet().setShort("RBR", ++myrbr);
+      getDetailSet().setInt("RBSID", (int) ++myrbs);
+      
+      getDetailSet().setInt("CART", sta.getInt("CART"));
+      if (hr.restart.util.lookupData.getlookupData().
+          raLocate(dm.getAllArtikli(),new String[] {"CART"},
+      new String[] {String.valueOf(sta.getInt("CART"))})){
+      	System.out.println(dm.getAllArtikli().getString("NAZART"));      	
+      	
+        getDetailSet().setString("CART1",dm.getAllArtikli().getString("CART1"));
+        getDetailSet().setString("BC",dm.getAllArtikli().getString("BC"));
+        getDetailSet().setString("NAZART",dm.getAllArtikli().getString("NAZART"));
+        getDetailSet().setString("JM",dm.getAllArtikli().getString("JM"));
+      }
+      getDetailSet().setString("ID_STAVKA", raControlDocs.getKey(getDetailSet(), idkey, "stdoki"));
+      
+      rKD.stavka.kol = Aus.zero3;
+      rKD.stavka.iraz = rKD.stanje.vri;
+      rKD.stavka.inab = rKD.stanje.nabul.subtract(rKD.stanje.nabiz);
+      rKD.stavka.imar = Aus.zero2;
+      rKD.stavka.ipor = Aus.zero2;
+      
+      rKD.KalkulacijaStanje(what_kind_of_dokument);
+      lc.TransferFromClass2DB(getDetailSet(),rKD.stavka);
+
+      lc.TransferFromClass2DB(sta,rKD.stanje);
+      lc.TransferFromClass2DB(getDetailSet(),rKD.stavka);
+      rCD.unosIzlaz(getDetailSet(),sta);
+      
+  	}
+  	raTransaction.saveChangesInTransaction(new QueryDataSet[] {getDetailSet(), sta});
+  }
 
   public boolean unesiStavke() {
     if (realStavke==null || realStavke.getRowCount()==0) return false;
@@ -497,7 +587,6 @@ System.out.println(dm.getAllArtikli().getString("NAZART"));
       rKD.KalkulacijaStavke(what_kind_of_dokument,"KOL",raDetail.getMode(),
                             getMasterSet().getString("CSKL"),false);
       rKD.KalkulacijaStanje(what_kind_of_dokument);
-      lc.TransferFromClass2DB(getDetailSet(),rKD.stavka);
 
 //      Kalkulacija("KOL");
 //      if (rKD.TestStanje()==0) {
