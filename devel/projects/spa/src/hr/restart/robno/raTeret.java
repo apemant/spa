@@ -35,7 +35,7 @@ public class raTeret extends raIzlazTemplate {
   }
 
   public raTeret() {
-
+    isOJ = true;
     setPreSel((jpPreselectDoc) presTER.getPres());
     master_titel = "Tere\u0107enja";
     detail_titel_mno = "Stavke tere\u0107enja";

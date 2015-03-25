@@ -43,6 +43,7 @@ public class raOdobrenje extends raIzlazTemplate {
   
   public raOdobrenje() {
     setPreSel((jpPreselectDoc) presODB.getPres());
+    isOJ = true;
     master_titel = "Odobrenja";
     detail_titel_mno = "Stavke odobrenja";
     detail_titel_jed = "Stavke odobrenja";

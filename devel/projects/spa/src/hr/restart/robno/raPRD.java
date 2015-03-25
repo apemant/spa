@@ -48,6 +48,7 @@ public class raPRD extends raIzlazTemplate  {
   }
 
   public raPRD() {
+    isOJ = true;
     setPreSel((jpPreselectDoc) presPRD.getPres());
     addButtons(true,true);
 //    raMaster.addOption(rnvDellAll,3);
