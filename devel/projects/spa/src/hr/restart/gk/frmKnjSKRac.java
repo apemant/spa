@@ -134,7 +134,7 @@ public class frmKnjSKRac extends frmKnjizenje {
     
     System.out.println(skstavke.getQuery().getQueryString());
     sw.report("Loaded SK");
-    R2Handler.beginKnjizenje(getVrdokCond());
+    R2Handler.beginKnjizenje(getVrdokCond(), Condition.from("DATPRI", knjdo));
     sw.report("Loaded R2");
     if ((skstavke.getRowCount()+R2Handler.getR2KnjizenjeCount()) == 0) {
       getKnjizenje().setErrorMessage("Nema podataka za knjiženje");

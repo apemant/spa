@@ -628,7 +628,7 @@ public class R2Handler {
    * @param vrdokQuery
    * @param date
    */
-  public static void beginKnjizenje(Condition vrdokQuery) {
+  public static void beginKnjizenje(Condition vrdokQuery, Condition datpriCond) {
     uistavke_knjizenje = UIstavke.getDataModule().getReadonlySet();
     if (getStavkeShemeR2().rowCount() > 0) {
       
@@ -636,8 +636,9 @@ public class R2Handler {
       
       if (uir2.rowCount() == 0) return;
       
-      DataSet sk = Skstavke.getDataModule().openTempSet("KNJIG CPAR VRDOK BROJDOK CKNJIGE",
-          Aus.getKnjigCond().and(Condition.emptyString("CGKSTAVKE", false).and(vrdokQuery)));
+      QueryDataSet sk = Skstavke.getDataModule().openTempSet("KNJIG CPAR VRDOK BROJDOK CKNJIGE",
+          Aus.getKnjigCond().and((Condition.emptyString("CGKSTAVKE", false).or(datpriCond)).and(vrdokQuery)));
+      System.out.println(sk.getOriginalQueryString());
       
       HashSet unknj = new HashSet();
       for (sk.first(); sk.inBounds(); sk.next())
