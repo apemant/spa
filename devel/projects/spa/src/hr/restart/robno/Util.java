@@ -1022,6 +1022,13 @@ public class Util {
    * @param skl - Skladište na kojem radimo
    * @param jptv - jpTableView sa ekrana
    */
+  
+  public void showDocs(raJPTableView jptv, int cart) {
+    showDocs(jptv.getMpTable().getDataSet().getString("CSKL"), "",
+        jptv.getMpTable().getDataSet().getString("VRDOK"),
+        jptv.getMpTable().getDataSet().getInt("BRDOK"),
+        vl.findYear(jptv.getMpTable().getDataSet().getTimestamp("DATDOK")), String.valueOf(cart));
+  }
 
   public void showDocs(String skl, raJPTableView jptv) {
     showDocs(
