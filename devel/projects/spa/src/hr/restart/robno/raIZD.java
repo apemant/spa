@@ -481,6 +481,7 @@ public class raIZD extends raIzlazTemplate  {
       
   	}
   	raTransaction.saveChangesInTransaction(new QueryDataSet[] {getDetailSet(), sta});
+  	raDetail.getJpTableView().fireTableDataChanged();
   }
 
   public boolean unesiStavke() {
