@@ -44,7 +44,6 @@ public class raFrame extends java.awt.Container implements raFrameInterface {
   private javax.swing.JInternalFrame Iframe;
   private javax.swing.JDialog Jdialog;
   private java.awt.Container frameOwner;
-  private java.util.EventListener[] windowListeners;
   private java.util.EventListener[] keyListeners;
   private boolean raVisible=false;
 
@@ -325,9 +324,11 @@ public class raFrame extends java.awt.Container implements raFrameInterface {
     } else
     if (frameMode==FRAME) {
       Jframe.show();
+      Jframe.toFront();
     } else
     if (frameMode==DIALOG) {
       Jdialog.show();
+      Jdialog.toFront();
     } else
     if (frameMode==PANEL) {
       showP();
@@ -336,7 +337,7 @@ public class raFrame extends java.awt.Container implements raFrameInterface {
   }
 
   public void toFront() {
-    getWindow().show();
+    getWindow().toFront();
   }
 
   public void hide() {
@@ -406,7 +407,6 @@ public class raFrame extends java.awt.Container implements raFrameInterface {
   }
 
   private void collectListeners() {
-    windowListeners = Jframe.getListeners(java.awt.event.WindowListener.class);
     keyListeners = Jframe.getListeners(java.awt.event.KeyListener.class);
   }
   
