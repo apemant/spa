@@ -204,6 +204,14 @@ public class repBrBilAllSource implements raReportData {
   public String getNAZIVKLASE3() {
     return raKonta.getNazivKonta(ds.getString("BROJKONTA").substring(0,3));
   }
+  
+  public String getKLASE4() {
+    return ds.getString("BROJKONTA").substring(0,4);
+  }
+
+  public String getNAZIVKLASE4() {
+    return raKonta.getNazivKonta(ds.getString("BROJKONTA").substring(0,4));
+  }
 
   public String getCORGLAVA() {
     if (!fbb.getSKUPNI().equals("ZBIRNO")) {

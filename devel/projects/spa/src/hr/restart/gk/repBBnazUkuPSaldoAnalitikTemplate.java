@@ -54,10 +54,14 @@ public class repBBnazUkuPSaldoAnalitikTemplate extends repBBnameUkPromSaldoOrigT
     this.Section2.setProperty(ep.GROUP_HEADER, prije ? raElixirPropertyValues.YES : raElixirPropertyValues.NO);
     this.Section3.setProperty(ep.GROUP_HEADER, /*prije ? raElixirPropertyValues.YES : */raElixirPropertyValues.NO);
     this.Section4.setProperty(ep.GROUP_HEADER, /*prije ? raElixirPropertyValues.YES : */raElixirPropertyValues.NO);
+    if (frmBrBilAll.getInstance().sind == 4)
+      this.Section6.setProperty(ep.GROUP_HEADER, /*prije ? raElixirPropertyValues.YES : */raElixirPropertyValues.NO);
     
     this.Section2.setProperty(ep.GROUP_FOOTER, prije ? raElixirPropertyValues.NO : raElixirPropertyValues.YES);
     this.Section3.setProperty(ep.GROUP_FOOTER, /*prije ?*/ raElixirPropertyValues.NO /*: raElixirPropertyValues.YES*/);
     this.Section4.setProperty(ep.GROUP_FOOTER, /*prije ? */raElixirPropertyValues.NO /*: raElixirPropertyValues.YES*/);
+    if (frmBrBilAll.getInstance().sind == 4)
+      this.Section6.setProperty(ep.GROUP_FOOTER, /*prije ? */raElixirPropertyValues.NO /*: raElixirPropertyValues.YES*/);
     
   }
 

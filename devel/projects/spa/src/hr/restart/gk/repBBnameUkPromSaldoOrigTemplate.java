@@ -46,6 +46,8 @@ public abstract class repBBnameUkPromSaldoOrigTemplate extends raReportTemplate 
   private String[] Section4Props = new String[] {"KLASE3", "", "Yes", "Yes", "", "", ""};
   public raReportElement Section5;
   private String[] Section5Props = new String[] {"BROJKONTA", "", "", "", "", "", ""};
+  public raReportElement Section6;
+  private String[] Section6Props = new String[] {"KLASE4", "", "Yes", "Yes", "", "", ""};
   public raReportSection ReportHeader;
   public raReportSection PageHeader;
   public raReportSection SectionHeader0;
@@ -189,6 +191,7 @@ public abstract class repBBnameUkPromSaldoOrigTemplate extends raReportTemplate 
   private String[] TextNAZIVKLASE2Props = new String[] {"NAZIVKLASE2", "", "", "", "", "", "Yes", 
      "", "1240", "40", "7460", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", 
      ""};
+  
   public raReportSection SectionHeader4;
   private String[] SectionHeader4Props = new String[] {"KLASE3", "", "", "", "Yes", "", "Yes", "", 
      "340"};
@@ -213,6 +216,32 @@ public abstract class repBBnameUkPromSaldoOrigTemplate extends raReportTemplate 
   public raReportElement TextKLASE3;
   private String[] TextKLASE3Props = new String[] {"KLASE3", "", "", "", "", "", "", "", "", "40", 
      "1220", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+  
+  public raReportSection SectionHeader5;
+  private String[] SectionHeader5Props = new String[] {"KLASE4", "", "", "", "Yes", "", "Yes", "", 
+     "340"};
+  public raReportElement Line26;
+  private String[] Line26Props = new String[] {"", "", "", "0", "15640", "0", "", "", ""};
+  public raReportElement Text27;
+  private String[] Text27Props = new String[] {"=(dsum \"SALDO\")", "", "", 
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "13360", "40", "2300", "220", "", "", 
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text28;
+  private String[] Text28Props = new String[] {"=(dsum \"IPALL\")", "", "", 
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "11040", "40", "2300", "220", "", "", 
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text29;
+  private String[] Text29Props = new String[] {"=(dsum \"IDALL\")", "", "", 
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "8720", "40", "2300", "220", "", "", "", 
+     "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement TextNAZIVKLASE4;
+  private String[] TextNAZIVKLASE4Props = new String[] {"NAZIVKLASE4", "", "", "", "", "", "Yes", 
+     "", "1240", "40", "7460", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", 
+     ""};
+  public raReportElement TextKLASE4;
+  private String[] TextKLASE4Props = new String[] {"KLASE4", "", "", "", "", "", "", "", "", "40", 
+     "1220", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+  
   public raReportSection Detail;
   private String[] DetailProps = new String[] {"", "", "", "", "", "", "", "280"};
   public raReportElement TextNAZIVKONTA;
@@ -233,6 +262,31 @@ public abstract class repBBnameUkPromSaldoOrigTemplate extends raReportTemplate 
   private String[] TextIDALLProps = new String[] {"IDALL", "", "", 
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "8720", "", "2300", "220", "", "", "", 
      "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  
+  public raReportSection SectionFooter5;
+  private String[] SectionFooter5Props = new String[] {"KLASE4", "", "", "", "Yes", "", "", "340"};
+  public raReportElement Line27;
+  private String[] Line27Props = new String[] {"", "", "", "0", "15640", "0", "", "", ""};
+  public raReportElement TextKLASE41;
+  private String[] TextKLASE41Props = new String[] {"KLASE4", "", "", "", "", "", "", "", "", "40", 
+     "1220", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+  public raReportElement TextNAZIVKLASE41;
+  private String[] TextNAZIVKLASE41Props = new String[] {"NAZIVKLASE4", "", "", "", "", "", "Yes", 
+     "", "1240", "40", "7460", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", 
+     ""};
+  public raReportElement Text30;
+  private String[] Text30Props = new String[] {"=(dsum \"IDALL\")", "", "", 
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "8720", "40", "2300", "220", "", "", "", 
+     "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text31;
+  private String[] Text31Props = new String[] {"=(dsum \"IPALL\")", "", "", 
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "11040", "40", "2300", "220", "", "", 
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text32;
+  private String[] Text32Props = new String[] {"=(dsum \"SALDO\")", "", "", 
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "13360", "40", "2300", "220", "", "", 
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  
   public raReportSection SectionFooter4;
   private String[] SectionFooter4Props = new String[] {"KLASE3", "", "", "", "Yes", "", "", "340"};
   public raReportElement Line7;
@@ -256,6 +310,7 @@ public abstract class repBBnameUkPromSaldoOrigTemplate extends raReportTemplate 
   private String[] Text12Props = new String[] {"=(dsum \"SALDO\")", "", "", 
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "13360", "40", "2300", "220", "", "", 
      "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  
   public raReportSection SectionFooter3;
   private String[] SectionFooter3Props = new String[] {"KLASE2", "", "", "", "Yes", "", "", "340"};
   public raReportElement Line8;
@@ -368,7 +423,10 @@ public abstract class repBBnameUkPromSaldoOrigTemplate extends raReportTemplate 
     Section2 = sect.getModel(ep.SECTION + 2, Section2Props);
     Section3 = sect.getModel(ep.SECTION + 3, Section3Props);
     Section4 = sect.getModel(ep.SECTION + 4, Section4Props);
-    Section5 = sect.getModel(ep.SECTION + 5, Section5Props);
+    if (frmBrBilAll.getInstance().sind == 4) {
+      Section6 = sect.getModel(ep.SECTION + 5, Section6Props);
+      Section5 = sect.getModel(ep.SECTION + 6, Section5Props);
+    } else Section5 = sect.getModel(ep.SECTION + 5, Section5Props);
     return sect;
   }
 
@@ -451,6 +509,18 @@ public abstract class repBBnameUkPromSaldoOrigTemplate extends raReportTemplate 
     TextKLASE3 = sect.addModel(ep.TEXT, TextKLASE3Props);
     return sect;
   }
+  
+  public raReportSection createSectionHeader5() {
+    raReportSection sect = new raReportSection(template.getModel(ep.SECTION_HEADER + 5), SectionHeader5Props);
+
+    Line26 = sect.addModel(ep.LINE, Line26Props);
+    Text27 = sect.addModel(ep.TEXT, Text27Props);
+    Text28 = sect.addModel(ep.TEXT, Text28Props);
+    Text29 = sect.addModel(ep.TEXT, Text29Props);
+    TextNAZIVKLASE4 = sect.addModel(ep.TEXT, TextNAZIVKLASE4Props);
+    TextKLASE4 = sect.addModel(ep.TEXT, TextKLASE4Props);
+    return sect;
+  }
 
   public raReportSection createDetail() {
     raReportSection sect = new raReportSection(template.getModel(ep.DETAIL), DetailProps);
@@ -460,6 +530,18 @@ public abstract class repBBnameUkPromSaldoOrigTemplate extends raReportTemplate 
     TextSALDO = sect.addModel(ep.TEXT, TextSALDOProps);
     TextIPALL = sect.addModel(ep.TEXT, TextIPALLProps);
     TextIDALL = sect.addModel(ep.TEXT, TextIDALLProps);
+    return sect;
+  }
+  
+  public raReportSection createSectionFooter5() {
+    raReportSection sect = new raReportSection(template.getModel(ep.SECTION_FOOTER + 5), SectionFooter5Props);
+
+    Line27 = sect.addModel(ep.LINE, Line27Props);
+    TextKLASE41 = sect.addModel(ep.TEXT, TextKLASE41Props);
+    TextNAZIVKLASE41 = sect.addModel(ep.TEXT, TextNAZIVKLASE41Props);
+    Text30 = sect.addModel(ep.TEXT, Text30Props);
+    Text31 = sect.addModel(ep.TEXT, Text31Props);
+    Text32 = sect.addModel(ep.TEXT, Text32Props);
     return sect;
   }
 
@@ -549,7 +631,11 @@ public abstract class repBBnameUkPromSaldoOrigTemplate extends raReportTemplate 
     SectionHeader2 = addSection(createSectionHeader2());
     SectionHeader3 = addSection(createSectionHeader3());
     SectionHeader4 = addSection(createSectionHeader4());
+    if (frmBrBilAll.getInstance().sind == 4)
+      SectionHeader5 = addSection(createSectionHeader5());
     Detail = addSection(createDetail());
+    if (frmBrBilAll.getInstance().sind == 4)
+      SectionFooter5 = addSection(createSectionFooter5());
     SectionFooter4 = addSection(createSectionFooter4());
     SectionFooter3 = addSection(createSectionFooter3());
     SectionFooter2 = addSection(createSectionFooter2());
