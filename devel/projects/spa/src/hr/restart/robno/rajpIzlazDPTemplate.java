@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
@@ -141,6 +142,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 		fDI.findCPOR();
 		fDI.findCStanje();
 		fDI.updateTxt();
+		fDI.updateHelper();
 		//      }
 		//    });
 		//      fDI.restoreDummySet();
@@ -150,6 +152,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+			  
 				if ( fDI instanceof raDOS) {
 					jtfKOL2.requestFocus();
 					jtfKOL2.selectAll();
@@ -163,6 +166,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 					jtfKOL.selectAll();
 				}
 				System.out.println("afterlook2");
+				
 			}
 		});
 

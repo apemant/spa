@@ -24,6 +24,7 @@ import hr.restart.baza.*;
 import hr.restart.pos.presBlag;
 import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.raUser;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
@@ -112,6 +113,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	rajpIzlazMPTemplate MP;
 
 	rajpIzlazDPTemplate DP;
+	
+	dlgArtHelper dah;
 
 	String srcString;
 	String keyforRN = null, keyfordod;
@@ -921,6 +924,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 				"Kontrola ispravosti redoslijeda unosa dokumenata")
 				.equalsIgnoreCase("D"));
 		setKumulativ(); // Siniša
+		
+		dah = new dlgArtHelper(raDetail);
 	}
 
 	public void OpenWhatWeNeed() {
@@ -2015,6 +2020,7 @@ ST.prn(radninal);
 		getDetailSet().refresh();
 		getDetailSet().goToClosestRow(row);
 		vttext = null;
+		if (dah.isShowing()) dah.hide();
 
 		// DP.rpcart.Clean();
 	}
@@ -2389,6 +2395,7 @@ ST.prn(radninal);
 		    raWebSync.isWeb(getDetailSet().getInt("CART"))) {
           raWebSync.updateStanje(getDetailSet().getInt("CART"), getMasterSet());
         }
+		if (dah.isShowing()) dah.hide();
 	}
 
 	final public void AfterDeleteDetail() {
@@ -5175,6 +5182,25 @@ System.out.println("findCjenik::else :: "+sql);
 			}
 		}
 		return true;
+	}
+	
+	public void updateHelper() {
+	  if (frmParam.getParam("robno", "artHelper", "D", "Prikazati nabavne cijene artikla na izlazima (D,N)?", true).equalsIgnoreCase("D")) {
+	    if (!raUser.getInstance().canAccessTable("doku", "P")) return;
+	    
+	    String docs = frmParam.getParam("robno", "artHelperDocs", "PON ROT RAC", "Vrste dokumenata za artHelper",true);
+	    if (docs.indexOf(what_kind_of_dokument) < 0) return;
+	    
+	    System.out.println("showing dah");
+	    
+	    if (Sklad.getDataModule().getRowCount() == 1) 
+	      dah.show(getDetailSet().getInt("CART"), null);
+	    else {
+	      String cskl = getMasterSet().getString("CSKL");
+	      if (isOJ) cskl = getDetailSet().getString("CSKLART");
+	      dah.show(getDetailSet().getInt("CART"), cskl);
+	    }
+      }
 	}
 
 	// javax.swing.JOptionPane.showMessageDialog(null,
