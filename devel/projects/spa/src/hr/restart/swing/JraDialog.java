@@ -32,6 +32,8 @@ public class JraDialog extends JDialog {
   }
 
   private boolean showing;
+  private boolean shown;
+  private int pix = 1;
 
   public JraDialog() {
     super();
@@ -78,6 +80,10 @@ public class JraDialog extends JDialog {
   }
 
   public void show() {
+    if (shown && JraFrame.twitchHack) {
+      setLocation(getX(), getY()+pix);
+      pix = pix * -1;
+    }
     if (!isShowing() && isTreperenjeHandled()) showing = true;
     super.show();
   }
@@ -87,7 +93,7 @@ public class JraDialog extends JDialog {
   private static int trepCounter = 0;
   private static boolean isTreperenjeHandled() {
     if (trepCached) return trepHandled;
-    if (trepCounter++ < 5) return trepHandled;
+    if (trepCounter++ < 8) return trepHandled;
     trepCached = true;
     //default true
     return trepHandled = frmParam
@@ -103,6 +109,7 @@ public class JraDialog extends JDialog {
       raDisabledPopup.hideInstance();
       raDatePopup.hideInstance();
     } catch (Exception e) {}
+    shown = true;
     super.hide();
   }
   public void dispose() {
