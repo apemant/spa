@@ -295,12 +295,13 @@ trenSTANJE = hr.restart.util.Util.getNewQueryDataSet(queryString,true);
 ////////////////////////////
 
   void findSTANJE(String godina,String skladiste, int artikl){
-    if (!(godina.equals(this.OLDGodina) && skladiste.equals(this.OLDCskl)&& artikl==this.OLDcart)) {
+    /*if (!(godina.equals(this.OLDGodina) && skladiste.equals(this.OLDCskl)&& artikl==this.OLDcart)) {
       OLDGodina= godina;
       OLDCskl = skladiste;
       OLDcart = artikl;
       findStanjeUnconditional(godina,skladiste,artikl);
-    }
+    }*/
+    findStanjeUnconditional(godina,skladiste,artikl);
   }
 
   public boolean findStanje(String godina,String skladiste, int artikl){
