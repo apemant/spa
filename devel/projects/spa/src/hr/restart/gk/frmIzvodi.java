@@ -389,6 +389,7 @@ public class frmIzvodi extends raMasterDetail {
       } else
         return false;
     } catch (Exception ex) {
+      ex.printStackTrace();
       return false;
     }
   }
