@@ -184,7 +184,7 @@ public class JOPPDhndlr {
       strAset.addColumn(dM.createBigDecimalColumn("ZAPOSINV","VI.4.2.Zapošljavanje osoba s invaliditetom"));
       strAset.addColumn(dM.createBigDecimalColumn("ZAPOSPOD","VI.4.3.Zapošljavanje poduzetnièka plaæa"));
       
-      strAset.addColumn(dM.createBigDecimalColumn("ZAPOSSD","VI.4.3.Zapošljavanje samostalna djelatnost"));
+      strAset.addColumn(dM.createBigDecimalColumn("ZAPOSSD","VI.4.4.Zapošljavanje samostalna djelatnost"));
       
       strAset.addColumn(dM.createBigDecimalColumn("NEOP","VII. Neoporezivi primici"));
       strAset.addColumn(dM.createBigDecimalColumn("KAMATA","VIII. Kamata MO2"));
@@ -276,14 +276,14 @@ public class JOPPDhndlr {
       
       addBigDec(strAset, strBset, new String[] {"ZAPOSPOD","ZAP"}, "JOS=0031-0039;");
       addBigDec(strAset, strBset, new String[] {"ZAPOSSD","ZAP"}, "JOS=0041-0049;");
-      Aus.sub(strAset, "ZAP", "ZAPOSPOD");
-      Aus.sub(strAset, "ZAP", "ZAPOSSD");
 
       addBigDec(strAset, strBset, new String[] {"NEOP","NEOP"}, "");
       addBigDec(strAset, strBset, new String[] {"KAMATA","MIO2","MIO2STAZ"}, "JOP=5271;");
 
       strAset.post();
     }
+    Aus.sub(strAset, "ZAP", "ZAPOSPOD");
+    Aus.sub(strAset, "ZAP", "ZAPOSSD");
   }
 
   private void addBigDec(StorageDataSet sA, StorageDataSet sB, String[] augs, String cond) {
