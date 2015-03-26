@@ -537,7 +537,7 @@ public class frmBrBilAll extends raUpitFat {
     QueryDataSet jptvov = deriveRawSetShifts(data, kontoPanel.getBrKonLength() + 1, false);
     checkClosing();
     
-    if (!doubleClicked) {
+    //if (!doubleClicked) {
 
 //      sysoutTEST st = new sysoutTEST(false); //XDEBUG delete when no more needed
       if (isKompletnaBilanca()){
@@ -559,7 +559,7 @@ public class frmBrBilAll extends raUpitFat {
         repRekapitulacijaSet = valutaConvertedSet(makeRekapitulacija(data));
         repRekapitulacijaSet.setSort(new SortDescriptor(new String[] {"CORG", "BROJKONTA"}));
       }
-    }
+    //}
     
     positionDataSet(jptvov);
     setDataSetAndSums(jptvov, new String[] {"POCID","POCIP","SALPS","ID","IP","SALPROM","DUG","POT","SALDO"});
