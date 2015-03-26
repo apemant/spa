@@ -21,6 +21,7 @@ import hr.restart.start;
 import hr.restart.baza.Condition;
 import hr.restart.baza.ConsoleCreator;
 import hr.restart.baza.Knjigod;
+import hr.restart.baza.KreirDrop;
 import hr.restart.baza.Refresher;
 import hr.restart.baza.dM;
 import hr.restart.robno.raDateUtil;
@@ -1180,6 +1181,17 @@ public class Aus {
   		ds.getDatabase(), filter, null, true, Load.ALL));
   	removeRowID(ds);
   }
+  
+  public static void setupColumn(Column col, Column src) {
+    col.setCaption(src.getCaption());
+    col.setWidth(src.getWidth());
+    col.setDisplayMask(src.getDisplayMask());
+  }
+  
+  public static void setupColumn(Column col, KreirDrop src) {
+    setupColumn(col, src.getColumn(col.getColumnName()));
+  }
+  
   
   /**
    * Postavlja filter na dataset i otvara ga.
