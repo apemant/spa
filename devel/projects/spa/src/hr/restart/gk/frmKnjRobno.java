@@ -19,6 +19,7 @@ package hr.restart.gk;
 
 import hr.restart.baza.Shkonta;
 import hr.restart.baza.dM;
+import hr.restart.baza.doki;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.sk.raSaldaKonti;
@@ -107,6 +108,7 @@ public class frmKnjRobno extends frmKnjizenje {
         tmpskstavke.close();
         tmpskstavke.setColumns(getKnjizenje().getStavkaSK().cloneColumns());
         tmpskstavke.addColumn(identifikator);
+        tmpskstavke.addColumn(doki.getDataModule().getColumn("SYSDAT").cloneColumn());
         tmpskstavke.open();
         //ST.prn(tmpskstavke);
     }
@@ -468,6 +470,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                         tmpskstavke.setString("OZNVAL", podaci.getString("OZNVAL"));
                     	
                     }
+                                        
                     if (podaci.hasColumn("TECAJ")!=null) {
                         tmpskstavke.setBigDecimal("TECAJ", podaci.getBigDecimal(
                         "TECAJ"));
@@ -631,6 +634,11 @@ System.out.println("**** DEVIZNI ANLAGE");
                 tmpskstavke.setTimestamp("DATDOSP", data
                         .getTimestamp("DATDOSP"));
             }
+            
+            if (data.hasColumn("SYSDAT")!=null) {
+              tmpskstavke.setTimestamp("SYSDAT", data.getTimestamp("SYSDAT"));
+            }
+            
             tmpskstavke.setTimestamp("DATPRI", datdok);
             String pero = "Dokument " + opisstavke
             + getValuteOpis(data);
@@ -730,6 +738,9 @@ System.out.println("**** DEVIZNI ANLAGE");
             if (data.hasColumn("DATDOSP") != null) {
                 tmpskstavke.setTimestamp("DATDOSP", data
                         .getTimestamp("DATDOSP"));
+            }
+            if (data.hasColumn("SYSDAT")!=null) {
+              tmpskstavke.setTimestamp("SYSDAT", data.getTimestamp("SYSDAT"));
             }
             tmpskstavke.setTimestamp("DATPRI", datdok);
             if (detaljniOpisNonSK() && !raKonta.isZbirni(konto)) {
