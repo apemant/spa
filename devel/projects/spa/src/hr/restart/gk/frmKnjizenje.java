@@ -503,11 +503,11 @@ public class frmKnjizenje extends JraDialog implements ResetEnabled {
   class knjizThread extends Thread {
     public void run() {
       setEnabled(false);
-      frmNalozi.getFrmNalozi().getMasterSet().setString("SRC", srcTem);
       getStatus().startTask(progSteps,"Knjiženje u tijeku ...");
       setProcessMessage("Knjiženje u tijeku ...");
       getKnjizenje().kSk.clearErrors();
       boolean isOK = runOkPressTrans();
+      frmNalozi.getFrmNalozi().getMasterSet().setString("SRC", srcTem);
       clearProcessMessage();
       try {
         if (isOK) {
