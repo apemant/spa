@@ -284,6 +284,7 @@ public class raExtendedTable extends JraTable2 {
       if (stm != null && stm.isNatural()) stm.clearSelection();
       getDataSet().setSort(original);
       if (isShowing()) getTableHeader().repaint();
+      if (owner != null) owner.getColumnsBean().checkSelection();
       return;
     }
     int fakes = 0;
@@ -306,6 +307,7 @@ public class raExtendedTable extends JraTable2 {
     if (isShowing()) getTableHeader().repaint();
     raSelectTableModifier stm = hasSelectionTrackerInstalled();
     if (stm != null && stm.isNatural()) stm.clearSelection();
+    if (owner != null) owner.getColumnsBean().checkSelection();
     getDataSet().setSort(sd);
   }
   

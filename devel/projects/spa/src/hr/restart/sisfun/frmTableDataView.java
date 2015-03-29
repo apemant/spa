@@ -373,6 +373,7 @@ public class frmTableDataView extends JraFrame {
     	jp.getDataSet().goToRow(row);
     jp.enableEvents(true);
     jp.getSelectionTracker().clearSelection();
+    jp.getColumnsBean().checkSelection();
     jp.fireTableDataChanged();
   }
   
