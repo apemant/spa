@@ -115,6 +115,7 @@ final public class raRAC extends raIzlazTemplate {
     	          getMasterSet().refetchRow(getMasterSet());
     	    	  }
         		}
+        		raMaster.getColumnsBean().checkSelection();
     	    } finally {
     	      raMaster.getJpTableView().enableEvents(true);
     	    }

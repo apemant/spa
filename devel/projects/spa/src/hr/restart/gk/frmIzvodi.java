@@ -1191,6 +1191,7 @@ public class frmIzvodi extends raMasterDetail {
       }
     } while (getMasterSet().next());
     raMaster.getSelectionTracker().clearSelection();
+    raMaster.getColumnsBean().checkSelection();
     getMasterSet().goToRow(lastRow);
     raMaster.getJpTableView().enableEvents(true);
   }
@@ -1207,6 +1208,7 @@ public class frmIzvodi extends raMasterDetail {
         ponistiIzvod();
       }
     }
+    raMaster.getColumnsBean().checkSelection();
     raMaster.getJpTableView().fireTableDataChanged();
     changeDetailViewStatus(getMasterSet().getString("STATUS"));//ai 04.05.05
   }

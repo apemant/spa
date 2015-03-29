@@ -1251,6 +1251,7 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
 
   void obrNaloga_action() {
     raMaster.getSelectionTracker().removeFromSelection(getMasterSet());
+    raMaster.getColumnsBean().checkSelection();
     new Thread() {
       public void run() {
         obrNaloga_inThread(false, false, false, false);
@@ -1294,6 +1295,7 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
           }
         } while (getMasterSet().next());
         raMaster.getSelectionTracker().clearSelection();
+        raMaster.getColumnsBean().checkSelection();
         raMaster.getJpTableView().enableEvents(true);
       }
     }.start();
@@ -1761,6 +1763,7 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
       if (validateSelectionMaster(getMasterSet(),true))
         raMaster.getSelectionTracker().toggleSelection(getMasterSet());
     }
+    raMaster.getColumnsBean().checkSelection();
     raMaster.getJpTableView().enableEvents(true);
   }
   private static String changeDatumKnjizenja_ret = "";
