@@ -279,7 +279,7 @@ public class jpUlazMaster extends JPanel {
     });*/
     jlCPAR.setText(res.getString("jlCPAR_text"));
     jlDATRAC.setText(res.getString("jlDATRAC_text"));
-    jlDATDOSP.setText("Datum dospje\u0107a");
+    jlDATDOSP.setText("Dospjeæe");
     jlUIPRPOR.setText(res.getString("jlUIPRPOR_text"));
 
     jlUINAB.setText(res.getString("jlUINAB_text"));
