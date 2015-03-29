@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
@@ -150,6 +151,8 @@ public class frmZavTr extends raSifraNaziv {
     jp.add(jlPZT, new XYConstraints(260, 0, -1, -1));
     jp.add(jtfPZT, new XYConstraints(350, 0, 100, -1));
     this.jpRoot.add(jp,java.awt.BorderLayout.SOUTH);
+    
+    raDataIntegrity.installFor(this);
   }
 
   void jtfPZT_focusLost(FocusEvent e) {
@@ -162,14 +165,6 @@ public class frmZavTr extends raSifraNaziv {
     if (dm.getZavtr().getBigDecimal("IZT").doubleValue()>0) {
       dm.getZavtr().setBigDecimal("PZT",main.nul);
     }
-  }
-
-  public boolean DeleteCheck() {
-    if (util.chkIsDeleteable("VTZAVTR", "CZT", dm.getZavtr().getString("CZT"), util.MOD_STR)==false)
-      return false;
-    if (util.isDeleteable("VSHZTR_ZTR", "CZT", dm.getZavtr().getString("CZT"), util.MOD_STR)==false)
-      return false;
-    return true;
   }
 
 }
