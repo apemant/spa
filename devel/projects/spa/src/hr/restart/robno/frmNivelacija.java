@@ -780,17 +780,14 @@ public class frmNivelacija extends raMasterDetail {
    * iz tablice stanja. Rezultiraju\u0107i dataset se \u010Duva u allArt.
    */
   private boolean getStanjeArt() {
-    String grart = "";
-    dm.getGrupart().open();
-    if (!pa.isAll()) grart =
-      Aus.getDataTreeList(pa.getGrupart(),dm.getGrupart(),"CGRART","CGRARTPRIP");
-    if (grart == null) return false;
-    else if (grart != "") grart = " and artikli." + grart;
+    Condition grart = Condition.none;
+
+    if (!pa.isAll()) grart = Aus.getDataTreeList(pa.getGrupart(),dm.getGrupart(),"CGRART","CGRARTPRIP");
+    if (grart == Condition.nil) return false;
     
     String q = "select stanje.cart, artikli.cart1, artikli.bc, artikli.nazart, artikli.jm, stanje.vc, stanje.mc "+
         "from stanje,artikli where stanje.cart = artikli.cart and " +
-        "stanje.cskl = '" + this.getMasterSet().getString("CSKL") + "' and " +
-        "stanje.god = '" + this.getMasterSet().getString("GOD") +"' "+grart;
+    		Condition.whereAllEqual(new String[] {"CSKL", "GOD"}, getMasterSet()).qualified("stanje").and(grart.qualified("artikli"));
     
     System.out.println(q);
 
