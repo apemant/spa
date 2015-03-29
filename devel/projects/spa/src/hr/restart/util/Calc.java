@@ -31,6 +31,7 @@ public class Calc {
   private String expression;
   private ReadWriteRow values;
   private HashMap vars;
+  private HashMap mods;
 
   class Operator {
     private String op;
@@ -56,7 +57,20 @@ public class Calc {
     public BigDecimal exec(String var, BigDecimal val) {
       BigDecimal temp = exec(getVar(var), val);
       if (priority > 0) return temp;
-      if (values == null || values.hasColumn(var) == null) {
+      
+      int dot = var.indexOf('.');
+    	boolean cap = var.length() > 0 && var.charAt(0) >= 'A' && var.charAt(0) <= 'Z';
+      if (!cap || dot > 0 || values == null || values.hasColumn(var) == null) {      	
+      	if (dot > 0) {
+        	ReadWriteRow mod = (ReadWriteRow) mods.get(var.substring(0, dot));
+        	if (mod != null) {
+        		String col = var.substring(dot + 1);
+        		if (mod.hasColumn(col) != null)  {
+        			mod.setBigDecimal(col, temp.setScale(mod.getColumn(col).getScale(), BigDecimal.ROUND_HALF_UP));
+        			return mod.getBigDecimal(col);
+        		}
+        	}
+        }      	
       	vars.put(var, temp); 
       	return temp;
       }
@@ -66,7 +80,7 @@ public class Calc {
     public BigDecimal eval(Object o1, Object o2) {
       boolean var = o1 instanceof String;
       if (priority == 0 && !var)
-        new IllegalArgumentException("Invalid operand for assignment: " + expression);
+        throw new IllegalArgumentException("Invalid operand for assignment: " + expression);
       if (var) return exec((String) o1, getValue(o2));
       return exec((BigDecimal) o1, getValue(o2));
     }
@@ -85,7 +99,7 @@ public class Calc {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.multiply(val2); }
   };
   Operator DIV = new Operator("/", 2, 20) {
-    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.divide(val2, val1.scale(), BigDecimal.ROUND_HALF_UP); }
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return div(val1, val2); }
   };
   Operator LSH = new Operator("<<", 2, 20) {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.movePointRight(val2.intValue()); }
@@ -97,7 +111,7 @@ public class Calc {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.multiply(val2).movePointLeft(2); }
   };
   Operator GETPERCENT = new Operator("%%", 2, 20) {
-    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.divide(val2.movePointLeft(2), val1.scale(), BigDecimal.ROUND_HALF_UP); }
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return div(val1, val2.movePointLeft(2)); }
   };
   Operator ADDPERCENT = new Operator("+%", 2, 20) {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.add(val1.multiply(val2).movePointLeft(2)); }
@@ -106,7 +120,7 @@ public class Calc {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.subtract(val1.multiply(val2).movePointLeft(2)); }
   };
   Operator INVERTPERCENT = new Operator("~%", 2, 20) {
-    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.divide(Aus.one0.add(val2.movePointLeft(2)), val1.scale(), BigDecimal.ROUND_HALF_UP); }
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return div(val1, Aus.one0.add(val2.movePointLeft(2))); }
   };
   Operator PRECISION = new Operator(",", 2, 30) {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.setScale(val2.intValue(), BigDecimal.ROUND_HALF_UP); }
@@ -124,7 +138,7 @@ public class Calc {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.multiply(val2); }
   };
   Operator ASSIGN_DIV = new Operator("/=", 2, 0) {
-    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.divide(val2, val1.scale(), BigDecimal.ROUND_HALF_UP); }
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return div(val1, val2); }
   };
   Operator ASSIGN_LSH = new Operator("<<=", 2, 0) {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.movePointRight(val2.intValue()); }
@@ -142,7 +156,7 @@ public class Calc {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.subtract(val1.multiply(val2).movePointLeft(2)); }
   };
   Operator ASSIGN_INVERTPERCENT = new Operator("~%=", 2, 0) {
-    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.divide(Aus.one0.add(val2.movePointLeft(2)), val1.scale(), BigDecimal.ROUND_HALF_UP); }
+    public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return div(val1, Aus.one0.add(val2.movePointLeft(2))); }
   };  
   Operator EQ = new Operator("==", 2, 5) {
     public BigDecimal exec(BigDecimal val1, BigDecimal val2) { return val1.compareTo(val2) == 0 ? Aus.one0 : Aus.zero0; }
@@ -164,10 +178,23 @@ public class Calc {
   };  
   Operator IF = new Operator("?:", 2, 5);
   
+  BigDecimal div(BigDecimal val1, BigDecimal val2) {
+  	return val2.signum() == 0 ? Aus.zero0 : val1.divide(val2, val1.scale(), BigDecimal.ROUND_HALF_UP);
+  }
   
   private BigDecimal getVar(String var) {
-    if (values != null && values.hasColumn(var) != null) 
+  	int dot = var.indexOf('.');
+  	boolean cap = var.length() > 0 && var.charAt(0) >= 'A' && var.charAt(0) <= 'Z';
+    if (values != null && cap && dot < 0 && values.hasColumn(var) != null) 
       return values.getBigDecimal(var);
+    if (dot > 0) {
+    	ReadWriteRow mod = (ReadWriteRow) mods.get(var.substring(0, dot));
+    	if (mod != null) {
+    		String col = var.substring(dot + 1);
+    		if (mod.hasColumn(col) != null) 
+    			return mod.getBigDecimal(col);
+    	}
+    }
     return (BigDecimal) vars.get(var);
   }
   
@@ -192,11 +219,13 @@ public class Calc {
     this.values = ds;
     this.expression = expr;
     this.vars = new HashMap();
+    this.mods = new HashMap();
   }
   
   public Calc(Calc copy) {
     this.values = copy.values;
     this.vars = copy.vars;
+    this.mods = copy.mods;
   }
   
   public static BigDecimal eval(String expr) {
@@ -216,6 +245,11 @@ public class Calc {
   	return this;
   }
   
+  public Calc module(String name, ReadWriteRow mod) {
+  	mods.put(name, mod);
+  	return this;
+  }
+  
   public BigDecimal get(String var) {
     return (BigDecimal) vars.get(var);
   }
@@ -229,7 +263,7 @@ public class Calc {
     this.values = ds;
     return this;
   }
-  
+    
   public BigDecimal runOn(ReadWriteRow ds, String expr) {
     return new Calc(this).setData(ds).run(expr);
   }
@@ -269,11 +303,13 @@ public class Calc {
     }
     String var = expression.substring(beg, p);
     if (module != null) {
-    	if (beg == p) throw new IllegalArgumentException("Invalid variable after dot: " + expression);
+    	if (beg + module.length() + 1 == p) 
+    		throw new IllegalArgumentException("Invalid variable after dot: " + expression);
+    	if (mods.containsKey(module)) return var;
+    	
     	ReadWriteRow ds = dM.getDataByName(module);
     	if (ds == null) throw new IllegalArgumentException("Invalid module: " + expression);
-    	String col = expression.substring(beg + module.length() + 1, p);
-    	vars.put(var, ds.getBigDecimal(col));
+    	mods.put(module, ds);    	
     }
     return var;
   }
@@ -343,7 +379,7 @@ public class Calc {
         if (ch == '!') return NEQ;
         if (ch == '>') return GE;
         if (ch == '<') return LE;
-        new IllegalArgumentException("Illegal operand: " + expression);
+        throw new IllegalArgumentException("Illegal operand: " + expression);
       } else if (ch2 == '%') {
         ++p;
         if (ch3 == '=') {
@@ -357,7 +393,7 @@ public class Calc {
           if (ch == '-') return SUBPERCENT;
           if (ch == '~') return INVERTPERCENT;
         }
-        new IllegalArgumentException("Illegal operand: " + expression);
+        throw new IllegalArgumentException("Illegal operand: " + expression);
       }
       if (ch == '+') return ADD;
       if (ch == '-') return SUB;
@@ -381,7 +417,7 @@ public class Calc {
       if (ch == '>') return GT;
       if (ch == '<') return LT;
       if (ch == '<' && ch2 == '>') return NEQ;
-      new IllegalArgumentException("Illegal operand: " + expression);
+      throw new IllegalArgumentException("Illegal operand: " + expression);
     }
     return null;
   }
@@ -399,9 +435,9 @@ public class Calc {
     
     while (p < l) {
       while (op == null) {
-    	left = getOperand();
-    	op = getOperator();
-    	if (op == null && p >= l) return getValue(left);
+    	  left = getOperand();
+    	  op = getOperator();
+    	  if (op == null && p >= l) return getValue(left);
       }
       if (op == IF) return evalBranch(getValue(left).signum() != 0);
       Object right = getOperand();
@@ -410,13 +446,17 @@ public class Calc {
         right = evalBranch(getValue(right).signum() != 0);
         nop = null;
       }
-      if (nop != null && nop.strongerThan(op)) {
+      if (nop != null && (nop.strongerThan(op) || op.priority == 0)) {
       	stack.addLast(left);
       	stack.addLast(op);
       	left = right;
       	op = nop;
       } else {
-      	left = op.eval(left,  right);
+      	try {
+      		left = op.eval(left,  right);
+      	} catch (Exception e) {
+      		throw new IllegalArgumentException("Expression: " + left + " " + op + " " + right);
+      	}
       	while (stack.size() > 0 && ((Operator) stack.getLast()).notWeaker(nop)) {
       		op = (Operator) stack.removeLast();
       		left = op.eval(stack.removeLast(), left);
@@ -449,7 +489,7 @@ public class Calc {
   	lookupData.getlookupData().raLocate(dM.getDataModule().getPorezi(), "CPOR", dM.getDataModule().getArtikli().getString("CPOR"));
   	
   	long tim = System.currentTimeMillis();
-  	for (int i = 0; i < 50000; i++) {
+  	for (int i = 0; i < 500000; i++) {
 	  	ds.setBigDecimal(
 					"DIOPORPOR",
 					ds.getBigDecimal("PORAV").multiply(
@@ -466,13 +506,11 @@ public class Calc {
   	System.out.println("direct " + (System.currentTimeMillis() - tim));
   	
   	tim = System.currentTimeMillis();
-  	for (int i = 0; i < 50000; i++) {
-  		Calc c = new Calc(ds);
-  		c.evaluate("DIOPORMAR = PORAV ~% Porezi.UKUPOR;" +
-  				   "DIOPORPOR = PORAV - DIOPORPOR;" +
-  				   "34 > 33 ? 4 : 3"  
-  		    );
-  		
+  	Calc c = new Calc(ds);
+  	c.module("porezi", dM.getDataModule().getPorezi());
+  	for (int i = 0; i < 500000; i++) {
+  		c.run("DIOPORMAR = PORAV ~% porezi.UKUPOR;" +
+  				   "DIOPORPOR = PORAV - DIOPORPOR");
   		
   		//c.evaluate("DIOPORPOR = PORAV - DIOPORPOR");
   	}
