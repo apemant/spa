@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.swing.JrCheckBox;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
@@ -228,6 +229,7 @@ public class frmPorezi extends raMatPodaci {
     jp.add(jlPOR2, new XYConstraints(15, 128, -1, -1));
     jp.add(jtfUNPOR2, new XYConstraints(260, 128, 100, -1));
     jp.add(jlPOR3, new XYConstraints(15, 153, -1, -1));
+    raDataIntegrity.installFor(this);
   }
   public boolean Validacija(char mode) {
     if (mode=='N') {
@@ -259,9 +261,6 @@ public class frmPorezi extends raMatPodaci {
       }
       jtfNAZPOR.requestFocus();
     }
-  }
-  public boolean DeleteCheck() {
-    return util.isDeleteable("ARTIKLI", "CPOR", getRaQueryDataSet().getString("CPOR"), util.MOD_STR);
   }
   public void EntryPoint(char mode) {
     rcc.setLabelLaF(jcbPnp1,false);
