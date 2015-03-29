@@ -301,6 +301,7 @@ public class raTableCopyPopup extends JPopupMenu {
       public void actionPerformed(ActionEvent e) {
         raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
         stm.clearSelection();
+        ((raExtendedTable) jt).owner.getColumnsBean().checkSelection();
         jt.repaint();
       }
     });
@@ -484,6 +485,7 @@ public class raTableCopyPopup extends JPopupMenu {
       stm.toggleSelection(ds);
     ds.goToRow(row);
     ds.enableDataSetEvents(true);
+    ((raExtendedTable) jt).owner.getColumnsBean().checkSelection();
     jt.startFire();
     jt.repaint();
   }
@@ -545,13 +547,16 @@ public class raTableCopyPopup extends JPopupMenu {
   
   void finddups() {
     Set all = new HashSet();
-    Set dups = new HashSet();
+    Map dups = new HashMap();
     for (int i = 0; i < jt.getRowCount(); i++) {
       Object key = getKey(i);
       if (key == null) continue;
       
-      if (all.contains(key)) dups.add(key);
-      all.add(key);
+      if (!all.add(key)) {
+      	Integer c = (Integer) dups.get(key);
+      	if (c == null) c = new Integer(1);
+      	dups.put(key, new Integer(c.intValue() + 1));
+      }
     }
     
     if (dups.size() == 0) {
@@ -559,7 +564,7 @@ public class raTableCopyPopup extends JPopupMenu {
           "Nema duplikata.", "Duplikati", JOptionPane.INFORMATION_MESSAGE);
       return;
     }
-    frmTableDataView old = showSet(dups);
+    frmTableDataView old = showMap(dups);
     old.setTitle("Duplikati");
     old.pack();
     old.show();
@@ -630,9 +635,9 @@ public class raTableCopyPopup extends JPopupMenu {
  		}
   }
   
-  StorageDataSet createDataSet(Set values) {
+  StorageDataSet createDataSet(Map values) {
     Column col = null;
-    Object key = values.iterator().next();
+    Object key = values.keySet().iterator().next();
     if (key instanceof BigDecimal) 
         col = dM.createBigDecimalColumn("VRI", "Vrijednost", ((BigDecimal) key).scale());
     else if (key instanceof Integer)
@@ -649,39 +654,14 @@ public class raTableCopyPopup extends JPopupMenu {
     }   else return null;
     
     StorageDataSet ds = new StorageDataSet();
-    ds.setColumns(new Column[] {col});
+    ds.setColumns(new Column[] {col, dM.createIntColumn("BROJ", "Broj")});
     ds.open();
     return ds;
   }
   
-  frmTableDataView showSet(Set values) {
-    StorageDataSet ds = createDataSet(values);
-    Column col = ds.getColumn("VRI");
-    Object key = null;
-    
-    try {
-      Variant v = new Variant();
-      for (Iterator i = values.iterator(); i.hasNext(); ) {
-          key = i.next();
-          ds.insertRow(false);
-          v.setFromString(col.getDataType(), key.toString());
-          ds.setVariant("VRI", v);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-    
-    frmTableDataView view = new frmTableDataView();
-    view.setDataSet(ds);
-    view.jp.setPreferredSize(new Dimension(360, 500));
-    view.jp.getMpTable().setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-    return view;
-  }
-  
   frmTableDataView showMap(Map values) {
-    
-  	StorageDataSet ds = createDataSet(values.keySet());
+  	
+  	StorageDataSet ds = createDataSet(values);
   	Column col = ds.getColumn("VRI");
     Object key = null;
   	
@@ -689,12 +669,10 @@ public class raTableCopyPopup extends JPopupMenu {
 	  	Variant v = new Variant();
 	  	for (Iterator i = values.keySet().iterator(); i.hasNext(); ) {
 	  		key = i.next();
-	  		Integer cnt = (Integer) values.get(key);
-	  		for (int c = 0; c < cnt.intValue(); c++) {
-	  			ds.insertRow(false);
-	  			v.setFromString(col.getDataType(), key.toString());
-	  			ds.setVariant("VRI", v);
-	  		}
+	  		ds.insertRow(false);
+	  		v.setFromString(col.getDataType(), key.toString());
+	  		ds.setVariant("VRI", v);
+	  		ds.setInt("BROJ", ((Integer) values.get(key)).intValue());
 	  	}
   	} catch (Exception e) {
   		e.printStackTrace();
@@ -1254,7 +1232,10 @@ public class raTableCopyPopup extends JPopupMenu {
     raSelectTableModifier stm = jt.hasSelectionTrackerInstalled();
     if (stm != null && stm.isNatural()) stm.clearSelection();
     jt.fireTableDataChanged();
-    if (cb != null && cb.isShowing()) cb.checkFilter();
+    if (cb != null && cb.isShowing()) { 
+    	cb.checkFilter();
+    	cb.checkSelection();
+    }
   }
   
   void showFilter() {
