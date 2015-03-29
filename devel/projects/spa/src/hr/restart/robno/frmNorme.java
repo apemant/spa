@@ -26,16 +26,16 @@ import hr.restart.baza.stdoki;
 import hr.restart.sisfun.Asql;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraTextField;
-import hr.restart.swing.raOptionDialog;
+import hr.restart.swing.raInputDialog;
 import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raProcess;
 import hr.restart.util.startFrame;
-import hr.restart.util.sysoutTEST;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
@@ -45,8 +45,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -68,7 +68,6 @@ public class frmNorme extends raMasterFakeDetailArtikl {
   JraTextField jraKol = new JraTextField();
   rapancart rpn = new rapancart();
   rapancskl1 rps = new rapancskl1(false, 250);
-  raOptionDialog rod = new raOptionDialog();
 //  raArtiklUnos rpn = new raArtiklUnos();
 
   frmRnus rns;
@@ -86,8 +85,8 @@ public class frmNorme extends raMasterFakeDetailArtikl {
   
   public frmNorme() {
     try {
+    	instanceOfMe = this;
       jbInit();
-      instanceOfMe = this;
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -119,13 +118,22 @@ public class frmNorme extends raMasterFakeDetailArtikl {
     if (rpn.getCART().equals("")) {
       JOptionPane.showMessageDialog(this.getJPanelMaster(),
          "Potrebno je izabrati artikl!", "Greška", JOptionPane.ERROR_MESSAGE);
+      rpn.EnabDisab(true);
       rpn.setCART();
       return false;
     }
     mast.setInt("CARTNOR", Integer.valueOf(rpn.getCART()).intValue());
     if (mode == 'N' && MasterNotUnique()) {
       JOptionPane.showMessageDialog(this.getJPanelMaster(),
-         "Normativ ve\u0107 postoji!", "Greška", JOptionPane.ERROR_MESSAGE);
+         "Normativ veæ postoji!", "Greška", JOptionPane.ERROR_MESSAGE);
+      rpn.EnabDisab(true);
+      rpn.setCART();
+      return false;
+    }
+    if (!raVart.isNorma(mast.getInt("CART"))) {
+    	JOptionPane.showMessageDialog(this.getJPanelMaster(),
+          "Artikl ne dopušta normiranje!", "Greška", JOptionPane.ERROR_MESSAGE);
+    	rpn.EnabDisab(true);
       rpn.setCART();
       return false;
     }
@@ -147,6 +155,14 @@ public class frmNorme extends raMasterFakeDetailArtikl {
 
   public boolean Validacija(char mode) {
     if (vl.isEmpty(jraKol)) return false;
+    if (mode == 'N' && frmNormArt.isCircular(getDetailSet().getInt("CART"), mast.getInt("CARTNOR"))) {
+    	JOptionPane.showMessageDialog(getWindow(), "Beskonaène petlje su nedopuštene!",
+          "Greška", JOptionPane.ERROR_MESSAGE);
+    	rpc.EnabDisab(true);
+    	EraseFields();
+    	rpc.setCART();
+    	return false;
+    }
     return true;
   }
 
@@ -159,6 +175,11 @@ public class frmNorme extends raMasterFakeDetailArtikl {
     return "SELECT * FROM norme WHERE cartnor = " + mast.getInt("CARTNOR");
   }
 
+  @Override
+  public void refilterDetailSet() {
+  	super.refilterDetailSet();
+  	setNaslovDetail("Sastav normativa " + mast.getInt("CART") + " - " + mast.getString("NAZART")); 
+  }
   
   public void beforeShowDetail() {
     // TODO Auto-generated method stub
@@ -194,18 +215,32 @@ public class frmNorme extends raMasterFakeDetailArtikl {
     jPanel1.add(jlKol, new XYConstraints(15, 0, -1, -1));
     jPanel1.add(jraKol, new XYConstraints(150, 0, 100, -1));
 
-    this.raMaster.addOption(new raNavAction("Pregled cijena", raImages.IMGMOVIE, KeyEvent.VK_F8) {
-      public void actionPerformed(java.awt.event.ActionEvent ev) {
-        showRequirementsMaster();
-      }
-    },4,true);
-    
     this.raMaster.addOption(new raNavAction("Nusproizvodi", raImages.IMGCOMPOSEMAIL, KeyEvent.VK_F7) {
       public void actionPerformed(java.awt.event.ActionEvent ev) {
       	rns.setOwner(getMasterSet().getInt("CARTNOR"));
         startFrame.getStartFrame().showFrame(rns);
       }
-    },3,true);
+    },4,true);
+    
+    this.raMaster.addOption(new raNavAction("Pregled cijena", raImages.IMGMOVIE, KeyEvent.VK_F8) {
+      public void actionPerformed(java.awt.event.ActionEvent ev) {
+        showRequirementsMaster(raMaster.getWindow());
+      }
+    },5,true);
+    
+    this.raDetail.addOption(new raNavAction("Nusproizvodi", raImages.IMGCOMPOSEMAIL, KeyEvent.VK_F7) {
+      public void actionPerformed(java.awt.event.ActionEvent ev) {
+      	rns.setOwner(getMasterSet().getInt("CARTNOR"));
+        startFrame.getStartFrame().showFrame(rns);
+      }
+    },4,true);
+    
+    this.raDetail.addOption(new raNavAction("Pregled cijena", raImages.IMGMOVIE, KeyEvent.VK_F8) {
+      public void actionPerformed(java.awt.event.ActionEvent ev) {
+      	showRequirementsMaster(raDetail.getWindow());
+      }
+    },5,true);
+    
     
     SetPanels(rpn, jPanel1, false);
     initRpn();
@@ -230,6 +265,16 @@ public class frmNorme extends raMasterFakeDetailArtikl {
     rpn.setMode("DOH");
     rpn.setDefParam();
     rpn.InitRaPanCart();
+  }
+  
+  public void masterSet_navigated(NavigationEvent e) {
+  	if (raMaster.getMode() == 'B' && rns.isShowing() && 
+  			rns.getMode() == 'B' && rns.cartnor != getMasterSet().getInt("CARTNOR")) {
+  		rns.setOwner(getMasterSet().getInt("CARTNOR"));
+  		rns.getRaQueryDataSet().open();
+  		rns.beforeShow();
+  		rns.getJpTableView().fireTableDataChanged();
+  	}
   }
   
   private QueryDataSet detailReportSet = dm.getNorme();
@@ -262,19 +307,13 @@ public class frmNorme extends raMasterFakeDetailArtikl {
   }
   
   String[] reqc = {"CART", "CART1", "BC", "NAZART", "JM", "KOL"};
-  void showRequirementsMaster() {
+  void showRequirementsMaster(Container parent) {
+  	if (getMasterSet().getRowCount() == 0) return;
+  	
     JPanel pan = new JPanel(new BorderLayout());
-    JPanel p2 = new JPanel(new BorderLayout());
-    p2.add(rps);
-    p2.setBorder(BorderFactory.createEmptyBorder(10, 15, 20, 10));
-    pan.add(p2);
-    pan.add(rod.getOkPanel(), BorderLayout.SOUTH);
-    if (!rod.show(raMaster.getWindow(), pan, "Izbor skladišta"))
-      return;
-    
-    
-    
-    if (getMasterSet().getRowCount() == 0) return;
+    pan.add(rps);
+    pan.setBorder(BorderFactory.createEmptyBorder(10, 15, 20, 10));
+    if (!new raInputDialog().show(parent, pan, "Izbor skladišta")) return;
     
     final StorageDataSet reqs = stdoki.getDataModule().getScopedSet(
         "CSKL CART CART1 BC NAZART JM KOL NC INAB");
