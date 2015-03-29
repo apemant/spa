@@ -261,6 +261,9 @@ public class rajpDetailMeskla extends JPanel {
     jPanelStanje.add(jLabel12, new XYConstraints(365, 25, 120, -1));
     jPanelStanje.add(jLabel13, new XYConstraints(490, 25, 130, -1));
     this.add(rpcart, BorderLayout.NORTH);
+    
+    rpcart.setMyAfterLookupOnNavigate(false);
+		rpcart.setFocusCycleRoot(true);
   }
 
   public void InitRaPanCartDP(){
