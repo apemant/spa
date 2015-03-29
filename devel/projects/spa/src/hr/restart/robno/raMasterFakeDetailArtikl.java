@@ -87,6 +87,7 @@ public abstract class raMasterFakeDetailArtikl extends raMasterDetail {
 
 
   public raMasterFakeDetailArtikl() {
+  	super(1, 2);
     this.setMasterDeleteMode(canDeleteMaster() ? DELDETAIL : NODEL);
   }
 
@@ -177,7 +178,7 @@ public abstract class raMasterFakeDetailArtikl extends raMasterDetail {
   public boolean ValidacijaDetail(char mode) {
     if (rpc.getCART().equals("")) {
       EraseFields();
-      JOptionPane.showMessageDialog(this.jpDetail,"Obavezan unos Artikla!","Greška",
+      JOptionPane.showMessageDialog(this.jpDetail,"Obavezan unos artikla!","Greška",
         JOptionPane.ERROR_MESSAGE);
       rpc.EnabDisab(true);
       EraseFields();
@@ -185,7 +186,7 @@ public abstract class raMasterFakeDetailArtikl extends raMasterDetail {
     }
     if (mode == 'N' && artNotUnique(rpc.getCART())) {
       EraseFields();
-      JOptionPane.showMessageDialog(this.jpDetail,"Artikl ve\u0107 u tablici!","Greška",
+      JOptionPane.showMessageDialog(this.jpDetail,"Artikl veæ u tablici!","Greška",
         JOptionPane.ERROR_MESSAGE);
       rpc.EnabDisab(true);
       EraseFields();
