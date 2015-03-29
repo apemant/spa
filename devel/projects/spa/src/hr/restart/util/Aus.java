@@ -1030,15 +1030,15 @@ public class Aus {
    * @return razvijeni dataset, depth-first oblik.
    */
   public static DataSet getDataBranch(String val, DataSet data, String keyCol, String linkCol) {
-    return new DataSetExpander(data, keyCol, linkCol).expand(val);
+  	return DataTree.getSubSet(val, data, keyCol, linkCol);
   }
   
   /**
    * Vraæa SQL izraz s popisom svih kljuèeva tablice koji hijerarhijski pripadaju slogu
    * s kljuèem 'val'. Vidi getDataBranch(). 
    */
-  public static String getDataTreeList(String val, DataSet data, String keyCol, String linkCol) {
-    return new DataSetExpander(data, keyCol, linkCol).expandToList(val);
+  public static Condition getDataTreeList(String val, DataSet data, String keyCol, String linkCol) {
+  	return DataTree.getSubCond(val, data, keyCol, linkCol);
   }
 
   public static File[] getClassPath() {
@@ -1216,6 +1216,53 @@ public class Aus {
     return Util.getUtil().getFirstSecondOfDay(new Timestamp(cal.getTime().getTime()));
   }
   
+  public static StorageDataSet createSet(String def) {
+  	StorageDataSet ds = new StorageDataSet();
+  	VarStr buf = new VarStr(def).trim();
+  	ArrayList labs = new ArrayList();
+  	int b = 0, e;
+  	while ((b = buf.indexOf('{', b)) >= 0) {
+  		e = buf.indexOf('}', b);
+  		labs.add(buf.mid(b + 1, e));
+  		buf.replace(b + 1, e, "");
+  		b = e + 1;
+  	}
+  	
+  	String[] cold = buf.indexOf(',') > 0 ? buf.splitTrimmed(',') : buf.split();
+  	Column[] cols = new Column[cold.length];
+  	String module = null;
+  	int l = 0, p;
+  	for (int i = 0; i < cold.length; i++) {
+  		String lab = null;
+  		if (cold[i].startsWith("{}")) {
+  			lab = (String) labs.get(l++);
+  			cold[i] = cold[i].substring(2);
+  		}
+  		if ((p = cold[i].indexOf('.')) >= 0) {
+  			String left = cold[i].substring(0, p);
+  			String rest = cold[i].substring(p + 1);
+  			if (!isDigit(rest)) {
+  				if (p > 0) module = left;
+  				cols[i] = KreirDrop.getModuleByName(module).getColumn(rest).cloneColumn();
+  				cols[i].setRowId(false);
+  			} else 
+  				cols[i] = dM.createBigDecimalColumn(left, lab == null ? left : lab, getNumber(rest));
+  		} else if ((p = cold[i].indexOf(':')) > 0) {
+  			String name = cold[i].substring(0, p);
+  			if (lab == null) lab = name;
+  			int d = cold[i].indexOf('=');
+  			if (d < 0) cols[i] = dM.createStringColumn(name, lab, getNumber(cold[i].substring(p + 1)));
+  			else cols[i] = dM.createStringColumn(name, lab, cold[i].substring(d + 1), getNumber(cold[i].substring(p + 1, d)));
+  		} else if (cold[i].startsWith("@"))
+  			cols[i] = dM.createTimestampColumn(cold[i].substring(1));
+  		else cols[i] = dM.createIntColumn(cold[i]);
+  	}
+  	
+  	ds.setColumns(cols);
+  	ds.open();
+  	return ds;
+  }
+  
   public static raFieldMask installNumberMask(JTextField tf, int decs) {
     if ("calc".equalsIgnoreCase(frmParam.getParam("sisfun", "numberMask", 
         "calc", "Vrsta numerièke maske (calc/old)", true)))
@@ -1294,6 +1341,24 @@ public class Aus {
   			ds.getVariant(col, i, min);
   	}
   	return min;
+  }
+  
+  public static StorageDataSet q(KreirDrop kd, String cols) {
+  	return q(kd.getScopedSet(cols), "SELECT " + cols + " FROM " + kd.Naziv);
+  }
+  
+  public static StorageDataSet qq(KreirDrop kd, String cols) {
+  	return qq(kd.getScopedSet(cols), "SELECT " + cols + " FROM " + kd.Naziv);
+  }
+  
+  public static StorageDataSet q(StorageDataSet ds, String query) {
+  	Util.fillReadonlyData(ds, query);
+  	return ds;
+  }
+  
+  public static StorageDataSet qq(StorageDataSet ds, String query) {
+  	Util.fillAsyncData(ds, query);
+  	return ds;
   }
   
   public static QueryDataSet q(String query) {
