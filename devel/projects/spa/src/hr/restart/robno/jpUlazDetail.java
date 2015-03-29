@@ -19,11 +19,13 @@ package hr.restart.robno;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stdoku;
+import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.JraTextMultyKolField;
 import hr.restart.util.Aus;
+import hr.restart.util.Calc;
 import hr.restart.util.raImages;
 import hr.restart.util.raKeyAction;
 import hr.restart.zapod.Tecajevi;
@@ -69,6 +71,7 @@ public class jpUlazDetail extends JPanel {
   hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
 
 //  dlgDodZT dZT;
+  Calc calc;
   JPanel jpDetailCenter = new JPanel();
   XYLayout xYLayout2 = new XYLayout();
 //  JraTextField jtfKOL = new JraTextField();
@@ -225,9 +228,6 @@ public class jpUlazDetail extends JPanel {
     }
   };
   TableDataSet tds = new TableDataSet();
-  Column column1 = new Column();
-  Column column2 = new Column();
-  Column column3 = new Column();
 
   public jpUlazDetail(frmUlazTemplate fut,boolean cskl) {
   }
@@ -448,24 +448,6 @@ public class jpUlazDetail extends JPanel {
         jtfIDOB_VAL_focusLost(e);
       }*/
     });
-    column1.setColumnName("RAB");
-    column1.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
-    column1.setDisplayMask("###,###,##0.00");
-    column1.setDefault("0");
-    column1.setServerColumnName("NewColumn1");
-    column1.setSqlType(0);
-    column2.setColumnName("ZT");
-    column2.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
-    column2.setDisplayMask("###,###,##0.00");
-    column2.setDefault("0");
-    column2.setServerColumnName("NewColumn2");
-    column2.setSqlType(0);
-    column3.setColumnName("POR");
-    column3.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
-    column3.setDisplayMask("###,###,##0.00");
-    column3.setDefault("0");
-    column3.setServerColumnName("NewColumn1");
-    column3.setSqlType(0);
     jpDetailCenter.add(jlKOL, new XYConstraints(360, 20, 130, -1));
     jpDetailCenter.add(jtfKOL, new XYConstraints(500, 20, 130, -1));
     jpDetailCenter.add(trans, new XYConstraints(470, 20, 21, 21));
@@ -473,7 +455,10 @@ public class jpUlazDetail extends JPanel {
     jpDetailCenter.add(jlZaJedinicu, new XYConstraints(360, 50, 130, -1));
     jpDetailCenter.add(jlPostotak, new XYConstraints(250, 50, 100, -1));
     this.setLayout(new BorderLayout());
-    tds.setColumns(new Column[] {column1, column2, column3});
+    tds.setColumns(new Column[] {
+    		dM.createBigDecimalColumn("RAB", "Jedinièni RuC", 2),
+    		dM.createBigDecimalColumn("ZT", "Jedinièni troškovi", 2),
+    		dM.createBigDecimalColumn("POR", "Jedinièni porez", 2)});
     this.add(jpDetailCenter, BorderLayout.CENTER);
     
     jpDetailCenter.add(jlDC, new XYConstraints(15, 100, -1, -1));
@@ -863,6 +848,10 @@ public class jpUlazDetail extends JPanel {
 //ai//    rpcart.setCskl(qds.getString("CSKL"));
     rpcart.setTabela(qds);
     initRpcart();
+    
+    calc = new Calc(qds);
+    calc.module("tds", tds);
+    calc.module("sta", frm.stanjeSet);
   }
 
   hr.restart.util.lookupData lD =  hr.restart.util.lookupData.getlookupData();
@@ -873,45 +862,39 @@ public class jpUlazDetail extends JPanel {
           "  |"+rpcart.getCPOR()+"|"+rpcart.getCART()+"|");
     }
 //    dm.getPorezi().interactiveLocate(rpcart.getCPOR(),"CPOR",com.borland.dx.dataset.Locate.FIRST, false);
-    frm.stanjeSet.close();
-    frm.stanjeSet.setQuery(new QueryDescriptor(dm.getDatabase1(), rdUtil.getUtil().findStanje(frm.getMasterSet().getString("CSKL"), frm.getDetailSet().getInt("CART"), frm.getMasterSet().getString("GOD"))));
+    
+    Aus.setFilter(frm.stanjeSet, rdUtil.getUtil().
+        findStanje(frm.getMasterSet().getString("CSKL"),
+        		frm.getDetailSet().getInt("CART"),
+        		frm.getMasterSet().getString("GOD")));    
     frm.stanjeSet.open();
     if(frm.stanjeSet.getRowCount()>0) {
       if (mode=='U') {
-        if (frm.getDetailSet().getBigDecimal("NC").doubleValue()==0) {
-          if (frm.isDobArt) {
-            frm.getDetailSet().setBigDecimal("DC",    dm.getDob_art().getBigDecimal("DC"));
-            frm.getDetailSet().setBigDecimal("PRAB",  dm.getDob_art().getBigDecimal("PRAB"));
-          }
-          tds.setBigDecimal("RAB",                 util.findIznos(frm.getDetailSet().getBigDecimal("DC"), frm.getDetailSet().getBigDecimal("PRAB")));
-          tds.setBigDecimal("ZT",                  util.findIznos(util.negateValue(frm.getDetailSet().getBigDecimal("DC"), tds.getBigDecimal("RAB")), frm.getDetailSet().getBigDecimal("PZT")));
-          frm.getDetailSet().setBigDecimal("NC",   util.sumValue(util.negateValue(frm.getDetailSet().getBigDecimal("DC"), tds.getBigDecimal("RAB")), tds.getBigDecimal("ZT")));
-          frm.getDetailSet().setBigDecimal("VC",   frm.stanjeSet.getBigDecimal("VC"));
-          frm.getDetailSet().setBigDecimal("MC",   frm.stanjeSet.getBigDecimal("MC"));
-          frm.getDetailSet().setBigDecimal("MAR",  util.negateValue(frm.getDetailSet().getBigDecimal("VC"), frm.getDetailSet().getBigDecimal("NC")));
-          frm.getDetailSet().setBigDecimal("PMAR", util.findPostotak(frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
-          tds.setBigDecimal("POR",                 util.findIznos(frm.getDetailSet().getBigDecimal("VC"), dm.getPorezi().getBigDecimal("UKUPOR")));
-          if (frm.getDetailSet().getBigDecimal("NC").doubleValue()==0) {
-            frm.getDetailSet().setBigDecimal("NC",   frm.stanjeSet.getBigDecimal("NC"));
-          }
-          calcSumFields();
+        if (frm.getDetailSet().getBigDecimal("NC").signum()==0) {
+          if (frm.isDobArt) 
+          	calc.run("DC = Dob_art.DC;  PRAB = Dob_art.PRAB");
+          
+          calc.run("VC = sta.VC;  MC = sta.MC");          
+          calc.run("tds.RAB = DC % PRAB;  tds.ZT = (DC - tds.RAB) % PZT;  NC = DC - tds.RAB + tds.ZT");
+          if (calc.evaluate("NC").signum() == 0) 	calc.run("NC = sta.NC");
+          calc.run("MAR = VC - NC;  PMAR = MAR %% NC;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
+          calcFromNC();
         }
       }
       frm.isFind=true;
-    }
-    else if(mode!='U'){
-      frm.getDetailSet().setBigDecimal("DC", main.nul);
-      frm.getDetailSet().setBigDecimal("PRAB", main.nul);
-      tds.setBigDecimal("RAB", main.nul);
-      frm.getDetailSet().setBigDecimal("NC", main.nul);
-      frm.getDetailSet().setBigDecimal("PMAR", main.nul);
-      frm.getDetailSet().setBigDecimal("IMAR", main.nul);
-      frm.getDetailSet().setBigDecimal("VC", main.nul);
-      frm.getDetailSet().setBigDecimal("MC", main.nul);
-      frm.getDetailSet().setBigDecimal("KOL", main.nul);
+    } else if (mode!='U') {
+    	Calc.run(tds, "RAB = POR = ZT = 0");
+    	calc.run("DC = PRAB = NC = PMAR = VC = MC = KOL = 0");
       frm.isFind=false;
     }
     else {
+    	if (frm.getDetailSet().getBigDecimal("NC").signum()==0) {
+        if (frm.isDobArt) {
+        	calc.run("DC = Dob_art.DC;  PRAB = Dob_art.PRAB");
+        	calc.run("tds.RAB = DC % PRAB;  tds.ZT = (DC - tds.RAB) % PZT;  NC = DC - tds.RAB + tds.ZT");
+        	calc.run("MAR = PMAR = 0;  VC = NC;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
+        }
+    	}
       frm.isFind=false;
     }
     return frm.isFind;
@@ -924,30 +907,23 @@ public class jpUlazDetail extends JPanel {
       if (tds.rowCount()==0) {
         tds.insertRow(true);
       }
-      tds.setBigDecimal("ZT", _Main.nul);
-      tds.setBigDecimal("RAB", _Main.nul);
-      tds.setBigDecimal("POR", _Main.nul);
+      Calc.run(tds, "RAB = POR = ZT = 0");
       if (frm.getMasterSet().getBigDecimal("UINAB").doubleValue()>0) {
-        frm.getDetailSet().setBigDecimal("PZT", frm.getMasterSet().getBigDecimal("UPZT"));
+      	Aus.set(frm.getDetailSet(), "PZT", frm.getMasterSet(), "UPZT");
       }
       initRpcart();
       disableUnosFields(true, frm.prSTAT);
       rpcart.SetDefFocus();
     }
     else {
-      BigDecimal kol = frm.getDetailSet().getBigDecimal("KOL");
-      tds.setBigDecimal("ZT",  util.divideValue(frm.getDetailSet().getBigDecimal("IZT"), kol));
-      tds.setBigDecimal("RAB", util.divideValue(frm.getDetailSet().getBigDecimal("IRAB"),kol));
-      frm.getDetailSet().setBigDecimal("IMAR", frm.getDetailSet().getBigDecimal("IBP").subtract(frm.getDetailSet().getBigDecimal("INAB")));
-      frm.getDetailSet().setBigDecimal("IPOR", frm.getDetailSet().getBigDecimal("ISP").subtract(frm.getDetailSet().getBigDecimal("IBP")));
-      tds.setBigDecimal("POR", util.divideValue(frm.getDetailSet().getBigDecimal("IPOR"),frm.getDetailSet().getBigDecimal("KOL")));
+    	calc.run("IPOR = ISP - IBP;  IMAR = IBP - INAB");
+    	calc.run("tds.ZT = IZT / KOL;  tds.RAB = IRAB / KOL;  tds.POR = IPOR / KOL");
       if (mode=='I') {
         initRpcart();
         if (frm.prSTAT!='K') {
           jtfKOL.requestFocus();
           jtfKOL.selectAll();
         }
-
       }
       else if (mode=='B') {
         rpcart.setMode("B");
@@ -958,189 +934,105 @@ public class jpUlazDetail extends JPanel {
 //  public void
   
   public boolean rekalk = false;
-
+  
   void kalkulacija (int mode) {
-    if (frm.raDetail.getMode() == 'B' && !rekalk) return;
+  	if (frm.raDetail.getMode() == 'B' && !rekalk) return;
     
     boolean pzt = !frm.getMasterSet().getString("CSHZT").equals("YES");
     BigDecimal kol = frm.getDetailSet().getBigDecimal("KOL");
-    BigDecimal jedval = Tecajevi.getJedVal(frm.getMasterSet().getString("OZNVAL"));
-    BigDecimal tecaj = frm.getMasterSet().getBigDecimal("TECAJ");
-    if (tecaj.signum() == 0) tecaj = Aus.one0;
-    if (mode==0) {        // Kolicina
+    
+  	calc.set("jedval", Tecajevi.getJedVal(frm.getMasterSet().getString("OZNVAL")));
+  	calc.set("tecaj", frm.getMasterSet().getBigDecimal("TECAJ"));
+  	if (calc.get("tecaj").signum() == 0) calc.set("tecaj", Aus.one0);
+  	
+  	if (mode==0) {        // Kolicina
       if (frm.vrDok.equals("PRE")) {
         if (kol.signum() != 0) {
-          Aus.div(frm.getDetailSet(), "NC", "INAB", "KOL");
-          //frm.getDetailSet().setBigDecimal("NC", util.divideValue(frm.getDetailSet().getBigDecimal("INAB"), kol));
+        	calc.run("NC = INAB / KOL");
           calcFromINAB();
         }
       } else {
-        Aus.set(frm.getDetailSet(), "IDOB_VAL", "DC_VAL");
-        Aus.mul(frm.getDetailSet(), "IDOB_VAL", kol);
-        Aus.mul(frm.getDetailSet(), "IDOB", "DC", "KOL");
-        //frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
-        //frm.getDetailSet().setBigDecimal("IDOB",    util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
+      	calc.run("IDOB_VAL = DC_VAL * KOL;  IDOB = DC * KOL");
         calcFromIDOB();
       }
-    }
-    else if (mode==1) {   // Dobavljacev iznos u valuti
+    } else if (mode==1) {   // Dobavljacev iznos u valuti
       if (kol.signum() == 0) {
-        frm.getDetailSet().setBigDecimal("IDOB_VAL", _Main.nul);
+      	calc.run("IDOB_VAL = 0");
         return;
       }
-      Aus.div(frm.getDetailSet(), "DC_VAL", "IDOB_VAL", "KOL");
-      //frm.getDetailSet().setBigDecimal("DC_VAL",  util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
-      frm.getDetailSet().setBigDecimal("IDOB",    util.multiValue   (frm.getDetailSet().getBigDecimal("IDOB_VAL"), 
-          tecaj.divide(jedval, 9, BigDecimal.ROUND_HALF_UP)));
-      Aus.div(frm.getDetailSet(), "DC", "IDOB", "KOL");
-      //frm.getDetailSet().setBigDecimal("DC",      util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
+      calc.run("DC_VAL = IDOB_VAL / KOL;  IDOB = IDOB_VAL * tecaj / jedval;  DC = IDOB / KOL");
       calcFromIDOB();
-    }
-    else if (mode==2) {   // Dobavljaceva cijena u valuti
-      Aus.set(frm.getDetailSet(), "IDOB_VAL", "DC_VAL");
-      Aus.mul(frm.getDetailSet(), "IDOB_VAL", kol);
-      //frm.getDetailSet().setBigDecimal("IDOB_VAL",util.multiValue   (frm.getDetailSet().getBigDecimal("DC_VAL"), kol));
-      frm.getDetailSet().setBigDecimal("IDOB",   util.multiValue   (frm.getDetailSet().getBigDecimal("IDOB_VAL"), 
-          tecaj.divide(jedval, 9, BigDecimal.ROUND_HALF_UP)));
-      if (kol.signum() == 0) frm.getDetailSet().setBigDecimal("DC", Aus.zero2);
-      else Aus.div(frm.getDetailSet(), "DC", "IDOB", "KOL");
-      //frm.getDetailSet().setBigDecimal("DC",      util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
+    } else if (mode==2) {   // Dobavljaceva cijena u valuti
+    	calc.run("IDOB_VAL = DC_VAL * KOL;  IDOB = IDOB_VAL * tecaj / jedval;  DC = IDOB / KOL");
       calcFromIDOB();
-    }
-    else if (mode==3) {   // Dobavljacev iznos
-      Aus.set(frm.getDetailSet(), "IDOB_VAL", "IDOB");
-      Aus.mul(frm.getDetailSet(), "IDOB_VAL", jedval);
-      Aus.div(frm.getDetailSet(), "IDOB_VAL", tecaj);
-      //frm.getDetailSet().setBigDecimal("IDOB_VAL",  util.divideValue   (frm.getDetailSet().getBigDecimal("IDOB").multiply(jedval), frm.getMasterSet().getBigDecimal("TECAJ")));
-      if (kol.signum() == 0) {
-        frm.getDetailSet().setBigDecimal("DC_VAL", Aus.zero2);
-        frm.getDetailSet().setBigDecimal("DC", Aus.zero2);
-      } else {
-        Aus.div(frm.getDetailSet(), "DC_VAL", "IDOB_VAL", "KOL");
-        Aus.div(frm.getDetailSet(), "DC", "IDOB", "KOL");
-      }
-      //frm.getDetailSet().setBigDecimal("DC_VAL",    util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
-      //frm.getDetailSet().setBigDecimal("DC",        util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB"), kol));
+    } else if (mode==3) {   // Dobavljacev iznos
+    	calc.run("IDOB_VAL = IDOB * jedval / tecaj");
+    	calc.run("DC_VAL = IDOB_VAL / KOL;  DC = IDOB / KOL");
       calcFromIDOB();
-    }
-    else if (mode==4) {   // Dobavljaceva cijena
-      Aus.mul(frm.getDetailSet(), "IDOB", "DC", "KOL");
-      //frm.getDetailSet().setBigDecimal("IDOB",      util.multiValue   (frm.getDetailSet().getBigDecimal("DC"), kol));
-      Aus.set(frm.getDetailSet(), "IDOB_VAL", "IDOB");
-      Aus.mul(frm.getDetailSet(), "IDOB_VAL", jedval);
-      Aus.div(frm.getDetailSet(), "IDOB_VAL", tecaj);
-      //frm.getDetailSet().setBigDecimal("IDOB_VAL",  util.divideValue   (frm.getDetailSet().getBigDecimal("IDOB").multiply(jedval), frm.getMasterSet().getBigDecimal("TECAJ")));
-      if (kol.signum() == 0) frm.getDetailSet().setBigDecimal("DC_VAL", Aus.zero2);
-      else Aus.div(frm.getDetailSet(), "DC_VAL", "IDOB_VAL", "KOL");
-      //frm.getDetailSet().setBigDecimal("DC_VAL",    util.divideValue  (frm.getDetailSet().getBigDecimal("IDOB_VAL"), kol));
+    } else if (mode==4) {   // Dobavljaceva cijena
+    	calc.run("IDOB = DC * KOL;  IDOB_VAL = IDOB * jedval / tecaj");
+    	calc.run("DC_VAL = IDOB_VAL / KOL;  DC = IDOB / KOL");
       calcFromIDOB();
-    }
-    else if (mode==5) {   // Rabat u postotku
+    } else if (mode==5) {   // Rabat u postotku
       calcFromIDOB();
-    }
-    else if (mode==6) {   // Rabat u iznosu
-    }
-    else if (mode==7) {   // ZT u postotku
-      frm.getDetailSet().setBigDecimal("IZT", util.findIznos(frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB")), frm.getDetailSet().getBigDecimal("PZT")));
-      frm.getDetailSet().setBigDecimal("INAB", frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB")).add(frm.getDetailSet().getBigDecimal("IZT")));
+    } else if (mode==6) {   // Rabat u iznosu
+    } else if (mode==7) {   // ZT u postotku
+    	calc.run("IZT = (IDOB - IRAB) % PZT;  INAB = IDOB - IRAB + IZT");
       calcFromINAB();
-    }
-    else if (mode==8) {   // ZT u iznosu
-      //frm.getDetailSet().setBigDecimal("INAB", frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB")).add(frm.getDetailSet().getBigDecimal("IZT")));
-      Aus.sub(frm.getDetailSet(), "INAB", "IDOB", "IRAB");
-      Aus.add(frm.getDetailSet(), "INAB", "IZT");
-      Aus.percent(frm.getDetailSet(), "PZT", "IZT", Aus.minus(frm.getDetailSet(), "IDOB", "IRAB"));
-      //frm.getDetailSet().setBigDecimal("PZT", util.findPostotak7 (util.negateValue(frm.getDetailSet().getBigDecimal("IDOB"), frm.getDetailSet().getBigDecimal("IRAB")), frm.getDetailSet().getBigDecimal("IZT")));
+    } else if (mode==8) {   // ZT u iznosu
+    	calc.run("INAB = IDOB - IRAB + IZT;  PZT = IZT %% (IDOB - IRAB)");
       calcFromINAB();
-    }
-    else if (mode==9) {   // Nabavna cijena
-      frm.getDetailSet().setBigDecimal("INAB", util.multiValue(frm.getDetailSet().getBigDecimal("NC"), kol));
+    } else if (mode==9) {   // Nabavna cijena
+    	calc.run("INAB = NC * KOL");
       calcFromINAB();
-    }
-    else if (mode==10) {  // Marza u postotku
-      frm.getDetailSet().setBigDecimal("MAR",     util.findIznos    (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("PMAR")));
-      frm.getDetailSet().setBigDecimal("VC",        util.sumValue     (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
-      tds.setBigDecimal("POR",                      util.findIznos    (frm.getDetailSet().getBigDecimal("VC"), dm.getPorezi().getBigDecimal("UKUPOR")));
-      frm.getDetailSet().setBigDecimal("MC",        util.sumValue     (frm.getDetailSet().getBigDecimal("VC"), tds.getBigDecimal("POR")));
-    }
-    else if (mode==11) {  // Marza u iznosu
-      frm.getDetailSet().setBigDecimal("PMAR",      util.findPostotak (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
-      frm.getDetailSet().setBigDecimal("VC",        util.sumValue     (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
-      tds.setBigDecimal("POR",                      util.findIznos    (frm.getDetailSet().getBigDecimal("VC"), dm.getPorezi().getBigDecimal("UKUPOR")));
-      frm.getDetailSet().setBigDecimal("MC",        util.sumValue     (frm.getDetailSet().getBigDecimal("VC"), tds.getBigDecimal("POR")));
-    }
-    else if (mode==12) {  // Veleprodajna cijena
-      frm.getDetailSet().setBigDecimal("MAR",       util.negateValue  (frm.getDetailSet().getBigDecimal("VC"), frm.getDetailSet().getBigDecimal("NC")));
-      frm.getDetailSet().setBigDecimal("PMAR",      util.findPostotak (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
-      tds.setBigDecimal("POR",                      util.findIznos    (frm.getDetailSet().getBigDecimal("VC"), dm.getPorezi().getBigDecimal("UKUPOR")));
-      frm.getDetailSet().setBigDecimal("MC",        util.sumValue     (frm.getDetailSet().getBigDecimal("VC"), tds.getBigDecimal("POR")));
-    }
-    else if (mode==13) {  // Maloprodajna cijena
-      tds.setBigDecimal("POR",                      util.findIznos    (frm.getDetailSet().getBigDecimal("MC"), dm.getPorezi().getBigDecimal("UKUNPOR")));
-      frm.getDetailSet().setBigDecimal("VC",        util.negateValue  (frm.getDetailSet().getBigDecimal("MC"), tds.getBigDecimal("POR")));
-      frm.getDetailSet().setBigDecimal("MAR",       util.negateValue  (frm.getDetailSet().getBigDecimal("VC"), frm.getDetailSet().getBigDecimal("NC")));
-      frm.getDetailSet().setBigDecimal("PMAR",      util.findPostotak (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
-    }
-    calcSumFields();
+    } else if (mode==10) {  // Marza u postotku
+    	calc.run("MAR = NC % PMAR;  VC = NC + MAR;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
+    } else if (mode==11) {  // Marza u iznosu
+    	calc.run("PMAR = MAR %% NC;  VC = NC + MAR;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
+    } else if (mode==12) {  // Veleprodajna cijena
+    	calc.run("MAR = VC - NC;  PMAR = MAR %% NC;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
+    } else if (mode==13) {  // Maloprodajna cijena
+    	calc.run("VC = MC ~% Porezi.UKUPOR;  tds.POR = MC - VC;  MAR = VC - NC;  PMAR = MAR %% NC");
+    }  	
+  	calcSumFields();
   }
 
   void calcFromIDOB() {
-    frm.getDetailSet().setBigDecimal("IRAB", util.findIznos(frm.getDetailSet().getBigDecimal("IDOB"), frm.getDetailSet().getBigDecimal("PRAB")));
+  	calc.run("IRAB = IDOB % PRAB");
     if (!frm.getMasterSet().getString("CSHZT").equals("YES"))
-      frm.getDetailSet().setBigDecimal("IZT", util.findIznos(frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB")), frm.getDetailSet().getBigDecimal("PZT")));
+    	calc.run("IZT = (IDOB - IRAB) % PZT");
     else {
       checkZT();
-      Aus.percent(frm.getDetailSet(), "PZT", "IZT", Aus.minus(frm.getDetailSet(), "IDOB", "IRAB"));
-      //frm.getDetailSet().setBigDecimal("PZT", util.findPostotak7 (util.negateValue(frm.getDetailSet().getBigDecimal("IDOB"), frm.getDetailSet().getBigDecimal("IRAB")), frm.getDetailSet().getBigDecimal("IZT")));
+      calc.run("PZT = IZT %% (IDOB - IRAB)");
     }
-    frm.getDetailSet().setBigDecimal("INAB", frm.getDetailSet().getBigDecimal("IDOB").subtract(frm.getDetailSet().getBigDecimal("IRAB")).add(frm.getDetailSet().getBigDecimal("IZT")));
+    calc.run("INAB = IDOB - IRAB + IZT");
     calcFromINAB();
   }
 
   void calcFromINAB() {
     BigDecimal kol = frm.getDetailSet().getBigDecimal("KOL");
     if (kol.signum() == 0) return;
-    Aus.div(frm.getDetailSet(), "NC", "INAB", "KOL");
-    //frm.getDetailSet().setBigDecimal("NC", frm.getDetailSet().getBigDecimal("INAB").divide(kol, 2, BigDecimal.ROUND_HALF_UP));
-    if ("D".equalsIgnoreCase(hr.restart.sisfun.frmParam.getParam("robno","kalkchVC","N"))) {
-      frm.getDetailSet().setBigDecimal("MAR",     util.findIznos    (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("PMAR")));
-      frm.getDetailSet().setBigDecimal("VC",      util.sumValue     (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
-      tds.setBigDecimal("POR",                      util.findIznos    (frm.getDetailSet().getBigDecimal("VC"), dm.getPorezi().getBigDecimal("UKUPOR")));
-      frm.getDetailSet().setBigDecimal("MC",        util.sumValue     (frm.getDetailSet().getBigDecimal("VC"), tds.getBigDecimal("POR")));
-    }
-    else if ("M".equalsIgnoreCase(hr.restart.sisfun.frmParam.getParam("robno","kalkchVC","N"))) {
-    	tds.setBigDecimal("POR",                      util.findIznos    (frm.getDetailSet().getBigDecimal("MC"), dm.getPorezi().getBigDecimal("UKUNPOR")));
-        frm.getDetailSet().setBigDecimal("VC",        util.negateValue  (frm.getDetailSet().getBigDecimal("MC"), tds.getBigDecimal("POR")));
-        frm.getDetailSet().setBigDecimal("MAR",       util.negateValue  (frm.getDetailSet().getBigDecimal("VC"), frm.getDetailSet().getBigDecimal("NC")));
-        frm.getDetailSet().setBigDecimal("PMAR",      util.findPostotak (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
-
-    	/*        frm.getDetailSet().setBigDecimal("MAR",     util.findIznos    (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("PMAR")));
-        frm.getDetailSet().setBigDecimal("VC",      util.sumValue     (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
-        tds.setBigDecimal("POR",                      util.findIznos    (frm.getDetailSet().getBigDecimal("VC"), dm.getPorezi().getBigDecimal("UKUPOR")));
-        frm.getDetailSet().setBigDecimal("MC",        util.sumValue     (frm.getDetailSet().getBigDecimal("VC"), tds.getBigDecimal("POR")));*/
-      }
-    else {
-      frm.getDetailSet().setBigDecimal("MAR",       util.negateValue  (frm.getDetailSet().getBigDecimal("VC"), frm.getDetailSet().getBigDecimal("NC")));
-      frm.getDetailSet().setBigDecimal("PMAR",      util.findPostotak (frm.getDetailSet().getBigDecimal("NC"), frm.getDetailSet().getBigDecimal("MAR")));
-      tds.setBigDecimal("POR",                      util.findIznos    (frm.getDetailSet().getBigDecimal("VC"), dm.getPorezi().getBigDecimal("UKUPOR")));
-      frm.getDetailSet().setBigDecimal("MC",        util.sumValue     (frm.getDetailSet().getBigDecimal("VC"), tds.getBigDecimal("POR")));
-    }
+    
+    calc.run("NC = INAB / KOL");
+    calcFromNC();
+  }
+  
+  void calcFromNC() {
+  	String chVC = frmParam.getParam("robno", "kalkchVC", "N", "Naèin kalkulacije cijene (N = fiksni VC, M = fiksni MC, D = fiksni PMAR)");
+    
+    if ("D".equalsIgnoreCase(chVC)) 
+    	calc.run("MAR = NC % PMAR;  VC = NC + MAR;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
+    else if ("M".equalsIgnoreCase(chVC))
+    	calc.run("VC = MC ~% Porezi.UKUPOR;  tds.POR = MC - VC;  MAR = VC - NC;  PMAR = MAR %% NC");
+    else calc.run("MAR = VC - NC;  PMAR = MAR %% NC;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
   }
 /**
  * Sumiranje za kolichinu
  */
   void calcSumFields() {
-    BigDecimal kol = frm.getDetailSet().getBigDecimal("KOL");
-    if (kol.signum() != 0) {
-      tds.setBigDecimal("RAB", frm.getDetailSet().getBigDecimal("IRAB").divide(kol, 2, BigDecimal.ROUND_HALF_UP));
-      tds.setBigDecimal("ZT", frm.getDetailSet().getBigDecimal("IZT").divide(kol, 2, BigDecimal.ROUND_HALF_UP));
-    }
-    frm.getDetailSet().setBigDecimal("IBP",  util.multiValue(frm.getDetailSet().getBigDecimal("VC"), kol));
-    frm.getDetailSet().setBigDecimal("IMAR", frm.getDetailSet().getBigDecimal("IBP").subtract(frm.getDetailSet().getBigDecimal("INAB")));
-    frm.getDetailSet().setBigDecimal("ISP",  util.multiValue(frm.getDetailSet().getBigDecimal("MC"), kol));
-    frm.getDetailSet().setBigDecimal("IPOR", frm.getDetailSet().getBigDecimal("ISP").subtract(frm.getDetailSet().getBigDecimal("IBP")));
-//    frm.getDetailSet().setBigDecimal("IZT",  util.multiValue(tds.getBigDecimal("ZT"),                 frm.getDetailSet().getBigDecimal("KOL")));
-//    checkZT();
+  	if (calc.evaluate("KOL").signum() != 0)
+  		calc.run("tds.RAB = IRAB / KOL;  tds.ZT = IZT / KOL");
+  	calc.run("IBP = VC * KOL;  IMAR = IBP - INAB;  ISP = MC * KOL;  IPOR = ISP - IBP");
   }
 
   public void jbInit1() throws Exception {
@@ -1292,7 +1184,7 @@ public class jpUlazDetail extends JPanel {
     jpDetailCenter.setBorder(BorderFactory.createEtchedBorder());
     xYLayout2.setWidth(645);
     xYLayout2.setHeight(215);
-    jLabel1.setText("Dobavlja\u010Deva cijena (valutna)");
+    jLabel1.setText("Dobavljaèeva cijena (valutna)");
     jtfDC_VAL.setColumnName("DC_VAL");
     jtfDC_VAL.addFocusListener(new java.awt.event.FocusAdapter() {
       public void focusGained(FocusEvent e) {
@@ -1311,31 +1203,16 @@ public class jpUlazDetail extends JPanel {
         jtfIDOB_VAL_focusLost(e);
       }*/
     });
-    column1.setColumnName("RAB");
-    column1.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
-    column1.setDisplayMask("###,###,##0.00");
-    column1.setDefault("0");
-    column1.setServerColumnName("NewColumn1");
-    column1.setSqlType(0);
-    column2.setColumnName("ZT");
-    column2.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
-    column2.setDisplayMask("###,###,##0.00");
-    column2.setDefault("0");
-    column2.setServerColumnName("NewColumn2");
-    column2.setSqlType(0);
-    column3.setColumnName("POR");
-    column3.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
-    column3.setDisplayMask("###,###,##0.00");
-    column3.setDefault("0");
-    column3.setServerColumnName("NewColumn1");
-    column3.setSqlType(0);
     jpDetailCenter.add(jlKOL, new XYConstraints(360, 20, 130, -1));
     jpDetailCenter.add(jtfKOL, new XYConstraints(500, 20, 130, -1));
     jpDetailCenter.add(jlZaKolicinu, new XYConstraints(500, 50, 130, -1));
     jpDetailCenter.add(jlZaJedinicu, new XYConstraints(360, 50, 130, -1));
     jpDetailCenter.add(jlPostotak, new XYConstraints(270, 50, 80, -1));
     this.setLayout(new BorderLayout());
-    tds.setColumns(new Column[] {column1, column2, column3});
+    tds.setColumns(new Column[] {
+    		dM.createBigDecimalColumn("RAB", "Jedinièni RuC", 2),
+    		dM.createBigDecimalColumn("ZT", "Jedinièni troškovi", 2),
+    		dM.createBigDecimalColumn("POR", "Jedinièni porez", 2)});
     this.add(jpDetailCenter, BorderLayout.CENTER);
 //    jpDetailCenter.add(jlDC, new XYConstraints(15, 100, -1, -1));
 //    jpDetailCenter.add(jlRAB, new XYConstraints(15, 125, -1, -1));
@@ -1376,7 +1253,4 @@ public class jpUlazDetail extends JPanel {
       tds.insertRow(true);
     }
   }
-
-
-
 }

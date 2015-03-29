@@ -124,6 +124,8 @@ public class frmUlazTemplate extends raMasterDetail {
 	boolean enableZT; // ab.f
 	
 	public char prSTAT;  // prebacen umobolni static iz _Main
+	
+	char vrzal;
 
 	//  boolean rowAddDelete = false; // Rade dodao za ekran ZT. Zašto? Pitaj ga!
 
@@ -200,6 +202,8 @@ public class frmUlazTemplate extends raMasterDetail {
 				"kontKalk", "D",
 				"Kontrola ispravosti redoslijeda unosa dokumenata")
 				.equalsIgnoreCase("D"));
+		
+		raDetail.calc.module("sta", stanjeSet);
 	}
 	
 	void keyActionShowKartica() {
@@ -334,6 +338,13 @@ public class frmUlazTemplate extends raMasterDetail {
 			getDetailSet().setShort("RBR", nStavka);
 
 		}
+		
+		if (dm.getArtikli().getInt("CART") != getDetailSet().getInt("CART"))
+      lD.raLocate(dm.getArtikli(), "CART", Integer.toString(getDetailSet().getInt("CART")));
+
+    if (!lD.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"))){
+      System.err.println("Greška nisu naðeni porezi !!!!" + dm.getArtikli());
+    }
 
 		isFind = findSTANJE();
 		findIZAD();
@@ -349,7 +360,7 @@ public class frmUlazTemplate extends raMasterDetail {
         }
 
 		if (mode == 'N') {
-			if (stanjeSet.getRowCount() == 0)
+			if (!isFind || stanjeSet.getRowCount() == 0)
 				return true;
 
 			// neistestirano
@@ -441,18 +452,26 @@ public class frmUlazTemplate extends raMasterDetail {
 	}
 
 	public boolean locateSklad() {
-		dm.getSklad().open();
 		// tomo update
-		hr.restart.util.lookupData lD = hr.restart.util.lookupData
-				.getlookupData();
-		if (!lD.raLocate(dm.getSklad(), "CSKL", getMasterSet()
-				.getString("CSKL"))) {
+		if (!lD.raLocate(dm.getSklad(), "CSKL", getMasterSet())) {
 			JOptionPane.showMessageDialog(raDetail.getWindow(),
 			    "Ne mogu pronaæi slog skladišta! ("+
 			    getMasterSet().getString("CSKL")+")", "Greška",
 			    JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
+		vrzal = ' ';
+		if (dm.getSklad().getString("VRZAL").length() == 1)
+			vrzal = dm.getSklad().getString("VRZAL").charAt(0);
+		
+		if ("NVMFLH".indexOf(vrzal) < 0) {
+			JOptionPane.showMessageDialog(raDetail.getWindow(),
+			    "Pogrešna vrsta zalihe skladišta! ("+
+			    getMasterSet().getString("CSKL")+")", "Greška",
+			    JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		
 		return true;
 	}
 
@@ -478,7 +497,7 @@ public class frmUlazTemplate extends raMasterDetail {
 		}
 
 		if (!locateSklad()) return false;
-		if (dm.getSklad().getString("VRZAL").trim().equals("V")) {
+		if (isFind && vrzal == 'V') {
 			if (getDetailSet().getBigDecimal("VC").compareTo(
 					stanjeSet.getBigDecimal("VC")) != 0) {
 				JOptionPane.showConfirmDialog(raDetail.getWindow(),
@@ -487,7 +506,7 @@ public class frmUlazTemplate extends raMasterDetail {
 				return false;
 			}
 		}
-		if (dm.getSklad().getString("VRZAL").trim().equals("M")) {
+		if (isFind && vrzal == 'M') {
 			if (getDetailSet().getBigDecimal("MC").compareTo(stanjeSet
 					.getBigDecimal("MC")) != 0) {
 				JOptionPane.showConfirmDialog(raDetail.getWindow(),
@@ -498,8 +517,7 @@ public class frmUlazTemplate extends raMasterDetail {
 				return false;
 			}
 		}
-		if (!dlgSerBrojevi.getdlgSerBrojevi().beforeDeleteSerBr(getDetailSet(),
-				'U'))
+		if (isFind && !dlgSerBrojevi.getdlgSerBrojevi().beforeDeleteSerBr(getDetailSet(), 'U'))
 			return false;
 		oldKOL = getDetailSet().getBigDecimal("KOL");
 		oldMAR = getDetailSet().getBigDecimal("IMAR");
@@ -513,6 +531,10 @@ public class frmUlazTemplate extends raMasterDetail {
 		oldVC = getDetailSet().getBigDecimal("SVC");
 		oldMC = getDetailSet().getBigDecimal("SMC");
 		oldCART = getDetailSet().getInt("CART");
+		
+		raDetail.calc.run("oldKOL = KOL;  oldMAR = IMAR;  oldPOR = IPOR;  oldNAB = INAB;  oldZAD = IZAD");
+		raDetail.calc.run("oldPORAV = PORAV;  oldPORAVMAR = DIOPORMAR;  oldPORAVPOR = DIOPORPOR;  oldVC = SVC;  oldMC = SMC");
+		
 		//		return isFind;
 		//if (!isFind)
 		//	return false;
@@ -646,6 +668,9 @@ System.out.println("oldBRRAC "+oldBRRAC);
 			oldPORAVMAR = main.nul;
 			oldPORAVPOR = main.nul;
 			oldIZNKALK = main.nul;
+			
+			raDetail.calc.run("oldKOL = oldMAR = oldPOR = oldNAB = oldZAD = oldPORAV = oldPORAVMAR = oldPORAVPOR = oldIZNKALK = 0");
+
 		} else if (mode == 'I') {
 			oldKOL = getDetailSet().getBigDecimal("KOL");
 			oldMAR = getDetailSet().getBigDecimal("IMAR");
@@ -656,6 +681,9 @@ System.out.println("oldBRRAC "+oldBRRAC);
 			oldPORAVMAR = getDetailSet().getBigDecimal("DIOPORMAR");
 			oldPORAVPOR = getDetailSet().getBigDecimal("DIOPORPOR");
 			oldIZNKALK = getDetailSet().getBigDecimal("INAB");
+			
+			raDetail.calc.run("oldKOL = KOL;  oldMAR = IMAR;  oldPOR = IPOR;  oldNAB = INAB;  oldZAD = IZAD");
+			raDetail.calc.run("oldPORAV = PORAV;  oldPORAVMAR = DIOPORMAR;  oldPORAVPOR = DIOPORPOR;  oldIZNKALK = INAB");
 		}
 	}
 
@@ -674,80 +702,30 @@ System.out.println("oldBRRAC "+oldBRRAC);
 */	
 	
 	void findIZAD() {
-		locateSklad();
-
-		//    Util.getUtil().getSkladFromCorg().interactiveLocate(getMasterSet().getString("CSKL"),"CSKL",com.borland.dx.dataset.Locate.FIRST,
-		// false);
-		if (dm.getSklad().getString("VRZAL").trim().equals("N") ||
-		    dm.getSklad().getString("VRZAL").trim().equals("F") ||
-		    dm.getSklad().getString("VRZAL").trim().equals("L") ||
-		    dm.getSklad().getString("VRZAL").trim().equals("H")) {
-			getDetailSet().setBigDecimal("ZC",
-					getDetailSet().getBigDecimal("NC"));
-			getDetailSet().setBigDecimal("IZAD",
-					getDetailSet().getBigDecimal("INAB"));
-			getDetailSet().setBigDecimal("IMAR", util.nul);
-			getDetailSet().setBigDecimal("IPOR", util.nul);
-		} else if (dm.getSklad().getString("VRZAL").trim().equals("V")) {
-			getDetailSet().setBigDecimal("ZC",
-					getDetailSet().getBigDecimal("VC"));
-			getDetailSet().setBigDecimal("IZAD",
-					getDetailSet().getBigDecimal("IBP"));
-			getDetailSet().setBigDecimal("IPOR", util.nul);
+		
+		if (!raVart.isStanje(getDetailSet().getInt("CART"))) {
+			raDetail.calc.run("ZC = IZAD = IMAR = IPOR = 0");
+			return;
+		}
+		
+		if (!locateSklad()) return;
+		
+		if (vrzal == 'N' || vrzal == 'F' || vrzal == 'F' || vrzal == 'L' || vrzal == 'H')
+			raDetail.calc.run("ZC = NC;  IZAD = INAB;  IMAR = IPOR = 0");
+		else if (vrzal == 'V') {
+			raDetail.calc.run("ZC = VC;  IZAD = IBP;  IPOR = 0");			
+			if (isFind) 
+				raDetail.calc.run("PORAV = oldPORAV + (sta.KOL - oldKOL) * (VC - sta.VC);  DIOPORMAR = PORAV");
+		} else if (vrzal == 'M') {
+			raDetail.calc.run("ZC = MC;  IZAD = ISP");
 			if (isFind) {
-				getDetailSet().setBigDecimal(
-						"PORAV",
-						util.sumValue(oldPORAV, util.multiValue(util
-								.negateValue(stanjeSet.getBigDecimal("KOL"),
-										oldKOL), util.negateValue(
-								getDetailSet().getBigDecimal("VC"), stanjeSet
-										.getBigDecimal("VC")))));
-				getDetailSet().setBigDecimal("DIOPORMAR",
-						getDetailSet().getBigDecimal("PORAV"));
-			}
-		} else if (dm.getSklad().getString("VRZAL").trim().equals("M")) {
-			getDetailSet().setBigDecimal("ZC",
-					getDetailSet().getBigDecimal("MC"));
-			getDetailSet().setBigDecimal("IZAD",
-					getDetailSet().getBigDecimal("ISP"));
-			if (isFind) {
-				//        getDetailSet().setBigDecimal("PORAV",
-				// stanjeSet.getBigDecimal("KOL").multiply(getDetailSet().getBigDecimal("MC").add(stanjeSet.getBigDecimal("MC").negate())).setScale(2,
-				// BigDecimal.ROUND_HALF_UP));
-				getDetailSet().setBigDecimal(
-						"PORAV",
-						util.sumValue(oldPORAV, util.multiValue(util
-								.negateValue(stanjeSet.getBigDecimal("KOL"),
-										oldKOL), util.negateValue(
-								getDetailSet().getBigDecimal("MC"), stanjeSet
-										.getBigDecimal("MC")))));
-				
-				
-				/*getDetailSet().setBigDecimal("DIOPORPOR", getDetailSet().getBigDecimal("PORAV").
-				    divide(dm.getPorezi().getBigDecimal("UKUPOR").movePointLeft(2).add(Aus.one0), 2, BigDecimal.ROUND_HALF_UP));
-				    multiply(
-								dm.getPorezi().getBigDecimal("UKUNPOR"))
-								.divide(main.sto, 1).setScale(2,
-										BigDecimal.ROUND_HALF_UP));*/
-				Aus.base(getDetailSet(), "DIOPORPOR", "PORAV", dm.getPorezi().getBigDecimal("UKUPOR"));
-				
-				Aus.sub(getDetailSet(), "DIOPORMAR", "PORAV", "DIOPORPOR");
-				/*getDetailSet().setBigDecimal(
-						"DIOPORMAR",
-						getDetailSet().getBigDecimal("PORAV").add(
-								getDetailSet().getBigDecimal("DIOPORPOR")
-										.negate()).setScale(2,
-								BigDecimal.ROUND_HALF_UP));*/
+				raDetail.calc.run("PORAV = oldPORAV + (sta.KOL - oldKOL) * (MC - sta.MC)");
+				raDetail.calc.run("DIPORPOR = PORAV % porezi.UKUPOR;  DIOPORMAR = PORAV - DIOPORPOR");
 			}
 		}
 		if (isFind) { // ako postoji na stanju
 			if (this.raDetail.getMode() == 'N') {
-				getDetailSet().setBigDecimal("SKOL",
-						stanjeSet.getBigDecimal("KOL"));
-				getDetailSet().setBigDecimal("SVC",
-						stanjeSet.getBigDecimal("VC"));
-				getDetailSet().setBigDecimal("SMC",
-						stanjeSet.getBigDecimal("MC"));
+				raDetail.calc.run("SKOL = sta.KOL;  SVC = sta.VC;  SMC = sta.MC");
 			}
 		}
 	}
@@ -903,8 +881,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
                     raControlDocs.getKey(getDetailSet(), new String[] { "cskl",
                             "vrdok", "god", "brdok", "rbsid" }, "stdoku"));
 
-            getMasterSet().setBigDecimal(
-					"UIKAL",
+            getMasterSet().setBigDecimal("UIKAL",
 					getMasterSet().getBigDecimal("UIKAL").add(
 							getDetailSet().getBigDecimal("INAB")));
 			
@@ -951,7 +928,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 			try {
 				hr.restart.util.Valid.getValid().recountDataSet(raDetail,
 						"RBR", delStavka, false);
-				dlgSerBrojevi.getdlgSerBrojevi().deleteSerBr('U');
+				if (isFind) dlgSerBrojevi.getdlgSerBrojevi().deleteSerBr('U');
 				/*
 				 * System.out.println("Jebeno brianje: " + isFind + ", " +
 				 * (oldVC.doubleValue() != 0) + " ," + oldVC.doubleValue());
@@ -1053,9 +1030,10 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	}
 
 	public boolean isUpdateOrDeletePossible() {
+		if (!isFind) return true;
+		
 	  if (raFLH.getInstance().provjeraFLH(getDetailSet())) return false;    /* FLH */
 	  
-	  if (!isFind) return true;
 		stanjeSet.refresh();
 		return rCD.testKalkulacije(getDetailSet(), stanjeSet);
 	}
