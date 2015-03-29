@@ -21,9 +21,11 @@ import hr.restart.baza.Condition;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.ActionExecutor;
+import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raTableModifier;
 
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -33,7 +35,9 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.event.AncestorEvent;
+import javax.swing.text.JTextComponent;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -41,6 +45,7 @@ import com.borland.dx.dataset.StatusListener;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
 
 
 
@@ -236,10 +241,11 @@ public class JlrNavField extends JraTextField {
 //    if (colNames == null) colNames = new String[] {this.getColumnName()};
     if (colNames == null) colNames = new String[] {getNavColumnName()};
   }
-  private void setDefHelpText() {
+  public void setDefHelpText() {
     if (getHelpText()!=null) return;
     if (getRaDataSet() != null) {
       Column col = getRaDataSet().hasColumn(getColumnName());
+      if (col == null) col = getRaDataSet().hasColumn(getNavColumnName());
       if (col!=null) {
         if (searchMode == 0) {/** @todo malo te textove prilagodi luModeF9 i luModeENTER */
           setHelpText("Unesite podatak "+col.getCaption().toUpperCase()+" ili ga dohvatite sa tipkom "+KeyEvent.getKeyText(KeyEvent.VK_F9));
@@ -436,6 +442,49 @@ public class JlrNavField extends JraTextField {
     this.setLookupSaveName(nPrF.getLookupSaveName());
   }
   
+  public void addNav(String col) {
+  	addNav(new JlrNavField(), col);
+  }
+  
+  public void addNav(JlrNavField other, String col) {
+  	other.setColumnName(col);
+  	other.setSearchMode(1);
+  	other.setNavProperties(this);
+  	
+  	if (textFields == null) textFields = new JTextComponent[] {other};
+  	else {
+  		JTextComponent[] tf = new JTextComponent[textFields.length + 1];
+  		System.arraycopy(textFields, 0, tf, 0, textFields.length);
+  		tf[tf.length - 1] = other;
+  		textFields = tf;
+  	}
+  	if (colNames == null) colNames = new String[] {col};
+  	else Util.getUtil().concatArrayStr(colNames, col);
+  	
+  	if (navButton == null) setNavButton(new JraButton());
+  }
+  
+  public void setDoh(DataSet doh, int[] visCols) {
+  	setRaDataSet(doh);
+  	setVisCols(visCols);
+  }
+  
+  public void addTo(Container cont, String label, int y, int ow) {
+  	addTo(cont, label, y, 100, ow);
+  }
+  
+  public void addTo(Container cont, String label, int y, int myw, int ow) {
+  	addTo(cont, label, y, myw, new int[] {ow});
+  }
+  
+  public void addTo(Container cont, String label, int y, int myw, int[] ow) {
+  	cont.add(new JLabel(label), new XYConstraints(15, y, -1, -1));
+  	cont.add(this, new XYConstraints(150, y, myw, -1));
+  	int x = 155 + myw;
+  	for (int i = 0; i < ow.length; x += ow[i] + 5, i++)
+  		cont.add(textFields[i], new XYConstraints(x, y, ow[i], -1));
+  	cont.add(navButton, new XYConstraints(x, y, 21, 21)); 
+  }
   
   public void setAllowMultiple(boolean mult) {
     if (mult && navProperties == null)
