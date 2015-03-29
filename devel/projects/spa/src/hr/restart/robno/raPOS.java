@@ -251,7 +251,7 @@ public class raPOS extends raIzlazTemplate  {
     frmParam.getParam("robno", "razdRep", "02", "Šifra vrste troška razduženje blagajne za reprezentaciju");
     rep = frmParam.getParam("robno", "razdRepSep", "N", "Razdvojiti razduženje reprezentacije? (D,N)").equalsIgnoreCase("D");
     
-    vhack = frmParam.getParam("pos", "vHack", "D", "Prikaz posebnih kategorija za Vezuv (D,N)").equalsIgnoreCase("D");
+    vhack = frmParam.getParam("pos", "vHack", "N", "Prikaz posebnih kategorija za Vezuv (D,N)").equalsIgnoreCase("D");
     
   	JPanel pan = new JPanel(new XYLayout(vhack ? 415 : 540, 75));
   	tds = new StorageDataSet();
