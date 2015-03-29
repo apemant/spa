@@ -32,6 +32,7 @@ import hr.restart.baza.dM;
 import hr.restart.baza.zirorn;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
+import hr.restart.util.DataTree;
 import hr.restart.util.HashDataSet;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
@@ -124,12 +125,7 @@ System.out.println("setting filter "+knjigsql+andNotIn);
   }
   public com.borland.dx.sql.dataset.QueryDataSet getOrgstr2() {
     if (orgstr2==null) {
-      orgstr2 = new com.borland.dx.sql.dataset.QueryDataSet();
-      try {
-        orgstr2.setQuery(dm.getOrgstruktura().getQuery());
-        orgstr2.setColumns(dm.getOrgstruktura().cloneColumns());
-        orgstr2.open();
-      } catch (Exception e) {e.printStackTrace();}
+    	orgstr2 = Orgstruktura.getDataModule().copyDataSet();
     } else {
 //      orgstr2.refresh();
     }
@@ -406,6 +402,7 @@ e.printStackTrace();
     if (orgs.size() > 10 && getAllOrg().rowCount() - orgs.size() < orgs.size() / 2) {
       HashSet non = getAllCorgs();
       non.removeAll(orgs);
+      if (non.size() == 0) return Condition.ident;
       return Condition.in(col, non).not();
     }
     return Condition.in(col, orgs);
@@ -434,64 +431,26 @@ e.printStackTrace();
     if (sharedKnjig == null) {
     	sharedKnjig = Orgstruktura.getDataModule().getReadonlySet();
     	sharedKnjig.setTableName("ORGSTRUKTURA");
-    	fillOrgSet(sharedKnjig, dlgGetKnjig.getKNJCORG(false));
+    	DataTree.fillSubSet(sharedKnjig, dlgGetKnjig.getKNJCORG(false), dM.getDataModule().getOrgstruktura(), "CORG", "PRIPADNOST");
       OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
         public void knjigChanged(String a1, String a2) {
         	sharedKnjig.empty();
-        	fillOrgSet(sharedKnjig, dlgGetKnjig.getKNJCORG(false));
+        	DataTree.fillSubSet(sharedKnjig, dlgGetKnjig.getKNJCORG(false), dM.getDataModule().getOrgstruktura(), "CORG", "PRIPADNOST");
         }
       });
     }
     return sharedKnjig;
   }
-  
-  private static void fillOrgSet(StorageDataSet out, String corg) {
-  	Tree t = getOrgTree(corg);
     
-    HashDataSet ho = new HashDataSet(dM.getDataModule().getOrgstruktura(), "CORG");
-    
-    if (t != null) {
-      ArrayList all = new ArrayList();
-      t.sortDeep();
-      t.fill(all);
-      for (Iterator i = all.iterator(); i.hasNext(); ) {
-        out.insertRow(false);
-        ho.get(i.next()).copyTo(out);
-      }
-    }
-  }
-  
   public static StorageDataSet getTempOrgs(String corg) {
     StorageDataSet out = Orgstruktura.getDataModule().getReadonlySet();
     out.setTableName("ORGSTRUKTURA");
-    fillOrgSet(out, corg);
+    DataTree.fillSubSet(out, corg, dM.getDataModule().getOrgstruktura(), "CORG", "PRIPADNOST");
     return out;
   }
   
   public static StorageDataSet getTempOrgsKnjig() {
     return getTempOrgs(dlgGetKnjig.getKNJCORG(false));
-  }
-  
-  public static Tree getOrgTree(String root) {
-    DataSet org = dM.getDataModule().getOrgstruktura();
-    org.open();
-    
-    HashMap prips = new HashMap();
-    for (org.first(); org.inBounds(); org.next()) {
-      String prip = org.getString("PRIPADNOST");
-      String corg = org.getString("CORG");
-      
-      Tree t = (Tree) prips.get(corg);
-      if (t == null) prips.put(corg, t = new Tree(corg));
-
-      if (prip.equals(corg)) continue;
-      
-      Tree sub = (Tree) prips.get(prip);
-      if (sub == null) prips.put(prip, sub = new Tree(prip));
-      sub.addBranch(t);    
-    }
-    
-    return (Tree) prips.get(root);
   }
   
   public static HashMap getPripMap() {
@@ -507,7 +466,7 @@ e.printStackTrace();
   
   public static HashSet getCorgSet(String root) {
     HashSet ret = new HashSet();
-    Tree t = getOrgTree(root);
+    DataTree t = DataTree.getSubTree(root, dM.getDataModule().getOrgstruktura(), "CORG", "PRIPADNOST");
     
     if (t != null) t.fill(ret);
     return ret;
@@ -516,64 +475,5 @@ e.printStackTrace();
   public static HashSet getCorgKnjigSet() {
     return getCorgSet(dlgGetKnjig.getKNJCORG(false));
   }
-  
-  public static class Tree implements Comparable {
-    public String corg;
-    public ArrayList branches;
-    public Tree(String root) {
-      corg = root;
-      branches = null;
-    }
-    
-    public void addBranch(Tree branch) {
-      if (branches == null) branches = new ArrayList();
-      branches.add(branch);
-    }
-    
-    public List getBranches() {
-      return branches;
-    }
-    
-    public boolean isLeaf() {
-      return branches == null || branches.size() == 0;
-    }
-    
-    public void fill(Collection ret) {
-      ret.add(corg);
-      if (branches != null)
-        for (Iterator i = branches.iterator(); i.hasNext(); )
-          ((Tree) i.next()).fill(ret);
-    }
-    
-    public void sortDeep() {
-      if (branches != null) {
-        Collections.sort(branches);
-        for (Iterator i = branches.iterator(); i.hasNext(); )
-          ((Tree) i.next()).sortDeep();
-      }
-    }
-    
-    public void dump() {
-      System.out.print(corg);
-      if (!isLeaf()) {
-        System.out.print(": [");
-        for (Iterator i = branches.iterator(); i.hasNext(); )
-          ((Tree) i.next()).dump();
-        System.out.print("]");
-      }
-      System.out.print(", ");
-    }
-    
-    public boolean equals(Object obj) {
-      return (obj instanceof Tree && ((Tree) obj).corg.equals(corg));
-    }
-    
-    public int hashCode() {
-      return corg.hashCode();
-    }
-    
-    public int compareTo(Object o) {
-      return corg.compareTo(((Tree) o).corg);
-    }
-  }
+
 }
