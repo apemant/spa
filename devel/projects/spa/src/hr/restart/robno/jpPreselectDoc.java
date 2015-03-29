@@ -395,8 +395,7 @@ abstract public class jpPreselectDoc extends PreSelect {
     jrfCSKL.selectAll();
 //    getSelRow().setTimestamp("DATDOK-from",hr.restart.robno.Util.getUtil().findFirstDayOfYear(Integer.parseInt(vl.findYear())));
     Timestamp day = vl.getToday();
-    if (!Aut.getAut().getKnjigodRobno().equals(vl.findYear()) &&
-        !dm.getKnjigod().getString("STATRADA").equalsIgnoreCase("D"))
+    if (Aut.getAut().getKnjigodRobno().compareTo(vl.findYear()) < 0)
       day = uut.getYearEnd(Aut.getAut().getKnjigodRobno());
     
 
