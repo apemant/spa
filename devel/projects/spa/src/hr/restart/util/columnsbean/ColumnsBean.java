@@ -20,30 +20,45 @@ package hr.restart.util.columnsbean;
 
 
 import hr.restart.start;
+import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.ColumnChangeListener;
+import hr.restart.swing.JraButton;
+import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraComboBox;
+import hr.restart.swing.JraDialog;
+import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTableInterface;
+import hr.restart.swing.JraTextField;
+import hr.restart.swing.KeyAction;
+import hr.restart.swing.raInputDialog;
+import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raSelectTableModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.FileHandler;
 import hr.restart.util.IntParam;
+import hr.restart.util.OKpanel;
 import hr.restart.util.VarStr;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raRowSume;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -52,19 +67,24 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.event.AncestorEvent;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumnModel;
 
+import com.borland.dbswing.JdbTable;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.RowFilterListener;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 
 
@@ -121,6 +141,9 @@ public class ColumnsBean extends JPanel {
   private JraTable2 raJdbTable;
 
   private TableColumnModel SavedTable=null;
+  
+  private JPanel savedPan = null;
+  private JraCheckBox[] savedCbs = null;
   
 //  private PropertyChangeListener pcl;
   
@@ -205,6 +228,17 @@ public class ColumnsBean extends JPanel {
 
     }
 
+  };
+  
+  public raNavAction rnvDeselect = new raNavAction("Poništi odabir",raImages.IMGTABLE,KeyEvent.VK_O,KeyEvent.CTRL_MASK) {
+  	public void actionPerformed(ActionEvent e) {
+      raSelectTableModifier stm = raJdbTable.hasSelectionTrackerInstalled();
+      if (stm != null && stm.countSelected() > 0) {
+      	stm.clearSelection();
+      	checkSelection();
+      	raJdbTable.repaint();
+      } else showColumns();
+    }
   };
 
   public raNavAction rnvRefresh = new raNavAction("Napuni opet",raImages.IMGREFRESH,KeyEvent.VK_R,KeyEvent.CTRL_MASK) {
@@ -339,8 +373,10 @@ public class ColumnsBean extends JPanel {
     this.add(rnvTotal, new XYConstraints(151+raNavAction.ACTSIZE,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
 
     this.add(rnvFind, new XYConstraints(151+raNavAction.ACTSIZE*2,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
+    
+    this.add(rnvDeselect, new XYConstraints(151+raNavAction.ACTSIZE*3,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
 
-    this.add(rnvRefresh, new XYConstraints(151+raNavAction.ACTSIZE*3,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
+    this.add(rnvRefresh, new XYConstraints(151+raNavAction.ACTSIZE*4,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
 
 //    this.add(jCheckBVisible, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 
@@ -901,6 +937,15 @@ public class ColumnsBean extends JPanel {
         raJdbTable != null && raJdbTable.getDataSet() != null &&
         raJdbTable.getDataSet().getRowFilterListener() != null);
   }
+  
+  public void checkSelection() {
+  	boolean sel = raJdbTable != null && 
+  			raJdbTable.hasSelectionTrackerInstalled() != null &&
+  			raJdbTable.hasSelectionTrackerInstalled().countSelected() > 0;
+  	rnvDeselect.setLockedLoweredBorder(sel);
+  	if (sel) rnvDeselect.setTexts();
+  	else rnvDeselect.setTexts("Vidljivost kolona");
+  }
 
   public void initialize() {
     
@@ -915,6 +960,7 @@ public class ColumnsBean extends JPanel {
       return;
     }
     checkFilter();
+    checkSelection();
     ((JraTable2) raJdbTable).createDefaultColumnsFromModel();
 
     //Punjenje comboboxa checkboxima (vidi klasu ComBoxCellRenderer)
@@ -961,14 +1007,79 @@ public class ColumnsBean extends JPanel {
 //    SavedTable = new JraTable(raJdbTable.getModel());
 
     SavedTable = new DefaultTableColumnModel();
+    savedCbs = new JraCheckBox[raJdbTable.getColumnCount()];
+    savedPan = new JPanel(new BorderLayout());
+    JPanel innerPan = new JPanel(new XYLayout(300, raJdbTable.getColumnCount() * 25 + 15));
+    int y = 10;
 //    SavedTable = raJdbTable.clone(raJdbTable.getModel());
     for (int i = 0; i < raJdbTable.getColumnCount(); i++) {
       SavedTable.addColumn(raJdbTable.getColumnModel().getColumn(i));
+      
+      JraCheckBox cb = new JraCheckBox(" " + raJdbTable.getColumnModel().getColumn(i).getHeaderValue().toString() + " ");
+      cb.setHorizontalTextPosition(SwingConstants.TRAILING);
+      cb.setHorizontalAlignment(SwingConstants.LEADING);
+      cb.setFocusPainted(false);
+      innerPan.add(cb, new XYConstraints(25, y, -1, -1));
+      y += 25;
+      savedCbs[i] = cb;
+      
+      cb.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					checkCb((JraCheckBox) e.getSource());
+				}
+			});
+      
   //    int wid = raJdbTable.getColumnModel().getColumn(i).getPreferredWidth();
   //    SavedTable.getColumnModel().getColumn(i).setPreferredWidth(wid);
   //    SavedTable.getColumnModel().getColumn(i).setWidth(wid);
     }
+    
+    JraScrollPane vp = new JraScrollPane();
+    vp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    vp.getVerticalScrollBar().setUnitIncrement(25);
+    vp.getVerticalScrollBar().setBlockIncrement(400);
+    
+    vp.setPreferredSize(new Dimension(320, Math.min(400, raJdbTable.getColumnCount() * 25 + 20)));
+    vp.setViewportView(innerPan);
 
+    savedPan.add(vp);
+    JPanel up = new JPanel(new GridLayout(1, 0));
+    JraButton jAll = new JraButton();
+    jAll.setText("Ukljuèi sve");
+    jAll.setMaximumSize(new Dimension(200, 27+OKpanel.TOUCHHEIGHT));
+    jAll.setMinimumSize(new Dimension(100, 27+OKpanel.TOUCHHEIGHT));
+    jAll.setPreferredSize(new Dimension(150, 27+OKpanel.TOUCHHEIGHT));
+    jAll.setIcon(raImages.getImageIcon(raImages.IMGCHECK));
+    jAll.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+      	for (int i = 0; i < savedCbs.length; i++)
+      		savedCbs[i].setSelected(true);
+      	
+      	makeSaveValue();
+      }
+    });
+    
+    JraButton jNone = new JraButton();
+    jNone.setText("Ukloni sve");
+    jNone.setMaximumSize(new Dimension(200, 27+OKpanel.TOUCHHEIGHT));
+    jNone.setMinimumSize(new Dimension(100, 27+OKpanel.TOUCHHEIGHT));
+    jNone.setPreferredSize(new Dimension(150, 27+OKpanel.TOUCHHEIGHT));
+    jNone.setIcon(raImages.getImageIcon(raImages.IMGUNCHECK));
+    jNone.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+      	for (int i = 0; i < savedCbs.length; i++)
+      		savedCbs[i].setSelected(false);
+      	
+      	makeSaveValue();
+      }
+    });
+    up.add(jAll);
+    up.add(jNone);
+    savedPan.add(up, BorderLayout.NORTH);
+    
+//    jBOK.setSelected(true);
+    
+    
 //ST.prn("SavedTable.getColumnCount = ",SavedTable.getColumnCount());
 
 //    test();
@@ -987,6 +1098,14 @@ public class ColumnsBean extends JPanel {
 
   }
 
+  void checkCb(JraCheckBox cb) {
+  	int idx = -1;
+  	for (int i = 0; i < savedCbs.length; i++)
+  		if (savedCbs[i] == cb) idx = i;
+  	
+  	if (idx >= 0 && colDisplayed(idx) != cb.isSelected())
+  		toggleColVisibility(idx);
+  }
 
 
 /*private void test() {
@@ -1155,6 +1274,8 @@ System.out.println(raDataSet.getColumn(i).getWidth());
 	      tc.setWidth(wid);
       }*/
     }
+    if (savedCbs != null && savedCbs.length > colIndex && colIndex >= 0) 
+    	savedCbs[colIndex].setSelected(true);
   }
 
 
@@ -1166,9 +1287,13 @@ System.out.println(raDataSet.getColumn(i).getWidth());
   private void delTableColumn(int colIndex) {
 
 //ST.prn("removing column "+raJdbTable.getColumnModel().getColumn(colIndex).getHeaderValue());
+  	
+  	int idx = raJdbTable.convertColumnIndexToModel(colIndex);
 
     raJdbTable.removeColumn(raJdbTable.getColumnModel().getColumn(colIndex));
-
+    
+    if (savedCbs != null && savedCbs.length > idx && idx >= 0) savedCbs[idx].setSelected(false);
+    
   }
 
 
@@ -1291,7 +1416,7 @@ System.out.println(raDataSet.getColumn(i).getWidth());
   }*/
 
 
-  private void checkedAction() {
+  void checkedAction() {
 
     //sisnuo je na vanjski checkbox
 
@@ -1387,6 +1512,21 @@ System.out.println(raDataSet.getColumn(i).getWidth());
 
     }
 
+  }
+  
+  raOptionDialog cd = new raOptionDialog() {
+  	protected void beforeShow() {
+  		AWTKeyboard.registerKeyStroke(win, AWTKeyboard.ESC, new KeyAction() {
+				public boolean actionPerformed() {
+					cancelPress();
+					return true;
+				}
+			});
+  	};
+  };
+  
+  public void showColumns() {
+  	cd.show(raJdbTable.getParent(), savedPan, "Vidljivost kolona");
   }
 
   public void refreshAction() {
