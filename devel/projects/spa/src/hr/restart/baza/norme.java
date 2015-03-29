@@ -17,8 +17,9 @@
 ****************************************************************************/
 package hr.restart.baza;
 
+import hr.restart.util.Aus;
+
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class norme extends KreirDrop implements DataModule {
@@ -29,7 +30,8 @@ public class norme extends KreirDrop implements DataModule {
   
   {
   	createFilteredDataSet(normesorted, "");
-    normesorted.setSort(new SortDescriptor(new String[] {"CARTNOR"}));
+  	Aus.setFilter(normesorted, "SELECT * FROM norme ORDER BY cartnor");
+    //normesorted.setSort(new SortDescriptor(new String[] {"CARTNOR"}));
   }
   
   public static norme getDataModule() {
