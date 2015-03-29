@@ -17,10 +17,14 @@
 ****************************************************************************/
 package hr.restart.util;
 
+import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.raSelectTableModifier;
 import hr.restart.swing.raTableModifier;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.TooManyListenersException;
 
@@ -235,7 +239,7 @@ sysoutTEST ST=new sysoutTEST(false);
 
   private boolean raLookup(DataSet ds, ReadRow find, DataRow result) {
     handleFilters(ds, null);
-    return ds.lookup(find, result, Locate.CASE_INSENSITIVE | Locate.FIRST | Locate.FAST);
+    return ds.lookup(find, result, Locate.CASE_INSENSITIVE | Locate.FIRST);
   }
   /**
    * Locira odredjeni zapis po filterima u datasetu
@@ -348,14 +352,8 @@ sysoutTEST ST=new sysoutTEST(false);
 //ST.prn(colFilters);
     return true;
   } */
-  private String[] ll2string(java.util.LinkedList ll) {
-    String[] stmp = new String[ll.size()];
-    for (int i=0;i<ll.size();i++) {
-      stmp[i]=(String)ll.get(i);
-    }
-    return stmp;
-  }
-/**
+
+  /**
  * <pre>
  * Npr. Treba naci slog u datasetu ds1 u kojem je column cl1 = "666" i cl2='TEST" i onda pozoves:
  * raLocate(ds1,new String[] {"cl1","cl2"}, new String[] {"666","TEST"})
@@ -392,18 +390,18 @@ sysoutTEST ST=new sysoutTEST(false);
 //      ((com.borland.dx.dataset.StorageDataSet)setToLocate).setLocale(null);
 //      if (setToLocate.refreshSupported()) setToLocate.refresh(); //uzas
 //    }
-    java.util.LinkedList lc= new java.util.LinkedList();
-    java.util.LinkedList lf= new java.util.LinkedList();
-    for (int i=0;i<colFilters.length;i++) {
-      if (!(colFilters[i].equals("")||colFilters[i]==null)) {
-        lc.add(colNames[i]);
-        lf.add(colFilters[i]);
+    ArrayList ac= new ArrayList();
+    ArrayList af= new ArrayList();
+    for (int i = 0; i < colFilters.length; i++) {
+      if (colFilters[i] != null && colFilters[i].length() > 0) {
+        ac.add(colNames[i]);
+        af.add(colFilters[i]);
       }
     }
-    if (lc.size()==0) return false;
-    colNames = ll2string(lc);
-    colFilters = ll2string(lf);
-//
+    if (ac.size()==0) return false;
+    colNames = (String[]) ac.toArray(new String[ac.size()]);
+    colFilters = (String[]) af.toArray(new String[af.size()]);
+
     com.borland.dx.dataset.DataRow locRow = new com.borland.dx.dataset.DataRow(setToLocate,colNames);
     com.borland.dx.dataset.Variant vv;
     for (int i=0;i<colNames.length;i++) {
@@ -418,7 +416,7 @@ sysoutTEST ST=new sysoutTEST(false);
       };
     }
 //    return setToLocate.locate(locRow,Locate.FIRST|Locate.FAST|locOptions);
-    return jbLocate(setToLocate,locRow,Locate.FIRST|Locate.FAST|locOptions);
+    return jbLocate(setToLocate,locRow,Locate.FIRST|locOptions);
   }
 
   /**
@@ -439,6 +437,30 @@ sysoutTEST ST=new sysoutTEST(false);
       String colName,
       String colFilter) {
     return raLocate(setToLocate,new String[] {colName},new String[] {colFilter});
+  }
+  
+  VarStr vs = new VarStr();
+  public boolean raLocate(DataSet ds, String cols, ReadRow vals) {
+  	vs.clear().append(cols);
+  	if (vs.indexOf(' ') > 0) return raLocate(ds, vs.split(), vals);
+  	if (vs.indexOf(',') > 0) return raLocate(ds, vs.splitTrimmed(','), vals);
+  	DataRow dr = new DataRow(ds, cols);
+  	vals.getVariant(cols, shared);
+    dr.setVariant(cols, shared);
+    return ds.locate(dr, Locate.FIRST);
+  }
+  
+  public boolean raLocate(DataSet ds, String[] cols, ReadRow vals) {
+  	return raLocate(ds, cols, vals, cols);
+  }
+  
+  public boolean raLocate(DataSet ds, String[] cols, ReadRow vals, String[] keys) {
+  	DataRow dr = new DataRow(ds, cols);
+  	for (int i = 0; i < cols.length; i++) {
+      vals.getVariant(keys[i], shared);
+      dr.setVariant(cols[i], shared);
+    }  	
+  	return ds.locate(dr, Locate.FIRST);
   }
   /**
    * <pre>
@@ -539,7 +561,9 @@ sysoutTEST ST=new sysoutTEST(false);
         }
       } else {
         filterField.emptyTextFields();
-        filterField.setText(VarStr.join(msel.getSelection(), ',').toString());
+        Object[] sel = msel.getSelection();
+        Arrays.sort(sel);
+        filterField.setText(VarStr.join(sel, ',').toString());
       }
       returnValue = true;
     } else {
