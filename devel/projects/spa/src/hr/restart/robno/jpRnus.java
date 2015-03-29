@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.baza.Artikli;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.raCommonClass;
 
 import java.awt.BorderLayout;
@@ -76,6 +77,8 @@ public class jpRnus extends JPanel {
 
   public void EraseFields() {
     rpcLostFocus = false;
+    frn.getRaQueryDataSet().setBigDecimal("KOEFKOL", Aus.zero0);
+    frn.getRaQueryDataSet().setBigDecimal("KOEFZC", Aus.zero0);
     rcc.EnabDisabAll(jpDetail, false);
   }
 
