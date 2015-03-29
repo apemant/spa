@@ -257,6 +257,9 @@ public class frmMasterBlagajna extends raMasterDetail {
       if (getDetailSet().getString("BC").trim().equals("") && getDetailSet().getString("CART1").trim().equals("") && getDetailSet().getInt("CART")==0) 
       	return;
       if (raDetail.getMode()=='I') return;
+      if ((jpBl.tCartSifparam.equals("CART") && !jpBl.jrfCART.isEnabled()) ||
+      		(jpBl.tCartSifparam.equals("CART1") && !jpBl.jrfCART1.isEnabled()) ||
+      		(jpBl.tCartSifparam.equals("BC") && !jpBl.jrfBC.isEnabled())) return;
       if (jpBl.jrfBC.isLastLookSuccessfull() || jpBl.jrfCART.isLastLookSuccessfull() || jpBl.jrfCART1.isLastLookSuccessfull()) {
       	System.out.println("findOtherThings");
       	findOtherThings();

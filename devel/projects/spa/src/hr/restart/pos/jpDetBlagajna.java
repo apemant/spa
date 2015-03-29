@@ -74,7 +74,8 @@ public class jpDetBlagajna extends JPanel {
       AWTKeyboard.registerKeyStroke(this, AWTKeyboard.ESC, esc);
     }
     public void valueChanged() {
-      jtfPOPUST_focusLost(null);
+    	if (jtfKOL.isEnabled())
+    		jtfPOPUST_focusLost(null);
     }
   };
   JraTextField jtfMC = new JraTextField();
@@ -85,7 +86,8 @@ public class jpDetBlagajna extends JPanel {
       AWTKeyboard.registerKeyStroke(this, AWTKeyboard.ESC, esc);
     }
     public void valueChanged() {
-      jtfPOPUST_focusLost(null);
+    	if (jtfPOPUST.isEnabled())
+    		jtfPOPUST_focusLost(null);
     }
   };
   JlrNavField jrfCART = new JlrNavField() {
