@@ -383,6 +383,7 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
   }
   
   protected DataSet getArtikliSet() {
+  	String pmj = vrdok.equals("GRC") ? " AND m.cprodmj=d.cprodmj " : " ";
     VarStr q = new VarStr(
         "SELECT d.cart, d.cart1, d.bc, d.jm, d.nazart, " +
         "d.kol, d.rezkol, d.ipopust1+d.ipopust2 as uirab, " +
@@ -393,8 +394,8 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
         "(d.neto-d.por1-d.por2-d.por3) as iprodbp, " +
         "d.por1, d.por2, d.por3, d.neto/d.kol as fmc, d.mc, " +
         "d.neto as iprodsp, d.ppor1, d.ppor2, d.ppor3, " +
-        "d.cskl from %m m, %d d WHERE " + util.getDoc("m", "d") +
-        " AND m.status='N' AND d.iznos!=0 AND d.kol!=0 AND "
+        "d.cskl from %m m, %d d WHERE " + util.getDoc("m", "d") + pmj +
+        "AND m.status='N' AND d.iznos!=0 AND d.kol!=0 AND "
     );
     q.replaceAll("%d", tabledet).replaceAll("%m", table);
     
