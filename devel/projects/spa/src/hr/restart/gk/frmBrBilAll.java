@@ -21,15 +21,13 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Konta;
 import hr.restart.baza.dM;
 import hr.restart.robno.raDateUtil;
-import hr.restart.robno.rdUtil;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
 import hr.restart.swing.raInputDialog;
-import hr.restart.swing.raNumberMask;
 import hr.restart.util.Aus;
-import hr.restart.util.Stopwatch;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.dlgCompanyTree;
@@ -42,7 +40,6 @@ import hr.restart.util.reports.dlgRunReport;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.raKonta;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,23 +56,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRSection;
 import net.sf.jasperreports.engine.design.JRDesignStaticText;
-import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
-import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 
@@ -217,10 +209,10 @@ public class frmBrBilAll extends raUpitFat {
   ///BP
   StorageDataSet stds = new StorageDataSet();
   //private QueryDataSet kontaSet = null;
-  private QueryDataSet repKontaSet;
-  private QueryDataSet repSintetikAnalitikSet;
-  private QueryDataSet repRekapitulacijaSet = null;
-  private QueryDataSet repPoNalozimaSet = null;
+  private StorageDataSet repKontaSet;
+  private StorageDataSet repSintetikAnalitikSet;
+  private StorageDataSet repRekapitulacijaSet = null;
+  private StorageDataSet repPoNalozimaSet = null;
   
   private static frmBrBilAll instanceOfMe = null;
   
@@ -448,7 +440,7 @@ public class frmBrBilAll extends raUpitFat {
       addingReport();
       okPressActions(data);
     } else {
-      QueryDataSet prik = deriveRawSetShifts(data, level, false);
+    	StorageDataSet prik = deriveRawSetShifts(data, level, false);
       positionDataSet(prik);
       setDataSetAndSums(prik, new String[] {"POCID","POCIP","SALPS","ID","IP","SALPROM","DUG","POT","SALDO"});
     }
@@ -457,7 +449,7 @@ public class frmBrBilAll extends raUpitFat {
   
 
   
-  private QueryDataSet deriveRawSetShifts(List data, int digits, boolean forPrint) {
+  private StorageDataSet deriveRawSetShifts(List data, int digits, boolean forPrint) {
 /*    int digitala = digits;
     if (digits > 3) digitala = 100; 
     QueryDataSet forReturn = new QueryDataSet();
@@ -534,7 +526,7 @@ public class frmBrBilAll extends raUpitFat {
   }
 
   private void okPressActions(List data) {
-    QueryDataSet jptvov = deriveRawSetShifts(data, kontoPanel.getBrKonLength() + 1, false);
+  	StorageDataSet jptvov = deriveRawSetShifts(data, kontoPanel.getBrKonLength() + 1, false);
     checkClosing();
     
     //if (!doubleClicked) {
@@ -594,15 +586,14 @@ public class frmBrBilAll extends raUpitFat {
         view.show();
   }
   
-  private QueryDataSet makeSetIspisPoNalozima(List data){
-    QueryDataSet razvijeni = new QueryDataSet();
-    razvijeni.setResolvable(false);
+  private StorageDataSet makeSetIspisPoNalozima(List data){
+  	StorageDataSet razvijeni = new StorageDataSet();
     razvijeni.setColumns(new Column[] {
         (Column) dm.getGkkumulativi().getColumn("CORG").clone(),
         (Column) dm.getGkkumulativi().getColumn("BROJKONTA").clone(),
         dm.createStringColumn("NK", "Naziv konta", 0),
-        dm.createBigDecimalColumn("POCID", "Po\u010DetnoD", 2),
-        dm.createBigDecimalColumn("POCIP", "Po\u010DetnoP", 2),
+        dm.createBigDecimalColumn("POCID", "PoèetnoD", 2),
+        dm.createBigDecimalColumn("POCIP", "PoèetnoP", 2),
         dm.createBigDecimalColumn("SALPS","SaldoPS",2),
         dm.createBigDecimalColumn("ID","PrometD",2),
         dm.createBigDecimalColumn("IP","PrometP",2),
@@ -673,15 +664,14 @@ public class frmBrBilAll extends raUpitFat {
     return razvijeni;
   }
   
-  private QueryDataSet makeRekapitulacija(List data){
-    QueryDataSet rekapitulacija = new QueryDataSet();
-    rekapitulacija.setResolvable(false);
+  private StorageDataSet makeRekapitulacija(List data){
+  	StorageDataSet rekapitulacija = new StorageDataSet();
     rekapitulacija.setColumns(new Column[] {
         (Column) dm.getGkkumulativi().getColumn("CORG").clone(),
         (Column) dm.getGkkumulativi().getColumn("BROJKONTA").clone(),
         dm.createStringColumn("NK", 0),
-        dm.createBigDecimalColumn("POCID", "Po\u010DetnoD", 2),
-        dm.createBigDecimalColumn("POCIP", "Po\u010DetnoP", 2),
+        dm.createBigDecimalColumn("POCID", "PoèetnoD", 2),
+        dm.createBigDecimalColumn("POCIP", "PoèetnoP", 2),
         dm.createBigDecimalColumn("SALPS","SaldoPS",2),
         dm.createBigDecimalColumn("ID","PrometD",2),
         dm.createBigDecimalColumn("IP","PrometP",2),
@@ -854,10 +844,9 @@ public class frmBrBilAll extends raUpitFat {
     return new ArrayList(sums.values());
   }
 
-  private QueryDataSet makeSetForNewIspis(List data) {
+  private StorageDataSet makeSetForNewIspis(List data) {
     checkClosing();
-    QueryDataSet obradjeni = new QueryDataSet();
-    obradjeni.setResolvable(false);
+    StorageDataSet obradjeni = new StorageDataSet();
     obradjeni.setColumns(new Column[] {
         (Column) dm.getGkkumulativi().getColumn("CORG").clone(),
         (Column) dm.getGkkumulativi().getColumn("BROJKONTA").clone(),
@@ -988,12 +977,11 @@ public class frmBrBilAll extends raUpitFat {
     return valutaConvertedSet(obradjeni);
   }
   
-  private QueryDataSet getClassedBilance(List data){
+  private StorageDataSet getClassedBilance(List data){
 //    sysoutTEST st = new sysoutTEST(false); //XDEBUG delete when no more needed
 //    st.showInFrame(fullConts,"Dataset Test Frame");
     checkClosing();
-    QueryDataSet razvijeni = new QueryDataSet();
-    razvijeni.setResolvable(false);
+    StorageDataSet razvijeni = new StorageDataSet();
     razvijeni.setColumns(new Column[] {
         (Column) dm.getGkkumulativi().getColumn("CORG").clone(),
         (Column) dm.getGkkumulativi().getColumn("BROJKONTA").clone(),
@@ -1006,8 +994,8 @@ public class frmBrBilAll extends raUpitFat {
         dm.createBigDecimalColumn("SALPROM","SaldoPR",2),
         dm.createBigDecimalColumn("SALDO","SaldoUK",2)
     }); 
-    razvijeni.setRowId("CORG",true);
-    razvijeni.setRowId("BROJKONTA",true);
+    //razvijeni.setRowId("CORG",true);
+    //razvijeni.setRowId("BROJKONTA",true);
     razvijeni.open();
     
 /*    fullConts.first();
@@ -1284,19 +1272,19 @@ public class frmBrBilAll extends raUpitFat {
     return  !stds.getString("OZNVAL").equalsIgnoreCase(domaval);
   }
   
-  public QueryDataSet getBroutoBilancaReportSet(){
+  public StorageDataSet getBroutoBilancaReportSet(){
     return repKontaSet;
   }
   
-  public QueryDataSet getSintetikAnalitikSet(){
+  public StorageDataSet getSintetikAnalitikSet(){
     return repSintetikAnalitikSet;
   }
   
-  public QueryDataSet getRekapitulacijaSet(){
+  public DataSet getRekapitulacijaSet(){
     return repRekapitulacijaSet;
   }
   
-  public QueryDataSet getPoNalozimaSet(){
+  public DataSet getPoNalozimaSet(){
     return repPoNalozimaSet;
   }
 
@@ -1431,10 +1419,9 @@ public class frmBrBilAll extends raUpitFat {
     
   }*/
 
-  private QueryDataSet sumSame(List data, boolean forPrint){
+  private StorageDataSet sumSame(List data, boolean forPrint){
     
-    QueryDataSet sumamed = new QueryDataSet();
-    sumamed.setResolvable(false);
+  	StorageDataSet sumamed = new StorageDataSet();
     sumamed.setColumns(new Column[] {
         (Column) dm.getGkkumulativi().getColumn("CORG").clone(),
         (Column) dm.getGkkumulativi().getColumn("BROJKONTA").clone(),
@@ -1451,8 +1438,8 @@ public class frmBrBilAll extends raUpitFat {
         (Column) dm.getGkkumulativi().getColumn("GODMJ").clone(),
         (Column) dm.getGkstavke().getColumn("CVRNAL").clone()
     });
-    sumamed.setRowId("BROJKONTA",true);
-    sumamed.setRowId("CORG",true);
+    //sumamed.setRowId("BROJKONTA",true);
+    //sumamed.setRowId("CORG",true);
     sumamed.getColumn("CORG").setVisible(0);
     sumamed.getColumn("GODMJ").setVisible(0);
     sumamed.getColumn("CVRNAL").setVisible(0);
@@ -1530,7 +1517,7 @@ public class frmBrBilAll extends raUpitFat {
   BigDecimal jedVl;
   private String valuta = "";
   
-  private QueryDataSet valutaConvertedSet(QueryDataSet originSet){
+  private StorageDataSet valutaConvertedSet(StorageDataSet originSet){
     checkClosing();
     if (isZaValutu()) {
       tecaj = hr.restart.zapod.Tecajevi.getTecaj(vl.getToday(),stds.getString("OZNVAL"));
@@ -2084,29 +2071,19 @@ public class frmBrBilAll extends raUpitFat {
 		});
   }
   
-  raInputDialog multDlg = new raInputDialog();
-  JraTextField mult = new JraTextField();
-  StorageDataSet multData = new StorageDataSet();
-  JPanel multPan = new JPanel(new XYLayout(375, 60));
-  {
-  	multData.setColumns(new Column[] {
-  			dM.createBigDecimalColumn("MULT", 2),
-  	});
-  	multData.open();
-  	mult.setColumnName("MULT");
-  	mult.setDataSet(multData);
-  	multData.setBigDecimal("MULT", Aus.one0);
-  	multPan.add(new JLabel("Faktor prilagodbe (množitelj)"), new XYConstraints(15, 25,-1, -1));
-  	multPan.add(mult, new XYConstraints(250, 25, 100, -1));
-  }
-  
+  StorageDataSet multData;
+
   void invokeRecalcOption() {
-  	BigDecimal old = multData.getBigDecimal("MULT");
-  	if (!multDlg.show(dlgRunReport.getCurrentDlgRunReport().getDlg(), multPan, "Dodatni parametri ispisa")) 
-  		multData.setBigDecimal("MULT",  old);
+  	if (multData == null) {
+  		multData = Aus.createSet("MULT.2");
+  		multData.setBigDecimal("MULT", Aus.one0);
+  	}
   	
+  	BigDecimal old = multData.getBigDecimal("MULT");
+  	XYPanel pan = new XYPanel(multData).label("Faktor prilagodbe (množitelj)").skip(100).text("MULT").expand();  	
+  	if (!new raInputDialog().show(dlgRunReport.getCurrentDlgRunReport().getDlg(), pan, "Dodatni parametri ispisa")) 
+  		multData.setBigDecimal("MULT",  old);
   }
-  
 
   protected void addingReport(){
     killAllReports();
