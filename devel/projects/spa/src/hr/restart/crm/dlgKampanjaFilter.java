@@ -21,6 +21,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Klijenti;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.XYPanel;
 import hr.restart.swing.raInputDialog;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raComboBox;
@@ -46,32 +47,24 @@ public class dlgKampanjaFilter extends raInputDialog {
     JLabel jlUser = new JLabel();
     JLabel jlCity = new JLabel();
     
-    JPanel main = new JPanel();
+    XYPanel main = new XYPanel();
     
     String currUser, currStatus, currSeg, currGrad;
 
     public dlgKampanjaFilter() {
         main.setLayout(new XYLayout(370, 150));
-              
-        jlrGrad.setNavColumnName("NAZMJESTA");
+        
+        main.down(5).label("Status").combo(jcbStatus, 200).nl();
+        main.down(5).label("Kontaktirao").combo(jcbUser, 200).nl();
+        main.down(5).label("Segmentacija").combo(jcbSeg, 200).nl();
+        main.down(5).label("Grad").nav("NAZMJESTA", dM.getDataModule().getMjesta()).expand();
+        jlrGrad = main.getNav("NAZMJESTA");
         jlrGrad.setVisCols(new int[] {0, 1, 2});
-        jlrGrad.setRaDataSet(dM.getDataModule().getMjesta());
-        jlrGrad.setNavButton(jbGrad);
         jlrGrad.setFocusLostOnShow(false);
         jlrGrad.setAfterLookUpOnClear(false);
         jlrGrad.setSearchMode(1);
-        
+
         reset();
-        
-        main.add(new JLabel("Status"), new XYConstraints(20, 20, -1, -1));
-        main.add(jcbStatus, new XYConstraints(150, 20, 200, 21));        
-        main.add(new JLabel("Kontaktirao"), new XYConstraints(20, 50, -1, -1));
-        main.add(jcbUser, new XYConstraints(150, 50, 200, 21));
-        main.add(new JLabel("Segmentacija"), new XYConstraints(20, 80, -1, -1));
-        main.add(jcbSeg, new XYConstraints(150, 80, 200, 21));
-        main.add(new JLabel("Grad"), new XYConstraints(20, 110, -1, -1));
-        main.add(jlrGrad, new XYConstraints(150, 110, 170, -1));
-        main.add(jbGrad, new XYConstraints(325, 110, 21, 21));
     }
     
     public void reset() {
