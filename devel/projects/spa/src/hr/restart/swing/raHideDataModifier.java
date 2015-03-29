@@ -18,9 +18,7 @@
 package hr.restart.swing;
 
 
-import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
-import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.VarStr;
 import hr.restart.zapod.raUserChangeListener;
@@ -32,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 
 import bsh.EvalError;
 import bsh.Interpreter;
