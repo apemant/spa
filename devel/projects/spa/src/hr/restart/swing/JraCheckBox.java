@@ -131,7 +131,7 @@ public class JraCheckBox extends JCheckBox implements raAbstractButton, ColumnAw
 	* @return dataset button grupe kojoj ovaj button pripada.
 	*/
   public DataSet getDataSet() {
-	 return (bgr == null) ? null : bgr.getDataSet();
+	 return (bgr == null) ? binder.getDataSet() : bgr.getDataSet();
   }
 
   /**
@@ -139,7 +139,7 @@ public class JraCheckBox extends JCheckBox implements raAbstractButton, ColumnAw
 	* @return ime kolone na koju se cijeli button group binda.
 	*/
   public String getColumnName() {
-	 return (bgr == null) ? null : bgr.getColumnName();
+	 return (bgr == null) ? binder.getColumnName() : bgr.getColumnName();
   }
 
   /**
