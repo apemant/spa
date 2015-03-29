@@ -46,7 +46,7 @@ public class frmJedMj extends raSifraNaziv {
     this.setRaColumnNaziv("NAZJM");
     this.setRaText("Jedinica mjere");
   }
-  public boolean DeleteCheck() {
+/*  public boolean DeleteCheck() {
     if (util.isDeleteable("ARTIKLI", "JM", dm.getJedmj().getString("JM"), util.MOD_STR)==false)
       return false;
     if (util.chkIsDeleteable("ARTIKLI", "JMPAK", dm.getJedmj().getString("JM"), util.MOD_STR)==false)
@@ -56,5 +56,5 @@ public class frmJedMj extends raSifraNaziv {
     if (util.isDeleteable("KUP_ART", "JMPAK", dm.getJedmj().getString("JM"), util.MOD_STR)==false)
       return false;
     return true;
-  }
+  }*/
 }
