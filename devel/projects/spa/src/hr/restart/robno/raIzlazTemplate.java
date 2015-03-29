@@ -28,6 +28,7 @@ import hr.restart.sisfun.raUser;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
 import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raOptionDialog;
@@ -4963,24 +4964,11 @@ System.out.println("findCjenik::else :: "+sql);
 	  for (ds.first(); ds.inBounds(); ds.next())
 	    if (ds.getString("CRAB").equals(gr)) old = ds.getBigDecimal("PRAB");
 	  
-	  
-	  JPanel pan = new JPanel(new XYLayout(415, 50));
-	   StorageDataSet tds = new StorageDataSet();
-	        tds.setColumns(new Column[] {
-	                dM.createBigDecimalColumn("PRAB", 2)
-	        });
-	    tds.open();
-	    tds.setBigDecimal("PRAB", old);
-
-	    JraTextField prab = new JraTextField();
-	    prab.setColumnName("PRAB");
-	    prab.setDataSet(tds);
+	   StorageDataSet tds = Aus.createSet("PRAB.2");
+	   tds.setBigDecimal("PRAB", old);
 	    
-	    pan.add(new JLabel("Popust na raèun"), new XYConstraints(15,15,-1,-1));
-	    pan.add(prab, new XYConstraints(300, 15, 100, -1));
-	    
-	    raInputDialog od = new raInputDialog();
-	    if (!od.show(null, pan, "Dodavanje popusta")) return;
+	   XYPanel pan = new XYPanel(tds).label("Popust na raèun").skip(150).text("PRAB").expand();
+	   if (!new raInputDialog().show(this.raMaster.getWindow(), pan, "Dodavanje popusta")) return;
 	  
 	   BigDecimal pop = tds.getBigDecimal("PRAB");
 	   if (pop.compareTo(old) == 0) return;
