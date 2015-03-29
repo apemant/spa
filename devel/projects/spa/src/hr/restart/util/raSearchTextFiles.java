@@ -129,10 +129,10 @@ public class raSearchTextFiles extends raInputDialog {
 	private void add(File f, String lines) {
 		results.insertRow(false);
 		results.setString("FILENAME", limit(f.getName(), 50));
-		results.setString("PATH", limit(f.getAbsoluteFile().getParent(), 100));
+		results.setString("PATH", limit(f.getAbsoluteFile().getParent(), 120));
 		results.setInt("LENGTH", (int) f.length());
 		results.setTimestamp("MODIFIED", new Timestamp(f.lastModified()));
-		results.setString("LINES", limit(lines, 100));
+		results.setString("LINES", limit(lines, 200));
 	}
 	
 	private String limit(String orig, int length) {
@@ -195,8 +195,8 @@ public class raSearchTextFiles extends raInputDialog {
     		dM.createStringColumn("FILENAME", "Datoteka", 50),
     		dM.createIntColumn("LENGTH", "Velièina"),
     		dM.createTimestampColumn("MODIFIED", "Datum promjene"),
-    		dM.createStringColumn("PATH", "Putanja", 100),
-    		dM.createStringColumn("LINES", "Linije", 100)
+    		dM.createStringColumn("PATH", "Putanja", 120),
+    		dM.createStringColumn("LINES", "Linije", 200)
     });
     results.open();
 	}
