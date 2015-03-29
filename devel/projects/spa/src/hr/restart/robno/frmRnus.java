@@ -17,24 +17,14 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.JOptionPane;
-
-import com.borland.dx.dataset.DataSet;
-import com.borland.dx.sql.dataset.QueryDataSet;
-
 import hr.restart.baza.Condition;
-import hr.restart.baza.RN;
 import hr.restart.baza.Rnus;
-import hr.restart.baza.dM;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
-import hr.restart.util.raImages;
 import hr.restart.util.raMatPodaci;
-import hr.restart.util.raNavAction;
+
+import javax.swing.JOptionPane;
 
 public class frmRnus extends raMatPodaci {
 	
@@ -50,7 +40,7 @@ public class frmRnus extends raMatPodaci {
   int cartnor;
 
 	public frmRnus() {
-		super(2);
+		super(2, DIALOG, frmNorme.getInstance().raMaster.getWindow());
 		try {
       jbInit();
     }
@@ -63,9 +53,8 @@ public class frmRnus extends raMatPodaci {
 
     dm = hr.restart.baza.dM.getDataModule();
     
-    
-    this.setRaQueryDataSet(Rnus.getDataModule().getTempSet("1=0"));
-    this.setVisibleCols(new int[] {1,4,6,7});
+    this.setRaQueryDataSet(Rnus.getDataModule().getFilteredDataSet(Condition.nil));
+    this.setVisibleCols(new int[] {Aut.getAut().getCARTdependable(1,2,3),4,5,6});
     
     jp = new jpRnus(this);
     this.setRaDetailPanel(jp);
@@ -114,6 +103,7 @@ public class frmRnus extends raMatPodaci {
       JOptionPane.showMessageDialog(this.jp, "Artikl nije na stanju!",
                   "Greška", JOptionPane.ERROR_MESSAGE);
       jp.rpc.EnabDisab(true);
+      jp.EraseFields();
       jp.rpc.setCART();
       return false;
     }
@@ -126,6 +116,7 @@ public class frmRnus extends raMatPodaci {
       	JOptionPane.showMessageDialog(this.jp, "Artikl veæ u popisu!",
             "Greška", JOptionPane.ERROR_MESSAGE);
       	jp.rpc.EnabDisab(true);
+      	jp.EraseFields();
       	jp.rpc.setCART();
       	return false;
       }
