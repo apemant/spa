@@ -34,6 +34,8 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
@@ -392,7 +394,9 @@ public class Aut {
 
   private String[] normName = new String[] {"CARTNOR"};
   private String[] normVal = new String[] {""};
-  private VarStr branch = new VarStr();
+  //private VarStr branch = new VarStr();  
+  LinkedList stack = new LinkedList();
+  
   /**
    * Metoda vrši ekspanziju nekog DataSet-a koji ima polja CART, CART1, BC, NAZART, JM i KOL
    * tako da za svaki artikl koji je normiran dohva\u0107a sve artikle koje mu pripadaju
@@ -407,7 +411,7 @@ public class Aut {
   public QueryDataSet expandArts(DataSet ds, boolean total) {
     BigDecimal kol = new BigDecimal(1);
     qdsArtExpander.empty();
-    branch.clear();
+    stack.clear();
     dm.getSortedNorme().open();
     ds.open();
 //    System.out.println("expandArts "+kol);
@@ -428,7 +432,7 @@ public class Aut {
 
   public QueryDataSet expandArt(int cart, BigDecimal kol, boolean total) {
     qdsArtExpander.empty();
-    branch.clear();
+    stack.clear();
     dm.getSortedNorme().open();
     normVal[0] = String.valueOf(cart);
     if (lookupData.getlookupData().raLocate(dm.getSortedNorme(), normName, normVal))
@@ -440,7 +444,7 @@ public class Aut {
 
   public QueryDataSet expandArt(DataSet ds, boolean total) {
     qdsArtExpander.empty();
-    branch.clear();
+    stack.clear();
     dm.getSortedNorme().open();
     expandOne(ds, new BigDecimal(1), total);
     qdsArtExpander.post();
@@ -458,7 +462,12 @@ public class Aut {
   }
 
   private void expandNorm(int cart, BigDecimal kol, boolean total) {
-    branch.append(cart).append(':');
+  	Integer ic = new Integer(cart);
+  	if (total && stack.contains(ic)) {
+  		System.err.println("Beskonaèna petlja!!!");
+  		return;
+  	}
+  	stack.add(ic);
     for (DataSet sn = dm.getSortedNorme(); sn.inBounds() && sn.getInt("CARTNOR") == cart; sn.next())
       if (!total) insertOne(sn, kol);
       else {
@@ -467,14 +476,15 @@ public class Aut {
         expandOne(expandRow, kol, true);
         sn.goToRow(current);
       }
-    branch.truncate(branch.lastIndexOf(':', branch.length() - 1) + 1);
+    stack.removeLast();
   }
 
   private void insertOne(DataSet ds, BigDecimal kol) {
     qdsArtExpander.insertRow(false);
     copyArtFields(qdsArtExpander, ds);
-    qdsArtExpander.setString("BRANCH", branch.toString().
-                   concat(String.valueOf(qdsArtExpander.getInt("CART"))));
+    stack.add(new Integer(qdsArtExpander.getInt("CART")));
+    qdsArtExpander.setString("BRANCH", VarStr.join(stack, ':').toString());
+    stack.removeLast();
     qdsArtExpander.setBigDecimal("KOL", ds.getBigDecimal("KOL").multiply(kol).setScale(3, BigDecimal.ROUND_HALF_UP));
   }
 
