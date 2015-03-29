@@ -535,6 +535,7 @@ public class JlrNavField extends JraTextField {
   }
   
   public void focusGained(FocusEvent e) {
+  	setDefHelpText();
     super.focusGained(e);
     setEnterMode();
   }
