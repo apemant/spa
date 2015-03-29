@@ -388,7 +388,7 @@ public class jpGetValute extends JPanel {
 
   public void setTecajDate(java.sql.Timestamp newTecajDate) {
     tecajDate = newTecajDate;
-    if (tecajVisible && jcbValuta.isSelected() && !tecajChanged)
+    if (tecajVisible && jcbValuta.isSelected() && !tecajChanged && doGetTecaj)
       jtTECAJ.getDataSet().setBigDecimal(tecajColumn, dohTecaj = getTecajDB());
   }
 
