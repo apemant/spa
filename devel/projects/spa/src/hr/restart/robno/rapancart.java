@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraButton;
@@ -626,26 +627,25 @@ System.out.println("layheight="+lay.getHeight());
       return AST.findKOL(god,cskl,cart);
     }
   }
-  Thread StanjeFinder = new Thread(new Runnable() {
+  Runnable StanjeFinder = new Runnable() {
       public void run() {
 //    if (AST.findStanje(this.getGodina(),this.getCskl(),this.getTabela().getInt("CART")) &&
 //      this.jrfCART.isValueChanged() && !jrfCART.getText().equals("")) {
-        if (AST.findStanje(getGodina(),getCskl(),getTabela().getInt("CART")) &&
-          !jrfCART.getText().equals("")) {
-            AST.findStanjeUnconditional(getGodina(),getCskl(),getTabela().getInt("CART"));
+        if (!jrfCART.isEmpty() && AST.findStanje(getGodina(),getCskl(),getTabela().getInt("CART"))) {
+            //AST.findStanjeUnconditional(getGodina(),getCskl(),getTabela().getInt("CART"));
             Glupan.open();
             Glupan.setBigDecimal("KOL",getStanjeKOL(getGodina(),getCskl(),getTabela().getInt("CART")));
             Glupan.setBigDecimal("REZKOL",AST.gettrenSTANJE().getBigDecimal("KOLREZ"));
             Glupan.setBigDecimal("TREKOL", hr.restart.robno.Util.getUtil().negateValue(Glupan.getBigDecimal("KOL"), Glupan.getBigDecimal("REZKOL")));
         }
-        else if (!jrfCART.getText().equals("")){
+        else if (!jrfCART.isEmpty()){
           normalFousabile();
           Glupan.setBigDecimal("KOL",Nula);
           Glupan.setBigDecimal("REZKOL",Nula);
           Glupan.setBigDecimal("TREKOL",Nula);
         }
       } //end run
-});//end thread
+  };//end thread
 
   void findStanje(){
     StanjeFinder.run();
@@ -1382,8 +1382,8 @@ System.out.println("layheight="+lay.getHeight());
       }
 
       if (!this.getCGRART().trim().equals("")) {
-        if (Aus.getDataTreeList(this.getCGRART(),dm.getGrupart(),"CGRART","CGRARTPRIP") == null || !podgrupe) return joint+"ARTIKLI.CGRART = '" + this.getCGRART()+"' ";
-        return joint+"ARTIKLI."+Aus.getDataTreeList(this.getCGRART(),dm.getGrupart(),"CGRART","CGRARTPRIP")+" ";
+      	if (!podgrupe) return joint + Condition.equal("CGRART", getCGRART()).qualified("artikli");
+      	return joint + Aus.getDataTreeList(getCGRART(),dm.getGrupart(),"CGRART","CGRARTPRIP").qualified("artikli");
       }
 
       if (!this.getBC().trim().equals("")) {
@@ -1393,26 +1393,6 @@ System.out.println("layheight="+lay.getHeight());
     }
   }
   
-  public String[] getInGroupsArray(boolean podgrupe){
-   String[] grar = null;
-   String joint = "";
-
-     if (!this.getCGRART().trim().equals("")) {
-       if (Aus.getDataTreeList(this.getCGRART(),dm.getGrupart(),"CGRART","CGRARTPRIP") == null || !podgrupe) {
-         grar = new String[] {this.getCGRART()};
-       } else {
-         DataSet grset = Aus.getDataBranch(this.getCGRART(),dm.getGrupart(),"CGRART","CGRARTPRIP");
-         grset.open();
-         grar = new String[grset.getRowCount()];
-         for (grset.first(); grset.inBounds(); grset.next()){
-           System.out.println("grupa - " + grset.getString("CGRART")); //XDEBUG delete when no more needed
-           grar[grset.row()] = grset.getString("CGRART");
-         }
-       }
-     }
-   return grar;
-  }
-
   void enableNaziv(boolean tru) {
 //    ovo je samo za usluge katkada  ....
 //    System.out.println("enable fucki'n naziv: "+tru);
