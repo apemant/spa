@@ -17,22 +17,23 @@
 ****************************************************************************/
 package hr.restart.sisfun;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
+import hr.restart.baza.Condition;
 import hr.restart.baza.Skripte;
-import hr.restart.baza.dM;
-import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raTableModifier;
 import hr.restart.util.raMatPodaci;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+
+import bsh.EvalError;
+import bsh.Interpreter;
 
 import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.Variant;
@@ -142,5 +143,16 @@ public class frmSkripte extends raMatPodaci {
       String tx = getRaQueryDataSet().getString("TEKST");
       script.setText(tx);
     }
+  }
+  
+  public static Object invoke(String key, Interpreter bsh) {
+  	String scr = Skripte.getDataModule().openTempSet(Condition.equal("CKEY", key)).getString("TEKST");
+  	if (scr.length() == 0) return null;
+  	try {
+			return bsh.eval(scr);
+		} catch (EvalError e) {
+			e.printStackTrace();
+			return null;
+		}
   }
 }
