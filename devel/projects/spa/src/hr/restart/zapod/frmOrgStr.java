@@ -19,12 +19,16 @@ package hr.restart.zapod;
 
 
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Grupart;
+import hr.restart.baza.Orgstruktura;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraKeyListener;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raButtonGroup;
+import hr.restart.util.DataTree;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raComboBox;
@@ -477,6 +481,14 @@ public class frmOrgStr extends raMatPodaci {
       }
     }
     
+    if (DataTree.isCircular(getRaQueryDataSet(), dm.getOrgstruktura(), "CORG", "PRIPADNOST")) {
+    	jlrNFPRIPADNOST.requestFocus();
+    	JOptionPane.showMessageDialog(jlrNFPRIPADNOST,
+    			"Pripadnost stvara beskonaènu petlju!", "Greška",
+          javax.swing.JOptionPane.ERROR_MESSAGE);
+    	return false;
+    }
+    
     if (!addZiroUI()) return false;
 
     return true;
@@ -634,6 +646,16 @@ public class frmOrgStr extends raMatPodaci {
 
     enabPripPanel(!isKnjigovodstvo());
 
+  }
+  
+  public boolean DeleteCheck() {
+  	if (Orgstruktura.getDataModule().getRowCount(Condition.equal("PRIPADNOST", getRaQueryDataSet().getString("CORG")).
+  			and(Condition.diff("CORG", getRaQueryDataSet()))) > 0) {
+  		JOptionPane.showMessageDialog(getWindow(),"Brisanje nije moguæe jer ova OJ ima pripadne jedinice!",
+  				"Greška",JOptionPane.ERROR_MESSAGE);
+  		return false;
+  	}
+  	return true;
   }
 
   private void enabPripPanel(boolean kako) {
