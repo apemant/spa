@@ -824,8 +824,8 @@ public class raPOS extends raIzlazTemplate  {
         "(d.neto-d.por1-d.por2-d.por3) as iprodbp, " +
         "d.por1, d.por2, d.por3, d.neto/d.kol as fmc, d.mc as fmcprp, " +
         "d.neto as iprodsp, d.ppor1, d.ppor2, d.ppor3 " +
-        "from pos m, stpos d WHERE " + Util.getUtil().getDoc("m", "d") +
-        " AND m.status='N' AND d.iznos!=0 AND d.kol!=0 AND " + csklCond + " and "
+        "from pos m, stpos d WHERE " + Util.getUtil().getDoc("m", "d") + " AND m.cprodmj=d.cprodmj " +
+        "AND m.vrdok='GRC' AND m.status='N' AND d.iznos!=0 AND d.kol!=0 AND " + csklCond + " and "
     );
    
     q.append(cond.qualified("m"));
