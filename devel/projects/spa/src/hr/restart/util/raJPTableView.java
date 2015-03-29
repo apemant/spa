@@ -1574,6 +1574,7 @@ public class raJPTableView extends JPanel {
   public void removeSelection() {
     if (selMod != null) {
       selMod.clearSelection();
+      getColumnsBean().checkSelection();
       fireTableDataChanged();
     }
   }
@@ -1589,6 +1590,7 @@ public class raJPTableView extends JPanel {
         if (e.getKeyCode() == e.VK_ENTER)
           AWTKeyboard.ignoreKeyRelease(AWTKeyboard.ENTER);
         selMod.toggleSelection(raQueryDataSet);
+        getColumnsBean().checkSelection();
         if (!raQueryDataSet.atLast() && !mpTable_allowRowChange(
              raQueryDataSet.getRow(), raQueryDataSet.getRow() + 1))
           fireTableDataChanged();
@@ -1636,6 +1638,8 @@ public class raJPTableView extends JPanel {
       selMod.toggleSelection(r);
     else if (!toggle && !selMod.isSelected(r) && validateSelection(r))
       selMod.addToSelection(r);
+    
+    getColumnsBean().checkSelection();
   }
 
   /**

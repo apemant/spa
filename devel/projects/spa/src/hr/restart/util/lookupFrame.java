@@ -340,6 +340,7 @@ public class lookupFrame extends JraDialog {
         ds.enableDataSetEvents(true);
         jdbTable1.startFire();
       }
+      columnsBean1.checkSelection();
     }
   }
 /*

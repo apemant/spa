@@ -2313,6 +2313,7 @@ sysoutTEST sT = new sysoutTEST(false);
               
               raSelectTableModifier stm = getJpTableView().getMpTable().hasSelectionTrackerInstalled();
               if (stm != null && stm.isNatural()) stm.clearSelection();
+              getJpTableView().getColumnsBean().checkSelection();
               fireTableDataChanged();
             }
           }

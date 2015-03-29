@@ -225,6 +225,7 @@ sysoutTEST ST = new sysoutTEST(false);
       JraTable2 tab = (JraTable2) colb.getRaJdbTable();
       raSelectTableModifier stm = tab.hasSelectionTrackerInstalled();
       if (stm != null && stm.isNatural()) stm.clearSelection();
+      colb.checkSelection();
       tab.fireTableDataChanged();
     }
   }
