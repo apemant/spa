@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.VTCartPart;
 import hr.restart.baza.dM;
@@ -26,12 +27,17 @@ import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.sk.frmKartica;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
+import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raTextMask;
 import hr.restart.util.Aus;
+import hr.restart.util.DataTree;
 import hr.restart.util.JlrNavField;
+import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raImages;
@@ -39,6 +45,7 @@ import hr.restart.util.raMatPodaci;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raPartialIncrementor;
 import hr.restart.util.raTransaction;
+import hr.restart.util.startFrame;
 import hr.restart.zapod.FrmPartneriArtikli;
 import hr.restart.util.ImageLoad;
 
@@ -56,10 +63,12 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
+
 import com.borland.dbswing.JdbLabel;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.TableDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -300,19 +309,32 @@ public class frmArtikli extends raMatPodaci {
     
   };
   
-  raNavAction rnvImgLoad = new raNavAction("Uèitaj sliku", raImages.IMGMOVIE, KeyEvent.VK_F6){
+  raNavAction rnvImgLoad = new raNavAction("Uèitaj sliku", raImages.IMGINFORMATION, KeyEvent.VK_F8){
 	    public void actionPerformed(ActionEvent e) {
 	    	rnvImgLoad_actionPerformed(e);
 	    }
 	    
 	  };
 	  
-	  raNavAction rnvNorm = new raNavAction("Normativ", raImages.IMGHISTORY, KeyEvent.VK_F7){
+	  raNavAction rnvNorm = new raNavAction("Sadržan u normativu", raImages.IMGHISTORY, KeyEvent.VK_F7){
         public void actionPerformed(ActionEvent e) {
             rnvNorm_actionPerformed(e);
         }
         
       };
+      
+   raNavAction rnvNormArt = new raNavAction("Normativ", raImages.IMGMOVIE, KeyEvent.VK_F6){
+      public void actionPerformed(ActionEvent e) {
+         rnvNormArt_actionPerformed(e);
+      }
+   };
+      
+   raNavAction rnvChgPrip = new raNavAction("Promijeni grupu",
+     raImages.IMGSENDMAIL, java.awt.event.KeyEvent.VK_F11) {
+       public void actionPerformed(ActionEvent e) {
+         chgGrupa();
+       }
+   };
   
   
   JlrNavField jlrVrsub = new JlrNavField() {
@@ -327,8 +349,20 @@ public class frmArtikli extends raMatPodaci {
 	  };
 	  JraButton jbVrsub = new JraButton();
 
-  frmTableDataView viewReq = new frmTableDataView(false, false, true);
+	int viewCart = -1;
+  frmTableDataView viewReq = new frmTableDataView(false, false, true) {
+  	protected void doubleClick(hr.restart.util.raJPTableView jp2) {
+  		if (frmArtikli.this.isShowing() && frmArtikli.this.getMode() == 'B' && jp2.getStorageDataSet().rowCount() > 0) {
+  			ld.raLocate(frmArtikli.this.getRaQueryDataSet(), "CART", Integer.toString(jp2.getStorageDataSet().getInt("CART")));
+  			if (noa.isShowing() && noa.getMode() == 'B')
+  				ld.raLocate(noa.getRaQueryDataSet(), "CART", Integer.toString(viewCart));
+  		}
+  	};
+  };
   
+  frmNormArt noa;
+  
+  static frmArtikli inst;
   
   private raPrenosVT rPVT = null;
 
@@ -339,10 +373,15 @@ public class frmArtikli extends raMatPodaci {
       return rPVT;
   }
 
+  public static frmArtikli getInstance() {
+    return inst;
+  }
+  
   public frmArtikli() {
 //    super(2);
 //    System.out.println("FrmArtikli sada u vlasnistvu S.G.-a");
     try {
+    	inst = this;
       jbInit();
     }
     catch(Exception e) {
@@ -1089,12 +1128,21 @@ public class frmArtikli extends raMatPodaci {
     raDataIntegrity di = raDataIntegrity.installFor(this);
     di.setProtectedColumns(new String[] {"TIPART","VRART"});
     di.addOtherTable("norme", new String[] {"CARTNOR"});
+    di.addOtherTable("rnus", new String[] {"CARTNOR"});
 //    raDataIntegrity.installFor(this).setProtectedColumns(
 //        new String[] {"CART1","BC","TIPART","VRART"});
+    
+    installSelectionTracker("CART");
+    
     jtpArtikli.setSelectedIndex(0);
-    this.addOption(rnvSifArt,5);
+    
+    this.addOption(rnvNormArt,5);
     this.addOption(rnvNorm,6);
-    this.addOption(rnvImgLoad,7);
+    this.addOption(rnvChgPrip,7);
+    this.addOption(rnvImgLoad,8);
+    this.addOption(rnvSifArt,9);
+    
+    noa = (frmNormArt) startFrame.getStartFrame().showFrame("hr.restart.robno.frmNormArt", 0, "Normativ", false);
   }
 /*
 
@@ -1171,8 +1219,7 @@ public boolean  doWithSave(char mode) {
     if (mode=='N') {
       rcbVRART.this_itemStateChanged();
       getRaQueryDataSet().setInt("CART", rdUtil.getUtil().getMaxArtikl());
-      pi.init(hr.restart.util.Util.getNewQueryDataSet("SELECT cart1 FROM artikli"), "CART1");
-//          Artikli.getDataModule().getTempSet(), "CART1");
+      pi.init(Aus.q(Artikli.getDataModule(), "CART1"), "CART1");
       if(!hr.restart.sisfun.frmParam.getParam("robno","indiCart").equals("CART"))
       {
         //rcc.setLabelLaF(jtfCART, false);
@@ -1533,10 +1580,36 @@ public boolean  doWithSave(char mode) {
     fPa.show();
   }
   
+  void  rnvNormArt_actionPerformed(ActionEvent e) {
+  	if (getRaQueryDataSet().rowCount() == 0) return;
+  	if (!raVart.isNorma(getRaQueryDataSet())) {
+  		JOptionPane.showMessageDialog(this.getWindow(),
+          "Vrsta artikla ne dopušta normiranje!",
+          "Greška", JOptionPane.ERROR_MESSAGE);
+      return;
+  	}
+  	
+  	noa.setOwner(getRaQueryDataSet().getInt("CART"));
+    startFrame.getStartFrame().showFrame(noa);
+  }
+  
+  public void raQueryDataSet_navigated(NavigationEvent e) {
+  	if (getMode() == 'B' && noa.isShowing() && 
+  			noa.getMode() == 'B' && noa.cartnor != getRaQueryDataSet().getInt("CART")) {
+  		if (!raVart.isNorma(getRaQueryDataSet())) noa.hide();
+  		else {
+  			noa.setOwner(getRaQueryDataSet().getInt("CART"));
+  			noa.getRaQueryDataSet().open();
+  			noa.beforeShow();
+  			noa.getJpTableView().fireTableDataChanged();
+  		}
+  	}
+  }
+  
   void  rnvNorm_actionPerformed(ActionEvent e) {
-    DataSet ds = norme.getDataModule().getTempSet(
-        Condition.equal("CART", getRaQueryDataSet()));
-    ds.open();
+  	if (getRaQueryDataSet().rowCount() == 0) return;
+  	
+    DataSet ds = norme.getDataModule().openTempSet("CARTNOR KOL", Condition.equal("CART", getRaQueryDataSet()));
     if (ds.rowCount() == 0) {
       JOptionPane.showMessageDialog(this.getWindow(),
           "Artikl nije sadržan niti u jednom normativu.",
@@ -1544,28 +1617,59 @@ public boolean  doWithSave(char mode) {
       return;
     }
     
-    StorageDataSet reqs = stdoki.getDataModule().getScopedSet(
-        "CART CART1 BC NAZART JM KOL");
+    StorageDataSet reqs = stdoki.getDataModule().getScopedSet("CART CART1 BC NAZART JM KOL");
     reqs.open();
     String[] cc = {"CART", "CART1", "BC", "NAZART", "JM"};
     
-    for (ds.first(); ds.inBounds(); ds.next()) {
-      DataRow dr =  ld.raLookup(getRaQueryDataSet(), "CART",
-          Integer.toString(ds.getInt("CARTNOR")));
-      if (dr != null) {
+    for (ds.first(); ds.inBounds(); ds.next())
+      if (ld.raLocate(dm.getArtikli(),"CART", Integer.toString(ds.getInt("CARTNOR")))) {
         reqs.insertRow(false);
-        dM.copyColumns(dr, reqs, cc);
+        dM.copyColumns(dm.getArtikli(), reqs, cc);
         Aus.set(reqs, "KOL", ds);
       }
-    }
     
+    viewCart = getRaQueryDataSet().getInt("CART");
     viewReq.setDataSet(reqs);
     viewReq.setSaveName("Pregled-art-norm");
     viewReq.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-    viewReq.setTitle("Popis normativa koji sadrže artikl " + getRaQueryDataSet().getInt("CART"));
+    viewReq.setTitle("Popis normativa koji sadrže artikl " +
+    		Aut.getAut().getCARTdependable(getRaQueryDataSet()) +	" - " + getRaQueryDataSet().getString("NAZART"));
     viewReq.setVisibleCols(new int[] {Aut.getAut().getCARTdependable(0, 1, 2), 3, 4, 5});
     viewReq.show();
   }
+  
+  void chgGrupa() {
+  	if (getSelectionTracker().countSelected() < 2) {
+  		JOptionPane.showMessageDialog(getWindow(), "Potrebno je oznaèiti bar dva artikla!",
+  				"Greška",JOptionPane.ERROR_MESSAGE);
+  		return;
+  	}
+  	raInputDialog dlg = new raInputDialog() {
+  		protected void init() {
+  			XYPanel pan = new XYPanel().label("Pripadnost").nav("CGRARTPRIP:CGRART", dm.getGrupart(), "NAZGRART").expand();
+  			setParams("Promjena grupe", pan, pan.getNav("CGRARTPRIP")); 
+  		}
+  	};
+  	if (dlg.show(getWindow())) {
+  		String cgnew = ((JlrNavField) dlg.getValue()).getText();
+  		
+  		Integer[] sel = (Integer[]) getSelectionTracker().getSelection();  		
+  		try {
+				getJpTableView().enableEvents(false);
+				int row = getRaQueryDataSet().getRow();
+				for (int i = 0; i < sel.length; i++) 
+					if (lookupData.getlookupData().raLocate(getRaQueryDataSet(), "CART", Integer.toString(sel[i])))
+						getRaQueryDataSet().setString("CGRART", cgnew);
+				
+				getRaQueryDataSet().goToRow(row);
+			} finally {
+				getJpTableView().enableEvents(true);
+			}
+  		getRaQueryDataSet().saveChanges();
+  		getJpTableView().fireTableDataChanged();
+  	}
+  }
+  
   
   void  rnvImgLoad_actionPerformed(ActionEvent e) {
 	    ImageLoad imgload= new ImageLoad();
