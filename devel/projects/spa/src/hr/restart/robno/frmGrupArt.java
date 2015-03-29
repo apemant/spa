@@ -17,12 +17,21 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Grupart;
 import hr.restart.baza.raDataSet;
+import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.swing.JrCheckBox;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
+import hr.restart.swing.raInputDialog;
+import hr.restart.swing.raOptionDialog;
+import hr.restart.util.DataTree;
 import hr.restart.util.JlrNavField;
+import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raImages;
 import hr.restart.util.raLoader;
@@ -35,6 +44,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
@@ -97,6 +107,14 @@ public class frmGrupArt extends raMatPodaci {
         addNapomena();
       }
     };
+    
+    
+  raNavAction rnvChgPrip = new raNavAction("Promijeni pripadnost",
+      raImages.IMGSENDMAIL, java.awt.event.KeyEvent.VK_F11) {
+      public void actionPerformed(ActionEvent e) {
+        chgPrip();
+      }
+  };
 
   public frmGrupArt() {
     try {
@@ -295,6 +313,12 @@ public class frmGrupArt extends raMatPodaci {
     raLoader.load("hr.restart.robno.frmDodTextUnos");
     
     addOption(rnvGrupNap,4,true);
+    
+    addOption(rnvChgPrip,6,true);
+    
+    raDataIntegrity.installFor(this);
+    
+    installSelectionTracker("CGRART");
   }
 
   public boolean Validacija(char mode) {
@@ -314,6 +338,13 @@ public class frmGrupArt extends raMatPodaci {
       	getRaQueryDataSet().setString("CGRARTPRIP", getRaQueryDataSet().getString("CGRART"));
       }
     }
+    if (DataTree.isCircular(getRaQueryDataSet(), dm.getGrupart(), "CGRART", "CGRARTPRIP")) {
+    	jrfCGRART.requestFocus();
+    	JOptionPane.showMessageDialog(jrfCGRART,
+    			"Pripadnost stvara beskonaènu petlju!", "Greška",
+          javax.swing.JOptionPane.ERROR_MESSAGE);
+    	return false;
+    }
     return true;
   }
   
@@ -329,9 +360,14 @@ public class frmGrupArt extends raMatPodaci {
       jtfNAZGRART.requestFocus();
     }
   }
+  
   public boolean DeleteCheck() {
-    return util.isDeleteable("GRUPART", "CGRARTPRIP", 
-    		getRaQueryDataSet().getString("CGRART"), util.MOD_STR, true);
+  	if (Grupart.getDataModule().getRowCount(Condition.equal("CGRARTPRIP", getRaQueryDataSet().getString("CGRART")).
+  			and(Condition.diff("CGRART", getRaQueryDataSet()))) > 0) {
+  		JOptionPane.showMessageDialog(getWindow(),"Brisanje nije moguæe jer ova grupa ima podgrupe!","Greška",JOptionPane.ERROR_MESSAGE);
+  		return false;
+  	}
+  	return true;
   }
 
   public void EntryPoint(char mode) {
@@ -364,6 +400,52 @@ public class frmGrupArt extends raMatPodaci {
     }
   }
 
+  void chgPrip() {
+  	if (getSelectionTracker().countSelected() < 2) {
+  		JOptionPane.showMessageDialog(getWindow(), "Potrebno je oznaèiti bar dvije grupe!",
+  				"Greška",JOptionPane.ERROR_MESSAGE);
+  		return;
+  	}
+  	
+  	raInputDialog dlg = new raInputDialog() {
+  		JlrNavField jlrPRIP;
+  		protected void init() {
+  			XYPanel pan = new XYPanel().label("Pripadnost").nav("CGRARTPRIP:CGRART", grart, "NAZGRART").expand();
+  			setParams("Promjena pripadnosti grupa", pan, jlrPRIP = pan.getNav("CGRARTPRIP"));
+  		}
+  		protected boolean checkOk() {
+  			return !Valid.getValid().isEmpty(jlrPRIP);
+  		}
+  	};
+  	if (dlg.show(getWindow())) {
+  		String cgnew = ((JlrNavField) dlg.getValue()).getText();
+  		
+  		String[] sel = (String[]) getSelectionTracker().getSelection();
+  		for (int i = 0; i < sel.length; i++)
+  			if (DataTree.isCircular(sel[i], cgnew, dm.getGrupart(), "CGRART", "CGRARTPRIP")) {
+  				lookupData.getlookupData().raLocate(getRaQueryDataSet(), "CGRART", sel[i]);
+  				JOptionPane.showMessageDialog(getWindow(),
+  	    			"Pripadnost bi stvorila beskonaènu petlju!", "Greška",
+  	          javax.swing.JOptionPane.ERROR_MESSAGE);
+  				return;
+  			}
+  		
+  		try {
+				getJpTableView().enableEvents(false);
+				int row = getRaQueryDataSet().getRow();
+				for (int i = 0; i < sel.length; i++) 
+					if (lookupData.getlookupData().raLocate(getRaQueryDataSet(), "CGRART", sel[i]))
+						getRaQueryDataSet().setString("CGRARTPRIP", cgnew);
+				
+				getRaQueryDataSet().goToRow(row);
+			} finally {
+				getJpTableView().enableEvents(true);
+			}
+  		getRaQueryDataSet().saveChanges();
+  		getJpTableView().fireTableDataChanged();
+  	}
+  }
+  
 /*  private com.borland.dx.sql.dataset.QueryDataSet getgrart2() {
     System.out.println("getgrart");
     if (grart==null) {
