@@ -124,13 +124,17 @@ public abstract class raNavAction extends JLabel implements Action {
     //comp.removeKeyListener(raNavActionKeyListener);
     unregisterKeyStroke(comp);
   }
-
+  
   public void setTexts() {
+  	setTexts(identifier);
+  }
+
+  public void setTexts(String tid) {
     if (textual) setText(identifier);
     if (keyNum!=KeyEvent.VK_UNDEFINED)
-      setToolTipText(identifier+" "+getModifierText()+KeyEvent.getKeyText(keyNum));
+      setToolTipText(tid+" "+getModifierText()+KeyEvent.getKeyText(keyNum));
     else
-      setToolTipText(identifier);
+      setToolTipText(tid);
   }
   private String getModifierText() {
     if (raNavActionModifiers==0) return "";
