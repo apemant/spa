@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.util.raSifraNaziv;
 
@@ -62,8 +63,6 @@ public class frmNamjena extends raSifraNaziv {
     this.setRaText("Namjena");
     jp.add(jcbPorez,  new XYConstraints(15, 0, -1, -1));
     this.jpRoot.add(jp,java.awt.BorderLayout.SOUTH);
-  }
-  public boolean DeleteCheck() {
-    return util.isDeleteable("DOKI", "CNAMJ", dm.getNamjena().getString("CNAMJ"), util.MOD_STR);
+    raDataIntegrity.installFor(this);
   }
 }

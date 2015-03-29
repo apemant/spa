@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.util.raSifraNaziv;
 /**
  * Title:        Robno poslovanje
@@ -46,8 +47,6 @@ public class frmNacOtp extends raSifraNaziv {
     this.setRaColumnSifra("CNAC");
     this.setRaColumnNaziv("NAZNAC");
     this.setRaText("Naèin otpreme");
-  }
-  public boolean DeleteCheck() {
-    return util.isDeleteable("DOKI", "CNAC", dm.getNacotp().getString("CNAC"), util.MOD_STR);
+    raDataIntegrity.installFor(this);
   }
 }

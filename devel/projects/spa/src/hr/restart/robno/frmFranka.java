@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.util.raSifraNaziv;
 
 /**
@@ -46,8 +47,6 @@ public class frmFranka extends raSifraNaziv {
     this.setRaColumnSifra("CFRA");
     this.setRaColumnNaziv("NAZFRA");
     this.setRaText("Paritet");
-  }
-  public boolean DeleteCheck() {
-    return util.isDeleteable("DOKI", "CFRA", dm.getFranka().getString("CFRA"), util.MOD_STR);
+    raDataIntegrity.installFor(this);
   }
 }
