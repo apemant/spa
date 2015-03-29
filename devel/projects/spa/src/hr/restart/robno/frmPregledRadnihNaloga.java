@@ -193,8 +193,6 @@ public class frmPregledRadnihNaloga extends raFrame implements raPreSelectAware 
 
 
   private void jbInit() throws Exception {
-    dM.getDataModule().loadModules();
-
     jpPodaci.setTables("RN_vrsub", "RN_znacajke", "RN_znacsub", "RN_sifznac");
     jpPodaci.setVrsubCols("CVRSUBJ", "NAZVRSUBJ", "CPRIP");
     jpPodaci.setAttrCols("CZNAC", "ZNACOPIS", "ZNACTIP", "ZNACREQ", "ZNACSIF");
