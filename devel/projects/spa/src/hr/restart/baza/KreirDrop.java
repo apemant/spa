@@ -110,6 +110,7 @@ public abstract class KreirDrop {
     }
     try {
       if (!getDefinition()) setall();
+      moduleNames.put(Naziv.toLowerCase(), this.getClass().getName());
       pkey = ddl.getPrimaryKey();
     } catch (Exception e) {
       e.printStackTrace();
@@ -182,6 +183,7 @@ public abstract class KreirDrop {
   }
 
   public static KreirDrop getModuleByName(String name) {
+  	name = name.toLowerCase();
     if (moduleNames.containsKey(name))
       return getModule((String) moduleNames.get(name));
     for (Iterator i = modules.keySet().iterator(); i.hasNext(); ) {
