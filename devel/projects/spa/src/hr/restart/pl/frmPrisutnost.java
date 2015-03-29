@@ -24,17 +24,34 @@ import hr.restart.baza.Radnici;
 import hr.restart.baza.Radnicipl;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmTableDataView;
-import hr.restart.swing.*;
-import hr.restart.util.*;
+import hr.restart.swing.ExtNumber;
+import hr.restart.swing.JraCheckBox;
+import hr.restart.swing.JraRadioButton;
+import hr.restart.swing.JraTable2;
+import hr.restart.swing.XYPanel;
+import hr.restart.swing.jpCorg;
+import hr.restart.swing.raButtonGroup;
+import hr.restart.swing.raExtendedTable;
+import hr.restart.swing.raInputDialog;
+import hr.restart.swing.raTableModifier;
+import hr.restart.util.Aus;
+import hr.restart.util.HashDataSet;
+import hr.restart.util.HashSum;
+import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
+import hr.restart.util.lookupData;
+import hr.restart.util.raCommonClass;
+import hr.restart.util.raImages;
+import hr.restart.util.raJPTableView;
+import hr.restart.util.raMasterDetail;
+import hr.restart.util.raNavAction;
+import hr.restart.util.raProcess;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.text.CollationKey;
 import java.text.Collator;
@@ -49,7 +66,6 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -60,12 +76,9 @@ import javax.swing.event.TableColumnModelListener;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
-import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
-import com.borland.jbcl.layout.XYConstraints;
-import com.borland.jbcl.layout.XYLayout;
 
 
 public class frmPrisutnost extends raMasterDetail {
@@ -91,6 +104,9 @@ public class frmPrisutnost extends raMasterDetail {
   HashDataSet vrprims;
   //HashDataSet kumulrad;
   HashMap kumulrad;
+  
+  StorageDataSet sds = new StorageDataSet();
+  jpCorg jpc = new jpCorg(100, 350, true);
   
   raNavAction rnvShowOne  = new raNavAction("Prikaži raspored",raImages.IMGALIGNJUSTIFY,KeyEvent.VK_F7) {
     public void actionPerformed(ActionEvent e) {
@@ -781,41 +797,31 @@ public class frmPrisutnost extends raMasterDetail {
   
   void showOneArh() {
     raInputDialog ad = new raInputDialog() {
-      JraPanel apan = new JraPanel();
-      JraTextField jtfGod = new JraTextField();
-      JraTextField jtfMj = new JraTextField(); 
-      {
-        apan.setLayout(new XYLayout(275, 60));
-        apan.add(new JLabel("Godina i mjesec"), new XYConstraints(15, 20, -1, -1));
-        apan.add(jtfGod, new XYConstraints(150, 20, 50, -1));
-        apan.add(jtfMj, new XYConstraints(205, 20, 50, -1));
-        jtfGod.setDataSet(sds);
-        jtfGod.setColumnName("GODOBR");
-        jtfMj.setDataSet(sds);
-        jtfMj.setColumnName("MJOBR");
-      }
-      public boolean show(Container parent, JPanel content, String title) {
-        return super.show(parent, apan, title);
+    	XYPanel pan;
+    	
+      protected void init() {
+      	pan = new XYPanel(sds).down(5).label("Godina i mjesec").text("GODOBR", 55).text("MJOBR", 55).expand();
+      	setParams("Dohvat iz arhive", pan,  null);
       }
       protected boolean checkOk() {
-        if (Valid.getValid().isEmpty(jtfGod)) return false;
+        if (Valid.getValid().isEmpty(pan.getText("GODOBR"))) return false;
         int god = sds.getShort("GODOBR");
         if (god < 1990 || god > 2100) {
-          jtfGod.requestFocus();
-          JOptionPane.showMessageDialog(jraGod, "Pogrešna godina!", "Greška", JOptionPane.ERROR_MESSAGE);
+        	pan.getText("GODOBR").requestFocus();
+          JOptionPane.showMessageDialog(pan.getText("GODOBR"), "Pogrešna godina!", "Greška", JOptionPane.ERROR_MESSAGE);
           return false;
         }
         int mj = sds.getShort("MJOBR");
         if (mj < 1 || mj > 12) {
-          jtfGod.requestFocus();
-          JOptionPane.showMessageDialog(jraGod, "Pogrešan mjesec!", "Greška", JOptionPane.ERROR_MESSAGE);
+        	pan.getText("MJOBR").requestFocus();
+          JOptionPane.showMessageDialog(pan.getText("MJOBR"), "Pogrešan mjesec!", "Greška", JOptionPane.ERROR_MESSAGE);
           return false;
         }
         return true;
       };
     };
     
-    if (ad.show(raDetail.getWindow(), null, "Dohvat iz arhive")) 
+    if (ad.show(raDetail.getWindow())) 
       showOne(true, sds.getShort("GODOBR"), sds.getShort("MJOBR"));
   }
   
@@ -851,56 +857,85 @@ public class frmPrisutnost extends raMasterDetail {
   }
   
   raInputDialog dlg = new raInputDialog() {
+  	XYPanel pan;
+  	protected void init() {
+  		raButtonGroup bg = new raButtonGroup();
+  	  JraRadioButton jrbP = new JraRadioButton();
+  	  JraRadioButton jrbG = new JraRadioButton();
+  	  JraRadioButton jrbOJG = new JraRadioButton();
+  		bg.setColumnName("VRSTA");
+      bg.setDataSet(sds);
+      bg.add(jrbP, " Po primanjima ", "P");
+      bg.add(jrbG, " Po grupama ", "G");
+      bg.add(jrbOJG, " Po jedinicama i grupama ", "O");
+      bg.setHorizontalTextPosition(SwingConstants.TRAILING);
+      bg.setHorizontalAlignment(SwingConstants.LEADING);
+      bg.setSelected(jrbP);
+      
+      pan = new XYPanel(sds) {
+  			protected void changed(JraCheckBox cb) {
+  				if (cb.getColumnName().equals("ARH")) {
+  					rcc.setLabelLaF(pan.getText("GODOBR"), cb.isSelected());
+  			    rcc.setLabelLaF(pan.getText("MJOBR"), cb.isSelected());
+  				}
+  			};
+  		};
+  		
+  		pan.down(5).comp(jpc).nl();
+  		pan.down(5).label("Vrsta izvješæa").comp(jrbP).skip(135).comp(jrbG).skip(120).comp(jrbOJG).skip(230).nl();
+  		pan.down(5).check(" Dohvat arhive: ", "ARH").skip(135).text("GODOBR", 55).text("MJOBR", 55).expand();
+  		setParams("Rekapitulacije", pan, pan);
+  		
+  		pan.getCheck("ARH").setSelected(false);
+  	};
+  	protected void beforeShow() {
+  		boolean isSel = sds.getString("ARH").equals("D");
+  		pan.getCheck("ARH").setSelected(isSel);
+  		rcc.setLabelLaF(pan.getText("GODOBR"), isSel);
+	    rcc.setLabelLaF(pan.getText("MJOBR"), isSel);
+  	};
     protected boolean checkOk() {
       if (Valid.getValid().isEmpty(jpc.corg)) return false;
-      if (!jcbArh.isSelected()) return true;
-      if (Valid.getValid().isEmpty(jraGod)) return false;
+      if (!pan.getCheck("ARH").isSelected()) return true;
+      if (Valid.getValid().isEmpty(pan.getText("GODOBR"))) return false;
       int god = sds.getShort("GODOBR");
       if (god < 1990 || god > 2100) {
-        jraGod.requestFocus();
-        JOptionPane.showMessageDialog(jraGod, "Pogrešna godina!", "Greška", JOptionPane.ERROR_MESSAGE);
+      	pan.getText("GODOBR").requestFocus();
+        JOptionPane.showMessageDialog(pan.getText("GODOBR"), "Pogrešna godina!", "Greška", JOptionPane.ERROR_MESSAGE);
         return false;
       }
-      if (!jraMj.isEmpty()) {
+      if (!pan.getText("MJOBR").isEmpty()) {
         int mj = sds.getShort("MJOBR");
         if (mj < 1 || mj > 12) {
-          jraGod.requestFocus();
-          JOptionPane.showMessageDialog(jraGod, "Pogrešan mjesec!", "Greška", JOptionPane.ERROR_MESSAGE);
+        	pan.getText("MJOBR").requestFocus();
+          JOptionPane.showMessageDialog(pan.getText("MJOBR"), "Pogrešan mjesec!", "Greška", JOptionPane.ERROR_MESSAGE);
           return false;
         }
       }
       return true;
     };
   };
-  JraPanel pan = new JraPanel();
-  StorageDataSet sds = new StorageDataSet();
-  jpCorg jpc = new jpCorg(100, 350, true);
-  raButtonGroup bg = new raButtonGroup();
-  JraRadioButton jrbP = new JraRadioButton();
-  JraRadioButton jrbG = new JraRadioButton();
-  JraRadioButton jrbOJG = new JraRadioButton();
-  JraCheckBox jcbArh = new JraCheckBox();
-  JraTextField jraGod = new JraTextField();
-  JraTextField jraMj = new JraTextField();
-  
+
+    
   void showRekap() {
-    checkGodMj();
+    //checkGodMj();
     if (jpc.corg.isEmpty())
       jpc.setCorg(getPreSelect().getSelRow().getString("CORG"));
-    if (dlg.show(raMaster.getWindow(), pan, "Rekapitulacije")) {
+    if (dlg.show(raMaster.getWindow())) {
+    	XYPanel p = (XYPanel) dlg.getValue();
       Condition arh = null;
       String ob = "  obraèun za " + mje + ". mjesec " + god + ".";
-      if (jcbArh.isSelected()) {
-        arh = jraMj.isEmpty() ? Condition.equal("GODOBR", sds) : Condition.whereAllEqual(new String[] {"GODOBR", "MJOBR"}, sds);
-        ob = jraMj.isEmpty() ? "  obraèun za " + jraGod.getText() + ". godinu" : 
-          "  obraèun za " + jraMj.getText() + ". mjesec " + jraGod.getText() + ".";
+      if (sds.getString("ARH").equals("D")) {
+        arh = p.getText("MJOBR").isEmpty() ? Condition.equal("GODOBR", sds) : Condition.whereAllEqual(new String[] {"GODOBR", "MJOBR"}, sds);
+        ob = p.getText("MJOBR").isEmpty() ? "  obraèun za " + p.getText("GODOBR").getText() + ". godinu" : 
+          "  obraèun za " + p.getText("MJOBR").getText() + ". mjesec " + p.getText("GODOBR").getText() + ".";
       }
       System.out.println(jpc.getCondition());
-      if (jrbP.isSelected()) {
+      if (sds.getString("VRSTA").equals("P")) {
         showPrim(jpc.getCondition(), arh, "Rekapitulacija plaæe po vrstama zarada" + ob, jpc.getCorg()); 
-      } else if (jrbG.isSelected()) {
+      } else if (sds.getString("VRSTA").equals("G")) {
         showGrupe(jpc.getCondition(), arh, jpc.getCorg(), "Rekapitulacija plaæe po grupama - " + jpDetail.jlCsif.getText() + ob);
-      } else if (jrbOJG.isSelected()) {
+      } else if (sds.getString("VRSTA").equals("O")) {
         showGrupe(jpc.getCondition(), arh, null, "Rekapitulacija plaæe po org. jedinicama" + ob);
       }
     }
@@ -969,7 +1004,7 @@ public class frmPrisutnost extends raMasterDetail {
     all.setCounterEnabled(false);
     all.jp.setAutoPos(false);
     
-    pan.setLayout(new XYLayout(645, 100));
+   // pan.setLayout(new XYLayout(645, 100));
     sds.setColumns(new Column[] {
         Orgstruktura.getDataModule().getColumn("CORG").cloneColumn(),
         dM.createStringColumn("VRSTA", "Vrsta izvješæa", 1),
@@ -978,7 +1013,7 @@ public class frmPrisutnost extends raMasterDetail {
         dM.createShortColumn("MJOBR", "Mjesec")
     });
     sds.open();
-    bg.setColumnName("VRSTA");
+   /* bg.setColumnName("VRSTA");
     bg.setDataSet(sds);
     bg.add(jrbP, " Po primanjima ", "P");
     bg.add(jrbG, " Po grupama ", "G");
@@ -1011,13 +1046,13 @@ public class frmPrisutnost extends raMasterDetail {
       public void itemStateChanged(ItemEvent e) {
         checkGodMj();
       }
-    });
+    });*/
   }
   
-  void checkGodMj() {
+  /*void checkGodMj() {
     rcc.setLabelLaF(jraGod, jcbArh.isSelected());
     rcc.setLabelLaF(jraMj, jcbArh.isSelected());
-  }
+  }*/
   
   static Collator myCol = Collator.getInstance();
 }
