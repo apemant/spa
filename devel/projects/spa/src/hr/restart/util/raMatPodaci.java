@@ -219,7 +219,7 @@ sysoutTEST ST = new sysoutTEST(false);
 
    };
 
-  JraScrollPane jScrollPaneDetail = new JraScrollPane();
+  public JraScrollPane jScrollPaneDetail = new JraScrollPane();
 
 //  hr.restart.swing.JraTable mpTable; //Privremeno
 
