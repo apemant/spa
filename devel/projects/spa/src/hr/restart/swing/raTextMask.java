@@ -166,6 +166,8 @@ public class raTextMask extends raFieldMask {
         if (num < 0 && charType == DIGITS) num = 0;
         tf.setText(Integer.toString(num));
         updateText();
+        if (tf instanceof JraTextField)
+          ((JraTextField) tf).maskCheck();
       }
       return true;
     }
