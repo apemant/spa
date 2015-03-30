@@ -4004,6 +4004,7 @@ RBR;int;6;pkey;;Rbr sheme
 RBS;int;6;pkey;;Rbr stavke
 POLJE;char;20;;;Polje u datasetu
 BROJKONTA;char;8;;;Konto
+KARAKTERISTIKA;char;1;;;Karakteristika
 UVJET;char;100;;;Uvjet
 ZAG;char;1;;N;Zaglavlje SK dok.
 CKNJIGE;char;5;;;Oznaka knjige
