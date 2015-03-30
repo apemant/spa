@@ -1016,6 +1016,7 @@ public class JlrNavField extends JraTextField {
       return lD.lookUP(null,this.getRaDataSet(),this,textFields,colNames,currVisCols,currentLuMode);
     }
     catch (Exception ex) {
+      ex.printStackTrace();
       return false;
     }
   }
