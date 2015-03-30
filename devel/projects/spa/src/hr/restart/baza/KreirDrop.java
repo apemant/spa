@@ -1145,7 +1145,7 @@ public abstract class KreirDrop {
         line.append(part).append(sep);
       }
     }
-    line.replaceAll("\n", "\\n");
+    line.replaceAll("\n", "\\n").replaceAll("\r","");
     return line.toString();
   }
   
