@@ -43,7 +43,7 @@ public abstract class raFieldMask implements FocusListener, KeyListener {
   protected static VarStr sharedBuf = new VarStr();
   
   protected int sBeg, sEnd, cPos, tLen, sLen;
-  protected boolean sel, prot;
+  protected boolean sel, prot, arrows;
 
 //  public abstract void updateText();
 //  public abstract void resolveText();
@@ -60,7 +60,7 @@ public abstract class raFieldMask implements FocusListener, KeyListener {
   public boolean keypressControl(char ch) {
     return false;
   }
-
+  
   public raFieldMask(JTextField tf) {
     this.tf = tf;
     if (!(tf instanceof JraTextField))
@@ -78,6 +78,14 @@ public abstract class raFieldMask implements FocusListener, KeyListener {
   public void uninstall() {
     tf.removeFocusListener(this);
     tf.removeKeyListener(this);
+  }
+  
+  public void setHandlesArrows(boolean arrows) {
+    this.arrows = arrows;
+  }
+  
+  public boolean isHandlingArrows() {
+    return arrows;
   }
   
   public void setProtected(boolean prot) {

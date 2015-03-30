@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.swing;
 
+import java.awt.event.KeyEvent;
+
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
 
@@ -66,6 +68,7 @@ public class raTextMask extends raFieldMask {
     this.maxLength = maxLength;
     this.allowSpaces = allowSpaces;
     charType = type & 127;
+    if (charType == NUMERIC || charType == DIGITS) setHandlesArrows(true);
     placeHolder = (type & PLACEHOLDER) == PLACEHOLDER;
     placeHolderChar = defaultPlaceHolderChar;
   }
@@ -154,7 +157,21 @@ public class raTextMask extends raFieldMask {
     tf.copy();
     return true;
   }
-
+  
+  public boolean keypressCode(int code) {
+    if (code == KeyEvent.VK_UP || code == KeyEvent.VK_DOWN) {
+      if (isHandlingArrows()) {
+        int num = Aus.getAnyNumber(tf.getText());
+        if (code == KeyEvent.VK_UP) --num; else ++num;
+        if (num < 0 && charType == DIGITS) num = 0;
+        tf.setText(Integer.toString(num));
+        updateText();
+      }
+      return true;
+    }
+    return false;
+  }
+  
   public boolean keypressCharacter(char ch) {
     if (ch == ' ' && !allowSpaces) return true;
     if (!characterAllowed(ch)) return true;

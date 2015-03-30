@@ -635,8 +635,8 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
         }
       } else if (e.getKeyCode()==e.VK_PAGE_DOWN) e.consume();
       else if (e.getKeyCode()==e.VK_PAGE_UP) e.consume();
-      else if (e.getKeyCode()==e.VK_DOWN) e.consume();
-      else if (e.getKeyCode()==e.VK_UP) e.consume();
+      else if ((e.getKeyCode()==e.VK_DOWN || e.getKeyCode()==e.VK_UP) && 
+          (getFieldMask() == null || !getFieldMask().isHandlingArrows())) e.consume();
       else if (disableEnter && e.getKeyCode()==e.VK_ENTER) e.consume();
 /*
       else {
