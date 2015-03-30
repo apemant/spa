@@ -46,7 +46,11 @@ public class frmZaKlasa extends frmKnjizenje {
   JLabel jlGod = new JLabel();
   JLabel jlOdg = new JLabel();
   JraTextField jraDog = new JraTextField();
-  JraTextField jraGod = new JraTextField();
+  JraTextField jraGod = new JraTextField() {
+    public void valueChanged() {
+      dataSet.setTimestamp("DATUMKNJ", ut.getYearEnd(jraGod.getText()));
+    }
+  };
   JraTextField jraOdg = new JraTextField();
 
   StorageDataSet zds = new StorageDataSet();
@@ -105,7 +109,7 @@ public class frmZaKlasa extends frmKnjizenje {
     zds.setString("ODG", "");
     zds.setString("DOG", "");
     zds.setInt("GOD", Aus.getNumber(ut.getYear(vl.getToday())) - 1);
-    dataSet.setTimestamp("DATUMKNJ", ut.getLastDayOfYear(ut.addYears(vl.getToday(), -1)));
+    dataSet.setTimestamp("DATUMKNJ", ut.getYearEnd(jraGod.getText()));
 
   }
 
