@@ -44,6 +44,8 @@ public class menuOp extends JMenu {
   JMenuItem jmArtikli = new JMenuItem();
   JMenuItem jmShemeKonta = new JMenuItem();
   JMenuItem jmShemeKontaOJ = new JMenuItem();
+  JMenuItem jmShemeKontaR = new JMenuItem();
+  
   JMenuItem jmRabati = new JMenuItem();
   JMenuItem jmShemeRab = new JMenuItem();
   JMenuItem jmZavTr = new JMenuItem();
@@ -117,6 +119,12 @@ public class menuOp extends JMenu {
         jmShemeKontaOJ_actionPerformed(e);
       }
     });
+    jmShemeKontaR.setText("Sheme kontiranja - robno");
+    jmShemeKontaR.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmRobSheme_actionPerformed(e);
+      }
+    });
     jmRabati.setText("Rabati");
     jmRabati.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -129,13 +137,13 @@ public class menuOp extends JMenu {
         jmShemeRab_actionPerformed(e);
       }
     });
-    jmZavTr.setText("Zavisni tro\u0161kovi");
+    jmZavTr.setText("Zavisni troškovi");
     jmZavTr.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmZavTr_actionPerformed(e);
       }
     });
-    jmShemeZavTr.setText("Sheme zavisnih tro\u0161kova");
+    jmShemeZavTr.setText("Sheme zavisnih troškova");
     jmShemeZavTr.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmShemeZavTr_actionPerformed(e);
@@ -159,7 +167,7 @@ public class menuOp extends JMenu {
         jmSkupArt_actionPerformed(e);
       }
     });
-    jmDobArt.setText("Dobavlja\u010Di-artikli");
+    jmDobArt.setText("Dobavljaèi-artikli");
     jmDobArt.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmDobArt_actionPerformed(e);
@@ -183,7 +191,7 @@ public class menuOp extends JMenu {
         jmNamjene_actionPerformed(e);
       }
     });
-    jmNacOtp.setText("Na\u010Dini otpreme");
+    jmNacOtp.setText("Naèini otpreme");
     jmNacOtp.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmNacOtp_actionPerformed(e);
@@ -217,6 +225,7 @@ public class menuOp extends JMenu {
     this.addSeparator();
     this.add(jmShemeKonta);
     this.add(jmShemeKontaOJ);
+    this.add(jmShemeKontaR);
     this.addSeparator();
     this.add(jmRabati);
     this.add(jmShemeRab);
@@ -289,6 +298,10 @@ public class menuOp extends JMenu {
   void jmKupArt_actionPerformed(ActionEvent e) {
     frmKup_Art fKupArt = (frmKup_Art)raLoader.load("hr.restart.robno.frmKup_Art");
     fKupArt.go();
+  }
+  public void jmRobSheme_actionPerformed(ActionEvent e) {
+    frmShemeRobno fsr = (frmShemeRobno) raLoader.load("hr.restart.robno.frmShemeRobno");
+    fsr.go();
   }
   void jmFrankature_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmFranka", res.getString("frmFranka_title"));
