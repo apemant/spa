@@ -95,6 +95,7 @@ public class frmSkripte extends raMatPodaci {
     
     setRaDetailPanel(jp);
     
+    jpDetailView.remove(jScrollPaneDetail);
     jpDetailView.add(jp);
     
     getJpTableView().addTableModifier(new raTableModifier() {
@@ -110,8 +111,6 @@ public class frmSkripte extends raMatPodaci {
           setComponentText(text.substring(0, nl));
       }
     });
-    
-    setRaDetailPanel(new JPanel());
   }
   
   public boolean Validacija(char mode) {
