@@ -39,6 +39,7 @@ import com.borland.jbcl.layout.XYLayout;
 public class XYPanel extends JraPanel {
 	public XYLayout lay;
 	public int up = 15;
+	public int bottom = 15;
 	public int above = 18;
 	public int left = 15;
 	public int text = 150;
@@ -61,7 +62,7 @@ public class XYPanel extends JraPanel {
 	public int y = 15;
 	public int x = 0;
 	
-	private int maxx = 0, maxy = 0;
+	private int maxx = 0, maxy = 0, lastx = 0;
 	
 	HashMap texts = new HashMap();
 	HashMap navs = new HashMap();
@@ -101,6 +102,7 @@ public class XYPanel extends JraPanel {
 	
 	public XYPanel skip(int w) {
 		x += w;
+		lastx = x;
 		check(0, 0);
 		return this;
 	}
@@ -212,6 +214,7 @@ public class XYPanel extends JraPanel {
 		tf.setColumnName(colName);
 		add(tf, new XYConstraints(x, y, wid, -1));
 		x += wid + xspac;
+		lastx = x - xspac;
 		check(0, sheight);
 		return tf;
 	}
@@ -222,6 +225,7 @@ public class XYPanel extends JraPanel {
 	}
 	
 	public JraTextField addText(String colName, String lab, int tw) {
+		if (tw < 0) tw = lastx - x;
 		if (lab != null) {
 			JLabel label = createLab(lab, true);
 			add(label, new XYConstraints(x + 1, y - above, tw - 2, -1));
@@ -233,6 +237,7 @@ public class XYPanel extends JraPanel {
 		tf.setColumnName(colName);
 		add(tf, new XYConstraints(x, y, tw, -1));
 		x += tw + xspac;
+		lastx = x - xspac;
 		check(0, sheight);
 		return tf;
 	}
@@ -294,7 +299,7 @@ public class XYPanel extends JraPanel {
 			add(naz, new XYConstraints(x, y, nwid, -1));
 			x += nwid + xspac;
 		}
-		
+		lastx = x - xspac;
 		add(jlr.getNavButton(), new XYConstraints(x, y, sheight, sheight));
 		check(sheight, sheight);
 		return jlr;
@@ -331,6 +336,7 @@ public class XYPanel extends JraPanel {
 	public XYPanel comp(JComponent comp, int cw) {
 		add(comp, new XYConstraints(x, y, cw, -1));
 		x += cw + xspac;
+		lastx = x - xspac;
 		check(0, sheight);
 		return this;
 	}
@@ -338,6 +344,7 @@ public class XYPanel extends JraPanel {
 	public XYPanel combo(JraComboBox jcb, int cw) {
 		add(jcb, new XYConstraints(x, y, cw, sheight));
 		x += cw + xspac;
+		lastx = x - xspac;
 		check(0, sheight);
 		return this;
 	}
@@ -402,7 +409,7 @@ public class XYPanel extends JraPanel {
 	
 	public XYPanel expand() {
 		lay.setWidth(maxx + left);
-		lay.setHeight(maxy + 15);
+		lay.setHeight(maxy + bottom);
 		return this;
 	}
 	
