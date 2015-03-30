@@ -17,11 +17,19 @@
 ****************************************************************************/
 package hr.restart.swing;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
+import com.sun.glass.events.KeyEvent;
 
 
 /**
@@ -35,9 +43,11 @@ import javax.swing.SwingConstants;
 
 public class raDateMask extends raFieldMask {
   private static boolean defaultSmartDate;
-  private static char placeHolderChar, separatorChar;
+  static char placeHolderChar, separatorChar;
   private static String placeHolder, separator;
   private static String emptyMask;
+  private static DateFormat dform;
+  private static Calendar cal;
 
   private boolean smartDate = defaultSmartDate;
 
@@ -58,6 +68,9 @@ public class raDateMask extends raFieldMask {
     emptyMask = Aus.string(2, placeHolder) + separator +
                 Aus.string(2, placeHolder) + separator +
                 Aus.string(4, placeHolder);
+    
+    dform = new SimpleDateFormat("dd-MM-yyyy");
+    cal = Calendar.getInstance();
   }
 
   public void setSmartDate(boolean smartDate) {
@@ -67,6 +80,7 @@ public class raDateMask extends raFieldMask {
   public raDateMask(JTextField tf) {
     super(tf);
     tf.setHorizontalAlignment(SwingConstants.CENTER);
+    setHandlesArrows(true);
   }
   public boolean keypressCopy() {
     tf.copy();
@@ -100,6 +114,29 @@ public class raDateMask extends raFieldMask {
       }
     } else if (pos == 2 || pos == 5) ++pos;
     tf.setCaretPosition(pos);
+  }
+  
+  public boolean keypressCode(int code) {
+    if (code == KeyEvent.VK_UP || code == KeyEvent.VK_DOWN) {
+      if (isHandlingArrows()) {
+        int add =  code == KeyEvent.VK_UP ? -1 : 1;
+        try {
+          Date d = dform.parse(tf.getText());
+          cal.setTime(d);
+          if (cPos <= 2)
+            cal.add(cal.DATE, add);
+          else if (cPos <= 5)
+            cal.add(cal.MONTH, add);
+          else cal.add(cal.YEAR, add);
+          setText(dform.format(cal.getTime()));
+          tf.setCaretPosition(cPos);
+        } catch (ParseException e) {
+          // nothing
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
   public boolean keypressCharacter(char ch) {
@@ -243,7 +280,8 @@ public class raDateMask extends raFieldMask {
       setText(emptyMask);
       tf.setCaretPosition(0);
       return true;
-    } else return false;
+    } 
+    return false;
   }
 
   static class DateParser {
@@ -286,7 +324,7 @@ public class raDateMask extends raFieldMask {
     }
 
     private void parseDate(String date) {
-      String[] parts = new VarStr(date).split(separatorChar);
+      String[] parts = new VarStr(date).retainChars("0123456789" + separatorChar).split(separatorChar);
       if (parts.length > 2 && Aus.isDigit(ys = (parts[2] + ys).substring(0, 4)))
         y = Aus.getNumber(ys);
       if (parts.length > 1 && Aus.isDigit(ms = (parts[1] + ms).substring(0, 2)))
