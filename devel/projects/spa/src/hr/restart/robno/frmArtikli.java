@@ -1658,7 +1658,7 @@ public boolean  doWithSave(char mode) {
 				getJpTableView().enableEvents(false);
 				int row = getRaQueryDataSet().getRow();
 				for (int i = 0; i < sel.length; i++) 
-					if (lookupData.getlookupData().raLocate(getRaQueryDataSet(), "CART", Integer.toString(sel[i])))
+					if (lookupData.getlookupData().raLocate(getRaQueryDataSet(), "CART", Integer.toString(sel[i].intValue())))
 						getRaQueryDataSet().setString("CGRART", cgnew);
 				
 				getRaQueryDataSet().goToRow(row);
