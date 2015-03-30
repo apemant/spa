@@ -957,6 +957,21 @@ public class VarStr {
     }
     return this;
   }
+  
+  /**
+   * Izbacuje iz ovog VarStr-a sve znakove osim navedenih u stringu.<p>
+   * @param chars String sa popisom svih znakova koje se zadržavaju.
+   * @return this.
+   */
+  public VarStr retainChars(String chars) {
+    if (chars == null || chars.length() == 0) return this;
+    char val[] = value;
+    for (int i = count - 1; i >= 0; i--) {
+      if (chars.indexOf(val[i]) < 0 && --count > i)
+        System.arraycopy(val, i + 1, val, i, count - i);
+    }
+    return this;
+  }
 
   /**
    * Izbacuje iz ovog VarStr-a sve prazne znakove: razmak, line feed, carriage
