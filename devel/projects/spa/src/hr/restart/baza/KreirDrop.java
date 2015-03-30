@@ -1140,12 +1140,12 @@ public abstract class KreirDrop {
          part.clear().append(encode(v.getInputStream())); 
         else {
           part.clear().append(v);
-          part.replaceAll(sep, "</sep>");
+          if (v.getType() == Variant.STRING)
+            part.replaceAll(sep, "</sep>").replaceAll("\n", "\\n").replaceAll("\r","");
         }
         line.append(part).append(sep);
       }
     }
-    line.replaceAll("\n", "\\n").replaceAll("\r","");
     return line.toString();
   }
   
