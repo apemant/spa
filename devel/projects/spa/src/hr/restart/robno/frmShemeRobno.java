@@ -150,7 +150,6 @@ public class frmShemeRobno  extends raMasterDetail {
 		return basic;
 	}
 	
-	@Override
 	public void SetFokusMaster(char mode) {
 		super.SetFokusMaster(mode);
 		Aus.dumpContainer(raMaster.jpDetailView, 2);

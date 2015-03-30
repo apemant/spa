@@ -175,7 +175,6 @@ public class frmNorme extends raMasterFakeDetailArtikl {
     return "SELECT * FROM norme WHERE cartnor = " + mast.getInt("CARTNOR");
   }
 
-  @Override
   public void refilterDetailSet() {
   	super.refilterDetailSet();
   	setNaslovDetail("Sastav normativa " + mast.getInt("CART") + " - " + mast.getString("NAZART")); 
