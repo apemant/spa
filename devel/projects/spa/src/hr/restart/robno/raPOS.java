@@ -752,7 +752,6 @@ public class raPOS extends raIzlazTemplate  {
         //ist.setString("VEZA", rst.getString("ID_STAVKA"));
         
         ld.raLocate(sta, new String[] {"CSKL", "CART"}, new String[] {izag.getString("CSKL"), expanded.getInt("CART")+""});
-        Aus.sub(sta, "KOLREZ", expanded, "KOL");
         
         rKD.stanje.Init();
         lc.TransferFromDB2Class(sta,rKD.stanje);
