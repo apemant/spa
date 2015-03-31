@@ -22,22 +22,24 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.RobSheme;
 import hr.restart.baza.StRobSheme;
 import hr.restart.baza.dM;
-import hr.restart.swing.JraComboBox;
 import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.XYPanel;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
+import hr.restart.util.raComboBox;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raMasterDetail;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+
+import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.NavigationEvent;
 
 public class frmShemeRobno  extends raMasterDetail {
 	
@@ -52,6 +54,8 @@ public class frmShemeRobno  extends raMasterDetail {
   
   JPanel jpMaster;
   JPanel jpDetail;
+  
+  XYPanel xymaster, xydetail;
 
   JEditorPane zag = new JEditorPane() {
     public boolean getScrollableTracksViewportWidth() {
@@ -71,7 +75,7 @@ public class frmShemeRobno  extends raMasterDetail {
     }
   };
   
-  JraComboBox jcbKar = new JraComboBox(new String[] {"D", "P"});
+  raComboBox jcbKar = new raComboBox();
   
   public frmShemeRobno() {
     super(2,3);
@@ -108,10 +112,10 @@ public class frmShemeRobno  extends raMasterDetail {
   }
   
 	private JPanel createMasterPanel() {
-		XYPanel basic = new XYPanel(getMasterSet());
+		XYPanel basic = xymaster = new XYPanel(getMasterSet());
 		basic.text = 120;
 		basic.bottom = 10;
-		basic.down(10).label("Shema").text("RBR").text("OPIS", 400).nl();
+		basic.down(10).label("Shema").text("RBR").text("OPIS", 450).nl();
 		basic.down(5).label("Dokumenti").text("CVRDOK", -1).nl();
 		basic.down(5).label("Sklad/OJ").text("CCSKL", -1).nl();
 		basic.down(5).label("Kljuè").text("ZAGKEY", -1).expand();
@@ -129,8 +133,8 @@ public class frmShemeRobno  extends raMasterDetail {
 		sstav.setViewportView(stav);
 		
 		JTabbedPane tabs = new JTabbedPane();
-		tabs.addTab("Zaglavlje", szag);
-		tabs.addTab("Ažuriranje", supd);
+		tabs.addTab("Zaglavlja", szag);
+		tabs.addTab("Ažuriranja", supd);
 		tabs.addTab("Stavke", sstav);
 		
 		JPanel ret = new JPanel(new BorderLayout());
@@ -140,18 +144,80 @@ public class frmShemeRobno  extends raMasterDetail {
 	}
 
 	private JPanel createDetailPanel() {
-		XYPanel basic = new XYPanel(getDetailSet());
-		basic.text = 120;
-		basic.label("Polje").text("POLJE").label("ako", 40).text("UVJET", 300).nl();
-		basic.label("Konto").nav("BROJKONTA", dm.getKontaAnalitic(), "NAZIVKONTA").combo(jcbKar, 50).nl();
-		basic.label("Knjiga").nav("CKNJIGE", dm.getKnjigeUI(), "NAZKNJIGE").nl();
-		basic.label("Kolona").nav("CKOLONE", dm.getKoloneknjUI(), "NAZIVKOLONE").expand();
+		XYPanel basic = xydetail = new XYPanel(getDetailSet());
+		basic.text = 100;
+		basic.label("Polje").text("RBS", 80).text("POLJE", 240).skip(15).check(" Zaglavlje salda konti ", "ZAG").nl();
+		basic.label("Uvjet").text("UVJET", 520).nl();
+		basic.label("Konto").nav(new String[] {"BROJKONTA", "NAZIVKONTA"}, new int[] {80, 300}, dm.getKontaAnalitic());
+		basic.skip(30).combo(jcbKar, 100).nl();
+		basic.label("Knjiga").nav(new String[] {"CKNJIGE", "NAZKNJIGE"}, new int[] {80, 300}, dm.getKnjigeUI()).nl();
+		basic.label("Kolona").nav(new String[] {"CKOLONE", "NAZIVKOLONE"}, new int[] {80, 300}, dm.getKoloneknjUI());
 		
-		return basic;
+		jcbKar.setRaDataSet(getDetailSet());
+		jcbKar.setRaColumn("KARAKTERISTIKA");
+	    jcbKar.setRaItems(new String[][] {
+	        { "Dugovni", "D" },
+	        { "Potražni", "P" }
+	    });
+		
+		return basic.expand();
 	}
 	
 	public void SetFokusMaster(char mode) {
-		super.SetFokusMaster(mode);
-		Aus.dumpContainer(raMaster.jpDetailView, 2);
+	  if (mode=='N') {
+	      rcc.setLabelLaF(xymaster.getText("RBR"), true);
+	      DataSet mrbr = Aus.q("SELECT MAX(rbr) AS maxrbr FROM robsheme");
+	      getMasterSet().setInt("RBR", mrbr.getInt("MAXRBR") + 1);
+	      xymaster.getText("RBR").requestFocus();
+	  } else if (mode=='I') {
+	      rcc.setLabelLaF(xymaster.getText("RBR"),false);
+	      xymaster.getText("OPIS").requestFocus();
+	  }
 	}
+	
+	public boolean ValidacijaMaster(char mode) {
+	  if (mode == 'N') {
+	    if (vl.isEmpty(xymaster.getText("RBR"))) return false;
+	    if (vl.notUnique(xymaster.getText("RBR"))) return false;
+	  }
+	  
+	  return true;
+	}
+	
+	public void SetFokusDetail(char mode) {
+	  if (mode=='N') {
+        rcc.setLabelLaF(xydetail.getText("RBS"), true);
+        DataSet mrbr = Aus.q("SELECT MAX(rbs) AS maxrbr FROM strobsheme WHERE " + Condition.equal("RBR", getMasterSet()));
+        getDetailSet().setInt("RBS", mrbr.getInt("MAXRBR") + 1);
+        xydetail.getText("RBS").requestFocus();
+      } else if (mode=='I') {
+        rcc.setLabelLaF(xydetail.getText("RBS"),false);
+        xymaster.getText("POLJE").requestFocus();
+      }
+	}
+	
+	public boolean ValidacijaDetail(char mode) {
+      if (mode == 'N') {
+        if (vl.isEmpty(xymaster.getText("RBS"))) return false;
+        if (StRobSheme.getDataModule().getRowCount(Condition.whereAllEqual(new String[] {"RBR", "RBS"}, getDetailSet())) > 0) {
+          xymaster.getText("RBS").requestFocus();
+          vl.showValidErrMsg(xymaster.getText("RBS"), 'U');
+        }
+      }
+      
+      return true;
+    }
+	
+	public void masterSet_navigated(NavigationEvent e) {
+	  if (getMasterSet().rowCount() == 0) {
+	    zag.setText("");
+	    upd.setText("");
+	    stav.setText("");
+	  } else {
+	    zag.setText(getMasterSet().getString("QZAG"));
+	    upd.setText(getMasterSet().getString("QUPD"));
+	    stav.setText(getMasterSet().getString("QSTAV"));
+	  }
+	}
+
 }
