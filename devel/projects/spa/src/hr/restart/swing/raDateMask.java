@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.swing;
 
+import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,8 +29,6 @@ import hr.restart.util.VarStr;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
-import com.sun.glass.events.KeyEvent;
 
 
 /**
