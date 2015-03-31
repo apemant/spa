@@ -112,7 +112,7 @@ public class XYPanel extends JraPanel {
 		if (y + h > maxy) maxy = y + h;
 	}
 	
-	private JLabel createLab(String lab, boolean isAbove) {
+	private JLabel createLab(String lab) {
 		JLabel label = new JLabel(lab);
 		if (lab.startsWith("~")) {
 			label.setText(lab.substring(1));
@@ -120,7 +120,7 @@ public class XYPanel extends JraPanel {
 		} else if (lab.endsWith("~")) {
 			label.setText(lab.substring(0, lab.length() - 1));
 			label.setHorizontalAlignment(SwingConstants.LEFT);
-		} else if (isAbove) 
+		} else 
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 		return label;
 	}
@@ -173,7 +173,7 @@ public class XYPanel extends JraPanel {
 	}
 	
 	public JLabel addLabel(String label, int width) {
-		JLabel lab = createLab(label, false);
+		JLabel lab = createLab(label);
 		add(lab, new XYConstraints(x, y, width, -1));
 		x += width;
 		check(0, sheight);
@@ -227,7 +227,7 @@ public class XYPanel extends JraPanel {
 	public JraTextField addText(String colName, String lab, int tw) {
 		if (tw < 0) tw = lastx - x;
 		if (lab != null) {
-			JLabel label = createLab(lab, true);
+			JLabel label = createLab(lab);
 			add(label, new XYConstraints(x + 1, y - above, tw - 2, -1));
 		}
 		
@@ -305,10 +305,25 @@ public class XYPanel extends JraPanel {
 		return jlr;
 	}
 	
+	public XYPanel nav(String[] colNames, int[] wids, DataSet raSet, int[] visCols, boolean isAbove) {
+	  addNav(colNames, wids, raSet, visCols, isAbove);
+	  return this;
+	}
+	
 	public XYPanel nav(String[] colNames, DataSet raSet, int[] visCols, boolean above) {
 		addNav(colNames, null, raSet, visCols, above);
 		return this;
 	}
+	
+	public XYPanel nav(String[] colNames, int[] wids, DataSet raSet, int[] visCols) {
+      addNav(colNames, wids, raSet, visCols, false);
+      return this;
+    }
+	
+	public XYPanel nav(String[] colNames, int[] wids, DataSet raSet) {
+      addNav(colNames, wids, raSet, null, false);
+      return this;
+    }
 	
 	public JlrNavField addNav(String colName, DataSet raSet) {
 		return addNav(colName, raSet, null, false);
