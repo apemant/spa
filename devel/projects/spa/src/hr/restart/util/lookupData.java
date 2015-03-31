@@ -444,6 +444,7 @@ sysoutTEST ST=new sysoutTEST(false);
   	vs.clear().append(cols);
   	if (vs.indexOf(' ') > 0) return raLocate(ds, vs.split(), vals);
   	if (vs.indexOf(',') > 0) return raLocate(ds, vs.splitTrimmed(','), vals);
+  	ds.open();
   	DataRow dr = new DataRow(ds, cols);
   	vals.getVariant(cols, shared);
     dr.setVariant(cols, shared);
@@ -455,6 +456,7 @@ sysoutTEST ST=new sysoutTEST(false);
   }
   
   public boolean raLocate(DataSet ds, String[] cols, ReadRow vals, String[] keys) {
+    ds.open();
   	DataRow dr = new DataRow(ds, cols);
   	for (int i = 0; i < cols.length; i++) {
       vals.getVariant(keys[i], shared);
