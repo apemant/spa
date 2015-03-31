@@ -3938,7 +3938,7 @@ OPIS;char;30;pkey;;Opis;15
 KNJIG;char;12;;;Knjigovodstvo
 GOD;char;4;;;Godina
 APP;char;10;;;Aplikacija
-BROJ;double;10,0;;;Broj;15
+BROJ;int;6;;;Broj;15
 
 $Serbr
 LOKK;char;1;;N;Status zauzetosti;*
