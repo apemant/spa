@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -35,6 +36,7 @@ import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raDateMask;
+import hr.restart.swing.raExtendedTable;
 import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raTextMask;
@@ -353,6 +355,22 @@ public class raPOS extends raIzlazTemplate  {
         return;
     }
     
+    if (!vhack) {
+      raProcess.runChild(new Runnable() {
+        public void run() {
+          raProcess.yield(getResults());
+        };
+      });
+      if (raProcess.isInterrupted()) return;
+      if (raProcess.isFailed()) {
+        JOptionPane.showMessageDialog(null, 
+            new raMultiLineMessage(raProcess.getLastException().getMessage(), JLabel.LEADING), 
+            "Greška", JOptionPane.ERROR_MESSAGE);
+      }
+      StorageDataSet[] result = (StorageDataSet[]) raProcess.getReturnValue();
+      if (!new ZakViewer(result[0], result[1]).show()) return;
+    }
+    
     raProcess.runChild(new Runnable() {		
 			public void run() {
 				if (!new raLocalTransaction(){
@@ -373,8 +391,145 @@ public class raPOS extends raIzlazTemplate  {
           "Zakljuèak", JOptionPane.INFORMATION_MESSAGE);
     else if (raProcess.isFailed())
       JOptionPane.showMessageDialog(null, 
-          new raMultiLineMessage(err, JLabel.LEADING), 
-          "Zakljuèak", JOptionPane.ERROR_MESSAGE);
+          new raMultiLineMessage(raProcess.getLastException().getMessage(), JLabel.LEADING), 
+          "Greška", JOptionPane.ERROR_MESSAGE);
+  }
+  
+  
+  static StorageDataSet[] getResults() {
+    lookupData ld = lookupData.getlookupData();
+    
+    ld.raLocate(dm.getSklad(), "CSKL", tds.getString("CSKL"));
+    DataSet samec = Sklad.getDataModule().getTempSet(Condition.equal("CORG", dm.getSklad()));
+    Condition sc = Condition.in("CSKL", samec);
+    Condition dat = Condition.till("DATDOK", tds).and(Condition.from("DATDOK", 
+        hr.restart.util.Util.getUtil().getFirstDayOfYear(tds.getTimestamp("DATDOK"))));
+    
+    StorageDataSet ds = getArtikliSet(dat);
+    initNormExpansion(ds);
+    
+    QueryDataSet sta = Stanje.getDataModule().getTempSet(
+        Condition.equal("GOD", Valid.getValid().findYear(tds.getTimestamp("DATDOK")))
+        .and(sc).and(Condition.in("CART", expanded)));
+    sta.open();
+    
+    StorageDataSet arts = stdoki.getDataModule().getScopedSet("CSKL CART CART1 BC NAZART JM KOL FMC IPRODSP KOL1 KOL2");
+    arts.getColumn("KOL1").setCaption("Stanje");
+    arts.getColumn("KOL2").setCaption("Rezultat");
+    
+    StorageDataSet mat = stdoki.getDataModule().getScopedSet("CSKL CART CART1 BC NAZART JM KOL ZC IRAZ KOL1 KOL2");
+    mat.getColumn("KOL1").setCaption("Stanje");
+    mat.getColumn("KOL2").setCaption("Rezultat");
+    
+    ds.setSort(new SortDescriptor(new String[] {"CART"}));
+    
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      if (!ld.raLocate(arts, "CSKL CART", ds)) {
+        arts.insertRow(false);
+        Aut.getAut().copyArtFields(arts, ds);
+        arts.setString("CSKL", ds.getString("CSKL"));
+        arts.setAssignedNull("KOL1");
+        arts.setAssignedNull("KOL2");
+        if (ld.raLocate(sta, "CART", Integer.toString(ds.getInt("CART")))) {
+          if (ld.raLocate(expanded, "CSKL CART", ds))
+            expanded.setString("CSKL", sta.getString("CSKL"));
+
+          arts.setBigDecimal("KOL1", sta.getBigDecimal("KOL"));
+        }
+      }
+      Aus.add(arts, "KOL", ds);
+      Aus.add(arts, "IPRODSP", ds);
+      if (!arts.isNull("KOL1")) 
+        Aus.sub(arts, "KOL2", "KOL1", "KOL");
+      if (arts.getBigDecimal("KOL").signum() != 0) 
+        Aus.div(arts, "FMC", "IPRODSP", "KOL");
+    }
+  
+    expanded.setSort(new SortDescriptor(new String[] {"CSKL", "CART"}));
+    
+    for (expanded.first(); expanded.inBounds(); expanded.next()) {
+      if (!ld.raLocate(mat, "CSKL CART", expanded)) {
+        mat.insertRow(false);
+        Aut.getAut().copyArtFields(mat, expanded);
+        mat.setString("CSKL", expanded.getString("CSKL"));
+        mat.setAssignedNull("KOL1");
+        mat.setAssignedNull("KOL2");
+        if (ld.raLocate(sta, "CSKL CART", expanded)) {
+          mat.setBigDecimal("KOL1", sta.getBigDecimal("KOL"));
+          Aus.set(mat, "ZC", sta);
+        }
+      }
+      Aus.add(mat, "KOL", expanded);
+      if (!mat.isNull("KOL1")) {
+        Aus.mul(mat, "IRAZ", "ZC", "KOL");
+        Aus.sub(mat, "KOL2", "KOL1", "KOL");
+      }
+    }
+    return new StorageDataSet[] {arts, mat};
+  }
+  
+ 
+  static class ZakViewer {
+    raInputDialog rid = new raInputDialog() {
+      protected void beforeShow() {
+        jp.initKeyListener(win);
+      };
+    };
+    raExtendedTable mpt = new raExtendedTable() {
+      public void killFocus(java.util.EventObject e) {
+        rid.getOkPanel().jPrekid.requestFocus();
+      }
+      public void setTableColumnsUI() {
+        super.setTableColumnsUI();
+        if (jp.getColumnsBean() != null)
+          jp.getColumnsBean().updateColumnWidths();
+      }
+    };
+    public raJPTableView jp = new raJPTableView(mpt);
+    raNavAction pa = new raNavAction("Prikaži artikle", raImages.IMGHISTORY, KeyEvent.VK_F6) {
+      public void actionPerformed(ActionEvent e) {
+        jp.getColumnsBean().saveSettings();
+        pa.setEnabled(false);
+        pm.setEnabled(true);
+        rid.setTitle("Pregled artikala za zakljuèak");
+        jp.setDataSetAndSums(arts, new String[] {"IPRODSP"});
+        jp.setVisibleCols(new int[] {0, Aut.getAut().getCARTdependable(1,2,3), 4,5,6,7,8,9,10});
+        jp.getColumnsBean().initialize();
+      }
+    };
+    raNavAction pm = new raNavAction("Prikaži materijal", raImages.IMGMOVIE, KeyEvent.VK_F7) {
+      public void actionPerformed(ActionEvent e) {
+        jp.getColumnsBean().saveSettings();
+        pm.setEnabled(false);
+        pa.setEnabled(true);
+        rid.setTitle("Pregled materijala po normativima za zakljuèak");
+        jp.setDataSetAndSums(mat, new String[] {"IRAZ"});
+        jp.setVisibleCols(new int[] {0, Aut.getAut().getCARTdependable(1,2,3), 4,5,6,7,8,9,10});
+        jp.getColumnsBean().initialize();
+      }
+    };
+    StorageDataSet arts, mat;
+    public ZakViewer(StorageDataSet arts, StorageDataSet mat) {
+      this.arts = arts;
+      this.mat = mat;
+      arts.setTableName("artikli");
+      mat.setTableName("materijal");
+      jp.getNavBar().addOption(pa);
+      jp.getNavBar().addOption(pm);
+      pa.setEnabled(false);
+      rid.setTitle("Pregled artikala za zakljuèak");
+      rid.setContent(jp);
+      jp.getColumnsBean().setSaveSettings(true);
+      jp.getColumnsBean().setSaveName("pregled-zakljucak");
+      jp.setVisibleCols(new int[] {0, Aut.getAut().getCARTdependable(1,2,3), 4,5,6,7,8,9,10});
+      jp.setDataSetAndSums(arts, new String[] {"IPRODSP"});
+      jp.getColumnsBean().initialize();
+      
+    }
+    
+    public boolean show() {
+      return rid.show(null);
+    }
   }
   
   static StorageDataSet expanded = null;
