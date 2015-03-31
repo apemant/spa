@@ -859,11 +859,11 @@ public class frmPrisutnost extends raMasterDetail {
   raInputDialog dlg = new raInputDialog() {
   	XYPanel pan;
   	protected void init() {
-  		raButtonGroup bg = new raButtonGroup();
+  	  raButtonGroup bg = new raButtonGroup();
   	  JraRadioButton jrbP = new JraRadioButton();
   	  JraRadioButton jrbG = new JraRadioButton();
   	  JraRadioButton jrbOJG = new JraRadioButton();
-  		bg.setColumnName("VRSTA");
+  	  bg.setColumnName("VRSTA");
       bg.setDataSet(sds);
       bg.add(jrbP, " Po primanjima ", "P");
       bg.add(jrbG, " Po grupama ", "G");
