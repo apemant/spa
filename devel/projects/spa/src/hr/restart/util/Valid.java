@@ -681,11 +681,11 @@ public class Valid {
   public Double findSeqDouble(String cOpis, boolean save, boolean lock) {
     setSeqFilter(cOpis);
     if (lock) dm.getSeq().setString("LOKK", "D");
-    dm.getSeq().setDouble("BROJ", dm.getSeq().getDouble("BROJ")+1);
+    dm.getSeq().setInt("BROJ", dm.getSeq().getInt("BROJ")+1);
     if (!save && !lock) dm.getSeq().post();
     else if (lock && save) dm.getSeq().saveChanges();
     else raTransaction.saveChanges(dm.getSeq());
-    return new Double(dm.getSeq().getDouble("BROJ"));
+    return new Double(dm.getSeq().getInt("BROJ"));
   }
 
 /*  public Double findSeqDouble(String cOpis, boolean save) {
