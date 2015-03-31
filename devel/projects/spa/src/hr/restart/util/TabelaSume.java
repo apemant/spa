@@ -80,7 +80,7 @@ public class TabelaSume extends JraDialog {
 
   public TabelaSume(java.awt.Frame frm) {
     super(frm,false);
-    setTitle(frm.getTitle());
+    setTitle(frm == null ? "Sume" : frm.getTitle());
     InitTas();
   }
 
