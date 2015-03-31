@@ -41,9 +41,11 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
   String oj, mskl;
   
   
-  
+  int ngod, rgod, nfirst, nlast, rfirst, rlast;
   Set carts = new HashSet();
   Set sklads = new HashSet();
+  
+  Calendar cal = Calendar.getInstance();
   
  
   public WebSyncImpl_binomNew() {
@@ -111,9 +113,8 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
   }
   
   public void updateStanje(int cart, DataSet ms) {
-    Calendar c = Calendar.getInstance();
-    c.setTime(new Timestamp(System.currentTimeMillis()));
-    int hour = c.get(c.HOUR_OF_DAY);
+    cal.setTime(new Timestamp(System.currentTimeMillis()));
+    int hour = cal.get(cal.HOUR_OF_DAY);
     if (hour < 2 || hour > 4) return;
     
     DataSet ds = Stanje.getDataModule().getTempSet(getSkladCond().
@@ -243,7 +244,21 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
     dzg.setTimestamp("DATDOSP", dzg.getTimestamp("DATDOK"));
     dzg.setString("GOD", hr.restart.util.Util.getUtil().getYear(dzg.getTimestamp("DATDOK")));
     if (nar && cpar == 0)
-      dzg.setString("OPIS", "Narucio " + pb.getR1CompanyTitle()); 
+      dzg.setString("OPIS", "Narucio " + pb.getR1CompanyTitle());
+    
+    cal.setTime(dzg.getTimestamp("DATDOK"));
+    int g = cal.get(cal.YEAR);
+    int mj = cal.get(cal.MONTH);
+    
+    if (nar) {
+      if (g > ngod) ngod = g; 
+      if (mj < nfirst || nfirst == -1) nfirst = mj;
+      if (mj > nfirst) nfirst = mj;
+    } else {
+      if (g > rgod) rgod = g;
+      if (mj < rfirst || rfirst == -1) rfirst = mj;
+      if (mj > rfirst) rfirst = mj;
+    }
     
     if (!nar) {
       dzg.setInt("FBR", pb.getBillNr());
@@ -372,6 +387,8 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
       
       System.out.println(ob);
       
+      ngod = rgod = nfirst = nlast = rfirst = rlast = -1;
+      
       hr.binom.PurchaseBase[] pb = ob.getData();
       if (pb != null) {
         int nars = 0, gots = 0;
@@ -385,19 +402,19 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
           
           VarStr buf = new VarStr();
           buf.append("<html><p>WEBSHOP:</p>");
-          buf.append("<p>Dohvaæeno " + nars + "narudžbi ");
+          buf.append("<p>Dohvaæeno " + nars + " narudžbi ");
           if (nars > 0) 
             buf.append("(").append(Aus.createLink("Pregled", 
                 "hr.restart.robno.Util.getUtil().showDocs(\""+mskl+
-                "\", \"NKU\", hr.restart.robno.Util.getUtil().findFirstDayOfMonth()," +
-                "hr.restart.robno.Util.getUtil().findLastDayOfMonth())")).append(") ");
+                "\", \"NKU\", hr.restart.robno.Util.getUtil().findFirstDayOfMonth("+nfirst+","+ngod+")," +
+                "hr.restart.robno.Util.getUtil().findLastDayOfMonth("+nlast+","+ngod+"))")).append(") ");
 
           buf.append("i " + gots + " raèuna ");
           if (gots > 0)
             buf.append("(").append(Aus.createLink("Pregled", 
                 "hr.restart.robno.Util.getUtil().showDocs(\""+oj+
-                "\", \"GRN\", hr.restart.robno.Util.getUtil().findFirstDayOfMonth()," +
-                "hr.restart.robno.Util.getUtil().findLastDayOfMonth())")).append(") ");
+                "\", \"GRN\", hr.restart.robno.Util.getUtil().findFirstDayOfMonth("+rfirst+","+rgod+")," +
+                "hr.restart.robno.Util.getUtil().findLastDayOfMonth("+rlast+","+rgod+")")).append(") ");
             
           buf.append(" s webshop servera.");
           String msg = buf.toString();
@@ -426,12 +443,11 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
       public void actionPerformed(ActionEvent e) {
           importDocs();
           
-          Calendar c = Calendar.getInstance();
-          c.setTime(new Timestamp(System.currentTimeMillis()));
-          int hour = c.get(c.HOUR_OF_DAY);
+          cal.setTime(new Timestamp(System.currentTimeMillis()));
+          int hour = cal.get(cal.HOUR_OF_DAY);
           if (hour < 2 || hour > 4) return;
-          if (c.get(c.DAY_OF_YEAR) == lastday) return;
-          lastday = c.get(c.DAY_OF_YEAR);
+          if (cal.get(cal.DAY_OF_YEAR) == lastday) return;
+          lastday = cal.get(cal.DAY_OF_YEAR);
           updateAllStanje();
       }
     });
