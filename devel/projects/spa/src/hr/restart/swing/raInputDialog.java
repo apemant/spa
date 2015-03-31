@@ -10,13 +10,18 @@ public class raInputDialog extends raOptionDialog {
 	private JPanel content;
 	private String title;
 	private Object ret;
+	private boolean init;
 	public raInputDialog() {
-		init();
+		//init();
 	}
 	public boolean show(Container parent) {
+	  if (!init) init();
+	  init = true;
 		return show(parent, content, title);
 	}
   public boolean show(Container parent, JPanel content, String title) {
+    if (!init) init();
+    init = true;
     JPanel main = new JPanel(new BorderLayout());
     main.add(content);
     main.add(okp, BorderLayout.SOUTH);
