@@ -33,6 +33,7 @@ public class raInputDialog extends raOptionDialog {
   }
   public void setTitle(String title) {
   	this.title = title;
+  	if (win != null) win.setTitle(title);
   }
   public void setValue(Object val) {
   	ret = val;
