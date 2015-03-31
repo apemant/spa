@@ -21,7 +21,7 @@ public class repBrBillRDG extends repBrBilAllSource {
     String[] bdcols = {"POCID", "POCIP", "ID", "IP", "SALPS", "SALPROM", "SALDO"};
     for (int i = 0; i < bdcols.length; i++) _set.getColumn(bdcols[i]).setScale(2);
     _set.open();
-    filtDOB = raDataFilter.parse(frmParam.getParam("gk", "filterDOBIT", "and[-BROJKONTA|BROJKONTA|3|74|16][-BROJKONTA|BROJKONTA|2|77999999|16]", "Filter za stavke glavne knjige koje su PRIHOD"));
+    filtDOB = raDataFilter.parse(frmParam.getParam("gk", "filterDOBIT", "and[-BROJKONTA|BROJKONTA|3|74|16][-BROJKONTA|BROJKONTA|2|78999999|16]", "Filter za stavke glavne knjige koje su PRIHOD"));
     filtGUB = raDataFilter.parse(frmParam.getParam("gk", "filterGUBIT", "or[and[-BROJKONTA|BROJKONTA|3|4|16][-BROJKONTA|BROJKONTA|2|49999999|16]][and[-BROJKONTA|BROJKONTA|3|7|16][+BROJKONTA|BROJKONTA|3|74|16]]", "Filter za stavke glavne knjige koje su RASHOD"));
     try {
       if (_tmp.getRowFilterListener()!=null) {
