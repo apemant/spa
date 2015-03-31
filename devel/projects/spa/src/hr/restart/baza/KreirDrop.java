@@ -315,6 +315,7 @@ public abstract class KreirDrop {
   	for (int i = 0; i < cols.length; i++)
   		cols[i] = getColumn(columns[i]).cloneColumn();
   	ret.setColumns(cols);
+  	ret.open();
   	return ret;
   }
   
