@@ -24,6 +24,7 @@ import hr.restart.swing.JraTable2;
 import hr.restart.swing.raTableModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
 import hr.restart.util.raImages;
 import hr.restart.util.raMatPodaci;
 import hr.restart.util.raNavAction;
@@ -186,17 +187,24 @@ public class frmMessages extends raMatPodaci {
       public void modify() {
         ((JraTable2) getTable()).getDataSet().getVariant("MTEXT", getRow(), v);
         String text = v.getString().trim();
-        int nl = text.indexOf('\n');
-        if (nl > 0) {
-          text = text.substring(0, nl);
-          String tl = text.toLowerCase();
-          if (tl.startsWith("<html>")) {
-            int p = tl.indexOf("<p>");
-            if (p > 0) text = text.substring(0, p);
-            text = text.concat("</html>");
-          }
+        if (text.startsWith("<html>") || text.startsWith("<HTML>")) {
+        	text = removeHtml(text);
+        	int nl = text.indexOf('\n');
+          if (nl > 0)
+            text = text.substring(0, nl);
           setComponentText(text);
+        } else {
+        	int nl = text.indexOf('\n');
+        	if (nl > 0)
+        		setComponentText(text.substring(0, nl));
         }
+      }
+      String removeHtml(String text) {
+      	VarStr v = new VarStr(text);
+      	int b, e;
+      	while (((b = v.indexOf('<')) >= 0) && ((e = v.indexOf('>')) >= 0) && (b < e))
+      		v.replace(b, e + 1, "");
+      	return v.toString();
       }
     });
   }
