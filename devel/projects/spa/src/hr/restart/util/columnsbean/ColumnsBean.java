@@ -25,13 +25,10 @@ import hr.restart.swing.ColumnChangeListener;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraComboBox;
-import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTableInterface;
-import hr.restart.swing.JraTextField;
 import hr.restart.swing.KeyAction;
-import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raSelectTableModifier;
 import hr.restart.util.Aus;
@@ -56,9 +53,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -67,7 +62,6 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -79,7 +73,6 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumnModel;
 
-import com.borland.dbswing.JdbTable;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.RowFilterListener;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -765,7 +758,7 @@ public class ColumnsBean extends JPanel {
 
     Dimension scr = Toolkit.getDefaultToolkit().getScreenSize();
     return new Dimension(
-        Math.min(scr.width, Math.max(400, width)),
+        Math.min(scr.width, Math.max(250, width)),
         Math.min(scr.height, Math.max(200, tabheight)));
   }
   
