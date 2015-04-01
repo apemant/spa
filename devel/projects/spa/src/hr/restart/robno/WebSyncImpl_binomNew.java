@@ -201,6 +201,9 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
     
     Aus.dumpVars(pb);
     
+    String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
+        "Format fiskalnog broja izlaznog dokumenta na ispisu");
+    
     hr.restart.util.LinkClass lc = hr.restart.util.LinkClass.getLinkClass();
     lookupData ld = lookupData.getlookupData();
     raKalkulBDDoc rKD = new raKalkulBDDoc();
@@ -267,6 +270,8 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
       dzg.setInt("FNU", presBlag.getFiskNapG(dzg));
       dzg.setString("FOK", pb.getJIR() != null && pb.getJIR().length() > 0 ? "D" : "N");
       
+      dzg.setString("PNBZ2", Aus.formatBroj(dzg, fiskForm));
+      
       if (pb.getOperatorOIB() != null && pb.getOperatorOIB().length() > 0) {
         if (ld.raLocate(dM.getDataModule().getUseri(), "OIB", pb.getOperatorOIB())) {
           dzg.setString("CUSER", dM.getDataModule().getUseri().getString("CUSER"));
@@ -280,6 +285,7 @@ public class WebSyncImpl_binomNew implements WebSyncInterface {
           dzg.setInt("CPAR", dM.getDataModule().getPartneri().getInt("CPAR"));
         }
       }
+      
     }
     
     String[] acc = {"CART", "CART1", "BC", "NAZART", "JM"};
