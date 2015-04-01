@@ -175,8 +175,8 @@ public class Util {
         "Pokušajte ponovo nakon nekoliko trenutaka.", "Greška", JOptionPane.WARNING_MESSAGE);
       return false;
     }
-    if (Integer.parseInt(cBroj)==(int) dm.getSeq().getDouble("BROJ")) return true;
-    JOptionPane.showConfirmDialog(null,"Brisati možete samo posljednji dokument: "+Integer.parseInt(cBroj)+"<>"+(int) dm.getSeq().getDouble("BROJ")+" !",
+    if (Integer.parseInt(cBroj)==(int) dm.getSeq().getInt("BROJ")) return true;
+    JOptionPane.showConfirmDialog(null,"Brisati možete samo posljednji dokument: "+Integer.parseInt(cBroj)+"<>"+(int) dm.getSeq().getInt("BROJ")+" !",
                                   "Gre\u0161ka",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
     return false;
   }
@@ -200,8 +200,8 @@ public class Util {
       dm.getSeq().setDouble("BROJ", 1);
     }*/
     Valid.getValid().setSeqFilter(cOpis);
-    if (dm.getSeq().getDouble("BROJ") > 0)
-      dm.getSeq().setDouble("BROJ", dm.getSeq().getDouble("BROJ")-1);
+    if (dm.getSeq().getInt("BROJ") > 0)
+      dm.getSeq().setInt("BROJ", dm.getSeq().getInt("BROJ")-1);
     dm.getSeq().post();
     if (trans) hr.restart.util.raTransaction.saveChanges(dm.getSeq());
 
@@ -210,8 +210,8 @@ public class Util {
   
   public void delSeqCheck(String cOpis, boolean trans, int delnum) {
   	Valid.getValid().setSeqFilter(cOpis);
-    if ((int) dm.getSeq().getDouble("BROJ") == delnum) {
-      dm.getSeq().setDouble("BROJ", dm.getSeq().getDouble("BROJ")-1);
+    if ((int) dm.getSeq().getInt("BROJ") == delnum) {
+      dm.getSeq().setInt("BROJ", dm.getSeq().getInt("BROJ")-1);
       dm.getSeq().post();
       if (trans) hr.restart.util.raTransaction.saveChanges(dm.getSeq());
     }
