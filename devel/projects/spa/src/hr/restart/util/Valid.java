@@ -668,7 +668,7 @@ public class Valid {
 //        dm.getSeq().setString("GOD",_god);
 //        dm.getSeq().setString("APP",lastApp);
         dm.getSeq().setString("OPIS", cOpis);
-        dm.getSeq().setDouble("BROJ", 0);
+        dm.getSeq().setInt("BROJ", 0);
       }
 //     } else if (!dm.getSeq().getString("LOKK").equalsIgnoreCase("N"))
 //       throw new SeqLockedException();
