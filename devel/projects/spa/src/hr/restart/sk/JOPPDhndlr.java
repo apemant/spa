@@ -453,7 +453,7 @@ public class JOPPDhndlr {
       if (!isOOmatch(rs)) continue;
       //rs.BRUTOMJ = pravibruto
       //rs.BRUTO = osnovica dop. (max)
-      if (rs.getBigDecimal("BRUTO").signum()!=0) omjer = rs.getBigDecimal("PBTO").divide(rs.getBigDecimal("BRUTOMJ"),4,BigDecimal.ROUND_HALF_UP);
+      if (rs.getBigDecimal("BRUTO").signum()!=0) omjer = rs.getBigDecimal("PBTO").divide(rs.getBigDecimal("BRUTOMJ"),8,BigDecimal.ROUND_HALF_UP);
       
 /*****D*E*B*U*G***B*R*I*Š*I*******/
 //System.out.println(strBset);
