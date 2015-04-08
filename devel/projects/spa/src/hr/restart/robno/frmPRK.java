@@ -471,6 +471,7 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
     zt.kill();
   }
   public void AfterCancelDetail() {
+    super.AfterCancelDetail();
     zts.kill();
   }
   public boolean DeleteCheckMaster() {

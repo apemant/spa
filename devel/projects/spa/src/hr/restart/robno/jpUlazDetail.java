@@ -42,6 +42,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.TableDataSet;
@@ -174,6 +175,8 @@ public class jpUlazDetail extends JPanel {
     public void nextTofocus(){
     }
     public void metToDo_after_lookUp(){
+      if (frm.raDetail.getMode() == 'B') return;
+      frm.updateHelper();
       MYmetToDo_after_lookUp();
     }
   };
@@ -212,8 +215,12 @@ public class jpUlazDetail extends JPanel {
     if ((frm.isTranzit || frm.isNar) && trans.isVisible())
       frm.afterGetArtikl();
 
-    jtfKOL.requestFocus();
-    jtfKOL.selectAll();
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        jtfKOL.requestFocus();
+        jtfKOL.selectAll();        
+      }
+    });
   }
 
   JLabel jLabel1 = new JLabel();
@@ -884,7 +891,7 @@ public class jpUlazDetail extends JPanel {
       frm.isFind=true;
     } else if (mode!='U') {
     	Calc.run(tds, "RAB = POR = ZT = 0");
-    	calc.run("DC = PRAB = NC = PMAR = VC = MC = KOL = 0");
+    	calc.run("DC_VAL = DC = PRAB = NC = PMAR = VC = MC = KOL = 0");
       frm.isFind=false;
     }
     else {
@@ -1010,8 +1017,8 @@ public class jpUlazDetail extends JPanel {
   }
 
   void calcFromINAB() {
-    BigDecimal kol = frm.getDetailSet().getBigDecimal("KOL");
-    if (kol.signum() == 0) return;
+    if (frm.getDetailSet().getBigDecimal("KOL").signum() == 0 ||
+        frm.getDetailSet().getBigDecimal("INAB").signum() == 0) return;
     
     calc.run("NC = INAB / KOL");
     calcFromNC();

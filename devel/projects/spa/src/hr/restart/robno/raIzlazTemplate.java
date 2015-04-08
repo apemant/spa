@@ -5182,11 +5182,11 @@ System.out.println("findCjenik::else :: "+sql);
 	    System.out.println("showing dah");
 	    
 	    if (Sklad.getDataModule().getRowCount() == 1) 
-	      dah.show(getDetailSet().getInt("CART"), null);
+	      dah.show(getDetailSet().getInt("CART"), null, getMasterSet().getInt("CPAR"));
 	    else {
 	      String cskl = getMasterSet().getString("CSKL");
 	      if (isOJ) cskl = getDetailSet().getString("CSKLART");
-	      dah.show(getDetailSet().getInt("CART"), cskl);
+	      dah.show(getDetailSet().getInt("CART"),  cskl, getMasterSet().getInt("CPAR"));
 	    }
       }
 	}

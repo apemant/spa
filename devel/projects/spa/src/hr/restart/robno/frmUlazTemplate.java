@@ -19,11 +19,13 @@ package hr.restart.robno;
 
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
+import hr.restart.baza.Sklad;
 import hr.restart.baza.Stdoku;
 import hr.restart.baza.VTZtr;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.dlgErrors;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.raUser;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraButton;
 import hr.restart.util.*;
@@ -142,6 +144,8 @@ public class frmUlazTemplate extends raMasterDetail {
 	java.sql.Timestamp dan;
 
 	dlgErrors errs;
+	
+	dlgArtHelper dah;
 
 	public java.lang.String[] key = Util.mkey;
 
@@ -204,6 +208,8 @@ public class frmUlazTemplate extends raMasterDetail {
 				.equalsIgnoreCase("D"));
 		
 		raDetail.calc.module("sta", stanjeSet);
+		
+		dah = new dlgArtHelper(raDetail);
 	}
 	
 	void keyActionShowKartica() {
@@ -542,6 +548,11 @@ public class frmUlazTemplate extends raMasterDetail {
 			return localDodatniDetailCheck();
 
 	}
+	
+	public void AfterCancelDetail() {
+	  super.AfterCancelDetail();
+	  if (dah.isShowing()) dah.hide();
+	}
 
 	//  public void AfterDeleteMaster() {
 	//    util.delSeq(srcString);
@@ -567,8 +578,29 @@ public class frmUlazTemplate extends raMasterDetail {
           raWebSync.active && raWebSync.isWeb(oldCART) && raWebSync.isWeb(getMasterSet().getString("CSKL"))) {
         raWebSync.updateStanje(getDetailSet().getInt("CART"), getMasterSet());
       }
+	  
+	  if (dah.isShowing()) dah.hide();
 	}
 
+	
+	public void updateHelper() {
+      if (frmParam.getParam("robno", "artHelper", "D", "Prikazati nabavne cijene artikla na izlazima (D,N)?", true).equalsIgnoreCase("D")) {
+        if (!raUser.getInstance().canAccessTable("doku", "P")) return;
+        
+        String docs = frmParam.getParam("robno", "artHelperDocs", "PON ROT RAC PRK KAL", "Vrste dokumenata za artHelper",true);
+        if (docs.indexOf(vrDok) < 0) return;
+        
+        System.out.println("showing dah");
+        //, getMasterSet().getInt("CPAR")
+        if (Sklad.getDataModule().getRowCount() == 1) 
+          dah.show(getDetailSet().getInt("CART"), null);
+        else {
+          String cskl = getMasterSet().getString("CSKL");
+          if (TD.isDocOJ(vrDok)) cskl = getDetailSet().getString("CSKLART");
+          dah.show(getDetailSet().getInt("CART"), cskl);
+        }
+      }
+    }
 	/*
 	 * void insertVTZavtr(String cvar) { if (cvar.equals("")) { return; } String
 	 * qStr = rdUtil.getUtil().getVTZavtrInsert(cvar); vl.execSQL(qStr);
