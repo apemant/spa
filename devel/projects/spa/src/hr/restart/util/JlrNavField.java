@@ -940,6 +940,7 @@ public class JlrNavField extends JraTextField {
       return lD.lookUP(frame,this.getRaDataSet(),this,textFields,colNames,currVisCols,currentLuMode);
     }
     catch (Exception ex) {
+      System.err.println("NAV " + getColumnName());
       ex.printStackTrace();
       return false;
     }
@@ -995,6 +996,8 @@ public class JlrNavField extends JraTextField {
       return lD.lookUP(frame,this.getRaDataSet(),this,textFields,colNames,currVisCols,currentLuMode);
     }
     catch (Exception ex) {
+      System.err.println("NAV " + getColumnName());
+      ex.printStackTrace();
       return false;
     }
   }
@@ -1016,6 +1019,7 @@ public class JlrNavField extends JraTextField {
       return lD.lookUP(null,this.getRaDataSet(),this,textFields,colNames,currVisCols,currentLuMode);
     }
     catch (Exception ex) {
+      System.err.println("NAV " + getColumnName());
       ex.printStackTrace();
       return false;
     }
