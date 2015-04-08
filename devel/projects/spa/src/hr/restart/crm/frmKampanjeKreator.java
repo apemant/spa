@@ -404,7 +404,7 @@ public class frmKampanjeKreator extends raFrame {
         st.setInt("KAMPANJA", zag.getInt("UID"));
         st.setString("STATUS", frmKampanje.OPEN);
       }
-      dM.getDataModule().getSeq().setDouble("BROJ", kuid);
+      dM.getDataModule().getSeq().setInt("BROJ", kuid);
     } while (!raTransaction.saveChangesInTransaction(new QueryDataSet[] {st, dM.getDataModule().getSeq()}) && ++retry < 5);
     
     if (retry == 5) raProcess.fail();

@@ -409,15 +409,15 @@ public class jpKontakt extends JPanel {
     if (mode != 'B') {
       updateList(true);
       Valid.getValid().setSeqFilter("CRM-kontakti");
-      int last = (int) dM.getDataModule().getSeq().getDouble("BROJ");
+      int last = (int) dM.getDataModule().getSeq().getInt("BROJ");
       for (dsp.first(); dsp.inBounds(); dsp.next())
         if (dsp.getInt("UID") < 0) {
           dsp.setInt("UID", ++last);
           dsp.setInt("CKLIJENT", frm.getRaQueryDataSet().getInt("CKLIJENT"));
           dsp.setString("STATUS", frmKampanje.CLOSED);
         }
-      if (last != dM.getDataModule().getSeq().getDouble("BROJ")) {
-        dM.getDataModule().getSeq().setDouble("BROJ", last);
+      if (last != dM.getDataModule().getSeq().getInt("BROJ")) {
+        dM.getDataModule().getSeq().setInt("BROJ", last);
         raTransaction.saveChanges(dM.getDataModule().getSeq());
       }
       raTransaction.saveChanges(dsp);

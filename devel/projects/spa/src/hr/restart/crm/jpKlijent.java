@@ -522,14 +522,14 @@ public class jpKlijent extends JPanel {
     if (mode != 'B') {
       updateList(true);
       Valid.getValid().setSeqFilter("CRM-kontosobe");
-      int last = (int) dM.getDataModule().getSeq().getDouble("BROJ");
+      int last = (int) dM.getDataModule().getSeq().getInt("BROJ");
       for (dsko.first(); dsko.inBounds(); dsko.next())
         if (dsko.getInt("COSOBE") < 0) {
           dsko.setInt("COSOBE", ++last);
           dsko.setInt("CKLIJENT", frm.getRaQueryDataSet().getInt("CKLIJENT"));
         }
-      if (last != dM.getDataModule().getSeq().getDouble("BROJ")) {
-        dM.getDataModule().getSeq().setDouble("BROJ", last);
+      if (last != dM.getDataModule().getSeq().getInt("BROJ")) {
+        dM.getDataModule().getSeq().setInt("BROJ", last);
         raTransaction.saveChanges(dM.getDataModule().getSeq());
       }
       raTransaction.saveChanges(dsko);

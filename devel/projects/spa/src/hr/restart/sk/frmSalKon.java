@@ -707,7 +707,7 @@ public class frmSalKon extends raMasterDetail {
           int next = Valid.getValid().findSeqInt(seqKey, false, false);
       	  int ext = Aus.getNumber(oldExt);
       	  if (ext == next - 1) {
-      		dm.getSeq().setDouble("BROJ", ext - 1);
+      		dm.getSeq().setInt("BROJ", ext - 1);
       		raTransaction.saveChanges(dm.getSeq());
       	  }
         }
@@ -741,7 +741,7 @@ public class frmSalKon extends raMasterDetail {
     	  int next = Valid.getValid().findSeqInt(seqKey, false, false);
     	  int ext = Aus.getNumber(getMasterSet().getString("EXTBRDOK"));
     	  if (ext >= next) {
-    		dm.getSeq().setDouble("BROJ", ext);
+    		dm.getSeq().setInt("BROJ", ext);
     		raTransaction.saveChanges(dm.getSeq());
     	  }
       }

@@ -608,7 +608,7 @@ public class raAutomatRacPartner extends raFrame {
     } while (Ugovors.next());
 //    val.setSeqFilter(cOpis);
 //System.out.println(cOpis+"-"+brdok+"---seq je "+ dm.getSeq().getString("OPIS"));
-    dm.getSeq().setDouble("BROJ", brdok-1);
+    dm.getSeq().setInt("BROJ", brdok-1);
     startFrame.getStartFrame().getStatusBar().finnishTask();
     return true;
   }

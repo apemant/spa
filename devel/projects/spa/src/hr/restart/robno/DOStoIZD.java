@@ -91,7 +91,7 @@ d2i.start();
      
       //seq!!!!
       Valid.getValid().setSeqFilter(seqO);
-      dM.getDataModule().getSeq().setDouble("BROJ", brdok);
+      dM.getDataModule().getSeq().setInt("BROJ", brdok);
 //      raTransaction.saveChangesInTransaction(new QueryDataSet[] {
 //          dos_doki,
 //          izd_doki,
