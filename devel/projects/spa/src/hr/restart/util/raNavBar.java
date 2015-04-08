@@ -69,7 +69,7 @@ public class raNavBar extends JToolBar {
     }
   };
   XYLayout tbLayout = new XYLayout();
-  XYConstraints xyc = new XYConstraints(0,0,400,raNavAction.ACTSIZE);
+  XYConstraints xyc = new XYConstraints(0,0,212+5*27,raNavAction.ACTSIZE);
 
   public raNavBar(int initOptionC) {
     setInitOption(initOptionC);
