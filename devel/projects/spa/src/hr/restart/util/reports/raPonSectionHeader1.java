@@ -17,12 +17,14 @@
 ****************************************************************************/
 package hr.restart.util.reports;
 
+import hr.restart.robno.Aut;
+
 
 public class raPonSectionHeader1 extends raReportSection {
 
   private String[] thisProps = new String[] {"BRDOK", "", "", "", "Yes", "No", "", "Yes", "500"};
   public raReportElement Line1;
-  private String[] Line1Props = new String[] {"", "", "", "60", "10800", "0", "", "", ""};
+  private String[] Line1Props = new String[] {"", "", "", "60", "10820", "0", "", "", ""};
   public raReportElement LabelJm;
   private String[] LabelJmProps = new String[] {"Jm", "", "6060", "100", "480", "240", "Normal",
      "Gray", "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Center"};
@@ -43,10 +45,10 @@ public class raPonSectionHeader1 extends raReportSection {
   private String[] LabelRbProps = new String[] {"Rb", "", "", "100", "400", "240", "Normal",
      "Gray", "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Center"};
   public raReportElement LabelKolicina;
-  private String[] LabelKolicinaProps = new String[] {"Koli\u010Dina", "", "6560", "100", "1380",
+  private String[] LabelKolicinaProps = new String[] {"Kolièina", "", "6560", "100", "1380",
      "240", "Normal", "Gray", "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Center"};
   public raReportElement Line2;
-  private String[] Line2Props = new String[] {"", "", "", "360", "10800", "0", "", "", ""};
+  private String[] Line2Props = new String[] {"", "", "", "360", "10820", "0", "", "", ""};
 
   public raPonSectionHeader1(raReportTemplate owner) {
     super(owner.template.getModel(raElixirProperties.SECTION_HEADER + 1));
@@ -74,7 +76,7 @@ public class raPonSectionHeader1 extends raReportSection {
   }
 
   private void modifyThis() {
-//    LabelSifra.setCaption(Aut.getAut().getIzlazCARTdep("Šifra", "Oznaka", "Barcode"));
+    LabelSifra.setCaption(Aut.getAut().getIzlazCARTdep("Šifra", "Oznaka", "Barcode"));
 //    resizeElement(this.LabelSifra, Aut.getAut().getIzlazCARTdep(750, 1400, 1400), this.LabelNaziv_artikla);
   }
 }
