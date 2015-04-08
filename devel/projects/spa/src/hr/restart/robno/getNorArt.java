@@ -16,6 +16,9 @@
 **
 ****************************************************************************/
 package hr.restart.robno;
+import hr.restart.baza.Condition;
+import hr.restart.baza.norme;
+
 import java.awt.Toolkit;
 
 import com.borland.dx.dataset.Column;
@@ -62,8 +65,7 @@ public class getNorArt {
         Sastojak.close();
         Sastojak.closeStatement();
       }
-      Sastojak.setQuery(new QueryDescriptor(dm.getDatabase1(),
-            aSS.getQuery4Sastojak(NorArt.getInt("CART"))));
+      norme.getDataModule().setFilter(Sastojak, Condition.equal("CARTNOR", NorArt.getInt("CART")));
       Sastojak.open();
   }
 
