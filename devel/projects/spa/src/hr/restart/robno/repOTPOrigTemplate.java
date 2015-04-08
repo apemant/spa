@@ -17,8 +17,11 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
+import hr.restart.util.reports.ReportModifier;
 import hr.restart.util.reports.raElixirProperties;
 import hr.restart.util.reports.raElixirPropertiesInstance;
+import hr.restart.util.reports.raElixirPropertyValues;
 import hr.restart.util.reports.raReportElement;
 import hr.restart.util.reports.raReportSection;
 import hr.restart.util.reports.raReportTemplate;
@@ -118,6 +121,12 @@ public abstract class repOTPOrigTemplate extends raReportTemplate {
   public repOTPOrigTemplate() {
     createReportStructure();
     setReportProperties();
+    
+    addReportModifier(new ReportModifier() {
+      public void modify() {
+        modifyThis();
+      }
+    });
   }
 
   public raReportSection createSections() {
@@ -208,5 +217,11 @@ public abstract class repOTPOrigTemplate extends raReportTemplate {
     SectionFooter0 = addSection(createSectionFooter0());
     PageFooter = addSection(createPageFooter());
     ReportFooter = addSection(createReportFooter());
+  }
+  
+  private void modifyThis() {
+    if (frmParam.getParam("robno", "detailBreak", "N",
+        "Dopustiti prelamanje detail-a na izlaznim dokumentima (D,N)?").equalsIgnoreCase("D"))
+      Detail.defaultAltererSect().setProperty(ep.KEEP_TOGETHER, raElixirPropertyValues.NO);
   }
 }
