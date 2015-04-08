@@ -8,6 +8,7 @@ import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.JraSplitPane;
+import hr.restart.swing.JraTextField;
 import hr.restart.swing.KeyAction;
 import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
@@ -15,6 +16,8 @@ import hr.restart.util.raFrame;
 import hr.restart.util.raJPTableView;
 
 import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -53,9 +56,12 @@ public class dlgArtHelper extends raFrame {
   int cart;
   
   KeyAction actESC;
+  JraTextField toFocus;
   
-  public dlgArtHelper(raFrame owner) {
+  public dlgArtHelper(raFrame owner, JraTextField focus) {
     super(raFrame.DIALOG, owner.getWindow());
+    
+    toFocus = focus;
     
     lab.setText("Ulazi na skladištu");
     JPanel labp = new JPanel(new BorderLayout());
@@ -77,6 +83,11 @@ public class dlgArtHelper extends raFrame {
     jptv2.getColumnsBean().setSaveName(getClass().getName());
     this.getContentPane().add(pan);
     this.pack();
+    getJdialog().addWindowListener(new WindowAdapter() {
+      public void windowOpened(WindowEvent e) {
+        toFocus.requestFocusLater();
+      }
+    });
   }
   
   public void show(int cart, String cskl) {
