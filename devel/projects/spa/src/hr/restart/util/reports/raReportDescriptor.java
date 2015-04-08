@@ -513,6 +513,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repNarudzbaV", "NAR", "D", ""},
       {"hr.restart.robno.repNarudzba2V", "NAR", "D", ""},
       {"hr.restart.robno.repPonuda", "PON", "D", ""},
+      {"hr.restart.robno.repPonudaNoi", "PON", "D", ""},
       {"hr.restart.robno.repPonudaNop", "PON", "D", ""},
       {"hr.restart.robno.repPonudaValSingle", "PON", "D", ""},
       {"hr.restart.robno.repPonuda2", "PON", "D", ""},
