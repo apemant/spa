@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -209,7 +210,13 @@ public class frmUlazTemplate extends raMasterDetail {
 		
 		raDetail.calc.module("sta", stanjeSet);
 		
-		dah = new dlgArtHelper(raDetail);
+	}
+	
+	public void setJPanelDetail(JPanel newJPanelDetail) {
+	  super.setJPanelDetail(newJPanelDetail);
+	  if (getJPanelDetail() instanceof jpUlazDetail)
+        dah = new dlgArtHelper(raDetail, ((jpUlazDetail) getJPanelDetail()).jtfKOL);
+      else dah = new dlgArtHelper(raDetail, null);
 	}
 	
 	void keyActionShowKartica() {

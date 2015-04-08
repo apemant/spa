@@ -926,7 +926,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 				.equalsIgnoreCase("D"));
 		setKumulativ(); // Siniša
 		
-		dah = new dlgArtHelper(raDetail);
+		dah = new dlgArtHelper(raDetail, DP.jtfKOL);
 	}
 
 	public void OpenWhatWeNeed() {
