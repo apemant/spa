@@ -46,6 +46,10 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -509,7 +513,30 @@ public class SecondChooser extends JraDialog {
 		ZaglavljeSet.enableDataSetEvents(false);
 		//ZaglavljeSetTmp.enableDataSetEvents(false);
 		DesniSet.enableDataSetEvents(false);
-		ArrayList al = new ArrayList();
+		
+		if (DesniSet.rowCount() == 1) 
+		  ZaglavljeSetTmp = hr.restart.util.Util.getNewQueryDataSet(aSS
+              .getQuery4ZaglavljeSet(docDs.getTableName(), DesniSet
+                      .getString("CSKL"), DesniSet.getString("GOD"), DesniSet
+                      .getString("VRDOK"), DesniSet.getInt("BRDOK")), true);
+		else {
+		  Map gbr = new HashMap();
+		  for (DesniSet.first(); DesniSet.inBounds(); DesniSet.next()) {
+		    Set brs = (Set) gbr.get(DesniSet.getString("GOD"));
+		    if (brs == null) gbr.put(DesniSet.getString("GOD"), brs = new HashSet());
+		    brs.add(new Integer(DesniSet.getInt("BRDOK")));
+		  }
+		  Condition gbrCond = Condition.none;
+		  for (Iterator i = gbr.keySet().iterator(); i.hasNext(); ) {
+		    String god = (String) i.next();
+		    gbrCond = gbrCond.or(Condition.equal("GOD", god).and(Condition.in("BRDOK", (Set) gbr.get(god))));
+		  }
+		  Condition other = Condition.whereAllEqual(new String[] {"CSKL", "VRDOK"}, DesniSet);
+		  String q = "SELECT * FROM " + docDs.getTableName() + " WHERE " + other.and(gbrCond);
+		  ZaglavljeSetTmp = Aus.q(q);
+		  System.out.println(q);
+		}
+		/*ArrayList al = new ArrayList();
 		for (DesniSet.first(); DesniSet.inBounds(); DesniSet.next()) {
 			al.add(new Integer(DesniSet.getInt("BRDOK")));
 		}
@@ -518,7 +545,7 @@ public class SecondChooser extends JraDialog {
 				.getQuery4ZaglavljeSet(docDs.getTableName(), DesniSet
 						.getString("CSKL"), DesniSet.getString("GOD"), DesniSet
 						.getString("VRDOK"), al), true);
-		/*
+		
 		 * System.out.println("ZaglavljeSetTmp.getInt(CPAR) " +
 		 * ZaglavljeSetTmp.getInt("CPAR"));
 		 * System.out.println("ZaglavljeSetTmp.isAssignedNull(CPAR) " +
