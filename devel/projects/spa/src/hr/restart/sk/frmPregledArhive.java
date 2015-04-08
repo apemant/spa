@@ -320,7 +320,7 @@ public class frmPregledArhive extends raMasterDetail {
           		  false, false);
 	    	int ext = Aus.getNumber(delStavka.getString("EXTBRDOK"));
 	    	if (ext == next - 1) {
-	    	  dm.getSeq().setDouble("BROJ", ext - 1);
+	    	  dm.getSeq().setInt("BROJ", ext - 1);
 	    	  raTransaction.saveChanges(dm.getSeq());
 	    	}
         }

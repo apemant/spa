@@ -321,8 +321,8 @@ public class WebSyncImpl_binom implements WebSyncInterface {
     saveDoc(dzg, dst, sta);
     
     Valid.getValid().setSeqFilter("WEBSYNC");
-    if (dM.getDataModule().getSeq().getDouble("BROJ") < pb.getID()) {
-      dM.getDataModule().getSeq().setDouble("BROJ" , pb.getID());
+    if (dM.getDataModule().getSeq().getInt("BROJ") < pb.getID()) {
+      dM.getDataModule().getSeq().setInt("BROJ" , pb.getID());
       dM.getDataModule().getSeq().saveChanges();
     }
     
@@ -376,7 +376,7 @@ public class WebSyncImpl_binom implements WebSyncInterface {
       
       Valid.getValid().setSeqFilter("WEBSYNC");
           
-      hr.binom.OrderBase ob = es.getOrders(apiKey, (int) dM.getDataModule().getSeq().getDouble("BROJ"));
+      hr.binom.OrderBase ob = es.getOrders(apiKey, (int) dM.getDataModule().getSeq().getInt("BROJ"));
       
       System.out.println(ob);
       

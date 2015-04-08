@@ -680,7 +680,7 @@ ST.prn(prenosPartner);
       }
     } while (prenosPartner.next());
 //    val.setSeqFilter(cOpis);
-    dm.getSeq().setDouble("BROJ", brdok-1);
+    dm.getSeq().setInt("BROJ", brdok-1);
     startFrame.getStartFrame().getStatusBar().finnishTask();
     return true;
   }
