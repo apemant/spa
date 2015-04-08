@@ -18,9 +18,6 @@
 package hr.restart.robno;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
-import hr.restart.util.VarStr;
-
-import java.util.ArrayList;
 
 public class allSelect {
   hr.restart.robno.Util rut = hr.restart.robno.Util.getUtil();
@@ -77,26 +74,6 @@ public class allSelect {
      return queryString;
   }
 
-  public String getS4raGRC(String god,String cskl) {
-
-     queryString = "select cskl,god,vrdok,brdok from rn where "+
-                "god = '"+god+"' and cskl='" +cskl +
-                "' and status='P'" ; //samo trenutno
-     ispisQuery();
-     return queryString;
-  }
-
-
-  public String getQuery4rCD4findZaglavlje(String god,String cskl,String vrdok,
-                                           int brdok ){
-     queryString = "select * from doki where "+
-            "god = '"    +god+"' "+
-            " and cskl='" +cskl+"' "+
-            " and vrdok='"+vrdok+"' "+
-            " and brdok=" +brdok;
-     ispisQuery();
-     return queryString;
-  }
 
   public String getQuery4rCD4findStavke(String god,String cskl,String vrdok,
                                            int brdok ){
@@ -210,23 +187,6 @@ public class allSelect {
     return queryString;
   }
 
-  public String getQuery4rEDBM4DeleteVTrabat(String cskl,
-                                             String vrdok,
-                                             String god,
-                                             int brdok,
-                                             int rbr1) {
-
-    queryString ="delete from vtrabat where " +
-         "cskl  = '" + cskl  +"' and "+
-         "vrdok = '" + vrdok +"' and "+
-         "god   = '" + god   +"' and "+
-         "brdok = "  + brdok +" and "+
-         "rbr="      + rbr1;
-
-    ispisQuery();
-    return queryString;
-  }
-
   public String getQuery4rEDBM4DeleteVTrabat() {
 
     queryString ="delete from vtrabat where " +
@@ -285,20 +245,6 @@ public class allSelect {
     return queryString;
   }
 
-  public String getQuery4rEDBM4SelectVTzavtr(String cskl,
-                                             String vrdok,
-                                             String god,
-                                             int brdok) {
-
-    queryString = "select * from vtzavtr where " +
-         "cskl = '"  + cskl +"' and "+
-         "vrdok = '" + vrdok+"' and "+
-         "god = '"   + god  +"' and "+
-         "brdok = "  + brdok;
-    ispisQuery();
-    return queryString;
-  }
-
   public String getQuery4rEDBM4DeleteVTzavtr(String cskl,
                                              String vrdok,
                                              String god,
@@ -328,175 +274,6 @@ public class allSelect {
          brdok+" as brdok,"+
          rbr1+" as rbr,rbr as lrbr, czt,  pzt, 0 as izt,0 as uiprpor, ztnazt,'' as brojkonta "+
          "from vshztr_ztr where cshzt = '"+cshzt+"'";
-    ispisQuery();
-    return queryString;
-  }
-
-  public String getQuery4rRSselectStdoku(String cskl,String god, int cart){
-    queryString = "select * from doku, stdoku  where " +
-          "doku.cskl=stdoku.cskl and doku.vrdok=stdoku.vrdok and "+
-          "doku.god=stdoku.god and doku.brdok=stdoku.brdok ";
-    if (!cskl.equals("")) {
-      queryString= queryString.concat(" and doku.cskl='"+cskl+"'");
-    }
-    if (!god.equals("")) {
-      queryString= queryString.concat(" and doku.god='"+god+"'");
-    }
-    if (cart!=0) {
-      queryString= queryString.concat(
-          " and stdoku.cart="+cart+" ");
-    }
-    queryString= queryString.concat(" order by cart");
-    ispisQuery();
-    return queryString;
-  }
-
-  public String getQuery4rRSselectStdoki(String cskl,String god,int cart){
-    queryString = "select * from doki, stdoki where " +
-          "doki.cskl=stdoki.cskl and doki.vrdok=stdoki.vrdok and "+
-          "doki.god=stdoki.god and doki.brdok=stdoki.brdok ";
-    if (!cskl.equals("")) {
-      queryString= queryString.concat(" and doki.cskl='"+cskl+"' ");
-    }
-    if (!god.equals("")) {
-      queryString= queryString.concat(" and doki.god='"+god+"' ");
-    }
-    if (cart!=0) {
-      queryString= queryString.concat(
-          " and stdoki.cart="+cart+" ");
-    }
-
-    queryString= queryString.concat("order by cart");
-    ispisQuery();
-    return queryString;
-  }
-
-  public String getQuery4rRSselectStmesklaUL(String cskl,String god,int cart){
-    queryString =
-         "select * from meskla, stmeskla where meskla.csklul= stmeskla.csklul "+
-         " and meskla.cskliz=stmeskla.cskliz and meskla.vrdok=stmeskla.vrdok "+
-         " and meskla.god=stmeskla.god and meskla.brdok=stmeskla.brdok and "+
-         "(meskla.vrdok='MES' or meskla.vrdok='MEU') ";
-    if (!cskl.equals("")) {
-      queryString= queryString.concat(
-          " and meskla.csklul='"+cskl+"' ");
-    }
-    if (cart!=0) {
-      queryString= queryString.concat(
-          " and stmeskla.cart="+cart+" ");
-    }
-
-    if (!god.equals("")) {
-      queryString= queryString.concat(" and meskla.god='"+god+"' ");
-    }
-      queryString= queryString.concat(" order by cart");
-    ispisQuery();
-    return queryString;
-  }
-
-  public String getQuery4rRSselectStmesklaIZ(String cskl,String god,int cart){
-    queryString =
-         "select * from meskla, stmeskla where meskla.csklul= stmeskla.csklul "+
-         " and meskla.cskliz=stmeskla.cskliz and meskla.vrdok=stmeskla.vrdok "+
-         " and meskla.god=stmeskla.god and meskla.brdok=stmeskla.brdok and "+
-         "(meskla.vrdok='MES' or meskla.vrdok='MEI') ";
-    if (!cskl.equals("")) {
-      queryString= queryString.concat(
-          " and meskla.cskliz='"+cskl+"' ");
-    }
-    if (!god.equals("")) {
-      queryString= queryString.concat(" and meskla.god='"+god+"'");
-    }
-    if (cart!=0) {
-      queryString= queryString.concat(
-          " and stmeskla.cart="+cart+" ");
-    }
-
-    queryString= queryString.concat(" order by cart");
-    ispisQuery();
-    return queryString;
-  }
-
-  public String getQuery4rRSselectAllStanje(String cskl,String god,int cart){
-    queryString =
-         "select * from stanje ";
-    if (!cskl.equals("") && !god.equals("")) {
-      queryString= queryString.concat(
-          "where cskl='"+cskl+"' and god='"+god+"'");
-    }
-    else if (!cskl.equals("") && god.equals("")) {
-      queryString= queryString.concat("where cskl='"+cskl+"'");
-    }
-    else if (cskl.equals("") && !god.equals("")) {
-      queryString= queryString.concat(" where god='"+god+"'");
-    }
-    if (cart!=0) {
-      queryString= queryString.concat(
-          " and stanje.cart="+cart+" ");
-    }
-
-    ispisQuery();
-    return queryString;
-  }
-
-  public String getQuery4rRS(String cskl,String god, int cart){
-    queryString  = "select artikli.vrart as avrart, stanje.*, sklad.vrzal as svrzal " +
-                   "from artikli,stanje,sklad where artikli.cart=stanje.cart and "+
-                   "sklad.cskl=stanje.cskl and stanje.cskl='"+cskl+
-                   "' and stanje.god='"+god+"' and cart = "+cart;
-    ispisQuery();
-    return queryString;
-  }
-
-  public String getQuery4rRSselectStdokuStanje(String cskl,String god){
-
-    queryString = "select doku.*,sklad.vrzal, stanje.*, stdoku.*, stdoku.kol as koldoc, "+
-         "stanje.kol as kolstanj, stanje.mc as mcstanj, stanje.vc as vcstanj, "+
-          "stanje.nc as ncstanj, stanje.zc as zcstanj, stdoku.nc as ncdoc, "+
-          "stdoku.vc as vcdoc, stdoku.mc as mcdoc "+
-          "from sklad,doku, stdoku ,stanje where " +
-          "doku.cskl=stdoku.cskl and doku.vrdok=stdoku.vrdok and "+
-          "doku.god=stdoku.god and doku.brdok=stdoku.brdok and stdoku.cskl=stanje.cskl "+
-          " and stdoku.cart=stanje.cart and sklad.cskl= stanje.cskl ";
-
-    if (!cskl.equals("")) {
-      queryString= queryString.concat(" and doku.cskl='"+cskl+"' ");
-    }
-    if (!god.equals("")) {
-      queryString= queryString.concat(" and doku.god='"+god+"' ");
-    }
-    ispisQuery();
-    return queryString;
-  }
-
-  public String getQuery4rRSselectStdokiStanje(String cskl,String god){
-    queryString = "select stanje.*, stdoki.*, stdoki.kol as koldoc, "+
-          "stanje.kol as kolstanj, stanje.mc as mcstanj, stanje.vc as vcstanj, "+
-          "stanje.nc as ncstanj, stanje.zc as zcstanj, stdoki.nc as ncdoc, "+
-          "stdoki.vc as vcdoc, stdoki.mc as mcdoc "+
-          "from doki, stdoki ,stanje where " +
-          "doki.cskl=stdoki.cskl and doki.vrdok=stdoki.vrdok and "+
-          "doki.god=stdoki.god and doki.brdok=stdoki.brdok and stdoki.cskl=stanje.cskl "+
-          " and stdoki.cart=stanje.cart ";
-    if (!cskl.equals("")) {
-      queryString= queryString.concat(" and doki.cskl='"+cskl+"' ");
-    }
-    if (!god.equals("")) {
-      queryString= queryString.concat(" and doki.god='"+god+"' ");
-    }
-    ispisQuery();
-    return queryString;
-  }
-  public String getQuery4ZaglavljeSet(String ime_table,String cskl,String god,String vrdok, ArrayList brdoks) {
-    VarStr var= new VarStr("(");
-    for (int i = 0;i<brdoks.size();i++){
-      var = var.append((Integer) brdoks.get(i)).append(",");
-    }
-      var.chopRight(1).append(")");
-
-    queryString = "select * from "+ime_table+" where " +
-          ime_table+".cskl='"+cskl+"' and "+ime_table+".vrdok='"+vrdok+"' and "+
-          ime_table+".god='"+god+"' and "+ime_table+".brdok in "+var;
     ispisQuery();
     return queryString;
   }
@@ -531,15 +308,4 @@ public class allSelect {
     return queryString;
   }
 
-  public String getQuery4Sastojak(int cartnor) {
-    queryString = "select * from norme where cartnor = "+cartnor;
-    ispisQuery();
-    return queryString;
-  }
-
-  public String getQuery4raPrenosVT (String imeTable,String keysrc,String value) {
-    queryString = "select * from "+imeTable+" where "+keysrc+"='"+value+"'";
-    ispisQuery();
-    return queryString;
-  }
 }
