@@ -924,7 +924,9 @@ public class Aus {
       c = c.getSuperclass();
       System.out.print(": " + c.getName());
     }
-    System.out.println(" = " + o);
+    if (o instanceof JComponent)
+      System.out.println(" = " + o + "  prefSize = " + ((JComponent) o).getPreferredSize());
+    else System.out.println(" = " + o);
   }
   
   public static void dumpColumns(ReadRow ds) {
