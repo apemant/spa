@@ -591,7 +591,7 @@ public class frmUlazTemplate extends raMasterDetail {
 
 	
 	public void updateHelper() {
-      if (frmParam.getParam("robno", "artHelper", "D", "Prikazati nabavne cijene artikla na izlazima (D,N)?", true).equalsIgnoreCase("D")) {
+      if (frmParam.getParam("robno", "artHelper", "N", "Prikazati nabavne cijene artikla na izlazima (D,N)?", true).equalsIgnoreCase("D")) {
         if (!raUser.getInstance().canAccessTable("doku", "P")) return;
         
         String docs = frmParam.getParam("robno", "artHelperDocs", "PON ROT RAC PRK KAL", "Vrste dokumenata za artHelper",true);
