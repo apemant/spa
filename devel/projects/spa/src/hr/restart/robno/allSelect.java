@@ -245,6 +245,20 @@ public class allSelect {
     return queryString;
   }
 
+  public String getQuery4rEDBM4SelectVTzavtr(String cskl,
+                                             String vrdok,
+                                             String god,
+                                             int brdok) {
+
+    queryString = "select * from vtzavtr where " +
+         "cskl = '"  + cskl +"' and "+
+         "vrdok = '" + vrdok+"' and "+
+         "god = '"   + god  +"' and "+
+         "brdok = "  + brdok;
+    ispisQuery();
+    return queryString;
+  }
+
   public String getQuery4rEDBM4DeleteVTzavtr(String cskl,
                                              String vrdok,
                                              String god,
