@@ -727,6 +727,8 @@ public class frmIzvodi extends raMasterDetail {
   }
 
   public boolean ValidacijaDetail(char mode) {
+    getDetailSet().setString("BROJDOK", getDetailSet().getString("BROJDOK").trim());
+    
     if (vl.isEmpty(jpDetail.kcGroup.getJlrBROJKONTA()) ||
         vl.isEmpty(jpDetail.kcGroup.getJlrCORG())) {
       return false;
@@ -1089,7 +1091,7 @@ public class frmIzvodi extends raMasterDetail {
     String vrdok = getDetailSet().getString("VRDOK");
     if (vrdok.equals(""))
       return;
-    String brojdok = getDetailSet().getString("BROJDOK");
+    String brojdok = getDetailSet().getString("BROJDOK").trim();
     String opis = "";
     if (jpDetail.rcVRDOK.getSelectedIndex() == 3)
       opis = "Kompenzacija po ".concat(brojdok);
