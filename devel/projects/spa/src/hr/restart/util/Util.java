@@ -1989,7 +1989,7 @@ System.out.println("desetice "+inTxtVal.substring(9,11));
 
     cal.set(cal.SECOND, 59);
 
-    cal.set(cal.MILLISECOND, 0);
+    cal.set(cal.MILLISECOND, 999);
 
     return new Timestamp(cal.getTime().getTime());
 
