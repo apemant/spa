@@ -396,6 +396,10 @@ public class frmKnjizenje extends JraDialog implements ResetEnabled {
   public String getDatumDoSQL() {
     return " < '"+new java.sql.Date(Util.getUtil().addDays(dataSet.getTimestamp("DATUMDO"),1).getTime()).toString()+"'";
   }
+  
+  public Condition datumCond(String datCol) {
+  	return Condition.from(datCol, Util.getUtil().addDays(dataSet.getTimestamp("DATUMDO"), 1)).not();
+  }
 
   public raStatusBar getStatus() {
     raStatusBar status;
