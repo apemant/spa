@@ -916,10 +916,10 @@ public class Util {
 
   public static com.borland.dx.sql.dataset.QueryDataSet getSkladFromCorg() {
     if (skladFromCorg==null) {
-      skladFromCorg = Sklad.getDataModule().getFilteredDataSet(OrgStr.getCorgsKnjigCond());
+      skladFromCorg = Sklad.getDataModule().getFilteredDataSet(Aus.getKnjigCond());
       hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
         public void knjigChanged(String a1, String a2) {
-        	Sklad.getDataModule().setFilter(skladFromCorg, OrgStr.getCorgsKnjigCond());
+        	Sklad.getDataModule().setFilter(skladFromCorg, Aus.getKnjigCond());
           skladFromCorg.open();
         }
       });
