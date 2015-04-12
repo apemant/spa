@@ -63,12 +63,6 @@ public class frmShemeRobno  extends raMasterDetail {
     }
   };
   
-  JEditorPane upd = new JEditorPane() {
-    public boolean getScrollableTracksViewportWidth() {
-      return true;
-    }
-  };
-  
   JEditorPane stav = new JEditorPane() {
     public boolean getScrollableTracksViewportWidth() {
       return true;
@@ -124,17 +118,12 @@ public class frmShemeRobno  extends raMasterDetail {
 		szag.setPreferredSize(new Dimension(500, 200));
 		szag.setViewportView(zag);
 		
-		JraScrollPane supd = new JraScrollPane();
-		supd.setPreferredSize(new Dimension(500, 200));
-		supd.setViewportView(upd);
-		
 		JraScrollPane sstav = new JraScrollPane();
 		sstav.setPreferredSize(new Dimension(500, 200));
 		sstav.setViewportView(stav);
 		
 		JTabbedPane tabs = new JTabbedPane();
 		tabs.addTab("Zaglavlja", szag);
-		tabs.addTab("Ažuriranja", supd);
 		tabs.addTab("Stavke", sstav);
 		
 		JPanel ret = new JPanel(new BorderLayout());
@@ -211,11 +200,9 @@ public class frmShemeRobno  extends raMasterDetail {
 	public void masterSet_navigated(NavigationEvent e) {
 	  if (getMasterSet().rowCount() == 0) {
 	    zag.setText("");
-	    upd.setText("");
 	    stav.setText("");
 	  } else {
 	    zag.setText(getMasterSet().getString("QZAG"));
-	    upd.setText(getMasterSet().getString("QUPD"));
 	    stav.setText(getMasterSet().getString("QSTAV"));
 	  }
 	}
