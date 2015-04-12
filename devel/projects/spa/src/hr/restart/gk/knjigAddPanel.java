@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.gk;
 
+import hr.restart.baza.Condition;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraButton;
@@ -29,6 +30,7 @@ import hr.restart.util.sysoutTEST;
 import hr.restart.zapod.OrgStr;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -64,14 +66,15 @@ public class knjigAddPanel extends JPanel {
   private JraButton jbGetCorg = new JraButton();
   private JraScrollPane jSP = new JraScrollPane();
   private hr.restart.robno.TypeDoc TD = hr.restart.robno.TypeDoc.getTypeDoc();
-  private java.util.ArrayList AulazniVrdok = new java.util.ArrayList();
-  private java.util.ArrayList AizlazniVrdok = new java.util.ArrayList();
-  private java.util.ArrayList AfinancVrdok = new java.util.ArrayList();
-  private java.util.ArrayList BfinancVrdok = new java.util.ArrayList();  
-  private java.util.ArrayList AmesklaVrdokUl = new java.util.ArrayList();
-  private java.util.ArrayList AmesklaVrdokIZ = new java.util.ArrayList();
-  private java.util.ArrayList Askladista = new java.util.ArrayList();
-  private java.util.ArrayList Acorgovi = new java.util.ArrayList();
+  private HashSet Avrdok = new HashSet();
+  private HashSet AulazniVrdok = new HashSet();
+  private HashSet AizlazniVrdok = new HashSet();
+  private HashSet AfinancVrdok = new HashSet();
+  private HashSet BfinancVrdok = new HashSet();  
+  private HashSet AmesklaVrdokUl = new HashSet();
+  private HashSet AmesklaVrdokIZ = new HashSet();
+  private HashSet Askladista = new HashSet();
+  private HashSet Acorgovi = new HashSet();
   private int statusUI = -1;
 
 
@@ -220,6 +223,7 @@ public class knjigAddPanel extends JPanel {
   }
 
   private void clearAllArrayList(){
+  	Avrdok.clear();
     AulazniVrdok.clear();
     AizlazniVrdok.clear();
     AfinancVrdok.clear();
@@ -254,6 +258,7 @@ public class knjigAddPanel extends JPanel {
     else if (TD.isDocOJ(vrdok) && TD.isDocUlaz(vrdok)) {
       BfinancVrdok.add(vrdok);
     }    
+    Avrdok.add(vrdok);
   }
 
   public ArrayList getArrayListVrdok(){
@@ -278,6 +283,14 @@ System.out.println(sqlupit);
       }
   	return al;
   }
+    
+  public HashSet getVrdoks() {
+  	return Avrdok;
+  }
+  
+  public Condition vrdokCond() {
+  	return Condition.in("VRDOK", getVrdoks());
+  }
   
   public ArrayList getArrayListSklad(){
   	String knjig = hr.restart.zapod.OrgStr.getOrgStr().getKNJCORG(true);
@@ -295,6 +308,14 @@ System.out.println(sqlupit);
   	return al;  	
   }
   
+  public HashSet getSklads() {
+  	return Askladista;
+  }
+  
+  public Condition skladCond() {
+  	return Condition.in("CSKL", getSklads());
+  }
+  
   public ArrayList getArrayListOrgstr(){
   	
   	ArrayList al = new ArrayList();
@@ -304,18 +325,20 @@ System.out.println(sqlupit);
       	al.add(jlrCORG.getText());
       }
   	return al;  	
-  	
-  
-  
-  
   }
   
+  public HashSet getOrgs() {
+  	return Acorgovi;
+  }
   
-  
+  public Condition corgCond() {
+  	return Condition.in("CSKL", getOrgs());
+  }
   
   private void prepareArrayList() {
     clearAllArrayList();
 // raspodjela VRDOK u ARRAYLISTU
+    
     if (jlrDok.getText().equalsIgnoreCase("")) {    // aako je za sve dokumente
       jlrDok.getRaDataSet().open();
       DataSetView  dsw = jlrDok.getRaDataSet().cloneDataSetView();
@@ -328,7 +351,8 @@ System.out.println(sqlupit);
       ALadd(jlrDok.getText());
     }
 // raspodjela skladista
-    if (jlrCSKL.getText().equalsIgnoreCase("")) {
+    Askladista.addAll(getArrayListSklad());
+/*    if (jlrCSKL.getText().equalsIgnoreCase("")) {
       QueryDataSet dsw = hr.restart.robno.Util.getSkladFromCorg();
       for (dsw.first();dsw.inBounds();dsw.next()) {
         Askladista.add(dsw.getString("CSKL"));
@@ -336,14 +360,15 @@ System.out.println(sqlupit);
     }
     else {
       Askladista.add(jlrCSKL.getText());
-    }
+    }*/
+    Acorgovi.addAll(getArrayListOrgstr());
 // raspodjela orgjedinica
-    if (jlrCORG.getText().equalsIgnoreCase("")) {
+    /*if (jlrCORG.getText().equalsIgnoreCase("")) {
     	Acorgovi.addAll(OrgStr.getCorgKnjigSet());
     }
     else {
       Acorgovi.add(jlrCORG.getText());
-    }
+    }*/
   }
 
   private hr.restart.util.VarStr UzagradiAL(java.util.ArrayList al) {
@@ -365,7 +390,7 @@ System.out.println(sqlupit);
     System.out.println(naziv+" ---- Kraj");
   }
 
-  private void prepareSqls() {
+/*  private void prepareSqls() {
     hr.restart.util.VarStr queryUL = new hr.restart.util.VarStr();
     hr.restart.util.VarStr queryULskl = new hr.restart.util.VarStr();
     hr.restart.util.VarStr queryULOJ = new hr.restart.util.VarStr();    
@@ -448,11 +473,11 @@ System.out.println(queryULOJ);
     System.out.println(dodajUlaz);
     System.out.println(dodajUlazOJ);
 
-  }
+  }*/
 
   public void setupString() {
     prepareArrayList();
-    prepareSqls();
+    //prepareSqls();
   
 //    System.out.println("setupString() isUlaz "+isUlaz);
 //    System.out.println("setupString() isIzlaz "+isIzlaz);
