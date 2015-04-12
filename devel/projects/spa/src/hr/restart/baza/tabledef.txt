@@ -3995,7 +3995,6 @@ CVRDOK;char;200;;;Kriterij vrste dok
 CCSKL;char;200;;;Kriterij cskl/corg
 ZAGKEY;char;120;;;Kolone kljuèa zag
 QZAG;char;2000;;;Skripta dohvata zaglavlja
-QUPD;char;2000;;;Skripta azuriranja zaglavlja
 QSTAV;char;2000;;;Skripta dohvata stavki
 
 
@@ -4467,7 +4466,7 @@ CKEY;char;60;pkey;;Kljuè izvornog dokumenta;30
 TEXTFAK;char;4000;;;Tekst stavke;30
 
 $Skripte
-CKEY;char;12;pkey;;Kljuè skripte
+CKEY;char;30;pkey;;Kljuè skripte
 TEKST;char;4000;;;Tekst skripte
 
 $vtzavtr
