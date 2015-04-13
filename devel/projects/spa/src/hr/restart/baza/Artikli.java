@@ -18,7 +18,6 @@
 package hr.restart.baza;
 
 import com.borland.dx.dataset.DataModule;
-import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Artikli extends KreirDrop implements DataModule {
@@ -45,12 +44,12 @@ public class Artikli extends KreirDrop implements DataModule {
     return artikliaktiv;
   }
   
-  public void fixSort() {
+  /*public void fixSort() {
     if (artikliaktiv.getSort() == null ||
         artikliaktiv.getSort().getKeys().length != 1 ||
         !artikliaktiv.getSort().getKeys()[0].equalsIgnoreCase("CART"))
       artikliaktiv.setSort(new SortDescriptor(new String[] {"CART"}));
-  }
+  }*/
 
   public boolean isAutoRefresh() {
     return true;
