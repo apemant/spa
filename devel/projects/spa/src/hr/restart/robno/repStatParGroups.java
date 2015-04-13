@@ -119,6 +119,14 @@ public class repStatParGroups implements raReportData { //sg.com.elixir.reportwr
     return isp.getNazPar();
   }
 
+  public String getAgent() {
+  	return isp.getAgent();
+  }
+  
+  public String getNazAgent() {
+  	return isp.getNazAgent();
+  }
+
   public String getCkup() {
     return isp.getCkup();
   }

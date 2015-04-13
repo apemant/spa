@@ -142,7 +142,7 @@ public class ispStatPar extends raPanStats {
         equalsIgnoreCase("D")) {
       JasperHook jh = new JasperHook() {
         public void adjustDesign(String reportName, JasperDesign design) {
-          adjustJasper(design);
+          adjustJas(design);
         }
       };
       getRepRunner().addJasperHook("hr.restart.robno.repStatPar", jh);
@@ -154,10 +154,20 @@ public class ispStatPar extends raPanStats {
       getRepRunner().addJasperHook("hr.restart.robno.repStatParGroups3", jh);
       getRepRunner().addJasperHook("hr.restart.robno.repStatParDetGroups", jh);
       getRepRunner().addJasperHook("hr.restart.robno.repStatsMonths", jh);
+    } else {
+    	addHook("hr.restart.robno.repStatPar");
+    	addHook("hr.restart.robno.repStatParOne");
+    	addHook("hr.restart.robno.repStatParDet");
+    	addHook("hr.restart.robno.repStatParDetPJ");
+    	addHook("hr.restart.robno.repStatParGroups");
+    	addHook("hr.restart.robno.repStatParGroups2");
+    	addHook("hr.restart.robno.repStatParGroups3");
+    	addHook("hr.restart.robno.repStatParDetGroups");
     }
   }
   
-  void adjustJasper(JasperDesign jas) {
+  void adjustJas(JasperDesign jas) {
+  	adjustJasper(jas);
     adjustBand(jas.getColumnHeader());
     adjustBand(jas.getDetail());
     adjustBand(jas.getColumnFooter());
@@ -1052,12 +1062,15 @@ public class ispStatPar extends raPanStats {
 
     if (!getCkup().equals("")) ckupca = "and doki.cpar='" + getCkup() + "' ";
     if (!getPjCkup().equals("")) pjKupca = "and doki.pj='" + getPjCkup() + "' ";
+    
+    String cagenta = "";
+    if (getAgent().length() > 0) cagenta = "and doki.cagent=" + getAgent() + " ";
 
     selStr += " from doki,stdoki,artikli WHERE doki.cskl = stdoki.cskl " +
             "AND doki.vrdok = stdoki.vrdok AND doki.god = stdoki.god " + 
             "AND doki.brdok = stdoki.brdok AND stdoki.cart = artikli.cart " +
             "AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') " + 
-            exInClude + ckupca + pjKupca + artikliFilter + carting + 
+            exInClude + cagenta + ckupca + pjKupca + artikliFilter + carting + 
             " and doki.datdok between " + pdat + " " + "and " + zdat;
 
     //if ()
@@ -1170,7 +1183,7 @@ public class ispStatPar extends raPanStats {
     } else
       System.out.println("Not implemented for function yet....");
   }
-  
+    
   public void cancelPress() {
     doubleClicked = false;
     repCache = null;

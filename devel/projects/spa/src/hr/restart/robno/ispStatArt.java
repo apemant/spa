@@ -22,6 +22,7 @@ import hr.restart.baza.dM;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
+import hr.restart.util.reports.raReportDescriptor;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.event.ActionEvent;
@@ -168,12 +169,15 @@ public class ispStatArt extends raPanStats {
 
     if (!getCkup().equals("")) ckupca = "and doki.cpar='" + getCkup() + "' ";
     if (!getPjCkup().equals("")) pjKupca = "and doki.pj='" + getPjCkup() + "' ";
+    
+    String cagenta = "";
+    if (getAgent().length() > 0) cagenta = "and doki.cagent=" + getAgent() + " ";
 
     selStr += " from doki,stdoki,artikli WHERE doki.cskl = stdoki.cskl " +
             "AND doki.vrdok = stdoki.vrdok AND doki.god = stdoki.god " + 
             "AND doki.brdok = stdoki.brdok AND stdoki.cart = artikli.cart " +
             "AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') " + 
-            exInClude + ckupca + pjKupca + artikliFilter + carting + 
+            exInClude + cagenta + ckupca + pjKupca + artikliFilter + carting + 
             " and doki.datdok between " + pdat + " " + "and " + zdat;
 
     //if ()
@@ -351,7 +355,7 @@ public class ispStatArt extends raPanStats {
       else
         sort = getSorter();
       //  System.out.println("before");
-      reportSet = sgQuerys.getSgQuerys().getIspStatArtDS(newDateP, newDateZ, sort, getCskl(), getCkup(), getPjCkup(), getCpar(), artikliFilter, carting, fieldSet.getString("CORG"));//ut.getNewQueryDataSet(qStr);
+      reportSet = sgQuerys.getSgQuerys().getIspStatArtDS(newDateP, newDateZ, sort, getCskl(), getAgent(), getCkup(), getPjCkup(), getCpar(), artikliFilter, carting, fieldSet.getString("CORG"));//ut.getNewQueryDataSet(qStr);
       //  System.out.println("after");
       //    syst.prn(reportSet);
       checkClosing();
@@ -360,7 +364,7 @@ public class ispStatArt extends raPanStats {
 
       /** @todo detaljni ispis */
       if (jpKup.isEmpty()) {
-        reportSetDet = sgQuerys.getSgQuerys().getIspStatArtDetailsDS(newDateP, newDateZ, sort, getCskl(), getCkup(), getCpar(), artikliFilter, carting, fieldSet.getString("CORG"));
+        reportSetDet = sgQuerys.getSgQuerys().getIspStatArtDetailsDS(newDateP, newDateZ, sort, getCskl(), getAgent(), getCkup(), getCpar(), artikliFilter, carting, fieldSet.getString("CORG"));
       } else {
         //    System.out.println("ubijam detaljni dataset");
         reportSetDet = null;
@@ -417,7 +421,7 @@ public class ispStatArt extends raPanStats {
       		"and doki.vrdok=stdoki.vrdok and stdoki.cart = "+cart+
       		" and doki.datdok between "+newDateP+" and "+newDateZ;*/
       
-      String ckupca = " ", pjKupca = " ", dobart=" ", caprDobart="", sklad="";
+      String ckupca = " ", pjKupca = " ", dobart=" ", caprDobart="", sklad="", cagenta="";
 //    System.out.println("CPAR = " + cpart);
     if (!getCkup().equals("")) ckupca = "and doki.cpar='" + getCkup() + "' ";
     if (!getPjCkup().equals("")) pjKupca = "and doki.pj='" + getPjCkup() + "' ";
@@ -426,6 +430,7 @@ public class ispStatArt extends raPanStats {
       ckupca = ckupca + "and dob_art.cpar = '" + getCpar() + "' and dob_art.cart = stdoki.cart ";
       caprDobart = ", dob_art.cpar as dcp ";
     }
+    if (getAgent().length() > 0) cagenta = "and doki.cagent="+getAgent()+" ";
     
     if (getCskl().equals("")){
       
@@ -486,7 +491,7 @@ public class ispStatArt extends raPanStats {
 	 "and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok AND stdoki.cart = artikli.cart "+
 	 " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','INM','INV','IZD','OTP') "+
 	 exInClude+
-	 ckupca+
+	 cagenta+ckupca+
 	 pjKupca+
 	 " and stdoki.cart = "+cart+" "+
 	 " and doki.datdok between "+
@@ -769,6 +774,12 @@ public class ispStatArt extends raPanStats {
       		ds.getInt("BRDOK"), ds.getString("GOD"),
       		Integer.toString(ds.getInt("CART")));
     }
+  }
+  
+  public void addHooks() {
+  	super.addHooks();
+  	addHook("hr.restart.robno.repStatArtDva");
+  	addHook("hr.restart.robno.repStatArtDetaljno");
   }
 
   public boolean isPoRacunima() {

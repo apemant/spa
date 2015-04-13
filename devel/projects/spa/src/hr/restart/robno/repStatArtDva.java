@@ -212,6 +212,14 @@ public class repStatArtDva implements raReportData {
   public String getNazPar() {
     return isa2.getNazPar();
   }
+  
+  public String getAgent() {
+  	return isa2.getAgent();
+  }
+  
+  public String getNazAgent() {
+  	return isa2.getNazAgent();
+  }
 
   public String getCkup() {
     return isa2.getCkup();

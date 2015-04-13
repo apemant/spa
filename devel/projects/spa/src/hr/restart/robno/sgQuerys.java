@@ -23,6 +23,7 @@ import hr.restart.baza.Pjpar;
 import hr.restart.baza.dM;
 import hr.restart.sk.PartnerCache;
 import hr.restart.util.Aus;
+import hr.restart.util.HashDataSet;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.zapod.OrgStr;
@@ -616,303 +617,8 @@ System.out.println("QS : " + queryString);
     return queryString;
   }
 
-//  public QueryDataSet getProvjeraString(String skladiste, String godina) {
-//    QueryDataSet provjeraOld = ut.getNewQueryDataSet("select stanje.*,  sklad.vrzal from stanje, sklad where cskl='" +
-//                                        skladiste +
-//                                        "' and god='" +
-//                                        godina +
-//                                        "' and stanje.cskl=sklad.cskl and stanje.god=sklad.godina");
-//    return provjeraOld;
-//  }
-
-//  public String getStringIspPOS_Total_UNION(String rate){
-//    String queryString =  "select max(POS.vrdok) as vrsta, max(NACPL.naznacpl) as naziv, sum(RATE.irata) as iznos, max(NACPL.cnacpl) as npl, '' as banka "+
-//                          "from NACPL, RATE, POS "+
-//                          "where "+rut.getDoc("POS", "RATE")+" and RATE.cnacpl=NACPL.cnacpl "+rate+
-//                          " group by RATE.cnacpl "+
-//                          "UNION "+
-//                          "select max(POS.vrdok) as vrsta, max(BANKE.naziv) as naziv, sum(RATE.irata) as iznos, max(NACPL.CNACPL) as npl, max(RATE.cbanka) as banka "+
-//                          "from POS, NACPL, BANKE, RATE "+
-//                          "where RATE.cnacpl=NACPL.cnacpl and NACPL.fl_cek='D' and RATE.cbanka=BANKE.cbanka "+rate+
-//                          " group by RATE.cbanka "+
-//                          "UNION "+
-//                          "select max(POS.vrdok) as vrsta, max(KARTICE.NAZIV) as naziv, sum(RATE.irata) as iznos, max(NACPL.CNACPL) as npl, max(RATE.cbanka) as banka "+
-//                          "from POS, NACPL, KARTICE, RATE "+
-//                          "where RATE.cnacpl=NACPL.cnacpl and NACPL.fl_kartica='D' and RATE.cbanka=KARTICE.cbanka "+rate+
-//                          " group by RATE.cbanka order by 4,5";
-//    return queryString;
-//  }
-
-//  public String getStringIspPOS_Total_POS(String pos){
-//    String queryString =  "select max(STPOS.vrdok) as vrdok, max(STPOS.cart) as cart, max(STPOS.cart1) as cart1, " +
-//                          "max(STPOS.bc) as bc, max(STPOS.nazart) as nazart,max(STPOS.jm) as jm, sum(STPOS.kol) as kol "+
-//                          "from STPOS, POS "+
-//                          "where "+ rut.getDoc("POS", "STPOS") + pos+
-//                          " group by STPOS.CART";
-//
-//  //                          "select max(STPOS.cart), max(STPOS.nazart), sum(STPOS.kol) from STPOS, POS where "
-//  //                          + POSRATE + pos +" group by STPOS.CART";
-//    return queryString;
-//  }
-//  /**
-//   * Geter koji vraèa malo veèi string.<br>
-//   * Koristi se u klasi <b>ispStatPar</b> i služi za slaganje rezSet-a koji prikazuje kupce i partnere<br>
-//   * s njihovim ukupnim prometom složenim po raèunima, ili ukupno za odabrano razdoblje.<br>
-//   * @param dateP Poèetni datum razdoblja za koji se traži naj kupac (default - prvi dan u tekuèoj godini)
-//   * @param dateZ Krajnji datum razdoblja za koji se traži naj kupac (default - današnji dan)
-//   * @param qDodatakNaStr dodatak kojim se odreðuju neke sitnice - vidi <b>ispStatPar</b>
-//   * @return <b>queryString</b>
-//   * @see <b>ispStatPar</b>
-//   */
-
-//  public String getStringIspStatPar(String dateP, String dateZ, String qDodatakNaStr) {
-//    String queryString ="select max(partneri.cpar) as ckupac, max(partneri.nazpar) as nazkupac, " +
-//                        "max(doki.cpar) as cpar, max(doki.brdok) as brdok, max(doki.cskl) as cskl, max(doki.god) as god, " +
-//                        "sum(stdoki.ineto) as iznos, sum(stdoki.uirab) as rabat, sum(stdoki.iprodbp) as neto, sum(stdoki.por1) as pdv, " +
-//                        "sum(stdoki.por2) as por2, sum(stdoki.por3) as por3, " +
-//                        "sum(stdoki.iprodsp) as ukupno from partneri, doki, stdoki " +
-//                        "where partneri.cpar=doki.cpar and doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok " +
-//                        "and doki.datdok between " + dateP + " and " + dateZ + " " +
-//                        qDodatakNaStr;
-//    return queryString;
-//  }
-
-  public QueryDataSet getIspStatParDetailsDS(String dateP, String dateZ, String summum, String cskl, String ckup, String pjkup, String cpartner, String corg){
-    String ckupca = " ", dobart=" ", caprDobart="", pjKupca = " ";
-    if (!ckup.equals("")) ckupca = "and doki.cpar='" + ckup + "' ";
-    if (!pjkup.equals("")) pjKupca = "and doki.pj='" + pjkup + "' ";
-    if (!cpartner.equals("")){
-      dobart = ", dob_art ";
-      ckupca = ckupca + "and dob_art.cpar = '" + cpartner + "' and dob_art.cart = stdoki.cart ";
-      caprDobart = ", dob_art.cpar as dcp";
-    }
-    
-    Condition cin = OrgStr.getCorgsCond("CSKL", corg).qualified("doki");
-    String inq = cin == Condition.nil ? "1=1" : cin.toString();
-
-   /* String inq;
-    StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
-    if (corgs.rowCount() == 0) inq = "1=1";
-    else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
-    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
-    hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
-    String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+" AND DOKI.CSKL = '"+cskl+"'))";
-
-    String queryString ="select partneri.cpar as cpar, partneri.nazpar, doki.brdok, stdoki.cart, stdoki.cart1, "+
-                        "stdoki.bc, stdoki.nazart, stdoki.jm, stdoki.kol, "+
-                        "stdoki.inab, 0.0 as ruc, 0.0 as rucp, stdoki.iprodbp, " +
-                        "0.0 as por, " +
-                        "stdoki.iprodsp"+caprDobart+" from doki, stdoki, partneri " +dobart +
-                        "where  doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok " +
-//                        " AND doki.vrdok != 'PON' AND doki.vrdok != 'NDO' AND doki.vrdok != 'NKU' AND stdoki.vrdok != 'RNL' AND stdoki.vrdok != 'REV' AND stdoki.vrdok != 'PRV' "+
-                        " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') "+
-                        "and partneri.cpar=doki.cpar and doki.datdok between " + dateP + " and " + dateZ + " " + ckupca + pjKupca +
-                        "and doki.cskl='" + cskl + "' "+ exInClude;//"' and doki.vrdok in ('ROT','RAC','POD')";
-
-    System.out.println("---------------------\n"+queryString+"\n---------------------");
-
-    QueryDataSet ts = null;
-    try {
-      ts = ut.getNewQueryDataSet(queryString);
-    }
-    catch (Exception ex) {
-      ex.printStackTrace();
-      return null;
-    }
-    if (ts.rowCount() == 0) return null;
-
-//    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
-//    syst.prn(ts);
-
-    Column ruc =dm.getStdoki().getColumn("INAB").cloneColumn();
-    ruc.setColumnName("RUC");
-    ruc.setCaption("RUC");
-    Column rucp =dm.getStdoki().getColumn("INAB").cloneColumn();
-    rucp.setColumnName("RUCP");
-    rucp.setCaption("% RUC");
-    Column por =dm.getStdoki().getColumn("INAB").cloneColumn();
-    por.setColumnName("POR");
-    por.setCaption("Porez");
-    Column dcp = dm.createIntColumn("DCP");
-
-    QueryDataSet stds = new QueryDataSet();
-    stds.setColumns(new Column[] {
-      dm.getDoki().getColumn("CPAR").cloneColumn(),
-      dm.getPartneri().getColumn("NAZPAR").cloneColumn(),
-      dm.getDoki().getColumn("BRDOK").cloneColumn(),
-      dm.getStdoki().getColumn("CART").cloneColumn(),
-      dm.getStdoki().getColumn("CART1").cloneColumn(),
-      dm.getStdoki().getColumn("BC").cloneColumn(),
-      dm.getStdoki().getColumn("NAZART").cloneColumn(),
-      dm.getStdoki().getColumn("JM").cloneColumn(),
-      dm.getStdoki().getColumn("KOL").cloneColumn(),
-      dm.getStdoki().getColumn("INAB").cloneColumn(),
-      ruc,
-      rucp,
-      dm.getStdoki().getColumn("IPRODBP").cloneColumn(),
-      por,
-      dm.getStdoki().getColumn("IPRODSP").cloneColumn(),
-      dcp
-    });
-    stds.open();
-    ts.first();
-    hr.restart.util.lookupData ld = hr.restart.util.lookupData.getlookupData();
-
-    do {
-      if (!ld.raLocate(stds,new String[]{"CPAR","CART"},new String[]{ts.getInt("CPAR")+"",ts.getInt("CART")+""})){
-        stds.insertRow(false);
-        stds.setInt("CPAR", ts.getInt("CPAR"));
-        stds.setString("NAZPAR",ts.getString("NAZPAR"));
-        stds.setInt("BRDOK", ts.getInt("BRDOK"));
-        stds.setInt("CART",ts.getInt("CART"));
-        if (!cpartner.equals(""))
-          stds.setString("CART1",ts.getString("CART11")); /** @todo CART11 !!!!!! WARNING!!!! */
-        else
-          stds.setString("CART1",ts.getString("CART1"));
-        stds.setString("BC", ts.getString("BC"));
-        stds.setString("NAZART", ts.getString("NAZART"));
-        stds.setString("JM", ts.getString("JM"));
-        stds.setBigDecimal("KOL", stds.getBigDecimal("KOL").add(ts.getBigDecimal("KOL")));
-        stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
-        stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
-//        ts.copyTo(stds);
-      } else {
-        stds.setBigDecimal("KOL", stds.getBigDecimal("KOL").add(ts.getBigDecimal("KOL")));
-        stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
-        stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
-      }
-    } while (ts.next());
-
-    for (stds.first();stds.inBounds();stds.next()){
-        stds.setBigDecimal("POR", stds.getBigDecimal("IPRODSP").subtract(stds.getBigDecimal("IPRODBP")));
-      if (stds.getBigDecimal("INAB").doubleValue() != 0) {
-        stds.setBigDecimal("RUC", stds.getBigDecimal("IPRODBP").subtract(stds.getBigDecimal("INAB")));
-        stds.setBigDecimal("RUCP", stds.getBigDecimal("RUC").multiply(new java.math.BigDecimal("100.00")).divide(stds.getBigDecimal("INAB"),6,java.math.BigDecimal.ROUND_HALF_UP));
-//        stds.setBigDecimal("RUCP", stds.getBigDecimal("RUCP").multiply(new java.math.BigDecimal("100.00")));
-      } else {
-        stds.setBigDecimal("RUCP",new java.math.BigDecimal("0.00"));
-      }
-    }
-    stds.setSort(new SortDescriptor(new String[] {"IPRODSP"}));
-//    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
-//    syst.prn(stds);
-    return stds;
-  }
-
-  public QueryDataSet getIspStatParDS(String dateP, String dateZ, String summum, String cskl, String ckup, String pjkup, String cpart, String corg){
-    String ckupca = " ", dobart=" ", caprDobart=" ", pjKupca=" ";
-//    System.out.println("CPAR = " + cpart);
-    if (!ckup.equals("")) ckupca = "and doki.cpar='" + ckup + "' ";
-    if (!pjkup.equals("")) pjKupca = "and doki.pj='" + pjkup + "' ";
-    if (!cpart.equals("")){
-      dobart = ", dob_art ";
-      ckupca = ckupca + "and dob_art.cpar = '" + cpart + "' and dob_art.cart = stdoki.cart ";
-      caprDobart = ", dob_art.cpar as dcp";
-    }
-
-    Condition cin = OrgStr.getCorgsCond("CSKL", corg).qualified("doki");
-    String inq = cin == Condition.nil ? "1=1" : cin.toString();
-    
-    /*String inq;
-    StorageDataSet corgs = hr.restart.zapod.OrgStr.getOrgStr().getOrgstrAndKnjig(corg);
-    if (corgs.rowCount() == 0) inq = "1=1";
-    else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
-    else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
-    hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
-    String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+" AND DOKI.CSKL = '"+cskl+"'))";
-
-//
-
-    String queryString ="select partneri.cpar as cpar, partneri.nazpar, " +
-                        "doki.cskl, doki.vrdok, doki.god, doki.brdok, " +
-                        "stdoki.inab,0.0 as ruc,0.0 as rucp,stdoki.iprodbp, stdoki.por1, " +
-                        "stdoki.por2, stdoki.por3, " +
-                        "0.0 as por, " +
-                        "stdoki.iprodsp"+caprDobart+" from partneri, doki, stdoki" + dobart +
-                        "where partneri.cpar=doki.cpar and doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok and doki.god=stdoki.god and doki.vrdok=stdoki.vrdok " +
-//                        " AND doki.vrdok != 'PON' AND doki.vrdok != 'NDO' AND doki.vrdok != 'NKU' AND stdoki.vrdok != 'RNL' AND stdoki.vrdok != 'REV' AND stdoki.vrdok != 'PRV' "+
-                        " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') "+
-                        "and doki.datdok between " + dateP + " and " + dateZ + " " + ckupca + pjKupca +
-                        /*"and doki.cskl='" + cskl + "' "+*/exInClude;//"' and doki.vrdok in ('ROT','RAC','POD','TER','ODB')";
-
-    System.out.println("-----------------<SQL>-----------------\n"+queryString+"\n----------------</SQL>-----------------");
-
-    QueryDataSet ts = ut.getNewQueryDataSet(queryString);
-    if (ts.rowCount() == 0) return null;
-
-//    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
-//    syst.prn(ts);
-
-    Column ruc =dm.getStdoki().getColumn("INAB").cloneColumn();
-    ruc.setColumnName("RUC");
-    ruc.setCaption("RUC");
-    Column rucp =dm.getStdoki().getColumn("INAB").cloneColumn();
-    rucp.setColumnName("RUCP");
-    rucp.setCaption("% RUC");
-    Column por =dm.getStdoki().getColumn("INAB").cloneColumn();
-    por.setColumnName("POR");
-    por.setCaption("Porez");
-
-
-    QueryDataSet stds = new QueryDataSet();
-    stds.setColumns(new Column[] {
-      (Column) dm.getPartneri().getColumn("CPAR").clone(),
-      (Column) dm.getPartneri().getColumn("NAZPAR").clone(),
-      (Column) dm.getDoki().getColumn("CSKL").clone(),
-      (Column) dm.getDoki().getColumn("VRDOK").clone(),
-      (Column) dm.getDoki().getColumn("GOD").clone(),
-      (Column) dm.getDoki().getColumn("BRDOK").clone(),
-      (Column) dm.getStdoki().getColumn("INAB").clone(),
-      ruc,
-      rucp,
-      (Column) dm.getStdoki().getColumn("IPRODBP").clone(),
-      (Column) dm.getStdoki().getColumn("POR1").clone(),
-      (Column) dm.getStdoki().getColumn("POR2").clone(),
-      (Column) dm.getStdoki().getColumn("POR3").clone(),
-      por,
-      (Column) dm.getStdoki().getColumn("IPRODSP").clone(),
-      (Column) dm.getDob_art().getColumn("CPAR").clone()
-    });
-    stds.open();
-    ts.first();
-    hr.restart.util.lookupData ld = hr.restart.util.lookupData.getlookupData();
-//    System.out.println("summum " + summum  );
-    do {
-//      System.out.println("summum " + summum + " ts.getint(summum) " +ts.getInt(summum)+"");
-      if (!ld.raLocate(stds,new String[]{"CPAR",summum},new String[] {ts.getInt("CPAR")+"",ts.getInt(summum)+""})){         //summum,ts.getInt(summum)+"")){
-//        System.out.println("insertam");
-        stds.insertRow(false);
-        ts.copyTo(stds);
-      } else {
-//        System.out.println("prijebavan");
-        stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
-        stds.setBigDecimal("POR1", stds.getBigDecimal("POR1").add(ts.getBigDecimal("POR1")));
-        stds.setBigDecimal("POR2", stds.getBigDecimal("POR2").add(ts.getBigDecimal("POR2")));
-        stds.setBigDecimal("POR3", stds.getBigDecimal("POR3").add(ts.getBigDecimal("POR3")));
-        stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
-      }
-    } while (ts.next());
-
-    for (stds.first();stds.inBounds();stds.next()){
-        stds.setBigDecimal("POR", stds.getBigDecimal("IPRODSP").subtract(stds.getBigDecimal("IPRODBP")));
-      if (stds.getBigDecimal("INAB").doubleValue() != 0) {
-        stds.setBigDecimal("RUC", stds.getBigDecimal("IPRODBP").subtract(stds.getBigDecimal("INAB")));
-        stds.setBigDecimal("RUCP", stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),6,java.math.BigDecimal.ROUND_HALF_UP));
-        stds.setBigDecimal("RUCP", stds.getBigDecimal("RUCP").multiply(new java.math.BigDecimal("100.00")));
-      } else {
-        stds.setBigDecimal("RUCP",new java.math.BigDecimal("0.00"));
-      }
-    }
-    stds.setSort(new SortDescriptor(new String[] {"IPRODSP"},true,true));
-//    syst.prn(stds);
-    return stds;
-  }
-
-  public QueryDataSet getIspStatArtDS(String dateP, String dateZ, String sortum, String cskl, String ckup, String pjkup, String cpart, String artikli, String carting, String corg) {
-    String ckupca = " ", pjKupca = " ", dobart=" ", caprDobart="", sklad="";
+  public QueryDataSet getIspStatArtDS(String dateP, String dateZ, String sortum, String cskl, String cag, String ckup, String pjkup, String cpart, String artikli, String carting, String corg) {
+    String ckupca = " ", pjKupca = " ", dobart=" ", caprDobart="", sklad="", cagenta="";
 //    System.out.println("CPAR = " + cpart);
     if (!ckup.equals("")) ckupca = "and doki.cpar='" + ckup + "' ";
     if (!pjkup.equals("")) pjKupca = "and doki.pj='" + pjkup + "' ";
@@ -921,6 +627,7 @@ System.out.println("QS : " + queryString);
       ckupca = ckupca + "and dob_art.cpar = '" + cpart + "' and dob_art.cart = stdoki.cart ";
       caprDobart = ", dob_art.cpar as dcp ";
     }
+    if (cag.length() > 0) cagenta = "and doki.cagent=" + cag + " ";
     
     if (cskl.equals("")){
       
@@ -954,7 +661,7 @@ System.out.println("QS : " + queryString);
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
     else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
-    String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+"))";
+    String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+")) ";
 
     String queryString = "select "+
     					 "doki.vrdok, "+
@@ -978,7 +685,7 @@ System.out.println("QS : " + queryString);
 //                         " AND doki.vrdok != 'PON' AND doki.vrdok != 'NDO' AND doki.vrdok != 'NKU' AND stdoki.vrdok != 'RNL' AND stdoki.vrdok != 'REV' AND stdoki.vrdok != 'PRV' "+
                          " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') "+
                          exInClude+
-                         ckupca+
+                         cagenta+ckupca+
                          pjKupca+
                          artikli+
                          carting+
@@ -990,6 +697,7 @@ System.out.println("QS : " + queryString);
     QueryDataSet ts = ut.getNewQueryDataSet(queryString);
     if (ts.rowCount() == 0) return null;
 
+    System.out.println("loaded");
 //    hr.restart.util.sysoutTEST syst = new hr.restart.util.sysoutTEST(false);
 //    syst.prn(ts);
 
@@ -1018,10 +726,13 @@ System.out.println("QS : " + queryString);
     ts.setSort(new SortDescriptor(new String[] {"CART"}));
     ts.first();
     
-    Artikli.getDataModule().fixSort();
+    //Artikli.getDataModule().fixSort();
     
-    hr.restart.util.lookupData ld = hr.restart.util.lookupData.getlookupData();
+    //hr.restart.util.lookupData ld = hr.restart.util.lookupData.getlookupData();
 /*    HashMap cpar2row = new HashMap(); */
+    HashDataSet arts = new HashDataSet(dm.getArtikli(), "CART");
+    
+    
     int cart = -1027;
     do {
 /*      if (cpar2row.containsKey(new Integer(ts.getInt("CART")))) {
@@ -1048,8 +759,7 @@ System.out.println("QS : " + queryString);
         stds.setString("CART1",ts.getString("CART11"));
         stds.setString("BC",ts.getString("BC"));
         if (!raVart.isStanje(ts)){
-         if (ld.raLocate(dm.getArtikli(),"CART",ts.getInt("CART")+""))
-           stds.setString("NAZART",dm.getArtikli().getString("NAZART"));
+         if (arts.loc(ts)) stds.setString("NAZART",arts.get().getString("NAZART"));
          else stds.setString("NAZART",ts.getString("NAZART"));
         } else {
         stds.setString("NAZART",ts.getString("NAZART"));
@@ -1134,20 +844,8 @@ System.out.println("QS : " + queryString);
     return stds;
   }
 
-//  /**
-//   * Geter koji vraèa malo veèi string.<br>
-//   * Koristi se u klasi <b>ispStatArt</b> i služi za slaganje rezSet-a koji prikazuje artikle<br>
-//   * s njihovim ukupnim prometom složenim po kolièinama, ili vrijednostima za odabrano razdoblje.<br>
-//   * @param dateP Poèetni datum razdoblja za koji se traži naj artikl (default - prvi dan u tekuèoj godini)
-//   * @param dateZ Krajnji datum razdoblja za koji se traži naj artikl (default - današnji dan)
-//   * @param qDodatakNaStr dodatak kojim se odreðuju neke sitnice - vidi <b>ispStatArt</b>
-//   * @param artikliFilter dodatak koji odredjuje vrstu artikla (R-roba, U-usluga, M-materijal....)
-//   * @return <b>queryString</b>
-//   * @see <b>ispStatArt</b>
-//   */
-
-  public QueryDataSet getIspStatArtDetailsDS(String dateP, String dateZ, String sortum, String cskl, String ckup, String cpart, String artikli, String carting, String corg) {
-    String ckupca = " ", dobart=" ", caprDobart="", sklad = "";
+  public QueryDataSet getIspStatArtDetailsDS(String dateP, String dateZ, String sortum, String cskl, String cag, String ckup, String cpart, String artikli, String carting, String corg) {
+    String ckupca = " ", dobart=" ", caprDobart="", sklad = "", cagenta="";
 //    System.out.println("CPAR = " + cpart);
     if (!ckup.equals("")) ckupca = "and doki.cpar='" + ckup + "' ";
     if (!cpart.equals("")){
@@ -1155,6 +853,7 @@ System.out.println("QS : " + queryString);
       ckupca = ckupca + "and dob_art.cpar = '" + cpart + "' and dob_art.cart = stdoki.cart ";
       caprDobart = ", dob_art.cpar as dcp ";
     }
+    if (cag.length() > 0) cagenta = "and doki.cagent=" + cag + " ";
     
     if (cskl.equals("")){
       
@@ -1189,7 +888,7 @@ System.out.println("QS : " + queryString);
     else if (corgs.rowCount() == 1) inq = "DOKI.CSKL = '" + corg + "'";
     else inq = "(DOKI.CSKL in " + hr.restart.zapod.OrgStr.getOrgStr().getINQuery(corgs,"DOKI.CSKL")+") ";*/
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
-    String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+"))";
+    String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+")) ";
 
     String queryString = "select doki.cpar, doki.pj, "+
 //                         "doki.brdok "+
@@ -1215,7 +914,7 @@ System.out.println("QS : " + queryString);
 //                         " AND doki.vrdok != 'PON' AND doki.vrdok != 'NDO' AND doki.vrdok != 'NKU' AND stdoki.vrdok != 'RNL' AND stdoki.vrdok != 'REV' AND stdoki.vrdok != 'PRV' "+
                         " AND doki.vrdok not in ('PON','TRE','ZAH','NDO','NKU','RNL','REV','PRV','OTR','OTP','INM','INV','IZD','OTP', 'DOS') "+
                          exInClude+
-                         ckupca+
+                         cagenta+ckupca+
                          artikli+
                          carting+
                          " and doki.datdok between " +
@@ -1285,6 +984,7 @@ System.out.println("QS : " + queryString);
     DataSet pjp = dm.getPjpar();
     hr.restart.util.lookupData ld = hr.restart.util.lookupData.getlookupData();
     
+    HashDataSet arts = new HashDataSet(dm.getArtikli(), "CART");
 
 //    System.out.println("ts rowcount = " + ts.rowCount());
     //dm.getPartneri().open();
@@ -1315,8 +1015,7 @@ System.out.println("QS : " + queryString);
         stds.setString("BC",ts.getString("BC"));
         
         if (!raVart.isStanje(ts)) {
-          if (ld.raLocate(dm.getArtikli(),"CART",ts.getInt("CART")+""))
-            stds.setString("NAZART",dm.getArtikli().getString("NAZART"));
+          if (arts.loc(ts)) stds.setString("NAZART", arts.get().getString("NAZART"));
           else stds.setString("NAZART",ts.getString("NAZART"));
         } else {
           stds.setString("NAZART",ts.getString("NAZART"));

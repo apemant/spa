@@ -31,6 +31,8 @@ import hr.restart.util.Valid;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raUpitFat;
+import hr.restart.util.reports.JasperHook;
+import hr.restart.util.reports.raReportDescriptor;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.Component;
@@ -43,6 +45,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
+
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRStaticText;
+import net.sf.jasperreports.engine.JRTextElement;
+import net.sf.jasperreports.engine.JRTextField;
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignStaticText;
+import net.sf.jasperreports.engine.design.JRDesignTextField;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -136,11 +150,15 @@ public abstract class raPanStats extends raUpitFat {
 //      rpcart.setParam(hr.restart.sisfun.frmParam.getParam("robno","indiCart"));
 //      rpcart.SetFocus(hr.restart.sisfun.frmParam.getParam("robno","focusCart"));
 //      rpcart.setCART();
-      jpKup.focusCpar();
+    	jlrAgent.requestFocus();
+      //jpKup.focusCpar();
     }
   };
 
   protected rapancart rpcart = new rapancart(){
+  	public QueryDataSet getRaDataSet() {
+  		return Artikli.getDataModule().copyDataSet();
+  	};
     public void metToDo_after_lookUp() {
 //      System.out.println("rapancart - metodoafterlookup");
 
@@ -176,6 +194,9 @@ public abstract class raPanStats extends raUpitFat {
       }
     }
   };
+  
+  JlrNavField jlrAgent = new JlrNavField();
+  JlrNavField jlrNazAgent = new JlrNavField();
 
   JraButton jbSelCorg = new JraButton();
 
@@ -198,6 +219,9 @@ public abstract class raPanStats extends raUpitFat {
     if (jpDob.isDisabled()) {
       getJPTV().clearDataSet();
       removeNav();
+      rcc.setLabelLaF(jlrAgent, true);
+      rcc.setLabelLaF(jlrNazAgent, true);
+      rcc.setLabelLaF(jlrAgent.getNavButton(), true);
       rcc.setLabelLaF(jtfPocDatum, true);
       rcc.setLabelLaF(jtfZavDatum, true);
       rcc.setLabelLaF(rcmbPrikaz, true);
@@ -236,6 +260,8 @@ public abstract class raPanStats extends raUpitFat {
       rpcart.EnabDisab(true);
 //      rpcart.Clear();
     } else {
+    	jlrAgent.setText("");
+    	jlrAgent.forceFocLost();
       System.out.println("NJULI DODATO - comboboxes dischardzing");
       rcmbPrikaz.setSelectedIndex(0);
       rcmbPoCemu.setSelectedIndex(0);
@@ -273,6 +299,8 @@ public abstract class raPanStats extends raUpitFat {
 //    jraNAZPARdobavljac.setText("");
     jpKup.clear();
     jpDob.clear();
+    jlrAgent.setText("");
+  	jlrAgent.forceFocLost();
     rpcskl.setCSKL(hr.restart.sisfun.raUser.getInstance().getDefSklad());
 //    System.out.println("hr.restart.zapod.OrgStr.getOrgStr().getKNJCORG() - " + hr.restart.zapod.OrgStr.getOrgStr().getKNJCORG());
     fieldSet.setString("CORG", hr.restart.zapod.OrgStr.getOrgStr().getKNJCORG());
@@ -382,7 +410,7 @@ public abstract class raPanStats extends raUpitFat {
 								        dm.createStringColumn("CORG",5), 
 								        dm.createStringColumn("PJ",5), 
 								        dm.createStringColumn("POCEMU",10), 
-								        dm.createStringColumn("CAGENT",5)});
+								        dm.createIntColumn("CAGENT")});
 
     jlCorg.setText("Org. jedinica");
     jlrCorg.setColumnName("CORG");
@@ -410,7 +438,12 @@ public abstract class raPanStats extends raUpitFat {
     jlrNazPjPar.setColumnName("NAZPJ");
     jlrNazPjPar.setNavProperties(jlrCPjPar);
     jlrNazPjPar.setSearchMode(1);
+    
 
+    jlrAgent.setDataSet(fieldSet);
+    jlrAgent.setColumnName("CAGENT");
+    jlrAgent.setDoh(dm.getAgenti(), new int[] {0,1,2});
+    jlrAgent.addNav(jlrNazAgent, "NAZAGENT");
 
     jlDatum1.setText("Datum (od-do)");
 
@@ -423,7 +456,7 @@ public abstract class raPanStats extends raUpitFat {
     jtfPocDatum.setHorizontalAlignment(SwingConstants.CENTER);
 
     xYLayout3.setWidth(650);
-    xYLayout3.setHeight(290);
+    xYLayout3.setHeight(315);
     jp.setLayout(xYLayout3);
 
 //    jraCPARdobavljac.setColumnName("CPAR");
@@ -462,7 +495,7 @@ public abstract class raPanStats extends raUpitFat {
 
     rcmbSljed.setRaDataSet(fieldSet);
     rcmbSljed.setRaColumn("SLJED");
-    jlSljed.setText("Prikaz / Slijed / Kolona");
+    jlSljed.setText("Prikaz / Slijed");
 
 
     rcmbPrikaz.setRaDataSet(fieldSet);
@@ -493,20 +526,26 @@ public abstract class raPanStats extends raUpitFat {
     jp.add(jbSelCorg, new XYConstraints(610, 30, 21, 21));
 
     jp.add(rpcskl, new XYConstraints(0, 55, -1, -1));
-    jp.add(jpKup, new XYConstraints(0, 80, -1, -1));
+    
+    jp.add(new JLabel("Agent"), new XYConstraints(15, 80, -1, -1));
+    jp.add(jlrAgent, new XYConstraints(150, 80, 100, -1));
+    jp.add(jlrNazAgent, new XYConstraints(255, 80, 350, -1));
+    jp.add(jlrAgent.getNavButton(), new XYConstraints(610, 80, 21, 21));
+    
+    jp.add(jpKup, new XYConstraints(0, 105, -1, -1));
 
-    jp.add(jlPjPar, new XYConstraints(15,105,-1,-1));
-    jp.add(jlrCPjPar, new XYConstraints(150, 105, 100, -1));
-    jp.add(jlrNazPjPar, new XYConstraints(255, 105, 350, -1));
-    jp.add(jrbPjPar, new XYConstraints(610, 105, 21, 21));
+    jp.add(jlPjPar, new XYConstraints(15,130,-1,-1));
+    jp.add(jlrCPjPar, new XYConstraints(150, 130, 100, -1));
+    jp.add(jlrNazPjPar, new XYConstraints(255, 130, 350, -1));
+    jp.add(jrbPjPar, new XYConstraints(610, 130, 21, 21));
 
-    jp.add(jpDob, new XYConstraints(0, 130, -1, -1));
-    jp.add(jtfPocDatum, new XYConstraints(150, 155, 100, -1));
-    jp.add(jtfZavDatum, new XYConstraints(255, 155, 100, -1));
-    jp.add(jlDatum1, new XYConstraints(15, 157, -1, -1));
-    jp.add(rcmbVrArt, new XYConstraints(455, 155, 150, 20));
-    jp.add(jlVrArt, new XYConstraints(365, 157, 70, -1));
-    jp.add(rpcart, new XYConstraints(0, 175, 630, 77));
+    jp.add(jpDob, new XYConstraints(0, 155, -1, -1));
+    jp.add(jtfPocDatum, new XYConstraints(150, 180, 100, -1));
+    jp.add(jtfZavDatum, new XYConstraints(255, 180, 100, -1));
+    jp.add(jlDatum1, new XYConstraints(15, 182, -1, -1));
+    jp.add(rcmbVrArt, new XYConstraints(455, 180, 150, 20));
+    jp.add(jlVrArt, new XYConstraints(365, 182, 70, -1));
+    jp.add(rpcart, new XYConstraints(0, 200, 630, 77));
 
 //    jp.add(rpcskl, new XYConstraints(0, 0, -1, -1));
 //    jp.add(jpKup, new XYConstraints(0, 50, -1, -1));
@@ -523,10 +562,16 @@ public abstract class raPanStats extends raUpitFat {
 //    jp.add(jraCPARdobavljac, new XYConstraints(150, 50, 100, -1));
 //    jp.add(jlDobavljac, new XYConstraints(15, 75, -1, -1)); // was 50
 
-    jp.add(jlSljed,  new XYConstraints(15, 252, -1, -1));
-    jp.add(rcmbPrikaz,  new XYConstraints(150, 252, 150, 21));
-    jp.add(rcmbSljed,  new XYConstraints(305, 252, 150, 21));
-    jp.add(rcmbPoCemu,  new XYConstraints(460, 252, 145, 21));
+    jp.add(jlSljed,  new XYConstraints(15, 277, -1, -1));
+    jp.add(rcmbPrikaz,  new XYConstraints(150, 277, 150, 21));
+    jp.add(rcmbSljed,  new XYConstraints(305, 277, 150, 21));
+    jp.add(rcmbPoCemu,  new XYConstraints(460, 277, 145, 21));
+    
+    jhook = new JasperHook() {
+			public void adjustDesign(String reportName, JasperDesign design) {
+				adjustJasper(design);
+			}
+		};
 
 //    getJPTV().getMpTable().setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
   }
@@ -612,6 +657,15 @@ public abstract class raPanStats extends raUpitFat {
     if(getCkup().equals("")) return "Za sve kupce";
     return jpKup.getNazpar();
   }
+  
+  public String getAgent() {
+  	return jlrAgent.getText();
+  }
+  
+  public String getNazAgent() {
+  	if (jlrAgent.isEmpty()) return "Za sve agente";
+  	return jlrNazAgent.getText();
+  }
 
   public String getCpar() {
     return jpDob.cpar.getText();
@@ -645,6 +699,8 @@ public abstract class raPanStats extends raUpitFat {
   }
 
   public String getSorter() {
+  	if (fieldSet.getString("SLJED").equals("UKUPNO"))
+  		return fieldSet.getString("POCEMU");
     return fieldSet.getString("SLJED");
   }
   public String getSlijed() {
@@ -675,7 +731,7 @@ public abstract class raPanStats extends raUpitFat {
     }
     return false;
   }
-  
+    
   public void setRapancartDataset(){
     System.out.println("Vrsta artikla promjenjena"); //XDEBUG delete when no more needed
     //DataSet vrstaArtikalaDohvatFilterSet = null;
@@ -687,7 +743,7 @@ public abstract class raPanStats extends raUpitFat {
     rpcart.clearFields();
     if (vra.equals("@") || vra.equals(""))
       //vrstaArtikalaDohvatFilterSet = dm.getArtikli();
-    	cond = Condition.ident;
+    	cond = Condition.none;
     else {
       // vrstaArtikalaDohvatFilterSet = Artikli.getDataModule().getFilteredDataSet("VRART='"+vra+"'");
     	cond = Condition.equal("VRART", vra);
@@ -706,5 +762,63 @@ public abstract class raPanStats extends raUpitFat {
     
   }
 
+  JasperHook jhook;
+  protected void addHook(String rep) {
+  	getRepRunner().addJasperHook(rep, jhook);
+	}
+
+  protected void adjustJasper(JasperDesign design) {
+  	System.out.println("adjusting " + design.getGroups().length);
+  	
+  	JRDesignBand band = null;
+  	JRElement[] elems = null;
+  	JRDesignStaticText sklad = null, kup = null;
+  	JRDesignTextField cskl = null, nazskl = null;
+  	for (int b = -1; b < design.getGroups().length; b++) {
+  		band = b == -1 ? (JRDesignBand) design.getTitle() : (JRDesignBand) design.getGroups()[b].getGroupHeader();
+  		elems = band.getElements();
+  		for (int i = 0; i < elems.length; i++) 
+	  		if (elems[i] instanceof JRDesignStaticText) {
+	  			JRDesignStaticText lab = (JRDesignStaticText) elems[i];
+	  			if (lab.getText().equals("Skladište:")) sklad = lab;
+	  			else if (lab.getText().equals("Kupac:")) kup = lab;
+	  		} else if (elems[i] instanceof JRDesignTextField) {
+	  			JRDesignTextField tx = (JRDesignTextField) elems[i];
+	  			if (tx.getExpression().getText().indexOf("CSKL") >= 0) cskl = tx;
+	  			else if (tx.getExpression().getText().indexOf("NAZSKL") >= 0) nazskl = tx;
+	  		}
+  		if (sklad != null && kup != null && cskl != null && nazskl != null) break;
+  	}
+  	if (sklad == null || kup == null || cskl == null || nazskl == null) return;
+  	
+  	int line = kup.getY();
+  	int drop = line - sklad.getY();
+  	for (int i = 0; i < elems.length; i++)
+  		if (elems[i].getY() >= line) ((JRDesignElement) elems[i]).setY(elems[i].getY() + drop);
+  	
+  	JRDesignStaticText alab = (JRDesignStaticText) sklad.clone(band);
+  	alab.setY(alab.getY() + drop);
+  	alab.setText("Agent:");
+  	band.addElement(alab);
+  	
+  	JRDesignTextField agent = (JRDesignTextField) cskl.clone(band);
+  	agent.setY(agent.getY() + drop);
+  	JRDesignExpression ae = new JRDesignExpression();
+  	ae.setValueClass(String.class);
+  	ae.addFieldChunk("Agent");
+  	agent.setExpression(ae);
+  	band.addElement(agent);
+  	
+  	JRDesignTextField nazagent = (JRDesignTextField) nazskl.clone(band);
+  	nazagent.setY(nazagent.getY() + drop);
+  	JRDesignExpression nae = new JRDesignExpression();
+  	nae.setValueClass(String.class);
+  	nae.addFieldChunk("NazAgent");
+  	nazagent.setExpression(nae);
+  	band.addElement(nazagent);
+  	
+  	band.setHeight(band.getHeight() + drop);
+  	design.setProperty("data.noremove", "true");
+  }
 
 }
