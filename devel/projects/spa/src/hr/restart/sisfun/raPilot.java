@@ -483,7 +483,7 @@ public class raPilot extends raFrame {
 
   QueryDataSet tab = Tablice.getDataModule().getFilteredDataSet("");
 
-  JFileChooser jf = new JFileChooser();
+  JFileChooser jf = new JFileChooser(new File("."));
   
   Interpreter bshInterpreter = new Interpreter();
   
@@ -531,6 +531,11 @@ public class raPilot extends raFrame {
   }
 
   private static raDelayWindow load;
+  
+  public static void stopDelayWindow() {
+    if (load != null) load.close();
+    if (inst.process != null) inst.process.close();
+  }
 
   public static void executeReport(java.net.URL rep, String title, Window owner) {
     load = raDelayWindow.show(owner, 50).setModal(true).setInterruptable(true);
@@ -647,7 +652,6 @@ public class raPilot extends raFrame {
     jf.addChoosableFileFilter(filterSQL);
     jf.addChoosableFileFilter(filterHIS);
     jf.setFileFilter(filterSQL);
-    jf.setCurrentDirectory(new File("."));
 
     jbTab.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
