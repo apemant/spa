@@ -225,7 +225,7 @@ public class jpVlasnik extends JPanel {
       jlrCkupac.setVisCols(new int[] {0,1,2});
       jlrCkupac.setTextFields(
         new javax.swing.text.JTextComponent[] {jraAdr,jraEmadr,jraMj,jraIme,jraPrezime,jraJmbg,jraOib,jraPbr,jraTel});
-      jlrCkupac.setSearchMode(0);
+      jlrCkupac.setSearchMode(2);
       //jlrCkupac.setDataSet(resolvSet);
       prepareNavField(jraAdr, jlrCkupac);
       prepareNavField(jraEmadr, jlrCkupac);
