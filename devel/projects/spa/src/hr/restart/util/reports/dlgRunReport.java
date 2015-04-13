@@ -1536,16 +1536,16 @@ public class dlgRunReport {
             JasperDesign jdes = JasperBuilder.buildFromElixir(rt.getReportTemplate(), data);
             jdes.setName(getCurrentDescriptor().getName());
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
-            JRXmlWriter.writeReport(jdes, "design.jrxml", "UTF-8");
             rd.adjustJasperDesign(jdes);
             fixMargins(rd.getName(), jdes);
+            JRXmlWriter.writeReport(jdes, "design.jrxml", "UTF-8");
             raProcess.setMessage("Prevoðenje izraza...", false);
             JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
             JasperReport jcomp = new JRJdk13Compiler().compileReport(jdes);
             //JasperReport jcomp = new JasperCompiler().compileReport(jdes);
   //          JasperReport jcomp = JasperCompileManager.compileReport(jdes);
             //JRFillTextField
-            data.removeUnusedGetters();
+            if (!"true".equals(jdes.getProperty("data.noremove"))) data.removeUnusedGetters();
             raProcess.setMessage("Punjenje podataka...", false);
             data.buildTable(rt.getReportTemplate());
             raProcess.setMessage("Grupiranje i sortiranje...", false);
