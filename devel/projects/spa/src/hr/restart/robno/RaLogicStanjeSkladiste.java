@@ -21,6 +21,7 @@ import hr.restart.baza.Artikli;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
+import hr.restart.util.HashDataSet;
 import hr.restart.util.Stopwatch;
 import hr.restart.util.TimeTrack;
 import hr.restart.util.VarStr;
@@ -92,9 +93,11 @@ public class RaLogicStanjeSkladiste {
     mainDataSet.open();
     data.first();
     dm.getArtikli().open();
-    Artikli.getDataModule().fixSort();
+    HashDataSet arts =  data.rowCount() < 20 ? null : new HashDataSet(dm.getArtikli(), "CART");
+    //Artikli.getDataModule().fixSort();
     do {
-      ld.raLocate(dm.getArtikli(), "CART", data.getInt("CART") + "");
+    	if (arts != null) arts.loc(data);
+    	else ld.raLocate(dm.getArtikli(), "CART", data);
       if (raVart.isUsluga(dm.getArtikli()) || (!all && !raVart.isStanje(dm.getArtikli()))) continue;
       
       mainDataSet.insertRow(false);

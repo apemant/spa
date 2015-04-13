@@ -184,7 +184,7 @@ public class SecondChooser extends JraDialog {
 		 *       CFAKTURE (concat cskl,vrdok,god,brdok)
 		 */
 
-	  Artikli.getDataModule().fixSort();
+	  //Artikli.getDataModule().fixSort();
 		isMultipleDocs = false;
         directRNL = false;
         fixDOS = false;
@@ -797,7 +797,7 @@ public class SecondChooser extends JraDialog {
 			errorSet.open();
 
 			while (getNextRealRow()) {
-				if (!lD.raLocate(dm.getArtikli(), "CART", Integer.toString(realrow.getInt("CART")))) {
+				if (!lD.raLocate(dm.getArtikli(), "CART", realrow)) {
           returnValue = false;
           errors = null;
 					JOptionPane.showMessageDialog(null, "Artikl '"
@@ -1540,8 +1540,7 @@ System.out.println(StavkeSet.getInt("CARt"));
               StavkeSet.getBigDecimal("KOL"));
 		  if (rIT.getDetailSet().getBigDecimal("KOL1").signum() == 0) {
 	          // dod kol = 0
-	          lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", 
-	              Integer.toString(rIT.getDetailSet().getInt("CART")));
+	          lookupData.getlookupData().raLocate(dm.getArtikli(), "CART", rIT.getDetailSet());
 	          if (dm.getArtikli().getBigDecimal("BRJED").signum() > 0)
 	            rIT.getDetailSet().setBigDecimal("KOL1", rIT.getDetailSet().getBigDecimal("KOL")
 	                .divide(dm.getArtikli().getBigDecimal("BRJED"), 3, BigDecimal.ROUND_HALF_UP));
@@ -1693,8 +1692,7 @@ System.out.println(StavkeSet.getInt("CARt"));
           }
         }
 
-		if (!found && lD.raLocate(dm.getArtikli(), "CART",
-				Integer.toString(rIT.getDetailSet().getInt("CART")))) {
+		if (!found && lD.raLocate(dm.getArtikli(), "CART", rIT.getDetailSet())) {
 			rIT.getDetailSet().setBigDecimal("FC",
 					dm.getArtikli().getBigDecimal("VC"));
 			rIT.getDetailSet().setBigDecimal("FVC",
