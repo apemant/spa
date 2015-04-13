@@ -57,6 +57,9 @@ public class frmIzvArt extends raUpitLite {
   hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
   JPanel jp = new JPanel();
   rapancart rpcart = new rapancart(){
+  	public QueryDataSet getRaDataSet() {
+  		return Artikli.getDataModule().copyDataSet();
+  	};
     public void nextTofocus(){
     }
 //    public void metToDo_after_lookUp() {
