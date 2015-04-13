@@ -47,6 +47,7 @@ public class menuIzvRac extends JMenu {
 	  JMenuItem jmNezaracunatiDoksi = new JMenuItem();
 	  JMenuItem jmPregledKPRGRN = new JMenuItem();
 	  JMenuItem jmPregledZaduzenjeKPR = new JMenuItem();
+	  JMenuItem jmOstaliRep = new JMenuItem();
 	  public JMenuItem jmFISBIH = new JMenuItem();
 	  
 	  public menuIzvRac(hr.restart.util.startFrame startframe) {
@@ -120,6 +121,13 @@ public class menuIzvRac extends JMenu {
 	      }
 	    });
 	    
+	    jmOstaliRep.setText("Ostali izvještaji");
+	    jmOstaliRep.addActionListener(new java.awt.event.ActionListener() {
+	      public void actionPerformed(ActionEvent e) {
+	        jmOstaliRep_actionPerformed(e);
+	      }
+	    });
+	    
 	    this.add(jmUnFuckDoc);
 	    this.add(jmPreglProdArt);
 	    this.add(jmNezaracunatiDoksi);
@@ -134,6 +142,8 @@ public class menuIzvRac extends JMenu {
 	      addSeparator();
 	      add(jmFISBIH);
 	    }
+	    addSeparator();
+	    add(jmOstaliRep);
 	  }
 	  void jmUnFuckDoc_actionPerformed(ActionEvent e) {
 	    SF.showFrame("hr.restart.robno.upUnFuckDoc", jmUnFuckDoc.getText());
@@ -164,5 +174,8 @@ public class menuIzvRac extends JMenu {
 	  public void jmFISBIH_actionPerformed(ActionEvent e) {
 	    // TODO Auto-generated method stub
 	    SF.showFrame("hr.restart.robno.FISBIHIzvjestaji", jmFISBIH.getText());
+	  }
+	  void jmOstaliRep_actionPerformed(ActionEvent e) {
+	    SF.showFrame("hr.restart.rac.frmRacReportList", "Ostali izvještaji");
 	  }
 }
