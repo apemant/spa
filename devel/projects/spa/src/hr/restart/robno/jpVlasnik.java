@@ -24,6 +24,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 
 import java.awt.BorderLayout;
@@ -418,6 +419,10 @@ public class jpVlasnik extends JPanel {
       NE ODKOMENTIRAVATI ILI NEKU OVAKVU GLUPOST NAPISATI JER ODJEBE SVE U RAMASTERDETAILU
 */      
       resolvSet.setInt("CKUPAC", ckupac);
+      
+      if (resolvSet.hasColumn("CAGENT") != null && resolvSet.isNull("CAGENT") &&
+         lookupData.getlookupData().raLocate(dm.getPartneri(), "CKUPAC", resolvSet))
+      	resolvSet.setInt("CAGENT", dm.getPartneri().getInt("CAGENT"));
       
 /*      if (kupacSet instanceof raDataSet) {
         System.out.println("propagating changes for kupci");
