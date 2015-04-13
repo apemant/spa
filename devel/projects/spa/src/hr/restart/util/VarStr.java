@@ -63,6 +63,8 @@ import java.util.List;
 
 public class VarStr {
   private static int DEFAULT_CAPACITY = 16;
+  
+  public static int p;  // zadnji indexOf. Korisno.
 
   private char[] value;
   private int count;
@@ -732,7 +734,7 @@ public class VarStr {
     if (fromIndex < 0) fromIndex = 0;
     char[] val = value;
     for (int i = fromIndex; i < count; i++)
-      if (val[i] == ch) return i;
+      if (val[i] == ch) return p = i;
     return -1;
   }
 
@@ -744,7 +746,7 @@ public class VarStr {
     char[] val = value;
     while ((beg = indexOf(str[off], beg) + 1) > 0 && beg + len - 2 < count) {
       for (int i = 1; i <= len; i++)
-        if (i == len) return beg - 1;
+        if (i == len) return p = beg - 1;
         else if (val[beg - 1 + i] != str[off + i]) break;
     }
     return -1;
@@ -786,7 +788,7 @@ public class VarStr {
     char[] val = value;
     ch = Character.toLowerCase(ch);
     for (int i = fromIndex; i < count; i++)
-      if (Character.toLowerCase(val[i]) == ch) return i;
+      if (Character.toLowerCase(val[i]) == ch) return p = i;
     return -1;
   }
 
@@ -798,7 +800,7 @@ public class VarStr {
     char[] val = value;
     while ((beg = indexOfIgnoreCase(str[off], beg) + 1) > 0 && beg + len - 2 < count) {
       for (int i = 1; i <= len; i++)
-        if (i == len) return beg - 1;
+        if (i == len) return p = beg - 1;
         else if (Character.toLowerCase(val[beg - 1 + i]) !=
                  Character.toLowerCase(str[off + i])) break;
     }
@@ -833,7 +835,7 @@ public class VarStr {
     if (fromIndex <= 0) return -1;
     char[] val = value;
     for (int i = fromIndex - 1; i >= 0; i--)
-      if (val[i] == ch) return i;
+      if (val[i] == ch) return p = i;
     return -1;
   }
 
@@ -845,7 +847,7 @@ public class VarStr {
     char[] val = value;
     while ((beg = lastIndexOf(str[off + len - 1], beg)) >= 0 && beg - len + 1 >= 0) {
       for (int i = len - 1; i >= 0; i--)
-        if (i == 0) return beg - len + 1;
+        if (i == 0) return p = beg - len + 1;
         else if (val[beg - len + i] != str[off + i - 1]) break;
     }
     return -1;
@@ -879,7 +881,7 @@ public class VarStr {
     char[] val = value;
     ch = Character.toLowerCase(ch);
     for (int i = fromIndex - 1; i >= 0; i--)
-      if (Character.toLowerCase(val[i]) == ch) return i;
+      if (Character.toLowerCase(val[i]) == ch) return p = i;
     return -1;
   }
 
@@ -891,7 +893,7 @@ public class VarStr {
     char[] val = value;
     while ((beg = lastIndexOfIgnoreCase(str[off + len - 1], beg)) >= 0 && beg - len + 1 >= 0) {
       for (int i = len - 1; i >= 0; i--)
-        if (i == 0) return beg - len + 1;
+        if (i == 0) return p = beg - len + 1;
       else if (Character.toLowerCase(val[beg - len + i]) !=
                Character.toLowerCase(str[off + i - 1])) break;
     }
@@ -1250,7 +1252,7 @@ public class VarStr {
     int e = indexOf(to, i + from.length());
     if (e < 0) return null;
     
-    return mid(i + from.length(), e);
+    return mid((p = i) + from.length(), e);
   }
 
   /**
