@@ -232,24 +232,29 @@ public abstract class raPanStats extends raUpitFat {
       jpDob.EnabDisabAll(true);
 //      rpcart.EnabDisab(true);
 //      rpcart.clearFields();
-      if (!jpDob.cpar.getText().equals("")){
+      if (!jpDob.isEmpty()) {
         jpDob.clear();
         jpDob.focusCparLater();
-      } else if (!jpKup.cpar.getText().equals("")){
+      } else if (!jpKup.isEmpty()){
         jpKup.clear();
         jpKup.focusCparLater();
+      } else if (!jlrAgent.isEmpty()){
+      	jlrAgent.setText("");
+      	jlrAgent.forceFocLost();
+      	jlrAgent.requestFocusLater();
       } else {
         rpcskl.disabCSKL(true);
+        if (jlrCorg.isEmpty()) enabCorg(true);
         rpcskl.Clear();
         rpcskl.jrfCSKL.requestFocus();
 //        rpcart.EnabDisab(true);
 //        rpcart.Clear();
       }
-    } else if (!jpDob.cpar.getText().equals("")) {
+    } else if (!jpDob.isEmpty()) {
       jpDob.EnabDisabAll(true);
       jpDob.clear();
       jpDob.focusCparLater();
-    } else if (!jpKup.cpar.getText().equals("")){
+    } else if (!jpKup.isEmpty()){
       jpKup.EnabDisabAll(true);
       jpKup.clear();
       jpKup.focusCparLater();
@@ -275,7 +280,7 @@ public abstract class raPanStats extends raUpitFat {
 
   public boolean runFirstESC() {
 //    return !rpcskl.getCSKL().equals("");
-    return !jlrCorg.getText().equals("");
+    return jpDob.isDisabled() || !jlrCorg.isEmpty();
   }
 
 //  public boolean isIspis(){
@@ -772,7 +777,7 @@ public abstract class raPanStats extends raUpitFat {
   	
   	JRDesignBand band = null;
   	JRElement[] elems = null;
-  	JRDesignStaticText sklad = null, kup = null;
+  	JRDesignStaticText sklad = null, org = null;
   	JRDesignTextField cskl = null, nazskl = null;
   	for (int b = -1; b < design.getGroups().length; b++) {
   		band = b == -1 ? (JRDesignBand) design.getTitle() : (JRDesignBand) design.getGroups()[b].getGroupHeader();
@@ -780,19 +785,19 @@ public abstract class raPanStats extends raUpitFat {
   		for (int i = 0; i < elems.length; i++) 
 	  		if (elems[i] instanceof JRDesignStaticText) {
 	  			JRDesignStaticText lab = (JRDesignStaticText) elems[i];
-	  			if (lab.getText().equals("Skladište:")) sklad = lab;
-	  			else if (lab.getText().equals("Kupac:")) kup = lab;
+	  			if (lab.getText().startsWith("Skladište")) sklad = lab;
+	  			else if (lab.getText().startsWith("Org.")) org = lab;
 	  		} else if (elems[i] instanceof JRDesignTextField) {
 	  			JRDesignTextField tx = (JRDesignTextField) elems[i];
 	  			if (tx.getExpression().getText().indexOf("CSKL") >= 0) cskl = tx;
 	  			else if (tx.getExpression().getText().indexOf("NAZSKL") >= 0) nazskl = tx;
 	  		}
-  		if (sklad != null && kup != null && cskl != null && nazskl != null) break;
+  		if (sklad != null && org != null && cskl != null && nazskl != null) break;
   	}
-  	if (sklad == null || kup == null || cskl == null || nazskl == null) return;
-  	
-  	int line = kup.getY();
-  	int drop = line - sklad.getY();
+  	if (sklad == null || org == null || cskl == null || nazskl == null) return;
+  	  	
+  	int drop = sklad.getY() - org.getY();
+  	int line = sklad.getY() + drop;
   	for (int i = 0; i < elems.length; i++)
   		if (elems[i].getY() >= line) ((JRDesignElement) elems[i]).setY(elems[i].getY() + drop);
   	
