@@ -615,7 +615,7 @@
           <Model Name="Label57">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label57</Property>
-               <Property Name="Caption">Dobavljač</Property>
+               <Property Name="Caption">Dobavljač:</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">0</Property>
                <Property Name="Top">2460</Property>
@@ -638,7 +638,7 @@
           <Model Name="Label58">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label58</Property>
-               <Property Name="Caption">Skladište</Property>
+               <Property Name="Caption">Skladište:</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">0</Property>
                <Property Name="Top">1980</Property>
@@ -721,7 +721,7 @@
           <Model Name="Label59">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label59</Property>
-               <Property Name="Caption">Kupac</Property>
+               <Property Name="Caption">Kupac:</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">0</Property>
                <Property Name="Top">2220</Property>
