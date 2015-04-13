@@ -198,7 +198,7 @@ public class repStatParDetGroups implements raReportData { //sg.com.elixir.repor
     return ds.getBigDecimal("PRUC").doubleValue();
   }
 
-  public double getPDV() {
+  /*public double getPDV() {
     return ds.getBigDecimal("POR1").doubleValue();
   }
 
@@ -208,7 +208,7 @@ public class repStatParDetGroups implements raReportData { //sg.com.elixir.repor
 
   public double getPOR3() {
     return ds.getBigDecimal("POR3").doubleValue();
-  }
+  }*/
 
   public double getPOREZ() {
     return ds.getBigDecimal(isprab ? "IPRODSP" : "POR").doubleValue();
