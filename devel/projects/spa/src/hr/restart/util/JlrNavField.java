@@ -378,7 +378,9 @@ public class JlrNavField extends JraTextField {
   
   public void refilterRaDataSet(Condition filter) {
   	if (raDataSet == null || !(raDataSet instanceof QueryDataSet)) return;
-  	Aus.setFilter((QueryDataSet) raDataSet, filter.toString());
+  	VarStr orig = new VarStr(((QueryDataSet) raDataSet).getOriginalQueryString());
+  	if (orig.indexOfIgnoreCase(" WHERE ") > 0) orig.truncate(orig.p);
+  	Aus.setFilter((QueryDataSet) raDataSet, orig.append(" WHERE ").append(filter).toString());
   }
   
   public void setDataSet(com.borland.dx.dataset.DataSet newDataSet) {
