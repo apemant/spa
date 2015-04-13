@@ -64,7 +64,7 @@ import java.util.List;
 public class VarStr {
   private static int DEFAULT_CAPACITY = 16;
   
-  public static int p;  // zadnji indexOf. Korisno.
+  public int p;  // zadnji indexOf. Korisno.
 
   private char[] value;
   private int count;
