@@ -85,6 +85,7 @@ public class Util {
   
   public static String[] mkey = {"CSKL", "VRDOK", "GOD", "BRDOK"};
   public static String[] dkey = {"CSKL", "VRDOK", "GOD", "BRDOK", "RBR"};
+  public static String[] dikey = {"CSKL", "VRDOK", "GOD", "BRDOK", "RBSID"};
   
   private Util() {
     initDocClasses();
