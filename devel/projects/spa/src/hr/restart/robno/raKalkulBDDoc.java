@@ -308,6 +308,7 @@ public class raKalkulBDDoc extends raTopCalcUtil {
       stavka.iprodbp = stavka.ineto.subtract(stavka.uirab).add(stavka.uizt) ;
       if (stavka.kol.compareTo(Nula)!=0)
         stavka.fvc = stavka.iprodbp.divide(stavka.kol,2,BigDecimal.ROUND_HALF_UP);
+      else stavka.fvc = stavka.fc.multiply(Sto.subtract(stavka.uprab)).divide(Sto,2,BigDecimal.ROUND_HALF_UP);
 
 //_POREZ
       stavka.por1 = stavka.iprodbp.multiply(stavka.ppor1).divide(Sto,2,BigDecimal.ROUND_HALF_UP);
