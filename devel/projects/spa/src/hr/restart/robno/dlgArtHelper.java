@@ -1,11 +1,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Condition;
-import hr.restart.baza.Doku;
-import hr.restart.baza.Stdoku;
 import hr.restart.baza.dM;
-import hr.restart.baza.doki;
-import hr.restart.baza.stdoki;
 import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.JraSplitPane;
 import hr.restart.swing.JraTextField;
@@ -14,6 +10,7 @@ import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
 import hr.restart.util.raFrame;
 import hr.restart.util.raJPTableView;
+import hr.restart.util.raMatPodaci;
 
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
@@ -25,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 
@@ -37,7 +35,8 @@ public class dlgArtHelper extends raFrame {
   JLabel lab = new JLabel();
   raJPTableView jptv = new raJPTableView(true) {
     public void mpTable_doubleClicked() {
-      Util.getUtil().showDocs(jptv, cart);
+    	if (jptv.getDataSet().rowCount() > 0 && jptv.getDataSet().getString("VRDOK").length() > 0)
+    		Util.getUtil().showDocs(jptv, cart);
     }
     public void mpTable_killFocus(java.util.EventObject e) {};
   };
@@ -46,7 +45,8 @@ public class dlgArtHelper extends raFrame {
   JLabel lab2 = new JLabel();
   raJPTableView jptv2 = new raJPTableView(true) {
     public void mpTable_doubleClicked() {
-      Util.getUtil().showDocs(jptv2, cart);
+    	doubleClickIzlaz(jptv2.getStorageDataSet());
+      //Util.getUtil().showDocs(jptv2, cart);
     }
     public void mpTable_killFocus(java.util.EventObject e) {};
   };
@@ -57,11 +57,13 @@ public class dlgArtHelper extends raFrame {
   
   KeyAction actESC;
   JraTextField toFocus;
+  raFrame thisOwner;
   
   public dlgArtHelper(raFrame owner, JraTextField focus) {
     super(raFrame.DIALOG, owner.getWindow());
     
     toFocus = focus;
+    thisOwner = owner;
     
     lab.setText("Ulazi na skladištu");
     JPanel labp = new JPanel(new BorderLayout());
@@ -90,6 +92,15 @@ public class dlgArtHelper extends raFrame {
     });
   }
   
+  public void doubleClickIzlaz(StorageDataSet ds) {
+  	// za override
+  }
+  
+  public void recalcMar() {
+  	jptv.calc.set("fvc", ((raMatPodaci) thisOwner).getRaQueryDataSet().getBigDecimal("FVC"));
+    jptv.performAllRows("mar = fvc - NC;  PMAR = mar %% NC");
+  }
+  
   public void show(int cart, String cskl) {
     show(cart, cskl, -1);
   }
@@ -108,26 +119,22 @@ public class dlgArtHelper extends raFrame {
     Condition prkCond = Condition.equal("VRDOK", "PRK").qualified("doku");
     Condition kalCond = Condition.equal("VRDOK", "KAL").qualified("doku");
     Condition cartCond = Condition.equal("CART", cart).qualified("stdoku");
-    QueryDataSet nabs = Aus.q("SELECT doku.cskl, doku.vrdok, doku.god, doku.brdok, doku.datdok, " +
-    		" stdoku.kol, stdoku.kolflh, stdoku.dc, stdoku.prab, stdoku.pzt, stdoku.nc " +
+    StorageDataSet nabs = Aus.createSet("Doku.CSKL .VRDOK .GOD .BRDOK .DATDOK Stdoku.KOL {Stanje FLH}KOLFLH.3 .DC .PRAB .PZT .NC .PMAR");
+    Aus.q(nabs, "SELECT doku.cskl, doku.vrdok, doku.god, doku.brdok, doku.datdok, " +
+    		" stdoku.kol, stdoku.kolflh, stdoku.dc, stdoku.prab, stdoku.pzt, stdoku.nc, stdoku.pmar " +
             " FROM doku INNER JOIN stdoku ON " + Aus.join("doku", "stdoku", Util.mkey) +
-            " WHERE " +cartCond.and(prkCond.and(csklCond).or(kalCond.and(acsklCond))));
-    nabs.setTableName("doku_stdoku");
-    Aus.setupColumn(nabs.getColumn("CSKL"), Doku.getDataModule());
-    Aus.setupColumn(nabs.getColumn("VRDOK"), Doku.getDataModule());
-    Aus.setupColumn(nabs.getColumn("GOD"), Doku.getDataModule());
-    Aus.setupColumn(nabs.getColumn("BRDOK"), Doku.getDataModule());
-    Aus.setupColumn(nabs.getColumn("DATDOK"), Doku.getDataModule());
-    Aus.setupColumn(nabs.getColumn("KOL"), Stdoku.getDataModule());
-    Aus.setupColumn(nabs.getColumn("KOLFLH"), Stdoku.getDataModule().getColumn("KOL"));
-    nabs.getColumn("KOLFLH").setCaption("Stanje FLH");
-    Aus.setupColumn(nabs.getColumn("DC"), Stdoku.getDataModule());
-    Aus.setupColumn(nabs.getColumn("PRAB"), Stdoku.getDataModule());
-    Aus.setupColumn(nabs.getColumn("PZT"), Stdoku.getDataModule());
-    Aus.setupColumn(nabs.getColumn("NC"), Stdoku.getDataModule());
-    
-    nabs.setSort(new SortDescriptor(new String[] {"DATDOK"}));
+            " WHERE " +cartCond.and(prkCond.and(csklCond).or(kalCond.and(acsklCond))) + " ORDER BY doku.datdok");
+    nabs.setTableName("doku_stdoku");    
     nabs.last();
+    
+    QueryDataSet st = Aus.q("SELECT * FROM stanje WHERE " + 
+    		csklCond.and(Condition.equal("GOD", Aut.getAut().getKnjigodRobno())).and(cartCond).qualified("stanje"));
+    if (st.rowCount() > 0) {
+    	nabs.insertRow(false);
+    	dM.copyColumns(st, nabs, new String[] {"CSKL", "GOD", "KOL", "NC"});
+    	nabs.post();
+    	nabs.last();
+    }
     
     if (!ld.raLocate(dm.getArtikli(), "CART", Integer.toString(cart))) setTitle("Artikl " + cart); 
     else setTitle("Artikl " + Aut.getAut().getCARTdependable(dm.getArtikli()) + " - " + dm.getArtikli().getString("NAZART"));
@@ -159,22 +166,13 @@ public class dlgArtHelper extends raFrame {
       Condition cparCond = Condition.equal("CPAR", cpar);
       Condition ojCond = Condition.in("VRDOK", "RAC PRD").or(Condition.equal("VRDOK", "PON").and(Condition.equal("PARAM", "OJ"))).qualified("doki");
       Condition sklCond = Condition.equal("VRDOK", "ROT").or(Condition.equal("VRDOK", "PON").and(Condition.diff("PARAM", "OJ"))).qualified("doki");
-      QueryDataSet outs = Aus.q("SELECT doki.cskl, doki.vrdok, doki.god, doki.brdok, doki.datdok, " +
+      StorageDataSet outs = Aus.createSet("doki.CSKL .VRDOK .GOD .BRDOK .DATDOK stdoki.KOL .FC .UPRAB .FVC .FMC");
+      Aus.q(outs, "SELECT doki.cskl, doki.vrdok, doki.god, doki.brdok, doki.datdok, " +
           " stdoki.kol, stdoki.fc, stdoki.uprab, stdoki.fvc, stdoki.fmc " +
           " FROM doki INNER JOIN stdoki ON " + Aus.join("doki", "stdoki", Util.mkey) +
           " WHERE " +cartCond.and(cparCond).and(sklCond.and(csklCond).or(ojCond.and(acsklCond))));
       outs.setTableName("doki_stdoki");
-      Aus.setupColumn(outs.getColumn("CSKL"), doki.getDataModule());
-      Aus.setupColumn(outs.getColumn("VRDOK"), doki.getDataModule());
-      Aus.setupColumn(outs.getColumn("GOD"), doki.getDataModule());
-      Aus.setupColumn(outs.getColumn("BRDOK"), doki.getDataModule());
-      Aus.setupColumn(outs.getColumn("DATDOK"), doki.getDataModule());
-      Aus.setupColumn(outs.getColumn("KOL"), stdoki.getDataModule());
-      Aus.setupColumn(outs.getColumn("FC"), stdoki.getDataModule());
-      Aus.setupColumn(outs.getColumn("UPRAB"), stdoki.getDataModule());
-      Aus.setupColumn(outs.getColumn("FVC"), stdoki.getDataModule());
-      Aus.setupColumn(outs.getColumn("FMC"), stdoki.getDataModule());
-      
+
       outs.setSort(new SortDescriptor(new String[] {"DATDOK"}));
       outs.last();
       
@@ -198,6 +196,7 @@ public class dlgArtHelper extends raFrame {
       
       jptv.setVisibleCols(new int[] {4,10});
       jptv.getColumnsBean().initialize();
+      recalcMar();
       
       jptv2.setKumTak(true);
       jptv2.setDataSet(null);
