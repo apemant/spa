@@ -177,7 +177,8 @@ public class jpUlazDetail extends JPanel {
     public void metToDo_after_lookUp(){
       if (frm.raDetail.getMode() == 'B') return;
       frm.updateHelper();
-      MYmetToDo_after_lookUp();
+      if (rpcart.getCART().length() > 0)
+      	MYmetToDo_after_lookUp();
     }
   };
   
@@ -875,15 +876,18 @@ public class jpUlazDetail extends JPanel {
         		frm.getDetailSet().getInt("CART"),
         		frm.getMasterSet().getString("GOD")));    
     frm.stanjeSet.open();
+    boolean hasart = lD.raLocate(dm.getArtikli(), "CART", frm.getDetailSet());
+    System.out.println("hasart " + hasart + " " + frm.getDetailSet().getInt("CART"));
     if(frm.stanjeSet.getRowCount()>0) {
       if (mode=='U') {
         if (frm.getDetailSet().getBigDecimal("NC").signum()==0) {
           if (frm.isDobArt) 
           	calc.run("DC = Dob_art.DC;  PRAB = Dob_art.PRAB");
           
-          calc.run("VC = sta.VC;  MC = sta.MC");          
+          calc.run("VC = sta.VC;  MC = sta.MC");
           calc.run("tds.RAB = DC % PRAB;  tds.ZT = (DC - tds.RAB) % PZT;  NC = DC - tds.RAB + tds.ZT");
-          if (calc.evaluate("NC").signum() == 0) 	calc.run("NC = sta.NC");
+          if (frm.getDetailSet().getBigDecimal("NC").signum() == 0)   calc.run("NC = sta.NC");
+          if (hasart && frm.getDetailSet().getBigDecimal("VC").signum() == 0)   calc.run("VC = Artikli.VC");
           calc.run("MAR = VC - NC;  PMAR = MAR %% NC;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
           calcFromNC();
         }
@@ -899,9 +903,13 @@ public class jpUlazDetail extends JPanel {
         if (frm.isDobArt) {
         	calc.run("DC = Dob_art.DC;  PRAB = Dob_art.PRAB");
         	calc.run("tds.RAB = DC % PRAB;  tds.ZT = (DC - tds.RAB) % PZT;  NC = DC - tds.RAB + tds.ZT");
-        	calc.run("MAR = PMAR = 0;  VC = NC;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
-        }
-    	}
+        	if (hasart) calc.run("VC = Artikli.VC;  MAR = VC - NC;  PMAR = MAR %% NC");
+        	else calc.run("MAR = PMAR = 0;  VC = NC");
+        	calc.run("tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
+        } else if (hasart) {
+      		calc.run("VC = Artikli.VC;  MAR = VC - NC;  PMAR = MAR %% NC;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
+      	}
+    	} 
       frm.isFind=false;
     }
     return frm.isFind;
