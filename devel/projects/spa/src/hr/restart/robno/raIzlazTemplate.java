@@ -926,7 +926,16 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 				.equalsIgnoreCase("D"));
 		setKumulativ(); // Siniša
 		
-		dah = new dlgArtHelper(raDetail, DP.jtfKOL);
+		dah = new dlgArtHelper(raDetail, DP.jtfKOL) {
+			public void doubleClickIzlaz(StorageDataSet ds) {
+				System.out.println("doubleclik " + ds);
+				Aus.set(getDetailSet(), "FC", ds);
+				Aus.set(getDetailSet(), "UPRAB", ds);
+				lc.setBDField("FC", getDetailSet().getBigDecimal("FC"), rKD.stavka);
+				lc.setBDField("UPRAB", getDetailSet().getBigDecimal("UPRAB"), rKD.stavka);
+				Kalkulacija("FC");
+			};
+		};
 	}
 
 	public void OpenWhatWeNeed() {
@@ -4044,6 +4053,7 @@ System.out.println("findCjenik::else :: "+sql);
 		lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
 		if (how.equals("KOL") && nabDirect)
 			Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
+		if (dah.isShowing()) dah.recalcMar();
 	}
   
 	public void nabKal(String kako) {
