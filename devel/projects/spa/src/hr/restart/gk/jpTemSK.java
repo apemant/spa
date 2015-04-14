@@ -101,15 +101,22 @@ public class jpTemSK extends JPanel {
     jlrNazpar.setNavProperties(jlrCpar);
     jlrNazpar.setSearchMode(1);
 
-    add(jlBrojdok, new XYConstraints(15, 0, -1, -1));
-    add(jraDatdok, new XYConstraints(150, 0, 100, -1));
-    add(jraDatdosp, new XYConstraints(255, 0, 100, -1));
-    add(jraBrojdok, new XYConstraints(360, 0, 240, -1));
-    
-    add(jlCpar, new XYConstraints(15, 25, -1, -1));
-    add(jlrCpar, new XYConstraints(150, 25, 100, -1));
-    add(jlrNazpar, new XYConstraints(255, 25, 345, -1));
-    add(jbSelCpar, new XYConstraints(605, 25, 21, 21));
+
+    int yp = 25, yd = 0;
+    if (frmParam.getParam("gk", "invertSaldak", "D", "Staviti partnera prije datuma na temeljnici (D,N)").equalsIgnoreCase("D")) {
+      yd = 25;
+      yp = 0;
+    }
+      
+      add(jlCpar, new XYConstraints(15, yp, -1, -1));
+      add(jlrCpar, new XYConstraints(150, yp, 100, -1));
+      add(jlrNazpar, new XYConstraints(255, yp, 345, -1));
+      add(jbSelCpar, new XYConstraints(605, yp, 21, 21));
+      
+      add(jlBrojdok, new XYConstraints(15, yd, -1, -1));
+      add(jraDatdok, new XYConstraints(150, yd, 100, -1));
+      add(jraDatdosp, new XYConstraints(255, yd, 100, -1));
+      add(jraBrojdok, new XYConstraints(360, yd, 240, -1));
 
 //    jpDetail.add(jraVrdok, new XYConstraints(150, 50, 100, -1));
     
