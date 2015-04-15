@@ -453,6 +453,7 @@ public class raPOS extends raIzlazTemplate  {
     expanded.setSort(new SortDescriptor(new String[] {"CSKL", "CART"}));
     
     for (expanded.first(); expanded.inBounds(); expanded.next()) {
+    	if (!raVart.isStanje(expanded.getInt("CART"))) continue;
       if (!ld.raLocate(mat, "CSKL CART", expanded)) {
         mat.insertRow(false);
         Aut.getAut().copyArtFields(mat, expanded);
@@ -721,6 +722,7 @@ public class raPOS extends raIzlazTemplate  {
     else expanded.setSort(new SortDescriptor(new String[] {"CSKL", "CART"}));
     
     for (expanded.first(); expanded.inBounds(); expanded.next()) {
+    	if (!raVart.isStanje(expanded.getInt("CART"))) continue;
       if (cskl != expanded.getString("CSKL") || (rep && !expanded.getString("STATUS").equals(nacpl))) {
         cskl = expanded.getString("CSKL");
         nacpl = expanded.getString("STATUS");
