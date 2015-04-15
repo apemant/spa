@@ -54,8 +54,8 @@ public class menuOpMp extends JMenu {
   public JMenuItem jmShemeKonta = new JMenuItem();
   public JMenuItem jmShemeKontaOJ = new JMenuItem();
   public JMenuItem jmProdMjesta = new JMenuItem();
-  public JMenuItem jmVrArt = new JMenuItem();
   public JMenuItem jmBlagajnici = new JMenuItem();
+  public JMenuItem jmVlasnici = new JMenuItem();
 
   public menuOpMp(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -152,10 +152,10 @@ public class menuOpMp extends JMenu {
       	jmBlagajnici_actionPerformed(e);
       }
     });
-    jmVrArt.setText("Vrste artikla");
-    jmVrArt.addActionListener(new java.awt.event.ActionListener() {
+    jmVlasnici.setText("Kupci - vlasnici");
+    jmVlasnici.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        jmVrArt_actionPerformed(e);
+        jmVlasnici_actionPerformed(e);
       }
     });
     this.add(jmSkladista);
@@ -174,6 +174,7 @@ public class menuOpMp extends JMenu {
     this.addSeparator();
     this.add(jmProdMjesta);
     this.add(jmBlagajnici);
+    this.add(jmVlasnici);
   }
 
   public void jmSkladista_actionPerformed(ActionEvent e) {
@@ -225,8 +226,8 @@ public class menuOpMp extends JMenu {
   public void jmBlagajnici_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmBlagajnici", jmBlagajnici.getText());
   }
-  public void jmVrArt_actionPerformed(ActionEvent e) {
-    SF.showFrame("hr.restart.robno.frmVrArt", jmVrArt.getText());
+  void jmVlasnici_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.robno.frmVlasnik", res.getString("frmVlasnik_title"));
   }
 
 }
