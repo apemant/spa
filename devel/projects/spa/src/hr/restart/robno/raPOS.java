@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
@@ -34,14 +35,17 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.raDateMask;
 import hr.restart.swing.raExtendedTable;
 import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raMultiLineMessage;
+import hr.restart.swing.raTableModifier;
 import hr.restart.swing.raTextMask;
 import hr.restart.util.*;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -54,6 +58,7 @@ import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -524,7 +529,7 @@ public class raPOS extends raIzlazTemplate  {
       jp.setVisibleCols(new int[] {0, Aut.getAut().getCARTdependable(1,2,3), 4,5,6,7,8,9,10});
       jp.setDataSetAndSums(arts, new String[] {"IPRODSP"});
       jp.getColumnsBean().initialize();
-      
+      jp.addTableModifier(new StanjeColorModifier());
     }
     
     public boolean show() {
@@ -1032,4 +1037,44 @@ public class raPOS extends raIzlazTemplate  {
     return group;
   }
   
+  static class StanjeColorModifier extends raTableModifier {
+    Variant v = new Variant();
+    boolean coloring = false;
+    
+    public StanjeColorModifier() {
+      super();
+      setColorParam();
+    }
+
+    public boolean doModify() {
+    	if (!coloring) return false;
+      if (getTable() instanceof JraTable2) {
+        JraTable2 tab = (JraTable2) getTable();
+        if (tab.getDataSet().getRowCount() > 0 && tab.getDataSet().hasColumn("KOL2") != null) {
+          tab.getDataSet().getVariant("KOL2", this.getRow(), v);
+          return v.getBigDecimal().signum() < 0;
+        }
+      }
+      return false;
+    }
+    
+    public void setColorParam() {
+      coloring = frmParam.getFrmParam().getParam("robno","stanjeAlert","D",
+          "Bojanje stanja u ovisnosti o sig. i min. kol " +
+          "D - šareni prikaz, N - monotoni prikaz").equals("D");
+    }
+    
+    public void modify(){
+      if (coloring){
+        Color colorN = hr.restart.swing.raColors.red;//Color.red;
+        JComponent jRenderComp = (JComponent) renderComponent;
+        if (isSelected()) {
+          jRenderComp.setBackground(colorN);
+          jRenderComp.setForeground(Color.black);
+        } else {
+          jRenderComp.setForeground(Color.red);
+        }
+      }
+    }
+  }  
 }
