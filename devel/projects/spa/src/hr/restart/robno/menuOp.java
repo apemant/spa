@@ -60,7 +60,6 @@ public class menuOp extends JMenu {
   JMenuItem jmNacOtp = new JMenuItem();
   JMenuItem jmVlasnici = new JMenuItem();
   JMenuItem jmKreditori = new JMenuItem();
-  JMenuItem jmVrArt = new JMenuItem();
 
   public menuOp(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -209,18 +208,12 @@ public class menuOp extends JMenu {
         jmKreditori_actionPerformed(e);
       }
     });
-    jmVrArt.setText("Vrste artikla");
-    jmVrArt.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        jmVrArt_actionPerformed(e);
-      }
-    });
+
 
     this.add(jmSkladista);
     this.add(jmPorezi);
     this.add(jmJedMj);
     this.add(jmGrupaArt);
-    //this.add(jmVrArt);
     this.add(jmArtikli);
     this.addSeparator();
     this.add(jmShemeKonta);
@@ -317,8 +310,5 @@ public class menuOp extends JMenu {
   }
   void jmKreditori_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmKreditori", "Kreditori");
-  }
-  void jmVrArt_actionPerformed(ActionEvent e) {
-    SF.showFrame("hr.restart.robno.frmVrArt", jmVrArt.getText());
   }
 }
