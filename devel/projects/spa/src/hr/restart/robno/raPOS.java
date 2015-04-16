@@ -269,7 +269,8 @@ public class raPOS extends raIzlazTemplate  {
   		tds.open();
   		if (lastCskl != null) tds.setString("CSKL", lastCskl);
   		tds.setTimestamp("DATDOK", Valid.getValid().getToday());
-  		if (lastDate != null) tds.setTimestamp("DATDOK", hr.restart.util.Util.getUtil().addDays(lastDate, 1));
+  		if (lastDate != null && lastDate.before(hr.restart.util.Util.getUtil().getFirstSecondOfDay(tds.getTimestamp("DATDOK")))) 
+  		  tds.setTimestamp("DATDOK", hr.restart.util.Util.getUtil().addDays(lastDate, 1));
   			
     JraTextField dat = new JraTextField();
     dat.setColumnName("DATDOK");
