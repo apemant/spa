@@ -240,8 +240,8 @@ public class JOPPDhndlr {
       addBigDec(strAset, strBset, new String[] {"PORPRIRMIR","POR","PRIR"}, "JOS=0101-0119,0121;");
       addBigDec(strAset, strBset, new String[] {"PORPRIRKAP","POR","PRIR"}, "JOS=1001-1009;");
       addBigDec(strAset, strBset, new String[] {"PORPRIRIMO","POR","PRIR"}, "JOS=2001-2009;");
-      addBigDec(strAset, strBset, new String[] {"PORPRIRIOS","POR","PRIR"}, "JOS=3001-3009;");
-      addBigDec(strAset, strBset, new String[] {"PORPRIRIDD","POR","PRIR"}, "JOS=4001-4009,5501;");
+      addBigDec(strAset, strBset, new String[] {"PORPRIROS","POR","PRIR"}, "JOS=3001-3009;");
+      addBigDec(strAset, strBset, new String[] {"PORPRIRDD","POR","PRIR"}, "JOS=4001-4009,5501;");
       addBigDec(strAset, strBset, new String[] {"PORPRIRKAM","POR","PRIR"}, "JOS=1101-1109;");
 
       addBigDec(strAset, strBset, new String[] {"MIO1PL","MIO1"}, "JOS=0001-0003,0005-0009,0021-0029,5701-5799;");
