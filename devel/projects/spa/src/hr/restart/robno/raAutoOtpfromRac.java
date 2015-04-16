@@ -317,11 +317,11 @@ public class raAutoOtpfromRac {
 						+ zaglavlja_otp.getString("VRDOK")
 						+ zaglavlja_otp.getString("GOD");
 				if (lD.raLocate(mySEQ, "OPIS", opis)) {
-					mySEQ.setDouble("BROJ", mySEQ.getDouble("BROJ") + 1);
+					mySEQ.setInt("BROJ", mySEQ.getInt("BROJ") + 1);
 				} else {
 					mySEQ.insertRow(true);
 					mySEQ.setString("OPIS", opis);
-					mySEQ.setDouble("BROJ", brdok + 1);
+					mySEQ.setInt("BROJ", brdok + 1);
 				}
 				brdok = (int) mySEQ.getDouble("BROJ");
 
