@@ -323,7 +323,7 @@ public class raAutoOtpfromRac {
 					mySEQ.setString("OPIS", opis);
 					mySEQ.setInt("BROJ", brdok + 1);
 				}
-				brdok = (int) mySEQ.getDouble("BROJ");
+				brdok = (int) mySEQ.getInt("BROJ");
 
 				zaglavlja_otp.setInt("BRDOK", brdok);
 				//        zaglavlja_otp.setInt("BRDOK",val.findSeqInt(zaglavlja_otp.getString("CSKL")+
@@ -333,8 +333,7 @@ public class raAutoOtpfromRac {
 				hmrbr.put(zaglavlja_otp.getString("CSKL"), new Integer(1));
 				vtPrijenos.open();
 				vtPrijenos.insertRow(false);
-				vtPrijenos.setString(
-						"KEYSRC",
+				vtPrijenos.setString("KEYSRC",
 						rPVT.makeKey("doki", zaglavlje_rac.getString("CSKL"),
 								zaglavlje_rac.getString("VRDOK"), zaglavlje_rac
 										.getString("GOD"), zaglavlje_rac
