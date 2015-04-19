@@ -1167,10 +1167,10 @@ public class frmBrBilAll extends raUpitFat {
       kontoPanel.setNoLookup(true);
       doubleClicked = true;
     }
-    if (this.getJPTV().getDataSet().getString("BROJKONTA").length() < 4) {
+    if (this.getJPTV().getStorageDataSet().getString("BROJKONTA").length() < 4) {
       ll.addLast(this.kontoPanel.jlrKontoBroj.getText().trim());
-      pl.addLast(this.getJPTV().getDataSet().getRow()+"");
-      kontoPanel.jlrKontoBroj.setText(this.getJPTV().getDataSet().getString("BROJKONTA"));
+      pl.addLast(this.getJPTV().getStorageDataSet().getRow()+"");
+      kontoPanel.jlrKontoBroj.setText(this.getJPTV().getStorageDataSet().getString("BROJKONTA"));
       kontoPanel.jlrKontoBroj.forceFocLost();
       kontoPanel.setcORG(corgRemember);
       this.getJPTV().enableEvents(false);
@@ -1180,7 +1180,7 @@ public class frmBrBilAll extends raUpitFat {
       this.getJPTV().enableEvents(true);
     } else {
       frmKarticeGK fkgk = new frmKarticeGK(false,0);
-      String konto = this.getJPTV().getDataSet().getString("BROJKONTA");
+      String konto = this.getJPTV().getStorageDataSet().getString("BROJKONTA");
       fkgk.stds.open();
       fkgk.stds.setTimestamp("pocDatum", stds.getTimestamp("POCDAT"));
       fkgk.stds.setTimestamp("zavDatum", stds.getTimestamp("ZAVDAT"));
@@ -2027,7 +2027,7 @@ public class frmBrBilAll extends raUpitFat {
     if (level <= 4 && level >= 1 && isShifted) {
       this.getJPTV().enableEvents(false);
 
-      seekKonto = this.getJPTV().getDataSet().getString("BROJKONTA");
+      seekKonto = this.getJPTV().getStorageDataSet().getString("BROJKONTA");
       okAndInit();
 
       this.getJPTV().enableEvents(true);
