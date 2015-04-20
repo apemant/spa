@@ -23,6 +23,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -573,6 +574,24 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
     mset.setBigDecimal(column, bd);
   }
   
+  private void recalcPOR(StorageDataSet mset, StorageDataSet izvj) {
+    int perc = 0;
+    for (izvj.first(); izvj.inBounds(); izvj.next()) 
+      if (izvj.getString("CIZ").trim().toLowerCase().endsWith("o")) {
+        String[] tok = new VarStr(izvj.getString("OPIS")).split();
+        for (int i = 0; i < tok.length; i++) {
+          if (tok[i].equals("25%")) perc = 25;
+          else if (tok[i].equals("13%")) perc = 13;
+          else if (tok[i].equals("5%")) perc = 5;
+          else continue;
+          
+          if (lookupData.getlookupData().raLocate(mset, "POZ", izvj.getString("CIZ")))
+            mset.setBigDecimal("OSN", mset.getBigDecimal("PDV").
+                divide(BigDecimal.valueOf(perc).movePointLeft(2), 2, BigDecimal.ROUND_HALF_UP));
+        }
+      }
+  }
+  
   private void recalcPDVSet(StorageDataSet mset, StorageDataSet izvj) {
     izvj.open();
     //StringTokenizer sums = new StringTokenizer("101+203+404+505", "+", true);
@@ -708,6 +727,8 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
     setPDV.open();
     //
     fillsetPDV(setPDV);
+    if (frmParam.getParam("sk", "PDVcalcPor","D","Izraèunati osnovicu iz poreza na PDV obrascu (D,N)?").equals("D"))
+      recalcPOR(setPDV, izvjpdv);
     recalcPDVSet(setPDV, izvjpdv);
     recalcPDVSet(setPDV, izvjpdv);
     //
