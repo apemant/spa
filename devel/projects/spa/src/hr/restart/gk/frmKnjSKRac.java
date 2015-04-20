@@ -36,10 +36,8 @@ import hr.restart.util.Util;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raComboBox;
-import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
