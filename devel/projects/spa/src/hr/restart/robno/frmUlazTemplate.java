@@ -759,7 +759,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 			raDetail.calc.run("ZC = MC;  IZAD = ISP");
 			if (isFind) {
 				raDetail.calc.run("PORAV = oldPORAV + (sta.KOL - oldKOL) * (MC - sta.MC)");
-				raDetail.calc.run("DIPORPOR = PORAV % porezi.UKUPOR;  DIOPORMAR = PORAV - DIOPORPOR");
+				raDetail.calc.run("DIPORPOR = PORAV % Porezi.UKUPOR;  DIOPORMAR = PORAV - DIOPORPOR");
 			}
 		}
 		if (isFind) { // ako postoji na stanju
