@@ -901,10 +901,10 @@ public class Util {
 
   public static com.borland.dx.sql.dataset.QueryDataSet getMatSkladFromCorg() {
     if (matSkladFromCorg==null) {
-      matSkladFromCorg = Sklad.getDataModule().getFilteredDataSet(Condition.equal("TIPSKL", "M").and(OrgStr.getCorgsKnjigCond()));
+      matSkladFromCorg = Sklad.getDataModule().getFilteredDataSet(Condition.equal("VRZAL", "M").and(OrgStr.getCorgsKnjigCond()));
       hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(new hr.restart.zapod.raKnjigChangeListener() {
         public void knjigChanged(String a1, String a2) {
-        	Sklad.getDataModule().setFilter(matSkladFromCorg, Condition.equal("TIPSKL", "M").and(OrgStr.getCorgsKnjigCond()));
+        	Sklad.getDataModule().setFilter(matSkladFromCorg, Condition.equal("VRZAL", "M").and(OrgStr.getCorgsKnjigCond()));
           matSkladFromCorg.open();
         }
       });
