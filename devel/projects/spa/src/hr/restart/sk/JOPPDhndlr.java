@@ -244,7 +244,7 @@ public class JOPPDhndlr {
       addBigDec(strAset, strBset, new String[] {"PORPRIRDD","POR","PRIR"}, "JOS=4001-4009,5501;");
       addBigDec(strAset, strBset, new String[] {"PORPRIRKAM","POR","PRIR"}, "JOS=1101-1109;");
 
-      addBigDec(strAset, strBset, new String[] {"MIO1PL","MIO1"}, "JOS=0001-0003,0005-0009,0021-0029,5701-5799;");
+      addBigDec(strAset, strBset, new String[] {"MIO1PL","MIO1"}, "JOS=0001-0003,0005-0009,0021-0029,5701-5719;");
       addBigDec(strAset, strBset, new String[] {"MIO1DD","MIO1"}, "JOS=0201,4002;");
       addBigDec(strAset, strBset, new String[] {"MIO1POD","MIO1"}, "JOS=0031-0039;");
       addBigDec(strAset, strBset, new String[] {"MIO1PP","MIO1"}, "JOS=5401-5403,5608;");
@@ -252,7 +252,7 @@ public class JOPPDhndlr {
       addBigDec(strAset, strBset, new String[] {"MIO1STAZ","MIO1STAZ"}, "");
       addBigDec(strAset, strBset, new String[] {"MIO1SD","MIO1"}, "JOS=0041-0049;");
 
-      addBigDec(strAset, strBset, new String[] {"MIO2PL","MIO2"}, "JOS=0001-0003,0005-0009,0021-0029,5701-5799;");
+      addBigDec(strAset, strBset, new String[] {"MIO2PL","MIO2"}, "JOS=0001-0003,0005-0009,0021-0029,5701-5719;");
       addBigDec(strAset, strBset, new String[] {"MIO2DD","MIO2"}, "JOS=0201,4002;");
       addBigDec(strAset, strBset, new String[] {"MIO2POD","MIO2"}, "JOS=0031-0039;");
       addBigDec(strAset, strBset, new String[] {"MIO2PP","MIO2"}, "JOS=5101-5103,5201-5299,5301,5401-5403,5608;");
@@ -278,7 +278,7 @@ public class JOPPDhndlr {
       addBigDec(strAset, strBset, new String[] {"ZAPOSSD","ZAP"}, "JOS=0041-0049;");
 
       addBigDec(strAset, strBset, new String[] {"NEOP","NEOP"}, "");
-      addBigDec(strAset, strBset, new String[] {"KAMATA","MIO2","MIO2STAZ"}, "JOP=5271;");
+      addBigDec(strAset, strBset, new String[] {"KAMATA","MIO2","MIO2STAZ"}, "JOP=5721;");
 
       strAset.post();
     }
