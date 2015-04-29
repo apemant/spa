@@ -200,20 +200,20 @@ public class upDnevnik extends raUpit {
       "stdoku.kol as kolul,0. as koliz,stdoku.zc,stdoku.izad,0. as iraz,stdoku.izad as sal FROM doku,stdoku "+
       "WHERE "+rut.getDoc("doku", "stdoku")+" and doku.vrdok != 'POR' "+
       "and doku.cskl = '"+skl+"' and doku.datdok >= "+datfrom+" and doku.datdok <= "+datto+
-    " UNION "+
+    " UNION ALL "+
   // poravnanje kod primke
   "SELECT doku.cskl,doku.datdok,'POR' as vrdok,doku.brdok,stdoku.cart,stdoku.cart1,stdoku.bc,stdoku.nazart,"+
       "0. as kolul,0. as koliz,"+getZCPor("stdoku")+"stdoku.porav as izad,0. as iraz,stdoku.porav as sal FROM doku,stdoku "+
       "WHERE "+rut.getDoc("doku", "stdoku")+" and doku.vrdok != 'POR' and stdoku.porav != 0 "+
       "and doku.cskl = '"+skl+"' and doku.datdok >= "+datfrom+" and doku.datdok <= "+datto+
-    " UNION "+
+    " UNION ALL  "+
 
   // poravnanje
   "SELECT doku.cskl,doku.datdok,doku.vrdok,doku.brdok,stdoku.cart,stdoku.cart1,stdoku.bc,stdoku.nazart,"+
       "0. as kolul,0. as koliz,"+getZCPor("stdoku")+"stdoku.porav as izad,0. as iraz,stdoku.porav as sal FROM doku,stdoku "+
       "WHERE "+rut.getDoc("doku", "stdoku")+" and doku.vrdok = 'POR' "+
       "and doku.cskl = '"+skl+"' and doku.datdok >= "+datfrom+" and doku.datdok <= "+datto+
-    " UNION "+
+    " UNION ALL  "+
   // ulaz me\u0111uskladišnice
   "SELECT meskla.csklul as cskl,meskla.datdok,meskla.vrdok,meskla.brdok,stmeskla.cart,stmeskla.cart1,stmeskla.bc,stmeskla.nazart,"+
       "stmeskla.kol as kolul,0. as koliz,stmeskla.zcul as zc,stmeskla.zadrazul as izad,0. as iraz,stmeskla.zadrazul as sal "+
@@ -221,7 +221,7 @@ public class upDnevnik extends raUpit {
       "and meskla.vrdok = stmeskla.vrdok and meskla.brdok = stmeskla.brdok and meskla.god = stmeskla.god "+
       "and meskla.vrdok in ('MES', 'MEU') "+
       "and meskla.csklul = '"+skl+"' and meskla.datdok >= "+datfrom+" and meskla.datdok <= "+datto+
-    " UNION "+
+    " UNION ALL  "+
   // poravnanje ulaza me\u0111uskladišnice
   "SELECT meskla.csklul as cskl,meskla.datdok,'POR' as vrdok,meskla.brdok,stmeskla.cart,stmeskla.cart1,stmeskla.bc,stmeskla.nazart,"+
       "0. as kolul,0. as koliz,"+getZCPor("stmeskla")+"stmeskla.porav as izad,0. as iraz,stmeskla.porav as sal FROM meskla,stmeskla "+
@@ -229,7 +229,7 @@ public class upDnevnik extends raUpit {
       "and meskla.vrdok = stmeskla.vrdok and meskla.brdok = stmeskla.brdok and meskla.god = stmeskla.god "+
       "and meskla.vrdok in ('MES', 'MEU') and stmeskla.porav != 0 "+
       "and meskla.csklul = '"+skl+"' and meskla.datdok >= "+datfrom+" and meskla.datdok <= "+datto+
-    " UNION "+
+    " UNION ALL  "+
   // izlaz me\u0111uskladišnice
   "SELECT meskla.cskliz as cskl,meskla.datdok,meskla.vrdok,meskla.brdok,stmeskla.cart,stmeskla.cart1,stmeskla.bc,stmeskla.nazart,"+
       "0. as kolul,stmeskla.kol as koliz,stmeskla.zc,0. as izad,stmeskla.zadraziz as iraz,-stmeskla.zadraziz as sal "+
@@ -237,7 +237,7 @@ public class upDnevnik extends raUpit {
       "and meskla.vrdok = stmeskla.vrdok and meskla.brdok = stmeskla.brdok and meskla.god = stmeskla.god "+
       "and meskla.vrdok in ('MES','MEI') "+
       "and meskla.cskliz = '"+skl+"' and meskla.datdok >= "+datfrom+" and meskla.datdok <= "+datto+
-    " UNION "+
+    " UNION ALL  "+
   // ostali izlazi
   "SELECT doki.cskl,doki.datdok,doki.vrdok,doki.brdok,stdoki.cart,stdoki.cart1,stdoki.bc,stdoki.nazart,"+
       "0. as kolul,stdoki.kol as koliz,stdoki.zc,0. as izad,stdoki.iraz,-stdoki.iraz as sal FROM doki,stdoki "+
