@@ -1103,7 +1103,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
           clearSpeedHistory();
           e.consume();
         }
-      } else if ((e.getModifiers() & e.SHIFT_MASK) != 0 && raTypeaheadWindow.isShowing(this)) {
+      } else if ((e.getModifiers() & e.ALT_MASK) != 0 && raTypeaheadWindow.isShowing(this)) {
         if (e.getKeyCode()==e.VK_UP) {
           int row = findStringBidirect(speed.toString().toLowerCase(), -1);
           if (row >= 0 && row != getDataSet().getRow() && 
@@ -1118,6 +1118,30 @@ public class JraTable2 extends JTable implements JraTableInterface {
             getDataSet().goToRow(row);
 
           showTypeTip();
+          e.consume();
+        }
+      } else if ((e.getModifiers() & e.SHIFT_MASK) != 0) {
+        Rectangle vis = getVisibleRect();
+        int oldrow = getDataSet().getRow();
+        if (e.getKeyCode()==e.VK_UP) {
+          if (getDataSet().atFirst()) {
+            vis.y = 0;
+            scrollRectToVisible(vis);
+          } else if (!getDataSet().atFirst() && allowRowChange(
+              getDataSet().getRow(), getDataSet().getRow() - 1))
+            if (!getDataSet().prior()) getDataSet().first();
+            else rowChanged(oldrow, getDataSet().getRow(), false, true);
+          
+          e.consume();
+        } else if (e.getKeyCode()==e.VK_DOWN)  {
+          if (getDataSet().atLast()) {
+            vis.y += getRowHeight();
+            scrollRectToVisible(vis);
+          } else if (!getDataSet().atLast() && allowRowChange(
+              getDataSet().getRow(), getDataSet().getRow() + 1))
+            if (!getDataSet().next()) getDataSet().last();
+            else rowChanged(oldrow, getDataSet().getRow(), false, true);
+          
           e.consume();
         }
       }

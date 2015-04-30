@@ -517,6 +517,11 @@ sysoutTEST sT = new sysoutTEST(false);
     ZatvoriOstaloDetail();
     return true;
   }
+  
+  
+  public void rowChangedDetail(int oldrow, int newrow, boolean toggle, boolean extend) {
+    // for override
+  }
 
   /**
 
@@ -2810,6 +2815,11 @@ sysoutTEST sT = new sysoutTEST(false);
 //        raMaster_stavVisible(idx+1);
 
      }
+     
+     public void mpTable_rowChanged(int oldrow, int newrow, boolean toggle, boolean extend) {
+      // TODO Auto-generated method stub
+      rowChangedDetail(oldrow, newrow, toggle, extend);
+    }
 
 /*
 

@@ -181,6 +181,10 @@ sysoutTEST ST = new sysoutTEST(false);
     public boolean mpTable_allowRowChange(int oldrow, int newrow) {
       return allowRowChange(oldrow, newrow);
     }
+    
+    public void mpTable_rowChanged_ext(int oldrow, int newrow, boolean toggle, boolean extend) {
+      raMatPodaci.this.mpTable_rowChanged(oldrow, newrow, toggle, extend);
+    };
 
     public boolean validateSelection(ReadRow r) {
       return raMatPodaci.this.validateSelection(r);
@@ -2685,7 +2689,10 @@ ST.prnc(raQueryDataSet);
   private Set markTables = new HashSet();
   private Set markDatasets = new HashSet();
   
-
+  public void mpTable_rowChanged(int oldrow, int newrow, boolean toggle, boolean extend) {
+    // for override
+  }
+  
   public void markChange(String table) {
     markTables.add(table.toUpperCase());
   }

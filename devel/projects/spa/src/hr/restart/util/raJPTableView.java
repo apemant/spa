@@ -1630,7 +1630,11 @@ public class raJPTableView extends JPanel {
         raQueryDataSet.goToRow(row);
         enableEvents(true);
       }
-    }
+    } else mpTable_rowChanged_ext(oldrow, newrow, toggle, extend);
+  }
+  
+  public void mpTable_rowChanged_ext(int oldrow, int newrow, boolean toggle, boolean extend) {
+    // for override
   }
 
   private void selectOrToggle(DataSet r, boolean toggle) {
