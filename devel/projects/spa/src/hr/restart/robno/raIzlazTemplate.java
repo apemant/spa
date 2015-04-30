@@ -62,6 +62,7 @@ import javax.swing.SwingUtilities;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -184,6 +185,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	boolean isDospDatdok = false;
 	
 	boolean minKolCheck = false;
+	
+	boolean allowDrag = false;
 	
 	boolean sigKolCheck = false;
 	
@@ -1007,11 +1010,14 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	    isAutoFixPor = frmParam.getParam("robno", "autoFixPor", "N",
             "Automatska provjera ukupnog poreza (D,N)?").equals("D");
 	    
-	    minKolCheck = hr.restart.sisfun.frmParam.getParam("robno", "minkol", 
-	        "Provjera minimalne kolièine na stanju (D,N)", "N").equalsIgnoreCase("D");
+	    minKolCheck = hr.restart.sisfun.frmParam.getParam("robno", "minkol", "N", 
+	        "Provjera minimalne kolièine na stanju (D,N)").equalsIgnoreCase("D");
 	    
-	    sigKolCheck = hr.restart.sisfun.frmParam.getParam("robno", "sigkol", 
-	        "Provjera signalne kolièine na stanju (D,N)", "N").equalsIgnoreCase("D");
+	    allowDrag = hr.restart.sisfun.frmParam.getParam("robno", "allowDrag", "D", 
+            "Omoguæiti promjenu poretka stavaka mišem (D,N)").equalsIgnoreCase("D");
+	    
+	    sigKolCheck = hr.restart.sisfun.frmParam.getParam("robno", "sigkol", "N", 
+	        "Provjera signalne kolièine na stanju (D,N)").equalsIgnoreCase("D");
 	    
 	    chStanjeRiG = hr.restart.sisfun.frmParam.getParam("robno", "chStanjeRiG", "N",
           "Provjera stanja kod GRN i RAC -a").equalsIgnoreCase("D");
@@ -1649,6 +1655,32 @@ ST.prn(radninal);
 		getMasterSet().setString("CUSER",
 				hr.restart.sisfun.raUser.getInstance().getUser());
 		getMasterSet().setString("ZIRO", pnb.getZiroRN(getMasterSet()));
+	}
+	
+	public void rowChangedDetail(int oldrow, int newrow, boolean toggle, boolean extend) {	  
+	  if (!allowDrag || oldrow == newrow || !extend) return;
+	  SortDescriptor sort = getDetailSet().getSort();
+	  if (sort == null || sort.getKeys() == null) return;
+	  if (!Arrays.equals(sort.getKeys(), Util.dkey) && 
+	      !(sort.getKeys().length == 1 && sort.getKeys()[0].equalsIgnoreCase("RBR"))) return;
+	  raDetail.getJpTableView().enableEvents(false);
+	  try {
+	    long ti = getDetailSet().getInternalRow();
+	    short tr = getDetailSet().getShort("RBR");
+	    getDetailSet().goToRow(oldrow);
+	    short lr = getDetailSet().getShort("RBR");
+	    long li = getDetailSet().getInternalRow();
+	    getDetailSet().setShort("RBR", (short) -1023);
+	    getDetailSet().saveChanges();
+	    getDetailSet().goToInternalRow(ti);
+	    getDetailSet().setShort("RBR", lr);
+	    getDetailSet().saveChanges();
+	    getDetailSet().goToInternalRow(li);
+	    getDetailSet().setShort("RBR", tr);
+	    getDetailSet().saveChanges();
+	  } finally {
+	    raDetail.getJpTableView().enableEvents(true);
+	  }
 	}
 
 	public void SetFocusNovi() {
