@@ -1658,7 +1658,7 @@ ST.prn(radninal);
 	}
 	
 	public void rowChangedDetail(int oldrow, int newrow, boolean toggle, boolean extend) {	  
-	  if (!allowDrag || oldrow == newrow || !extend) return;
+	  if (!allowDrag || oldrow == newrow || !extend || raDetail.getMode() != 'B') return;
 	  SortDescriptor sort = getDetailSet().getSort();
 	  if (sort == null || sort.getKeys() == null) return;
 	  if (!Arrays.equals(sort.getKeys(), Util.dkey) && 
