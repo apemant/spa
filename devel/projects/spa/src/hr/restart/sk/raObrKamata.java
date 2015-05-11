@@ -596,7 +596,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
                  "(VRDOK='UPL' OR (VRDOK='OKK' AND (IP > 0 OR ID < 0)))" :    
                  "(VRDOK='IPL' OR (VRDOK='OKD' AND (ID > 0 OR IP < 0)))")+
              " AND skstavke.cskstavke = pokriveni.cuplate AND skstavke.datdok <= '"+
-             datumDo+"' "+ OrgStr.getCorgsCond(corg).qualified("skstavke")+
+             datumDo+"' AND "+ OrgStr.getCorgsCond(corg).qualified("skstavke")+
              " UNION ALL "+
              "SELECT skstavke.brojdok, skstavke.datdok, skstavke.oznval, "+
              " pokriveni.iznos, pokriveni.cuplate as cracuna, skstavke.ssaldo as signi, " +
@@ -606,7 +606,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
                  "(VRDOK='UPL' OR (VRDOK='OKK' AND (IP > 0 OR ID < 0)))" :    
                  "(VRDOK='IPL' OR (VRDOK='OKD' AND (ID > 0 OR IP < 0)))")+
              " AND skstavke.cskstavke = pokriveni.cracuna AND skstavke.datdok <= '"+
-             datumDo+"' "+OrgStr.getCorgsCond(corg).qualified("skstavke")+
+             datumDo+"' AND "+OrgStr.getCorgsCond(corg).qualified("skstavke")+
              " ORDER BY 5, 2", true);
   }
 
@@ -628,7 +628,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
                  "(VRDOK='IRN' OR (VRDOK='OKK' AND ID > 0))" :
                    "(VRDOK='URN' OR (VRDOK='OKD' AND IP > 0))"
                  ) + " AND skstavke.datdosp < '"+
-             ut.getFirstSecondOfDay(datumDo)+"' "+OrgStr.getCorgsCond(corg)+
+             ut.getFirstSecondOfDay(datumDo)+"' AND "+OrgStr.getCorgsCond(corg)+
             " ORDER BY cpar,datdosp", true);
   }
 
