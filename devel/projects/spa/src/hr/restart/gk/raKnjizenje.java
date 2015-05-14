@@ -1303,7 +1303,7 @@ public class raKnjizenje {
     }
   }
   
-  private void fillInitialMap(Map extbrdoks, boolean kup) {
+  /*private void fillInitialMap(Map extbrdoks, boolean kup) {
     
     Condition cond = Aus.getKnjigCond().and(Aus.getVrdokCond(kup, true)).
        and(Aus.getYearCond("DATUMKNJ", Util.getUtil().getYear(
@@ -1333,7 +1333,7 @@ public class raKnjizenje {
           ((Integer) extbrdoks.get(key)).intValue() < num)
         extbrdoks.put(key, new Integer(num));
     }
-  }
+  }*/
   
   boolean autoinc, bookDependant;
   int extsize;
@@ -1349,13 +1349,25 @@ public class raKnjizenje {
       "Minimalna velicina broja URA/IRA (popunjavanje vedeæim nulama)"));
     if (extsize > 20) extsize = 20;
 
-    fillInitialMap(extbrdoks, false);
-    fillInitialMap(extbrdoks, true);
+    //fillInitialMap(extbrdoks, false);
+    //fillInitialMap(extbrdoks, true);
 
     return true;
   }
   
   private String getNextBrdok(Map extbrdoks, DataSet sk) {
+    int next = Valid.getValid().findSeqInt(OrgStr.getKNJCORG(false) + (raVrdokMatcher.isKup(sk) ? "IRA-" : "URA-") +
+        Util.getUtil().getYear(sk.getTimestamp("DATUMKNJ")) +
+        (bookDependant ? "-" + sk.getString("CKNJIGE") : ""), 
+        false, false);
+
+    String result = Integer.toString(next);
+    if (result.length() < extsize) 
+      result = Aus.string(extsize - result.length(), '0') + result;
+    raTransaction.saveChanges(dM.getDataModule().getSeq());
+    return result;
+     
+  /*
     String prefix = raVrdokMatcher.isKup(sk) ? "I-" : "U-";
     String key = bookDependant ? prefix + sk.getString("CKNJIGE") : prefix;
     int next = !extbrdoks.containsKey(key) ? 1 :
@@ -1365,7 +1377,7 @@ public class raKnjizenje {
     String result = Integer.toString(next);
     if (result.length() < extsize) 
       result = Aus.string(extsize - result.length(), '0') + result;
-    return result;
+    return result;*/
   }
   
   private boolean commitTransTransaction(raPreparedStatement addsk, raPreparedStatement addui) throws Exception {

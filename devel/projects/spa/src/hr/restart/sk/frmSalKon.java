@@ -386,15 +386,15 @@ public class frmSalKon extends raMasterDetail {
     		  (bookDependant ? "-" + getMasterSet().getString("CKNJIGE") : ""), 
     		  false, false);
       
-      if (next > 1) {
+      //if (next > 1) {
     	  String result = Integer.toString(next);
           if (result.length() < extSize) 
             result = Aus.string(extSize - result.length(), '0') + result;
           getMasterSet().setString("EXTBRDOK", result);
           return;
-      }
+      //}
       
-      Condition cond = Aus.getKnjigCond().and(Aus.getVrdokCond(ira, true)).
+      /*Condition cond = Aus.getKnjigCond().and(Aus.getVrdokCond(ira, true)).
          and(Aus.getYearCond("DATUMKNJ", ut.getYear(getMasterSet().getTimestamp("DATDOK")))).
          and(Condition.anyString("CKNJIGE"));
       Condition condrad = Aus.getKnjigCond().and(Aus.getVrdokCond(ira)).
@@ -420,7 +420,7 @@ public class frmSalKon extends raMasterDetail {
       String result = Integer.toString(maxExt + 1);
       if (result.length() < extSize) 
         result = Aus.string(extSize - result.length(), '0') + result;
-      getMasterSet().setString("EXTBRDOK", result);
+      getMasterSet().setString("EXTBRDOK", result);*/
     }
   }
 
