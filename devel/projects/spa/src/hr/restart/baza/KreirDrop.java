@@ -839,15 +839,15 @@ public abstract class KreirDrop {
     }
   }
 
-  public void loadData(DataSet dest, File dir) throws FileNotFoundException {
+  public void loadTo(DataSet dest, File dir) throws FileNotFoundException {
     _loadData(dest, dir, origColumns[0].getTableName().toLowerCase(), false);
   }
 
-  public void loadData(DataSet dest, File dir, String name) throws FileNotFoundException {
+  public void loadTo(DataSet dest, File dir, String name) throws FileNotFoundException {
     _loadData(dest, dir, name, false);
   }
   
-  public void loadData(DataSet dest, File dir, String name, String defcontent) throws FileNotFoundException {
+  public void loadTo(DataSet dest, File dir, String name, String defcontent) throws FileNotFoundException {
     _loadData(dest, dir, name, false, defcontent);
   }
 
