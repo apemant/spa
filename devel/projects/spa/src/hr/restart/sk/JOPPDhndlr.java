@@ -419,6 +419,7 @@ public class JOPPDhndlr {
   /**
    * The ... gulp!
    */
+  boolean needmatch;
   void doJOPPD() {
     
     boolean iszapinv = isZapInv();
@@ -443,6 +444,11 @@ public class JOPPDhndlr {
     getStrBset();
     strBset.empty();
     rs = getRSperiod();
+    HashSet oos = new HashSet();
+    for (rs.first(); rs.inBounds(); rs.next())
+      oos.add(rs.getString("RSOO"));
+    needmatch = oos.size() > 1;
+    
     int rbr = 0;
     for (rs.first(); rs.inBounds(); rs.next()) {
       boolean naknada = isNaknada(rs.getShort("CVRP")+"");
@@ -450,7 +456,7 @@ public class JOPPDhndlr {
       BigDecimal zasnr = Aus.zero2;
       BigDecimal zapinv = Aus.zero2;
       BigDecimal omjer = Aus.zero2;
-      if (!isOOmatch(rs)) continue;
+      if (needmatch && !isOOmatch(rs)) continue;
       //rs.BRUTOMJ = pravibruto
       //rs.BRUTO = osnovica dop. (max)
       if (rs.getBigDecimal("BRUTO").signum()!=0) omjer = rs.getBigDecimal("PBTO").divide(rs.getBigDecimal("BRUTOMJ"),8,BigDecimal.ROUND_HALF_UP);
@@ -757,7 +763,7 @@ public class JOPPDhndlr {
     String cvrp = "P"+rs.getShort("CVRP");
     if (lookupData.getlookupData().raLocate(rpls, "CRADNIK", cvrp)) {
       String vrstaprim_rsOO = getVrstaPrim(rs.getShort("CVRP")).getString("RSOO");
-      if (!vrstaprim_rsOO.equals(rs.getString("RSOO"))) {
+      if (needmatch && !vrstaprim_rsOO.equals(rs.getString("RSOO"))) {
         //ako se razlikuje RSOO na periodu i vrsti primanja treba pronaci sifru za RSOO sa perioda
         for (vrstaprim.first(); vrstaprim.inBounds(); vrstaprim.next()) {
           if (vrstaprim.getString("RSOO").equals(rs.getString("RSOO"))) {
