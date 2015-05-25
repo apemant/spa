@@ -2092,6 +2092,8 @@ String getPripOrgAm(String str, String corgTable) {
         }
       }
 //      qds = replaceAmor_Isp(qds);
+      
+      qds.setSort(new SortDescriptor(new String[]{groupBy, "INVBROJ"}));
 
       qds.first();
       String corg="";
@@ -2175,7 +2177,7 @@ String getPripOrgAm(String str, String corgTable) {
               deset=qds.getBigDecimal("DESET").doubleValue();
               jedanaest=qds.getBigDecimal("JEDANAEST").doubleValue();
               dvanaest=qds.getBigDecimal("DVANAEST").doubleValue();
-              insertInv =qds.getString("INVBROJ");
+              tempInv = insertInv =qds.getString("INVBROJ");
             }
           }
 
