@@ -1181,6 +1181,8 @@ public boolean  doWithSave(char mode) {
 
     String[] key = new String[] {"CART"};
     if (mode=='N') {
+      if (getRaQueryDataSet().getString("VRART").trim().length()==0)
+        rcbVRART.this_itemStateChanged();
       if (jtfCART1.getFieldMask() instanceof raTextMask) {
         raTextMask m = (raTextMask) jtfCART1.getFieldMask();
         if (m.isMasked())
