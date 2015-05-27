@@ -98,7 +98,8 @@ public class dlgArtHelper extends raFrame {
   
   public void recalcMar() {
   	jptv.calc.set("fvc", ((raMatPodaci) thisOwner).getRaQueryDataSet().getBigDecimal("FVC"));
-    jptv.performAllRows("mar = fvc - NC;  PMAR = mar %% NC");
+  	jptv.calc.set("kol", ((raMatPodaci) thisOwner).getRaQueryDataSet().getBigDecimal("KOL"));
+    jptv.performAllRows("mar = fvc - NC;  PMAR = mar %% NC;  IMAR = mar * kol");
   }
   
   public void show(int cart, String cskl) {
@@ -119,7 +120,7 @@ public class dlgArtHelper extends raFrame {
     Condition prkCond = Condition.equal("VRDOK", "PRK").qualified("doku");
     Condition kalCond = Condition.equal("VRDOK", "KAL").qualified("doku");
     Condition cartCond = Condition.equal("CART", cart).qualified("stdoku");
-    StorageDataSet nabs = Aus.createSet("Doku.CSKL .VRDOK .GOD .BRDOK .DATDOK Stdoku.KOL {Stanje FLH}KOLFLH.3 .DC .PRAB .PZT .NC .PMAR");
+    StorageDataSet nabs = Aus.createSet("Doku.CSKL .VRDOK .GOD .BRDOK .DATDOK Stdoku.KOL {Stanje FLH}KOLFLH.3 .DC .PRAB .PZT .NC .PMAR .IMAR");
     Aus.q(nabs, "SELECT doku.cskl, doku.vrdok, doku.god, doku.brdok, doku.datdok, " +
     		" stdoku.kol, stdoku.kolflh, stdoku.dc, stdoku.prab, stdoku.pzt, stdoku.nc, stdoku.pmar " +
             " FROM doku INNER JOIN stdoku ON " + Aus.join("doku", "stdoku", Util.mkey) +
