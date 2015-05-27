@@ -1626,7 +1626,7 @@ public class raSaldaKonti {
     if (raSaldaKonti.isNaplata() && !checkTaxAllowance(skstavka.getTimestamp("DATDOK"))) return false;
     
     Skstavke.getDataModule().setFilter(
-      Condition.whereAllEqual(new String[] {"KNJIG", "CPAR", "BROJKONTA", "BROJDOK", "OZNVAL"}, skstavka));
+      Condition.whereAllEqual(new String[] {"KNJIG", "CPAR", "BROJKONTA", "BROJDOK", "OZNVAL"}, skstavka).and(Condition.diff("POKRIVENO", "X")));
     QueryDataSet sks = dM.getDataModule().getSkstavke();
     QueryDataSet pok = Pokriveni.getDataModule().openTempSet(Condition.nil);
     sks.open();
