@@ -193,7 +193,10 @@ public class Imports {
       st.setInt("RBSID", ++rbr);
       st.setShort("RBR", (short) rbr);
       Aut.getAut().copyArtFields(st, dM.getDataModule().getArtikli());
-      st.setString("NAZART", est.getChildTextTrim("OpisStavke"));
+      String nazart = est.getChildTextTrim("OpisStavke");
+      if (nazart.length() > st.getColumn("NAZART").getPrecision())
+        nazart = nazart.substring(0, st.getColumn("NAZART").getPrecision());
+      st.setString("NAZART", nazart);
       st.setBigDecimal("KOL", Aus.one0);
       BigDecimal val = Aus.getDecNumber(est.getChildTextTrim("IznosStavke"));
       st.setBigDecimal("FC", val);
