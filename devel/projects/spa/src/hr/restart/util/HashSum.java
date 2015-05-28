@@ -31,11 +31,13 @@ public class HashSum {
     this.ds = ds;
     this.keyCol = keyCol;
     this.valCol = valCol;
+    valType = ds.getColumn(valCol).getDataType();
   }
   
   public void set(DataSet ds, String valCol) {
     this.ds = ds;
     this.valCol = valCol;
+    valType = ds.getColumn(valCol).getDataType();
   }
   
   public void set(DataSet ds) {
@@ -44,9 +46,10 @@ public class HashSum {
   
   public void set(String valCol) {
     this.valCol = valCol;
+    valType = ds.getColumn(valCol).getDataType();
   }
   
-  private Object getKey(ReadRow row) {
+  protected Object getKey(ReadRow row) {
     if (keyType == Variant.STRING)
       return row.getString(keyCol);
     if (keyType == Variant.INT)
