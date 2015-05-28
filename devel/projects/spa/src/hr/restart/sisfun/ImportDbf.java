@@ -1,5 +1,6 @@
 package hr.restart.sisfun;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
@@ -27,16 +28,22 @@ import com.borland.dx.sql.dataset.QueryDataSet;
 public class ImportDbf {
 
   static Map artmap;
+  static QueryDataSet artnew;
+  static int mcart=0;
   
   public static void start(String root) {
     
     try {
       
       DataSet arts = Aus.q("SELECT * FROM artikli");
+      artnew = Artikli.getDataModule().getTempSet("1=0");
+      artnew.open();
       artmap = new HashMap();
       for (arts.first(); arts.inBounds(); arts.next()) {
         artmap.put(arts.getString("CART1"), 
             new Integer(arts.getInt("CART")));
+        if (arts.getInt("CART") > mcart)
+          mcart = arts.getInt("CART");
       }
       
       File rootf = new File(root);
@@ -57,9 +64,15 @@ public class ImportDbf {
       dbf.close();
       
       dbf = new DBF(new File(pierre, "MPSTANJE.DBF").toString());      
-      //dbf.useIndex(new File(pierre, "MPSTANJE.NDX").toString());
+      dbf.useIndex(new File(pierre, "MPSTANJE.NDX").toString());
       process(dbf, "3");
       dbf.close();
+      
+      
+      frmTableDataView view = new frmTableDataView(true, true, false);
+      view.setDataSet(artnew);
+      view.show();
+
       
 /*      System.out.println("Rows:");
       System.out.println(dbf.getRecordCount());
@@ -112,11 +125,25 @@ public class ImportDbf {
       String pm = dbf.getField("PM").get().trim();
       String pfx = pm;
       if (pm.equals("051")) pfx = "001";
+      if (pm.equals("052")) pfx = "002";
+      if (pm.equals("053")) pfx = "003";
       String sif = pfx + "-" + dbf.getField("SIFRA").get().trim();
       Integer ci = (Integer) artmap.get(sif);
       if (ci == null) {
         System.out.println("Nema šifre " + sif);
-        continue;
+        
+        artmap.put(sif, ci = new Integer(++mcart));
+        artnew.insertRow(false);
+        artnew.setInt("CART", mcart);
+        artnew.setString("CART1", sif);
+        artnew.setString("BC", sif);
+        artnew.setString("NAZART", sif);
+        artnew.setString("NAZPRI", sif);
+        artnew.setString("CPOR", "1");
+        artnew.setString("JM", "KOM");
+        artnew.setString("TIPART", "R");
+        artnew.setString("VRART", "R");
+        artnew.post();
       }
       
       BigDecimal mpc = num(dbf, "MPC");
