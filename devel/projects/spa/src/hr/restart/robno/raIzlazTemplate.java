@@ -2461,6 +2461,8 @@ ST.prn(radninal);
 
 	final public void EntryPointDetail(char mode) {
 		DP.InitRaPanCartDP();
+		
+		if (mode == 'I') updateHelper();
 	}
 
 	public boolean DodatnaValidacijaDetail() {
