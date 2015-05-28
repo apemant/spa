@@ -42,6 +42,7 @@ public class menuUpit extends JMenu {
   public JMenuItem jmKartKupArt = new JMenuItem();
   public JMenuItem jmKartKupArt2 = new JMenuItem();
   public JMenuItem jmDnevnik = new JMenuItem();
+  public JMenuItem jmRever = new JMenuItem();
   public JMenuItem jmCjenik = new JMenuItem();
   public JMenuItem jmCjenikCORG = new JMenuItem();
   public JMenuItem jmRab = new JMenuItem();
@@ -98,10 +99,16 @@ public class menuUpit extends JMenu {
         jmKartKupArt2_actionPerformed(e);
       }
     });
-    jmDnevnik.setText("Dnevnik knji\u017Eenja");
+    jmDnevnik.setText("Dnevnik knjiženja");
     jmDnevnik.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmDnevnik_actionPerformed(e);
+      }
+    });
+    jmRever.setText("Pregled stanja reversa");
+    jmRever.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmRever_actionPerformed(e);
       }
     });
     
@@ -162,6 +169,7 @@ public class menuUpit extends JMenu {
     this.add(jmKartKupArt);
 //    this.add(jmKartKupArt2); //TODO
     this.add(jmDnevnik);
+    this.add(jmRever);
     this.add(jmArtSklad);
     this.add(jmUIDoc);
     this.addSeparator();
@@ -193,6 +201,9 @@ public class menuUpit extends JMenu {
   }
   public void jmDnevnik_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upDnevnik", jmDnevnik.getText());
+  }
+  public void jmRever_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.robno.upReverStanje", jmRever.getText());
   }
   public void jmCjenik_actionPerformed(ActionEvent e) {
     hr.restart.robno.frmCjenik fCjenik = (frmCjenik) SF.showFrame("hr.restart.robno.frmCjenik", 0, jmCjenik.getText(), false);
