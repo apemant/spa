@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.util.JlrNavField;
@@ -194,5 +195,10 @@ public class rapancskl1 extends JPanel {
      */
       public String getCSKL() {
         return jrfCSKL.getText().trim();
+  }
+      
+  public Condition getCondition() {
+    if (getCSKL().length() == 0) return Condition.none;
+    return Condition.equal("CSKL", getCSKL());
   }
 }
