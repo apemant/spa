@@ -96,7 +96,7 @@ public class upDnevnik extends raUpit {
 
   public void componentShow() {
     showDefaults();
-    rpcskl.setCSKL(hr.restart.sisfun.raUser.getInstance().getDefSklad());
+    rpcskl.setDefaultCSKL();
   }
 
   String vrzal;
