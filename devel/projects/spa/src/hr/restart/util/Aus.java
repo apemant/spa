@@ -1227,7 +1227,7 @@ public class Aus {
   		e = buf.indexOf('}', b);
   		labs.add(buf.mid(b + 1, e));
   		buf.replace(b + 1, e, "");
-  		b = e + 1;
+  		b = b + 2;
   	}
   	
   	String[] cold = buf.indexOf(',') > 0 ? buf.splitTrimmed(',') : buf.split();
@@ -1256,7 +1256,7 @@ public class Aus {
   			if (d < 0) cols[i] = dM.createStringColumn(name, lab, getNumber(cold[i].substring(p + 1)));
   			else cols[i] = dM.createStringColumn(name, lab, cold[i].substring(d + 1), getNumber(cold[i].substring(p + 1, d)));
   		} else if (cold[i].startsWith("@"))
-  			cols[i] = dM.createTimestampColumn(cold[i].substring(1));
+  			cols[i] = dM.createTimestampColumn(cold[i].substring(1), lab != null ? lab : cold[i].substring(1));
   		else cols[i] = dM.createIntColumn(cold[i]);
   	}
   	
