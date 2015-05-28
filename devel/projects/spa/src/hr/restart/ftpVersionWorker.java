@@ -266,7 +266,7 @@ public class ftpVersionWorker {
     if (vpr.getProperty("starterworkdir") == null) vpr.setProperty("starterworkdir", starterworkdir);
     if (vpr.getProperty("waitbeforeexit") == null) vpr.setProperty("waitbeforeexit", "3000");
     if (vpr.getProperty("ftpdtype") == null) vpr.setProperty("ftpdtype", "bsd");
-    FileHandler.storeProperties(VERSIONPROPERTIES, vpr);
+    //FileHandler.storeProperties(VERSIONPROPERTIES, vpr);
     return vpr;
   }
  
