@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import java.util.HashSet;
+
 import hr.restart.baza.Condition;
 import hr.restart.baza.Kumulorg;
 import hr.restart.baza.Kumulrad;
@@ -130,10 +132,13 @@ public class frmArhiviranje extends frmObradaPL {
         vrsteodb.open();*/
         
         try {
+          HashSet kumset = new HashSet();
           QueryDataSet kumulorg = Kumulorg.getDataModule().openTempSet(OrgStr.getCorgsCond(tds.getString("CORG")));
           for (kumulorg.first(); kumulorg.inBounds(); kumulorg.next()) {//loop kumulorg
             String currcorg = kumulorg.getString("CORG");            
             raProcess.setMessage("Arhiviranje OJ "+currcorg + "...", false);
+            
+            kumset.add(currcorg);
             
             raIniciranje.getInstance().posOrgsPl(kumulorg.getString("CORG"));//pos orgpl
             dm.getParametripl().open();
@@ -310,6 +315,45 @@ public class frmArhiviranje extends frmObradaPL {
             }//radnicipl for
 */          }//kumulorg for
           
+          // radnici koji imaju samo prisutobr:
+          
+          raProcess.setMessage("Arhiviranje (samo prisutnost)...", false);
+          
+          DataSet ds = Aus.q("SELECT DISTINCT cradnik FROM prisutobr");
+          HashSet pris = new HashSet();
+          for (ds.first(); ds.inBounds(); ds.next())
+            pris.add(ds.getString("CRADNIK"));
+          
+          // oj koje spadaju u glavni corg, a nema ih u kumulorg:
+          HashSet orgs = OrgStr.getCorgSet(tds.getString("CORG"));
+          orgs.removeAll(kumset);
+          
+          // Radnici iz tih oj
+          DataSet rds = Radnicipl.getDataModule().openTempSet("CRADNIK CORG", OrgStr.getCorgsCond(tds.getString("CORG")));
+          HashSet rset = new HashSet();
+          for (rds.first(); rds.inBounds(); rds.next())
+             if (orgs.contains(rds.getString("CORG")))
+                rset.add(rds.getString("CRADNIK"));
+                    
+          // zadrži samo radnike iz prisutobr, koji spadaju u ove gore;
+          pris.retainAll(rset);
+          
+          // arhiviraj prisutobr za njih
+          
+          HashDataSet radnici = new HashDataSet(Radnicipl.getDataModule().openTempSet(
+              Condition.in("CRADNIK", pris)), "CRADNIK");
+
+          QueryDataSet pds = Prisutobr.getDataModule().openTempSet(Condition.in("CRADNIK", pris));
+          for (pds.first(); pds.inBounds(); pds.next()) {
+            String cradnik = locRadnik(radnici, pds);
+            
+            if (!vrsteprim.loc(pds))
+              throw new Exception("Nepoznata vrsta primanja "+pds.getShort("CVRP"));
+            addPRISUTARH.setValues(pds);
+            setValuesObrada(addPRISUTARH);
+            setOjFor(addPRISUTARH, cradnik, 5);
+            addPRISUTARH.execute();
+          }
           return true;
         }
         catch (Exception ex) {
