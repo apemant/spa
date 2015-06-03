@@ -76,6 +76,8 @@ public class frmNarDob extends raMasterDetail {
   
   QueryDataSet zahStavkaNew = null;
   QueryDataSet zahStavkaOld = null;
+  
+  boolean allowDrag = false;
 
 
   String corg, nazpar;
@@ -120,6 +122,8 @@ public class frmNarDob extends raMasterDetail {
   }
 
   public void beforeShowMaster() {
+    allowDrag = hr.restart.sisfun.frmParam.getParam("robno", "allowDrag", "D", 
+        "Omoguæiti promjenu poretka stavaka mišem (D,N)").equalsIgnoreCase("D");
     setPreselectValues();
     setTitleMaster();
     jpMaster.jp1.jlrCorg.setRaDataSet(OrgStr.getTempOrgs(corg));
@@ -153,6 +157,32 @@ public class frmNarDob extends raMasterDetail {
     zahStavkaNew = zahStavkaOld = null;
     oldKol = mode == 'N' ? Aus.zero3 :
       this.getDetailSet().getBigDecimal("KOL");
+  }
+  
+  public void rowChangedDetail(int oldrow, int newrow, boolean toggle, boolean extend) {      
+    if (!allowDrag || oldrow == newrow || !extend || raDetail.getMode() != 'B') return;
+    SortDescriptor sort = getDetailSet().getSort();
+    if (sort == null || sort.getKeys() == null) return;
+    if (!Arrays.equals(sort.getKeys(), Util.dkey) && 
+        !(sort.getKeys().length == 1 && sort.getKeys()[0].equalsIgnoreCase("RBR"))) return;
+    raDetail.getJpTableView().enableEvents(false);
+    try {
+      long ti = getDetailSet().getInternalRow();
+      short tr = getDetailSet().getShort("RBR");
+      getDetailSet().goToRow(oldrow);
+      short lr = getDetailSet().getShort("RBR");
+      long li = getDetailSet().getInternalRow();
+      getDetailSet().setShort("RBR", (short) -1023);
+      getDetailSet().saveChanges();
+      getDetailSet().goToInternalRow(ti);
+      getDetailSet().setShort("RBR", lr);
+      getDetailSet().saveChanges();
+      getDetailSet().goToInternalRow(li);
+      getDetailSet().setShort("RBR", tr);
+      getDetailSet().saveChanges();
+    } finally {
+      raDetail.getJpTableView().enableEvents(true);
+    }
   }
 
   private void setDefaultNacs() {
