@@ -2826,6 +2826,21 @@ class ArgumentDialog {
   }
 
   private void initDefaults() {
+    try {
+      bshInterpreter = new Interpreter();
+      bshInterpreter.eval(
+          "import hr.restart.baza.*;" +
+          "import hr.restart.util.*;" +
+          "import hr.restart.swing.*;" +          
+          "import com.borland.dx.dataset.*;" +
+          "import com.borland.dx.sql.dataset.*;" +
+          "import com.borland.jb.util.*;" +
+          "import java.math.BigDecimal;"
+      );
+    } catch (EvalError e) { 
+      e.printStackTrace();
+    }
+    checkDynamicBind("");
     for (int i = 0; i < tagnames.size(); i++) {
       String key = (String) tagnames.get(i);
       Tag t = (Tag) tags.get(key);
@@ -2851,20 +2866,6 @@ class ArgumentDialog {
           if (tf.getColumnName().equalsIgnoreCase(key))
             tf.forceFocLost();
         }
-    }
-    try {
-      bshInterpreter = new Interpreter();
-      bshInterpreter.eval(
-          "import hr.restart.baza.*;" +
-          "import hr.restart.util.*;" +
-          "import hr.restart.swing.*;" +          
-          "import com.borland.dx.dataset.*;" +
-          "import com.borland.dx.sql.dataset.*;" +
-          "import com.borland.jb.util.*;" +
-          "import java.math.BigDecimal;"
-      );
-    } catch (EvalError e) { 
-      e.printStackTrace();
     }
   }
 
@@ -2904,6 +2905,7 @@ class ArgumentDialog {
       else if (wid < 20) wid = 100;
       else if (wid < 30) wid = 200;
       else wid = 350;
+      if (cols[i].getDataType() == Variant.TIMESTAMP) wid = 100;
       if (key.toLowerCase().endsWith("from")) {
         for (int j = 0; j < tagnames.size(); j++) {
           String key2 = ((String) tagnames.get(j)).toLowerCase();
