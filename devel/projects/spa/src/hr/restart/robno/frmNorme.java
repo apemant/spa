@@ -130,7 +130,7 @@ public class frmNorme extends raMasterFakeDetailArtikl {
       rpn.setCART();
       return false;
     }
-    if (!raVart.isNorma(mast.getInt("CART"))) {
+    if (!raVart.isNorma(mast.getInt("CARTNOR"))) {
     	JOptionPane.showMessageDialog(this.getJPanelMaster(),
           "Artikl ne dopušta normiranje!", "Greška", JOptionPane.ERROR_MESSAGE);
     	rpn.EnabDisab(true);
