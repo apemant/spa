@@ -22,7 +22,6 @@ import hr.restart.baza.Logodat;
 import hr.restart.baza.dM;
 import hr.restart.baza.kreator;
 import hr.restart.robno.TypeDoc;
-import hr.restart.robno.repIzlazni;
 import hr.restart.robno.repUtil;
 import hr.restart.robno.reportsQuerysCollector;
 import hr.restart.sisfun.frmParam;
@@ -62,34 +61,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
-import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JRDesignTextElement;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JRJdk13Compiler;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -97,7 +80,6 @@ import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
-import net.sf.jasperreports.engine.xml.JasperDesignFactory;
 import net.sf.jasperreports.view.JRViewer;
 import sg.com.elixir.ReportRuntime;
 import sg.com.elixir.reportwriter.datasource.DataSourceManager;
@@ -1784,6 +1766,7 @@ public class dlgRunReport {
         boolean spec = rd.isCustomIzlaz() && rqc.caller != null &&
             rqc.caller.raMaster.getSelectionTracker().countSelected() > 1;
         StorageDataSet ret = null;
+        String prefixf = "SPA-ERP_ispis";
         if (spec) ret = ReportMailDialog.showMailDialog(false);
         else {
           String kome = null;
@@ -1794,9 +1777,18 @@ public class dlgRunReport {
                 Integer.toString(rqc.getQueryDataSet().getInt("CPAR"))))
               kome = dM.getDataModule().getPartneri().getString("EMADR");
             if (kome != null && kome.length() < 10) kome = null;
-            naslov = TypeDoc.getTypeDoc().nazivDokumenta(
+            
+            if (rqc.getQueryDataSet().getString("FOK").equals("D")) {
+              prefixf = rqc.getQueryDataSet().getString("VRDOK") + "-" + rqc.getQueryDataSet().getString("PNBZ2") + "-";
+              naslov = TypeDoc.getTypeDoc().nazivDokumenta(
+                  rqc.getQueryDataSet().getString("VRDOK")) + 
+                  " br. " + rqc.getQueryDataSet().getString("PNBZ2");
+            } else {
+              prefixf = repUtil.getFormatBroj(rqc.getQueryDataSet()) + "-";
+              naslov = TypeDoc.getTypeDoc().nazivDokumenta(
                 rqc.getQueryDataSet().getString("VRDOK")) + 
                 " br. " + repUtil.getFormatBroj(rqc.getQueryDataSet());
+            }
           }
           ret = ReportMailDialog.showMailDialog(kome, naslov, null);
         }
@@ -1844,7 +1836,7 @@ public class dlgRunReport {
               SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
               String time_suffix = sdf.format(now);
               JasperPrint jpr = getJasperPrint(dlg);
-              String fn = "SPA-ERP_ispis"+time_suffix+".pdf";
+              String fn = prefixf+time_suffix+".pdf";
               if (jpr == null) rt.saveAsPDF(fn); 
               else JasperExportManager.exportReportToPdfFile(jpr, fn);
               ReportMailDialog.sendMail(new File(fn), ret);
