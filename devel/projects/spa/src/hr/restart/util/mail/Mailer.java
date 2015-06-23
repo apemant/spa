@@ -17,7 +17,9 @@
 ****************************************************************************/
 package hr.restart.util.mail;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.FileHandler;
+import hr.restart.util.VarStr;
 import hr.restart.util.raProcess;
 import hr.restart.util.mail.ui.MailFrame;
 
@@ -85,7 +87,11 @@ public abstract class Mailer {
    * @return
    */
   private String getChecksum() {
-    return "\nSHA1:"+FileHandler.getSHA1(lastAttachment)+"\n";
+    String potpis = frmParam.getParam("zapod", "potpisEmail", "", "Potpis ispod e-maila", true);
+    if (potpis == null || potpis.length() == 0)
+      return "\nSHA1:"+FileHandler.getSHA1(lastAttachment)+"\n";
+    
+    return "\n\n---\n" + new VarStr(potpis).replace('|', '\n');
   }
 
   /**
