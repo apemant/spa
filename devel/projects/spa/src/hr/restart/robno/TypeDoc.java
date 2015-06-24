@@ -136,6 +136,7 @@ public class TypeDoc {
     if ("PON".equalsIgnoreCase(what_kind_of_document) ||
         "PRD".equalsIgnoreCase(what_kind_of_document) ||
         "NKU".equalsIgnoreCase(what_kind_of_document) ||
+        "NDO".equalsIgnoreCase(what_kind_of_document) ||
         "RAC".equalsIgnoreCase(what_kind_of_document) ||
         "GRC".equalsIgnoreCase(what_kind_of_document) ||
         "ROT".equalsIgnoreCase(what_kind_of_document) ||
