@@ -116,7 +116,7 @@ public class repDynamicProvider implements IDataProvider {
         xt.getDataSet().getVariant(xt.getGroup(n), row, v);        
         if (ds != null) {
           ds.open();
-          lookupData.getlookupData().raLocate(ds, xt.getGroup(n), v.toString());
+          if (!lookupData.getlookupData().raLocate(ds, xt.getGroup(n), v.toString())) return "";
         }
       }
       VarStr full = new VarStr(fake ? "" : xt.getDataSet().getColumn(xt.getGroup(n)).format(v));
