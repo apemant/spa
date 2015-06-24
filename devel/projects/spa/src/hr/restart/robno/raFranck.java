@@ -101,14 +101,14 @@ public class raFranck {
       
       //if (sf.getString("VRDOK").equals("GOT") && sf.isNull("CKUPAC")) horeca = "T";
       
-      if (!dat.equals(oldd) || !oldc.equals(nc) || !izlaz.equals(oldp) || !horeca.equals(oldh)) {
+      if ((out != null && !dat.equals(oldd)) || !oldc.equals(nc) || !izlaz.equals(oldp) || !horeca.equals(oldh)) {
         oldd = dat;
         oldc = nc;
         oldp = izlaz;
         oldh = horeca;
         if (!ld.raLocate(ds, cc, new String[] {oldd, oldp, oldc, oldh})) {
           ds.insertRow(false);
-          ds.setString("DATUM",  oldd);
+          if (out != null) ds.setString("DATUM",  oldd);
           ds.setString("IZLAZ",  oldp);
           ds.setString("ART",  oldc);
           ds.setString("HORECA",  oldh);
@@ -135,29 +135,31 @@ public class raFranck {
     
     ds.setSort(new SortDescriptor(new String[] {"DATUM", "ART", "IZLAZ"}));
     
-    TextFile tf = TextFile.write(out);
-    tf.out("DATUM;PPD_IZVOR;PPD_IZLAZ;ARTIKL;ART_PORIJEKLO_PPD;TRZISTE_DRZAVA;" +
-    		"TRGOVINA_HORECA;KOLICINA_KG;VALUTA;RF_UKUPNO_IZNOS;IZNOS_PRODAJE;NI;CK2;NR;ZT;PP");
-    
-    VarStr line = new VarStr();
-    for (ds.first(); ds.inBounds(); ds.next()) {
-      line.clear().append(ds.getString("DATUM")).append(";GAL;");
-      line.append(ds.getString("IZLAZ")).append(';');
-      line.append(ds.getString("ART")).append(';');
-      line.append("T;D01;");
-      line.append(ds.getString("HORECA")).append(';');
-      line.append(Aus.formatBigDecimal(ds.getBigDecimal("KG"))).append(';');
-      line.append("kn;");
-      line.append(Aus.formatBigDecimal(ds.getBigDecimal("RAB"))).append(';');
-      line.append(Aus.formatBigDecimal(ds.getBigDecimal("NETO"))).append(';');
-      line.append(Aus.formatBigDecimal(ds.getBigDecimal("NI"))).append(';');
-      line.append(Aus.formatBigDecimal(ds.getBigDecimal("CK2"))).append(';');
-      line.append("0;0;");
-      line.append(Aus.formatBigDecimal(ds.getBigDecimal("PPK")));
-      tf.out(line.toString());
+    if (out != null) {
+      TextFile tf = TextFile.write(out);
+      tf.out("DATUM;PPD_IZVOR;PPD_IZLAZ;ARTIKL;ART_PORIJEKLO_PPD;TRZISTE_DRZAVA;" +
+      		"TRGOVINA_HORECA;KOLICINA_KG;VALUTA;RF_UKUPNO_IZNOS;IZNOS_PRODAJE;NI;CK2;NR;ZT;PP");
+      
+      VarStr line = new VarStr();
+      for (ds.first(); ds.inBounds(); ds.next()) {
+        line.clear().append(ds.getString("DATUM")).append(";GAL;");
+        line.append(ds.getString("IZLAZ")).append(';');
+        line.append(ds.getString("ART")).append(';');
+        line.append("T;D01;");
+        line.append(ds.getString("HORECA")).append(';');
+        line.append(Aus.formatBigDecimal(ds.getBigDecimal("KG"))).append(';');
+        line.append("kn;");
+        line.append(Aus.formatBigDecimal(ds.getBigDecimal("RAB"))).append(';');
+        line.append(Aus.formatBigDecimal(ds.getBigDecimal("NETO"))).append(';');
+        line.append(Aus.formatBigDecimal(ds.getBigDecimal("NI"))).append(';');
+        line.append(Aus.formatBigDecimal(ds.getBigDecimal("CK2"))).append(';');
+        line.append("0;0;");
+        line.append(Aus.formatBigDecimal(ds.getBigDecimal("PPK")));
+        tf.out(line.toString());
+      }
+      
+      tf.close();
     }
-    
-    tf.close();
     
     return ds;
   }
