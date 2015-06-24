@@ -1777,14 +1777,13 @@ public class dlgRunReport {
                 Integer.toString(rqc.getQueryDataSet().getInt("CPAR"))))
               kome = dM.getDataModule().getPartneri().getString("EMADR");
             if (kome != null && kome.length() < 10) kome = null;
-            
+
+            prefixf = rqc.getQueryDataSet().getString("VRDOK") + "-" + rqc.getQueryDataSet().getString("PNBZ2") + "-";
             if (rqc.getQueryDataSet().getString("FOK").equals("D")) {
-              prefixf = rqc.getQueryDataSet().getString("VRDOK") + "-" + rqc.getQueryDataSet().getString("PNBZ2") + "-";
               naslov = TypeDoc.getTypeDoc().nazivDokumenta(
                   rqc.getQueryDataSet().getString("VRDOK")) + 
                   " br. " + rqc.getQueryDataSet().getString("PNBZ2");
             } else {
-              prefixf = repUtil.getFormatBroj(rqc.getQueryDataSet()) + "-";
               naslov = TypeDoc.getTypeDoc().nazivDokumenta(
                 rqc.getQueryDataSet().getString("VRDOK")) + 
                 " br. " + repUtil.getFormatBroj(rqc.getQueryDataSet());
