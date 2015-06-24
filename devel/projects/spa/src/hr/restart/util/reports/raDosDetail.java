@@ -18,6 +18,7 @@
 package hr.restart.util.reports;
 
 import hr.restart.robno.Aut;
+import hr.restart.sisfun.frmParam;
 
 public class raDosDetail extends raReportSection {
 
@@ -35,6 +36,11 @@ public class raDosDetail extends raReportSection {
   public raReportElement TextNAZART;
   private String[] TextNAZARTProps = new String[] {"NAZART", "", "", "", "", "", "", "", "2440", "", 
      "5180", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "No"};
+  
+  public raReportElement TextNAZARText;
+  private String[] TextNAZARTextProps = new String[] {"NAZARText", "", "", "", "", "", "Yes", "", "2440", "220",
+      "5180", "0", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
+  
   public raReportElement TextRBR;
   private String[] TextRBRProps = new String[] {"RBR", "", "", "", "", "", "", "", "20", "", "440", 
      "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", "No"};
@@ -61,6 +67,7 @@ public class raDosDetail extends raReportSection {
     TextKOL1 = addModel(ep.TEXT, TextKOL1Props);
     TextCART = addModel(ep.TEXT, TextCARTProps);
     TextNAZART = addModel(ep.TEXT, TextNAZARTProps);
+    TextNAZARText = addModel(ep.TEXT, TextNAZARTextProps);
     TextRBR = addModel(ep.TEXT, TextRBRProps);
     TextKOL = addModel(ep.TEXT, TextKOLProps);
   }
@@ -68,5 +75,7 @@ public class raDosDetail extends raReportSection {
   private void modifyThis() {
     this.restoreDefaults();
     this.resizeElement(this.TextCART, Aut.getAut().getIzlazCARTwidth(), this.TextNAZART);
+    this.TextNAZARText.setLeft(this.TextNAZART.getLeft());
+    this.TextNAZARText.setWidth(this.TextNAZART.getWidth());
   }
 }
