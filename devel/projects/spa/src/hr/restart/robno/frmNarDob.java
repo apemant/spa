@@ -226,7 +226,11 @@ public class frmNarDob extends raMasterDetail {
   }
 
   public boolean doBeforeSaveMaster(char mode) {
-    if (mode == 'N') hr.restart.robno.Util.getUtil().getBrojDokumenta(getMasterSet());
+    if (mode == 'N') {
+      hr.restart.robno.Util.getUtil().getBrojDokumenta(getMasterSet());
+      getMasterSet().setString("PNBZ2",
+          raPozivNaBroj.getraPozivNaBrojClass().getPozivNaBroj(getMasterSet()));
+    }
     return true;
   }
 
@@ -545,6 +549,7 @@ System.out.println("key4del "+ key4del);
     if (!isDetailExist()) return;
     reportsQuerysCollector.getRQCModule().ReSql(" AND " +
         Condition.whereAllEqual(mkey, getMasterSet()).qualified("doki"), "NDO");
+    reportsQuerysCollector.getRQCModule().caller = this;
     super.Funkcija_ispisa_master();
   }
 
@@ -552,6 +557,7 @@ System.out.println("key4del "+ key4del);
     if (!isDetailExist()) return;
     reportsQuerysCollector.getRQCModule().ReSql(" AND " +
         Condition.whereAllEqual(mkey, getMasterSet()).qualified("doki"), "NDO");
+    reportsQuerysCollector.getRQCModule().caller = this;
     super.Funkcija_ispisa_detail();
   }
 
@@ -720,6 +726,7 @@ System.out.println("key4del "+ key4del);
     this.setJPanelDetail(jpDetail);
     jpDetail.initRpcart();
     jpDetail.rpc.enableNameChange(true);
+    raMaster.installSelectionTracker("BRDOK");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarDob", "hr.restart.robno.repNarDobSource", "NarDob", "Narudžbe dobavljaèu");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarPop", "hr.restart.robno.repNarDobSource", "NarPop", "Narudžbe dobavljaèu s popustom");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarDobV", "hr.restart.robno.repNarDobSource", "NarDob", "Narudžbe dobavljaèu u valuti");

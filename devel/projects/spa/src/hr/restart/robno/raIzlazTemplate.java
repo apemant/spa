@@ -2667,6 +2667,7 @@ ST.prn(radninal);
 
 		reportsQuerysCollector.getRQCModule().ReSql(PrepSql(true, false),
 				what_kind_of_dokument);
+		reportsQuerysCollector.getRQCModule().caller = this;
 		if (!isDetailInitIspis) {
 			isDetailInitIspis = true;
 			MyaddIspisDetail();
