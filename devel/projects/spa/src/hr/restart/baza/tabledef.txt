@@ -2536,6 +2536,12 @@ OSNPOR3;numeric;17,2;;0;Osnovica za treæi porez;15
 OSNPOR4;numeric;17,2;;0;Osnovica za èetvrti porez;15
 OSNPOR5;numeric;17,2;;0;Osnovica za peti porez;15
 PARAMETRI;char;20;;;Parametri;*
+DATUM1;date;;;;Datum uplate MIO 1;10
+DATUM2;date;;;;Datum uplate MIO 2;10
+DATUMPOR;date;;;;Datum uplate poreza;10
+DATUMODB;date;;;;Datum uplate odbitaka;10
+DATUMISP;date;;;;Datum predaje radnicima;10
+DATUMDOSP;date;;;;Datum dospjeæa NP1;10
 IDX=mjobr
 IDX=rbrobr
 
@@ -2885,6 +2891,12 @@ STOPAK;numeric;17,2;;0;Stopa akontacije;15
 RSZ;char;5;;1;Oznaka zdravstvenog osiguranja
 RSIND;char;4;;;Identifikator RS
 PARAMETRI;char;20;;;Parametri;*
+DATUM1;date;;;;Datum uplate MIO 1;10
+DATUM2;date;;;;Datum uplate MIO 2;10
+DATUMPOR;date;;;;Datum uplate poreza;10
+DATUMODB;date;;;;Datum uplate odbitaka;10
+DATUMISP;date;;;;Datum predaje radnicima;10
+DATUMDOSP;date;;;;Datum dospjeæa NP1;10
 
 $Orgrad
 CORG;char;12;pkey;;Org. Jedinica
