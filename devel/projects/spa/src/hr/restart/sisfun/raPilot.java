@@ -1888,8 +1888,10 @@ public class raPilot extends raFrame {
               bshInterpreter.set(name, arg.getValue().getInt());
             else if (arg.type.equals(arg.FLOAT2) || arg.type.equals(arg.FLOAT3))
               bshInterpreter.set(name, arg.getValue().getBigDecimal());
-            else if (arg.type.equals(arg.DATE_FROM) || arg.type.equals(arg.DATE_TO))
-              bshInterpreter.set(name, arg.getValue().getTimestamp());                        
+            else if (arg.type.equals(arg.DATE_FROM))
+              bshInterpreter.set(name, arg.getValue().getTimestamp());              
+            else if (arg.type.equals(arg.DATE_TO))
+              bshInterpreter.set(name, Util.getUtil().getLastSecondOfDay(arg.getValue().getTimestamp()));
           }
         }
       } catch (EvalError e) {
