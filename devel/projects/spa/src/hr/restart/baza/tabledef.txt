@@ -233,7 +233,7 @@ EXTBRDOK;text;15;;;Dodatni broj
 CNACPL;text;3;;;Naèin plaæanja
 OZNVAL;text;3;;;Valuta
 TECAJ;numeric;17,6;;;Teèaj
-OPIS;text;100;;;Opis
+OPIS;text;250;;;Opis
 ID;numeric;17,2;;;Duguje
 IP;numeric;17,2;;;Potražuje
 POKRIVENO;text;1;;N;Pokriven
@@ -311,7 +311,7 @@ BROJKONTA;text;8;;;Konto
 CORG;text;12;;;OJ
 DATUMKNJ;timestamp;;;;Datum knjiženja
 DATDOK;timestamp;;;;Datum dokumenta
-OPIS;text;100;;;Opis
+OPIS;text;250;;;Opis
 ID;numeric;17,2;;;Duguje
 IP;numeric;17,2;;;Potražuje
 CPAR;integer;6;;;Partner
@@ -512,7 +512,7 @@ CPAR;int;6;;;Partner
 EXTBRDOK;char;15;;;Dodatni broj dokumenta
 BROJIZV;int;6;;;Broj izvoda
 CNACPL;char;3;;;Naèin plaæanja
-OPIS;char;100;;;Opis stavke;30
+OPIS;char;250;;;Opis stavke;30
 ID;numeric;17,2;;0;Iznos duguje;15
 IP;numeric;17,2;;0;Iznos potražuje;15
 POKRIVENO;char;1;;N;Indikator pokrivenosti
@@ -549,7 +549,7 @@ EXTBRDOK;char;15;;;Dodatni broj dokumenta
 CNACPL;char;3;;;Naèin plaæanja
 OZNVAL;char;3;;;Valuta
 TECAJ;numeric;17,6;;0;Teèaj;15
-OPIS;char;100;;;Opis stavke;30
+OPIS;char;250;;;Opis stavke;30
 ID;numeric;17,2;;0;Duguje;15
 IP;numeric;17,2;;0;Potražuje;15
 POKRIVENO;char;1;;N;Indikator pokrivenosti
@@ -1910,6 +1910,7 @@ CPOV;int;6;;;Oznaka povjerioca-virmana
 BRDOM;char;10;;;Broj domicilne banke
 BRPOSL;char;10;;;Broj poslovnice banke
 PARAMETRI;char;20;;;Parametri;*
+PREFIKS;char;10;;;Prefiks raèuna u banci
 
 $Blagajna
 LOKK;char;1;;N;Status zauzetosti;*
