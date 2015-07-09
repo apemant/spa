@@ -811,17 +811,29 @@ public class rajpIzlazDPTemplate extends JPanel {
 	
 	public void addLOT() {
 		if (rpcart.isbPrikazKolicina()) {
-			setPreferredSize(new Dimension(660, 210));
+			setPreferredSize(new Dimension(660, 240));
 		} else {
-			setPreferredSize(new Dimension(660, 170));
+			setPreferredSize(new Dimension(660, 200));
 		}
-		xYLayoutDC.setHeight(70);
+		xYLayoutDC.setHeight(100);
 		jraLOT.setColumnName("LOT");
 		jraPAK.setColumnName("KOL1");
+		jraFMC.setColumnName("FMC");
+        //    jraFMC.setDataSet(fDI.getDetailSet());
+        jraFMC.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                fDI.MfocusGained(e);
+            }
+        });
 		jpDetailCenter.add(new JLabel("Šarža"), new XYConstraints(380, 41, -1, -1));
 		jpDetailCenter.add(jraLOT, new XYConstraints(460, 41, 150, -1));
 		jpDetailCenter.add(new JLabel("Pakiranja"), new XYConstraints(18, 41, -1, -1));
 		jpDetailCenter.add(jraPAK, new XYConstraints(153, 41, 150, -1));
+		
+		jpDetailCenter.add(new JLabel("Izlazna cijena"), new XYConstraints(18, 70, -1, -1));
+		jpDetailCenter.add(jraFC, new XYConstraints(153, 70, 150, -1));
+		jpDetailCenter.add(new JLabel("Cijena s porezom"), new XYConstraints(320, 70, -1, -1));
+		jpDetailCenter.add(jraFMC, new XYConstraints(460, 70, 150, -1));
 	}
 
 	void setEnabledAll(boolean trut) {

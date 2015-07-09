@@ -1016,7 +1016,11 @@ System.out.println(StavkeSet.getInt("CARt"));
 			} else if (TD.isDocFinanc(rIT.what_kind_of_dokument)
 					&& TD.isDocSklad(docDs.getString("VRDOK"))) {
 			  copySklad = copySkladParam;
-				calcFinancPart();
+			  if (docDs.getString("VRDOK").equals("OTP") && StavkeSet.getBigDecimal("FC").signum() > 0)
+			    copySklad = true;
+			  
+			  System.out.println("copy sklad " + StavkeSet);
+			  calcFinancPart();
 			} else if (TD.isDocFinanc(rIT.what_kind_of_dokument)
 					&& TD.isDocRNL(docDs.getString("VRDOK"))) {
 				setToNull = ZaglavljeSetTmp.getString("GARANC").equalsIgnoreCase("D");
@@ -1656,10 +1660,17 @@ System.out.println(StavkeSet.getInt("CARt"));
         }
         
         if (copySklad) {
-          Aus.set(rIT.getDetailSet(), "FC", StavkeSet, "VC");
-          Aus.set(rIT.getDetailSet(), "FVC", StavkeSet, "VC");
-          Aus.set(rIT.getDetailSet(), "FMC", StavkeSet, "MC");
+          if (StavkeSet.getString("VRDOK").equals("OTP") && StavkeSet.getBigDecimal("FC").signum() > 0) {
+            Aus.set(rIT.getDetailSet(), "FC", StavkeSet);
+            Aus.set(rIT.getDetailSet(), "FVC", StavkeSet);
+            Aus.set(rIT.getDetailSet(), "FMC", StavkeSet);            
+          } else {
+            Aus.set(rIT.getDetailSet(), "FC", StavkeSet, "VC");
+            Aus.set(rIT.getDetailSet(), "FVC", StavkeSet, "VC");
+            Aus.set(rIT.getDetailSet(), "FMC", StavkeSet, "MC");
+          }
           found = true;
+
         }
         
         if (!found && rIT.getDetailSet().getString("CSKLART").length() > 0) {

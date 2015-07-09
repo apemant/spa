@@ -4078,6 +4078,8 @@ System.out.println("findCjenik::else :: "+sql);
 	}
 
 	public void Kalkulacija(String how) {
+	  BigDecimal oldvc = getDetailSet().getBigDecimal("FC");
+	  BigDecimal oldmc = getDetailSet().getBigDecimal("FMC");
 
 		lc.TransferFromDB2Class(AST.gettrenSTANJE(), rKD.stanje);
 		// rKD.setVrzal(vrzal);
@@ -4088,6 +4090,18 @@ System.out.println("findCjenik::else :: "+sql);
 		lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
 		if (how.equals("KOL") && nabDirect)
 			Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
+		if (what_kind_of_dokument.equals("OTP")) {
+	       if (how.equals("FC") || how.equals("FMC")) {
+	         lD.raLocate(dm.getArtikli(), "CART", getDetailSet());
+	         lD.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli());
+	         if (how.equals("FC"))
+	           oldmc = oldvc.multiply(dm.getPorezi().getBigDecimal("UKUPOR").movePointLeft(2).add(Aus.one0)).setScale(2, BigDecimal.ROUND_HALF_UP);
+	         else oldvc = oldmc.divide(dm.getPorezi().getBigDecimal("UKUPOR").movePointLeft(2).add(Aus.one0), 2, BigDecimal.ROUND_HALF_UP);
+	       }
+	       getDetailSet().setBigDecimal("FC", oldvc);
+	       getDetailSet().setBigDecimal("FVC", oldvc);
+	       getDetailSet().setBigDecimal("FMC", oldmc);
+	    }
 		if (dah.isShowing()) dah.recalcMar();
 	}
   
