@@ -444,10 +444,13 @@ public class JOPPDhndlr {
     getStrBset();
     strBset.empty();
     rs = getRSperiod();
-    HashSet oos = new HashSet();
-    for (rs.first(); rs.inBounds(); rs.next())
-      oos.add(rs.getString("RSOO"));
-    needmatch = oos.size() > 1;
+    HashMap oos = new HashMap();
+    for (rs.first(); rs.inBounds(); rs.next()) {
+      HashSet oosr = (HashSet) oos.get(rs.getString("CRADNIK"));
+      if (oosr == null) oos.put(rs.getString("CRADNIK"), oosr = new HashSet());
+      oosr.add(rs.getString("RSOO"));
+    }
+    //needmatch = oos.size() > 1;
     
     int rbr = 0;
     for (rs.first(); rs.inBounds(); rs.next()) {
@@ -456,6 +459,10 @@ public class JOPPDhndlr {
       BigDecimal zasnr = Aus.zero2;
       BigDecimal zapinv = Aus.zero2;
       BigDecimal omjer = Aus.zero2;
+      
+      HashSet oosr = (HashSet) oos.get(rs.getString("CRADNIK"));
+      needmatch = oosr.size() > 1;
+      
       if (needmatch && !isOOmatch(rs)) continue;
       //rs.BRUTOMJ = pravibruto
       //rs.BRUTO = osnovica dop. (max)
