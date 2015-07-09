@@ -640,12 +640,12 @@ System.out.println("**** DEVIZNI ANLAGE");
             }
             
             tmpskstavke.setTimestamp("DATPRI", datdok);
-            String pero = "Dokument " + opisstavke
-            + getValuteOpis(data);
-            if (pero.length()>100) {
+            String pero = "Dokument " + opisstavke + getValuteOpis(data);
+            
+            if (pero.length()>250) {
                 pero = opisstavke+ getValuteOpis(data);
-                if (pero.length()>100) {
-                    pero = pero.substring(0,100);
+                if (pero.length()>250) {
+                    pero = pero.substring(0,250);
                 }
             }
             tmpskstavke.setString("OPIS",pero );
