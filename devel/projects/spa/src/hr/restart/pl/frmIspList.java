@@ -26,14 +26,19 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
+import hr.restart.util.HashSum;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.MathEvaluator;
 import hr.restart.util.Util;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
+import hr.restart.util.reports.JasperHook;
 import hr.restart.zapod.OrgStr;
+import hr.restart.zapod.frmVirmani;
 import hr.restart.zapod.repNaljepnice;
 
 import java.awt.BorderLayout;
+import java.awt.GraphicsConfiguration;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -44,6 +49,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
+
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.design.JRDesignStaticText;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -272,6 +281,8 @@ public class frmIspList extends frmIzvjestajiPL {
   }
 
   protected void addReports() {
+    addJasper("hr.restart.pl.repIP1", "hr.restart.pl.repIspList", "IP1.jrxml", "Obrazac IP1");
+    addJasper("hr.restart.pl.repNP1", "hr.restart.pl.repIspList", "NP1.jrxml", "Obrazac NP1");
     this.addReport("hr.restart.pl.repIspList", "hr.restart.pl.repIspList", "IspList", "Ispis isplatnih listi\u0107a po abecedi");
     this.addReport("hr.restart.pl.repIspListCorg", "hr.restart.pl.repIspListCorg", "IspList", "Ispis isplatnih listiæa po org. jedinicama");
     addJasper("hr.restart.pl.repIspListNa", "hr.restart.pl.repIspList", "ispListNa.jrxml", "Isplatni listiæ sa svim doprinosima");
@@ -283,6 +294,32 @@ public class frmIspList extends frmIzvjestajiPL {
 //    this.addReport("hr.restart.pl.repIspList", "Ispis isplatnih listi\u0107a po abecedi",2);
     this.addReport("hr.restart.pl.repKoverte", "hr.restart.pl.repIspList", "KovertaL", "Ispis koverti po abecedi");
     this.addReport("nalj13x5", "hr.restart.zapod.repNaljepnice","Naljepnice13x5", "Ispis naljepnica 13 x 5");
+  }
+  
+  public void addHooks() {
+    
+    JasperHook jhook = new JasperHook() {
+      public void adjustDesign(String reportName, JasperDesign design) {
+        String font = frmParam.getParam("pl", "fontIP1", "", "Font za statièke tekstove na IP1/NP1", true);
+        String pdfont = frmParam.getParam("pl", "pdfontIP1", "", "PDF Font za statièke tekstove na IP1/NP1", true);
+        String fd = frmParam.getParam("pl", "fontDeltaIP1", "0", "Delta za font za statièke tekstove na IP1/NP1", true);
+        int delta = Aus.getNumber(fd);
+        if ((font == null || font.length() == 0) && delta == 0) return;
+        
+        JRBand sec = design.getGroups()[2].getGroupHeader();
+        for (int i = 0; i < sec.getElements().length; i++)
+            if (sec.getElements()[i] instanceof JRDesignStaticText) {
+              JRDesignStaticText tx = (JRDesignStaticText) sec.getElements()[i];
+              tx.setFontName(font);
+              tx.setFontSize(tx.getFontSize() + delta);
+              if (pdfont != null && pdfont.length() > 0)
+                tx.setPdfFontName(pdfont);
+            }
+      }
+    };
+    getRepRunner().addJasperHook("hr.restart.pl.repIP1", jhook);
+    getRepRunner().addJasperHook("hr.restart.pl.repNP1", jhook);
+    
   }
   
   
@@ -368,7 +405,7 @@ public class frmIspList extends frmIzvjestajiPL {
     jrcbPrikaz.setText("Prikaz isplate");
 
     vrprim = hr.restart.util.Util.getNewQueryDataSet("SELECT cvrp, naziv, parametri FROM vrsteprim");
-    vrodb = hr.restart.util.Util.getNewQueryDataSet("SELECT cvrodb, opisvrodb FROM vrsteodb");
+    vrodb = hr.restart.util.Util.getNewQueryDataSet("SELECT cvrodb, opisvrodb, cpov, parametri, stopa FROM vrsteodb");
     radpl = hr.restart.util.Util.getNewQueryDataSet("SELECT cradnik, cradmj, brojtek, cisplmj, cvro, jmbg, adresa, copcine, oib, BRUTOSN FROM radnicipl");
     radmj = hr.restart.util.Util.getNewQueryDataSet("SELECT cradmj, nazivrm FROM radmj");
     mainPanel.add(jpr, BorderLayout.CENTER);
@@ -445,7 +482,7 @@ public class frmIspList extends frmIzvjestajiPL {
 
 //    System.out.println("getPrimanjaSet arh : " + isArh);
 
-    String sql = "SELECT primanja"+(isArh?"arh":"obr")+".*, CAST ((primanja"+(isArh?"arh":"obr")+".BRUTO - primanja"+(isArh?"arh":"obr")+".DOPRINOSI) as numeric(15,2)) AS DOHODAK, vrsteprim.naziv FROM primanja"+(isArh?"arh":"obr")+", vrsteprim "+
+    String sql = "SELECT primanja"+(isArh?"arh":"obr")+".*, CAST ((primanja"+(isArh?"arh":"obr")+".BRUTO - primanja"+(isArh?"arh":"obr")+".DOPRINOSI) as numeric(15,2)) AS DOHODAK, vrsteprim.naziv, vrsteprim.cgrprim as CGRP FROM primanja"+(isArh?"arh":"obr")+", vrsteprim "+
                  "WHERE cradnik = '"+rad+"' AND primanja"+(isArh?"arh":"obr")+".cvrp = vrsteprim.cvrp "+
                  getBetweenAhrQuery("primanjaarh") +" "+
                  "ORDER BY "+(isArh?"primanjaarh.godobr, primanjaarh.mjobr, primanjaarh.rbrobr,":"")+" primanja"+(isArh?"arh":"obr")+".cvrp, primanja"+(isArh?"arh":"obr")+".rbr";
@@ -494,13 +531,26 @@ public class frmIspList extends frmIzvjestajiPL {
       .equalsIgnoreCase("D")?"DOHODAK":"NETO";
     //"NETO";
   }
-  BigDecimal totalStopa, totalStopaNa, totalIznosNa;
+  BigDecimal totalStopa, totalStopaNa, totalIznosNa, totalMIO1, totalMIO2, zastIznos, nedop;
   String nazivPrim, sati, koef, neto, bruto, nazivDop, osnovicaDop, stopa, iznos, nazivDopNa, osnovicaDopNa, stopaNa, iznosNa;
   String nazivNak, satiNaknada, iznosNak, nazivKred, iznosKred;
-  String cradmj, nazradmj;
-  String brojtek, nazbanke, tipIsplate, nazvro, copcine, oib, adresa, fondsati;
+  String cradmj, nazradmj, stopepor;
+  String brojtek, nazbanke, brojzas, nazbankzas, tipIsplate, nazvro, copcine, oib, adresa, fondsati, iban;
   short cisplmj;
   int cbanke;
+  boolean invert;
+  
+  HashSum primSati;
+  HashSum primIznos;
+  
+  private void fillZastRac(DataSet ds) {
+    invert = getVrodb().getBigDecimal("STOPA").compareTo(new BigDecimal(50)) < 0;
+    zastIznos = ds.getBigDecimal("OBRIZNOS");
+    ld.raLocate(dm.getPovjerioci(), "CPOV", String.valueOf(getVrodb().getInt("CPOV")));
+    brojzas = frmVirmaniPl.getIBAN_HR(dm.getPovjerioci().getString("ZIRO"), false);
+    nazbankzas = dm.getPovjerioci().getString("NAZPOV");
+  }
+  
   public void findStrings(String crad, short rbrObr, short mjObr, short godObr) {
     DataSet ds = getPrimanjaSet(crad);
     StringBuffer _naziv = new StringBuffer();
@@ -511,6 +561,13 @@ public class frmIspList extends frmIzvjestajiPL {
     StringBuffer _nazivN = new StringBuffer();
     StringBuffer _satiN = new StringBuffer();
     StringBuffer _iznosN = new StringBuffer();
+    
+    primSati = new HashSum(ds, "CGRP", "SATI");
+    primIznos = new HashSum(ds, "CGRP", "BRUTO");
+    invert = false;
+    nedop = Aus.zero0;
+    stopepor = "";
+    createCachept(StDSradnici);
 
     for (ds.first(); ds.inBounds(); ds.next()) {
       ld.raLocate(getVrprim(), new String[] {"CVRP"}, new String[] {""+ds.getShort("CVRP")});
@@ -518,34 +575,45 @@ public class frmIspList extends frmIzvjestajiPL {
         if (rbrObr == ds.getShort("RBROBR")
             && mjObr == ds.getShort("MJOBR")
             && godObr == ds.getShort("GODOBR")){
+          System.out.println(ds);
           if (raParam.getParam(getVrprim(), 1).equals("D")) {  // Primanja
             _naziv.append(getVrprim().getString("NAZIV")).append("\n");
             _sati.append(format(ds, "SATI")).append("\n");
             _koef.append(format(ds, "KOEF")).append("\n");
             _bruto.append(format(ds, "BRUTO")).append("\n");
             _neto.append(format(ds, getNetoColParam())).append("\n");
+            primIznos.add();
           }
           if (raParam.getParam(getVrprim(), 1).equals("N") &&
               raParam.getParam(getVrprim(), 2).equals("N")) {  // Naknade
             _nazivN.append(getVrprim().getString("NAZIV")).append("\n");
             _satiN.append(format(ds, "SATI")).append("\n");
             _iznosN.append(format(ds, getNetoColParam())).append("\n");
+            primIznos.addVal(getNetoColParam());
+            nedop = nedop.add(ds.getBigDecimal(getNetoColParam()));
           }
+          primSati.add();
+          
         }
       } else{
+        System.out.println(ds);
         if (raParam.getParam(getVrprim(), 1).equals("D")) {  // Primanja
           _naziv.append(getVrprim().getString("NAZIV")).append("\n");
           _sati.append(format(ds, "SATI")).append("\n");
           _koef.append(format(ds, "KOEF")).append("\n");
           _bruto.append(format(ds, "BRUTO")).append("\n");
           _neto.append(format(ds, getNetoColParam())).append("\n");
+          primIznos.add();
         }
         if (raParam.getParam(getVrprim(), 1).equals("N") &&
             raParam.getParam(getVrprim(), 2).equals("N")) {  // Naknade
           _nazivN.append(getVrprim().getString("NAZIV")).append("\n");
           _satiN.append(format(ds, "SATI")).append("\n");
           _iznosN.append(format(ds, getNetoColParam())).append("\n");
+          primIznos.addVal(getNetoColParam());
+          nedop = nedop.add(ds.getBigDecimal(getNetoColParam()));
         }
+        primSati.add();
       }
     }
     _naziv.setLength(Math.max(0, _naziv.length() - 1));
@@ -557,6 +625,8 @@ public class frmIspList extends frmIzvjestajiPL {
     _satiN.setLength(Math.max(0, _satiN.length() - 1));
     _iznosN.setLength(Math.max(0, _iznosN.length() - 1));
 //krediti
+    zastIznos = null;
+    brojzas = nazbankzas = null;
     ds = getKreditiSet(crad);
     StringBuffer _nazivK = new StringBuffer();
     StringBuffer _iznosK = new StringBuffer();
@@ -568,11 +638,13 @@ public class frmIspList extends frmIzvjestajiPL {
           ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
           _nazivK.append(getVrodb().getString("OPISVRODB")).append(getKreditInfo(ds)).append("\n");
           _iznosK.append(format(ds, "OBRIZNOS")).append("\n");
+          if (raParam.getParam(getVrodb(), 1).equals("D")) fillZastRac(ds);
         }
       } else {
         ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
         _nazivK.append(getVrodb().getString("OPISVRODB")).append(getKreditInfo(ds)).append("\n");
         _iznosK.append(format(ds, "OBRIZNOS")).append("\n");
+        if (raParam.getParam(getVrodb(), 1).equals("D")) fillZastRac(ds);
       }
     }
     _nazivK.setLength(Math.max(0, _nazivK.length() - 1));
@@ -589,6 +661,19 @@ public class frmIspList extends frmIzvjestajiPL {
 
     //doprinosi
     ds = getDoprinosiSet(crad);
+    totalMIO1 = totalMIO2 = null;
+    int cvro = -1;
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      if (cvro == -1 || ds.getShort("CVRODB") != cvro) {
+        cvro = ds.getShort("CVRODB");
+        if (totalMIO1 == null) totalMIO1 = ds.getBigDecimal("OBRIZNOS");
+        else totalMIO2 = ds.getBigDecimal("OBRIZNOS");
+      } else {
+        if (totalMIO2 == null) totalMIO1 = totalMIO1.add(ds.getBigDecimal("OBRIZNOS"));
+        else totalMIO2 = totalMIO2.add(ds.getBigDecimal("OBRIZNOS"));
+      }
+    }
+    
     Object[] doprinosi = makeDoprStringBuffers(ds, rbrObr, mjObr, godObr);
 
     nazivDop = ((StringBuffer)doprinosi[0]).toString();
@@ -623,6 +708,11 @@ public class frmIspList extends frmIzvjestajiPL {
     tipIsplate = dm.getIsplMJ().getString("TIPISPLMJ");
     ld.raLocate(dm.getBankepl(), "CBANKE" ,String.valueOf(dm.getIsplMJ().getInt("CBANKE")));
     nazbanke = dm.getBankepl().getString("NAZBANKE");
+    String pref = dm.getBankepl().getString("PREFIKS");
+    ld.raLocate(dm.getPovjerioci(), "CPOV", String.valueOf(dm.getBankepl().getInt("CPOV")));
+    //String ziro = new VarStr(dm.getPovjerioci().getString("ZIRO")).replace("$tek", radpl.getString("BROJTEK")).toString();
+    iban = frmVirmaniPl.getIBAN_HR(pref + "-" + radpl.getString("BROJTEK"), false);
+    
     dM.getDataModule().getVrodn().open();
     ld.raLocate(dM.getDataModule().getVrodn(), "CVRO", radpl.getString("CVRO"));
     nazvro = dM.getDataModule().getVrodn().getString("NAZIVRO");
@@ -683,6 +773,32 @@ System.out.println("KreditInfo za "+ds);
       return " - ostatak duga "+justFormat(ds.getBigDecimal("SALDO"));
     }
     return "";
+  }
+  
+  public BigDecimal getSatiPrim(String sif) {
+    return primSati.get(sif);
+  }
+  
+  public BigDecimal getIznosPrim(String sif) {
+    return primIznos.get(sif);
+  }
+  
+  public BigDecimal getIznosSum() {
+    return primIznos.total();
+  }
+  
+  public BigDecimal getOsnDop() {
+    /*if (primIznos.get("3.") == null) return getIznosSum();
+    return primIznos.total().subtract(primIznos.get("3."));*/
+    return getIznosSum().subtract(nedop);
+  }
+  
+  public BigDecimal getMIO1() {
+    return totalMIO1;
+  }
+  
+  public BigDecimal getMIO2() {
+    return totalMIO2;
   }
 
   public String getNazivVRO() {
@@ -808,9 +924,42 @@ System.out.println("KreditInfo za "+ds);
   public String getIznosKredita() {
     return iznosKred;
   }
+  
+  public String getIBAN() {
+    if (invert) return brojzas;
+    return iban;
+  }
+  
+  public String getBANKA() {
+    if (invert) return nazbankzas;
+    return nazbanke;
+  }
+  
+  public String getIBANZAS() {
+    if (invert) return iban;
+    return brojzas;
+  }
+  
+  public String getBANKAZAS() {
+    if (invert) return nazbanke;
+    return nazbankzas;
+  }
+  
+  public BigDecimal getZastIznos() {
+    if (invert) return StDSradnici.getBigDecimal("NETOPK").subtract(zastIznos);
+    return zastIznos;
+  }
+  
+  public BigDecimal getRealZastIznos() {
+    return zastIznos;
+  }
 
   public BigDecimal getTotalStopa() {
     return totalStopa;
+  }
+  
+  public String getStopePor() {
+    return stopepor;
   }
 
   public String getIsplataString(){
@@ -986,10 +1135,16 @@ System.out.println("KreditInfo za "+ds);
     return Aus.zero0;
   }
 
-  public java.sql.Timestamp getDatumIspl(String corg, String cvro, short g, short m, short rbr) {
+  /*public java.sql.Timestamp getDatumIspl(String corg, String cvro, short g, short m, short rbr) {
     QueryDataSet datis = Util.getNewQueryDataSet("SELECT datumispl FROM Kumulorgarh WHERE corg='" + corg + "' AND cvro ='" + cvro + "' AND godobr=" + g + " AND mjobr=" + m + " AND rbrobr=" + rbr);
     datumispl = datis.getTimestamp("DATUMISPL");
     return datumispl;
+  }*/
+  
+  public void setDatumIsp(DataSet rad, String corg, String cvro, short g, short m, short rbr) {
+    QueryDataSet datis = Util.getNewQueryDataSet("SELECT * FROM Kumulorgarh WHERE corg='" + corg + "' AND cvro ='" + cvro + "' AND godobr=" + g + " AND mjobr=" + m + " AND rbrobr=" + rbr);
+    dM.copyColumns(datis, rad, new String[] {"DATUM1", "DATUM2", "DATUMPOR", "DATUMODB", "DATUMISP", "DATUMDOSP"});
+    rad.setTimestamp("DATISP", datis.getTimestamp("DATUMISPL"));
   }
 
   StorageDataSet StDSradnici, StDSradniciCorg;
@@ -1001,6 +1156,13 @@ System.out.println("KreditInfo za "+ds);
     StDSradnici.addColumn(dM.createBigDecimalColumn("ZDRAVSTVENOOSIG", 2));
     StDSradnici.addColumn(dM.createBigDecimalColumn("MIROVINSKOOSIG", 2));
     StDSradnici.addColumn(dM.createTimestampColumn("DATISP"));
+    
+    StDSradnici.addColumn(dM.createTimestampColumn("DATUM1"));
+    StDSradnici.addColumn(dM.createTimestampColumn("DATUM2"));
+    StDSradnici.addColumn(dM.createTimestampColumn("DATUMPOR"));
+    StDSradnici.addColumn(dM.createTimestampColumn("DATUMODB"));
+    StDSradnici.addColumn(dM.createTimestampColumn("DATUMISP"));
+    StDSradnici.addColumn(dM.createTimestampColumn("DATUMDOSP"));
     if (getRepMode() == 'O'){
       StDSradnici.addColumn(dM.createShortColumn("GODOBR"));
       StDSradnici.addColumn(dM.createShortColumn("MJOBR"));
@@ -1014,6 +1176,7 @@ System.out.println("KreditInfo za "+ds);
     SQLradnici.first();
 
     do {
+      raIniciranje.getInstance().posOrgsPl(SQLradnici.getString("CORG"));
       StDSradnici.insertRow(false);
       if (getRepMode() != 'O'){
         StDSradnici.setShort("GODOBR", SQLradnici.getShort("GODOBR"));
@@ -1022,7 +1185,7 @@ System.out.println("KreditInfo za "+ds);
         StDSradnici.setBigDecimal("ZIVOTNOOSIG", lifeInsurance(SQLradnici.getString("CRADNIK"), SQLradnici.getShort("GODOBR"), SQLradnici.getShort("MJOBR"), SQLradnici.getShort("RBROBR")));
         StDSradnici.setBigDecimal("ZDRAVSTVENOOSIG", extraHealthInsurance(SQLradnici.getString("CRADNIK"), SQLradnici.getShort("GODOBR"), SQLradnici.getShort("MJOBR"), SQLradnici.getShort("RBROBR")));
         StDSradnici.setBigDecimal("MIROVINSKOOSIG", extraRetireInsurance(SQLradnici.getString("CRADNIK"), SQLradnici.getShort("GODOBR"), SQLradnici.getShort("MJOBR"), SQLradnici.getShort("RBROBR")));
-        StDSradnici.setTimestamp("DATISP" , getDatumIspl(SQLradnici.getString("CORG"), SQLradnici.getString("CVRO"), SQLradnici.getShort("GODOBR"), SQLradnici.getShort("MJOBR"), SQLradnici.getShort("RBROBR") ));
+        setDatumIsp(StDSradnici, SQLradnici.getString("CORG"), SQLradnici.getString("CVRO"), SQLradnici.getShort("GODOBR"), SQLradnici.getShort("MJOBR"), SQLradnici.getShort("RBROBR") );
       } else {
         StDSradnici.setShort("GODOBR", fieldSet.getShort("GODINAOD"));
         StDSradnici.setShort("MJOBR", fieldSet.getShort("MJESECOD"));
@@ -1031,6 +1194,7 @@ System.out.println("KreditInfo za "+ds);
         StDSradnici.setBigDecimal("ZDRAVSTVENOOSIG", extraHealthInsurance(SQLradnici.getString("CRADNIK"), (short) 0, (short) 0, (short) 0));
         StDSradnici.setBigDecimal("MIROVINSKOOSIG", extraRetireInsurance(SQLradnici.getString("CRADNIK"), (short) 0, (short) 0, (short) 0));
         StDSradnici.setTimestamp("DATISP" , getDatumIspl());
+        dM.copyColumns(dm.getOrgpl(), StDSradnici, new String[] {"DATUM1", "DATUM2", "DATUMPOR", "DATUMODB", "DATUMISP", "DATUMDOSP"});
       }
       StDSradnici.setString("CORG", SQLradnici.getString("CORG"));
       StDSradnici.setString("CRADNIK", SQLradnici.getString("CRADNIK"));
@@ -1066,6 +1230,7 @@ System.out.println("KreditInfo za "+ds);
     SQLradnicicorg.first();
 
     do {
+      raIniciranje.getInstance().posOrgsPl(SQLradnici.getString("CORG"));
       StDSradniciCorg.insertRow(false);
       if (getRepMode() != 'O'){
         StDSradniciCorg.setShort("GODOBR", SQLradnicicorg.getShort("GODOBR"));
@@ -1074,7 +1239,7 @@ System.out.println("KreditInfo za "+ds);
         StDSradniciCorg.setBigDecimal("ZIVOTNOOSIG", lifeInsurance(SQLradnicicorg.getString("CRADNIK"), SQLradnicicorg.getShort("GODOBR"), SQLradnicicorg.getShort("MJOBR"), SQLradnicicorg.getShort("RBROBR")));
         StDSradniciCorg.setBigDecimal("ZDRAVSTVENOOSIG", extraHealthInsurance(SQLradnicicorg.getString("CRADNIK"), SQLradnicicorg.getShort("GODOBR"), SQLradnicicorg.getShort("MJOBR"), SQLradnicicorg.getShort("RBROBR")));
         StDSradniciCorg.setBigDecimal("MIROVINSKOOSIG", extraRetireInsurance(SQLradnicicorg.getString("CRADNIK"), SQLradnicicorg.getShort("GODOBR"), SQLradnicicorg.getShort("MJOBR"), SQLradnicicorg.getShort("RBROBR")));
-        StDSradniciCorg.setTimestamp("DATISP" , getDatumIspl(SQLradnicicorg.getString("CORG"), SQLradnicicorg.getString("CVRO"), SQLradnicicorg.getShort("GODOBR"), SQLradnicicorg.getShort("MJOBR"), SQLradnicicorg.getShort("RBROBR") ));
+        setDatumIsp(StDSradniciCorg, SQLradnicicorg.getString("CORG"), SQLradnicicorg.getString("CVRO"), SQLradnicicorg.getShort("GODOBR"), SQLradnicicorg.getShort("MJOBR"), SQLradnicicorg.getShort("RBROBR") );
       } else {
         StDSradnici.setShort("GODOBR", fieldSet.getShort("GODINAOD"));
         StDSradnici.setShort("MJOBR", fieldSet.getShort("MJESECOD"));
@@ -1083,6 +1248,7 @@ System.out.println("KreditInfo za "+ds);
         StDSradniciCorg.setBigDecimal("ZDRAVSTVENOOSIG", extraHealthInsurance(SQLradnicicorg.getString("CRADNIK"), (short) 0, (short) 0, (short) 0));
         StDSradniciCorg.setBigDecimal("MIROVINSKOOSIG", extraRetireInsurance(SQLradnicicorg.getString("CRADNIK"), (short) 0, (short) 0, (short) 0));
         StDSradniciCorg.setTimestamp("DATISP" , getDatumIspl());
+        dM.copyColumns(dm.getOrgpl(), StDSradniciCorg, new String[] {"DATUM1", "DATUM2", "DATUMPOR", "DATUMODB", "DATUMISP", "DATUMDOSP"});
       }
       StDSradniciCorg.setString("CORG", SQLradnicicorg.getString("CORG"));
       StDSradniciCorg.setString("CRADNIK", SQLradnicicorg.getString("CRADNIK"));
@@ -1216,12 +1382,20 @@ System.out.println(porezi);
       format(porezi,"OBROSN")
       +" x "+format(porezi,"OBRSTOPA")+"%";
       cachept.put(porezi.getShort("RBRODB")+"",s);
+      if (porezi.getBigDecimal("OBRIZNOS").signum() > 0) {
+        if (stopepor.length() == 0) stopepor = "porez ";
+        stopepor = stopepor + porezi.getBigDecimal("OBRSTOPA").setScale(0, BigDecimal.ROUND_HALF_UP) + "% = " +
+              Aus.formatBigDecimal(porezi.getBigDecimal("OBRIZNOS")) + "   ";
+      }
     }
     QueryDataSet prirez = raOdbici.getInstance().getPrirez(cachept_cradnik, isArh?raOdbici.ARH:raOdbici.OBR);
     prirez.first();
     if (prirez.getRowCount()>0) {
       String p = "Prirez "+format(prirez, "OBRSTOPA")+"% "+getNazivOpcine(prirez.getString("CKEY"));
       cachept.put("-1", p);
+      if (prirez.getBigDecimal("OBRIZNOS").signum() > 0) 
+        stopepor = stopepor + "prirez " + prirez.getBigDecimal("OBRSTOPA").setScale(0, BigDecimal.ROUND_HALF_UP) + "% = " +
+            Aus.formatBigDecimal(prirez.getBigDecimal("OBRIZNOS")) + "   ";
     }
   }
   private String getNazivOpcine(String c) {

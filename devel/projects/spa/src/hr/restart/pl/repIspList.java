@@ -21,11 +21,15 @@ import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
 import hr.restart.util.reports.raReportDescriptor;
+import hr.restart.zapod.frmVirmani;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Calendar;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
@@ -36,11 +40,12 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
   frmIspList fil = frmIspList.getInstance();
   DataSet radnici = fil.getRadnici();
 
+  Calendar cal = Calendar.getInstance();
   raDateUtil rdu = raDateUtil.getraDateUtil();
   repMemo rpm = repMemo.getrepMemo();
   Valid vl = Valid.getValid();
   public repIspList() {
-    radnici.setSort(new SortDescriptor(new String[] {"PREZIME"}));
+    radnici.setSort(new SortDescriptor(new String[] {"PREZIME", "IME"}));
 //    fil = frmIspList.getInstance();
 //    radnici = fil.getRadnici();
 //    System.out.println("who is who : " + fil);
@@ -416,5 +421,238 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
     }
 //    System.out.println("SORT : " + sort);
     return sort;
+  }
+  
+  public int getIP_GROUP() {
+    return radnici.getRow();
+  }
+  
+  public String getIP_IMEP() {
+    return rpm.getLogoNazivlog();
+  }
+  
+  public String getIP_ADRP() {
+    return rpm.getLogoAdresa() + ", " + rpm.getLogoMjesto();
+  }
+  
+  public String getIP_OIBP() {
+    return rpm.getLogoOIB();
+  }
+  
+  public String getIP_IBANP() {
+    String ziro = rpm.getLogoZiro();
+    if (ziro.startsWith("HR")) return ziro;
+    return frmVirmani.getIBAN_HR(ziro, false);
+  }
+  
+  public String getIP_BANKAP() {
+    String ziro = rpm.getLogoZiro();
+    if (!lookupData.getlookupData().raLocate(dm.getZirorn(), "ZIRO", ziro)) return "";
+    return dm.getZirorn().getString("BANKA");
+  }
+  
+  public String getIP_IMER() {
+    return radnici.getString("IME") + " " + radnici.getString("PREZIME");
+  }
+  
+  public String getIP_ADRR() {
+    return fil.getRadnicipl().getString("ADRESA");
+  }
+  
+  public String getIP_OIBR() {
+    return  fil.getRadnicipl().getString("OIB");
+  }
+  
+  public String getIP_IBANR() {
+    return fil.getIBAN();
+  }
+  
+  public String getIP_BANKAR() {
+    return fil.getBANKA();
+  }
+  
+  public String getIP_IBANR212() {
+    return fil.getIBANZAS();
+  }
+  
+  public String getIP_BANKAR212() {
+    return fil.getBANKAZAS();
+  }
+  
+  public int getIP_GOD() {
+    return radnici.getShort("GODOBR");
+  }
+  
+  public int getIP_MJE() {
+    return radnici.getShort("MJOBR");
+  }
+
+  public int getIP_OD() {
+    return 1;
+  }
+
+  public int getIP_DO() {
+    cal.setTime(Aus.createTimestamp(getIP_GOD(), getIP_MJE(), 1));
+    return cal.getActualMaximum(cal.DATE); 
+  }
+  
+  public BigDecimal getIP_SATI11() {
+    return fil.getSatiPrim("1.1.");
+  }
+  public BigDecimal getIP_SATI12() {
+    return fil.getSatiPrim("1.2.");
+  }
+  public BigDecimal getIP_SATI13() {
+    return fil.getSatiPrim("1.3.");
+  }
+  public BigDecimal getIP_SATI14() {
+    return fil.getSatiPrim("1.4.");
+  }
+  public BigDecimal getIP_SATI15() {
+    return fil.getSatiPrim("1.5.");
+  }
+  public BigDecimal getIP_SATI16() {
+    return fil.getSatiPrim("1.6.");
+  }
+  public BigDecimal getIP_SATI17() {
+    return fil.getSatiPrim("1.7.");
+  }
+  public BigDecimal getIP_SATI2() {
+    return fil.getSatiPrim("2.");
+  }
+  public BigDecimal getIP_SATI3() {
+    return fil.getSatiPrim("3.");
+  }
+  public BigDecimal getIP_SATI4() {
+    return fil.getSatiPrim("4.");
+  }
+  public BigDecimal getIP_IZNOS11() {
+    return fil.getIznosPrim("1.1.");
+  }
+  public BigDecimal getIP_IZNOS12() {
+    return fil.getIznosPrim("1.2.");
+  }
+  public BigDecimal getIP_IZNOS13() {
+    return fil.getIznosPrim("1.3.");
+  }
+  public BigDecimal getIP_IZNOS14() {
+    return fil.getIznosPrim("1.4.");
+  }
+  public BigDecimal getIP_IZNOS15() {
+    return fil.getIznosPrim("1.5.");
+  }
+  public BigDecimal getIP_IZNOS16() {
+    return fil.getIznosPrim("1.6.");
+  }
+  public BigDecimal getIP_IZNOS17() {
+    return fil.getIznosPrim("1.7.");
+  }
+  public BigDecimal getIP_IZNOS2() {
+    return fil.getIznosPrim("2.");
+  }
+  public BigDecimal getIP_IZNOS3() {
+    return fil.getIznosPrim("3.");
+  }
+  public BigDecimal getIP_IZNOS4() {
+    return fil.getIznosPrim("4.");
+  }
+  
+  public BigDecimal getIP_IZNOSUM() {
+    return fil.getIznosSum();
+  }
+  public BigDecimal getIP_OSNDOP() {
+    return fil.getOsnDop();
+  }
+  
+  public BigDecimal getIP_MIO1() {
+    return fil.getMIO1();
+  }
+  
+  public BigDecimal getIP_MIO2() {
+    return fil.getMIO2();
+  }
+  
+  public BigDecimal getIP_DOH() {
+    return getDohodak();
+  }
+  
+  public BigDecimal getIP_OSOBOD() {
+    return getNeoporezivo();
+  }
+  
+  public BigDecimal getIP_OSNPOR() {
+    return getPorezOsnovica();
+  }
+  
+  public BigDecimal getIP_PORPRIR() {
+    return getTotalPorezPrirez();
+  }
+  
+  public BigDecimal getIP_NETOPK() {
+    if (fil.getZastIznos() != null) return radnici.getBigDecimal("NETOPK").subtract(fil.getZastIznos());
+    return radnici.getBigDecimal("NETOPK");
+  }
+  
+  public BigDecimal getIP_NETOZ() {
+    return fil.getZastIznos();
+  }
+  
+  public BigDecimal getIP_ODBICI() {
+    if (getTotalKrediti() == null || getTotalKrediti().signum() == 0) return null;
+    if (fil.getRealZastIznos() != null && fil.getRealZastIznos().equals(getTotalKrediti())) return null;
+    if (fil.getRealZastIznos() != null) return getTotalKrediti().subtract(fil.getRealZastIznos());
+    return getTotalKrediti();
+  }
+  
+  public BigDecimal getIP_NETO() {
+    if (fil.getRealZastIznos() != null) return radnici.getBigDecimal("NARUKE").add(fil.getRealZastIznos());
+    return radnici.getBigDecimal("NARUKE");
+  }
+  
+  public String getIP_STOPEPOR() {
+    return fil.getStopePor();
+  }
+  
+  public String getIP_DATPLA() {
+    return rdu.dataFormatter(radnici.getTimestamp("DATISP"));
+  }
+  
+  public String getIP_DATM1() {
+    if (getIP_MIO1() == null) return "";
+    String dat = rdu.dataFormatter(radnici.getTimestamp("DATUM1"));
+    if (dat == null || dat.length() == 0) return getIP_DATPLA();
+    return dat;
+  }
+  
+  public String getIP_DATM2() {
+    if (getIP_MIO2() == null) return "";
+    String dat = rdu.dataFormatter(radnici.getTimestamp("DATUM2"));
+    if (dat == null || dat.length() == 0) return getIP_DATPLA();
+    return dat;
+  }
+  
+  public String getIP_DATPOR() {
+    String dat = rdu.dataFormatter(radnici.getTimestamp("DATUMPOR"));
+    if (dat == null || dat.length() == 0) return getIP_DATPLA();
+    return dat;
+  }
+  
+  public String getIP_DATODB() {
+    if (getIP_ODBICI() == null) return "";
+    String dat = rdu.dataFormatter(radnici.getTimestamp("DATUMODB"));
+    if (dat == null || dat.length() == 0) return getIP_DATPLA();
+    return dat;
+  }
+  
+  public String getIP_DATISP() {
+    String dat = rdu.dataFormatter(radnici.getTimestamp("DATUMISP"));
+    if (dat == null || dat.length() == 0) return getIP_DATPLA();
+    return dat;
+  }
+  
+  public String getIP_DATDOSP() {
+    String dat = rdu.dataFormatter(radnici.getTimestamp("DATUMDOSP"));
+    if (dat == null || dat.length() == 0) return getIP_DATPLA();
+    return dat;
   }
 }

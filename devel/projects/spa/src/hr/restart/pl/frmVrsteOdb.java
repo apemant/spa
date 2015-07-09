@@ -93,6 +93,7 @@ public class frmVrsteOdb extends raMatPodaci {
     } else {
       rcc.setLabelLaF(jpDetail.jraIznos, false);
     }
+    selectParam();
   }
 
   public void detailViewShown(char mod) {
@@ -128,7 +129,18 @@ public class frmVrsteOdb extends raMatPodaci {
     if (strNivoOdb.equals(""))
       strNivoOdb = "ZA";
     this.getRaQueryDataSet().setString("NIVOODB", strNivoOdb);
+    raParam.setParam(this.getRaQueryDataSet(), 1, (jpDetail.jcZast.isSelected())? "D": "N");
     return true;
+  }
+  
+  public void raQueryDataSet_navigated(com.borland.dx.dataset.NavigationEvent ev)
+  {
+    selectParam();
+  }
+
+  void selectParam() 
+  {
+    jpDetail.jcZast.setSelected(raParam.getParam(getRaQueryDataSet(), 1).equals("D"));
   }
 
   private void jbInit() throws Exception {

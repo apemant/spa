@@ -78,6 +78,9 @@ public class jpVrsteOdb extends JPanel {
       jcbNivo1_selected();
     }
   };
+  
+  public JraCheckBox jcZast = new JraCheckBox();
+  
   raComboBox jcbNivo2 = new raComboBox();
   raComboBox jcbTip = new raComboBox();
   raComboBox jcbVrOs = new raComboBox();
@@ -243,12 +246,18 @@ public class jpVrsteOdb extends JPanel {
       {"Zakonska","4"},
       {"Porez","5"}
     });
+    
+    jcZast.setText("Zaštiæeni raèun");
+    jcZast.setHorizontalAlignment(SwingConstants.TRAILING);
+    jcZast.setHorizontalTextPosition(SwingConstants.LEADING);
+    
+    jpNivo.add(jcZast,       new XYConstraints(355, 170, 172, -1));
 
-    jcbNivo1.setNextFocusableComponent(jcbNivo2);
+/*    jcbNivo1.setNextFocusableComponent(jcbNivo2);
     jcbNivo2.setNextFocusableComponent(this.jcbTip);
     jcbTip.setNextFocusableComponent(this.jcbVrOs);
     this.setNextFocusableComponent(this.jcbAktiv);
-
+*/
     this.add(jpNivo, BorderLayout.CENTER);
     jpNivo.add(jraOpisvrodb,  new XYConstraints(205, 46, 325, -1));
     jpNivo.add(jraCvrodb,  new XYConstraints(150, 45, 50, -1));

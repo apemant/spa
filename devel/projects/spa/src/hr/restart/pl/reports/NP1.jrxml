@@ -1,0 +1,1524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="repIspList" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="28" rightMargin="28" topMargin="17" bottomMargin="28">
+	<field name="IP_GROUP" class="java.lang.Integer">
+		<fieldDescription><![CDATA[FINALSORTER]]></fieldDescription>
+	</field>
+	<field name="IP_IMEP" class="java.lang.String"/>
+	<field name="IP_ADRP" class="java.lang.String"/>
+	<field name="IP_OIBP" class="java.lang.String"/>
+	<field name="IP_IBANP" class="java.lang.String"/>
+	<field name="IP_BANKAP" class="java.lang.String"/>
+	<field name="IP_IMER" class="java.lang.String"/>
+	<field name="IP_ADRR" class="java.lang.String"/>
+	<field name="IP_OIBR" class="java.lang.String"/>
+	<field name="IP_IBANR" class="java.lang.String"/>
+	<field name="IP_BANKAR" class="java.lang.String"/>
+	<field name="IP_IBANR212" class="java.lang.String"/>
+	<field name="IP_BANKAR212" class="java.lang.String"/>
+	<field name="IP_SATI11" class="java.math.BigDecimal"/>
+	<field name="IP_SATI12" class="java.math.BigDecimal"/>
+	<field name="IP_SATI13" class="java.math.BigDecimal"/>
+	<field name="IP_SATI14" class="java.math.BigDecimal"/>
+	<field name="IP_SATI15" class="java.math.BigDecimal"/>
+	<field name="IP_SATI16" class="java.math.BigDecimal"/>
+	<field name="IP_SATI17" class="java.math.BigDecimal"/>
+	<field name="IP_SATI2" class="java.math.BigDecimal"/>
+	<field name="IP_SATI3" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOS11" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOS12" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOS13" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOS14" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOS15" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOS16" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOS17" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOS2" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOS3" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOSUM" class="java.math.BigDecimal"/>
+	<field name="IP_OSNDOP" class="java.math.BigDecimal"/>
+	<field name="IP_GOD" class="java.lang.Integer"/>
+	<field name="IP_MJE" class="java.lang.Integer"/>
+	<field name="IP_OD" class="java.lang.Integer"/>
+	<field name="IP_DO" class="java.lang.Integer"/>
+	<field name="IP_MIO1" class="java.math.BigDecimal"/>
+	<field name="IP_MIO2" class="java.math.BigDecimal"/>
+	<field name="IP_DOH" class="java.math.BigDecimal"/>
+	<field name="IP_OSOBOD" class="java.math.BigDecimal"/>
+	<field name="IP_OSNPOR" class="java.math.BigDecimal"/>
+	<field name="IP_PORPRIR" class="java.math.BigDecimal"/>
+	<field name="IP_NETOPK" class="java.math.BigDecimal"/>
+	<field name="IP_NETOZ" class="java.math.BigDecimal"/>
+	<field name="IP_ODBICI" class="java.math.BigDecimal"/>
+	<field name="IP_NAPOMENE" class="java.lang.String"/>
+	<field name="IP_DATDOSP" class="java.lang.String"/>
+	<field name="IP_DATISP" class="java.lang.String"/>
+	<field name="IP_NETO" class="java.math.BigDecimal"/>
+	<field name="IP_SATI4" class="java.math.BigDecimal"/>
+	<field name="IP_IZNOS4" class="java.math.BigDecimal"/>
+	<field name="IP_MIO1PRIM" class="java.lang.String"/>
+	<field name="IP_MIO1IBAN" class="java.lang.String"/>
+	<field name="IP_MIO1PNBZ" class="java.lang.String"/>
+	<field name="IP_MIO2PRIM" class="java.lang.String"/>
+	<field name="IP_MIO2IBAN" class="java.lang.String"/>
+	<field name="IP_MIO2PNBZ" class="java.lang.String"/>
+	<field name="IP_PORPRIM" class="java.lang.String"/>
+	<field name="IP_PORIBAN" class="java.lang.String"/>
+	<field name="IP_PORPNBZ" class="java.lang.String"/>
+	<field name="IP_STOPEPOR" class="java.lang.String"/>
+	<field name="IP_ODBPRIM" class="java.lang.String"/>
+	<field name="IP_ODBPNBZ" class="java.lang.String"/>
+	<field name="IP_ODBIBAN" class="java.lang.String"/>
+	<field name="IP_MJESTODAT" class="java.lang.String"/>
+	<group name="Section0" isStartNewPage="true" isResetPageNumber="true">
+		<groupExpression><![CDATA[$F{IP_GROUP}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<group name="Section1">
+		<groupExpression><![CDATA[$F{IP_GROUP}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<group name="Section2">
+		<groupExpression><![CDATA[$F{IP_GROUP}]]></groupExpression>
+		<groupHeader>
+			<band height="789">
+				<staticText>
+					<reportElement mode="Opaque" x="466" y="352" width="73" height="17" backcolor="#CCCCCC"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="465" y="672" width="74" height="17" backcolor="#CCCCCC"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="400" y="320" width="66" height="353" backcolor="#CCCCCC"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="478" y="6" width="61" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="true" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Obrazac NP1]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="320" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="24" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="24" width="1" height="697"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="538" y="24" width="1" height="697"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="27" width="134" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="true" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[I. PODACI O POSLODAVCU]]></text>
+				</staticText>
+				<line>
+					<reportElement x="270" y="24" width="1" height="78"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="274" y="27" width="160" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="true" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[II. PODACI O RADNIKU / RADNICI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="40" width="93" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1. Tvrtka / Ime i prezime]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="52" width="74" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2. Sjedište / Adresa]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="64" width="112" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[3. Osobni identifikacijski broj]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="76" width="78" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[4. IBAN broj računa]]></text>
+				</staticText>
+				<line>
+					<reportElement x="96" y="51" width="169" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="77" y="63" width="188" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="115" y="75" width="150" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="166" y="76" width="18" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[kod]]></text>
+				</staticText>
+				<line>
+					<reportElement x="81" y="87" width="82" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="182" y="87" width="83" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="275" y="40" width="61" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1. Ime i prezime]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="275" y="52" width="38" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2. Adresa]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="275" y="64" width="110" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[3. Osobni identifikacijski broj]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="275" y="76" width="78" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[4. IBAN broj računa]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="436" y="76" width="18" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[kod]]></text>
+				</staticText>
+				<line>
+					<reportElement x="335" y="51" width="198" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="311" y="63" width="222" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="384" y="75" width="149" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="351" y="87" width="82" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="452" y="87" width="81" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="275" y="88" width="78" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[5. IBAN čl.212. O.z.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="436" y="88" width="18" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[kod]]></text>
+				</staticText>
+				<line>
+					<reportElement x="351" y="99" width="82" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="452" y="99" width="81" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="105" width="213" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="true" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[III. RAZDOBLJE NA KOJE SE PLAĆA ODNOSI:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="216" y="105" width="45" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[GODINA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="296" y="105" width="47" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[, MJESEC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="366" y="105" width="105" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[DANI U MJESECU OD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="492" y="105" width="21" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[DO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="509" y="116" width="24" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="467" y="116" width="23" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="340" y="116" width="24" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="256" y="116" width="39" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="138" width="255" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="true" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1. OSNOVA ZA OBRAĆUN PLAĆE / NAKNADE PLAĆE]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="151" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Dotted"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="183" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Dotted"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="199" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Dotted"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="215" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Dotted"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="231" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Dotted"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="30" y="154" width="89" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.1. za redoviti rad]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="30" y="170" width="101" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.2. za redoviti rad noću]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="30" y="186" width="202" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.3. za redoviti rad u dane blagdana ili neradnih dana]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="30" y="202" width="101" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.4. za prekovremeni rad]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="30" y="218" width="126" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.5. za prekovremeni rad noću]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="30" y="234" width="224" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.6. za prekovremeni rad u dane blagdana ili neradnih dana]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="30" y="250" width="202" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[1.7. sate za koje radnik ostvaruje pravo na naknadu plaće]]></text>
+				</staticText>
+				<line>
+					<reportElement x="400" y="119" width="1" height="585"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="267" width="362" height="20"/>
+					<textElement verticalAlignment="Top">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[2. ostali oblici rada temeljem kojih ostvaruje pravo na uvećanje plaće prema kolektivnom ugovoru,
+    pravilniku o radu ili ugovoru o radu i novčani iznos po toj osnovi (sati pripravnosti)]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="102" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="119" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="135" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="247" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="263" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="465" y="119" width="1" height="585"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="401" y="138" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[SATI RADA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="466" y="138" width="72" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[I Z N O S]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="288" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="304" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="291" width="292" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[3. propisani ili ugovoreni dodaci na plaću radnika i novčani iznos po toj osnovi]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="323" width="359" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[5. ZBROJENI IZNOS PRIMITAKA PO SVIM OSNOVAMA PO STAVKAMA OD 1. DO 3.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="336" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="339" width="177" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[6. OSNOVICA ZA OBRAČUN DOPRINOSA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="352" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="355" width="396" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[7. VRSTE I IZNOSI DOPRINOSA ZA OBVEZNA OSIGURANJA KOJI SE OBUSTAVLJAJU IZ PLAĆE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="30" y="371" width="278" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[7.1. za mirovinsko osiguranje na temelju generacijske solidarnosti]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="384" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="30" y="419" width="278" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[7.2. za mirovinsko osiguranje na temelju individualne kapitalizirane štednje]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="308" y="419" width="45" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[(II. STUP)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="308" y="371" width="40" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[(I. STUP)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="467" width="63" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[8. DOHODAK]]></text>
+				</staticText>
+				<line>
+					<reportElement x="131" y="400" width="408" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="416" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="432" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="131" y="448" width="408" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="464" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="483" width="94" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[9. OSOBNI ODBITAK]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="499" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[10. POREZNA OSNOVICA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="515" width="280" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[11. IZNOS PREDUJMA POREZA I PRIREZA POREZU NA DOHODAK]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="643" width="346" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[14. IZNOS PLAĆE/NAKNADE PLAĆE ZA ISPLATU RADNIKU NA REDOVAN RAČUN]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="480" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="659" width="366" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[15. IZNOS PLAĆE ZA ISPLATU RADNIKU NA NA RAČUN IZ ČL.212. OVRŠNOG ZAKONA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="496" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="576" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="592" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="707" width="63" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[NAPOMENE:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="762" width="202" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="true" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[VI. DATUM PREDAJE RADNIKU / RADNICI:]]></text>
+				</staticText>
+				<line>
+					<reportElement x="202" y="773" width="90" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="365" y="774" width="143" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="365" y="775" width="143" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="7" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[(potpis ovlaštene osobe poslodavca)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="6" width="256" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="true" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[OBRAČUN NEISPLAĆENE PLAĆE / NAKNADE PLAĆE]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="98" y="40" width="167" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_IMEP}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="79" y="52" width="186" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_ADRP}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="115" y="64" width="150" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_OIBP}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="83" y="76" width="80" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_IBANP}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="184" y="76" width="81" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_BANKAP}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="336" y="40" width="197" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_IMER}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="313" y="52" width="220" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_ADRR}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="385" y="64" width="148" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_OIBR}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="353" y="76" width="81" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_IBANR}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="353" y="88" width="81" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_IBANR212}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="452" y="76" width="81" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_BANKAR}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="452" y="88" width="81" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_BANKAR212}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="401" y="154" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_SATI11}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="154" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOS11}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="401" y="170" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_SATI12}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="401" y="186" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_SATI13}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="401" y="202" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_SATI14}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="401" y="218" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_SATI15}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="401" y="234" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_SATI16}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="401" y="250" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_SATI17}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="401" y="267" width="64" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_SATI2}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="401" y="291" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_SATI3}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="170" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOS12}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="186" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOS13}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="202" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOS14}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="218" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOS15}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="234" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOS16}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="250" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOS17}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="267" width="66" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOS2}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="291" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOS3}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="323" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOSUM}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="339" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_OSNDOP}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="259" y="105" width="36" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$F{IP_GOD}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="343" y="105" width="19" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$F{IP_MJE}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="468" y="105" width="22" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$F{IP_OD}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="510" y="105" width="23" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$F{IP_DO}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="371" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_MIO1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="419" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_MIO2}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="467" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_DOH}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="483" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_OSOBOD}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="499" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_OSNPOR}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="515" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_PORPRIR}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="643" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_NETOPK}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="659" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_NETOZ}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="67" y="707" width="470" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_NAPOMENE}]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement x="218" y="762" width="60" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_DATISP}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="167" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Dotted"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="122" width="196" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="true" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[IV. PODACI O PLAĆI / NAKNADI PLAĆE]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="608" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="131" y="624" width="408" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="640" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="656" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="672" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="688" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="307" width="182" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[4. sati neopravdanog izostanka krivnjom radnika]]></text>
+				</staticText>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="401" y="307" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_SATI4}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="467" y="307" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_IZNOS4}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="131" y="384" width="1" height="32"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="131" y="432" width="1" height="32"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="387" width="68" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Naziv primatelja]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="435" width="68" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Naziv primatelja]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="387" width="31" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[IBAN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="435" width="31" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[IBAN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="403" width="84" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Model i poziv na broj]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="451" width="84" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Model i poziv na broj]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="368" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="512" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="528" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="131" y="544" width="408" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="131" y="560" width="408" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="131" y="528" width="1" height="48"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="531" width="68" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Naziv primatelja]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="531" width="31" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[IBAN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="547" width="84" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Model i poziv na broj]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="563" width="31" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Stope]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="579" width="186" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[12. IZNOS NETO PLAĆE / NAKNADE PLAĆE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="595" width="134" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[13. VRSTE I IZNOS OBUSTAVA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="704" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="720" width="539" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="131" y="608" width="1" height="32"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="4" y="611" width="68" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Naziv primatelja]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="611" width="31" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[IBAN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="627" width="84" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Model i poziv na broj]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="691" width="278" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="9" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[16. DATUM DOSPJELOSTI PLAĆE / NAKNADE PLAĆE ZA ISPLATU]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="401" y="675" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[DATUM]]></text>
+				</staticText>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="468" y="579" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_NETO}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="468" y="595" width="66" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IP_ODBICI}]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement x="401" y="691" width="64" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_DATDOSP}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="4" y="403" width="126" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_MIO1PRIM}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="4" y="451" width="126" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_MIO2PRIM}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="227" y="387" width="126" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_MIO1IBAN}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="227" y="403" width="157" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_MIO1PNBZ}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="227" y="435" width="126" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_MIO2IBAN}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="227" y="451" width="157" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_MIO2PNBZ}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="4" y="547" width="126" height="27"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_PORPRIM}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="222" y="531" width="126" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_PORIBAN}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="222" y="547" width="157" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_PORPNBZ}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="170" y="563" width="224" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_STOPEPOR}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="222" y="611" width="126" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_ODBIBAN}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="222" y="627" width="157" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_ODBPNBZ}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="724" width="537" height="19"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" size="8" isBold="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[Na dospjele, a neisplaćene iznose teče zakonska zatezna kamata sukladno članku 29. Zakona o obveznim odnosima uvećanjem eskontne stope za pet postotnih poena,
+počevši od datuma dospijeća do isplate, osim kamata na iznos predujma poreza i prireza porezu na dohodak sukladno propisima.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="746" width="119" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="true" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[V. Mjesto i datum izdavanja:]]></text>
+				</staticText>
+				<line>
+					<reportElement x="119" y="757" width="178" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="322" y="762" width="26" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Nimbus Roman No9 L" isBold="true" pdfFontName="Times-Roman" pdfEncoding="Cp1250"/>
+					</textElement>
+					<text><![CDATA[M.P.]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="123" y="746" width="169" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_MJESTODAT}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="4" y="627" width="126" height="12"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{IP_ODBPRIM}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<title>
+		<band/>
+	</title>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<columnHeader>
+		<band/>
+	</columnHeader>
+	<detail>
+		<band/>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="8">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="250" height="8" forecolor="#808080"/>
+				<box topPadding="1" leftPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="5" isBold="false" pdfEncoding="Cp1250"/>
+				</textElement>
+				<text><![CDATA[(c) REST@RT Sustav poslovnih aplikacija (SPA)]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="8">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="250" height="8" forecolor="#808080"/>
+				<box topPadding="1" leftPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="5" isBold="false" pdfEncoding="Cp1250"/>
+				</textElement>
+				<text><![CDATA[(c) REST@RT Sustav poslovnih aplikacija (SPA)]]></text>
+			</staticText>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>

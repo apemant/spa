@@ -20,6 +20,8 @@ package hr.restart.pl;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
+import hr.restart.swing.raInputDialog;
 import hr.restart.util.OKpanel;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
@@ -144,40 +146,32 @@ public class frmOrgpl extends raMatPodaci {
   }
 
   void datumispl_action() {
-    final JraDialog di = new JraDialog((Frame)getWindow(), "Org.jedinica "+getRaQueryDataSet().getString("CORG"));
-    JraTextField jrdi = new JraTextField();
-    jrdi.setDataSet(getRaQueryDataSet());
-    jrdi.setColumnName("DATUMISPL");
-    JLabel jldi = new JLabel("Datum isplate za tekuæi obraèun");
-    JPanel content = new JPanel(new BorderLayout());
-    JPanel jpdi = new JPanel();
-    OKpanel okdi = new OKpanel() {
-      public void jBOK_actionPerformed() {
-        getRaQueryDataSet().saveChanges();
-        di.hide();
-      }
-      public void jPrekid_actionPerformed() {
-        di.hide();
-      }
+    
+    XYPanel pan = new XYPanel(getRaQueryDataSet()) {
+      protected void changed(JraTextField tf) {
+        if (tf.getColumnName().equalsIgnoreCase("DATUMISPL") && tf.isValueChanged()) {
+          getRaQueryDataSet().setTimestamp("DATUM1", getRaQueryDataSet().getTimestamp("DATUMISPL"));
+          getRaQueryDataSet().setTimestamp("DATUM2", getRaQueryDataSet().getTimestamp("DATUMISPL"));
+          getRaQueryDataSet().setTimestamp("DATUMPOR", getRaQueryDataSet().getTimestamp("DATUMISPL"));
+          getRaQueryDataSet().setTimestamp("DATUMODB", getRaQueryDataSet().getTimestamp("DATUMISPL"));
+          getRaQueryDataSet().setTimestamp("DATUMISP", getRaQueryDataSet().getTimestamp("DATUMISPL"));
+        }
+      };
     };
-    XYLayout xyl = new XYLayout();
-    jpdi.setLayout(xyl);
-    jpdi.add(jldi, new XYConstraints(15, 10, -1, -1));
-    jpdi.add(jrdi, new XYConstraints(210, 10, 100, -1));
-    di.setModal(true);
-    content.add(jpdi,BorderLayout.CENTER);
-    content.add(okdi,BorderLayout.SOUTH);
-    di.setContentPane(content);
-    startFrame.getStartFrame().centerFrame(di,10,di.getTitle());
-    di.addComponentListener(new ComponentAdapter() {
-      public void componentResized(ComponentEvent e) {
-        System.out.println(di.getSize());
-      }
-    });
-    di.setSize(350,100);
-    di.show();
-    di.dispose();
-    getJpTableView().fireTableDataChanged();
+    pan.text = 300;
+    pan.label("Datum isplate za tekuæi obraèun").text("DATUMISPL").nl().down(5);
+    pan.label("Datum uplate doprinosa MIO 1").text("DATUM1").nl();
+    pan.label("Datum uplate doprinosa MIO 2").text("DATUM2").nl();
+    pan.label("Datum uplate poreza i prireza").text("DATUMPOR").nl();
+    pan.label("Datum uplate obustava").text("DATUMODB").nl();
+    pan.label("Datum predaje radnicima").text("DATUMISP").nl().down(5);
+    pan.label("Datum dospjeæa NP1").text("DATUMDOSP").nl().expand();
+       
+    raInputDialog rid = new raInputDialog();
+    if (rid.show(getWindow(), pan, "Org.jedinica "+getRaQueryDataSet().getString("CORG"))) {
+      getRaQueryDataSet().saveChanges();
+      getJpTableView().fireTableDataChanged();
+    } else getRaQueryDataSet().refetchRow(getRaQueryDataSet());
   }
 
   public void AfterSave(char mode)

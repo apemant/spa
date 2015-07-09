@@ -56,6 +56,7 @@ public class jpBankePL extends JPanel {
   JraTextField jraBrposl = new JraTextField();
   JraTextField jraCbanke = new JraTextField();
   JraTextField jraNazbanke = new JraTextField();
+  JraTextField jraPrefiks = new JraTextField();
   JlrNavField jlrNazpov = new JlrNavField() {
     public void after_lookUp() {
     }
@@ -79,7 +80,7 @@ public class jpBankePL extends JPanel {
   private void jbInit() throws Exception {
     jpDetail.setLayout(lay);
     lay.setWidth(575);
-    lay.setHeight(130);
+    lay.setHeight(155);
 
     jbSelCpov.setText("...");
     jlBrdom.setText("Broj domicilne banke");
@@ -103,6 +104,8 @@ public class jpBankePL extends JPanel {
     jraCbanke.setDataSet(fBankePL.getRaQueryDataSet());
     jraNazbanke.setColumnName("NAZBANKE");
     jraNazbanke.setDataSet(fBankePL.getRaQueryDataSet());
+    jraPrefiks.setColumnName("PREFIKS");
+    jraPrefiks.setDataSet(fBankePL.getRaQueryDataSet());
 
     jlrCpov.setColumnName("CPOV");
     jlrCpov.setDataSet(fBankePL.getRaQueryDataSet());
@@ -132,7 +135,8 @@ public class jpBankePL extends JPanel {
     jpDetail.add(jlNazbanke, new XYConstraints(205, 21, -1, -1));
     jpDetail.add(jlCbanke,  new XYConstraints(150, 21, -1, -1));
     jpDetail.add(jlBanka,   new XYConstraints(15, 40, -1, -1));
+    jpDetail.add(new JLabel("Prefiks žiro"),  new XYConstraints(15, 115, -1, -1));
+    jpDetail.add(jraPrefiks, new XYConstraints(150, 115, 100, -1));
     this.add(jpDetail, BorderLayout.CENTER);
-
   }
 }
