@@ -404,7 +404,7 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
       getMasterSet().setTimestamp("DVO", vl.getPresToday(presPRK.getPres().getSelRow()));
       presPRK.getPres().copySelValues();
     }
-    enableZT = (mode == 'N' || (mode == 'I' && !detailExist));
+    enableZT = (mode == 'N' || (mode == 'I' && !(detailExist && getMasterSet().getBigDecimal("UIZT").signum() != 0)));
     zt.needsRefresh();
     jpMaster.initPanel(mode);
     if (allowRecalc && mode == 'I') {
