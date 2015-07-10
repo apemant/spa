@@ -32,6 +32,7 @@ import hr.restart.util.MathEvaluator;
 import hr.restart.util.Util;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
+import hr.restart.util.raMnemonics;
 import hr.restart.util.reports.JasperHook;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.frmVirmani;
@@ -120,6 +121,9 @@ public class frmIspList extends frmIzvjestajiPL {
 
   QueryDataSet vrprim, vrodb, radpl, radmj;
 
+  raVirPlMnWorker worker = raVirPlMnWorker.getInstance();
+  StorageDataSet npdat; 
+  
   static frmIspList this_frm;
 
   public frmIspList() {
@@ -410,6 +414,9 @@ public class frmIspList extends frmIzvjestajiPL {
     radmj = hr.restart.util.Util.getNewQueryDataSet("SELECT cradmj, nazivrm FROM radmj");
     mainPanel.add(jpr, BorderLayout.CENTER);
     jPanel2.add(jrcbPrikaz, new XYConstraints(475, 25, 100, -1));
+    
+    npdat = Aus.createSet("MIO1PRIM:50 MIO1IBAN:30 MIO1PNBZ:30 MIO2PRIM:50 MIO2IBAN:30 MIO2PNBZ:30 "+
+        "PORPRIM:50 PORIBAN:30 PORPNBZ:30 ODBPRIM:50 ODBIBAN:30 ODBPNBZ:30");
   }
 
   public void aft_lookCorg() {
@@ -437,6 +444,10 @@ public class frmIspList extends frmIzvjestajiPL {
   public DataSet getRadnici() {
 //    return SQLradnici;
     return StDSradnici;
+  }
+  
+  public DataSet getNPdat() {
+    return npdat;
   }
 
   public QueryDataSet getVrprim() {
@@ -546,9 +557,52 @@ public class frmIspList extends frmIzvjestajiPL {
   private void fillZastRac(DataSet ds) {
     invert = getVrodb().getBigDecimal("STOPA").compareTo(new BigDecimal(50)) < 0;
     zastIznos = ds.getBigDecimal("OBRIZNOS");
-    ld.raLocate(dm.getPovjerioci(), "CPOV", String.valueOf(getVrodb().getInt("CPOV")));
+    ld.raLocate(dm.getPovjerioci(), "CPOV", getVrodb());
     brojzas = frmVirmaniPl.getIBAN_HR(dm.getPovjerioci().getString("ZIRO"), false);
     nazbankzas = dm.getPovjerioci().getString("NAZPOV");
+  }
+  
+  private void fillFromPov(String naz, String iban, String pnbz) {
+    ld.raLocate(dm.getPovjerioci(), "CPOV", getVrodb());
+    worker.strPov = worker.povDS.getInt("CPOV")+"";
+    worker.strRad = StDSradnici.getString("CRADNIK");
+    worker.strVrOdb = getVrodb().getShort("CVRODB") + "";
+    
+    npdat.setString(naz, worker.povDS.getString("NAZPOV"));
+    npdat.setString(iban, frmVirmaniPl.getIBAN_HR(raMnemonics.replaceMnemonics(
+        worker.povDS.getString("ZIRO"), worker.getID(),raMnemonics.DEFAULTMNMODE), false));
+    npdat.setString(pnbz, worker.povDS.getString("PNBO1") + " " +
+        raMnemonics.replaceMnemonics(worker.povDS.getString("PNBO2"), worker.getID(), raMnemonics.DEFAULTMNMODE));
+  }
+  
+  private void fillKred(DataSet ds) {
+    if (npdat.getString("ODBIBAN").length() > 0) return;
+    
+    fillFromPov("ODBPRIM", "ODBIBAN", "ODBPNBZ");
+  }
+  
+  private void fillMIO1(DataSet ds) {
+    if (npdat.getString("MIO1IBAN").length() > 0) return;
+    
+    ld.raLocate(getVrodb(), "CVRODB", ds);
+    
+    fillFromPov("MIO1PRIM", "MIO1IBAN", "MIO1PNBZ");
+  }
+  
+  private void fillMIO2(DataSet ds) {
+    if (npdat.getString("MIO2IBAN").length() > 0) return;
+    
+    ld.raLocate(getVrodb(), "CVRODB", ds);
+    
+    fillFromPov("MIO2PRIM", "MIO2IBAN", "MIO2PNBZ");
+  }
+  
+  private void fillPor(DataSet ds) {
+    if (npdat.getString("PORIBAN").length() > 0) return;
+    
+    ld.raLocate(getVrodb(), "CVRODB", ds);
+    
+    fillFromPov("PORPRIM", "PORIBAN", "PORPNBZ");
   }
   
   public void findStrings(String crad, short rbrObr, short mjObr, short godObr) {
@@ -567,6 +621,9 @@ public class frmIspList extends frmIzvjestajiPL {
     invert = false;
     nedop = Aus.zero0;
     stopepor = "";
+    npdat.deleteAllRows();
+    npdat.insertRow(false);
+    worker.povDS = dm.getPovjerioci();
     createCachept(StDSradnici);
 
     for (ds.first(); ds.inBounds(); ds.next()) {
@@ -639,12 +696,14 @@ public class frmIspList extends frmIzvjestajiPL {
           _nazivK.append(getVrodb().getString("OPISVRODB")).append(getKreditInfo(ds)).append("\n");
           _iznosK.append(format(ds, "OBRIZNOS")).append("\n");
           if (raParam.getParam(getVrodb(), 1).equals("D")) fillZastRac(ds);
+          else fillKred(ds);
         }
       } else {
         ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
         _nazivK.append(getVrodb().getString("OPISVRODB")).append(getKreditInfo(ds)).append("\n");
         _iznosK.append(format(ds, "OBRIZNOS")).append("\n");
         if (raParam.getParam(getVrodb(), 1).equals("D")) fillZastRac(ds);
+        else fillKred(ds);
       }
     }
     _nazivK.setLength(Math.max(0, _nazivK.length() - 1));
@@ -666,8 +725,13 @@ public class frmIspList extends frmIzvjestajiPL {
     for (ds.first(); ds.inBounds(); ds.next()) {
       if (cvro == -1 || ds.getShort("CVRODB") != cvro) {
         cvro = ds.getShort("CVRODB");
-        if (totalMIO1 == null) totalMIO1 = ds.getBigDecimal("OBRIZNOS");
-        else totalMIO2 = ds.getBigDecimal("OBRIZNOS");
+        if (totalMIO1 == null) {
+          totalMIO1 = ds.getBigDecimal("OBRIZNOS");
+          fillMIO1(ds);
+        } else {
+          totalMIO2 = ds.getBigDecimal("OBRIZNOS");
+          fillMIO2(ds);
+        }
       } else {
         if (totalMIO2 == null) totalMIO1 = totalMIO1.add(ds.getBigDecimal("OBRIZNOS"));
         else totalMIO2 = totalMIO2.add(ds.getBigDecimal("OBRIZNOS"));
@@ -1386,6 +1450,7 @@ System.out.println(porezi);
         if (stopepor.length() == 0) stopepor = "porez ";
         stopepor = stopepor + porezi.getBigDecimal("OBRSTOPA").setScale(0, BigDecimal.ROUND_HALF_UP) + "% = " +
               Aus.formatBigDecimal(porezi.getBigDecimal("OBRIZNOS")) + "   ";
+        fillPor(porezi);
       }
     }
     QueryDataSet prirez = raOdbici.getInstance().getPrirez(cachept_cradnik, isArh?raOdbici.ARH:raOdbici.OBR);

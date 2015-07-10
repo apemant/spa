@@ -655,4 +655,53 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
     if (dat == null || dat.length() == 0) return getIP_DATPLA();
     return dat;
   }
+  
+  public String getIP_MIO1PRIM() {
+    return fil.getNPdat().getString("MIO1PRIM");
+  }
+  
+  public String getIP_MIO1IBAN() {
+    return fil.getNPdat().getString("MIO1IBAN");
+  }
+  
+  public String getIP_MIO1PNBZ() {
+    return fil.getNPdat().getString("MIO1PNBZ");
+  }
+  
+  public String getIP_MIO2PRIM() {
+    return fil.getNPdat().getString("MIO2PRIM");
+  }
+  
+  public String getIP_MIO2IBAN() {
+    return fil.getNPdat().getString("MIO2IBAN");
+  }
+  
+  public String getIP_MIO2PNBZ() {
+    return fil.getNPdat().getString("MIO2PNBZ");
+  }
+  
+  public String getIP_PORPRIM() {
+    return fil.getNPdat().getString("PORPRIM");
+  }
+  
+  public String getIP_PORIBAN() {
+    return fil.getNPdat().getString("PORIBAN");
+  }
+  
+  public String getIP_PORPNBZ() {
+    return fil.getNPdat().getString("PORPNBZ");
+  }
+  
+  public String getIP_ODBPRIM() {
+    return fil.getNPdat().getString("ODBPRIM");
+  }
+  
+  public String getIP_ODBIBAN() {
+    return fil.getNPdat().getString("ODBIBAN");
+  }
+  
+  public String getODBPNBZ() {
+    return fil.getNPdat().getString("ODBPNBZ");
+  }
+
 }
