@@ -121,6 +121,8 @@ public class jpUlazMaster extends JPanel {
       jtfDATDOK_focusLost(null);
     }
   };
+  
+  JraTextField jtfOPIS = new JraTextField();
   JLabel jlBRDOKUL = new JLabel();
   JLabel jlBRRAC = new JLabel();
   JLabel jlDATDOKUL = new JLabel();
@@ -189,8 +191,8 @@ public class jpUlazMaster extends JPanel {
     }
   }
   void jbInit() throws Exception {
-    jpMasterCenter.setPreferredSize(new Dimension(650, 245));
-    jpMasterCenter.setMinimumSize(new Dimension(650, 245));
+    jpMasterCenter.setPreferredSize(new Dimension(650, 275));
+    jpMasterCenter.setMinimumSize(new Dimension(650, 275));
     jpMasterCenter.setBorder(BorderFactory.createEtchedBorder());
     jpMasterCenter.setLayout(xYLayout3);
     /*jtfUINAB.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -204,6 +206,8 @@ public class jpUlazMaster extends JPanel {
     this.setLayout(borderLayout1);
     jtfDATDOKUL.setColumnName("DATDOKUL");
     jtfDATDOKUL.setHorizontalAlignment(SwingConstants.CENTER);
+    
+    jtfOPIS.setColumnName("OPIS");
 
     jrfCPAR.setColumnName("CPAR");
     jrfCPAR.setColNames(new String[] {"NAZPAR", "DOSP"});
@@ -350,7 +354,7 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
 //		  jbULDOK_actionPerformed(e);
 //		}
 //	 });
-    jpMasterCenter.add(jpGetVal, new XYConstraints(0, 185, -1, -1));
+    jpMasterCenter.add(jpGetVal, new XYConstraints(0, 215, -1, -1));
     jpMasterCenter.add(jlCPAR, new XYConstraints(15, 35, -1, -1));
     jpMasterCenter.add(jrfCPAR, new XYConstraints(150, 35, 100, -1));
     jpMasterCenter.add(jrfDOSP, new XYConstraints(606, 35, 0, -1));
@@ -379,6 +383,10 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
     jpMasterCenter.add(jtfDATRAC, new XYConstraints(505, 85, 100, -1));
     jpMasterCenter.add(jtfDATDOSP, new XYConstraints(505, 110, 100, -1));
     jpMasterCenter.add(jtfDATDOKUL, new XYConstraints(505, 135, 100, -1));
+    
+    jpMasterCenter.add(new JLabel("Opis"), new XYConstraints(15, 170, -1, -1));
+    jpMasterCenter.add(jtfOPIS, new XYConstraints(150, 170, 455, -1));
+    
     jpZT.add(jlUINAB, new XYConstraints(27, 30, -1, -1));
 //    jpZT.add(jrbLinearniZT, new XYConstraints(10, 5, -1, -1));
     jpZT.add(jtfUINAB, new XYConstraints(135, 30, 100, -1));
@@ -615,6 +623,7 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
     jtfUPZT.setDataSet(qds);
     jtfUIZT.setDataSet(qds);
     jtfDATDOK.setDataSet(qds);
+    jtfOPIS.setDataSet(qds);
     jtfDVO.setDataSet(qds);
 //    if (ver==0) {
 //      jtfBRDOKUL.setDataSet(qds);
