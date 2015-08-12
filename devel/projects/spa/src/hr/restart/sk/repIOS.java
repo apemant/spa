@@ -291,7 +291,7 @@ public class repIOS implements raReportData { //sg.com.elixir.reportwriter.datas
   
   public String getPokazniSaldo(){
     BigDecimal sal =  getPOKAZNISALDO();
-    String side = Aus.leg(sal.signum(), "u VAŠU korist", "", "u NAŠU korist");
+    String side = Aus.leg(getPOKAZNISALDO2().signum(), "u VAŠU korist", "", "u NAŠU korist");
     //String side = sal.signum() < 0 ? "u VAŠU korist" : "u NAŠU korist";
     return "\nPokazuje dug od    " + sgQuerys.getSgQuerys().format(sal.abs(), 2) + 
            " Kn    "+side; 
@@ -299,7 +299,7 @@ public class repIOS implements raReportData { //sg.com.elixir.reportwriter.datas
   
   public String getSuglasniSaldo(){
     BigDecimal sal =  getPOKAZNISALDO();
-    String side = Aus.leg(sal.signum(),
+    String side = Aus.leg(getPOKAZNISALDO2().signum(),
         "u korist " + rik.getNazivPartnera(ds.getInt("CPAR")), "",
         "u korist " + re.getFirstLine());
     //String side = sal.signum() < 0 ? rik.getNazivPartnera(ds.getInt("CPAR")) : re.getFirstLine();
