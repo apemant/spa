@@ -677,7 +677,7 @@ System.out.println("QS : " + queryString);
                          "stdoki.iprodbp, "+
                          "CAST ((stdoki.iprodsp - stdoki.iprodbp) AS numeric(12,2)) as por, "+
                          "stdoki.iprodsp, "+
-                         "stdoki.inab, "+
+                         "stdoki.inab, stdoki.rinab"+
                          "CAST ((stdoki.iprodbp-stdoki.inab) AS numeric(12,2)) as ruc "+caprDobart+
                          "from artikli, doki, stdoki "+dobart+
                          "where doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok "+
@@ -786,8 +786,13 @@ System.out.println("QS : " + queryString);
         stds.setBigDecimal("IPRODBP", ts.getBigDecimal("IPRODBP"));
         stds.setBigDecimal("POR", ts.getBigDecimal("POR"));
         stds.setBigDecimal("IPRODSP", ts.getBigDecimal("IPRODSP"));
-        stds.setBigDecimal("INAB", ts.getBigDecimal("INAB"));
-        stds.setBigDecimal("RUC", ts.getBigDecimal("RUC"));
+        if (TypeDoc.getTypeDoc().isDocSklad(ts.getString("VRDOK"))) {
+          stds.setBigDecimal("INAB", ts.getBigDecimal("INAB"));
+          stds.setBigDecimal("RUC", ts.getBigDecimal("RUC"));
+        } else if (raIzlazTemplate.isNabDirect()) {
+          stds.setBigDecimal("INAB", ts.getBigDecimal("RINAB"));
+          stds.setBigDecimal("RUC", ts.getBigDecimal("IPRODBP").subtract(ts.getBigDecimal("RINAB")));
+        }
         /*
         stds.setBigDecimal("KOL", stds.getBigDecimal("KOL").add(ts.getBigDecimal("KOL")));
         stds.setBigDecimal("IRAZ", stds.getBigDecimal("IRAZ").add(ts.getBigDecimal("IRAZ")));
@@ -826,8 +831,13 @@ System.out.println("QS : " + queryString);
         stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
         stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(ts.getBigDecimal("POR")));
         stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
-        stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(ts.getBigDecimal("RUC")));
+        if (TypeDoc.getTypeDoc().isDocSklad(ts.getString("VRDOK"))) {
+          stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
+          stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(ts.getBigDecimal("RUC")));
+        } else if (raIzlazTemplate.isNabDirect()) {
+          stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("RINAB")));
+          stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(ts.getBigDecimal("IPRODBP").subtract(ts.getBigDecimal("RINAB"))));
+        }
         try {
           stds.setBigDecimal("PostoRUC",stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),4,java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
         }
@@ -905,7 +915,7 @@ System.out.println("QS : " + queryString);
                          "stdoki.iprodbp, "+
                          "(stdoki.iprodsp - stdoki.iprodbp) as por, "+
                          "stdoki.iprodsp, "+
-                         "stdoki.inab, "+
+                         "stdoki.inab, stdoki.rinab, "+
                          "stdoki.iprodsp + stdoki.uirab as itot, "+
                          "(stdoki.iprodbp-stdoki.inab) as ruc "+caprDobart+
                          "from artikli, doki, stdoki " +dobart+
@@ -1023,7 +1033,7 @@ System.out.println("QS : " + queryString);
         
         stds.setString("JM",ts.getString("JM"));
 
-        /*if (ts.getString("CSKL").equals(cskl))*/ stds.setBigDecimal("KOL", stds.getBigDecimal("KOL").add(ts.getBigDecimal("KOL")));
+        /*if (ts.getString("CSKL").equals(cskl))*/ stds.setBigDecimal("KOL", ts.getBigDecimal("KOL"));
 
         /*if (ts.getString("VRDOK").equals("PRD") ||
             ts.getString("VRDOK").equals("RAC") ||
@@ -1042,12 +1052,17 @@ System.out.println("QS : " + queryString);
 //        else stds.setBigDecimal("KOL", new java.math.BigDecimal("0.00"));
 
 //        stds.setBigDecimal("KOL", stds.getBigDecimal("KOL").add(ts.getBigDecimal("KOL")));
-        stds.setBigDecimal("IRAZ", stds.getBigDecimal("IRAZ").add(ts.getBigDecimal("IRAZ")));
-        stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
-        stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(dbl ? new BigDecimal(ts.getDouble("POR")) : ts.getBigDecimal("POR")));
-        stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
-        stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(dbl ? new BigDecimal(ts.getDouble("RUC")) : ts.getBigDecimal("RUC")));
+        stds.setBigDecimal("IRAZ", ts.getBigDecimal("IRAZ"));
+        stds.setBigDecimal("IPRODBP", ts.getBigDecimal("IPRODBP"));
+        stds.setBigDecimal("POR", dbl ? new BigDecimal(ts.getDouble("POR")) : ts.getBigDecimal("POR"));
+        stds.setBigDecimal("IPRODSP", ts.getBigDecimal("IPRODSP"));
+        if (TypeDoc.getTypeDoc().isDocSklad(ts.getString("VRDOK"))) {
+          stds.setBigDecimal("INAB", ts.getBigDecimal("INAB"));
+          stds.setBigDecimal("RUC", dbl ? new BigDecimal(ts.getDouble("RUC")) : ts.getBigDecimal("RUC"));
+        } else if (raIzlazTemplate.isNabDirect()) {
+          stds.setBigDecimal("INAB", ts.getBigDecimal("RINAB"));
+          stds.setBigDecimal("RUC", ts.getBigDecimal("IPRODBP").subtract(ts.getBigDecimal("RINAB")));
+        }
         stds.setBigDecimal("ITOT", stds.getBigDecimal("ITOT").add(dbl ? new BigDecimal(ts.getDouble("ITOT")) : ts.getBigDecimal("ITOT")));
         try {
           stds.setBigDecimal("PostoRUC",stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),4,java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
@@ -1077,8 +1092,13 @@ System.out.println("QS : " + queryString);
         stds.setBigDecimal("IPRODBP", stds.getBigDecimal("IPRODBP").add(ts.getBigDecimal("IPRODBP")));
         stds.setBigDecimal("POR", stds.getBigDecimal("POR").add(dbl ? new BigDecimal(ts.getDouble("POR")) : ts.getBigDecimal("POR")));
         stds.setBigDecimal("IPRODSP", stds.getBigDecimal("IPRODSP").add(ts.getBigDecimal("IPRODSP")));
-        stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
-        stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(dbl ? new BigDecimal(ts.getDouble("RUC")) : ts.getBigDecimal("RUC")));
+        if (TypeDoc.getTypeDoc().isDocSklad(ts.getString("VRDOK"))) {
+          stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("INAB")));
+          stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(dbl ? new BigDecimal(ts.getDouble("RUC")) : ts.getBigDecimal("RUC")));
+        } else if (raIzlazTemplate.isNabDirect()) {
+          stds.setBigDecimal("INAB", stds.getBigDecimal("INAB").add(ts.getBigDecimal("RINAB")));
+          stds.setBigDecimal("RUC", stds.getBigDecimal("RUC").add(ts.getBigDecimal("IPRODBP").subtract(ts.getBigDecimal("RINAB"))));
+        }
         stds.setBigDecimal("ITOT", stds.getBigDecimal("ITOT").add(dbl ? new BigDecimal(ts.getDouble("ITOT")) : ts.getBigDecimal("ITOT")));
         try {
           stds.setBigDecimal("PostoRUC",stds.getBigDecimal("RUC").divide(stds.getBigDecimal("INAB"),4,java.math.BigDecimal.ROUND_HALF_UP).multiply(new java.math.BigDecimal("100.00")));
