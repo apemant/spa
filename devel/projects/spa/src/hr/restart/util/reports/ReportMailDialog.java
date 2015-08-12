@@ -45,7 +45,14 @@ public class ReportMailDialog extends JraDialog {
       cancelPress();
     }
   };
-  JlrNavField jrEMADR = new JlrNavField();
+  JlrNavField jrEMADR = new JlrNavField() {
+    public String getMasterColumnName() {
+      return "EMADR";
+    };
+    public boolean isAllowMultiple() {
+      return true;
+    };
+  };
   JLabel jlKome = new JLabel("Kome");
   JPanel jpEMADR = new JPanel(new BorderLayout());
   
@@ -65,7 +72,7 @@ public class ReportMailDialog extends JraDialog {
   protected ReportMailDialog() {
     setModal(true);
     retValue = new StorageDataSet();
-    retValue.addColumn(dM.createStringColumn("EMADR","e-Mail adresa", 60));
+    retValue.addColumn(dM.createStringColumn("EMADR","e-Mail adresa", 500));
     retValue.addColumn(dM.createStringColumn("NASLOV","Naslov", 100));
     retValue.addColumn(dM.createStringColumn("TXT","Tekst poruke", 500));
     retValue.open();
@@ -261,7 +268,9 @@ public class ReportMailDialog extends JraDialog {
         }
         
       };
-      m.setRecipient(values.getString("EMADR"));
+      if (values.getString("EMADR").indexOf(',') < 0)
+        m.setRecipient(values.getString("EMADR"));
+      else m.setRecipients(new VarStr(values.getString("EMADR")).splitTrimmed(','));
       return m.sendMailUI(values.getString("TXT"), m.getAttachment(), true, m.getSubject());
   }
 }
