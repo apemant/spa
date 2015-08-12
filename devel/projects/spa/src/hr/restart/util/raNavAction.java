@@ -48,13 +48,9 @@ public abstract class raNavAction extends JLabel implements Action {
   private boolean textual = false;
   private boolean lockEnabled = false;
   private Dimension pSize = new Dimension(ACTSIZE,ACTSIZE);
-  private javax.swing.border.Border raisedBorder = BorderFactory.createBevelBorder(
-      javax.swing.border.BevelBorder.RAISED,
-      this.getBackground().brighter(),
-      this.getBackground().darker()
-  );
+  private javax.swing.border.Border raisedBorder = null;
 //  private javax.swing.border.Border raisedBorder = BorderFactory.createLineBorder(this.getBackground().brighter().brighter().brighter());
-  private javax.swing.border.Border loweredBorder = BorderFactory.createLoweredBevelBorder();
+  private javax.swing.border.Border loweredBorder = null;
     
 /*  private KeyAction AWTact = null;
   private Component AWTcomp = null;*/
@@ -103,6 +99,20 @@ public abstract class raNavAction extends JLabel implements Action {
     this(identifierC,raImages.IMGSTAV,KeyEvent.VK_UNDEFINED,0,false);
   }
 
+  javax.swing.border.Border getRaisedBorder() {
+    if (raisedBorder != null) return raisedBorder;
+    return raisedBorder = BorderFactory.createBevelBorder(
+        javax.swing.border.BevelBorder.RAISED,
+        this.getBackground().brighter(),
+        this.getBackground().darker()
+    );
+  }
+  
+  javax.swing.border.Border getLoweredBorder() {
+    if (loweredBorder != null) return loweredBorder;
+    return loweredBorder = BorderFactory.createLoweredBevelBorder();
+  }
+  
   private void initAction() {
     setIcon(raImages.getImageIcon(raIconDesc));
     setTexts();
@@ -204,7 +214,7 @@ if (((raNavAction)obj).getIdentifier() == null) {
   }
 
   void this_mouseEntered(MouseEvent e) {
-    if (isEnabled()) setNavBorder(raisedBorder);
+    if (isEnabled()) setNavBorder(getRaisedBorder());
   }
 
   void this_mouseExited(MouseEvent e) {
@@ -220,7 +230,7 @@ if (((raNavAction)obj).getIdentifier() == null) {
   }
 
   void this_mouseReleased(MouseEvent e) {
-    if (isEnabled()) if (getBorder() == loweredBorder)  setNavBorder(raisedBorder);
+    if (isEnabled()) if (getBorder() == getLoweredBorder())  setNavBorder(getRaisedBorder());
   }
 
   public void setNavBorder(javax.swing.border.Border bord) {
@@ -257,7 +267,7 @@ if (((raNavAction)obj).getIdentifier() == null) {
   public void setLockedRaisedBorder(boolean newLockedRaisedBorder) {
     lockedRaisedBorder = newLockedRaisedBorder;
     if (lockedRaisedBorder)
-      setBorder(raisedBorder);
+      setBorder(getRaisedBorder());
     else
       setBorder(null);
   }
@@ -270,7 +280,7 @@ if (((raNavAction)obj).getIdentifier() == null) {
   public void setLockedLoweredBorder(boolean newLockedLoweredBorder) {
     lockedLoweredBorder = newLockedLoweredBorder;
     if (lockedLoweredBorder)
-      setBorder(loweredBorder);
+      setBorder(getLoweredBorder());
     else
       setBorder(null);
   }
