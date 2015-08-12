@@ -64,7 +64,7 @@ public class raHelpContainer extends JPanel {
     }
   };
   private Container helpBrowser = new raLiteBrowser().getContentPane();
-  private raGradientPainter grpainter = new raGradientPainter(getBackground().darker(),Color.white);
+  private raGradientPainter grpainter;
   private JPanel titlePanel;
   private raHelpAware lastItem = null;
   /** Creates a new instance of raHelpContainer */
@@ -86,7 +86,7 @@ public class raHelpContainer extends JPanel {
     titlePanel = new JPanel(new BorderLayout()) {
       public void paint(Graphics g) {
         super.paint(g);
-        grpainter.paintGradient(g, titlePanel,true,true);
+        if (grpainter != null) grpainter.paintGradient(g, titlePanel,true,true);
       }
     };
     titlePanel.add(new raHelper(new Clock(false)),BorderLayout.NORTH);
@@ -115,7 +115,8 @@ public class raHelpContainer extends JPanel {
   }
   public void updateUI() {
     super.updateUI();
-    grpainter = new raGradientPainter(getBackground().darker(),Color.white);
+    if (getBackground() != null) 
+      grpainter = new raGradientPainter(getBackground().darker(),Color.white);
   }
   
   

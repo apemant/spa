@@ -114,15 +114,7 @@ public class raUserDialog extends JraFrame {
     		getUserPanel().getTaskTree().initFromTree(getUserPanel().getMenuTree());
     	}
     });*/
-    mesNorm = jMes.getBackground();
-    mesRed = Aus.halfTone(mesNorm, Color.red, 0.3f); 
-    jMes.setBackground(Aus.halfTone(jMes.getBackground(), Color.red, 0.3f));
-    jMes.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        stopMessageFlash();
-        startFrame.getStartFrame().showFrame("hr.restart.help.frmMessages", "Poruke");
-      }
-    });
+    
   }
   
   JraButton jMes = new JraButton();
@@ -148,6 +140,18 @@ public class raUserDialog extends JraFrame {
   }
   
   public void updateMessageButton(final boolean refresh) {
+    if (mesNorm == null) {
+      mesNorm = jMes.getBackground();
+      mesRed = Aus.halfTone(mesNorm, Color.red, 0.3f); 
+      jMes.setBackground(Aus.halfTone(jMes.getBackground(), Color.red, 0.3f));
+      jMes.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          System.out.println("jmes actionperform");
+          stopMessageFlash();
+          startFrame.getStartFrame().showFrame("hr.restart.help.frmMessages", "Poruke");
+        }
+      });
+    }
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         int num = MsgDispatcher.getUnread();
