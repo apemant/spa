@@ -908,6 +908,7 @@ LOT;char;12;;;Lot
 ROKTRAJ;date;;;;Rok trajanja
 RNC;numeric;15,2;;0;Prava nabavna cijena;12
 RINAB;numeric;15,2;;0;Pravi nabavni iznos;14
+RUC;numeric;15,2;;0;Pravi Ruc;14
 IDX=cskl,vrdok,god,brdok
 IDX=cart
 IDX=cradnal
@@ -1253,6 +1254,7 @@ ADRESA;char;50;;;Adresa;30
 BROJTEK;char;30;;;Broj raèuna
 PARAMETRI;char;20;;;Parametri;*
 OIB;char;20;;;OIB
+DRUGITEK;char;30;;;Drugi raèun
 
 $Stmeskla
 LOKK;char;1;;N;LOKK;*
@@ -1554,11 +1556,13 @@ CREP;int;6;pkey;;Šifra
 NAZREP;char;80;;;Opis
 TIP;char;1;;G;Tip
 APP;char;12;;;Aplikacija
+CKEY;char;30;;;Skripta
 
 $Repxdata
 CREP;int;6;pkey;;Šifra
 RBR;int;6;pkey;;Rbr
 OPIS;char;50;;;Opis stavke
+PLAHTA;int;6;;;Plahta
 RED;int;6;;;Redak
 KOL;int;6;;;Kolona
 TIP;char;1;;S;Tip podatka
