@@ -219,6 +219,7 @@ public class jpRadnicipl extends JPanel {
   JraTextField jraBrutuk = new JraTextField();
 
   JraTextField jraDatdol = new JraTextField();
+  JraTextField jraDrugitek = new JraTextField();
   JraTextField jraDatodl = new JraTextField();
   JraTextField jraDatpodstaz = new JraTextField();
   JraTextField jraDatregres = new JraTextField();
@@ -648,6 +649,8 @@ public class jpRadnicipl extends JPanel {
 
     jraDatdol.setColumnName("DATDOL");
     jraDatdol.setDataSet(fRadnicipl.getRaQueryDataSet());
+    jraDrugitek.setColumnName("DRUGITEK");
+    jraDrugitek.setDataSet(fRadnicipl.getRaQueryDataSet());
     jraDatodl.setColumnName("DATODL");
     jraDatodl.setDataSet(fRadnicipl.getRaQueryDataSet());
     jraDatpodstaz.setColumnName("DATPODSTAZ");
@@ -722,6 +725,8 @@ public class jpRadnicipl extends JPanel {
     jpDetail2.add(jraDatdol,        new XYConstraints(170, 395, 100, -1));
     jpDetail2.add(jraDatodl,         new XYConstraints(465, 395, 100, -1));
     jpDetail2.add(jlDatodl,         new XYConstraints(330, 395, -1, -1));
+    jpDetail2.add(new JLabel("Drugi raèun"),     new XYConstraints(330, 420, -1, -1));
+    jpDetail2.add(jraDrugitek,         new XYConstraints(465, 420, 100, -1));
     jpDetail2.add(jraDatregres,         new XYConstraints(170, 420, 100, -1));
     jpDetail2.add(jlDatregres,       new XYConstraints(15, 420, -1, -1));
     jpDetail2.add(jlDatdol,       new XYConstraints(15, 395, -1, -1));
