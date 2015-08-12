@@ -763,7 +763,7 @@ public class upPorezList extends raUpitLite {
     jlrDok.setTextFields(new javax.swing.text.JTextComponent[] {jlrNazDok});
     jlrDok.setVisCols(new int[] {0,1});
     jlrDok.setSearchMode(0);
-    jlrDok.setRaDataSet(Vrdokum.getDataModule().getFilteredDataSet("TIPDOK in ('F','SF') and APP in ('robno','rac','pos','mp') or vrdok = 'IZD' order by vrdok"));
+    jlrDok.setRaDataSet(Vrdokum.getDataModule().getFilteredDataSet("TIPDOK in ('F','SF') and APP in ('robno','rac','pos','mp') or vrdok = 'IZD'"));
     jlrDok.setNavButton(jbDok);
 
     jlrNazDok.setNavProperties(jlrDok);
@@ -830,7 +830,7 @@ public class upPorezList extends raUpitLite {
 
   void ulazSelected() {
     enabSkladCorg(true, true);
-    jlrDok.refilterRaDataSet(Condition.raw("VRSDOK = 'U' and TIPDOK in ('F','SF') and APP = 'robno' order by vrdok"));
+    jlrDok.refilterRaDataSet(Condition.raw("VRSDOK = 'U' and TIPDOK in ('F','SF') and APP = 'robno'"));
     //jlrDok.setRaDataSet(Vrdokum.getDataModule().getFilteredDataSet("VRSDOK = 'U' and TIPDOK in ('F','SF') and APP = 'robno' order by vrdok"));
 //    jlrDok.setText("");
 //    jlrDok.emptyTextFields();
@@ -838,7 +838,8 @@ public class upPorezList extends raUpitLite {
 
   void izlazSelected() {
     enabSkladCorg(true, true);
-    jlrDok.refilterRaDataSet(Condition.raw("VRSDOK = 'I' and TIPDOK in ('F','SF') and APP in ('robno','rac','pos','mp') or vrdok = 'IZD' order by vrdok"));
+    jlrDok.refilterRaDataSet(Condition.raw("VRSDOK = 'I' and TIPDOK in ('F','SF') and APP in ('robno','rac','pos','mp') or vrdok = 'IZD'"));
+    System.out.println(((QueryDataSet) jlrDok.getRaDataSet()).getOriginalQueryString());
     //jlrDok.setRaDataSet(Vrdokum.getDataModule().getFilteredDataSet("VRSDOK = 'I' and TIPDOK in ('F','SF') and APP in ('robno','rac','pos','mp') or vrdok = 'IZD' order by vrdok"));
 //    jlrDok.setText("");
 //    jlrDok.emptyTextFields();
