@@ -189,6 +189,7 @@ public class raAutoOtpfromRac {
       if (raIzlazTemplate.isNabDirect()) {
       	Aus.set(stav, "RNC", stavke_otp, "NC");
       	Aus.set(stav, "RINAB", stavke_otp, "INAB");
+      	Aus.sub(stav, "RUC", "IPRODBP", "RINAB");
       }
       return 0;
 	}
