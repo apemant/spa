@@ -204,6 +204,10 @@ public class repOTPvri extends repIzlazni implements raReportData { //sg.com.eli
     return "";
 
   }
+  
+  public BigDecimal getFIZNOS() {
+    return ds.getBigDecimal("FMC").multiply(ds.getBigDecimal("KOL").setScale(2, BigDecimal.ROUND_HALF_UP));
+  }
 
   public String getZR() {
     ru.setDataSet(ds);
