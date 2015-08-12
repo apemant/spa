@@ -271,6 +271,24 @@ public class frmKarticaDev extends raMatPodaci {
   {
     return valsal.toString();
   }
+  
+  public void Funkcija_ispisa() {
+    String qstr = "SELECT cpar, corg, vrdok, cskl, stavka, brojdok, datdok, datdosp, "
+        + "id, ip, saldo, pvid, pvip, pvsaldo, ziro, oznval, tecaj, cskstavke, "
+        + "extbrdok, opis, brojizv "
+        + "FROM skstavke WHERE " + pres.getPresCondition() + " ORDER BY cpar, datdosp";
+        /*+ pres.jpc.getCondition().and(Aus.getCurrGKDatumCond(dto)).
+          and(Condition.equal("CPAR", cpar)).and(raSaldaKonti.isDirect() ? 
+              pres.jpk.getCondition() : Condition.none).and(Aus.getVrdokCond(kupci)) + 
+          (raSaldaKonti.isSimple() ? " AND pokriveno='N'" : " AND pvpok='N'")
+         " AND pokriveno!='X' ORDER BY cpar, datdosp";*/
+    System.out.println(qstr);
+    raIspisKartica.getInstance(raIspisKartica.IOS).setParams(0, 1, kupci, false, dfrom, dto);
+    raIspisKartica.getInstance(raIspisKartica.IOS).setKonto(pres.getKonto());
+    raIspisKartica.getInstance(raIspisKartica.IOS).setPartner(cpar);
+    raIspisKartica.getInstance(raIspisKartica.IOS).setQuery(qstr);
+    super.Funkcija_ispisa();
+  }
 
   
   private void jbInit() throws Exception {
@@ -295,6 +313,7 @@ public class frmKarticaDev extends raMatPodaci {
     this.setSort(new String[]{"DATDOK"});
     
     this.getRepRunner().addReport("hr.restart.sk.repKarticaDev", "hr.restart.sk.repKarticaDev", "DevKartica", "Ispis devizne kartice");
+    this.getRepRunner().addReport("hr.restart.sk.repIOSdev", "hr.restart.sk.repIOSdev", "IOS", "Ispis otvorenih stavki partnera");
 
     this.getJpTableView().addTableModifier(new raCurrencyTableModifier("PVSALDO"));
     removeRnvCopyCurr();

@@ -328,6 +328,7 @@ public class raIspisKartica {
     totals.setBigDecimal("TOTALKOBU", n);
     totals.setBigDecimal("SALDOKOBU", n);
     totals.setBigDecimal("SALDO", n);
+    totals.setBigDecimal("PVSALDO", n);
     totals.post();
   }
   
@@ -335,6 +336,7 @@ public class raIspisKartica {
     int cpar, oldcpar = -1;
     String vrdok;
     BigDecimal id, ip, saldo, tsaldo;
+    boolean haspv = ds.hasColumn("PVSALDO") != null;
     for (ds.first(); ds.inBounds(); ds.next()) {
       if (plus > 0 && !ds.getTimestamp("DATDOK").after(poc)) continue;
       cpar = ds.getInt("CPAR");
@@ -365,6 +367,12 @@ public class raIspisKartica {
       }
 
       totals.setBigDecimal("SALDO", totals.getBigDecimal("SALDO").add(tsaldo));
+      if (haspv) {
+        BigDecimal pvs = ds.getBigDecimal("PVSALDO");
+        if (ds.getBigDecimal("PVIP").signum() == 0) pvs = pvs.negate();
+        Aus.add(totals, "PVSALDO", pvs);
+      }
+        
       
       if (plus == 0) {
         if (!ds.getTimestamp("DATDOSP").after(dto))
@@ -404,6 +412,7 @@ public class raIspisKartica {
       dM.createBigDecimalColumn("TOTALKOBU"),
       dM.createBigDecimalColumn("SALDOKOBU"),
       dM.createBigDecimalColumn("SALDO"),
+      dM.createBigDecimalColumn("PVSALDO"),
       dM.createBigDecimalColumn("DOSPSALDO")
     });
     totals.open();
