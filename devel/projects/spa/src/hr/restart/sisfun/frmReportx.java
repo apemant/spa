@@ -71,6 +71,11 @@ public class frmReportx extends raMasterDetail {
   
   JraTextField jraCREP = new JraTextField();
   JraTextField jraNAZREP = new JraTextField();
+  JlrNavField jlrSkripta = new JlrNavField() {
+    public void after_lookUp() {
+    }
+  };
+  JraButton jbSelSkripta = new JraButton();
   
   raComboBox rcbTip = new raComboBox();
   
@@ -84,6 +89,7 @@ public class frmReportx extends raMasterDetail {
     }
   };
   
+  JraTextField jraPlahta = new JraTextField();
   JraTextField jraOpis = new JraTextField();
 //  JraTextField jraRbr = new JraTextField();
   JraTextField jraCell = new JraTextField() {
@@ -121,6 +127,7 @@ public class frmReportx extends raMasterDetail {
 
   public void SetFokusMaster(char mode) {
     if (mode == 'N') {
+      rcbTip.this_itemStateChanged();
       jraCREP.requestFocusLater();
     } else if (mode == 'I') {
       jraNAZREP.requestFocusLater();
@@ -130,6 +137,7 @@ public class frmReportx extends raMasterDetail {
   public boolean ValidacijaMaster(char mode) {
     if (vl.isEmpty(jraCREP) || vl.isEmpty(jraNAZREP)) return false;
     if (mode == 'N' && vl.notUnique(jraCREP)) return false;
+    if (getMasterSet().getString("TIP").equalsIgnoreCase("S") && vl.isEmpty(jlrSkripta)) return false;
     return true;
   }
   
@@ -230,11 +238,12 @@ public class frmReportx extends raMasterDetail {
     this.setVisibleColsDetail(new int[] {1,2,5,6});
     this.setDetailKey(new String[] {"CREP", "RBR"});
     
-    JPanel mast = new JPanel(new XYLayout(570, 120));
+    JPanel mast = new JPanel(new XYLayout(570, 145));
     
     rcbTip.setRaItems(new String[][] {
         {"Glavna knjiga - fiksna polja", "G"},
         {"Glavna knjiga - pomièna polja", "B"},
+        {"Skripta za podatke po kljuèu", "S"}
     }
     );
     rcbTip.setRaColumn("TIP");
@@ -258,6 +267,15 @@ public class frmReportx extends raMasterDetail {
     jlrOpis.setNavProperties(jlrApp);
     jlrOpis.setSearchMode(1);
     
+    jlrSkripta.setColumnName("CKEY");
+    jlrSkripta.setDataSet(getMasterSet());
+    jlrSkripta.setColNames(new String[] {});
+    jlrSkripta.setTextFields(new JTextComponent[] {});
+    jlrSkripta.setVisCols(new int[] {0, 1});
+    jlrSkripta.setSearchMode(0);
+    jlrSkripta.setRaDataSet(dm.getSkripte());
+    jlrSkripta.setNavButton(jbSelSkripta);
+    
     
     mast.add(new JLabel("Izvještaj"), new XYConstraints(15, 30, -1, -1));
     mast.add(new JLabel("Šifra"), new XYConstraints(150, 12, 75, -1));
@@ -270,8 +288,11 @@ public class frmReportx extends raMasterDetail {
     mast.add(jbSelApp, new XYConstraints(535, 55, 21, 21));
     mast.add(new JLabel("Vrsta"), new XYConstraints(15, 80, -1, -1));
     mast.add(rcbTip, new XYConstraints(150, 80, 250, -1));
+    mast.add(new JLabel("Skripta"), new XYConstraints(15, 105, -1, -1));
+    mast.add(jlrSkripta, new XYConstraints(150, 105, 175, -1));
+    mast.add(jbSelSkripta, new XYConstraints(330, 105, 21, 21));
     
-    JPanel det = new JPanel(new XYLayout(565, 300));
+    JPanel det = new JPanel(new XYLayout(565, 325));
     
     jraOpis.setColumnName("OPIS");
     jraOpis.setDataSet(getDetailSet());
@@ -279,6 +300,8 @@ public class frmReportx extends raMasterDetail {
     jraKol.setDataSet(getDetailSet());
     jraRed.setColumnName("RED");
     jraRed.setDataSet(getDetailSet());
+    jraPlahta.setColumnName("PLAHTA");
+    jraPlahta.setDataSet(getDetailSet());
     
     rcbTipdat.setRaItems(new String[][] {
         {"Tekstualni", "S"},
@@ -294,17 +317,19 @@ public class frmReportx extends raMasterDetail {
 
     vp.setViewportView(data);
     
-    det.add(new JLabel("Opis stavke"), new XYConstraints(15, 20, -1, -1));
-    det.add(jraOpis, new XYConstraints(150, 20, 400, -1));
-    det.add(new JLabel("Pozicija"), new XYConstraints(15, 45, -1, -1));
-    det.add(jraCell, new XYConstraints(150, 45, 100, -1));
-    det.add(new JLabel("(X,Y)"), new XYConstraints(340, 45, -1, -1));
-    det.add(jraKol, new XYConstraints(395, 45, 75, -1));
-    det.add(jraRed, new XYConstraints(475, 45, 75, -1));
-    det.add(new JLabel("Tip podatka"), new XYConstraints(15, 70, -1, -1));
-    det.add(rcbTipdat, new XYConstraints(150, 70, 205, -1));
-    det.add(new JLabel("Definicija"), new XYConstraints(15, 95, -1, -1));
-    det.add(vp, new XYConstraints(150, 95, 400, 185));
+    det.add(new JLabel("Plahta"), new XYConstraints(15, 20, -1, -1));
+    det.add(jraPlahta, new XYConstraints(150, 20, 100, -1));
+    det.add(new JLabel("Opis stavke"), new XYConstraints(15, 45, -1, -1));
+    det.add(jraOpis, new XYConstraints(150, 45, 400, -1));
+    det.add(new JLabel("Pozicija"), new XYConstraints(15, 70, -1, -1));
+    det.add(jraCell, new XYConstraints(150, 70, 100, -1));
+    det.add(new JLabel("(X,Y)"), new XYConstraints(340, 70, -1, -1));
+    det.add(jraKol, new XYConstraints(395, 70, 75, -1));
+    det.add(jraRed, new XYConstraints(475, 70, 75, -1));
+    det.add(new JLabel("Tip podatka"), new XYConstraints(15, 95, -1, -1));
+    det.add(rcbTipdat, new XYConstraints(150, 95, 205, -1));
+    det.add(new JLabel("Definicija"), new XYConstraints(15, 120, -1, -1));
+    det.add(vp, new XYConstraints(150, 120, 400, 185));
     
     SetPanels(mast, det, false);
   }
