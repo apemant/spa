@@ -24,24 +24,13 @@ public class RaRobnoMiniSaldakSH1 extends raReportSection {
   public raReportElement TextFirstLine;
   private String[] TextFirstLineProps = new String[] {"FirstLine", "", "", "", "", "", "", "", "60", 
      "", "5660", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "", ""};
-  public raReportElement TextFirstLine1;
-  private String[] TextFirstLine1Props = new String[] {"FirstLine", "", "", "", "", "", "", "", 
-     "60", "", "5660", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "", ""};
   public raReportElement TextSecondLine;
   private String[] TextSecondLineProps = new String[] {"SecondLine", "", "", "", "", "", "", "", 
-     "60", "240", "5660", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "", 
-     ""};
-  public raReportElement TextSecondLine1;
-  private String[] TextSecondLine1Props = new String[] {"SecondLine", "", "", "", "", "", "", "", 
      "60", "240", "5660", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "", 
      ""};
   public raReportElement TextThirdLine;
   private String[] TextThirdLineProps = new String[] {"ThirdLine", "", "", "", "", "", "", "", "60", 
      "480", "5660", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "", ""};
-  public raReportElement TextThirdLine1;
-  private String[] TextThirdLine1Props = new String[] {"ThirdLine", "", "", "", "", "", "", "", 
-     "60", "480", "5660", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "", 
-     ""};
   public raReportElement LabelPRILOG_1;
   private String[] LabelPRILOG_1Props = new String[] {"PRILOG 1", "", "60", "820", "1320", "220", 
      "", "", "", "", "", "", "Lucida Bright", "", "", "", "", ""};
@@ -103,11 +92,8 @@ public class RaRobnoMiniSaldakSH1 extends raReportSection {
 
   private void addElements() {
     TextFirstLine = addModel(ep.TEXT, TextFirstLineProps);
-    TextFirstLine1 = addModel(ep.TEXT, TextFirstLine1Props);
     TextSecondLine = addModel(ep.TEXT, TextSecondLineProps);
-    TextSecondLine1 = addModel(ep.TEXT, TextSecondLine1Props);
     TextThirdLine = addModel(ep.TEXT, TextThirdLineProps);
-    TextThirdLine1 = addModel(ep.TEXT, TextThirdLine1Props);
     LabelPRILOG_1 = addModel(ep.LABEL, LabelPRILOG_1Props);
     TextNASLOV = addModel(ep.TEXT, TextNASLOVProps);
     TextStatusDospjece = addModel(ep.TEXT, TextStatusDospjeceProps);
