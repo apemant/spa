@@ -179,7 +179,7 @@ public class raImportRac {
     setDate(sk, "DATUMKNJ", head, "InvoiceDate");
     setDate(sk, "DATPRI", head, "InvoiceDate");
     
-    sk.setString("BROJDOK", head.getChildText("DocumentIdentifier") + "/" + ut.getYear(sk.getTimestamp("DATDOK")));
+    sk.setString("BROJDOK", head.getChildText("OfficialIdentifier") + "/" + ut.getYear(sk.getTimestamp("DATDOK")));
     System.out.println("Dokument: " + sk.getString("BROJDOK"));
     
     Element partn = head.getChild("Buyer");
