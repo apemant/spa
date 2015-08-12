@@ -516,7 +516,7 @@ public class raOdbici {
     }
     //minimalni iznosi iz parametra minosn+cvrodb
     String s_minos = hr.restart.sisfun.frmParam.getParam("pl","minosn".concat(cvrodb), "0", "Minimalna osnovica za doprinos ".concat(cvrodb));
-    if (!s_minos.equals("0") && res.obrosn.scale() > 0) {
+    if (!s_minos.equals("0")/* && res.obrosn.scale() > 0*/) {
       try {
         BigDecimal minos = new BigDecimal(s_minos);
         minos = minos.setScale(2,BigDecimal.ROUND_HALF_UP);
