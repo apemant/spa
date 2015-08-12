@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.baza.Condition;
 import hr.restart.baza.UplRobno;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sk.PartnerCache;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraComboBox;
@@ -27,6 +28,7 @@ import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.jpZupGrad;
 import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.OKpanel;
@@ -58,6 +60,7 @@ import javax.swing.SwingUtilities;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.TableDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
@@ -81,10 +84,12 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 	private QueryDataSet qdsAllIzlaz = new QueryDataSet();
 
 	private QueryDataSet qdsPojedIzlaz = new QueryDataSet();
+	private StorageDataSet PojedIzlaz = new QueryDataSet();
 
 	private QueryDataSet qdsAllUlaz = new QueryDataSet();
 
 	private QueryDataSet qdsPojedUlaz = new QueryDataSet();
+	private StorageDataSet PojedUlaz = new QueryDataSet();
 
 	private hr.restart.util.raCommonClass rcc = hr.restart.util.raCommonClass
 			.getraCommonClass();
@@ -96,6 +101,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 	//private JLabel jlCPAR = new JLabel("Partner");
 
 	private raComboBox rcbPartnerKupac = new raComboBox();
+	
+	private jpZupGrad jpZGA = new jpZupGrad();
 
 	private JraButton jbCPAR = new JraButton();
 
@@ -409,16 +416,24 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		//qdsPojedUlaz.getColumn("DVO").setCaption("DVO");
 		qdsPojedIzlaz.open();
 		qdsPojedUlaz.open();
+		
+		PojedIzlaz = qdsPojedIzlaz.cloneDataSetStructure();
+		PojedIzlaz.open();
+		PojedUlaz = qdsPojedUlaz.cloneDataSetStructure();
+		PojedUlaz.open();
 	}
 
 	public void mantancereports(boolean isAll, String kd) {
 		this.killAllReports();
 		if (tds.getString("PK").equals("K")) {
-			if (isAll)
+			if (isAll) {
 				this.addReport("hr.restart.robno.repRobnoMiniSaldak",
 						"hr.restart.robno.repRobnoMiniSaldak",
 						"RobnoMiniSaldak", "Ispis saldiranih kartica");
-			else {
+				this.addReport("hr.restart.robno.repRobnoMiniSaldakAll",
+				    "hr.restart.robno.repRobnoMiniSaldakAll","RobnoMiniSaldakCparAll", 
+				    "Skraæeni ispis otvorenih stavki");
+			} else {
 				this.addReport("hr.restart.robno.repRobnoMiniSaldakCpar",
 						"hr.restart.robno.repRobnoMiniSaldak",
 						"RobnoMiniSaldakCpar", "Izvadak otvorenih stavaka");
@@ -429,13 +444,15 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 						"Salda konta kupaca - kartica");
 			}
 		} else {
-			if (isAll)
-				this
-						.addReport("hr.restart.robno.repRobnoMiniSaldak",
+			if (isAll) {
+				this.addReport("hr.restart.robno.repRobnoMiniSaldak",
 								"hr.restart.robno.repRobnoMiniSaldakUlaz",
 								"RobnoMiniSaldakUlaz",
 								"Ispis saldiranih kartica ulaza");
-			else {
+				this.addReport("hr.restart.robno.repRobnoMiniSaldakAll",
+                    "hr.restart.robno.repRobnoMiniSaldakAll","RobnoMiniSaldakCparAll", 
+                    "Skraæeni ispis otvorenih stavki");
+			} else {
 				this.addReport(
 						"hr.restart.robno.repRobnoMiniSaldakKarticaCparUlaz",
 						"hr.restart.robno.repRobnoMiniSaldakUlaz",
@@ -443,6 +460,14 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 						"Salda konta kupaca - kartica");
 			}
 		}
+	}
+	
+	public boolean isIzlaz() {
+	  return tds.getString("PK").equals("K");
+	}
+	
+	public DataSet getDataSet() {
+	  return isIzlaz() ? PojedIzlaz : PojedUlaz;
 	}
 
 	public void okPress() {
@@ -464,6 +489,11 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		// hr.restart.util.sysoutTEST(false);
 		//    syst.prn(tds); // tds ispitivanje
 
+		SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            getJPTV().getColumnsBean().focusCombo();            
+          }
+        });
 	}
 
 	private static raRobnoMiniSaldak instanceOfMe;
@@ -496,6 +526,10 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		keySupport.setNavContainer(getJPTV().getNavBar().getNavContainer());
 		setUpQDS();
 		tds.setColumns(new Column[] {
+		    dm.getPartneri().getColumn("PBR").cloneColumn(),
+		    dm.getPartneri().getColumn("CAGENT").cloneColumn(),
+		   dm.getPartneri().getColumn("CGRPAR").cloneColumn(),
+		    dm.getZupanije().getColumn("CZUP").cloneColumn(),
 				dm.createTimestampColumn("pocDatum", "Po\u010Detni datum"),
 				dm.createTimestampColumn("zavDatum", "Završni datum"),
 				dm.createBigDecimalColumn("UPLATA", "Uplata", 2),
@@ -579,8 +613,10 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 		XYLayout xyl = new XYLayout();
 		xyl.setWidth(700);
-		xyl.setHeight(140);
+		xyl.setHeight(165);
 		panel_za_upit.setLayout(xyl);
+		
+		
 
 		panel_za_upit.add(jlSklad, new XYConstraints(15, 17, -1, -1));
 		panel_za_upit.add(jrfCSKL, new XYConstraints(150, 15, 100, -1));
@@ -592,26 +628,29 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		panel_za_upit.add(jrfNAZORG, new XYConstraints(255, 40, 350, -1));
 		panel_za_upit.add(jbcorg, new XYConstraints(610, 40, 21, 21));
 		
-		panel_za_upit.add(jcbPON, new XYConstraints(365, 90, 240, -1));
+		panel_za_upit.add(jpZGA, new XYConstraints(0, 65, -1, -1));
+		panel_za_upit.add(jcbPON, new XYConstraints(365, 115, 240, -1));
 		//panel_za_upit.add(jcbUPL, new XYConstraints(365, 115, 240, -1));
 
-		panel_za_upit.add(/* jlCPAR */rcbPartnerKupac, new XYConstraints(15, 65,
-				130, -1));
-		panel_za_upit.add(jrfCPAR, new XYConstraints(150, 65, 100, -1));
-		panel_za_upit.add(jrfNAZPAR, new XYConstraints(255, 65, 350, -1));
-		panel_za_upit.add(jbCPAR, new XYConstraints(610, 65, 21, 21));
+		panel_za_upit.add(/* jlCPAR */rcbPartnerKupac, new XYConstraints(15, 90, 130, -1));
+		panel_za_upit.add(jrfCPAR, new XYConstraints(150, 90, 100, -1));
+		panel_za_upit.add(jrfNAZPAR, new XYConstraints(255, 90, 350, -1));
+		panel_za_upit.add(jbCPAR, new XYConstraints(610, 90, 21, 21));
 
 		panel_za_upit.add(new JLabel("Plaæeno / Dospjelost"),
-				new XYConstraints(15, 92, -1, -1));
-		panel_za_upit.add(JCstatus, new XYConstraints(150, 90, 100, -1));
-		panel_za_upit.add(JCdosp, new XYConstraints(255, 90, 100, -1));
+				new XYConstraints(15, 117, -1, -1));
+		panel_za_upit.add(JCstatus, new XYConstraints(150, 115, 100, -1));
+		panel_za_upit.add(JCdosp, new XYConstraints(255, 115, 100, -1));
 
 		panel_za_upit.add(new JLabel("Datum (od-do)"), new XYConstraints(15,
-				117, -1, -1));
-		panel_za_upit.add(jtfPocDatum, new XYConstraints(150, 115, 100, -1));
-		panel_za_upit.add(jtfZavDatum, new XYConstraints(255, 115, 100, -1));
+				142, -1, -1));
+		panel_za_upit.add(jtfPocDatum, new XYConstraints(150, 140, 100, -1));
+		panel_za_upit.add(jtfZavDatum, new XYConstraints(255, 140, 100, -1));
 		this.setJPan(panel_za_upit);
 		initMiniPanel();
+		
+		jpZGA.bind(tds);
+		jpZGA.init();
 		
 		installResetButton();
 	}
@@ -619,13 +658,16 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 	private void findKarticaIzlaz() { // ovo je bilo i do sada
 
 		String sqlpitanje = "";
+		
+		PartnerCache pc = null;
+		
 
 		if (jrfCPAR.getText().equalsIgnoreCase("")) {
 			sqlpitanje = "select (doki.cskl||'-'||doki.vrdok||'-'||doki.god||'-'||doki.brdok) as kljuc,doki.cskl,doki.vrdok,doki.god,doki.brdok,doki.pnbz2,doki.datdok,doki.dvo,doki.datdosp,"
-					+ "doki.cpar,partneri.nazpar,doki.uirac,doki.platiti,doki.datupl from doki, partneri where doki.uirac != 0 and doki.cpar = partneri.cpar and ";
+					+ "doki.cpar,partneri.nazpar,doki.uirac,doki.platiti,doki.datupl,doki.cagent from doki, partneri where doki.uirac != 0 and doki.cpar = partneri.cpar and ";
 		} else {
 			sqlpitanje = "select (doki.cskl||'-'||doki.vrdok||'-'||doki.god||'-'||doki.brdok) as kljuc,doki.cskl,doki.vrdok,doki.god,doki.brdok,doki.pnbz2,doki.datdok,doki.dvo,doki.datdosp,"
-					+ "doki.cpar,partneri.nazpar,doki.uirac,doki.platiti,doki.datupl from doki, partneri where doki.uirac != 0 and doki.cpar = "
+					+ "doki.cpar,partneri.nazpar,doki.uirac,doki.platiti,doki.datupl,doki.cagent from doki, partneri where doki.uirac != 0 and doki.cpar = "
 					+ jrfCPAR.getText() + " and doki.cpar = partneri.cpar and ";
 		}
 		Condition svd = Condition.in("VRDOK", new String[] {"ROT", "POD"});
@@ -698,7 +740,9 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 		boolean isCPAR4ALL = jrfCPAR.getText().length() == 0;
 
+		qdsPojedIzlaz.emptyAllRows();
 		if (isCPAR4ALL) {
+		  pc = new PartnerCache();
 			qdsAllIzlaz.emptyAllRows();
 			qdsAllIzlaz.getColumn("CPAR").setVisible(
 					com.borland.jb.util.TriStateProperty.TRUE);
@@ -710,8 +754,9 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 					com.borland.jb.util.TriStateProperty.FALSE);
 			qdsAllIzlaz.getColumn("DATDOK").setVisible(
                 com.borland.jb.util.TriStateProperty.FALSE);
+			
 		} else {
-			qdsPojedIzlaz.emptyAllRows();
+			
 			qdsPojedIzlaz.getColumn("CPAR").setVisible(
 					com.borland.jb.util.TriStateProperty.FALSE);
 			qdsPojedIzlaz.getColumn("VRDOK").setVisible(
@@ -730,9 +775,14 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		if (tmpqds == null || tmpqds.rowCount() < 1){
 			setNoDataAndReturnImmediately();
         }
+		
+		int agent = jpZGA.isAgent() && !jpZGA.agent.isEmpty() ? Aus.getNumber(jpZGA.agent.getText()) : -1;
 
 		for (tmpqds.first(); tmpqds.inBounds(); tmpqds.next()) {
 			if (isCPAR4ALL) {
+			  PartnerCache.Data data = pc.getData(tmpqds.getInt("CPAR"));
+			  if (data == null || !jpZGA.checkPartner(tmpqds.getInt("CAGENT"), data.getZup(), data.getPbr(), data.getGrupa())) continue;
+			  
 				if (!hr.restart.util.lookupData.getlookupData().raLocate(
 						qdsAllIzlaz, "CPAR",
 						String.valueOf(tmpqds.getInt("CPAR")))) {
@@ -752,7 +802,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 						.setBigDecimal("SALDO", qdsAllIzlaz.getBigDecimal(
 								"UIRAC").subtract(
 								qdsAllIzlaz.getBigDecimal("PLATITI")));
-			} else {
+			} 
+			  if (agent > 0 && tmpqds.getInt("CAGENT") != agent) continue;
 				qdsPojedIzlaz.insertRow(true);
 				dm.copyColumns(tmpqds, qdsPojedIzlaz, new String[] { "cskl",
 						"vrdok", "god", "brdok", "pnbz2", "dvo", "datdok", "uirac",
@@ -785,7 +836,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 											.getTimestamp("datupl"))));
 				}
 			}
-		}
+		
 		//removeNavs();
 		if (isCPAR4ALL) {
 			//      qdsAllIzlaz.setSort(new SortDescriptor(new String[] {"NAZPAR"}));
@@ -793,6 +844,12 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			qdsAllIzlaz.first();
 			this.setDataSetAndSums(qdsAllIzlaz,
 					new String[] { "UIRAC", "PLATITI", "SALDO" });
+			
+			PojedIzlaz.emptyAllRows();
+			for (qdsPojedIzlaz.first(); qdsPojedIzlaz.inBounds(); qdsPojedIzlaz.next()) {
+			  PojedIzlaz.insertRow(false);
+			  qdsPojedIzlaz.copyTo(PojedIzlaz);
+			}
 			//addAllPar();
 		} else {
             qdsPojedIzlaz.setTableName("izlazsingle");
@@ -813,6 +870,9 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 	private void findKarticaUlaz() { // ovo je novo.... gledati prk i kal
 
 		boolean isCPAR4ALL = jrfCPAR.getText().equalsIgnoreCase("");
+		
+		PartnerCache pc = null;
+		
 //group by cskl, vrdok, brdok, god order by nazpar
 		String sqlpitanje = "select doku.cskl as cskl, doku.vrdok as vrdok, doku.god as god, "
 				+ "doku.brdok as brdok, max(doku.brrac) as brrac, max(doku.cpar) as cpar, max(partneri.nazpar) as nazpar, max(doku.cskl||'-'||doku.vrdok||'-'||doku.god||'-'||doku.brdok) as kljuc, "
@@ -873,7 +933,9 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		sqlpitanje += " group by cskl, vrdok, brdok, god order by nazpar "
 				+ collation;
 
+		qdsPojedUlaz.emptyAllRows();
 		if (isCPAR4ALL) {
+		  pc = new PartnerCache();
 			qdsAllUlaz.emptyAllRows();
 			qdsAllUlaz.getColumn("CPAR").setVisible(
 					com.borland.jb.util.TriStateProperty.TRUE);
@@ -886,7 +948,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			qdsAllUlaz.getColumn("DATDOK").setVisible(
                 com.borland.jb.util.TriStateProperty.FALSE);
 		} else {
-			qdsPojedUlaz.emptyAllRows();
+			
 			qdsPojedUlaz.getColumn("CPAR").setVisible(
 					com.borland.jb.util.TriStateProperty.FALSE);
 			qdsPojedUlaz.getColumn("VRDOK").setVisible(
@@ -919,9 +981,15 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 		//debug
 		//    s.prn(tmpqds);
+		
+		
+		int agent = jpZGA.isAgent() && !jpZGA.agent.isEmpty() ? Aus.getNumber(jpZGA.agent.getText()) : -1;
 
 		for (tmpqds.first(); tmpqds.inBounds(); tmpqds.next()) {
 			if (isCPAR4ALL) {
+			  PartnerCache.Data data = pc.getData(tmpqds.getInt("CPAR"));
+              if (data == null || !jpZGA.checkPartner(tmpqds.getInt("CAGENT"), data.getZup(), data.getPbr(), data.getGrupa())) continue;
+              
 				if (!hr.restart.util.lookupData.getlookupData().raLocate(
 						qdsAllUlaz, "CPAR",
 						String.valueOf(tmpqds.getInt("CPAR")))) {
@@ -941,7 +1009,12 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 						"PLATITI").add(tmpqds.getBigDecimal("PLATITI")));
 				qdsAllUlaz.setBigDecimal("SALDO", qdsAllUlaz.getBigDecimal(
 						"UIRAC").subtract(qdsAllUlaz.getBigDecimal("PLATITI")));
-			} else {
+				
+				
+			} 
+			
+	             if (agent > 0 && tmpqds.getInt("CAGENT") != agent) continue;
+	             
 				qdsPojedUlaz.insertRow(true);
                 dm.copyColumns(tmpqds, qdsPojedUlaz, new String[] 
                     {"brrac", "cskl", "vrdok", "god", "brdok", "kljuc", "cpar", 
@@ -976,7 +1049,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 											.getTimestamp("datupl"))));
 				}
 			}
-		}
+		
 		//removeNavs();
 		//debug
 		//    s.prn(qdsPojedUlaz);
@@ -987,6 +1060,11 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 			qdsAllUlaz.first();
 			setDataSetAndSums(qdsAllUlaz, 	new String[] { "UIRAC", "PLATITI", "SALDO" });
 			//addAllPar();
+			PojedUlaz.emptyAllRows();
+            for (qdsPojedUlaz.first(); qdsPojedUlaz.inBounds(); qdsPojedUlaz.next()) {
+              PojedUlaz.insertRow(false);
+              qdsPojedUlaz.copyTo(PojedUlaz);
+            }
 		} else {
             qdsPojedUlaz.setTableName("ulazsingle");
 			qdsPojedUlaz.first();
@@ -1643,6 +1721,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		return dospjelo;
 	}
 
+	
 	public void toHash() {
 		hm.clear();
 		hm.put("CORG", jrfCORG.getText());
@@ -1697,6 +1776,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
     		    
     			this.setDataSetAndSums(qdsAllIzlaz,
     					new String[] { "UIRAC", "PLATITI", "SALDO" });
+    			
+    			getJPTV().installSelectionTracker(new String[] { "CPAR" });
     		} else {
     		  if (qdsAllUlaz.getInt("CPAR") == qdsPojedUlaz.getInt("CPAR") ||
                   ld.raLocate(qdsAllUlaz, "CPAR", 
@@ -1709,6 +1790,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
     		  
                 this.setDataSetAndSums(qdsAllUlaz,
                     new String[] { "UIRAC", "PLATITI", "SALDO" });
+                
+                getJPTV().installSelectionTracker(new String[] { "CPAR" });
     			/*this.setDataSet(null);
     			ok_action();*/
             
