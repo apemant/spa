@@ -325,6 +325,7 @@ sysoutTEST ST = new sysoutTEST(false);
       osnovicaZaKredit = nula.setScale(8);
       osnovicaZaHarach = nula.setScale(8);
     }
+    System.out.println(kumulrad);
     primanja.first();
     do {
       DataSet _vrsteprim = posVrsteprim(primanja);
@@ -369,6 +370,7 @@ sysoutTEST ST = new sysoutTEST(false);
             primanja.setBigDecimal("NETO",primanja.getBigDecimal("BRUTO"));
             primanja.setBigDecimal("BRUTO",primanja.getBigDecimal("BRUTO").add(primanja.getBigDecimal("DOPRINOSI")));
           }
+          if (primanja.getBigDecimal("NETO").signum() < 0) primanja.setBigDecimal("NETO",Aus.zero2);
         } else {
           if (!isNeto_Bruto()) {
             BigDecimal propkoef;
@@ -416,6 +418,8 @@ sysoutTEST ST = new sysoutTEST(false);
     BigDecimal[] sumStopaIznos = calcOdbiciRadnik(doprinosi,"NETO",true);
     //napunim kumulrad.doprinosi
     kumulrad.setBigDecimal("DOPRINOSI",sumStopaIznos[1]); // = bruto - neto
+    if (kumulrad.getBigDecimal("NETO").signum() < 0)
+      kumulrad.setBigDecimal("NETO", Aus.zero2); // = bruto - neto
     posKumulOrg(currCorg,radnici.getString("CVRO"));
     // dodajem na kumulorg
     addBigDec_kumulorg("SATI",kumulrad.getBigDecimal("SATI"));
