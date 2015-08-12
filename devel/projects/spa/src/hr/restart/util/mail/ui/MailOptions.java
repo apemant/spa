@@ -107,7 +107,10 @@ public class MailOptions extends propsDialog {
       FileHandler.loadProperties(savedMailInfo, detail);
       data.setString("REC", detail.getProperty("recipient"));
       
-      if (key.startsWith("SPA-ERP_ispis")) {
+      File propf = new File(savedMailInfo);
+      data.setTimestamp("DATE", new Timestamp(propf.lastModified()));
+      
+      /*if (key.startsWith("SPA-ERP_ispis")) {
         key = key.substring("SPA-ERP_ispis".length());
         key = key.substring(0, key.indexOf('.'));
         try {
@@ -116,7 +119,7 @@ public class MailOptions extends propsDialog {
           // TODO Auto-generated catch block
           //e.printStackTrace();
         }
-      }
+      }*/
     }
     data.post();
     data.setSort(new SortDescriptor(new String[] {"DATE"}));
@@ -128,7 +131,7 @@ public class MailOptions extends propsDialog {
   
   public void props_del() {
     if (data.rowCount() == 0) return;
-    props4list.remove(data.getString("PKEY"));
+    props4list.remove(data.getString("FILE"));
     data.emptyRow();
     jp.fireTableDataChanged();
     doSave = true;
