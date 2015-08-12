@@ -61,7 +61,7 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
     return _this;
   }
   private void init() {
-    striped_radpl = Radnicipl.getDataModule().getFilteredDataSet("cradnik, brojtek, jmbg","");
+    striped_radpl = Radnicipl.getDataModule().getFilteredDataSet("cradnik, brojtek, drugitek, jmbg","");
     striped_radpl.open();
     radnici = Radnici.getDataModule().copyDataSet();
     radnici.open();
@@ -178,6 +178,13 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
       public String getText() {
         ld.raLocate(striped_radpl, new String[]{"CRADNIK"}, new String[]{strRad});
         return striped_radpl.getString("BROJTEK");
+      }
+    });
+    
+    addVar(new raMnemVar("$drugitek","Drugi raèun radnika") {
+      public String getText() {
+        ld.raLocate(striped_radpl, new String[]{"CRADNIK"}, new String[]{strRad});
+        return striped_radpl.getString("DRUGITEK");
       }
     });
     
