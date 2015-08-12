@@ -46,6 +46,7 @@ public class menuIzvVele extends JMenu {
   JMenuItem jmPopustList = new JMenuItem();
   JMenuItem jmUlazVrsteDokumenata = new JMenuItem();
   JMenuItem jmOstaliRep = new JMenuItem();
+  JMenuItem jmExcel = new JMenuItem();
   JMenuItem jmMiniSaldak = new JMenuItem();  
   JMenuItem jmPreglProdPoArt = new JMenuItem();
   JMenuItem jmPreglNeiskalkPrim = new JMenuItem();
@@ -156,7 +157,12 @@ public class menuIzvVele extends JMenu {
         jmOstaliRep_actionPerformed(e);
       }
     });
-    
+    jmExcel.setText("Excel izvjestaji");
+    jmExcel.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmExcel_actionPerformed(e);
+      }
+    });
 
     jmPreglProdPoArt.setText("Pregled prodaje po artiklima");
     jmPreglProdPoArt.addActionListener(new java.awt.event.ActionListener() {
@@ -214,6 +220,7 @@ public class menuIzvVele extends JMenu {
     }
     this.addSeparator();
     this.add(jmOstaliRep);
+    this.add(jmExcel);
 /*    this.add(jmUIDok);
     this.add(jmIzvArt);
     this.add(jmKupStat);*/
@@ -231,6 +238,11 @@ public class menuIzvVele extends JMenu {
   void jmOstaliRep_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmRobnoReportList", "Ostali izvještaji");
   }
+  
+  void jmExcel_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.robno.frmExcelRobno",jmExcel.getText());
+  }
+  
   void jmPorezList_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.upPorezList", jmPorezList.getText());
   }
