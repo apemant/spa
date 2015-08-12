@@ -1034,8 +1034,10 @@ public class jpUlazDetail extends JPanel {
   
   void calcFromNC() {
   	String chVC = frmParam.getParam("robno", "kalkchVC", "N", "Naèin kalkulacije cijene (N = fiksni VC, M = fiksni MC, D = fiksni PMAR)");
-    
-    if ("D".equalsIgnoreCase(chVC)) 
+  	
+    if ("D".equalsIgnoreCase(chVC) ||
+           ("M".equalsIgnoreCase(chVC) && frm.getDetailSet().getBigDecimal("MC").signum() == 0) ||
+           ("N".equalsIgnoreCase(chVC) && frm.getDetailSet().getBigDecimal("VC").signum() == 0))
     	calc.run("MAR = NC % PMAR;  VC = NC + MAR;  tds.POR = VC % Porezi.UKUPOR;  MC = VC + tds.POR");
     else if ("M".equalsIgnoreCase(chVC))
     	calc.run("VC = MC ~% Porezi.UKUPOR;  tds.POR = MC - VC;  MAR = VC - NC;  PMAR = MAR %% NC");
