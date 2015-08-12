@@ -153,7 +153,9 @@ public class frmAgenti extends raMatPodaci {
     rcbVr.setRaColumn("VRSTAPROV");
     rcbVr.setRaItems(new String[][] {
       {" Prema izdanim raèunima", "F"},
-      {" Prema naplaæenim raèunima", "N"}
+      {" Prema naplaæenim raèunima", "N"},
+      {" Prema RuC izdanih raèuna", "R"},
+      {" Prema realiziranom RuC-u", "T"}
     });
 
     jrEMADR.setColumnName("EMADR");
