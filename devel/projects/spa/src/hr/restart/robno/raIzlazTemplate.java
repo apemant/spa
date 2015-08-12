@@ -1177,6 +1177,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
             Aus.set(getDetailSet(), "RINAB", "INAB");
          }
 		
+		if (mode != 'B') findRuC();
+		
 		if (mode != 'B') 
 			SanityCheck.basicStdoki(getDetailSet());
 		if (mode == 'N' && autoval || mode == 'I' && autovali) {
@@ -1184,6 +1186,17 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		    recalcVal();
 		}
 		return true;
+	}
+	
+	void findRuC() {
+	  if (TD.isDocFinanc(what_kind_of_dokument)) {
+        if (TD.isDocSklad(what_kind_of_dokument) || !isNabDirect())
+          Aus.sub(getDetailSet(), "RUC", "IPRODBP", "INAB");
+        else Aus.sub(getDetailSet(), "RUC", "IPRODBP", "RINAB");
+      } else if (what_kind_of_dokument.equals("OTP") && isNabDirect()) {
+        Aus.mul(getDetailSet(), "RUC", "FC", "KOL");
+        Aus.sub(getDetailSet(), "RUC", "INAB");
+      }        
 	}
 	
 	void recalcVal() {
@@ -3581,7 +3594,9 @@ System.out.println("findCjenik::else :: "+sql);
 						"Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
 			} else {
 				dm.getSynchronizer().markAsDirty("vttext");
+				UpdateDoki();
 				raMaster.getJpTableView().fireTableDataChanged();
+				
 				/*raDetail.refreshTable();
 				getDetailSet().last();*/
 			}
@@ -4090,6 +4105,7 @@ System.out.println("findCjenik::else :: "+sql);
 		lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
 		if (how.equals("KOL") && nabDirect)
 			Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
+		findRuC();
 		if (what_kind_of_dokument.equals("OTP")) {
 	       if (how.equals("FC") || how.equals("FMC")) {
 	         lD.raLocate(dm.getArtikli(), "CART", getDetailSet());
@@ -4112,6 +4128,7 @@ System.out.println("findCjenik::else :: "+sql);
 			Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
 		else if (getDetailSet().getBigDecimal("KOL").signum() != 0) 
 			Aus.div(getDetailSet(), "RNC", "RINAB", "KOL");
+		findRuC();
 	}
 	
     public void Kalkulacija(JraTextField tmpF, String kako) {
@@ -4823,8 +4840,8 @@ System.out.println("findCjenik::else :: "+sql);
 	}
 	
 	void checkPlac() {
-	  getMasterSet().setString("STATPLA", 
-	   (getMasterSet().getBigDecimal("UIRAC").compareTo(getMasterSet().getBigDecimal("PLATITI")) == 0) ? "D" : "N");
+	  getMasterSet().setString("STATPLA", (getMasterSet().getBigDecimal("UIRAC").signum() != 0 && 
+	      getMasterSet().getBigDecimal("UIRAC").compareTo(getMasterSet().getBigDecimal("PLATITI")) == 0) ? "D" : "N");
 	}
 
 	public void defNamjena() {
@@ -4918,7 +4935,7 @@ System.out.println("findCjenik::else :: "+sql);
 		set_kum_detail(true);
 		stozbrojiti_detail(new String[] { "UIRAB", "UIZT", "INETO", "IPRODBP",
 				"IPRODSP", "INAB", "IMAR", "IBP", "IPOR", "ISP", "IRAZ",
-				"UIPOR" });
+				"UIPOR", "RINAB", "RUC" });
 		setnaslovi_detail(new String[] { "Iznos rabata",
 				"Iznos zavisih troškova", "Netto iznos", "Iznos bez poreza",
 				"Iznos s porezom", "Razduženje nabavne vrijednosti",
