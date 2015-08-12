@@ -211,6 +211,10 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
     vrdok.setWidth(3);
     Column datdok = dm.getDoki().getColumn("DATDOK").cloneColumn();
     datdok.setWidth(8);
+    Column cpar = dm.getDoki().getColumn("CPAR").cloneColumn();
+    cpar.setWidth(4);
+    Column nazpar = dm.getPartneri().getColumn("NAZPAR").cloneColumn();
+    nazpar.setWidth(20);
     Column cagent = dm.getDoki().getColumn("CAGENT").cloneColumn();
     cagent.setCaption("Šifra");
     cagent.setColumnName("CAGENT");
@@ -238,14 +242,17 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
     Column broj = dm.getDoki().getColumn("PNBZ2").cloneColumn();
     broj.setVisible(com.borland.jb.util.TriStateProperty.FALSE);
     Column saldo = dm.getStdoki().getColumn("IPRODBP").cloneColumn();
+    Column inab = dm.getStdoki().getColumn("INAB").cloneColumn();
     saldo.setCaption("Za isplatiti");
     saldo.setColumnName("SALDO");
     saldo.setPersist(false);
     saldo.setWidth(8);
+    
+    Column osn = dM.createBigDecimalColumn("OSNOVICA", "Osnovica", 2);
 
-    qdsAll.setColumns(new Column[]{cagent,naziv,fakt,nap,post,prov,plac,saldo});
+    qdsAll.setColumns(new Column[]{cagent,naziv,fakt,nap,osn,post,prov,plac,saldo});
     qdsAll.open();
-    qdsPojed.setColumns(new Column[]{cskl,vrdok,god,brdok,datdok,broj,iznos,napl,
+    qdsPojed.setColumns(new Column[]{cskl,vrdok,god,brdok,datdok,broj,cpar,nazpar,inab,iznos,napl,osn.cloneColumn(),
             post.cloneColumn(),prov.cloneColumn(),plac.cloneColumn(),saldo.cloneColumn()});
 
     qdsPojed.open();
@@ -382,9 +389,9 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
 
     VarStr sql = new VarStr();
     sql.append("SELECT MAX(doki.cagent) as cagent, MAX(doki.datdok) as datdok, " +
-        "MAX(doki.vrdok) as vrdok, MAX(doki.god) as god, MAX(doki.brdok) as brdok, " +
+        "MAX(doki.vrdok) as vrdok, MAX(doki.god) as god, MAX(doki.brdok) as brdok, max(doki.cpar) as cpar, " +
         "MAX(doki.provisp) as plac, MAX(doki.cskl) as cskl, " +
-        "MAX(doki.provpost) as provpost, SUM(stdoki.iprodbp) as iprodbp, " +
+        "MAX(doki.provpost) as provpost, SUM(stdoki.iprodbp) as iprodbp, sum(stdoki.inab) as inab, sum(stdoki.rinab) as rinab, " +
         "MAX(doki.pnbz2) as pnbz2, MAX(doki.statpla) as statpla FROM doki,stdoki "+
         "WHERE "+Util.getUtil().getDoc("doki", "stdoki")+" AND iprodbp != 0");
 
@@ -425,7 +432,7 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
 
     System.out.println("sqlPitanje " + sql);
 
-    boolean fakt = true, agentFound = true;
+    boolean fakt = true, ruc = false, agentFound = true;
     BigDecimal postprov = new BigDecimal(0);
     BigDecimal zero = new BigDecimal(0);
     int lastAgent = -2;
@@ -433,11 +440,14 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
     if (!svi) {
       fakt = false;
       if (lookupData.getlookupData().raLocate(dm.getAgenti(),"CAGENT", jrfCAG.getText())) {
-        fakt = dm.getAgenti().getString("VRSTAPROV").equalsIgnoreCase("F");
+        fakt = dm.getAgenti().getString("VRSTAPROV").equalsIgnoreCase("F") ||
+            dm.getAgenti().getString("VRSTAPROV").equalsIgnoreCase("R");
+        ruc = dm.getAgenti().getString("VRSTAPROV").equalsIgnoreCase("R") ||
+            dm.getAgenti().getString("VRSTAPROV").equalsIgnoreCase("T");
         agentProv = postprov = dm.getAgenti().getBigDecimal("POSTOPROV");
       }
     }
-    String[] ccols = {"CSKL", "VRDOK", "GOD", "BRDOK", "DATDOK", "PNBZ2", "PLAC"};
+    String[] ccols = {"CSKL", "VRDOK", "GOD", "BRDOK", "CPAR", "DATDOK", "PNBZ2", "PLAC"};
     QueryDataSet tmpqds = hr.restart.util.Util.getNewQueryDataSet(sql.toString(), true);
     for (tmpqds.first();tmpqds.inBounds();tmpqds.next()){
       if (svi) {
@@ -448,7 +458,10 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
             qdsAll.insertRow(true);
             qdsAll.setInt("CAGENT", lastAgent);
             qdsAll.setString("NAZAGENT",dm.getAgenti().getString("NAZAGENT"));
-            fakt = dm.getAgenti().getString("VRSTAPROV").equalsIgnoreCase("F");
+            fakt = dm.getAgenti().getString("VRSTAPROV").equalsIgnoreCase("F") ||
+                dm.getAgenti().getString("VRSTAPROV").equalsIgnoreCase("R");
+            ruc = dm.getAgenti().getString("VRSTAPROV").equalsIgnoreCase("R") ||
+                dm.getAgenti().getString("VRSTAPROV").equalsIgnoreCase("T");
             qdsAll.setBigDecimal("POST", postprov = dm.getAgenti().getBigDecimal("POSTOPROV"));
           }
         }
@@ -459,27 +472,48 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
                             pokDok.contains(tmpqds.getString("PNBZ2"));
           if (plac.signum() != 0) postprov = tmpqds.getBigDecimal("PROVPOST");
           else postprov = dm.getAgenti().getBigDecimal("POSTOPROV");
-          if (fakt || placen) osnova = tmpqds.getBigDecimal("IPRODBP");
+          if (fakt || placen)
+            if (ruc) {
+              if (tmpqds.getString("VRDOK").equals("ROT") || tmpqds.getString("VRDOK").equals("GOT"))
+                osnova = tmpqds.getBigDecimal("IPRODBP").subtract(tmpqds.getBigDecimal("INAB"));
+              else osnova = tmpqds.getBigDecimal("IPRODBP").subtract(tmpqds.getBigDecimal("RINAB"));
+            } else osnova = tmpqds.getBigDecimal("IPRODBP");
+          
+          if (osnova.signum() < 0) osnova = zero;
           BigDecimal prov = Util.getUtil().findIznos(osnova, postprov);
+          qdsAll.setBigDecimal("OSNOVICA", qdsAll.getBigDecimal("OSNOVICA").add(osnova));
           qdsAll.setBigDecimal("RAC", qdsAll.getBigDecimal("RAC").add(tmpqds.getBigDecimal("IPRODBP")));
           if (placen) qdsAll.setBigDecimal("NAP", qdsAll.getBigDecimal("NAP").add(tmpqds.getBigDecimal("IPRODBP")));
           qdsAll.setBigDecimal("PROV",qdsAll.getBigDecimal("PROV").add(prov));
           qdsAll.setBigDecimal("PLAC",qdsAll.getBigDecimal("PLAC").add(plac));
           qdsAll.setBigDecimal("SALDO",qdsAll.getBigDecimal("SALDO").add(prov).subtract(plac));
           qdsAll.setBigDecimal("POST", Util.getUtil().findPostotak(
-              qdsAll.getBigDecimal(fakt ? "RAC" : "NAP"), qdsAll.getBigDecimal("PROV")));
+              qdsAll.getBigDecimal("OSNOVICA"), qdsAll.getBigDecimal("PROV")));
         }
       } else {
         BigDecimal osnova = zero;
         boolean placen = tmpqds.getString("STATPLA").equals("D") ||
                           pokDok.contains(tmpqds.getString("PNBZ2"));
-        if (fakt || placen) osnova = tmpqds.getBigDecimal("IPRODBP");
+        
+        if (fakt || placen)
+          if (ruc) {
+            if (tmpqds.getString("VRDOK").equals("ROT") || tmpqds.getString("VRDOK").equals("GOT"))
+              osnova = tmpqds.getBigDecimal("IPRODBP").subtract(tmpqds.getBigDecimal("INAB"));
+            else osnova = tmpqds.getBigDecimal("IPRODBP").subtract(tmpqds.getBigDecimal("RINAB"));
+          } else osnova = tmpqds.getBigDecimal("IPRODBP");
         if (osnova.signum() != 0 || qdsPojed.getBigDecimal("PLAC").signum() != 0) {
           qdsPojed.insertRow(true);
           dm.copyColumns(tmpqds,qdsPojed,ccols);
+          if (tmpqds.getString("VRDOK").equals("ROT") || tmpqds.getString("VRDOK").equals("GOT"))
+            Aus.set(qdsPojed, "INAB", tmpqds);
+          else Aus.set(qdsPojed, "INAB", tmpqds, "RINAB");
+          
+          if (lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", qdsPojed))
+            qdsPojed.setString("NAZPAR", dm.getPartneri().getString("NAZPAR"));
           if (qdsPojed.getBigDecimal("PLAC").signum() == 0)
             postprov = dm.getAgenti().getBigDecimal("POSTOPROV");
           else postprov = tmpqds.getBigDecimal("PROVPOST");
+          qdsPojed.setBigDecimal("OSNOVICA", osnova);
           qdsPojed.setBigDecimal("IZNOS", tmpqds.getBigDecimal("IPRODBP"));
           qdsPojed.setString("STATNAP", placen ? "D" : "N");
           qdsPojed.setBigDecimal("POST", postprov);
