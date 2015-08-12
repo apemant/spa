@@ -21,6 +21,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Gkstavke;
 import hr.restart.baza.Repxdata;
 import hr.restart.baza.Repxhead;
+import hr.restart.baza.Skripte;
 import hr.restart.baza.dM;
 import hr.restart.baza.raDataSet;
 import hr.restart.swing.JraTextField;
@@ -54,12 +55,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import bsh.EvalError;
+import bsh.Interpreter;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -83,6 +87,8 @@ public class frmReportxList extends raFrame {
 
   lookupData ld = lookupData.getlookupData();
   
+  Interpreter bsh;
+  
   raJPTableView jp = new raJPTableView() {
     public void mpTable_doubleClicked() {
       OKPress();
@@ -103,6 +109,7 @@ public class frmReportxList extends raFrame {
   
   JFileChooser jf = new JFileChooser();
   FileFilter filter = new raFileFilter("Excel datoteke (*.xls)");
+  FileFilter filter2 = new raFileFilter("Excel XML datoteke (*.xlsx)");
   
   StorageDataSet fld = new StorageDataSet();
   JPanel pan = new JPanel(new BorderLayout());
@@ -121,7 +128,7 @@ public class frmReportxList extends raFrame {
         jpc.setCorg(OrgStr.getKNJCORG(false));
         fld.setTimestamp("DATFROM", Aus.getGkYear(Valid.getValid().getToday()));
         fld.setTimestamp("DATTO", Valid.getValid().getToday());
-        fld.setInt("SHEET", 1);
+        //fld.setInt("SHEET", 1);
       }
     }
   };
@@ -155,16 +162,15 @@ public class frmReportxList extends raFrame {
       return;
     }
     
-    if (reps.getString("TIP").equals("G") || reps.getString("TIP").equals("B")) {
+    if (reps.getString("TIP").equals("G") || reps.getString("TIP").equals("B") || reps.getString("TIP").equals("S")) {
       if (!dlg.show(this.getWindow(), pan, reps.getString("NAZREP")))
         return;
     }
     
-    try {
-      FileInputStream fis = new FileInputStream(sel);
+    /*try {
+      FileInputStream fis = new FileInputStream(sel);*/
       try {
-        POIFSFileSystem fs = new POIFSFileSystem(fis);
-        HSSFWorkbook wb = new HSSFWorkbook(fs);
+        Workbook wb = WorkbookFactory.create(sel);
         if (fillData(sel, wb)) {
           JOptionPane.showMessageDialog(this.getWindow(), 
               "Izvještaj završen.", "Excel izvještaj", 
@@ -180,7 +186,7 @@ public class frmReportxList extends raFrame {
         JOptionPane.showMessageDialog(this.getWindow(), 
             e.getMessage(), "Greška", JOptionPane.ERROR_MESSAGE);
         return;
-      } finally {
+      } /*finally {
         try {
           fis.close();
         } catch (IOException e) {
@@ -192,10 +198,10 @@ public class frmReportxList extends raFrame {
           "Datoteka ne postoji!",
           "Greška", JOptionPane.ERROR_MESSAGE);
       return;
-    }    
+    }    */
   }
   
-  boolean fillData(final File orig, final HSSFWorkbook wb) throws Exception {
+  boolean fillData(final File orig, final Workbook wb) throws Exception {
     raProcess.runChild(this.getWindow(), new Runnable() {
       public void run() {
         try {
@@ -211,7 +217,7 @@ public class frmReportxList extends raFrame {
     return raProcess.isCompleted();
   }
     
-  void fillDataProc(File orig, HSSFWorkbook wb) {
+  void fillDataProc(File orig, Workbook wb) {
     DataSet logo = dM.getDataModule().getLogotipovi();
     DataSet orgs = dM.getDataModule().getOrgstruktura();
     DataSet kont = dM.getDataModule().getKonta();
@@ -227,127 +233,139 @@ public class frmReportxList extends raFrame {
     }
     raProcess.checkClosing();
     
-    StorageDataSet gk = Gkstavke.getDataModule().getScopedSet("BROJKONTA DATUMKNJ ID IP");
-    raProcess.fillScratchDataSet(gk, "SELECT brojkonta,datumknj,id,ip FROM gkstavke WHERE "+
-        jpc.getCondition().and(Condition.between("DATUMKNJ", fld, "DATFROM", "DATTO")));
-    StorageDataSet ogk = Gkstavke.getDataModule().getScopedSet("BROJKONTA DATUMKNJ ID IP");
-    Timestamp old = Util.getUtil().addYears(fld.getTimestamp("DATFROM"), -1);
-    raProcess.fillScratchDataSet(ogk, "SELECT brojkonta,datumknj,id,ip FROM gkstavke WHERE "+
-        jpc.getCondition().and(Condition.between("DATUMKNJ", 
-            Util.getUtil().getFirstDayOfYear(old),
-            Util.getUtil().getLastDayOfYear(old))));
-    gk.enableDataSetEvents(false);
-    gk.setSort(new SortDescriptor(new String[] {"BROJKONTA"}));
-    ogk.enableDataSetEvents(false);
-    ogk.setSort(new SortDescriptor(new String[] {"BROJKONTA"}));
-
-    HSSFDataFormat df = wb.createDataFormat();
-    
-    HSSFSheet sh = wb.getSheetAt(fld.getInt("SHEET") - 1);
-    if (sh == null) throw new RuntimeException("Greška u plahti!");
-    
     DataSet rep = Repxdata.getDataModule().getTempSet(
         Condition.equal("CREP", reps));
     rep.open();
     
-    if (reps.getString("TIP").equals("G")) {
+    if (reps.getString("TIP").equals("S")) fillCustom(wb, rep);
+    else {
+      
+      StorageDataSet gk = Gkstavke.getDataModule().getScopedSet("BROJKONTA DATUMKNJ ID IP");
+      raProcess.fillScratchDataSet(gk, "SELECT brojkonta,datumknj,id,ip FROM gkstavke WHERE "+
+          jpc.getCondition().and(Condition.between("DATUMKNJ", fld, "DATFROM", "DATTO")));
+      StorageDataSet ogk = Gkstavke.getDataModule().getScopedSet("BROJKONTA DATUMKNJ ID IP");
+      Timestamp old = Util.getUtil().addYears(fld.getTimestamp("DATFROM"), -1);
+      raProcess.fillScratchDataSet(ogk, "SELECT brojkonta,datumknj,id,ip FROM gkstavke WHERE "+
+          jpc.getCondition().and(Condition.between("DATUMKNJ", 
+              Util.getUtil().getFirstDayOfYear(old),
+              Util.getUtil().getLastDayOfYear(old))));
+      gk.enableDataSetEvents(false);
+      gk.setSort(new SortDescriptor(new String[] {"BROJKONTA"}));
+      ogk.enableDataSetEvents(false);
+      ogk.setSort(new SortDescriptor(new String[] {"BROJKONTA"}));
+  
+      DataFormat df = wb.createDataFormat();
+      int sheet = fld.getInt("SHEET");
+      if (sheet > 0) --sheet;
+      
       raProcess.checkClosing();
-      for (rep.first(); rep.inBounds(); rep.next()) {
-        HSSFRow hr = sh.getRow((short) (rep.getInt("RED") - 1));
-        HSSFCell cell = hr.getCell((short) (rep.getInt("KOL") - 1));
-        if ("S".equals(rep.getString("TIP"))) {
-          fillString(cell, logo, rep.getString("DATA"));
-          cell.getCellStyle().setDataFormat(df.getFormat("text"));
-        } else if ("2".equals(rep.getString("TIP"))) {
-          fillNum(cell, gk, ogk, rep.getString("DATA"));
-          cell.getCellStyle().setDataFormat(df.getFormat("#,##0.00"));
-        } else if ("D".equals(rep.getString("TIP"))) {
-          fillDate(cell, rep.getString("DATA"));
-          cell.getCellStyle().setDataFormat(df.getFormat("dd.mm.yyyy"));
+      
+      if (reps.getString("TIP").equals("G")) {
+        Sheet sh = wb.getSheetAt(sheet);
+        if (sh == null) throw new RuntimeException("Greška u plahti!");
+        
+        raProcess.checkClosing();
+        for (rep.first(); rep.inBounds(); rep.next()) {
+          Row hr = sh.getRow((short) (rep.getInt("RED") - 1));
+          Cell cell = hr.getCell((short) (rep.getInt("KOL") - 1));
+          if ("S".equals(rep.getString("TIP"))) {
+            fillString(cell, logo, rep.getString("DATA"));
+            cell.getCellStyle().setDataFormat(df.getFormat("text"));
+          } else if ("2".equals(rep.getString("TIP"))) {
+            fillNum(cell, gk, ogk, rep.getString("DATA"));
+            cell.getCellStyle().setDataFormat(df.getFormat("#,##0.00"));
+          } else if ("D".equals(rep.getString("TIP"))) {
+            fillDate(cell, rep.getString("DATA"));
+            cell.getCellStyle().setDataFormat(df.getFormat("dd.mm.yyyy"));
+          }
+          raProcess.checkClosing();
+        }
+      } else if (reps.getString("TIP").equals("B")) {
+        Sheet sh = wb.getSheetAt(sheet);
+        if (sh == null) throw new RuntimeException("Greška u plahti!");
+        
+        raProcess.checkClosing();
+        String kontdef = "";
+        for (rep.first(); rep.inBounds(); rep.next()) {
+          if ("S".equals(rep.getString("TIP"))) {
+            String def = rep.getString("DATA").toUpperCase().trim();
+            if (def.startsWith("[[") && def.endsWith("]]"))
+              kontdef = def.substring(2, def.length() - 2);
+          }
         }
         raProcess.checkClosing();
-      }
-    } else if (reps.getString("TIP").equals("B")) {
-      raProcess.checkClosing();
-      String kontdef = "";
-      for (rep.first(); rep.inBounds(); rep.next()) {
-        if ("S".equals(rep.getString("TIP"))) {
-          String def = rep.getString("DATA").toUpperCase().trim();
-          if (def.startsWith("[[") && def.endsWith("]]"))
-            kontdef = def.substring(2, def.length() - 2);
+        System.out.println("Definicija: " + kontdef);
+        
+        raGlob glob = new raGlob(new VarStr(kontdef).replace('X', '?').append('*').toString());
+        String rule = new VarStr(kontdef).replace('X', '?').append("[]").toString();
+  
+        HashSet konta = new HashSet();      
+        for (gk.first(); gk.inBounds(); gk.next()) {
+          if (glob.matches(gk.getString("BROJKONTA")))
+            konta.add(glob.morphLastMatch(rule));
         }
-      }
-      raProcess.checkClosing();
-      System.out.println("Definicija: " + kontdef);
-      
-      raGlob glob = new raGlob(new VarStr(kontdef).replace('X', '?').append('*').toString());
-      String rule = new VarStr(kontdef).replace('X', '?').append("[]").toString();
-
-      HashSet konta = new HashSet();      
-      for (gk.first(); gk.inBounds(); gk.next()) {
-        if (glob.matches(gk.getString("BROJKONTA")))
-          konta.add(glob.morphLastMatch(rule));
-      }
-      ArrayList skonta = new ArrayList(konta);
-      Collections.sort(skonta);
-      System.out.println(skonta);
-      
-      for (rep.first(); rep.inBounds(); rep.next()) {
-        HSSFRow hr = sh.getRow((short) (rep.getInt("RED") - 1));
-        HSSFCell cell = hr.getCell((short) (rep.getInt("KOL") - 1));
-        if ("S".equals(rep.getString("TIP"))) {
-          String def = rep.getString("DATA").toUpperCase().trim();
-          if (def.startsWith("[[") && def.endsWith("]]")) {
+        ArrayList skonta = new ArrayList(konta);
+        Collections.sort(skonta);
+        System.out.println(skonta);
+        
+        for (rep.first(); rep.inBounds(); rep.next()) {
+          Row hr = sh.getRow((short) (rep.getInt("RED") - 1));
+          Cell cell = hr.getCell((short) (rep.getInt("KOL") - 1));
+          if ("S".equals(rep.getString("TIP"))) {
+            String def = rep.getString("DATA").toUpperCase().trim();
+            if (def.startsWith("[[") && def.endsWith("]]")) {
+              short row = (short) (rep.getInt("RED") - 1);
+              for (Iterator i = skonta.iterator(); i.hasNext(); ) {
+                String konto = (String) i.next();
+                if (ld.raLocate(kont, "BROJKONTA",  konto)) {
+                  cell.setCellValue(konto + " - " + kont.getString("NAZIVKONTA"));
+                  
+                  hr = sh.getRow(++row);
+                  cell = hr.getCell((short) (rep.getInt("KOL") - 1));
+                }
+              }
+            } else {
+              fillString(cell, logo, rep.getString("DATA"));
+              cell.getCellStyle().setDataFormat(df.getFormat("text"));
+            }
+          } else if ("2".equals(rep.getString("TIP"))) {
+            String def = rep.getString("DATA");
             short row = (short) (rep.getInt("RED") - 1);
             for (Iterator i = skonta.iterator(); i.hasNext(); ) {
               String konto = (String) i.next();
-              if (ld.raLocate(kont, "BROJKONTA",  konto)) {
-                cell.setEncoding(HSSFWorkbook.ENCODING_UTF_16);
-                cell.setCellValue(konto + " - " + kont.getString("NAZIVKONTA"));
-                
-                hr = sh.getRow(++row);
-                cell = hr.getCell((short) (rep.getInt("KOL") - 1));
+              VarStr repl = new VarStr(def).trim();
+              int beg, end;
+              while ((beg = repl.indexOf('[')) >= 0 && (end = repl.indexOf(']')) > beg) {
+                String tx = repl.mid(beg + 1, end);
+                int mon = 0;
+                if (tx.startsWith("M")) mon = Aus.getNumber(tx.substring(1));
+                repl.replace(beg, end + 1, getMonthVal(gk, konto, mon).toString());
               }
+              
+              Double val = new MathEvaluator(repl.toString()).getValue();
+              cell.setCellValue(val.doubleValue());
+              cell.getCellStyle().setDataFormat(df.getFormat("#,##0.00"));
+             
+              hr = sh.getRow(++row);
+              cell = hr.getCell((short) (rep.getInt("KOL") - 1));
             }
-          } else {
-            fillString(cell, logo, rep.getString("DATA"));
-            cell.getCellStyle().setDataFormat(df.getFormat("text"));
+          } else if ("D".equals(rep.getString("TIP"))) {
+            fillDate(cell, rep.getString("DATA"));
+            cell.getCellStyle().setDataFormat(df.getFormat("dd.mm.yyyy"));
           }
-        } else if ("2".equals(rep.getString("TIP"))) {
-          String def = rep.getString("DATA");
-          short row = (short) (rep.getInt("RED") - 1);
-          for (Iterator i = skonta.iterator(); i.hasNext(); ) {
-            String konto = (String) i.next();
-            VarStr repl = new VarStr(def).trim();
-            int beg, end;
-            while ((beg = repl.indexOf('[')) >= 0 && (end = repl.indexOf(']')) > beg) {
-              String tx = repl.mid(beg + 1, end);
-              int mon = 0;
-              if (tx.startsWith("M")) mon = Aus.getNumber(tx.substring(1));
-              repl.replace(beg, end + 1, getMonthVal(gk, konto, mon).toString());
-            }
-            
-            Double val = new MathEvaluator(repl.toString()).getValue();
-            cell.setCellValue(val.doubleValue());
-            cell.getCellStyle().setDataFormat(df.getFormat("#,##0.00"));
-           
-            hr = sh.getRow(++row);
-            cell = hr.getCell((short) (rep.getInt("KOL") - 1));
-          }
-        } else if ("D".equals(rep.getString("TIP"))) {
-          fillDate(cell, rep.getString("DATA"));
-          cell.getCellStyle().setDataFormat(df.getFormat("dd.mm.yyyy"));
         }
-      }
+      } 
     }
     
     String oname = orig.getAbsolutePath();
-    oname = oname.substring(0, oname.length() - 4);
+    if (oname.endsWith(".xls"))
+      oname = oname.substring(0, oname.length() - 4) + "-RA.xls";
+    else oname = oname.substring(0, oname.length() - 5) + "-RA.xlsx";
     
     FileOutputStream out = null;
     
     try {
-      out = new FileOutputStream(oname + "-RA.xls");
+      out = new FileOutputStream(oname);
       wb.write(out);
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -364,7 +382,34 @@ public class frmReportxList extends raFrame {
     }
   }
   
-  void fillDate(HSSFCell cell, String data) {
+  void fillCustom(Workbook wb, DataSet data) {
+    int sheet = fld.getInt("SHEET");
+    if (sheet > 0) --sheet;
+    
+    DataSet ds = null;
+    
+    String scr = Skripte.getDataModule().openTempSet(Condition.equal("CKEY", reps)).getString("TEKST");
+    if (scr.startsWith("SELECT") || scr.startsWith("select"))  ds = Aus.q(scr);
+    else {
+      bsh = new Interpreter();
+      try {
+        bsh.set("thisBsh", bsh);
+        frmSkripte.invoke("frmReportxList.init", bsh);
+        bsh.set("dfrom", fld.getTimestamp("DATFROM"));
+        bsh.set("dto", fld.getTimestamp("DATTO"));
+        bsh.set("wb", wb);
+      } catch (EvalError e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      Object o = frmSkripte.invoke(reps.getString("CKEY"), bsh);
+      if (o != null & o instanceof DataSet)
+        ds = (DataSet) o;
+    }
+
+  }
+  
+  void fillDate(Cell cell, String data) {
     data = data.trim().toUpperCase();
     if ("[DATFROM]".equals(data) ||
         "[DATUMFROM]".equals(data) ||
@@ -379,7 +424,7 @@ public class frmReportxList extends raFrame {
     }
   }
   
-  void fillString(HSSFCell cell, DataSet logo, String data) {
+  void fillString(Cell cell, DataSet logo, String data) {
     VarStr repl = new VarStr(data);
     Variant v = new Variant();
     int beg, end;
@@ -391,7 +436,6 @@ public class frmReportxList extends raFrame {
       }
       repl.replace(beg, end + 1, tx);
     }
-    cell.setEncoding(HSSFWorkbook.ENCODING_UTF_16);
     cell.setCellValue(repl.toString());
   }
   
@@ -410,7 +454,7 @@ public class frmReportxList extends raFrame {
     return total;
   }
   
-  void fillNum(HSSFCell cell, DataSet gk, DataSet ogk, String data) {
+  void fillNum(Cell cell, DataSet gk, DataSet ogk, String data) {
     if (data.length() == 0) return;
     
     VarStr repl = new VarStr(data).trim();
@@ -499,7 +543,8 @@ public class frmReportxList extends raFrame {
     okp.registerOKPanelKeys(this);
     
     jf.addChoosableFileFilter(filter);
-    jf.setFileFilter(filter);
+    jf.addChoosableFileFilter(filter2);
+    jf.setFileFilter(filter2);
     jf.setCurrentDirectory(new File("."));
     
     fld.setColumns(new Column[] {
