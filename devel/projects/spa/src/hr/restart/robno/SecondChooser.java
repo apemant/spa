@@ -734,7 +734,7 @@ public class SecondChooser extends JraDialog {
   
   void negate(DataSet ds) {
     String[] neg = {"KOL", "UIRAB", "UIZT", "INETO","IPRODBP","POR1","POR2","POR3",
-        "IPRODSP","INAB","IMAR","IBP","IPOR","ISP", "IRAZ","UIPOR","KOL1","KOL2","RINAB"};
+        "IPRODSP","INAB","IMAR","IBP","IPOR","ISP", "IRAZ","UIPOR","KOL1","KOL2","RINAB","RUC"};
     
     for (int i = 0; i < neg.length; i++)
       ds.setBigDecimal(neg[i], ds.getBigDecimal(neg[i]).negate());
@@ -1057,6 +1057,7 @@ System.out.println(StavkeSet.getInt("CARt"));
     					Aus.add(findStavkeSet, "RINAB", rIT.getDetailSet(), "INAB");
     					if (findStavkeSet.getBigDecimal("KOL").signum() != 0)
     						Aus.div(findStavkeSet, "RNC", "RINAB", "KOL");
+    					Aus.sub(findStavkeSet, "RUC", "IPRODBP", "RINAB");
     				}
     			}
 			}
@@ -1067,6 +1068,7 @@ System.out.println(StavkeSet.getInt("CARt"));
 					 TD.isDocSklad(StavkeSet.getString("VRDOK"))) {
 				Aus.set(rIT.getDetailSet(), "RNC", StavkeSet, "NC");
 				Aus.set(rIT.getDetailSet(), "RINAB", StavkeSet, "INAB");
+				Aus.sub(rIT.getDetailSet(), "RUC", "IPRODBP", "RINAB");
 			}
 			if (raIzlazTemplate.isNabDirect() &&
                 (rIT.getDetailSet().getString("VRDOK").equalsIgnoreCase("ROT") ||
@@ -1074,6 +1076,7 @@ System.out.println(StavkeSet.getInt("CARt"));
                  rIT.getDetailSet().getString("VRDOK").equalsIgnoreCase("POD"))) {
               Aus.set(rIT.getDetailSet(), "RNC", "NC");
               Aus.set(rIT.getDetailSet(), "RINAB", "INAB");
+              Aus.sub(rIT.getDetailSet(), "RUC", "IPRODBP", "RINAB");
             }
 
 			if (ponDodText || !StavkeSet.getString("VRDOK").equals("PON") || rIT.getDetailSet().getString("VRDOK").equals("PON"))
