@@ -18,6 +18,8 @@
 package hr.restart.pl;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.RSPeriodarh;
+import hr.restart.baza.RSPeriodobr;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.dM;
 import hr.restart.robno.raDateUtil;
@@ -59,6 +61,7 @@ import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
 import com.borland.jbcl.layout.XYConstraints;
@@ -558,7 +561,12 @@ public class frmIspList extends frmIzvjestajiPL {
     invert = getVrodb().getBigDecimal("STOPA").compareTo(new BigDecimal(50)) < 0;
     zastIznos = ds.getBigDecimal("OBRIZNOS");
     ld.raLocate(dm.getPovjerioci(), "CPOV", getVrodb());
-    brojzas = frmVirmaniPl.getIBAN_HR(dm.getPovjerioci().getString("ZIRO"), false);
+    worker.strPov = worker.povDS.getInt("CPOV")+"";
+    worker.strRad = StDSradnici.getString("CRADNIK");
+    worker.strVrOdb = getVrodb().getShort("CVRODB") + "";
+    
+    brojzas = frmVirmaniPl.getIBAN_HR(raMnemonics.replaceMnemonics(
+        worker.povDS.getString("ZIRO"), worker.getID(),raMnemonics.DEFAULTMNMODE), false);
     nazbankzas = dm.getPovjerioci().getString("NAZPOV");
   }
   
@@ -1040,19 +1048,34 @@ System.out.println("KreditInfo za "+ds);
   }
 
   public String getObracun(){
+    DataSet rs = RSPeriodobr.getDataModule().getTempSet(Condition.equal("CRADNIK", StDSradnici));
+    rs.open();
+    Variant odd = Aus.min(rs, "ODDANA");
+    Variant dod = Aus.max(rs, "DODANA");
+    return period(odd.getShort(), dod.getShort(), StDSradnici.getShort("GODOBR"), StDSradnici.getShort("MJOBR"));
 //    String mjOd;
 //    if (fieldSet.getShort("MJESECOD") < 10) mjOd = "0"+fieldSet.getShort("MJESECOD");
 //    else mjOd = ""+fieldSet.getShort("MJESECOD");
 //    return  "Obra\u010Dun pla\u0107e za ".concat(mjOd).concat(". mjesec ").concat(""+fieldSet.getShort("GODINAOD")+".").concat(" (rbr. "+fieldSet.getShort("RBROD")+")");
-    return periodPlace(fieldSet.getShort("GODINAOD"), fieldSet.getShort("MJESECOD"));
+    //return periodPlace(fieldSet.getShort("GODINAOD"), fieldSet.getShort("MJESECOD"));
+  }
+  
+  private String period(short o, short d, short g, short m) {
+    return "Obraèun plaæe za " + raDateUtil.getraDateUtil().dataFormatter(Aus.createTimestamp(g, m, o))+" - "+ 
+        raDateUtil.getraDateUtil().dataFormatter(Aus.createTimestamp(g, m, d));
   }
 
   public String getObracun(short g, short m, short r){
-//    String mjOd;
-//    if (m < (short)10) mjOd = "0"+m;
-//    else mjOd = ""+m;
-//    return  "Obra\u010Dun pla\u0107e za ".concat(mjOd).concat(". mjesec ").concat(""+g+".").concat(" (rbr. "+r+")");
-    return periodPlace(g, m);
+    /*DataSet rs = RSPeriodarh.getDataModule().getTempSet(Condition.whereAllEqual(new String[] {"CRADNIK", "GODOBR", "MJOBR", "RBROBR"}, StDSradnici));
+    rs.open();
+    Variant odd = Aus.min(rs, "ODDANA");
+    Variant dod = Aus.max(rs, "DODANA");
+    return period(odd.getShort(), dod.getShort(), StDSradnici.getShort("GODOBR"), StDSradnici.getShort("MJOBR"));*/
+    String mjOd;
+    if (m < (short)10) mjOd = "0"+m;
+    else mjOd = ""+m;
+    return  "Obra\u010Dun pla\u0107e za ".concat(mjOd).concat(". mjesec ").concat(""+g+".").concat(" (rbr. "+r+")");
+    //return periodPlace(g, m);
   }
   private String periodPlace(short g, short m) {
     String ret = "Obra\u010Dun pla\u0107e za ";
