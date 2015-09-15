@@ -561,10 +561,24 @@ public class frmNalozi extends raMasterDetail {
     getMasterSet().setString("CNALOGA",jpMaster.jpBrNal.getCNaloga());
     getMasterSet().setString("STATUS","N");
   }
+  
+  boolean checkPrev() {
+  	if (frmParam.getParam("gk", "checkPrevious", "N", 
+  			"Zabraniti unos novog naloga ako ima neproknjiženih ranije (D,N)?").equalsIgnoreCase("N")) return false;
+  	
+  	if (Nalozi.getDataModule().getRowCount(Condition.whereAllEqual(new String[] {"KNJIG", "GOD", "CVRNAL"}, getMasterSet()).
+  				and(Condition.diff("STATUS", "K"))) == 0) return false;
+  		
+  	 JOptionPane.showMessageDialog(jpMaster, "U odabranoj godini ima neproknjiženih naloga iste vrste!",
+         "Nedopušten unos", JOptionPane.ERROR_MESSAGE);
+  	return true;
+  }
   public boolean ValidacijaMaster(char mod) {
     if (mod == 'N') {
-      newNalog();
-      return !vl.isEmpty(jpMaster.jtDATUMKNJ);
+    	if (vl.isEmpty(jpMaster.jtDATUMKNJ)) return false;
+    	newNalog();
+    	if (checkPrev()) return false;
+      return true;
     } else if (mod == 'I') {
       setStatus();
     }
@@ -710,6 +724,13 @@ public class frmNalozi extends raMasterDetail {
           jpDetail.jtID.requestFocus();
           JOptionPane.showMessageDialog(jpDetail, "Salda konti stavke ne mogu imati "+
               "istovremeno i drugovnu i potražnu stranu!",
+              "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+        if (!getMasterSet().getString("SRC").equals(raKnjizenje.TEM) &&
+        		!getMasterSet().getString("SRC").equals(raKnjizenje.IZV)) {
+        	jpDetail.jtID.requestFocus();
+          JOptionPane.showMessageDialog(jpDetail, "Na temeljnicu se ne mogu dodavati salda konti stavke!",
               "Greška", JOptionPane.ERROR_MESSAGE);
           return false;
         }

@@ -20,6 +20,7 @@ package hr.restart.gk;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Gkstavkerad;
 import hr.restart.baza.Izvodi;
+import hr.restart.baza.Nalozi;
 import hr.restart.baza.Partneri;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
@@ -270,6 +271,32 @@ public class frmIzvodi extends raMasterDetail {
       jpMaster.jraBrojstavki.requestFocus();
     }
   }
+  
+  boolean checkPrev() {
+  	if (frmParam.getParam("gk", "checkPrevious", "N", 
+  			"Zabraniti unos novog naloga ako ima neproknjiženih ranije (D, N)?").equalsIgnoreCase("N")) return false;
+  	
+  	getMasterSet().setString("GOD", 
+        Util.getUtil().getYear(jpMaster.datknjset.getTimestamp("DATUMKNJ")));
+  	if (Izvodi.getDataModule().getRowCount(Condition.whereAllEqual(new String[] {"KNJIG", "GOD", "ZIRO"}, getMasterSet()).
+				and(Condition.diff("STATUS", "K"))) > 0) {
+  		JOptionPane.showMessageDialog(jpMaster, "U odabranoj godini ima neproknjiženih izvoda na istom žiro raèunu!",
+          "Nedopušten unos", JOptionPane.ERROR_MESSAGE);
+  		return true;
+  	}
+  	
+  	lookupData.getlookupData().raLocate(dm.getZirorn(), "ZIRO", getMasterSet());
+  	String cvrnal = dm.getZirorn().getString("CVRNAL");
+  	
+  	if (Nalozi.getDataModule().getRowCount(Condition.whereAllEqual(new String[] {"KNJIG", "GOD"}, getMasterSet()).
+  				and(Condition.equal("CVRNAL", cvrnal)).and(Condition.diff("STATUS", "K"))) > 0) {
+  			JOptionPane.showMessageDialog(jpMaster, "U odabranoj godini ima neproknjiženih naloga iste vrste!",
+          "Nedopušten unos", JOptionPane.ERROR_MESSAGE);
+  		return true;
+  	}
+  	 
+  	return false;
+  }
 
   public boolean ValidacijaMaster(char mode) {
     
@@ -300,7 +327,7 @@ public class frmIzvodi extends raMasterDetail {
         return false;
     }
     if (mode == 'N') {
-      
+      if (checkPrev()) return false;
     } else {
       updStatus(false);
     }
