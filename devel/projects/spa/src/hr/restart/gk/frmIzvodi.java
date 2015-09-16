@@ -99,7 +99,9 @@ public class frmIzvodi extends raMasterDetail {
   String ziro = "";
 
   String idizvod = "";
-
+  
+  String delNalog = "";
+  
   boolean devizni = false;
 
   boolean devind = false;
@@ -343,6 +345,14 @@ public class frmIzvodi extends raMasterDetail {
       getMasterSet().setString("STATUS", "N");
       getMasterSet().setString("GOD", 
           Util.getUtil().getYear(jpMaster.datknjset.getTimestamp("DATUMKNJ")));
+    }
+    if (mode == 'B') {
+    	try {
+				raTransaction.runSQL("DELETE FROM nalozi WHERE " + Condition.equal("CNALOGA", delNalog));
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
     }
     return true;
   }
@@ -683,6 +693,14 @@ public class frmIzvodi extends raMasterDetail {
       }
       return false;
     }
+    posNalozi();
+    if (!knjizenje.getFNalozi().getMasterSet().getString("CNALOGA").equals(getMasterSet().getString("CNALOGA"))) {
+    	JOptionPane.showMessageDialog(raMaster,
+          "Greška kod pozicioniranja naloga koji pripada ovom izvodu!", "Greška",
+          JOptionPane.ERROR_MESSAGE);
+      return false;
+    }
+    delNalog = getMasterSet().getString("CNALOGA");
     return true; //deleteIzvodovNalog() u before ili afterdelete;
   }
 
@@ -692,15 +710,15 @@ public class frmIzvodi extends raMasterDetail {
   }
 
   public void AfterDeleteMaster() {
-    deleteIzvodovNalog();
+    //deleteIzvodovNalog();
   }
 
   boolean isLastNalog = false;
 
   void deleteIzvodovNalog() {
-    if (isLastNalog) {
+    /*if (isLastNalog) {
       knjizenje.getFNalozi().raMaster.LegalDelete(false, false);
-    }
+    }*/
   }
 
   //  void postStavkaNaloga() {

@@ -18,7 +18,9 @@
 package hr.restart.gk;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Nalozi;
 import hr.restart.baza.Reportext;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
@@ -352,8 +354,21 @@ public class frmKnjizenje extends JraDialog implements ResetEnabled {
   public void SetFokus() {
     jpGetVrnal.jlrCVRNAL.requestFocus();
   }
+  boolean checkPrev() {
+  	if (frmParam.getParam("gk", "checkPrevious", "N", 
+  			"Zabraniti unos novog naloga ako ima neproknjiženih ranije (D,N)?").equalsIgnoreCase("N")) return false;
+  	
+  	if (Nalozi.getDataModule().getRowCount(
+  			Aus.getKnjigCond().and(Condition.equal("CVRNAL", dataSet)).
+  			and(Condition.equal("GOD", ut.getYear(dataSet.getTimestamp("DATUMKNJ"))))) == 0) return false;
+  		
+  	 JOptionPane.showMessageDialog(this, "U odabranoj godini ima neproknjiženih naloga iste vrste!",
+         "Nedopušten unos", JOptionPane.ERROR_MESSAGE);
+  	return true;
+  }
   private void okPressed() {
     if (!myValid()) return;
+    if (checkPrev()) return;
     if (!runPreloader()) return;
     if (!Validacija()) return;
     new knjizThread().start();
