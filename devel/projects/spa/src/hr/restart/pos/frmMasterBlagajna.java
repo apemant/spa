@@ -1832,7 +1832,7 @@ public class frmMasterBlagajna extends raMasterDetail {
         false //da li je naknadna dostava
      );
     
-    if (izmap.size() > 1 || (izmap.size() == 1 && izmap.containsKey(pdv25))) {
+    if (izmap.size() > 1 || (izmap.size() == 1 && !izmap.containsKey(pdv25))) {
       for (Iterator i = izmap.keySet().iterator(); i.hasNext(); ) {
         BigDecimal post = (BigDecimal) i.next();
         if (post.compareTo(pdv25) == 0) continue;

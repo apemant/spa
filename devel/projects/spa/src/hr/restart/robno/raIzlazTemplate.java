@@ -299,7 +299,9 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	BigDecimal tmpMCfromArtikl = new BigDecimal(0);
 
 	BigDecimal tmpIPRODSP = Aus.zero2;
+	BigDecimal tmpOTP = Aus.zero2;
 	BigDecimal tmpIRAZ = Aus.zero2;
+	BigDecimal tmpRUC = Aus.zero2;
 
 	hr.restart.util.lookupData lD = hr.restart.util.lookupData.getlookupData();
 
@@ -518,7 +520,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
           false //da li je naknadna dostava
        );
       
-      if (izmap.size() > 1 || (izmap.size() == 1 && izmap.containsKey(pdv25))) {
+      if (izmap.size() > 1 || (izmap.size() == 1 && !izmap.containsKey(pdv25))) {
         for (Iterator i = izmap.keySet().iterator(); i.hasNext(); ) {
           BigDecimal post = (BigDecimal) i.next();
           if (post.compareTo(pdv25) == 0) continue;
@@ -1037,7 +1039,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		setNaslovMaster(master_titel + additional);
 		setNaslovDetail(detail_titel_mno);
 		raMaster.setkum_tak(true);
-		raMaster.setstozbrojiti(new String[] {"UIRAC", "PLATITI", "UIPOPUST", "PROVISP"});
+		raMaster.setstozbrojiti(new String[] {"UIRAC", "PLATITI", "UIPOPUST", "PROVISP", "RUC"});
 		
 		setupDod();
 	}
@@ -1879,7 +1881,9 @@ ST.prn(radninal);
 			delCART = getDetailSet().getInt("CART");
 			delRbr = getDetailSet().getShort("RBR");
 			tmpIPRODSP = getDetailSet().getBigDecimal("IPRODSP");
+			tmpOTP = getDetailSet().getBigDecimal("FVC").multiply(getDetailSet().getBigDecimal("KOL")).setScale(2, BigDecimal.ROUND_HALF_UP);
 			tmpIRAZ = getDetailSet().getBigDecimal("IRAZ");
+			tmpRUC = getDetailSet().getBigDecimal("RUC");
 			if (lD.raLocate(dm.getArtikli(), new String[] { "CART" },
 					new String[] { getDetailSet().getInt("CART") + "" },
 					com.borland.dx.dataset.Locate.CASE_INSENSITIVE)) {
@@ -1935,6 +1939,8 @@ ST.prn(radninal);
 			EntryDetail(mode);
 			tmpIPRODSP = getDetailSet().getBigDecimal("IPRODSP");
 			tmpIRAZ = getDetailSet().getBigDecimal("IRAZ");
+			tmpRUC = getDetailSet().getBigDecimal("RUC");
+			tmpOTP = getDetailSet().getBigDecimal("FVC").multiply(getDetailSet().getBigDecimal("KOL")).setScale(2, BigDecimal.ROUND_HALF_UP);
 			if (isSingleKOL && DP.jraFC.isShowing())
 			  DP.jraFC.requestFocus();
 			else DP.jtfKOL.requestFocus();
@@ -1944,7 +1950,9 @@ ST.prn(radninal);
 			focusOffOn(mode == 'N');
 			DP.rpcart.SetDefFocus();
 			tmpIPRODSP = Aus.zero2;
+			tmpOTP = Aus.zero2;
 			tmpIRAZ = Aus.zero2;
+			tmpRUC = Aus.zero2;
 			EntryDetail(mode);
 		} else if (mode == 'B') {
 			DP.rpcart.setMode("B");
@@ -2244,6 +2252,7 @@ ST.prn(radninal);
 			try {
 			  if (TD.isDocFinanc(what_kind_of_dokument)) {
     			  Aus.sub(getMasterSet(), "UIRAC", tmpIPRODSP);
+    			  Aus.sub(getMasterSet(), "RUC", tmpRUC);
     			  nacPlDod();
     			  if (vcdec.signum() != 0)
     			    getMasterSet().setBigDecimal("UIU", getMasterSet().getBigDecimal("UIRAC").multiply(vcdec).
@@ -2251,7 +2260,10 @@ ST.prn(radninal);
     			  checkPlac();
     			  raTransaction.saveChanges(getMasterSet());
 			  } else if (TD.isDocSklad(what_kind_of_dokument)) {
-			    Aus.sub(getMasterSet(), "UIRAC", tmpIRAZ);
+			    if (what_kind_of_dokument.equals("OTP") && isOTPVC())
+			      Aus.sub(getMasterSet(), "UIRAC", tmpOTP);
+			    else Aus.sub(getMasterSet(), "UIRAC", tmpIRAZ);
+			    Aus.sub(getMasterSet(), "RUC", tmpRUC);
                 raTransaction.saveChanges(getMasterSet());
 			  }
 			} catch (Exception ex) {
@@ -2403,6 +2415,8 @@ ST.prn(radninal);
 		  if (TD.isDocFinanc(what_kind_of_dokument)) {
 		    Aus.addSub(getMasterSet(), "UIRAC",
 		        getDetailSet(), "IPRODSP", tmpIPRODSP);
+		    Aus.addSub(getMasterSet(), "RUC",
+                getDetailSet(), "RUC", tmpRUC);
 		    nacPlDod();
 		    if (vcdec.signum() != 0)
 		      getMasterSet().setBigDecimal("UIU", getMasterSet().getBigDecimal("UIRAC").multiply(vcdec).
@@ -2410,11 +2424,20 @@ ST.prn(radninal);
 		    checkPlac();
 		    raTransaction.saveChanges(getMasterSet());
 		  } else if (TD.isDocSklad(what_kind_of_dokument)) {
-		    Aus.addSub(getMasterSet(), "UIRAC",
+		    if (what_kind_of_dokument.equals("OTP") && isOTPVC()) {
+		      Aus.sub(getMasterSet(), "UIRAC", tmpOTP);
+		      BigDecimal notp = getDetailSet().getBigDecimal("FVC").multiply(getDetailSet().getBigDecimal("KOL")).setScale(2, BigDecimal.ROUND_HALF_UP);
+		      Aus.add(getMasterSet(), "UIRAC", notp);
+		    } else 
+		      Aus.addSub(getMasterSet(), "UIRAC",
                 getDetailSet(), "IRAZ", tmpIRAZ);
+	        Aus.addSub(getMasterSet(), "RUC",
+	            getDetailSet(), "RUC", tmpRUC);
+
             raTransaction.saveChanges(getMasterSet());
 		  }
 		} catch (Exception e) {
+		  e.printStackTrace();
 			retValue = false;
 		}
 
@@ -2438,6 +2461,7 @@ ST.prn(radninal);
 				raTransaction.saveChanges(AST.gettrenSTANJE());
 			}
 		} catch (Exception e) {
+		  e.printStackTrace();
 			retValue = false;
 		}
 		return retValue;
@@ -4105,7 +4129,6 @@ System.out.println("findCjenik::else :: "+sql);
 		lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
 		if (how.equals("KOL") && nabDirect)
 			Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
-		findRuC();
 		if (what_kind_of_dokument.equals("OTP")) {
 	       if (how.equals("FC") || how.equals("FMC")) {
 	         lD.raLocate(dm.getArtikli(), "CART", getDetailSet());
@@ -4118,6 +4141,7 @@ System.out.println("findCjenik::else :: "+sql);
 	       getDetailSet().setBigDecimal("FVC", oldvc);
 	       getDetailSet().setBigDecimal("FMC", oldmc);
 	    }
+		findRuC();
 		if (dah.isShowing()) dah.recalcMar();
 	}
   
@@ -5647,6 +5671,10 @@ System.out.println("findCjenik::else :: "+sql);
 
   public static boolean allowPriceChange() {
     return frmParam.getParam("robno", "priceChIzl", "N", "Dozvoliti izmjenu cijena na OTP, MEI, INM, OTR...(D/N)").equalsIgnoreCase("D");
+  }
+  
+  public static boolean isOTPVC() {
+    return frmParam.getParam("robno", "OTPVC", "D", "Iznos bez poreza na OTP...(D/N)").equalsIgnoreCase("D");
   }
   
   public static boolean allowIznosChange() {
