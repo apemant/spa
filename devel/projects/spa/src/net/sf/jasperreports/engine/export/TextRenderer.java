@@ -64,6 +64,7 @@ public class TextRenderer
     private boolean isMaxHeightReached = false;
     private byte horizontalAlignment = 0;
     private int fontSize = 0;
+    private boolean multiLines = false;
     
     /**
      * 
@@ -239,6 +240,8 @@ public class TextRenderer
     
         isMaxHeightReached = false;
         
+        multiLines = false;
+        
         this.fontSize = initFontSize;
         maxFontSizeFinder = MaxFontSizeFinder.getInstance(isStyledText);
     }
@@ -325,7 +328,7 @@ public class TextRenderer
                         {
                             drawPosX = formatWidth - layout.getAdvance();
                         }
-                        if (lineMeasurer.getPosition() < paragraph.getEndIndex())
+                        if (lineMeasurer.getPosition() < paragraph.getEndIndex() || !multiLines)
                         {
                             layout = layout.getJustifiedLayout(formatWidth);
                         }
@@ -355,6 +358,7 @@ public class TextRenderer
             {
                 isMaxHeightReached = true;
             }
+            multiLines = false;
         }
     }
     
