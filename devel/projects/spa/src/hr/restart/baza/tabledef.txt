@@ -842,6 +842,7 @@ FOK;char;1;;N;Fiskalizitan;*
 FPP;char;20;;;Poslovni prostor
 FNU;int;6;;;Broj naplatnog ureðaja
 CGKSTAVKE;text;38;idx;;Stavka naloga
+RUC;numeric;15,2;;0;Razlika u cijeni;14
 IDX=cpar
 
 $stdoki
