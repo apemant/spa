@@ -156,7 +156,7 @@ public class raDateUtil {
     if (Datum1 == null) return "";
     Calendar c = Calendar.getInstance();
     c.setTime(Datum1);
-    if (c.get(c.YEAR) < 1985) return "";
+    if (c.get(c.YEAR) < 1971) return "";
 
     String date = (Datum1 == null ? null : sdf.format(Datum1));
     return (date == null || date.indexOf("1970")>=0 ? "" : date);
