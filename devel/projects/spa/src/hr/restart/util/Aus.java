@@ -382,6 +382,12 @@ public class Aus {
     return nf.format(num);
   }
   
+  public static String formatDouble(double num) {
+    nf.setMinimumFractionDigits(2);
+    nf.setMaximumFractionDigits(2);
+    return nf.format(num);
+  }
+  
   public static String formatBroj(ReadRow ds, String format) {
     Variant v = new Variant();
     VarStr br = new VarStr(format);
@@ -809,6 +815,18 @@ public class Aus {
     char[] spaces = new char[n];
     for (int i = 0; i < n; i++) spaces[i] = ' ';
     return new String(spaces);
+  }
+  
+  public static String rjust(String str, int len) {
+    if (str.length() == len) return str;
+    if (str.length() > len) return str.substring(0, len);
+    return spc(len - str.length()) + str;
+  }
+  
+  public static String ljust(String str, int len) {
+    if (str.length() == len) return str;
+    if (str.length() > len) return str.substring(0, len);
+    return str + spc(len - str.length());
   }
 
   /**
