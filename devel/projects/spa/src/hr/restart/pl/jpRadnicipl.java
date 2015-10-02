@@ -607,7 +607,7 @@ public class jpRadnicipl extends JPanel {
     jcbClanomf.setHorizontalAlignment(SwingConstants.RIGHT);
     jcbClanomf.setHorizontalTextPosition(SwingConstants.LEADING);
     jcbClanomf.setSelectedDataValue("D");
-    jcbClanomf.setText("\u010Clan OMF (II stup)");
+    jcbClanomf.setText("Èlan OMF (II stup)");
     jcbClanomf.setUnselectedDataValue("N");
 
 
@@ -719,7 +719,7 @@ public class jpRadnicipl extends JPanel {
     jPanel3.add(jlOIB,    new XYConstraints(15, 100, -1, -1));
     jPanel3.add(jraOIB,    new XYConstraints(150, 100, 120, -1));
     jPanel3.add(jlClanomf,   new XYConstraints(250, 75, -1, -1));
-    jPanel3.add(jcbClanomf,      new XYConstraints(427, 100, 119, -1));
+    jPanel3.add(jcbClanomf,      new XYConstraints(400, 100, 145, -1));
     jPanel3.add(jlBrojTek,   new XYConstraints(310, 25, -1, -1));
     jpDetail2.add(jPanel1,    new XYConstraints(15, 125, 575, 103));
     jpDetail2.add(jraDatdol,        new XYConstraints(170, 395, 100, -1));
