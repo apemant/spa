@@ -244,6 +244,8 @@ public class R2Handler {
     if (ts == null) {
       sk.setTimestamp("DATPRI", endofmankind);
     } else {
+      if (sk.hasColumn("DATDOK") != null && sk.getTimestamp("DATDOK").after(ts))
+        ts = sk.getTimestamp("DATDOK");
       sk.setTimestamp("DATPRI", ts);
     }
     if (log.isDebugEnabled()) {
