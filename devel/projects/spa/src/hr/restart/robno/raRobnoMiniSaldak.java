@@ -988,7 +988,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		for (tmpqds.first(); tmpqds.inBounds(); tmpqds.next()) {
 			if (isCPAR4ALL) {
 			  PartnerCache.Data data = pc.getData(tmpqds.getInt("CPAR"));
-              if (data == null || !jpZGA.checkPartner(tmpqds.getInt("CAGENT"), data.getZup(), data.getPbr(), data.getGrupa())) continue;
+              if (data == null || !jpZGA.checkPartner(data.getAgent(), data.getZup(), data.getPbr(), data.getGrupa())) continue;
               
 				if (!hr.restart.util.lookupData.getlookupData().raLocate(
 						qdsAllUlaz, "CPAR",
@@ -1012,13 +1012,13 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 				
 				
 			} 
-			
-	             if (agent > 0 && tmpqds.getInt("CAGENT") != agent) continue;
+		
 	             
 				qdsPojedUlaz.insertRow(true);
                 dm.copyColumns(tmpqds, qdsPojedUlaz, new String[] 
                     {"brrac", "cskl", "vrdok", "god", "brdok", "kljuc", "cpar", 
                      "platiti", "statpla", "datdok", "dvo", "datdosp", "datupl"});
+                qdsPojedUlaz.setString("PNBZ2", tmpqds.getString("BRRAC"));
 				qdsPojedUlaz.setBigDecimal("UIRAC", tmpqds.getBigDecimal(
 						"UIPRPOR").add(tmpqds.getBigDecimal("UIKAL")));
 
