@@ -907,6 +907,7 @@ public class SecondChooser extends JraDialog {
 		String keykey = "";
 		String keyVeza = "";
 		uirac = uirac.valueOf(0, 2);
+		BigDecimal ruc = Aus.zero2;
 		StavkeSet.enableDataSetEvents(false);
 		short brstavke = 1;
 		int brsid = 1;
@@ -1009,7 +1010,12 @@ System.out.println(StavkeSet.getInt("CARt"));
 			copySklad = false;
 			if (TD.isDocFinanc(rIT.what_kind_of_dokument))
                 getRabatFromPartner();
-  
+			if (rIT.what_kind_of_dokument.equals("OTP") && docDs.getString("VRDOK").equals("NKU") && raIzlazTemplate.isOTPVC()) {
+			  Aus.set(rIT.getDetailSet(), "FC", StavkeSet);
+	          Aus.set(rIT.getDetailSet(), "FVC", StavkeSet);
+	          Aus.set(rIT.getDetailSet(), "FMC", StavkeSet);
+			}
+
 			if (TD.isDocFinanc(rIT.what_kind_of_dokument)
 					&& TD.isDocFinanc(docDs.getString("VRDOK"))) {
 				copyFinancPart();
@@ -1057,7 +1063,10 @@ System.out.println(StavkeSet.getInt("CARt"));
     					Aus.add(findStavkeSet, "RINAB", rIT.getDetailSet(), "INAB");
     					if (findStavkeSet.getBigDecimal("KOL").signum() != 0)
     						Aus.div(findStavkeSet, "RNC", "RINAB", "KOL");
+    					BigDecimal oldruc = findStavkeSet.getBigDecimal("RUC");
     					Aus.sub(findStavkeSet, "RUC", "IPRODBP", "RINAB");
+    					if (lD.raLocate(ZaglavljeSetTmp, new String[] { "CSKL", "VRDOK", "GOD", "BRDOK"}, findStavkeSet))
+    					  Aus.addSub(ZaglavljeSetTmp, "RUC", findStavkeSet, "RUC", oldruc);
     				}
     			}
 			}
@@ -1068,7 +1077,9 @@ System.out.println(StavkeSet.getInt("CARt"));
 					 TD.isDocSklad(StavkeSet.getString("VRDOK"))) {
 				Aus.set(rIT.getDetailSet(), "RNC", StavkeSet, "NC");
 				Aus.set(rIT.getDetailSet(), "RINAB", StavkeSet, "INAB");
+				BigDecimal oldruc = rIT.getDetailSet().getBigDecimal("RUC");
 				Aus.sub(rIT.getDetailSet(), "RUC", "IPRODBP", "RINAB");
+				Aus.addSub(rIT.getMasterSet(), "RUC", rIT.getDetailSet(), "RUC", oldruc);
 			}
 			if (raIzlazTemplate.isNabDirect() &&
                 (rIT.getDetailSet().getString("VRDOK").equalsIgnoreCase("ROT") ||
@@ -1076,20 +1087,33 @@ System.out.println(StavkeSet.getInt("CARt"));
                  rIT.getDetailSet().getString("VRDOK").equalsIgnoreCase("POD"))) {
               Aus.set(rIT.getDetailSet(), "RNC", "NC");
               Aus.set(rIT.getDetailSet(), "RINAB", "INAB");
+              BigDecimal oldruc = rIT.getDetailSet().getBigDecimal("RUC");
               Aus.sub(rIT.getDetailSet(), "RUC", "IPRODBP", "RINAB");
+              Aus.addSub(rIT.getMasterSet(), "RUC", rIT.getDetailSet(), "RUC", oldruc);
             }
 
 			if (ponDodText || !StavkeSet.getString("VRDOK").equals("PON") || rIT.getDetailSet().getString("VRDOK").equals("PON"))
 			  addVTtext(StavkeSet, keykey);
-			uirac = uirac.add(rIT.getDetailSet().getBigDecimal("IPRODSP"));
+			if (TD.isDocFinanc(rIT.what_kind_of_dokument))
+			  uirac = uirac.add(rIT.getDetailSet().getBigDecimal("IPRODSP"));
+			else if (rIT.what_kind_of_dokument.equals("OTP") && raIzlazTemplate.isOTPVC()) {
+			  Aus.mul(rIT.getDetailSet(), "RUC", "FC", "KOL");
+		      Aus.sub(rIT.getDetailSet(), "RUC", "INAB");
+			  uirac = uirac.add(rIT.getDetailSet().getBigDecimal("FC").multiply(rIT.getDetailSet().getBigDecimal("KOL")).setScale(2, BigDecimal.ROUND_HALF_UP));
+			} else if (TD.isDocSklad(rIT.what_kind_of_dokument))
+			  uirac = uirac.add(rIT.getDetailSet().getBigDecimal("IRAZ"));
 			brstavke++;
 			brsid++;
+			
+			ruc = ruc.add(rIT.getDetailSet().getBigDecimal("RUC"));
 		}
 		
 		if (!rIT.getMasterSet().getString("VRDOK").equals(ZaglavljeSetTmp.getString("VRDOK")))
 		  srediPreneseno();
 		rIT.getMasterSet().setBigDecimal("UIRAC",
 				rIT.getMasterSet().getBigDecimal("UIRAC").add(uirac));
+		rIT.getMasterSet().setBigDecimal("RUC",
+            rIT.getMasterSet().getBigDecimal("RUC").add(ruc));
 		return true;
 	}
 
