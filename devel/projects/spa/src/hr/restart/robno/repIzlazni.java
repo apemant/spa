@@ -34,6 +34,7 @@ import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
 import hr.restart.util.reports.raStringCache;
+import hr.restart.zapod.Tecajevi;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -1576,6 +1577,17 @@ public BigDecimal getIPRODSP() {
         multiply(raSaldaKonti.getJedVal(getOZNVAL())).
         divide(getTECAJ(), 2, BigDecimal.ROUND_HALF_UP)) +
         (ispTecaj ? "\n" + Aus.formatBigDecimal(getTECAJ()) : "");
+  }
+  
+  public String getPREFIX() {
+    String val = getOZNVAL();
+    if (raSaldaKonti.isDomVal(ds)) val = Tecajevi.getDomOZNVAL();
+    
+    String pref = "(" + val + ") ";
+    if (lD.raLocate(dm.getValute(), "OZNVAL", val))
+      if (dm.getValute().getString("CHV").length() > 0)
+        pref = dm.getValute().getString("CHV") + " ";
+    return pref;
   }
   
   public String getDVIBP() {

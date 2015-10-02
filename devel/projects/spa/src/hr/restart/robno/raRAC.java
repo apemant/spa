@@ -29,6 +29,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raSelectTableModifier;
 import hr.restart.util.*;
+import hr.restart.util.reports.JasperHook;
 import hr.restart.zapod.jpGetValute;
 
 import java.awt.BorderLayout;
@@ -43,6 +44,15 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.text.JTextComponent;
+
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JRTextElement;
+import net.sf.jasperreports.engine.JRTextField;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignTextField;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -67,6 +77,14 @@ final public class raRAC extends raIzlazTemplate {
     
     //  a REALLY REALLY ugly hardcoded hack
     boolean uglyHack = true;
+    
+    
+    JasperHook jhook = new JasperHook() {
+      public void adjustDesign(String reportName, JasperDesign design) {
+        adjust(design);
+      }
+    };
+    
     
     public boolean isKnjigen() {
       return uglyHack && super.isKnjigen();
@@ -257,8 +275,27 @@ final public class raRAC extends raIzlazTemplate {
           } else raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
         }
         
+        raMaster.getRepRunner().addJasperHook("hr.restart.robno.repInvoice", jhook);
+        raMaster.getRepRunner().addJasperHook("hr.restart.robno.repRacGroup", jhook);
+        
     }
     
+    void adjust(JasperDesign design) {
+      JRGroup[] grs = design.getGroups();
+      for (int i = 0; i < grs.length; i++) {
+        JRBand bn = grs[i].getGroupFooterSection().getBands()[0];
+        JRElement[] els = bn.getElements();
+        for (int j = 0; j < els.length; j++) 
+          if (els[j] instanceof JRTextField) {
+            JRDesignExpression ex = (JRDesignExpression) ((JRTextField) els[j]).getExpression();
+            if (ex.getText().indexOf("sum_Section0_") >= 0) {
+              ex.setText("$F{PREFIX} + $P{cform}.format(" + ex.getText() + ")");
+              ex.setValueClassName("java.lang.String");
+            }
+          }
+
+      }
+    }
     
     public String getPodnaslov() {
       return "Za period od " + Aus.formatTimestamp(getPreSelect().getSelRow().getTimestamp("DATDOK-from"))  
@@ -416,6 +453,10 @@ final public class raRAC extends raIzlazTemplate {
         //test
         raDetail.getRepRunner().addReport("hr.restart.robno.repInvoice",
                 "hr.restart.robno.repIzlazni","ProformaInvoice","Invoice");
+        
+        raDetail.getRepRunner().addJasperHook("hr.restart.robno.repInvoice", jhook);
+        raDetail.getRepRunner().addJasperHook("hr.restart.robno.repRacGroup", jhook);
+
         //test
 //        if (repFISBIH.isFISBIH()) raDetail.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
     }
