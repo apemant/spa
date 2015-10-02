@@ -1157,7 +1157,7 @@ public abstract class KreirDrop {
     } catch (IOException e) {
       //
     }
-    return out.toString();
+    return new VarStr(out.toString()).remove((char) 10).toString();
   }
   
   public static byte[] decode(String val) {
