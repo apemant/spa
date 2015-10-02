@@ -67,6 +67,7 @@ public class RaLogicStanjePromet {
     povratImovine.setMetaDataUpdate(MetaDataUpdate.TABLENAME + MetaDataUpdate.PRECISION + MetaDataUpdate.SCALE + MetaDataUpdate.SEARCHABLE);
     povratImovine.setColumns(new Column[] {
         (Column) dm.getStanje().getColumn("CSKL").clone(),
+        (Column) dm.getArtikli().getColumn("CGRART").clone(),
         (Column) dm.getDoki().getColumn("DATDOK").clone(),
         (Column) dm.getArtikli().getColumn("CART").clone(), 
         (Column) dm.getArtikli().getColumn("CART1").clone(), 
@@ -155,7 +156,7 @@ public class RaLogicStanjePromet {
     povratTmp.setSort(new SortDescriptor(new String[] {"DATDOK"}));
     povratTmp.first();
     
-    DataSet art = Aus.q("SELECT cart,vrart FROM artikli");
+    DataSet art = Aus.q("SELECT cart,vrart,cgrart FROM artikli");
     HashSet nost = new HashSet();
     for (art.first(); art.inBounds(); art.next())      
       if (raVart.isUsluga(art) || (!all && !raVart.isStanje(art))) 
@@ -184,6 +185,8 @@ public class RaLogicStanjePromet {
         povratImovine.setBigDecimal("POR", povratImovine.getBigDecimal("POR").add(povratTmp.getBigDecimal("POR")));
       } else {
         povratImovine.insertRow(false);
+        ld.raLocate(art, "CART", povratTmp);
+        povratImovine.setString("CGRART", art.getString("CGRART"));
         povratImovine.setString("CSKL", povratTmp.getString("CSKL"));
         povratImovine.setInt("CART", povratTmp.getInt("CART"));
         povratImovine.setString("CART1", povratTmp.getString("CART1"));

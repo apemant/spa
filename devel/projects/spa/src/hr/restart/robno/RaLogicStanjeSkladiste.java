@@ -55,6 +55,7 @@ public class RaLogicStanjeSkladiste {
     mainDataSet.setMetaDataUpdate(MetaDataUpdate.TABLENAME + MetaDataUpdate.PRECISION + MetaDataUpdate.SCALE + MetaDataUpdate.SEARCHABLE);
     mainDataSet.setColumns(new Column[] {
         (Column) dm.getStanje().getColumn("CSKL").clone(),
+        (Column) dm.getArtikli().getColumn("CGRART").clone(),
         (Column) dm.getArtikli().getColumn("CART").clone(), 
         (Column) dm.getArtikli().getColumn("CART1").clone(), 
         (Column) dm.getArtikli().getColumn("BC").clone(), 
@@ -102,6 +103,7 @@ public class RaLogicStanjeSkladiste {
       
       mainDataSet.insertRow(false);
       mainDataSet.setString("CSKL", data.getString("CSKL"));
+      mainDataSet.setString("CGRART", dm.getArtikli().getString("CGRART"));
       mainDataSet.setInt("CART", data.getInt("CART"));
       mainDataSet.setString("CART1", dm.getArtikli().getString("CART1"));
       mainDataSet.setString("BC", dm.getArtikli().getString("BC"));
