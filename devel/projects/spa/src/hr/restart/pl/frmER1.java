@@ -32,6 +32,7 @@ import java.awt.BorderLayout;
 import java.sql.Timestamp;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -63,11 +64,11 @@ public class frmER1 extends raUpitLite {
   QueryDataSet orgpl;
   QueryDataSet godPrim;
 
-  Column colRadnik = new Column();
+/*  Column colRadnik = new Column();
   Column colDatumOd = new Column();
   Column colDatumDo = new Column();
   Column colCorg = new Column();
-
+*/
 
   JraTextField jraDatOd = new JraTextField();
   JraTextField jraDatDo = new JraTextField();
@@ -81,6 +82,9 @@ public class frmER1 extends raUpitLite {
   JraTextField jlrPrezime = new JraTextField();
   JraTextField jlrIme = new JraTextField();
   JTextField jraImePrezime = new JTextField();
+  
+  JraTextField jraRbrOd = new JraTextField();
+  JraTextField jraRbrDo = new JraTextField();
 
   JraButton jbSelCorg = new JraButton();
   JraButton jbSelCradnik = new JraButton();
@@ -114,6 +118,8 @@ public class frmER1 extends raUpitLite {
     rcc.setLabelLaF(jraImePrezime, false);
     fieldSet.setTimestamp("DATOD", ut.getFirstDayOfYear());
     fieldSet.setTimestamp("DATDO", ut.getLastDayOfYear());
+    fieldSet.setInt("RBROD", (short) 1); 
+    fieldSet.setInt("RBRDO", (short) 99);
     jlrCorg.requestFocus();
     jlrCorg.selectAll();
   }
@@ -195,14 +201,16 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
   public boolean Validacija(){
 
     if (vl.isEmpty(jlrCorg) || vl.isEmpty(jlrCradnik) ) return false;
-    if (getTimestamp(jraDatOd).after(getTimestamp(jraDatDo))) {
-      javax.swing.JOptionPane.showMessageDialog(
-          this,
-          "Datumski period nije ispravan",
-          "GREŠKA",
-          javax.swing.JOptionPane.ERROR_MESSAGE);
+    if (!Aus.checkDateRange(jraDatOd, jraDatDo)) return false;
+    if (vl.isEmpty(jraRbrOd) || vl.isEmpty(jraRbrDo)) return false;
+    if (fieldSet.getInt("RBROD") > fieldSet.getInt("RBRDO")) {
+      jraRbrDo.requestFocus();
+      JOptionPane.showMessageDialog(jraRbrDo.getTopLevelAncestor(),
+            "Neispravan raspon rednih brojeva plaæa!",
+          "Greška", JOptionPane.ERROR_MESSAGE);
       return false;
     }
+    
 
 //  //    sysoutTEST ST = new sysoutTEST(false);
 //  //    ST.prn(fieldSet);
@@ -376,13 +384,14 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
                   "cast(sum(kumulradarh.sati) as numeric(17,2)) as sati, "+
                   "cast(sum(kumulradarh.bruto) as numeric(17,2)) as bruto, "+
                   "cast(sum(kumulradarh.naknade) as numeric(17,2)) as naknade, "+
-                  "max(kumulradarh.mjobr) as mjobrdoh, "+
-                  "max(kumulradarh.godobr) as godobrdoh, "+
+                  "kumulradarh.mjobr as mjobrdoh, "+
+                  "kumulradarh.godobr as godobrdoh, "+
                   "cast(sum(kumulradarh.netopk) as numeric(17,2)) as netopk, "+
                   "max(radnici.ime) as ime, "+
                   "max(radnici.prezime) as prezime, "+
                   "max(radnici.cradnik) as cradnik, "+
-                  "max(radnicipl.oib) as jmbg, "+
+                  "max(radnicipl.oib) as oib, "+
+                  "max(radnicipl.jmbg) as jmbg, "+
                   "max(radnicipl.brobveze) as brobveze, "+
                   "max(radnicipl.brosigzo) as brosigzo, "+
                   "max(radnicipl.clanomf) as clanomf "+
@@ -400,10 +409,11 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
 //                  " AND radnicipl.corg = kumulorgarh.corg"+
                   " and kumulorgarh.datumispl between '"+ fieldSet.getTimestamp("DATOD") + "' and '" + ut.getLastSecondOfDay(fieldSet.getTimestamp("DATDO")) + "'" +
                   " and kumulradarh.cradnik = '"+ fieldSet.getString("CRADNIK") + "'" +
+                  " and kumulradarh.rbrobr BETWEEN " + fieldSet.getInt("RBROD") + " AND " + fieldSet.getInt("RBRDO") +
 //                  " and (kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulradarh.corg")+")"+
                   " and " + kumul +
                   " group by kumulradarh.mjobr, kumulradarh.godobr "+
-                  "order by prezime " + vl.getCollateSQL() + " , kumulradarh.godobr, kumulradarh.mjobr";
+                  "order by kumulradarh.godobr, kumulradarh.mjobr";
     return qstr;
   }
 
@@ -450,7 +460,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
   }
 
   private void jbinit() throws Exception {
-    this.addReport("hr.restart.pl.repER1", "ER1", 2);
+    this.addJasper("hr.restart.pl.repER1novi", "hr.restart.pl.repER1novi", "er1novi.jrxml", "Obrazac R1");
 
     jbSelCradnik.setText("...");
     jbSelCorg.setText("...");
@@ -458,13 +468,14 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
     jlRadnik.setText("Radnik");
     jlPeriod.setText("Za period");
 
-    colRadnik = dm.createStringColumn("CRADNIK","Oznaka radnika",6);
-    colDatumOd = dm.createTimestampColumn("DATOD");
-    colDatumDo = dm.createTimestampColumn("DATDO");
-    colCorg = dm.createStringColumn("CORG","Oznaka organizacijske jedinice",0);
+    //colRadnik = dm.createStringColumn("CRADNIK","Oznaka radnika",6);
+    //colDatumOd = dm.createTimestampColumn("DATOD");
+    //colDatumDo = dm.createTimestampColumn("DATDO");
+    //colCorg = dm.createStringColumn("CORG","Oznaka organizacijske jedinice",0);
 
     try {
-      fieldSet.setColumns(new Column[] {colCorg, colRadnik, colDatumOd, colDatumDo});
+      fieldSet = Aus.createSet("CRADNIK:6 @DATOD @DATDO CORG:12 RBROD RBRDO");
+      //fieldSet.setColumns(new Column[] {colCorg, colRadnik, colDatumOd, colDatumDo});
       fieldSet.open();
     }
     catch (Exception ex) {
@@ -501,11 +512,17 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
 
     jraDatDo.setDataSet(fieldSet);
     jraDatDo.setColumnName("DATDO");
+    
+    jraRbrOd.setDataSet(fieldSet);
+    jraRbrOd.setColumnName("RBROD");
+
+    jraRbrDo.setDataSet(fieldSet);
+    jraRbrDo.setColumnName("RBRDO");
 
     mainPanel.setLayout(borderLayout1);
     this.setJPan(mainPanel);
     jpPanel1.setLayout(xYLayout1);
-    xYLayout1.setHeight(125);
+    xYLayout1.setHeight(150);
     xYLayout1.setWidth(600);
     jpPanel1.add(jlCorg, new XYConstraints(15,15,-1,-1));
     jpPanel1.add(jlrCorg, new XYConstraints(150, 15, 100, -1));
@@ -518,6 +535,10 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
     jpPanel1.add(jlPeriod, new XYConstraints(15,90,-1,-1));
     jpPanel1.add(jraDatOd, new XYConstraints(150, 90, 100, -1));
     jpPanel1.add(jraDatDo, new XYConstraints(255, 90, 100, -1));
+    jpPanel1.add(new JLabel("Red. broj (od - do)"), new XYConstraints(15,115,-1,-1));
+    jpPanel1.add(jraRbrOd, new XYConstraints(150, 115, 45, -1));
+    jpPanel1.add(jraRbrDo, new XYConstraints(205, 115, 45, -1));
+    
     mainPanel.add(jpPanel1, BorderLayout.CENTER);
   }
 
