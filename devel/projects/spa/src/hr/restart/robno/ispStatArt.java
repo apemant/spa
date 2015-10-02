@@ -100,7 +100,7 @@ public class ispStatArt extends raPanStats {
     "stdoki.cart, " + "stdoki.cart1, " + 
     "stdoki.bc, " + "stdoki.nazart, " + "stdoki.jm, " + " artikli.cgrart, " + "stdoki.kol, " + 
     "stdoki.iraz, " + "stdoki.iprodbp, " + "CAST ((stdoki.iprodsp - stdoki.iprodbp) AS numeric(12,2)) as por, " + 
-    "stdoki.iprodsp, " + "stdoki.inab, " + "CAST ((stdoki.iprodbp-stdoki.inab) AS numeric(12,2)) as ruc, " +
+    "stdoki.iprodsp, " + "stdoki.inab, stdoki.rinab," + "CAST ((stdoki.iprodbp-stdoki.inab) AS numeric(12,2)) as ruc, " +
     "CAST ((stdoki.iprodsp+stdoki.uirab) AS numeric(12,2)) as itot ";
 
     String cskls;
