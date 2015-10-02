@@ -358,8 +358,9 @@ public class frmKnjizenje extends JraDialog implements ResetEnabled {
   	if (frmParam.getParam("gk", "checkPrevious", "N", 
   			"Zabraniti unos novog naloga ako ima neproknjiženih ranije (D,N)?").equalsIgnoreCase("N")) return false;
   	
+  	
   	if (Nalozi.getDataModule().getRowCount(
-  			Aus.getKnjigCond().and(Condition.equal("CVRNAL", dataSet)).
+  			Aus.getKnjigCond().and(Condition.equal("CVRNAL", dataSet)).and(Condition.diff("STATUS", "K")).
   			and(Condition.equal("GOD", ut.getYear(dataSet.getTimestamp("DATUMKNJ"))))) == 0) return false;
   		
   	 JOptionPane.showMessageDialog(this, "U odabranoj godini ima neproknjiženih naloga iste vrste!",
