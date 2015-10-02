@@ -160,10 +160,13 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
       rcc.setLabelLaF(jrfCBlagajnik,false);
       rcc.setLabelLaF(jrfNazivBlagajnika,false);
       rcc.setLabelLaF(jbSelBlagajnik,false);
+      jrbDatum.setSelected();
+      rcc.setLabelLaF(jrbRacun, false);
     } else {
       rcc.setLabelLaF(jrfCBlagajnik,true);
       rcc.setLabelLaF(jrfNazivBlagajnika,true);
       rcc.setLabelLaF(jbSelBlagajnik,true);
+      rcc.setLabelLaF(jrbRacun, true);
     }
     tds.setString("IspisRek","D");
     tds.setString("IspisSmje","D");
@@ -193,6 +196,13 @@ public class ispRekapitulacijaRacunaPOS extends raUpitLite {
     } else {
 //      System.out.println(jtfPocDatum + " - " + jtfZavDatum);
       if (!vl.isValidRange(jtfPocDatum,jtfZavDatum))return false;
+      if (presBlag.isUserOriented() && !raUser.getInstance().isSuper()) {
+        int back =  Aus.getAnyNumber(frmParam.getParam("pos", "rekapBack", "1", "Koliko dana unazad dopustiti rekapitulaciju uplata"));
+        if (back > 0 && raDateUtil.getraDateUtil().DateDifference(tds.getTimestamp("pocDatum"), vl.getToday()) > back) {
+          javax.swing.JOptionPane.showMessageDialog(jtfPocDatum,"Datum predaleko u prošlosti!","Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+      }
     }
     return true;
   }
