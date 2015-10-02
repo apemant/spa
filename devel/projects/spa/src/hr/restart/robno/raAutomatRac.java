@@ -1135,6 +1135,10 @@ public class raAutomatRac extends raFrame {
                     stavRac.getBigDecimal("POR1").
                     add(stavRac.getBigDecimal("POR2")).
                     add(stavRac.getBigDecimal("POR3")));
+            
+            Aus.set(stavRac, "RUC", "IPRODBP");
+            Aus.add(zagRac, "UIRAC", stavRac, "IPRODSP");
+            Aus.add(zagRac, "RUC", stavRac);
             zagRac.setBigDecimal("UIRAC",
                     zagRac.getBigDecimal("UIRAC").add(
                     		stavRac.getBigDecimal("IPRODSP")));
@@ -1168,10 +1172,10 @@ public class raAutomatRac extends raFrame {
                 "UIPOR",
                 stugovora.getBigDecimal("IPRODSP").subtract(
                         stugovora.getBigDecimal("IPRODBP")));
-        zagRac.setBigDecimal(
-                "UIRAC",
-                zagRac.getBigDecimal("UIRAC").add(
-                		stavRac.getBigDecimal("IPRODSP")));
+        Aus.set(stavRac, "RUC", "IPRODBP");
+        Aus.add(zagRac, "UIRAC", stavRac, "IPRODSP");
+        Aus.add(zagRac, "RUC", stavRac);
+        
         }
 /*
         dm.getVTText().insertRow(true);
