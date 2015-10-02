@@ -334,7 +334,7 @@ public class raPOS extends raIzlazTemplate  {
     csklCond = vhack ? "m.cskl like '" + oldpj + "%'" : Condition.equal("CSKL", tds).qualified("m").toString();
     
     String q = "SELECT cskl, datdok from pos m WHERE " + 
-        "status='N' AND uirac!=0 AND " + csklCond + " and " + cond;
+        "status='N' AND vrdok='GRC' AND uirac!=0 AND " + csklCond + " and " + cond;
     
     DataSet allpos = Aus.q(q);
     if (allpos.rowCount() == 0) {
@@ -648,7 +648,8 @@ public class raPOS extends raIzlazTemplate  {
             
             if (cag && rep) rzag.setInt("CAGENT", nacpl.equals("R") ? 2 : 1); 
             raTransaction.runSQL("update pos set status='P', rdok='" + raControlDocs.getKey(rzag) +
-                "' where "+ dat.and(crep).and(Condition.equal("CSKL", cskl).and(Condition.equal("STATUS", "N"))).qualified("pos"));
+                "' where "+ dat.and(crep).and(Condition.equal("CSKL", cskl).and(Condition.equal("VRDOK", "GRC")).
+                    and(Condition.equal("STATUS", "N"))).qualified("pos"));
 
             /*izag.insertRow(false);
             izag.setString("CSKL", cskl);
@@ -854,7 +855,8 @@ public class raPOS extends raIzlazTemplate  {
 				Util.getUtil().getBrojDokumenta(rzag);
 				Aus.clear(rzag, "UIRAC");
 				raTransaction.runSQL("update pos set status='P', rdok='" + raControlDocs.getKey(rzag) +
-            "' where "+ dat.and(Condition.equal("CSKL", cskl).and(Condition.equal("STATUS", "N"))).qualified("pos"));
+            "' where "+ dat.and(Condition.equal("CSKL", cskl).and(Condition.equal("VRDOK", "GRC")).
+                  and(Condition.equal("STATUS", "N"))).qualified("pos"));
 				
 				short rbs = 0;
 				total = Aus.zero2;
