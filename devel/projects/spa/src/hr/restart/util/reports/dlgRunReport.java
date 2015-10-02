@@ -54,11 +54,13 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.*;
@@ -73,6 +75,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRDesignParameter;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JRJdk13Compiler;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -1487,13 +1490,23 @@ public class dlgRunReport {
       public void run() {
         try {
           raProcess.setMessage("Priprema ispisa...", false);
-          raReportDescriptor rd = getCurrentDescriptor();          
+          raReportDescriptor rd = getCurrentDescriptor();
+          JRDesignParameter dpar = new JRDesignParameter();
+          dpar.setName("cform");
+          dpar.setValueClassName("java.text.NumberFormat");
+          NumberFormat nform = NumberFormat.getInstance();
+          nform.setMaximumFractionDigits(2);
+          nform.setMaximumFractionDigits(2);
+          Map params = new HashMap();
+          params.put("cform", nform);
           if (rd.isJasper()) {
             JasperElixirData data = new JasperElixirData(rd.getDataSource());
             JasperDesign jdes = JRXmlLoader.load(
                 getSystemResourceAsStream(rd.getTemplate()));
             jdes.setName(getCurrentDescriptor().getName());
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
+            jdes.addParameter(dpar);
+            
             ElixirToJasperConverter.adjustReport(jdes);
             rd.adjustJasperDesign(jdes);
             fixMargins(rd.getName(), jdes);
@@ -1505,7 +1518,7 @@ public class dlgRunReport {
               data.buildTable();
             }
             raProcess.setMessage("Formiranje ispisa...", false);
-            raProcess.yield(JasperFillManager.fillReport(jcomp, null, data.getSource()));
+            raProcess.yield(JasperFillManager.fillReport(jcomp, params, data.getSource()));
           } else {
             String dsnName = getCurrentDescriptor().getProviderName();
             DataSourceManager dsm = DataSourceManager.current();
@@ -1518,6 +1531,8 @@ public class dlgRunReport {
             JasperDesign jdes = JasperBuilder.buildFromElixir(rt.getReportTemplate(), data);
             jdes.setName(getCurrentDescriptor().getName());
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
+            jdes.addParameter(dpar);
+            data.setUsedGetter("PREFIX");
             rd.adjustJasperDesign(jdes);
             fixMargins(rd.getName(), jdes);
             JRXmlWriter.writeReport(jdes, "design.jrxml", "UTF-8");
@@ -1533,7 +1548,7 @@ public class dlgRunReport {
             raProcess.setMessage("Grupiranje i sortiranje...", false);
             data.sortTable();
             raProcess.setMessage("Formiranje ispisa...", false);
-            raProcess.yield(JasperFillManager.fillReport(jcomp, null, data));
+            raProcess.yield(JasperFillManager.fillReport(jcomp, params, data));
           }
         } catch (RuntimeException e) {
           throw e;
