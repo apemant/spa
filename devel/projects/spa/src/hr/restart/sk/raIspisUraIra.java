@@ -292,9 +292,9 @@ public class raIspisUraIra extends raFrame {
     System.out.println("ROWS: "+uraira.getRowCount());
     getRepRunner().clearAllReports();
     if (jrbUraira1.isSelected()) {
-      getRepRunner().addJasper("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
+      getRepRunner().addJasper("hr.restart.sk.repURAEU13", "hr.restart.sk.repURAEU",
           "uraeu2.jrxml", "Ispis knjige URA EU 13%");
-      getRepRunner().addJasper("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
+      getRepRunner().addJasper("hr.restart.sk.repURAEU10", "hr.restart.sk.repURAEU",
           "uraeu10.jrxml", "Ispis knjige URA EU 10%");
       getRepRunner().addJasper("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
           "uraeu.jrxml", "Ispis knjige URA EU");
@@ -614,11 +614,45 @@ public class raIspisUraIra extends raFrame {
     if (raProcess.isCompleted()) {
       frmTableDataView view = new frmTableDataView(true, false, false);
       view.setDataSet(uraira);
-      view.setCustomReport(jrbUraira1.isSelected() ? 
-          raReportDescriptor.create("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
-              "uraeu.jrxml", "Ispis knjige URA EU", true) :
-          raReportDescriptor.create("hr.restart.sk.repIRAEU2", "hr.restart.sk.repIRA",
-              "iraeu2.jrxml", "Ispis knjige IRA EU - oporezive kolone", true));
+      if (jrbUraira1.isSelected()) {
+        view.setCustomReport(raReportDescriptor.create("hr.restart.sk.repURAEU13", "hr.restart.sk.repURAEU",
+            "uraeu2.jrxml", "Ispis knjige URA EU 13%", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repURAEU10", "hr.restart.sk.repURAEU",
+            "uraeu10.jrxml", "Ispis knjige URA EU 10%", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
+            "uraeu.jrxml", "Ispis knjige URA EU", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repURA25", "hr.restart.sk.repURANew",
+            "ura25.jrxml", "Ispis knjige URA 25%", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repURA09", "hr.restart.sk.repURANew",
+            "ura09.jrxml", "Ispis knjige URA 23%", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repURA06", "hr.restart.sk.repURANew",
+            "URA06", "Ispis knjige URA 22%"));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repURA", "hr.restart.sk.repURA",
+                                 "URA_ORGINAL", "Ispis knjige URA 2005"));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repURA11", "hr.restart.sk.repURA",
+                                 "URA11", "Ispis knjige URA 2005 s 11 kolona"));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repURA12", "hr.restart.sk.repURA",
+                                 "URA12", "Ispis knjige URA 2005 s 12 kolona"));
+      } else {
+        view.setCustomReport(raReportDescriptor.create("hr.restart.sk.repIRAEUN2", "hr.restart.sk.repIRA",
+            "iraeun2.jrxml", "Ispis knjige IRA EU novi - oporezive kolone", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repIRAEUN1", "hr.restart.sk.repIRA",
+            "iraeun1.jrxml", "Ispis knjige IRA EU novi - neoporezive kolone", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repIRAEU2", "hr.restart.sk.repIRA",
+            "iraeu2.jrxml", "Ispis knjige IRA EU - oporezive kolone", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repIRAEU1", "hr.restart.sk.repIRA",
+            "iraeu1.jrxml", "Ispis knjige IRA EU - neoporezive kolone", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repIRA25", "hr.restart.sk.repIRA",
+            "ira25.jrxml", "Ispis knjige IRA 25%", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repIRA10", "hr.restart.sk.repIRA",
+            "ira10.jrxml", "Ispis knjige IRA 23%", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repIRA09", "hr.restart.sk.repIRA",
+            "ira09.jrxml", "Ispis knjige IRA 2009", true));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repIRA06", "hr.restart.sk.repIRA",
+            "IRA06", "Ispis knjige IRA"));
+        view.addCustomReport(raReportDescriptor.create("hr.restart.sk.repIRA", "hr.restart.sk.repIRA",
+                                 "IRA", "Ispis knjige IRA 2005"));
+      }
       List sumc = new ArrayList();
       for (int i = 10; i < uraira.getColumnCount(); i++)
         sumc.add(uraira.getColumn(i).getColumnName());
