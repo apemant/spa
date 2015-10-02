@@ -48,8 +48,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -147,6 +150,7 @@ public class frmTableDataView extends JraFrame {
 
   JTablePrintRun printer = new JTablePrintRun();
   raReportDescriptor custom;
+  List multicustom;
   raNavAction ex;
 
   FileFilter filterCSV = new raFileFilter("Excel datoteke (*.csv)");
@@ -349,6 +353,15 @@ public class frmTableDataView extends JraFrame {
   
   public void setCustomReport(raReportDescriptor rd) {
     custom = rd;
+    multicustom = null;
+  }
+  
+  public void addCustomReport(raReportDescriptor rd) {
+    if (multicustom == null) {
+      multicustom = new ArrayList();
+      if (custom != null) multicustom.add(custom);
+    }
+    multicustom.add(rd);
   }
   
   void multiDelete() {
@@ -681,7 +694,12 @@ public class frmTableDataView extends JraFrame {
     printer.setInterTitle(getClass().getName());
     printer.setColB(jp.getNavBar().getColBean());
     printer.setRTitle(this.getTitle());
-    if (custom != null) {
+    if (multicustom != null) {
+      printer.getReportRunner().clearAllCustomReports();
+      for (Iterator i = multicustom.iterator(); i.hasNext(); )
+        printer.getReportRunner().addReport((raReportDescriptor) i.next());
+    }
+    else if (custom != null) {
       printer.getReportRunner().clearAllCustomReports();
       printer.getReportRunner().addReport(custom);
     }
