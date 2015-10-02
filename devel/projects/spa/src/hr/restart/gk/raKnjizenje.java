@@ -103,7 +103,7 @@ public class raKnjizenje {
   //
   private boolean SKRacKnj = true;
   public String originalCNALOGA = "";
-  boolean fake;
+  boolean fake, nulrac;
   String cGK = null;
   String longcGK = null;
   raKnjizenjeSK kSk;
@@ -219,6 +219,8 @@ public class raKnjizenje {
    */
   public boolean startKnjizenje(frmKnjizenje fknj) {
     try {
+      nulrac = frmParam.getParam("robno", "nulRac", "N", "Knjižiti nul raèune u robnom (D,N)?").equalsIgnoreCase("D");
+      
       clearTransferInfo();
       kSk.clearErrors();
       fakePreSel();
@@ -558,7 +560,7 @@ public class raKnjizenje {
       throw new Exception("Org. jedinica mora biti upisana!");
     if (isEmpty("DATDOK"))
       throw new Exception("Nije ispravan datum dokumenta!");
-    if (!isLastKontoZbirni() && isEmpty("ID") && isEmpty("IP"))
+    if (!nulrac && !isLastKontoZbirni() && isEmpty("ID") && isEmpty("IP"))
       throw new Exception("I dugovni i potrazni iznos su 0!");
     if (raKonta.isSaldak(getStavka().getString("BROJKONTA")) && isSKRacKnj()) {
       hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();

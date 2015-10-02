@@ -849,6 +849,8 @@ System.out.println("**** DEVIZNI ANLAGE");
     }
     public boolean realKnjizenje() {
         if (!checkOutDate()) return false;
+        
+        boolean nulrac = frmParam.getParam("robno", "nulRac", "N", "Knjižiti nul raèune u robnom (D,N)?").equalsIgnoreCase("D");
       
         BigDecimal sumip = Aus.zero2;
         BigDecimal sumid = Aus.zero2;
@@ -899,6 +901,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                     && tmpskstavke.getBigDecimal("IP").doubleValue() == 0) {
                 //				System.out.println("GLAVNA koja ispada"
                 //						+ tmpskstavke.getString("GLAVNA"));
+              if (!nulrac || !hr.restart.zapod.raKonta.isSaldak(tmpskstavke.getString("BROJKONTA")))
                 continue;
             }
             sds = getKnjizenje().getNewStavka(
