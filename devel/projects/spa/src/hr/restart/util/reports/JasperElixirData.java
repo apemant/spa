@@ -236,6 +236,7 @@ public class JasperElixirData implements JRDataSource {
     {"java.sql.Date", "java.sql.Date"},
     {"java.sql.Timestamp", "java.sql.Timestamp"},
     {"java.math.BigDecimal", "java.math.BigDecimal"},
+    {"java.lang.Integer", "java.lang.Integer"},
     {"java.lang.Boolean", "java.lang.Boolean"}
   };
   
