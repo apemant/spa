@@ -18,6 +18,7 @@
 package hr.restart.pl;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
@@ -378,6 +379,10 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
 //                  " group by godobrdoh, mjobrdoh " +
                   " order by radnici.prezime " + vl.getCollateSQL() + " , kumulradarh.mjobr "; /// PROXIMITY WARNING
     System.out.println("repQdsSQL = " + qstr);*/
+    
+    String ojw = frmParam.getParam("pl", "ojwithER1_"+fieldSet.getString("CORG"), "", 
+        "S kojim još knjigovodstvom da zbroji ER1 za knjigov. "+fieldSet.getString("CORG"));
+    String add = ojw.length() == 0 ? "" : " or kumulradarh.cradnik = '"+ fieldSet.getString("CRADNIK") + "@" +fieldSet.getString("CORG") + "'";
 
     String qstr = "select " +
                   "max(kumulorgarh.datumispl) as datumispl, "+
@@ -407,8 +412,9 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
                   " AND radnici.cradnik = radnicipl.cradnik"+
 //                  " AND radnicipl.cvro = kumulorgarh.cvro"+
 //                  " AND radnicipl.corg = kumulorgarh.corg"+
-                  " and kumulorgarh.datumispl between '"+ fieldSet.getTimestamp("DATOD") + "' and '" + ut.getLastSecondOfDay(fieldSet.getTimestamp("DATDO")) + "'" +
-                  " and kumulradarh.cradnik = '"+ fieldSet.getString("CRADNIK") + "'" +
+                   (ojw.length() > 0 ? "" :
+                  " and kumulorgarh.datumispl between '"+ fieldSet.getTimestamp("DATOD") + "' and '" + ut.getLastSecondOfDay(fieldSet.getTimestamp("DATDO")) + "'")+
+                  " and (kumulradarh.cradnik = '"+ fieldSet.getString("CRADNIK") + "'" + add + ")" +
                   " and kumulradarh.rbrobr BETWEEN " + fieldSet.getInt("RBROD") + " AND " + fieldSet.getInt("RBRDO") +
 //                  " and (kumulradarh.corg in " + orgs.getInQuery(orgs.getOrgstrAndKnjig(fieldSet.getString("CORG")),"kumulradarh.corg")+")"+
                   " and " + kumul +
