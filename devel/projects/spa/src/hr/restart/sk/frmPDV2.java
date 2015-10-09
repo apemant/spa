@@ -51,8 +51,8 @@ public class frmPDV2 extends raUpitFat {
   JLabel jlPer = new JLabel("Razdoblje");
   JraTextField jraPoctDat = new JraTextField();
   JraTextField jraKrajDat = new JraTextField();
-  
-  JraComboBox jraObrazac = new JraComboBox(new String[] {"Obrazac PDV","Obrazac PDV-S","Obrazac ZP","Obrazac PDV-K", "Obrazac JOPPD", "Obrazac PDV za 2013", "Obrazac PPO 2013/2014"});
+    
+  JraComboBox jraObrazac = new JraComboBox(new String[] {"Obrazac PDV","Obrazac PDV-S","Obrazac ZP","Obrazac PDV-K", "Obrazac JOPPD (plaæe)", "Obrazac JOPPD (p.n.)", "Obrazac PDV za 2013", "Obrazac PPO 2013/2014"});
   XYLayout xYlay = new XYLayout();
   StorageDataSet stds = new StorageDataSet();
   hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
@@ -62,8 +62,9 @@ public class frmPDV2 extends raUpitFat {
   private String _izvjpdv_ciz_prefix = "Pdv";
   QueryDataSet izvjpdv_k = IzvjPDV.getDataModule().getTempSet("CIZ like 'Pok%'");
   QueryDataSet izvjpdv_k_all = IzvjPDV.getDataModule().getTempSet("CIZ like 'Pdv%' or CIZ like 'Pod%' or CIZ like 'Pok%'");
-  private String opcinarada;
+  String opcinarada;
   JOPPDhndlr JOPPD;
+  JOPPDhndlrPN JOPPDPN;
   
   public JOPPDhndlr getJOPPD() {
     return JOPPD;
@@ -79,23 +80,25 @@ public class frmPDV2 extends raUpitFat {
         dM.createTimestampColumn("DATUMDO")
       });
       JOPPD = new JOPPDhndlr(this);
+      JOPPDPN = new JOPPDhndlrPN(this);
       jraPoctDat.setDataSet(stds);
       jraPoctDat.setColumnName("DATUMOD");
 
       jraKrajDat.setDataSet(stds);
       jraKrajDat.setColumnName("DATUMDO");
-      datePanel.add(jlPer, new XYConstraints(205,15,-1,21));
-      datePanel.add(jraPoctDat, new XYConstraints(300, 15, 100, 21));
-      datePanel.add(jraKrajDat, new XYConstraints(405, 15, 100, 21));
-      datePanel.add(jraObrazac, new XYConstraints(15, 15, 150, 21));
+      datePanel.add(jlPer, new XYConstraints(230,15,-1,21));
+      datePanel.add(jraPoctDat, new XYConstraints(340, 15, 100, 21));
+      datePanel.add(jraKrajDat, new XYConstraints(445, 15, 100, 21));
+      datePanel.add(jraObrazac, new XYConstraints(15, 15, 200, 21));
       setJPan(datePanel);
       jraObrazac.addItemListener(new ItemListener() {
         
 
         public void itemStateChanged(ItemEvent e) {
+          clearJop();
           if (jraObrazac.getSelectedIndex() == 4) {
             datePanel.remove(jraKrajDat);
-            datePanel.add(JOPPD.getBtns(), new XYConstraints(405, 15, 100, 21));
+            datePanel.add(JOPPD.getBtns(), new XYConstraints(445, 15, 100, 21));
             jlPer.setText("Datum isplate");
             QueryDataSet orgpl = Orgpl.getDataModule().getTempSet(Condition.equal("CORG", OrgStr.getKNJCORG()));
             orgpl.open();
@@ -104,13 +107,20 @@ public class frmPDV2 extends raUpitFat {
             stds.setTimestamp("DATUMOD", orgpl.getTimestamp("DATUMISPL"));
             stds.post();
             SwingUtilities.invokeLater(new Runnable() {
-              
               public void run() {
                 datePanel.repaint();
               }
             });
-          } else {
-            clearJop();
+          } else if (jraObrazac.getSelectedIndex() == 5) {
+            datePanel.remove(jraKrajDat);
+            datePanel.add(JOPPDPN.getBtns(), new XYConstraints(445, 15, 100, 21));
+            jlPer.setText("Datum isplate");
+            stds.setTimestamp("DATUMOD", vl.getToday());
+            SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                datePanel.repaint();
+              }
+            });
           }
           datePanel.validate();
           System.err.println("jraObrazac.itemStateChanged");
@@ -152,6 +162,12 @@ public class frmPDV2 extends raUpitFat {
       getJPTV().fireTableDataChanged();
     }
   }
+  
+  public boolean Validacija() {
+    if (jraObrazac.getSelectedIndex() == 5)
+      return JOPPDPN.checkPeriod();
+    return true;
+  }
 
   public void okPress() {
     setDataSet(null);
@@ -179,10 +195,14 @@ public class frmPDV2 extends raUpitFat {
       break;
       
     case 5:
+      JOPPDPN.doJOPPD();
+      break;
+      
+    case 6:
       doPDV13();
       break;
 
-    case 6:
+    case 7:
       doPPO20132014();
       break;
       
@@ -214,8 +234,12 @@ public class frmPDV2 extends raUpitFat {
     case 4:
       addJOPPD();
       break;
+    
+    case 5:
+      addJOPPD();
+      break;
       
-    case 6:
+    case 7:
       addPPO();
       break;
       
@@ -282,9 +306,11 @@ public class frmPDV2 extends raUpitFat {
   private void clearJop() {
     JOPPD.setMode("Dohvat");
     JOPPD.currOIB = null;
+    JOPPDPN.currOIB = null;
     jlPer.setText("Razdoblje");
     datePanel.remove(JOPPD.getBtns());
-    datePanel.add(jraKrajDat, new XYConstraints(405, 15, 100, -1));
+    datePanel.remove(JOPPDPN.getBtns());
+    datePanel.add(jraKrajDat, new XYConstraints(445, 15, 100, -1));
     stds.setTimestamp("DATUMOD", ut.getFirstDayOfMonth(ut.addMonths(vl.getToday(), -1)));
     stds.setTimestamp("DATUMDO", ut.getLastDayOfMonth(ut.addMonths(vl.getToday(), -1)));
   }
@@ -848,10 +874,14 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
       break;
       
     case 5:
+      updJOPPDPN();
+      break;
+      
+    case 6:
       updPDV();
       break;
             
-    case 6:
+    case 7:
       updPPO();
       break;
             
@@ -862,6 +892,10 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
 
   private void updJOPPD() {
     JOPPD.getJOPPD_BDialog().show();
+  }
+  
+  private void updJOPPDPN() {
+    JOPPDPN.getJOPPD_BDialog().show();
   }
 
 

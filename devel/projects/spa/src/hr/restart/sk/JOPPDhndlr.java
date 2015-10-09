@@ -132,8 +132,8 @@ public class JOPPDhndlr {
   }
 
   //JOPPD 
-  private StorageDataSet strAset = null;
-  private String oib = null;
+  protected StorageDataSet strAset = null;
+  protected String oib = null;
   public StorageDataSet getStrAset() {
     if (strAset == null) {
       strAset = new StorageDataSet();
@@ -351,7 +351,7 @@ public class JOPPDhndlr {
   }
 
   //Strana B
-  private StorageDataSet strBset = null;
+  protected StorageDataSet strBset = null;
   public StorageDataSet getStrBset() {
     if (strBset == null) {
       strBset = new StorageDataSet();
@@ -420,7 +420,7 @@ public class JOPPDhndlr {
    * The ... gulp!
    */
   boolean needmatch;
-  void doJOPPD() {
+  protected void doJOPPD() {
     
     boolean iszapinv = isZapInv();
     multipliers.clear();
@@ -707,7 +707,7 @@ public class JOPPDhndlr {
   private boolean isZapInv() {
     return frmParam.getParam("pl", "jzapinv"+hr.restart.zapod.OrgStr.getKNJCORG(), "N", "Ukljuèiti doprinos za zap.inv. u JOPPD za "+hr.restart.zapod.OrgStr.getKNJCORG()).equalsIgnoreCase("D");
   }
-  private String getKnjCurrOIB() {
+  protected String getKnjCurrOIB() {
     QueryDataSet oibset = Aus.q("SELECT OIB from logotipovi WHERE corg = '"+hr.restart.zapod.OrgStr.getKNJCORG()+"'");
     oibset.open();
     oibset.first();
@@ -811,7 +811,7 @@ System.err.println(
       if (rs.hasColumn(cols[i]) != null) rs.setString(cols[i], getSifraFor(cols[i], rs)); 
     }
   }
-  private static void setDefaultRPLS(ReadWriteRow r) {
+  protected static void setDefaultRPLS(ReadWriteRow r) {
     r.setString("CRADNIK", "#");
     r.setString("JOS", "0001");
     r.setString("JOP", "0001");
