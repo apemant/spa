@@ -20,6 +20,7 @@ package hr.restart.util.reports;
 import java.io.File;
 
 import bsh.Interpreter;
+import hr.restart.Matrix;
 import hr.restart.util.Aus;
 import hr.restart.util.FileHandler;
 import hr.restart.util.Util;
@@ -617,6 +618,10 @@ public class mxReport {
    * @return
    */
   public static boolean bshEvalPrintCommand(String printCommand, String _f) {
+    if (printCommand.startsWith("print")) {
+      Matrix.parse(printCommand);
+      return true;
+    }
     if (!(printCommand.startsWith("$shc") || printCommand.startsWith("$shf"))) return false;
     if (_f == null) _f = System.getProperty("user.dir")+System.getProperty("file.separator")+mxReport.TMPPRINTFILE;
     try {
@@ -628,11 +633,10 @@ public class mxReport {
       Interpreter i = new Interpreter();
       i.set("_f", _f);
       i.eval(shellcmd);
-      return true;
     } catch (Exception e) {
       e.printStackTrace();
-      return false;
     }
+    return true;
   }
 /**
  * Ispisuje report koristeci mxRM.printCommand kao externu komandu
