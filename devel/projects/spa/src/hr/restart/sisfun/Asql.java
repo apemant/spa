@@ -17,9 +17,12 @@
 ****************************************************************************/
 package hr.restart.sisfun;
 
+import hr.restart.baza.Akcije;
 import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
+import hr.restart.baza.doki;
 import hr.restart.robno.Aut;
+import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
@@ -267,13 +270,18 @@ public class Asql {
   public static void createMasterRab(QueryDataSet mast) {   
     mast.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(dm.getDatabase1(),
         "SELECT rabshema.cpar as cpar, "+ 
-        "max(partneri.nazpar) as nazpar FROM rabshema,partneri " +
+        "MAX(partneri.nazpar) as nazpar, MAX(rabshema.akcija) as akcija, " +
+        "MAX(rabshema.datod) as datod, MAX(rabshema.datdo) as datdo " +
+        "FROM rabshema,partneri " +
         "WHERE rabshema.cpar = partneri.cpar GROUP BY rabshema.cpar"
     ));
-
+    
     mast.setColumns(new Column[] {
-      (Column) dm.getCjenik().getColumn("CPAR").clone(),
-      (Column) dm.getPartneri().getColumn("NAZPAR").clone(),
+      dm.getCjenik().getColumn("CPAR").cloneColumn(),
+      dm.getPartneri().getColumn("NAZPAR").cloneColumn(),
+      dM.createStringColumn("AKCIJA", "Akcija", "N", 1),
+      Akcije.getDataModule().getColumn("DATOD").cloneColumn(),
+      Akcije.getDataModule().getColumn("DATDO").cloneColumn()
     });
     mast.getColumn("NAZPAR").setCaption("Naziv partnera");
     
