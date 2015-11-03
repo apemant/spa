@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import com.borland.dx.dataset.DataSet;
@@ -113,20 +114,20 @@ public class repIzvProdajaArtikli implements raReportData {
         return ds.getString("NAZART");
     }
 
-    public double getKol() {
-        return ds.getBigDecimal("KOL").doubleValue();
+    public BigDecimal getKol() {
+        return ds.getBigDecimal("KOL");
     }
 
-    public double getNabVri() {
-        return ds.getBigDecimal("INAB").doubleValue();
+    public BigDecimal getNabVri() {
+        return ds.getBigDecimal("INAB");
     }
 
-    public double getProVri() {
-        return ds.getBigDecimal("IZAD").doubleValue();
+    public BigDecimal getProVri() {
+        return ds.getBigDecimal("IZAD");
     }
 
-    public double getUtrzak() {
-        return ds.getBigDecimal("IPRODSP").doubleValue();
+    public BigDecimal getUtrzak() {
+        return ds.getBigDecimal("IPRODSP");
     }
 
     public String getDatumIsp() {
@@ -171,32 +172,32 @@ public class repIzvProdajaArtikli implements raReportData {
         return rdu.dataFormatter(datOd) + "-" + rdu.dataFormatter(datDo);
     }
 
-    public double getIRaz() {
-        return ds.getBigDecimal("IRAZ").doubleValue();
+    public BigDecimal getIRaz() {
+        return ds.getBigDecimal("IRAZ");
     }
 
-    public double getUIRab() {
-        return ds2.getBigDecimal("UIRAB").doubleValue();
+    public BigDecimal getUIRab() {
+        return ds2.getBigDecimal("UIRAB");
     }
 
-    public double getIProdBP() {
-        return ds.getBigDecimal("IPRODBP").doubleValue();
+    public BigDecimal getIProdBP() {
+        return ds.getBigDecimal("IPRODBP");
     }
 
-    public double getPor() {
-        return ds2.getDouble("POR");
+    public BigDecimal getPor() {
+        return ds2.getBigDecimal("POR");
     }
 
-    public double getInab() {
-        return ds.getBigDecimal("INAB").doubleValue();
+    public BigDecimal getInab() {
+        return ds.getBigDecimal("INAB");
     }
 
-    public double getIProdSP() {
-        return ds.getBigDecimal("IPRODSP").doubleValue();
+    public BigDecimal getIProdSP() {
+        return ds.getBigDecimal("IPRODSP");
     }
 
-    public double getUkupno() {
-        return ds2.getDouble("UKUPNO");
+    public BigDecimal getUkupno() {
+        return ds2.getBigDecimal("UKUPNO");
     }
 
 }
