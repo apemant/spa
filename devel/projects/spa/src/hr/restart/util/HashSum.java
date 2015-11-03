@@ -19,6 +19,13 @@ public class HashSum {
     //
   }
   
+  public HashSum(DataSet ds, String keyCol, String valCol, boolean fill) {
+    set(ds, keyCol, valCol);
+    if (fill)
+      for (ds.first(); ds.inBounds(); ds.next())
+        add();
+  }
+  
   public HashSum(DataSet ds, String keyCol, String valCol) {
     this.ds = ds;
     this.keyCol = keyCol;
@@ -67,8 +74,28 @@ public class HashSum {
     add(getKey(ds), valCol);
   }
   
-  public void addVal(String valc) {
+  public void add(String valc) {
     add(getKey(ds), valc);
+  }
+  
+  public void add(ReadRow row, String valc) {
+    add(getKey(row), valc);
+  }
+  
+  public void sub(ReadRow row) {
+    sub(getKey(row), valCol);
+  }
+  
+  public void sub() {
+    sub(getKey(ds), valCol);
+  }
+  
+  public void sub(String valc) {
+    sub(getKey(ds), valc);
+  }
+  
+  public void sub(ReadRow row, String valc) {
+    sub(getKey(row), valc);
   }
   
   public BigDecimal get() {
@@ -88,16 +115,33 @@ public class HashSum {
       add(key, ds.getFloat(valc));
   }
   
+  private void sub(Object key, String valc) {
+    if (valType == Variant.BIGDECIMAL)
+      sub(key, ds.getBigDecimal(valc));
+    else if (valType == Variant.DOUBLE)
+      sub(key, ds.getDouble(valc));
+    else if (valType == Variant.FLOAT)
+      sub(key, ds.getFloat(valc));
+  }
+  
   public void add(Object key, BigDecimal val) {
     BigDecimal old = (BigDecimal) map.get(key);
     if (old == null) map.put(key, val);
     else map.put(key, val == null ? old : val.add(old));
   }
   
+  public void sub(Object key, BigDecimal val) {
+    add(key, val.negate());
+  }
+  
   public void add(Object key, double val) {
     Double old = (Double) map.get(key);
     if (old == null) map.put(key, new Double(val));
     else map.put(key, new Double(val + old.doubleValue()));
+  }
+  
+  public void sub(Object key, double val) {
+    add(key, -val);
   }
   
   public BigDecimal get(Object key) {
