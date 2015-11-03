@@ -677,7 +677,7 @@ System.out.println("QS : " + queryString);
                          "stdoki.iprodbp, "+
                          "CAST ((stdoki.iprodsp - stdoki.iprodbp) AS numeric(12,2)) as por, "+
                          "stdoki.iprodsp, "+
-                         "stdoki.inab, stdoki.rinab"+
+                         "stdoki.inab, stdoki.rinab, "+
                          "CAST ((stdoki.iprodbp-stdoki.inab) AS numeric(12,2)) as ruc "+caprDobart+
                          "from artikli, doki, stdoki "+dobart+
                          "where doki.cskl=stdoki.cskl and doki.brdok=stdoki.brdok "+
@@ -900,7 +900,7 @@ System.out.println("QS : " + queryString);
     hr.restart.baza.Condition oj = hr.restart.baza.Condition.in("DOKI.VRDOK", TypeDoc.araj_docsOJ);
     String exInClude = "AND (("+oj+" AND "+inq+") OR ("+oj.not()+sklad+")) ";
 
-    String queryString = "select doki.cpar, doki.pj, "+
+    String queryString = "select doki.cpar, doki.pj, doki.vrdok, "+
 //                         "doki.brdok "+
                          "stdoki.cskl, "+
                          "stdoki.cart, "+
