@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
+
 public class raOdobrenje extends raIzlazTemplate {
 
   public void initialiser(){
@@ -53,6 +55,11 @@ public class raOdobrenje extends raIzlazTemplate {
     raMaster.addOption(rnvFisk, 5, false);
     MP.BindComp();
     DP.BindComp();
+    if (frmParam.getParam("robno", "racSklad", "D", 
+        "Dodati skladište na RAC/PON (D,N)").equals("D")) {
+      DP.rpcart.addSkladField(hr.restart.robno.Util.getSkladFromCorg());
+    }
+    DP.resizeDP();
 
   }
 
