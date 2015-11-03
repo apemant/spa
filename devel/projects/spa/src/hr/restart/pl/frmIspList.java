@@ -549,7 +549,7 @@ public class frmIspList extends frmIzvjestajiPL {
   String nazivPrim, sati, koef, neto, bruto, nazivDop, osnovicaDop, stopa, iznos, nazivDopNa, osnovicaDopNa, stopaNa, iznosNa;
   String nazivNak, satiNaknada, iznosNak, nazivKred, iznosKred;
   String cradmj, nazradmj, stopepor;
-  String brojtek, nazbanke, brojzas, nazbankzas, tipIsplate, nazvro, copcine, oib, adresa, fondsati, iban;
+  String brojtek, nazbanke, brojzas, nazbankzas, tipIsplate, nazvro, copcine, oib, adresa, fondsati, iban, ibann;
   short cisplmj;
   int cbanke;
   boolean invert;
@@ -654,7 +654,7 @@ public class frmIspList extends frmIzvjestajiPL {
             _nazivN.append(getVrprim().getString("NAZIV")).append("\n");
             _satiN.append(format(ds, "SATI")).append("\n");
             _iznosN.append(format(ds, getNetoColParam())).append("\n");
-            primIznos.addVal(getNetoColParam());
+            primIznos.add(getNetoColParam());
             nedop = nedop.add(ds.getBigDecimal(getNetoColParam()));
           }
           primSati.add();
@@ -675,7 +675,7 @@ public class frmIspList extends frmIzvjestajiPL {
           _nazivN.append(getVrprim().getString("NAZIV")).append("\n");
           _satiN.append(format(ds, "SATI")).append("\n");
           _iznosN.append(format(ds, getNetoColParam())).append("\n");
-          primIznos.addVal(getNetoColParam());
+          primIznos.add(getNetoColParam());
           nedop = nedop.add(ds.getBigDecimal(getNetoColParam()));
         }
         primSati.add();
@@ -784,6 +784,7 @@ public class frmIspList extends frmIzvjestajiPL {
     ld.raLocate(dm.getPovjerioci(), "CPOV", String.valueOf(dm.getBankepl().getInt("CPOV")));
     //String ziro = new VarStr(dm.getPovjerioci().getString("ZIRO")).replace("$tek", radpl.getString("BROJTEK")).toString();
     iban = frmVirmaniPl.getIBAN_HR(pref + "-" + radpl.getString("BROJTEK"), false);
+    ibann = frmVirmaniPl.getIBAN_HR(pref + "-" + radpl.getString("BROJTEK"), true);
     
     dM.getDataModule().getVrodn().open();
     ld.raLocate(dM.getDataModule().getVrodn(), "CVRO", radpl.getString("CVRO"));
@@ -1038,7 +1039,8 @@ System.out.println("KreditInfo za "+ds);
 //    System.out.println("tipIsplate : " + tipIsplate);
     String isplataString = "";
     if (tipIsplate.equals("T")){
-      isplataString = "Isplata - ".concat(brojtek).concat(", ").concat(nazbanke);
+      isplataString = "Isplata - ".concat(ibann).concat(", ").concat(nazbanke);
+      //isplataString = "Isplata - ".concat(brojtek).concat(", ").concat(nazbanke);
     } else if (tipIsplate.equals("G")) {
       isplataString = "Isplata u gotovini";
     } else if (tipIsplate.equals("S")) {
