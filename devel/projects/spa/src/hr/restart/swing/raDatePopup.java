@@ -183,7 +183,7 @@ public class raDatePopup extends JPopupMenu {
       jra.getActionMap().remove("LM");
       jra.getInputMap().remove(KeyStroke.getKeyStroke(KeyEvent.VK_G, MouseEvent.CTRL_MASK));
       jra.getActionMap().remove("FY");
-      jra.getInputMap().remove(KeyStroke.getKeyStroke(KeyEvent.VK_H, MouseEvent.CTRL_MASK));
+      jra.getInputMap().remove(KeyStroke.getKeyStroke(KeyEvent.VK_E, MouseEvent.CTRL_MASK));
       jra.getActionMap().remove("LY");
       jra.removeMouseListener(popup);
     }
@@ -205,7 +205,7 @@ public class raDatePopup extends JPopupMenu {
     jra.getActionMap().put("LM", lastInMonth);
     jra.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_G, MouseEvent.CTRL_MASK), "FY");
     jra.getActionMap().put("FY", firstInYear);
-    jra.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_H, MouseEvent.CTRL_MASK), "LY");
+    jra.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_E, MouseEvent.CTRL_MASK), "LY");
     jra.getActionMap().put("LY", lastInYear);
     jra.addMouseListener(popup = new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
