@@ -2,21 +2,33 @@ package hr.restart.robno;
 
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
+import hr.restart.baza.Orgstruktura;
+import hr.restart.baza.Sklad;
+import hr.restart.baza.Stanje;
 import hr.restart.baza.VTCartPart;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.TextFile;
 import hr.restart.util.Aus;
+import hr.restart.util.HashDataSet;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 
 
 public class raFranck {
@@ -163,5 +175,311 @@ public class raFranck {
     
     return ds;
   }
+  
+  public static DataSet fillSheets(int cpar, Timestamp from, Timestamp to, Workbook wb) {
+    DataSet ca = VTCartPart.getDataModule().getTempSet(Condition.equal("CPAR", cpar));
+    ca.open();
+    
+    HashMap arts = new HashMap();
+    for (ca.first(); ca.inBounds(); ca.next()) 
+      if (ca.getString("CCPAR").length() > 0)
+        arts.put(new Integer(ca.getInt("CART")), ca.getString("CCPAR"));
+    HashSet artss = new HashSet(arts.values());
+    
+    DataSet sf = Aus.q("SELECT stdoki.cart, stdoki.kol*artikli.tezpak as kol, stdoki.ineto, stdoki.iprodbp " +
+        "FROM doki,stdoki,artikli WHERE " + Util.getUtil().getDoc("doki","stdoki") + " AND stdoki.cart=artikli.cart AND " +
+      Condition.between("DATDOK", from, to).qualified("doki") + " AND " +
+        "doki.vrdok in ('POD','GOT','ROT', 'GRN') ORDER BY stdoki.cart");
+    
+    System.out.println(((QueryDataSet) sf).getOriginalQueryString());
+    
+    String god = hr.restart.util.Util.getUtil().getYear(from);
+    
+    DataSet ds = Aus.q("SELECT stanje.cart, MAX(stanje.vc*artikli.tezkol) as vc FROM stanje,artikli WHERE stanje.cart=artikli.cart AND " +
+        Condition.equal("GOD", god).and(Condition.in("CART", arts.keySet())).qualified("stanje") + " GROUP BY stanje.cart");
+    
+    HashDataSet st = new HashDataSet(ds, "CART");
+    
+    int cart = -99;
+    StorageDataSet out = Aus.createSet("CART CCPAR:20 KOL.3 INETO.2 IPRODBP.2 VC.2 FVC.2");
+    for (sf.first(); sf.inBounds(); sf.next()) {
+      if (sf.getInt("CART") != cart) {
+        cart = sf.getInt("CART");
+        if (arts.containsKey(new Integer(cart))) {
+          out.insertRow(false);
+          out.setInt("CART", cart);
+          out.setString("CCPAR", (String) arts.get(new Integer(cart)));
+          if (st.loc(sf)) out.setBigDecimal("VC", st.get().getBigDecimal("VC"));
+        }
+      }
+      if (out.rowCount() > 0 && out.getInt("CART") == cart) {
+        Aus.add(out, "KOL", sf);
+        Aus.add(out, "INETO", sf);
+        Aus.add(out, "IPRODBP", sf);
+      }
+    }
+    //hr.restart.robno.raFranck.fillSheets(308378, hr.restart.util.Util.getUtil().getYearBegin("2015"), hr.restart.util.Util.getUtil().getYearEnd("2015"), null)
+    
+    for (out.first(); out.inBounds(); out.next()) 
+      if (out.getBigDecimal("KOL").signum() != 0) {
+        BigDecimal vc = out.getBigDecimal("INETO").divide(out.getBigDecimal("KOL"), 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal fvc = out.getBigDecimal("IPRODBP").divide(out.getBigDecimal("KOL"), 2, BigDecimal.ROUND_HALF_UP);
+        if (vc.compareTo(out.getBigDecimal("VC")) > 0)
+          out.setBigDecimal("VC", vc);
+        out.setBigDecimal("FVC", fvc);
+      }
+    
+    if (wb != null) {
+      fillSheet(wb.getSheetAt(0), new HashDataSet(out, "CCPAR"), artss);
+      fillSheet(wb.getSheetAt(1), new HashDataSet(out, "CCPAR"), artss);
+    }
+    
+    return out;
+  }
+  
+  private static void fillSheet(Sheet sh, HashDataSet ds, HashSet artss) {
+    for (int i = 1090; i < 2156; i++) {
+      Row row = sh.getRow(i);
+      
+      String rart = getStringValue(row, 1);
+      if (rart == null || rart.length() == 0) continue;
+      
+      int dash = rart.indexOf(" - ");
+      if (dash < 0) continue;
+      String art = rart.substring(0, dash).trim();
+      if (!artss.contains(art)) continue;
+      
+      if (!ds.loc(art)) continue;
+      
+      Cell c = row.getCell(2);
+      c.setCellValue(ds.get().getBigDecimal("FVC").doubleValue());
+      
+      c = row.getCell(10);
+      c.setCellValue(ds.get().getBigDecimal("VC").doubleValue());
+      
+      if (ds.get().getBigDecimal("VC").signum() > 0) {
+        BigDecimal perc = ds.get().getBigDecimal("VC").subtract(ds.get().getBigDecimal("FVC")).
+          divide(ds.get().getBigDecimal("VC"), 4, BigDecimal.ROUND_HALF_UP).movePointRight(2);
+        
+        c = row.getCell(8);
+        c.setCellValue(perc.doubleValue());
+        
+        c = row.getCell(16);
+        c.setCellValue(perc.doubleValue());
+      }
+    }
+  }
+  
+  public static void fillSheet(int cpar, Timestamp from, Timestamp to, Workbook wb) {
+    
+    DataSet sf = Aus.q("SELECT doki.cskl, doki.datdok, doki.vrdok, doki.cpar, stdoki.cart, stdoki.kol*artikli.tezpak as kol, stdoki.iprodbp " +
+        "FROM doki,stdoki,artikli WHERE " + Util.getUtil().getDoc("doki","stdoki") + " AND stdoki.cart=artikli.cart AND " +
+      Condition.between("DATDOK", from, to).qualified("doki") + " AND " +
+        "doki.vrdok in ('POD','GOT','ROT')");
+    
+    String year = Integer.toString(Aus.getNumber(hr.restart.util.Util.getUtil().getYear(from)) - 1);
+    Timestamp yb =  hr.restart.util.Util.getUtil().getYearBegin(year);
+    Timestamp ye =  hr.restart.util.Util.getUtil().getYearEnd(year);
+    
+    DataSet ly = Aus.q("SELECT doki.cskl, doki.datdok, doki.vrdok, doki.cpar, stdoki.cart, stdoki.kol*artikli.tezpak as kol, stdoki.iprodbp " +
+        "FROM doki,stdoki,artikli WHERE " + Util.getUtil().getDoc("doki","stdoki") + " AND stdoki.cart=artikli.cart AND " +
+      Condition.between("DATDOK", yb, ye).qualified("doki") + " AND " +
+        "doki.vrdok in ('POD','GOT','ROT')");
+    
+    DataSet sklad = Sklad.getDataModule().getAktiv();
+    sklad.open();
+    
+    DataSet org = Orgstruktura.getDataModule().getAktiv();
+    org.open();
+    
+    HashMap dest = new HashMap();
+    for (sklad.first(); sklad.inBounds(); sklad.next()) 
+      if (lookupData.getlookupData().raLocate(org, "CORG",  sklad)) {
+        String pp = org.getString("FPP");
+        if (pp.equals("1") || pp.equals("11") || pp.equals("12"))
+          dest.put(sklad.getString("CSKL"), "1");
+        else if (pp.equals("2")) dest.put(sklad.getString("CSKL"), "3"); 
+        else if (pp.equals("3")) dest.put(sklad.getString("CSKL"), "2");
+        else if (pp.equals("4")) dest.put(sklad.getString("CSKL"), "4");
+        else if (pp.equals("10")) dest.put(sklad.getString("CSKL"), "5");
+      }
 
+    DataSet ca = VTCartPart.getDataModule().getTempSet(Condition.equal("CPAR", cpar));
+    ca.open();
+
+    HashMap arts = new HashMap();
+    for (ca.first(); ca.inBounds(); ca.next()) 
+      if (ca.getString("CCPAR").length() > 0)
+        arts.put(new Integer(ca.getInt("CART")), ca.getString("CCPAR"));
+    HashSet artss = new HashSet(arts.values());
+    
+    HashMap fresh = new HashMap();
+    fillMap(cpar, fresh, sf, dest, arts);
+    
+    HashMap old = new HashMap();
+    fillMap(cpar, old, ly, dest, arts);
+    
+    System.out.println(old);
+    
+    for (int sheet = 1; sheet <= 6; sheet++) {
+      fillSheet(wb, "" + sheet, "franck", 0, 6, 22, fresh, old, artss);
+      fillSheet(wb, "" + sheet, "horeca", 0, 21, 142, fresh, old, artss);
+      
+      fillSheet(wb, "" + sheet, "franck", 1, 145, 161, fresh, old, artss);
+      fillSheet(wb, "" + sheet, "horeca", 1, 161, 281, fresh, old, artss);
+    }
+    
+    Sheet tot = wb.getSheetAt(5);
+    
+    for (int i = 6; i <= 281; i++) {
+      Row row = tot.getRow(i);
+      
+      String rart = getStringValue(row, 1);
+      if (rart == null || rart.length() == 0) continue;
+      
+      int dash = rart.indexOf(" - ");
+      if (dash < 0) continue;
+      String art = rart.substring(0, dash).trim();
+      if (!artss.contains(art)) continue;
+      
+      String val = getStringValue(row, 13 * 5 - 2);
+      if (val != null && val.startsWith("=")) break;
+      
+      double maink = getIntValue(row, 13 * 5 - 2) / (double) getIntValue(row, 13 * 5 - 3);
+      for (int s = 0; s < 5; s++) {
+        Sheet sh = wb.getSheetAt(s);
+        Row r = sh.getRow(i);
+        int poldv = getIntValue(r, 13 * 5 - 3);
+        Cell cell = r.getCell((short) (13 * 5 - 2));
+        cell.setCellValue((int) (poldv * maink));
+      }
+      
+      for (int m = 1; m <= 12; m++) {
+        
+        double mkoef = getIntValue(row, m * 5 - 2) / (double) getIntValue(row, 13 * 5 - 2); 
+       
+        System.out.println("Artikl " + art + "  mj " + m + " = koef "+ mkoef + "  ratio " + maink);
+        
+        for (int s = 0; s < 5; s++) {
+          Sheet sh = wb.getSheetAt(s);
+          
+          Row r = sh.getRow(i);
+          
+          int poldv = getIntValue(r, 13 * 5 - 2);
+          Cell cell = r.getCell((short) (m * 5 - 2));
+          cell.setCellValue((int) (poldv * mkoef));
+        }
+      }
+    }
+    
+  }
+  
+  static void fillSheet(Workbook wb, String sheet, String src, int bd, int rfrom, int rto, HashMap fresh, HashMap old, HashSet arts) {
+    Sheet sh = wb.getSheetAt(Aus.getNumber(sheet) - 1);
+    for (int i = rfrom; i <= rto; i++) {
+      Row row = sh.getRow(i);
+      
+      String rart = getStringValue(row, 1);
+      if (rart == null || rart.length() == 0) continue;
+      
+      int dash = rart.indexOf(" - ");
+      if (dash < 0) continue;
+      String art = rart.substring(0, dash).trim();
+      if (!arts.contains(art)) continue;
+      
+      for (int m = 1; m <= 13; m++) {
+        String val = getStringValue(row, m * 5 - 2);
+        if (val != null && val.startsWith("=")) break;
+        
+        Cell cell = row.getCell((short) (m * 5 - 3));
+        cell.setCellValue(getVal(old, src, sheet, m, art, bd));
+        
+        cell = row.getCell((short) (m * 5 - 1));
+        cell.setCellValue(getVal(fresh, src, sheet, m, art, bd));
+      }
+    }
+  }
+  
+  static int getVal(HashMap data, String src, String vpart, int m, String art, int bd) {
+    HashMap part = (HashMap) data.get(src);
+    if (part == null) return 0;
+    
+    HashMap div = (HashMap) part.get(vpart);
+    if (div == null) return 0;
+    
+    HashMap mon = (HashMap) div.get(new Integer(m));
+    if (mon == null) return 0;
+    
+    BigDecimal[] tot = (BigDecimal[]) mon.get(art);
+    if (tot == null) return 0;
+    
+    return tot[bd].setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+  }
+
+  static void fillMap(int cpar, HashMap data, DataSet ds, HashMap dest, HashMap arts) {
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      String pp = (String) dest.get(ds.getString("CSKL"));
+      String art = (String) arts.get(new Integer(ds.getInt("CART")));
+      if (pp != null && art != null) {
+        String vpart = "horeca";
+        if (ds.getInt("CPAR") == cpar) vpart = "franck";
+        
+        HashMap part = (HashMap) data.get(vpart);
+        if (part == null) data.put(vpart, part = new HashMap());
+        
+        HashMap div = (HashMap) part.get(pp);
+        if (div == null) part.put(pp, div = new HashMap());
+        
+        Integer month = Integer.valueOf(hr.restart.util.Util.getUtil().getMonth(ds.getTimestamp("DATDOK")));
+        fillArt(ds, div, month, art);
+        fillArt(ds, div, new Integer(13), art);
+        
+        HashMap total = (HashMap) part.get("6");
+        if (total == null) part.put("6",  total = new HashMap());
+        
+        fillArt(ds, total, month, art);
+        fillArt(ds, total, new Integer(13), art);
+      }
+    }
+  }
+  
+  static void fillArt(DataSet ds, HashMap div, Integer month, String art) {
+    HashMap mon = (HashMap) div.get(month);
+    if (mon == null) div.put(month, mon = new HashMap());
+    
+    BigDecimal[] tot = (BigDecimal[]) mon.get(art);
+    if (tot == null) mon.put(art, tot = new BigDecimal[] {Aus.zero0, Aus.zero0});
+    tot[0] = tot[0].add(ds.getBigDecimal("KOL"));
+    tot[1] = tot[1].add(ds.getBigDecimal("IPRODBP"));
+  }
+  
+  static String getStringValue(Row row, int num) {
+    Cell cell = row.getCell((short) num);
+    if (cell == null) return "";
+    if (cell.getCellType() == Cell.CELL_TYPE_STRING)
+      return cell.getStringCellValue();
+    if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC)
+      return "" + (long) cell.getNumericCellValue();
+    return "";
+  }
+  
+  static int getIntValue(Row row, int num) {
+    Cell cell = row.getCell((short) num);
+    if (cell == null) return 0;
+    if (cell.getCellType() == Cell.CELL_TYPE_STRING)
+      return 0;
+    if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC)
+      return (int) cell.getNumericCellValue();
+    return 0;
+  }
+  
+  static String getNumValue(Row row, int num) {
+    Cell cell = row.getCell((short) num);
+    if (cell == null) return "";
+    if (cell.getCellType() == Cell.CELL_TYPE_STRING)
+      return "";
+    if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC)
+      return "" + BigDecimal.valueOf(cell.getNumericCellValue()).setScale(2, BigDecimal.ROUND_HALF_UP);
+    return "";
+  }
 }
