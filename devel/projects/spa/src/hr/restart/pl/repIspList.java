@@ -23,11 +23,9 @@ import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
-import hr.restart.util.reports.raReportDescriptor;
 import hr.restart.zapod.frmVirmani;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -395,7 +393,9 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
   }
   
   public String getFirstLine(){
-    return fil.shouldPrintLogo()?"":rpm.getOneLine()+"\nRN: "+rpm.getLogoZiro()/*+"  OIB: "+rpm.getLogoOIB()*/;
+    String ziro = rpm.getLogoZiro();
+    if (!ziro.startsWith("HR")) ziro = frmVirmani.getIBAN_HR(ziro, true);
+    return fil.shouldPrintLogo()?"":rpm.getTwoLine()+ "\nIBAN: " + ziro; /*+"  OIB: "+rpm.getLogoOIB()*/;
   }
   public String getSecondLine(){
     return rpm.getSecondLine();
