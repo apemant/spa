@@ -498,7 +498,7 @@ public class Sih {
       if (rads == null || rads.contains(netods.getString("CRADNIK"))) {
         retn.add();
         retd.add();
-        retd.addVal("PORIPRIR");
+        retd.add("PORIPRIR");
       }
 
     report("Dohvat odbitaka...");
