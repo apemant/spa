@@ -1021,6 +1021,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     /*if (presBlag.isFiskal()) */ raMaster.getJpTableView().addTableModifier(fsc);
     
     raDetail.getNavBar().removeStandardOption(raNavBar.ACTION_TOGGLE_TABLE);
+    raDetail.removeRnvCopyCurr();
 
     raDetail.setkum_tak(true);
     raDetail.setstozbrojiti(new String[] {"IZNOS"});
@@ -1716,6 +1717,18 @@ public class frmMasterBlagajna extends raMasterDetail {
   
 //  public RacunType rtype = null;
   
+  public static String getUserOIB(DataSet ms) {
+    lookupData ld = lookupData.getlookupData();
+    DataRow usr = ld.raLookup(dM.getDataModule().getUseri(),"CUSER", ms.getString("CUSER"));
+    String oibu = usr.getString("OIB");
+    
+    if (!presBlag.isUserOriented()) {
+      DataRow blag = ld.raLookup(dM.getDataModule().getBlagajnici(), "CBLAGAJNIK", ms.getString("CBLAGAJNIK"));
+      if (blag != null && blag.getString("OIB").length() > 0) oibu = blag.getString("OIB");
+    }
+    return oibu;
+  }
+  
   public static RacunType getRacType(DataSet ms) {
         
     lookupData ld = lookupData.getlookupData();
@@ -1782,13 +1795,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     String oibf = dm.getLogotipovi().getString("OIB");
     System.out.println(dm.getLogotipovi());
     
-    DataRow usr = ld.raLookup(dM.getDataModule().getUseri(),"CUSER", ms.getString("CUSER"));
-    String oibu = usr.getString("OIB");
-    
-    if (!presBlag.isUserOriented()) {
-      DataRow blag = ld.raLookup(dM.getDataModule().getBlagajnici(), "CBLAGAJNIK", ms.getString("CBLAGAJNIK"));
-      if (blag != null && blag.getString("OIB").length() > 0) oibu = blag.getString("OIB");
-    }
+    String oibu = getUserOIB(ms);
     
     String nacpl = ms.getString("CNACPL");
     DataSet rate = Rate.getDataModule().getTempSet(Condition.whereAllEqual(key, ms));
@@ -1868,16 +1875,20 @@ public class frmMasterBlagajna extends raMasterDetail {
           ms.saveChanges();
         }
         
+        String oib = getUserOIB(ms);
+        if (oib == null || oib.length() == 0) ms.setString("JIR", "#");
+        else {
    
-  Timestamp datvri = new Timestamp(System.currentTimeMillis());
-  RacunZahtjev zahtj = presBlag.getFis("GRC", ms.getString("CSKL")).createRacunZahtjev(
-          presBlag.getFis("GRC", ms.getString("CSKL")).createZaglavlje(datvri, null), 
-          getRacType(ms));
-        
-        String jir = presBlag.getFis("GRC", ms.getString("CSKL")).fiskaliziraj(zahtj);
-        if (jir != null && jir.length() > 0 && !jir.startsWith("ZKI") && !jir.startsWith("false"))
-          ms.setString("JIR", jir);
-        else ms.setString("JIR", "");
+    Timestamp datvri = new Timestamp(System.currentTimeMillis());
+    RacunZahtjev zahtj = presBlag.getFis("GRC", ms.getString("CSKL")).createRacunZahtjev(
+            presBlag.getFis("GRC", ms.getString("CSKL")).createZaglavlje(datvri, null), 
+            getRacType(ms));
+          
+          String jir = presBlag.getFis("GRC", ms.getString("CSKL")).fiskaliziraj(zahtj);
+          if (jir != null && jir.length() > 0 && !jir.startsWith("ZKI") && !jir.startsWith("false"))
+            ms.setString("JIR", jir);
+          else ms.setString("JIR", "");
+        }
         ms.saveChanges();
       } catch (Exception e) {
         // TODO Auto-generated catch block
