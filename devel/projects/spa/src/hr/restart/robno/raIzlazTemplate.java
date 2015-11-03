@@ -3932,6 +3932,7 @@ System.out.println("findCjenik::else :: "+sql);
 						Condition.equal("CART", getDetailSet())));
 				boolean allgr = false;
 				boolean direct = ds.rowCount() > 0;
+				boolean aktiv = true;
 				if (!direct) {
 				  ds = Rabshema.getDataModule().openTempSet(Condition.equal("CPAR", cpar).and(
 				            Condition.equal("ALLGR", "D")));
@@ -3948,6 +3949,13 @@ System.out.println("findCjenik::else :: "+sql);
 				  }
 				}
 				
+                if ((direct || allgr) && ds.getString("AKCIJA").equals("D"))
+                  if (getMasterSet().getTimestamp("DATDOK").before(ut.getFirstSecondOfDay(ds.getTimestamp("DATOD"))) ||
+                      getMasterSet().getTimestamp("DATDOK").after(ut.getLastSecondOfDay(ds.getTimestamp("DATDO"))))
+                    if (!ds.getString("UR1").equals("D") && !ds.getString("UR2").equals("D") && !ds.getString("UR3").equals("D"))
+                      direct = allgr = false;
+                    else aktiv = false;
+                
 				if (direct || allgr) {
 					BigDecimal bdvc = Aus.zero2, bdmc = Aus.zero2;
 					if (!allgr) {
@@ -3968,23 +3976,26 @@ System.out.println("findCjenik::else :: "+sql);
 					}
 					lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
 					
-					if (ds.getString("CRAB1").length() > 0) {
+					int rabs = 0;
+					if (ds.getString("CRAB1").length() > 0 && (aktiv || ds.getString("UR1").equals("D"))) {
 						initRab();
 						lD.raLocate(dm.getRabati(), "CRAB", ds.getString("CRAB1")); 
-						getrDR().insertTempRow((short) 1, ds.getString("CRAB1"), dm.getRabati().getString("NRAB"),
+						getrDR().insertTempRow((short) ++rabs, ds.getString("CRAB1"), dm.getRabati().getString("NRAB"),
 											dm.getRabati().getBigDecimal("PRAB"), "N");
-						if (ds.getString("CRAB2").length() > 0) {
-							lD.raLocate(dm.getRabati(), "CRAB", ds.getString("CRAB2")); 
-							getrDR().insertTempRow((short) 2, ds.getString("CRAB2"), dm.getRabati().getString("NRAB"),
-												dm.getRabati().getBigDecimal("PRAB"), dm.getRabati().getString("RABNARAB"));
-							if (ds.getString("CRAB3").length() > 0) {
-								lD.raLocate(dm.getRabati(), "CRAB", ds.getString("CRAB3")); 
-								getrDR().insertTempRow((short) 3, ds.getString("CRAB3"), dm.getRabati().getString("NRAB"),
-													dm.getRabati().getBigDecimal("PRAB"), dm.getRabati().getString("RABNARAB"));
-							}
-						}
-						getrDR().afterJob();
 					}
+					if (ds.getString("CRAB2").length() > 0 && (aktiv || ds.getString("UR2").equals("D"))) {
+					  if (rabs == 0) initRab();
+					  lD.raLocate(dm.getRabati(), "CRAB", ds.getString("CRAB2")); 
+					  getrDR().insertTempRow((short) ++rabs, ds.getString("CRAB2"), dm.getRabati().getString("NRAB"),
+							dm.getRabati().getBigDecimal("PRAB"), rabs == 0 ? "N" : dm.getRabati().getString("RABNARAB"));
+					}
+					if (ds.getString("CRAB3").length() > 0 && (aktiv || ds.getString("UR3").equals("D"))) {
+					  if (rabs == 0) initRab();
+					  lD.raLocate(dm.getRabati(), "CRAB", ds.getString("CRAB3")); 
+					  getrDR().insertTempRow((short) ++rabs, ds.getString("CRAB3"), dm.getRabati().getString("NRAB"),
+					        dm.getRabati().getBigDecimal("PRAB"), rabs == 0 ? "N" :  dm.getRabati().getString("RABNARAB"));
+					}
+					getrDR().afterJob();
 				}
 			}
 			
