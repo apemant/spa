@@ -19,9 +19,11 @@ package hr.restart.util;
 
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
+import hr.restart.swing.JraButton;
 import hr.restart.swing.raSelectTableModifier;
 import hr.restart.swing.raTableModifier;
 
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -121,6 +123,8 @@ sysoutTEST ST=new sysoutTEST(false);
   public String saveName;
   
   public String frameTitle = "Dohvat";
+  
+  public JraButton lbutt;
 /**
  * Default constructor
 */
@@ -718,9 +722,15 @@ OPTIMIZACIJE       TT.ReStart("setStorageDataSet...");
             System.out.println("enter enabled: "+raSelectTableModifier.space);
             lupFr.jdbTable1.addTableModifier(multi);
           }
+          
+          try {
+            if (lbutt != null) lupFr.oKpanel1.add(lbutt, BorderLayout.WEST);
           /*int h = lupFr.oKpanel1.getPreferredSize().height;
           lupFr.oKpanel1.setPreferredSize(new java.awt.Dimension(lupFrWidth, h));*/
-          lupFr.ShowCenter(true,!keepRow && LUMODE != INDIRECT,0,0);
+            lupFr.ShowCenter(true,!keepRow && LUMODE != INDIRECT,0,0);
+          } finally {
+            if (lbutt != null) lupFr.oKpanel1.remove(lbutt);
+          }
           if (modifiers != null)
             for (int i = 0; i < modifiers.size(); i++)
               lupFr.jdbTable1.removeTableModifier((raTableModifier) modifiers.get(i));
