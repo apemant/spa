@@ -466,7 +466,8 @@ public class JOPPDhndlr {
       if (needmatch && !isOOmatch(rs)) continue;
       //rs.BRUTOMJ = pravibruto
       //rs.BRUTO = osnovica dop. (max)
-      if (rs.getBigDecimal("BRUTO").signum()!=0) omjer = rs.getBigDecimal("PBTO").divide(rs.getBigDecimal("BRUTOMJ"),8,BigDecimal.ROUND_HALF_UP);
+      if (rs.getBigDecimal("BRUTOMJ").signum()!=0) omjer = rs.getBigDecimal("PBTO").divide(rs.getBigDecimal("BRUTOMJ"),8,BigDecimal.ROUND_HALF_UP);
+      else if (rs.getBigDecimal("PBTO").signum()==0) omjer = Aus.one0;
       
 /*****D*E*B*U*G***B*R*I*Š*I*******/
 //System.out.println(strBset);
@@ -516,6 +517,9 @@ public class JOPPDhndlr {
           addStrBSet("OSNDOP", rs.getBigDecimal("PBTO"));
         }
         
+        if (strBset.getBigDecimal("OSNDOP").compareTo(getMinOsnDop("1")) < 0)
+          strBset.setBigDecimal("OSNDOP", getMinOsnDop("1"));
+        
         addStrBSet("MIO1", rs.getBigDecimal("MIO1").multiply(omjer));
         addStrBSet("MIO2", rs.getBigDecimal("MIO2").multiply(omjer));
         //temp hack
@@ -538,13 +542,16 @@ public class JOPPDhndlr {
           addStrBSet("ZAPOSINV", zapinv);
         }
         addStrBSet("ZAP", rs.getBigDecimal("ZAPOS").multiply(omjer));
-        strBset.setBigDecimal("IZDATAKMIO", strBset.getBigDecimal("MIO1").add(strBset.getBigDecimal("MIO2")));
-        strBset.setBigDecimal("DOHODAK",
-            strBset.getBigDecimal("BRUTO")
-            .subtract(strBset.getBigDecimal("IZDATAKMIO"))
+        if (strBset.getBigDecimal("BRUTO").signum() > 0) {
+          strBset.setBigDecimal("IZDATAKMIO", strBset.getBigDecimal("MIO1").add(strBset.getBigDecimal("MIO2")));
+          strBset.setBigDecimal("DOHODAK",
+              strBset.getBigDecimal("BRUTO")
+              .subtract(strBset.getBigDecimal("IZDATAKMIO"))
 //            .subtract(strBset.getBigDecimal("IZDATAK"))
-            );
-        addStrBSet("ISKNEOP",rs.getBigDecimal("OSODB").multiply(omjer));
+              );
+          addStrBSet("ISKNEOP",rs.getBigDecimal("OSODB").multiply(omjer));
+        }
+
         strBset.setBigDecimal("POROSN",strBset.getBigDecimal("DOHODAK").subtract(strBset.getBigDecimal("ISKNEOP")));
         addStrBSet("POR", rs.getBigDecimal("POREZ").multiply(omjer));
         addStrBSet("PRIR", rs.getBigDecimal("PRIREZ").multiply(omjer));
@@ -596,14 +603,16 @@ public class JOPPDhndlr {
         } else {
           strBset.setBigDecimal("OSNDOP", rs.getBigDecimal("PBTO"));
         }
+        if (strBset.getBigDecimal("OSNDOP").compareTo(getMinOsnDop("1")) < 0)
+          strBset.setBigDecimal("OSNDOP", getMinOsnDop("1"));
         strBset.setBigDecimal("MIO1", rs.getBigDecimal("MIO1").multiply(omjer));
         strBset.setBigDecimal("MIO2", rs.getBigDecimal("MIO2").multiply(omjer));
         //temp hack
         if (rs.getBigDecimal("ZO").signum() != 0) {
-          zasnr = strBset.getBigDecimal("BRUTO").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
+          zasnr = strBset.getBigDecimal("OSNDOP").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
 //          zasnr = rs.getBigDecimal(samojedna?"BRUTO":"PBTO").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
           zapinv = iszapinv ?
-              strBset.getBigDecimal("BRUTO").multiply(new BigDecimal("0.001")).setScale(2,BigDecimal.ROUND_HALF_UP)
+              strBset.getBigDecimal("OSNDOP").multiply(new BigDecimal("0.001")).setScale(2,BigDecimal.ROUND_HALF_UP)
               :Aus.zero2;
 
         }
@@ -611,13 +620,15 @@ public class JOPPDhndlr {
         strBset.setBigDecimal("ZASNR", zasnr);
         strBset.setBigDecimal("ZAP", rs.getBigDecimal("ZAPOS").multiply(omjer));
         strBset.setBigDecimal("ZAPOSINV",zapinv);
-        strBset.setBigDecimal("IZDATAKMIO", strBset.getBigDecimal("MIO1").add(strBset.getBigDecimal("MIO2")));
-        strBset.setBigDecimal("DOHODAK",
+        if (strBset.getBigDecimal("BRUTO").signum() > 0) {
+          strBset.setBigDecimal("IZDATAKMIO", strBset.getBigDecimal("MIO1").add(strBset.getBigDecimal("MIO2")));
+          strBset.setBigDecimal("DOHODAK",
             strBset.getBigDecimal("BRUTO")
             .subtract(strBset.getBigDecimal("IZDATAKMIO"))
 //            .subtract(strBset.getBigDecimal("IZDATAK"))
             );
-        strBset.setBigDecimal("ISKNEOP",rs.getBigDecimal("OSODB").multiply(omjer));
+          strBset.setBigDecimal("ISKNEOP",rs.getBigDecimal("OSODB").multiply(omjer));
+        }
         strBset.setBigDecimal("POROSN",strBset.getBigDecimal("DOHODAK").subtract(strBset.getBigDecimal("ISKNEOP")));
         strBset.setBigDecimal("POR", rs.getBigDecimal("POREZ").multiply(omjer));
         strBset.setBigDecimal("PRIR", rs.getBigDecimal("PRIREZ").multiply(omjer));
@@ -702,6 +713,18 @@ public class JOPPDhndlr {
     }
     
     return false;
+  }
+  
+  private BigDecimal getMinOsnDop(String cpr) {
+    try {
+      String smaxo = hr.restart.sisfun.frmParam.getParam("pl","minosn" + cpr/*HC!!!+_doprinosi.getShort("CVRODB")*/, "0", "Minimalna osnovica za doprinos " + cpr);
+      if ("0".equals(smaxo)) return Aus.zero2;
+      return new BigDecimal(smaxo);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    return Aus.zero2;
   }
 
   private boolean isZapInv() {
