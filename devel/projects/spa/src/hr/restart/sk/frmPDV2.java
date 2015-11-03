@@ -343,6 +343,10 @@ public class frmPDV2 extends raUpitFat {
     fillsetP("ZPCIZdobTro", setZP, qryZPcommon, "I3");
     fillsetP("ZPCIZusl", setZP, qryZPcommon, "I4");
     
+    int rbr = 0;
+    for (setZP.first(); setZP.inBounds(); setZP.next())
+      setZP.setInt("RBR", ++rbr);
+    
     setZP.setTableName("setZP");
     setDataSetAndSums(setZP, new String[] {"I1","I2","I3","I4"});
     getJPTV().addTableModifier(
