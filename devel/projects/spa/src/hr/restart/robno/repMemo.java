@@ -106,6 +106,12 @@ public class repMemo  {
       ds.getInt("pbr") + " " + ds.getString("mjesto")) +
       (ds.getString("OIB").length() == 0 ? "" : ", OIB " + ds.getString("OIB")); 
   }
+  
+  public String getTwoLine() {
+    return ds.getString("nazivlog") + ", " + ds.getString("adresa") + (ds.getInt("pbr") == 0 ? "" : ", " +
+      ds.getInt("pbr") + " " + ds.getString("mjesto")) +
+      (ds.getString("OIB").length() == 0 ? "" : "\nOIB: " + ds.getString("OIB")); 
+  }
 
   public String getLogoCorg(){return test()?ds.getString("corg"):"";}
   public String getLogoNazivlog(){return test()?ds.getString("nazivlog"):"";}
