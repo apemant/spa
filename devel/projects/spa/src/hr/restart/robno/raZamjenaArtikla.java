@@ -20,6 +20,8 @@ package hr.restart.robno;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
+import hr.restart.util.HashSum;
 import hr.restart.util.NavigationAdapter;
 import hr.restart.util.raImages;
 import hr.restart.util.raJPTableView;
@@ -31,6 +33,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -77,6 +80,7 @@ abstract public class raZamjenaArtikla extends JraDialog {
   private hr.restart.swing.raTableColumnModifier TCMzam;
   private hr.restart.util.Valid val= hr.restart.util.Valid.getValid();
   private boolean inReplace = false;
+  private HashSum artsum;
 
   private hr.restart.util.OKpanel okp = new hr.restart.util.OKpanel(){
     public void jPrekid_actionPerformed(){
@@ -146,6 +150,9 @@ abstract public class raZamjenaArtikla extends JraDialog {
     super (frame,true);
     this.cskl = cskl;
     goodset = goodds;
+    
+    artsum = new HashSum(goodds, "CART", "KOL", true);
+      
 
 System.out.println("INICJALIZIRAM !!!");
 
@@ -219,9 +226,10 @@ System.out.println("INICJALIZIRAM !!!");
           "Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
      return false;
    }
-   if (!testStanja(jptv.getDataSet().getInt("CARTZAM"),jptv.getDataSet().getBigDecimal("KOLZAM"))) {
+   if (!testStanja(jptv.getDataSet().getInt("CARTZAM"), 
+       artsum.get().subtract(goodset.getBigDecimal("KOLZAM")).add(jptv.getDataSet().getBigDecimal("KOLZAM")))) {
      javax.swing.JOptionPane.showMessageDialog(null,
-         "Koli\u010Dina je manja nego na zalihi !",
+         "Kolièina je manja nego na zalihi !",
           "Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
      return false;
    }
@@ -234,21 +242,20 @@ System.out.println("INICJALIZIRAM !!!");
 
     if (inReplace) {
     	System.out.println("Binderstatus "+zamjena.getBinder().getDataSet().getString("STATUS"));
+    	boolean loc = ld.raLocate(goodset, "BRANCH", jptv.getDataSet());
     	
     	if (zamjena.isSelected()) {
     	
 //      if (zamjena.getBinder().getDataSet().getString("STATUS").equalsIgnoreCase("A")){
-        if (ld.raLocate(goodset,
-                        new String[] {"RBSID", "CART", "CARTZAM"},
-                        new String[] {String.valueOf(jptv.getDataSet().getInt("RBSID")),
-                        String.valueOf(jptv.getDataSet().getInt("CART")),
-                        String.valueOf(jptv.getDataSet().getInt("CARTZAM"))})) {
+        if (loc) {
           inReplace = false;
+          artsum.sub("KOLZAM");
           jptv.getDataSet().post();
           rcc.EnabDisabAll(rapancart2, false);
           rcc.setLabelLaF(zamjena, false);
           rcc.setLabelLaF(kol, false);
           rcc.EnabDisabAll(jptv, true);
+          goodset.setBigDecimal("KOLZAM", Aus.zero3);
           goodset.setString("STATUS", "Z");
           System.out.println("Oðe !!");
         }
@@ -260,11 +267,10 @@ System.out.println("INICJALIZIRAM !!!");
         rcc.setLabelLaF(kol,false);
         rcc.setLabelLaF(zamjena, false);
         rcc.EnabDisabAll(jptv,true);
-        if (ld.raLocate(goodset,new String[]
-             {"RBSID","CART"},new String[] {
-        		  String.valueOf(jptv.getDataSet().getInt("RBSID")),
-                  String.valueOf(jptv.getDataSet().getInt("CART"))})){
+        if (loc) {
+           artsum.sub("KOLZAM");
            goodset.setBigDecimal("KOLZAM",jptv.getDataSet().getBigDecimal("KOLZAM"));
+           artsum.add("KOLZAM");
            goodset.setInt("CARTZAM",jptv.getDataSet().getInt("CARTZAM"));
            goodset.setString("STATUS","N");
            System.out.println("Debug 1");
