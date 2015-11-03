@@ -17,6 +17,10 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.math.BigDecimal;
 
 import javax.swing.BorderFactory;
@@ -24,9 +28,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -42,6 +48,7 @@ import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
+import hr.restart.util.raTransaction;
 
 
 public class frmRabatShema extends raMasterFakeDetailArtikl {
@@ -81,6 +88,15 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
   
   JraCheckBox jcbGrupa = new JraCheckBox();
   
+  JraCheckBox jcbAkcija = new JraCheckBox();
+  JraTextField jraDATOD = new JraTextField();
+  JraTextField jraDATDO = new JraTextField();
+  
+  JLabel jlOverride = new JLabel();
+  JraCheckBox jcbUR1 = new JraCheckBox();
+  JraCheckBox jcbUR2 = new JraCheckBox();
+  JraCheckBox jcbUR3 = new JraCheckBox();
+  
 	
   String[] key = new String[] {"CPAR"};
   String[] keyd = new String[] {"CPAR", "CART"};
@@ -115,7 +131,7 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
     
     jlPartner.setText("Poslovni partner");
     xYLayout1.setWidth(576);
-    xYLayout1.setHeight(75);
+    xYLayout1.setHeight(110);
     jpPres.setLayout(xYLayout1);
     jbSelPart.setText("...");
 
@@ -132,6 +148,19 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
     jlrNazPart.setNavProperties(jlrPart);
     jlrNazPart.setDataSet(this.getMasterSet());
     jlrNazPart.setSearchMode(1);
+    
+    jcbAkcija.setDataSet(this.getMasterSet());
+    jcbAkcija.setColumnName("AKCIJA");
+    jcbAkcija.setHorizontalTextPosition(SwingConstants.TRAILING);
+    jcbAkcija.setHorizontalAlignment(SwingConstants.LEADING);
+    jcbAkcija.setText(" Akcija (od - do) ");
+    jcbAkcija.setSelectedDataValue("D");
+    jcbAkcija.setUnselectedDataValue("N");
+    
+    jraDATOD.setColumnName("DATOD");
+    jraDATOD.setDataSet(this.getMasterSet());
+    jraDATDO.setColumnName("DATDO");
+    jraDATDO.setDataSet(this.getMasterSet());
     
     jpRab.setLayout(xYLayout2);
     xYLayout2.setWidth(630);
@@ -211,10 +240,41 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
     jcbGrupa.setSelectedDataValue("D");
     jcbGrupa.setUnselectedDataValue("N");
     
+    jlOverride.setText("Vrijedi uvijek?");
+    jlOverride.setHorizontalAlignment(SwingConstants.TRAILING);
+    
+    jcbUR1.setDataSet(this.getDetailSet());
+    jcbUR1.setColumnName("UR1");
+    jcbUR1.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbUR1.setHorizontalAlignment(SwingConstants.TRAILING);
+    jcbUR1.setText("");
+    jcbUR1.setSelectedDataValue("D");
+    jcbUR1.setUnselectedDataValue("N");
+    
+    jcbUR2.setDataSet(this.getDetailSet());
+    jcbUR2.setColumnName("UR2");
+    jcbUR2.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbUR2.setHorizontalAlignment(SwingConstants.TRAILING);
+    jcbUR2.setText("");
+    jcbUR2.setSelectedDataValue("D");
+    jcbUR2.setUnselectedDataValue("N");
+    
+    jcbUR3.setDataSet(this.getDetailSet());
+    jcbUR3.setColumnName("UR3");
+    jcbUR3.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbUR3.setHorizontalAlignment(SwingConstants.TRAILING);
+    jcbUR3.setText("");
+    jcbUR3.setSelectedDataValue("D");
+    jcbUR3.setUnselectedDataValue("N");
+    
+    
     jpPres.add(jlPartner, new XYConstraints(15, 20, -1, -1));
     jpPres.add(jlrPart, new XYConstraints(150, 20, 100, -1));
     jpPres.add(jlrNazPart, new XYConstraints(255, 20, 280, -1));
     jpPres.add(jbSelPart, new XYConstraints(540, 20, 21, 21));
+    jpPres.add(jcbAkcija, new XYConstraints(15, 50, -1, -1));
+    jpPres.add(jraDATOD, new XYConstraints(150, 50, 100, -1));
+    jpPres.add(jraDATDO, new XYConstraints(255, 50, 100, -1));
     
     jpRab.add(jcbGrupa, new XYConstraints(200, 15, 385, -1));
     jpRab.add(new JLabel("Cijena bez poreza"),  new XYConstraints(300, 45, -1, -1));
@@ -222,17 +282,22 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
     jpRab.add(new JLabel("Cijena s porezom"),  new XYConstraints(300, 70, -1, -1));
     jpRab.add(jraMC, new XYConstraints(485, 70, 100, -1));
     
+    jpRab.add(jlOverride, new XYConstraints(15, 70, 130, -1));
+    
     jpRab.add(new JLabel("Rabat 1"),  new XYConstraints(15, 100, -1, -1));
+    jpRab.add(jcbUR1, new XYConstraints(100, 100, 45, -1));
     jpRab.add(jlrRAB1, new XYConstraints(150, 100, 75, -1));
     jpRab.add(jlrNRAB1, new XYConstraints(230, 100, 250, -1));
     jpRab.add(jlrIRAB1, new XYConstraints(485, 100, 100, -1));
     jpRab.add(jbSelRab1, new XYConstraints(590, 100, 21, 21));
     jpRab.add(new JLabel("Rabat 2"),  new XYConstraints(15, 125, -1, -1));
+    jpRab.add(jcbUR2, new XYConstraints(100, 125, 45, -1));
     jpRab.add(jlrRAB2, new XYConstraints(150, 125, 75, -1));
     jpRab.add(jlrNRAB2, new XYConstraints(230, 125, 250, -1));
     jpRab.add(jlrIRAB2, new XYConstraints(485, 125, 100, -1));
     jpRab.add(jbSelRab2, new XYConstraints(590, 125, 21, 21));
     jpRab.add(new JLabel("Rabat 3"),  new XYConstraints(15, 150, -1, -1));
+    jpRab.add(jcbUR3, new XYConstraints(100, 150, 45, -1));
     jpRab.add(jlrRAB3, new XYConstraints(150, 150, 75, -1));
     jpRab.add(jlrNRAB3, new XYConstraints(230, 150, 250, -1));
     jpRab.add(jlrIRAB3, new XYConstraints(485, 150, 100, -1));
@@ -240,6 +305,30 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
     
     this.SetPanels(jpPres, jpRab, true);
     
+    jcbAkcija.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        System.out.println("klik!");
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            if (!getMasterSet().getString("AKCIJA").equals("D")) {
+              getMasterSet().setAssignedNull("DATOD");
+              getMasterSet().setAssignedNull("DATDO");
+            }
+            updAkcija();
+          }
+        });
+      }
+    });
+    
+    jcbGrupa.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            updGrupa();
+          }
+        });
+      }
+    });
   }
   
   public void ClearFields() {
@@ -251,9 +340,31 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
   	jlrRAB3.emptyTextFields();
   }
   
+  void updAkcija() {
+    boolean akc = getMasterSet().getString("AKCIJA").equals("D");
+    System.out.println("update " + akc);
+    rcc.setLabelLaF(jraDATOD, akc);
+    rcc.setLabelLaF(jraDATDO, akc);
+    jlOverride.setVisible(akc);
+    jcbUR1.setVisible(akc);
+    jcbUR2.setVisible(akc);
+    jcbUR3.setVisible(akc);
+    jcbUR1.setEnabled(akc);
+    jcbUR2.setEnabled(akc);
+    jcbUR3.setEnabled(akc);
+  }
+  
+  void updGrupa() {
+    boolean gr = getDetailSet().getString("ALLGR").equals("D");
+    rcc.setLabelLaF(jraVC, !gr);
+    rcc.setLabelLaF(jraMC, !gr);
+  }
+  
   public void EntryPointMaster(char mode) {
     if (mode == 'I') {
       rcc.EnabDisabAll(this.getJPanelMaster(), false);
+      rcc.setLabelLaF(jcbAkcija, true);
+      updAkcija();
     }
   }
 
@@ -271,8 +382,28 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
       JOptionPane.showMessageDialog(this.getJPanelMaster(),
          "Partner veæ u tablici!", "Greška", JOptionPane.ERROR_MESSAGE);
       return false;
-    }   
+    }
+    if (getMasterSet().getString("AKCIJA").equals("D")) {
+      if (vl.isEmpty(jraDATOD) || vl.isEmpty(jraDATDO)) return false;
+      if (getMasterSet().getTimestamp("DATDO").before(getMasterSet().getTimestamp("DATOD"))) {
+        jraDATOD.requestFocus();
+        JOptionPane.showMessageDialog(jraDATOD.getTopLevelAncestor(),
+            "Poèetni datum je iza završnog!", "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+      }
+    }
     mast.post();
+    refilterDetailSet();
+    return true;
+  }
+  
+  public boolean doWithSaveMaster(char mode) {
+    if (mode == 'I') {
+      String[] cc = {"AKCIJA", "DATOD", "DATDO"};
+      for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next()) 
+        dM.copyColumns(mast, getDetailSet(), cc);
+      raTransaction.saveChanges(getDetailSet());
+    }
     return true;
   }
   
@@ -289,6 +420,7 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
   }
   
   public void AfterSaveDetail(char mode) {
+    super.AfterSaveDetail(mode);
     if (raWebSync.active && raWebSync.isWeb(delCart)) {
       DataSet rab = rabati.getDataModule().getQueryDataSet();
       
@@ -316,15 +448,22 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
   
   public boolean Validacija(char mode) {
     delCart = getDetailSet().getInt("CART");
+    dM.copyColumns(getMasterSet(), getDetailSet(), new String[] {"AKCIJA", "DATOD", "DATDO"});
     return true;
   }
   
   public void SetFokusIzmjena() {
+    updGrupa();
   	jraVC.requestFocus();
   }
   
   protected boolean rpcOut() {
   	if (!super.rpcOut()) return false;
+  	
+  	if (ld.raLocate(dm.getArtikli(), "CART", getDetailSet())) {
+  	  Aus.set(getDetailSet(), "VC", dm.getArtikli());
+  	  Aus.set(getDetailSet(), "MC", dm.getArtikli());
+  	}
   	
   	jraVC.requestFocus();
   	return true;
@@ -337,6 +476,11 @@ public class frmRabatShema extends raMasterFakeDetailArtikl {
   public String CheckMasterKeySQLString() {
       return "select * from rabshema where " +
       "cpar = " + mast.getInt("CPAR");
+  }
+  
+  public void masterSet_navigated(NavigationEvent e) { 
+    super.masterSet_navigated(e);
+    updAkcija();
   }
   
   protected void initRpcart() {
