@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
@@ -51,11 +52,11 @@ public class repListaPopusta implements raReportData {
   }
 
   public String getNASLOV(){
-    return "LISTA POPUSTA\nod " + rdu.dataFormatter(upol.getDatumOd()) + " do " + rdu.dataFormatter(upol.getDatumDo());
+    return "PREGLED POPUSTA\nod " + rdu.dataFormatter(upol.getDatumOd()) + " do " + rdu.dataFormatter(upol.getDatumDo());
   }
 
-  public java.sql.Date getDatDok(){
-    return java.sql.Date.valueOf(ds.getTimestamp("DATDOK").toString().substring(0,10));
+  public String getDatDok(){
+    return Aus.formatTimestamp(ds.getTimestamp("DATDOK"));
   }
 
   public String getBRDOK(){
