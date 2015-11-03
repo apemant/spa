@@ -1606,6 +1606,9 @@ $Rabshema
 LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
 CPAR;int;6;pkey;;Partner
+AKCIJA;char;1;;N;Akcija
+DATOD;timestamp;;;;Datum od
+DATDO;timestamp;;;;Datum do
 CART;int;6;pkey;;Šifra
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
@@ -1617,6 +1620,9 @@ CRAB1;char;2;;;Rabat 1
 CRAB2;char;2;;;Rabat 2
 CRAB3;char;2;;;Rabat 3
 ALLGR;char;1;;N;Cijela grupa
+UR1;char;1;;N;Rabat 1 uvijek
+UR2;char;1;;N;Rabat 2 uvijek
+UR3;char;1;;N;Rabat 3 uvijek
 
 $Rnser
 CRADNAL;text;30;pkey;;Šifra RN
