@@ -1385,7 +1385,7 @@ public class checkKartica {
             meskla.setBigDecimal("IMARIZ", kartica.getBigDecimal("IMAR_GOOD"));
             meskla.setBigDecimal("IPORIZ", kartica.getBigDecimal("IPOR_GOOD"));
             meskla.setBigDecimal("ZADRAZIZ", kartica.getBigDecimal("IZAD_GOOD"));    
-            if (fixMes) {
+            if (fixMes && meskla.getString("VRDOK").equals("MES")) {
               meskla.setBigDecimal("ZCUL", kartica.getBigDecimal("ZC_GOOD"));
               meskla.setBigDecimal("INABUL", kartica.getBigDecimal("INAB_GOOD"));
               meskla.setBigDecimal("IMARUL", Aus.zero2);
