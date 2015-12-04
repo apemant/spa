@@ -176,6 +176,52 @@ public class raFranck {
     return ds;
   }
   
+  public static DataSet fillCK2(int cpar, Timestamp from, Timestamp to, Workbook wb) {
+    DataSet ca = VTCartPart.getDataModule().getTempSet(Condition.equal("CPAR", cpar));
+    ca.open();
+    
+    HashMap arts = new HashMap();
+    for (ca.first(); ca.inBounds(); ca.next()) 
+      if (ca.getString("CCPAR").length() > 0)
+        arts.put(ca.getString("CCPAR"), Integer.toString(ca.getInt("CART")));
+    
+    DataSet ul = Aus.q("SELECT stdoku.cart, sum(stdoku.kol) as kol, sum(stdoku.kol*artikli.tezpak) as kol2, sum(stdoku.inab) as inab " +
+        "FROM doku,stdoku,artikli WHERE " + Util.getUtil().getDoc("doku", "stdoku") + " AND stdoku.cart=artikli.cart AND " +
+        Condition.between("DATDOK", from, to).qualified("doku") + " AND doku.vrdok in ('PRK','KAL','PTE') GROUP BY stdoku.cart");
+    
+    HashDataSet ds = new HashDataSet(ul, "CART");
+    
+    System.out.println(((QueryDataSet) ul).getOriginalQueryString());
+    
+    Sheet sh = wb.getSheetAt(0);
+    for (int i = 6; i < 895; i++) {
+      Row row = sh.getRow(i);
+      if (row == null) continue;
+      
+      String rart = getStringValue(row, 1);
+      if (rart == null || rart.length() == 0) continue;
+      
+      int dash = rart.indexOf(" - ");
+      if (dash < 0) continue;
+      String art = rart.substring(0, dash).trim();
+      if (!arts.containsKey(art)) continue;
+      
+      if (!ds.loc(arts.get(art))) continue;
+      
+      BigDecimal kol2 = ds.get().getBigDecimal("KOL2");
+      if (kol2.signum() != 0) {
+        Cell c = row.getCell(4);
+        c.setCellValue(ds.get().getBigDecimal("INAB").divide(kol2, 2, BigDecimal.ROUND_HALF_UP).doubleValue());
+      }
+      BigDecimal kol = ds.get().getBigDecimal("KOL");
+      if (kol.signum() != 0) {
+        Cell c = row.getCell(8);
+        c.setCellValue(ds.get().getBigDecimal("INAB").divide(kol, 2, BigDecimal.ROUND_HALF_UP).doubleValue());
+      }
+    }
+    return ul;
+  }
+  
   public static DataSet fillSheets(int cpar, Timestamp from, Timestamp to, Workbook wb) {
     DataSet ca = VTCartPart.getDataModule().getTempSet(Condition.equal("CPAR", cpar));
     ca.open();
@@ -264,7 +310,7 @@ public class raFranck {
         c = row.getCell(8);
         c.setCellValue(perc.doubleValue());
         
-        c = row.getCell(16);
+        c = row.getCell(12);
         c.setCellValue(perc.doubleValue());
       }
     }
