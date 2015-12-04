@@ -17,7 +17,10 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
 import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 
 import com.borland.dx.dataset.DataSet;
@@ -85,6 +88,14 @@ public class repUtil {
   public static String getFormatBroj(DataSet ds) {
     return getFormatBroj(ds.getString("CSKL"), ds.getString("VRDOK"),
         ds.getString("GOD"), ds.getInt("BRDOK"));
+  }
+  
+  public static Condition getCondFromBroj(String formatBroj) {
+    VarStr fb = new VarStr(formatBroj);
+    String[] elems = fb.replace('/', '-').split('-');
+    if (elems == null || elems.length != 4) return null;
+    return Condition.equal("CSKL", elems[0]).and(Condition.equal("VRDOK", elems[1])).
+      and(Condition.equal("GOD", elems[2]).and(Condition.equal("BRDOK", Aus.getNumber(elems[3]))));
   }
 
   public String getFormatBroj(){
