@@ -255,7 +255,7 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
             "Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
         return false;
     }
-    else {
+
        if (i == -2 && !allowNeg){
           String rezkol = hr.restart.sisfun.frmParam.getParam("robno","rezkol");
           if (!rezkol.equals("N")){
@@ -297,7 +297,7 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
         }
         SanityCheck.basicStmeskla(getDetailSet());
         return true;
-    }
+
   }
 
   public void EntryPointDetail(char mode) {

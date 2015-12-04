@@ -301,7 +301,6 @@ public class raMEI extends hr.restart.util.raMasterDetail{
         raDM.jtfKOL.requestFocus();
         return false;
     }
-    else {
        if (i == -2 && bMEI && !allowNeg){
           String rezkol =hr.restart.sisfun.frmParam.getParam("robno","rezkol");
           if (!rezkol.equals("N")){
@@ -347,7 +346,7 @@ public class raMEI extends hr.restart.util.raMasterDetail{
         rKM.kalkStanja();
         SanityCheck.basicStmeskla(getDetailSet());
         return true;
-    }
+
   }
 
   public boolean DeleteCheckDetail(){
