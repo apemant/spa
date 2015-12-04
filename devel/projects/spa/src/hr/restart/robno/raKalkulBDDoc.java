@@ -280,6 +280,7 @@ public class raKalkulBDDoc extends raTopCalcUtil {
       else stavka.uirab = stavka.fmcprp.subtract(stavka.fmc).multiply(stavka.kol).setScale(2, BigDecimal.ROUND_HALF_UP);
     } else {
       stavka.ineto=stavka.iprodbp;
+      stavka.uirab=Nula; // aaaaargh
     }
 
     if (stavka.kol.compareTo(Nula)!=0) {  // ? zasto 3 ?  (ab.f)
@@ -290,7 +291,7 @@ public class raKalkulBDDoc extends raTopCalcUtil {
   }
 
   private void kalkFinancMalCijene() {
-    stavka.fmc=stavka.fmcprp.multiply(Sto.subtract(stavka.uprab)).divide(Sto,2,BigDecimal.ROUND_HALF_UP);
+    stavka.fmc=stavka.fmcprp.multiply(Sto.subtract(stavka.uprab)).divide(Sto,2,BigDecimal.ROUND_HALF_UP);    
   }
 
   public void kalkFinancPart(){
