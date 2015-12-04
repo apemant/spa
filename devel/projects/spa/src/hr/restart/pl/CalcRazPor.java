@@ -34,6 +34,7 @@ import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraDialog;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
 import hr.restart.util.raTransaction;
@@ -47,6 +48,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
@@ -77,6 +79,8 @@ public class CalcRazPor {
   private BigDecimal limit;
   private int _godina;
   private boolean preview = false;
+  
+  private HashSet rads;
   /**
    * @param radnici bitno je samo da radnici imaju kolonu CRADNIK i CORG
    * @param godina godina za koju se radi konacni obracun poreza
@@ -87,9 +91,19 @@ public class CalcRazPor {
   }
   public void calcRazl() {
     _radnici.open();
-    for (_radnici.first(); _radnici.inBounds(); _radnici.next()) {
-      calc(_radnici.getString("CRADNIK"), _radnici.getString("CORG"));
+    for (_radnici.first(); _radnici.inBounds(); _radnici.next()) 
+      if (rads == null || rads.contains(_radnici.getString("CRADNIK"))) 
+        calc(_radnici.getString("CRADNIK"), _radnici.getString("CORG"));
+
+  }
+  
+  public void setRadniciList(String radlist) {
+    if (radlist == null || radlist.length() == 0) {
+      rads = null;
+      return;
     }
+    if (rads == null) rads = new HashSet();
+    rads.addAll(new VarStr(radlist).splitAsListTrimmed(','));
   }
   public CalcRazPor(int godina) {
     this();
