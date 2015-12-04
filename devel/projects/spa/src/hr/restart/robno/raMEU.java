@@ -16,6 +16,7 @@
 **
 ****************************************************************************/
 package hr.restart.robno;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.raTransaction;
 
 import javax.swing.JOptionPane;
@@ -234,6 +235,13 @@ public class raMEU extends raMEI {
 
   public void setupPrice(){
       rKM.setupPriceMEU();
+      if (frmParam.getParam("robno", "meuFixCijene", "D", "Uzeti cijene za MEU s artikla (D,N)").equals("D")) {
+        if (lD.raLocate(dm.getArtikli(), "CART", getDetailSet())) {
+          rKM.stavka.nc = dm.getArtikli().getBigDecimal("NC");
+          rKM.stavka.vc = dm.getArtikli().getBigDecimal("VC");
+          rKM.stavka.mc = dm.getArtikli().getBigDecimal("MC");
+        }
+      }
       rKM.setupOldPrice();
   }
 
