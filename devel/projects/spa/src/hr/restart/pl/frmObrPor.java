@@ -19,14 +19,18 @@ package hr.restart.pl;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Parametripl;
+import hr.restart.baza.Radnici;
 import hr.restart.baza.Radnicipl;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
+import hr.restart.util.JlrNavField;
 import hr.restart.util.OKpanel;
 import hr.restart.util.raMatPodaci;
 import hr.restart.util.raProcess;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -44,6 +48,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 public class frmObrPor extends frmObradaPL {
@@ -59,11 +64,6 @@ public class frmObrPor extends frmObradaPL {
   JraDialog dprw;
   protected frmCRP frmcrp = null;
   public frmObrPor() {
-    this.addComponentListener(new ComponentAdapter() {//TEMP
-      public void componentResized(ComponentEvent e) {
-        System.out.println(frmObrPor.this.getSize());
-      }
-    });    
     jp.remove(jtfDAN);
     jp.remove(jLabel3);
     frmatCB(jcbDopr);
@@ -80,7 +80,7 @@ public class frmObrPor extends frmObradaPL {
           frmPL.getStartFrame().centerFrame(frmcrp,0,frmcrp.getTitle());
           frmcrp.show();
         } else {
-          frmcrp = null;
+          //frmcrp = null;
         }
       }
       
@@ -131,6 +131,9 @@ public class frmObrPor extends frmObradaPL {
   public void doAfterLookup() {
     setEnableCorg(true);
     setEnableObr(false);
+    if (frmcrp != null)
+      Radnici.getDataModule().setFilter((QueryDataSet) frmcrp.jlrRads.getRaDataSet(),
+        Condition.equal("AKTIV", "D").and(OrgStr.getCorgsCond(tds.getString("CORG"))));
     rcc.setLabelLaF(jtfDATUM,true);
   }
   private boolean getObrConfirmation() {
@@ -222,6 +225,15 @@ public class frmObrPor extends frmObradaPL {
     JCheckBox jcbClean = new JCheckBox("Obrisati odbitke razlike p. iz prošlih obraèuna", true); 
     JCheckBox jcbRealOlak = new JCheckBox("Koristiti prave olakšice",true);
     JCheckBox jcbPreview = new JCheckBox("Pregled obraèunatih razlika", false);
+    JlrNavField jlrRads = new JlrNavField() {
+      public String getMasterColumnName() {
+        return "CRADNIK";
+      };
+      public boolean isAllowMultiple() {
+        return true;
+      };
+    };
+    
     OKpanel okp = new OKpanel() {
       public void jBOK_actionPerformed() {
         setupCRP();
@@ -239,11 +251,23 @@ public class frmObrPor extends frmObradaPL {
       initPanel();
     }
     private void initPanel() {
-      JPanel content = new JPanel(new XYLayout());
+      JPanel content = new JPanel(new XYLayout(500, 220));
       jtfLimit.setDataSet(inputData);
       jtfLimit.setColumnName("LIMIT");
       jtfGodina.setDataSet(inputData);
       jtfGodina.setColumnName("GOD");
+      
+      jlrRads.setDataSet(inputData);
+      jlrRads.setColumnName("CRADNIK");
+      jlrRads.setNavColumnName("CRADNIK");
+      jlrRads.setColNames(new String[] {"CRADNIK"});
+      jlrRads.setVisCols(new int[] {0,1,2});
+      jlrRads.setNavProperties(null);
+      jlrRads.setRaDataSet(Radnici.getDataModule().getFilteredDataSet(
+          Condition.equal("AKTIV", "D").and(OrgStr.getCorgsCond(tds.getString("CORG")))));
+      jlrRads.setSearchMode(1);
+      jlrRads.createNavButton();
+      jlrRads.setHandleError(false);
       
       content.add(jcbCalc, new XYConstraints(15, 20, -1, -1));
       content.add(jlGodina, new XYConstraints(15, 45, -1, -1));
@@ -253,20 +277,20 @@ public class frmObrPor extends frmObradaPL {
       content.add(jcbClean, new XYConstraints(15, 95, -1, -1));
       content.add(jcbRealOlak, new XYConstraints(15, 120, -1, -1));
       content.add(jcbPreview, new XYConstraints(15, 145, -1, -1));
-      
+      content.add(new JLabel("Radnici"), new XYConstraints(15, 175, -1, -1));
+      content.add(jlrRads, new XYConstraints(100, 175, 350, -1));
+      content.add(jlrRads.getNavButton(), new XYConstraints(455, 175, 21, 21));
+        
       frmCRP.this.getContentPane().add(raMatPodaci.addScrolledAndCentered(content,null,false),BorderLayout.CENTER);
+      //frmCRP.this.getContentPane().add(content,BorderLayout.CENTER);
       frmCRP.this.getContentPane().add(okp,BorderLayout.SOUTH);
       //privremeno
-      frmCRP.this.addComponentListener(new ComponentAdapter() {
-        public void componentResized(ComponentEvent e) {
-          System.out.println(frmCRP.this.getSize());
-        }
-      });
     }
     private void initDS() {
       crp = new CalcRazPor();
       inputData.addColumn(dM.createBigDecimalColumn("LIMIT"));
       inputData.addColumn(dM.createIntColumn("GOD"));
+      inputData.addColumn(dM.createStringColumn("CRADNIK", 2000));
       Parametripl.getDataModule().getQueryDataSet().open();
       inputData.open();
       inputData.setBigDecimal("LIMIT",crp.getLimit());
@@ -280,12 +304,10 @@ public class frmObrPor extends frmObradaPL {
 	      crp.setLimit(inputData.getBigDecimal("LIMIT"));
 	      crp.setRealolak(jcbRealOlak.isSelected());
 	      crp.setPreview(jcbPreview.isSelected());
+	      crp.setRadniciList(jlrRads.getText());
       }
     }
-    public void pack() {
-      super.pack();
-      setSize(new Dimension(330,240));
-    }
+
     public CalcRazPor getCRP() {
       return jcbCalc.isSelected()?crp:null;
     }
