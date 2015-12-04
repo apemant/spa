@@ -82,7 +82,7 @@ public class frmIzvodi extends raMasterDetail {
 
   JPanel jpMessage;
 
-  JCheckBox jcbPokriv = new JCheckBox("Pokrivanje", true);
+  //JCheckBox jcbPokriv = new JCheckBox("Pokrivanje", true);
 
   JLabel jlMessage = new JLabel();
 
@@ -1215,7 +1215,7 @@ public class frmIzvodi extends raMasterDetail {
     getZiroParams();
     if (askObr("Obraditi sve neobraðene i odabrane izvode na ekranu ?", true) != JOptionPane.YES_OPTION)
       return;
-    boolean pokriv = jcbPokriv.isSelected();
+    //boolean pokriv = jcbPokriv.isSelected();
     //    raMaster.getJpTableView().enableEvents(false);
     int lastRow = getMasterSet().getRow();
     raMaster.getJpTableView().enableEvents(false);
@@ -1227,7 +1227,7 @@ public class frmIzvodi extends raMasterDetail {
         refilterDetailSet();
         lastRow = getMasterSet().getRow();
         //        if (!raObrIzvoda.getRaObrIzvoda().obradaIzvoda(this,pokriv)) {
-        if (!izvodProcess(pokriv)) {
+        if (!izvodProcess(false)) {
           JOptionPane.showMessageDialog(raMaster, "Izvod " + ziro + " / "
               + oznval + " - " + getMasterSet().getInt("BROJIZV")
               + " neuspješno obraðen! Prekidam!",
@@ -1265,7 +1265,7 @@ public class frmIzvodi extends raMasterDetail {
     //    if
     // (raObrIzvoda.getRaObrIzvoda().obradaIzvoda(this,jcbPokriv.isSelected()))
     // {
-    if (!izvodProcess(jcbPokriv.isSelected())) {
+    if (!izvodProcess(false)) {
       //JOptionPane.showMessageDialog(raMaster.getWindow(),"Obrada izvoda
       // uspješno završena!","Obrada izvoda",JOptionPane.INFORMATION_MESSAGE);
       //} else {
@@ -1357,7 +1357,7 @@ public class frmIzvodi extends raMasterDetail {
   void initJpMessage() {
     jpMessage = new JPanel(new BorderLayout());
     jpMessage.add(jlMessage, BorderLayout.CENTER);
-    jpMessage.add(jcbPokriv, BorderLayout.SOUTH);
+    //jpMessage.add(jcbPokriv, BorderLayout.SOUTH);
     //    jpMessage.setPreferredSize(new Dimension(-1,50));
   }
 
