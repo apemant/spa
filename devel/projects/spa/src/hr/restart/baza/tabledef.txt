@@ -432,8 +432,8 @@ LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
 CPAR;int;6;pkey;;Šifra;5
 NAZPAR;char;150;;;Naziv;30
-MJ;char;30;;;Mjesto;15
-ADR;char;40;;;Adresa;15
+MJ;char;60;;;Mjesto;15
+ADR;char;80;;;Adresa;15
 PBR;int;6;;;Poštanski broj;15
 MB;char;13;;;Matièni broj
 CDJEL;char;10;;;Djelatnost
@@ -792,9 +792,9 @@ DATUG;date;;;;Datum ugovora;10
 DVO;date;;;;Datum DVO;10
 DDOSP;short;2;;0;Dani dospijeæa;4
 DATDOSP;date;;;;Datum dospijeæa;10
-BRDOKIZ;char;20;;;Broj izlaznog dokumenta;15
+BRDOKIZ;char;40;;;Broj izlaznog dokumenta;15
 DATDOKIZ;date;;;;Datum izlaznog dokumenta;10
-BRPRD;char;20;;;Broj predraèuna;15
+BRPRD;char;40;;;Broj predraèuna;15
 DATPRD;date;;;;Datum predraèuna;10
 BRNARIZ;char;40;;;Broj izlazne narudžbe;15
 DATNARIZ;date;;;;Datum izlazne narudžbe;10
@@ -843,6 +843,7 @@ FPP;char;20;;;Poslovni prostor
 FNU;int;6;;;Broj naplatnog ureðaja
 CGKSTAVKE;text;38;idx;;Stavka naloga
 RUC;numeric;15,2;;0;Razlika u cijeni;14
+PROV;numeric;15,2;;0;Iznos provizije;14
 IDX=cpar
 
 $stdoki
@@ -990,9 +991,9 @@ LOKK;char;1;;N;LOKK;*
 AKTIV;char;1;;D;AKTIV;*
 CPAR;int;6;pkey;;Šifra;15
 PJ;int;6;pkey;;Poslovna jedinica;15
-NAZPJ;char;50;;;Naziv;15
-MJPJ;char;30;;;Mjesto;15
-ADRPJ;char;40;;;Adresa;15
+NAZPJ;char;150;;;Naziv;15
+MJPJ;char;60;;;Mjesto;15
+ADRPJ;char;80;;;Adresa;15
 PBRPJ;int;6;;;Poštanski broj;15
 TELPJ;char;20;;;Telefon;15
 TELFAXPJ;char;20;;;Fax;15
@@ -4386,7 +4387,7 @@ $Vrsteprim
 LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
 CVRP;short;2;pkey;;Oznaka
-NAZIV;char;30;;;Naziv;15
+NAZIV;char;50;;;Naziv;15
 COBR;short;2;;;Naèin obraèuna
 COSN;short;2;;;Oznaka osnovice iz koje se raèuna zarada
 RSOO;char;5;;;Osnova osiguranja
