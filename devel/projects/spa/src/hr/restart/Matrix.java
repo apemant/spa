@@ -29,6 +29,8 @@ public class Matrix {
       printCro(comm.substring(9).trim());
     else if (comm.startsWith("printLat"))
       printLat(comm.substring(9).trim());
+    else if (comm.startsWith("print852"))
+      print852(comm.substring(9).trim());
     else print(comm.substring(6).trim());
   }
   
@@ -39,6 +41,11 @@ public class Matrix {
   
   public static void printLat(String printer) {
     convert(lat);
+    print(printer);
+  }
+  
+  public static void print852(String printer) {
+    convert(dlt);
     print(printer);
   }
   
@@ -113,13 +120,14 @@ public class Matrix {
     }
   }
 
-  private static byte[] lat, cro; 
+  private static byte[] lat, cro, dlt;
   
   private static void fillTables() {
     lat = new byte[256];
     cro = new byte[256];
+    dlt = new byte[256];
     for (int i = 0; i < 256; i++) 
-      lat[i] = cro[i] = (byte) i;
+      lat[i] = cro[i] = dlt[i] = (byte) i;
     
     lat[154] = (byte) 185;
     lat[158] = (byte) 190;
@@ -137,5 +145,17 @@ public class Matrix {
     cro[208] = (byte) 92;
     cro[138] = (byte) 91;
     cro[142] = (byte) 64;
+    
+    dlt[232] = (byte) 159;
+    dlt[230] = (byte) 134;
+    dlt[240] = (byte) 208;
+    dlt[154] = (byte) 231;
+    dlt[158] = (byte) 167;
+    
+    dlt[200] = (byte) 172;
+    dlt[198] = (byte) 143;
+    dlt[208] = (byte) 209;
+    dlt[138] = (byte) 230;
+    dlt[142] = (byte) 166;
   }
 }
