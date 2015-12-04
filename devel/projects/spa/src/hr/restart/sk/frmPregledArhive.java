@@ -210,6 +210,7 @@ public class frmPregledArhive extends raMasterDetail {
     rcc.setLabelLaF(jpMaster.jraExtbrojdok, true);
     rcc.setLabelLaF(jpMaster.jraDatdok, true);
     //if (!getMasterSet().isNull("DATDOSP"))
+    if (!raVrdokMatcher.isUplata(getMasterSet()))
       rcc.setLabelLaF(jpMaster.jraDatdosp, true);
     oldOpis = getMasterSet().getString("OPIS");
     oldBroj = getMasterSet().getString("BROJDOK");
