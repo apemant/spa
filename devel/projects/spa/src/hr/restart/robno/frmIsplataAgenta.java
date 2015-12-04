@@ -24,6 +24,8 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraComboBox;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
+import hr.restart.swing.raInputDialog;
 import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.OKpanel;
@@ -101,9 +103,15 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
       azuriranjeNaplate();
     }
   };
-  raNavAction rnvPonUPL = new raNavAction("Ponistavanje uplate",raImages.IMGDELETE,java.awt.event.KeyEvent.VK_F3) {
+  raNavAction rnvPonUPL = new raNavAction("Poništavanje uplate",raImages.IMGDELETE,java.awt.event.KeyEvent.VK_F3) {
       public void actionPerformed(java.awt.event.ActionEvent e) {
         ponUPL();
+      }
+    };
+    
+    raNavAction rnvMass = new raNavAction("Višestruka uplata",raImages.IMGMOVIE,java.awt.event.KeyEvent.VK_F7) {
+      public void actionPerformed(java.awt.event.ActionEvent e) {
+        azuriranjeNaplateMass();
       }
     };
 
@@ -207,6 +215,8 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
     Column god = dm.getDoki().getColumn("GOD").cloneColumn();
     god.setVisible(com.borland.jb.util.TriStateProperty.FALSE);
     Column brdok = dm.getDoki().getColumn("BRDOK").cloneColumn();
+    Column pnbz2 = dm.getDoki().getColumn("PNBZ2").cloneColumn();
+    pnbz2.setCaption("Broj raèuna");
     Column vrdok = dm.getDoki().getColumn("VRDOK").cloneColumn();
     vrdok.setWidth(3);
     Column datdok = dm.getDoki().getColumn("DATDOK").cloneColumn();
@@ -252,7 +262,7 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
 
     qdsAll.setColumns(new Column[]{cagent,naziv,fakt,nap,osn,post,prov,plac,saldo});
     qdsAll.open();
-    qdsPojed.setColumns(new Column[]{cskl,vrdok,god,brdok,datdok,broj,cpar,nazpar,inab,iznos,napl,osn.cloneColumn(),
+    qdsPojed.setColumns(new Column[]{cskl,vrdok,god,brdok,datdok,broj,pnbz2,cpar,nazpar,inab,iznos,napl,osn.cloneColumn(),
             post.cloneColumn(),prov.cloneColumn(),plac.cloneColumn(),saldo.cloneColumn()});
 
     qdsPojed.open();
@@ -264,7 +274,8 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
     if (isAll)
       this.addReport("hr.restart.robno.repIsplataAgenataZbirno", "hr.restart.robno.repIsplataAgenataZbirno", "IsplataAgenataZbirno", "Ispis totala");
     else {
-      this.addReport("hr.restart.robno.repIsplataAgenta", "hr.restart.robno.repIsplataAgenataZbirno", "IsplataAgenta", "Ispis agenta");
+      this.addJasper("hr.restart.robno.repIsplataAgenta", "hr.restart.robno.repIsplataAgenataZbirno", "repIsplataAgenta.jrxml", "Ispis agenta");
+      //this.addReport("hr.restart.robno.repIsplataAgenta", "hr.restart.robno.repIsplataAgenataZbirno", "IsplataAgenta", "Ispis agenta");
     }
   }
 
@@ -551,11 +562,15 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
           getJPTV().getNavBar().removeOption(rnvUPL);
         if (getJPTV().getNavBar().contains(rnvPonUPL))
           getJPTV().getNavBar().removeOption(rnvPonUPL);
+        if (getJPTV().getNavBar().contains(rnvMass))
+          getJPTV().getNavBar().removeOption(rnvMass);
       } else {
         if (!getJPTV().getNavBar().contains(rnvUPL))
           getJPTV().getNavBar().addOption(rnvUPL, 0);
+        if (!getJPTV().getNavBar().contains(rnvMass))
+          getJPTV().getNavBar().addOption(rnvMass, 1);
         if (!getJPTV().getNavBar().contains(rnvPonUPL))
-          getJPTV().getNavBar().addOption(rnvPonUPL, 1);
+          getJPTV().getNavBar().addOption(rnvPonUPL, 2);
       }
     }
 
@@ -565,6 +580,8 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
         this.getJPTV().getNavBar().removeOption(rnvUPL);
       if (getJPTV().getNavBar().contains(rnvPonUPL))
         this.getJPTV().getNavBar().removeOption(rnvPonUPL);
+      if (getJPTV().getNavBar().contains(rnvMass))
+        getJPTV().getNavBar().removeOption(rnvMass);
     }
   
   /*
@@ -572,7 +589,7 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
     getJPTV().getNavBar().removeOption(rnvUPL);
     getJPTV().getNavBar().removeOption(rnvPonUPL);
     getJPTV().getNavBar().removeOption(rnvRAC);
-    getJPTV().getNavBar().removeOption(rnvPonIsp);
+    getJPTV().getNavBar().removeOption(rnvPonIsPripadnostp);
     //getJPTV().getNavBar().removeOption(rnvTogleall);
     getJPTV().getNavBar().unregisterNavBarKeys(this);
   }
@@ -612,7 +629,7 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
   private void saveUplatu(){
 
     if (qdsPojed.getBigDecimal("PROV").compareTo(qdsPojed.getBigDecimal("PLAC").add(tds.getBigDecimal("UPLATA")))<0) {
-      JOptionPane.showConfirmDialog(this,"Isplata ne moze biti veæa od iznosa provizije!","Gre\u0161ka",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showConfirmDialog(this,"Isplata ne može biti veæa od iznosa provizije!","Gre\u0161ka",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
       SwingUtilities.invokeLater(new Runnable() {
         public void run() {
           uplata.requestFocus();
@@ -621,7 +638,12 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
       return;
     }
 
-    qdsPojed.setBigDecimal("PLAC",qdsPojed.getBigDecimal("PLAC").add(tds.getBigDecimal("UPLATA")));
+    uplata(tds.getBigDecimal("UPLATA"));
+    miniFrame.dispose();
+  }
+  
+  private void uplata(BigDecimal upl) {
+    qdsPojed.setBigDecimal("PLAC",qdsPojed.getBigDecimal("PLAC").add(upl));
     qdsPojed.setBigDecimal("SALDO",qdsPojed.getBigDecimal("PROV").subtract(qdsPojed.getBigDecimal("PLAC")));
 
     String mysqlupit = "select * from doki where cskl='"+qdsPojed.getString("cskl")+"' and vrdok='"+
@@ -632,15 +654,11 @@ public class frmIsplataAgenta extends hr.restart.util.raUpitFat {
     myqds.setBigDecimal("PROVPOST",qdsPojed.getBigDecimal("POST"));
 
     if (qdsAll!= null && qdsAll.getRowCount()!=0) {
-      qdsAll.setBigDecimal("PLAC",
-                           qdsAll.getBigDecimal("PLAC").add(tds.getBigDecimal("UPLATA")));
-      qdsAll.setBigDecimal("SALDO",
-                           qdsAll.getBigDecimal("PROV").subtract(qdsAll.getBigDecimal("PLAC")));
+      qdsAll.setBigDecimal("PLAC", qdsAll.getBigDecimal("PLAC").add(upl));
+      qdsAll.setBigDecimal("SALDO", qdsAll.getBigDecimal("PROV").subtract(qdsAll.getBigDecimal("PLAC")));
     }
-
     raTransaction.saveChanges(myqds);
     getJPTV().fireTableDataChanged();
-    miniFrame.dispose();
   }
 
   private void initMiniPanel(){
@@ -724,6 +742,43 @@ String selectidColumn ="";
                                   "Isplata poništena !!!","Poruka",
                                    JOptionPane.DEFAULT_OPTION);
   }
+  
+  
+
+  public void azuriranjeNaplateMass(){
+    if (jrfCAG.getText().length() == 0){
+      return;
+    }
+    
+    raInputDialog dlg = new raInputDialog() {
+      protected void init() {
+          XYPanel pan = new XYPanel(tds).label("Ukupna vrijednost uplate", 200).text("UPLATA").expand();
+          setParams("Višestruka uplata", pan, pan.getText("UPLATA")); 
+      }
+      protected boolean checkOk() {
+        if (tds.getBigDecimal("UPLATA").signum() <= 0) {
+          JOptionPane.showMessageDialog(this.win, "Uplata mora biti pozitivna!", "Greška",
+               JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+        return true;
+      }
+    };
+    if (dlg.show(getWindow())) {
+      BigDecimal total = tds.getBigDecimal("UPLATA");
+      System.out.println("TOTAL " + total);
+      do {
+        BigDecimal toupl = qdsPojed.getBigDecimal("PROV").subtract(qdsPojed.getBigDecimal("PLAC"));
+        if (toupl.compareTo(total) > 0) toupl = total;
+        uplata(toupl);
+        total = total.subtract(toupl);
+      } while (total.signum() > 0 && qdsPojed.next());
+      if (total.signum() > 0)
+        JOptionPane.showMessageDialog(this, "Preostalo od uplate: " + Aus.formatBigDecimal(total) + " kn.", "Upozorenje",
+            JOptionPane.WARNING_MESSAGE);
+    }
+  }
+  
 
   public void azuriranjeNaplate(){
     if (jrfCAG.getText().length() == 0){
