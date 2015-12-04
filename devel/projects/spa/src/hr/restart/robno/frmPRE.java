@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.VTPred;
 import hr.restart.util.Aus;
 import hr.restart.util.lookupData;
 import hr.restart.util.raTransaction;
@@ -46,11 +48,7 @@ public class frmPRE extends frmUlazTemplate {
   private String id_stavka=null;
   private String veza=null;
   private DataSet stavkern;
-  {
-    dm.getDokuPRE().open();
-    dm.getStdokuPRE().open();	
-    dm.getVTPred().open();
-  }
+  
   public frmPRE() {
     jpMaster = new jpMasterPanelPRE(this);
     vrDok="PRE";
@@ -213,9 +211,14 @@ public class frmPRE extends frmUlazTemplate {
   
 	public boolean doWithSaveDetail(char mode) {
 		if (mode=='B'){
-			if (id_stavka != null && id_stavka.length() > 0 && ld.raLocate(dm.getVTPred(),"ID_STAVKA",id_stavka)){
+			if (id_stavka != null && id_stavka.length() > 0) {
+			  
+			  VTPred.getDataModule().setFilter(Condition.equal("ID_STAVKA", id_stavka));
+			  dm.getVTPred().open();
+			  if (dm.getVTPred().rowCount() > 0) {
 				dm.getVTPred().deleteRow();
 				raTransaction.saveChanges(dm.getVTPred());
+			  }
 			}
 			if (veza != null && veza.length() > 0) {
     			stavkaRadnogNalogaZaBrisanje = hr.restart.util.Util.getNewQueryDataSet(

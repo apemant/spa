@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.VTPred;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
@@ -104,9 +105,15 @@ public class creatorPRD {
 
     stanje = hr.restart.util.Util.getNewQueryDataSet("SELECT * from stanje where "+
         "cskl = '"+cskl+"' and god ='"+god+"' and cart in ("+dodatak+")",true);
+    
+    System.out.println(stanje);
 
     stavkeRN = hr.restart.util.Util.getNewQueryDataSet("SELECT * from stdoki where vrdok='RNL' and "+
         "cradnal='"+cradnal+"' and rbsid in ("+dodatakRN.toString()+")",true);
+  }
+  
+  public void printErrors() {
+    System.out.println(greska);
   }
 
   public boolean creatPRD(DataSet ds,String cskl,Timestamp datdok,String cradnal,BigDecimal randman,int brdok,QueryDataSet detail){
@@ -118,6 +125,9 @@ public class creatorPRD {
       greska.add("Ne postoji odabrano skladište !!!");
       return false;
     }
+    
+    VTPred.getDataModule().setFilter("1=0");
+    dm.getVTPred().open();
 
     zaliha = dm.getSklad().getString("VRZAL");
 
@@ -361,7 +371,7 @@ public class creatorPRD {
     boolean isFindRN = ld.raLocate(stavkeRN,new String[] {"RBSID"},new String[] {String.valueOf(ds.getInt("RBSID"))});
 
     if (!isFindArtikl) {
-      greska.add("Ne postoji artikl s šifrom "+ds.getInt("CART"));
+      greska.add("Ne postoji artikl sa šifrom "+ds.getInt("CART"));
       return false;
     }
 
