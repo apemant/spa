@@ -1515,6 +1515,8 @@ SwingUtilities.invokeLater(new Runnable(){
 		JraTextField jraDATPRD = new JraTextField();
 		
 		JraButton jbDod = new JraButton();
+		
+		JraButton jbPRD = new JraButton();
 
 		JraTextField jraFBR = new JraTextField();
 		JLabel jlFBR = new JLabel();
@@ -1554,6 +1556,13 @@ SwingUtilities.invokeLater(new Runnable(){
                 fDI.showDod();
               }            
             });
+			jbPRD.setText("...");
+			jbPRD.setToolTipText("Dohvat raèuna za predujam");
+			jbPRD.addActionListener(new ActionListener() {
+              public void actionPerformed(ActionEvent e) {
+                fDI.getPRD();
+              }            
+            });
 			jraDATDOKIZ.setColumnName("DATDOKIZ");
 			jraDATDOKIZ.setHorizontalAlignment(SwingConstants.CENTER);
 			jraDATNARIZ.setColumnName("DATNARIZ");
@@ -1587,6 +1596,7 @@ SwingUtilities.invokeLater(new Runnable(){
 
 			add(jlBRPRED, new XYConstraints(15, 90, -1, -1));
 			add(jraBRPRD, new XYConstraints(130, 90, 110, -1));
+			add(jbPRD, new XYConstraints(245, 90, 42, 21));
 			add(jlIZDOK4, new XYConstraints(365, 90, -1, -1));
 			add(jraDATPRD, new XYConstraints(522, 90, 110, -1));
 			
