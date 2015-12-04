@@ -1505,7 +1505,12 @@ public class dlgRunReport {
                 getSystemResourceAsStream(rd.getTemplate()));
             jdes.setName(getCurrentDescriptor().getName());
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
-            jdes.addParameter(dpar);
+
+            try {
+              jdes.addParameter(dpar);
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
             
             ElixirToJasperConverter.adjustReport(jdes);
             rd.adjustJasperDesign(jdes);
