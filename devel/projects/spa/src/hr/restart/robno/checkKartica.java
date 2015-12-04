@@ -633,15 +633,14 @@ public class checkKartica {
 	  	  
 	  while (!knj && goingNeg() && pullUlaz());
 	  
-	  if (firstRow) {
+/*	  if (firstRow) {
 	    Aus.set(karticatmp,  "NC_GOOD",  kartica, "NC");
 	    Aus.set(karticatmp,  "VC_GOOD",  kartica, "VC");
 	    Aus.set(karticatmp,  "MC_GOOD",  kartica, "MC");
 	    Aus.set(karticatmp,  "ZC_GOOD",  kartica, "ZC");
 	    
 	  }
-
-	    
+*/
 	    
 		karticatmp.setBigDecimal("KOL_TRENUTNO", karticatmp.getBigDecimal(
 				"KOL_TRENUTNO").subtract(kartica.getBigDecimal("KOL")));
