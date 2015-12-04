@@ -58,7 +58,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.hssf.util.Region;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
@@ -473,7 +473,7 @@ public class raExtendedTable extends JraTable2 {
 	  this.drawLines = drawLines; 
 	}
 
-  private String xlsRange(int firstRow, int lastRow, short column) {
+  private String xlsRange(int firstRow, int lastRow, int column) {
     char cc = (char) ('A' + column);
     return "" + cc + firstRow + ":" + cc + lastRow;
   }
@@ -591,36 +591,34 @@ public class raExtendedTable extends JraTable2 {
     HSSFRow row;
     HSSFCell cell;
     
-    short cRow = 0;
+    int cRow = 0;
     
     // header and title
     row = sheet.createRow(cRow = 0);
-    cell = row.createCell((short) 0);
+    cell = row.createCell(0);
     cell.setCellStyle(csText);
-    if (cols > 1) sheet.addMergedRegion(new Region(cRow, (short) 0, cRow, (short) (cols - 1)));
-    cell.setEncoding(wb.ENCODING_UTF_16);
+    if (cols > 1) sheet.addMergedRegion(new CellRangeAddress(cRow, cRow, 0, cols - 1));
     cell.setCellValue(repMemo.getrepMemo().getOneLine());
     
     row = sheet.createRow(++cRow);
-    cell = row.createCell((short) 0);
+    row.setHeightInPoints(row.getHeightInPoints() * 2);
+    cell = row.createCell(0);
     cell.setCellStyle(csTitle);
-    if (cols > 1) sheet.addMergedRegion(new Region(cRow, (short) 0, cRow, (short) (cols - 1)));
-    cell.setEncoding(wb.ENCODING_UTF_16);
+    if (cols > 1) sheet.addMergedRegion(new CellRangeAddress(cRow, cRow, 0, cols - 1));
     if (dp.getTitle().length() > 0)
       cell.setCellValue(dp.getTitle().substring(1));
     else cell.setCellValue("");
     
     if (dp.getSubtitle().length() > 0) {
       row = sheet.createRow(++cRow);
-      cell = row.createCell((short) 0);
+      cell = row.createCell(0);
       cell.setCellStyle(csSubtitle);
-      if (cols > 1) sheet.addMergedRegion(new Region(cRow, (short) 0, cRow, (short) (cols - 1)));
-      cell.setEncoding(wb.ENCODING_UTF_16);
+      if (cols > 1) sheet.addMergedRegion(new CellRangeAddress(cRow, cRow, 0, cols - 1));
       cell.setCellValue(dp.getSubtitle().substring(1));
     }
     
-    for (short c = 0; c < cols; c++) 
-      sheet.setColumnWidth(c, (short) (getColumnModel().getColumn(c).getWidth() * 40));
+    for (int c = 0; c < cols; c++) 
+      sheet.setColumnWidth(c, (getColumnModel().getColumn(c).getWidth() * 40));
 
     // sections
     row = sheet.createRow(++cRow);
@@ -629,17 +627,16 @@ public class raExtendedTable extends JraTable2 {
     for (int r = 0; r < rows; r++) {
       if (r == 0) {
         row = sheet.createRow(++cRow);
-        for (short c = 0; c < cols; c++) {
+        for (int c = 0; c < cols; c++) {
           cell = row.createCell(c);
           cell.setCellStyle(csHeader);
-          cell.setEncoding(wb.ENCODING_UTF_16);
           cell.setCellValue(getColumnModel().getColumn(c).getHeaderValue().toString());
         }
         if (firstRow == 0) firstRow = cRow;
         secRow = cRow;
       }
       row = sheet.createRow(++cRow);
-      for (short c = 0; c < cols; c++) {
+      for (int c = 0; c < cols; c++) {
         cell = row.createCell(c);
         Object o = getValueAt(r, c);
         if (o instanceof Number) {
@@ -656,7 +653,6 @@ public class raExtendedTable extends JraTable2 {
               cell.setCellValue(((Number) o).doubleValue());
             } else {
               cell.setCellStyle(csText);
-              cell.setEncoding(wb.ENCODING_UTF_16);
               cell.setCellValue(t);
             }
           }
@@ -665,7 +661,6 @@ public class raExtendedTable extends JraTable2 {
           cell.setCellValue((Date) o);
         } else {
           cell.setCellStyle(csText);
-          cell.setEncoding(wb.ENCODING_UTF_16);
           cell.setCellValue(dp.getValueAt(r, c));
         }
       }
@@ -679,14 +674,13 @@ public class raExtendedTable extends JraTable2 {
         row = sheet.createRow(++cRow);
         
         if (non > 0) {
-          cell = row.createCell((short) 0);
+          cell = row.createCell(0);
           cell.setCellStyle(csFooter);
-          cell.setEncoding(wb.ENCODING_UTF_16);
           cell.setCellValue("U K U P N O");
           if (non > 1)
-            sheet.addMergedRegion(new Region(cRow, (short) 0, cRow, (short) (non - 1)));
+            sheet.addMergedRegion(new CellRangeAddress(cRow, cRow, 0, non - 1));
         }
-        for (short c = (short) non; c < cols; c++) {
+        for (int c = (short) non; c < cols; c++) {
           cell = row.createCell(c);
           Object o = getValueAt(rows - 1, c);
           if ((o instanceof BigDecimal) &&
@@ -694,7 +688,7 @@ public class raExtendedTable extends JraTable2 {
             cell.setCellStyle(csFooterNum2);
           else cell.setCellStyle(csFooterNum);
           if (dp.getValueAt(getRowCount() - 1, c).trim().length() != 0)
-            cell.setCellFormula("SUBTOTAL(9;"+xlsRange(firstRow + 1, cRow, c)+")");
+            cell.setCellFormula("SUBTOTAL(9,"+xlsRange(firstRow + 1, cRow, c)+")");
           else cell.setCellValue("");
         }
       }
