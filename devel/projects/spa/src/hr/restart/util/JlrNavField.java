@@ -871,6 +871,11 @@ public class JlrNavField extends JraTextField {
       navButton.setToolTipText("Dohvat F9");
     }
   }
+  
+  public void createNavButton() {
+    setNavButton(new JraButton());
+  }
+  
   public navButtonAction getNavButtonAction(javax.swing.AbstractButton b) {
     java.util.EventListener[] lis = b.getListeners(ActionListener.class);
     for (int i = 0; i < lis.length; i++) {
