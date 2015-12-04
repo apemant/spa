@@ -228,16 +228,14 @@
 	<group name="Section2">
 		<groupExpression><![CDATA[$F{FINALSORTER}]]></groupExpression>
 		<groupHeader>
-			<band height="616" splitType="Prevent">
-				<staticText>
-					<reportElement positionType="Float" x="0" y="17" width="537" height="35" forecolor="#000000"/>
-					<box topPadding="1"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
+			<band height="605" splitType="Prevent">
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" x="0" y="28" width="537" height="20" forecolor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 						<font fontName="Arial" size="14" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[
-ISPLATNI LISTIĆ]]></text>
-				</staticText>
+					<textFieldExpression class="java.lang.String"><![CDATA["\nOBRAČUN ISPLAĆENE PLAĆE"]]></textFieldExpression>
+				</textField>
 				<staticText>
 					<reportElement positionType="Float" mode="Opaque" x="0" y="443" width="537" height="13" forecolor="#000000" backcolor="#F5F5F5"/>
 					<box topPadding="1" leftPadding="2"/>
@@ -726,7 +724,7 @@ ISPLATNI LISTIĆ]]></text>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[Obrazac OP]]></text>
+					<text><![CDATA[Obrazac IP1]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="450" y="200" width="86" height="13" forecolor="#000000"/>
@@ -1220,7 +1218,7 @@ ISPLATNI LISTIĆ]]></text>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[BRUTTO 2]]></text>
+					<text><![CDATA[UKUPAN TROŠAK RADA]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="453" y="550" width="86" height="12" forecolor="#000000"/>
@@ -1231,20 +1229,20 @@ ISPLATNI LISTIĆ]]></text>
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{Bruto2}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement positionType="Float" x="360" y="604" width="143" height="12"/>
+					<reportElement positionType="Float" x="362" y="592" width="143" height="12"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Arial" size="7" isBold="false" pdfFontName="Helvetica" pdfEncoding="Cp1250"/>
 					</textElement>
 					<text><![CDATA[(potpis odgovorne osobe poslodavca)]]></text>
 				</staticText>
 				<line>
-					<reportElement positionType="Float" x="360" y="603" width="143" height="1"/>
+					<reportElement positionType="Float" x="362" y="591" width="143" height="1"/>
 					<graphicElement>
 						<pen lineWidth="0.5"/>
 					</graphicElement>
 				</line>
 				<staticText>
-					<reportElement positionType="Float" x="47" y="588" width="164" height="16" forecolor="#000000"/>
+					<reportElement positionType="Float" x="49" y="576" width="164" height="16" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
@@ -1252,7 +1250,7 @@ ISPLATNI LISTIĆ]]></text>
 					<text><![CDATA[Datum predaje radniku/radnici:]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="211" y="588" width="72" height="16" forecolor="#000000"/>
+					<reportElement positionType="Float" x="213" y="576" width="72" height="16" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
@@ -1260,7 +1258,7 @@ ISPLATNI LISTIĆ]]></text>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{DatumIsplate}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement positionType="Float" x="30" y="572" width="505" height="6"/>
+					<reportElement positionType="Float" x="30" y="566" width="505" height="6"/>
 					<textElement/>
 					<text><![CDATA[]]></text>
 				</staticText>

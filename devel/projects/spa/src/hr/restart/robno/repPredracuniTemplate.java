@@ -20,6 +20,7 @@ package hr.restart.robno;
 import hr.restart.util.reports.raIzlazDetail;
 import hr.restart.util.reports.raIzlazSectionFooterLines;
 import hr.restart.util.reports.raIzlazSectionHeaderLines;
+import hr.restart.util.reports.raIzlazSection_Footer1NoPopust;
 import hr.restart.util.reports.raReportElement;
 import hr.restart.util.reports.raReportSection;
 import hr.restart.util.reports.raSectionHeader0TF;
@@ -59,6 +60,8 @@ public class repPredracuniTemplate extends repIzlazOrigTemplate {
     textSgetDatug.setControlSource("SgetDATUG");
     textSgetDatug.setTop(topNar);
     sh.LabelR_A_C_U_N.setDefault(ep.CAPTION, "\nRA\u010CUN ZA PREDUJAM");
+    sh.LabelDospijeceDatum.setDefault(ep.CAPTION, "Datum primitka predujma");
+    sh.defaultAltererSect().removeModel(sh.TextSgetDDOSP);
     return sh;
   }
 
@@ -71,7 +74,10 @@ public class repPredracuniTemplate extends repIzlazOrigTemplate {
   }
 
   public raReportSection createSectionFooter1() {
-    return new raIzlazSectionFooterLines(this); // return new raIzlazSectionFooter(this);
+    raIzlazSection_Footer1NoPopust sh = new raIzlazSection_Footer1NoPopust(this);
+    
+    sh.LabelUkupno_s_porezom.setDefault(ep.CAPTION, "Ukupno predujam");
+    return sh;
   }
 
   public repPredracuniTemplate() {

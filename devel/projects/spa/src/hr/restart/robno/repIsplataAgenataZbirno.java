@@ -44,8 +44,7 @@ public class repIsplataAgenataZbirno implements raReportData {
   public repIsplataAgenataZbirno() {
     ds = fia.getJPTV().getSelectionView();
     ru.setDataSet(ds);
-    sysoutTEST st = new sysoutTEST(false); //XDEBUG delete when no more needed
-    st.prn(ds);
+    new sysoutTEST(false).prn(ds);
   }
     
   public raReportData getRow(int i) {
@@ -68,46 +67,57 @@ public class repIsplataAgenataZbirno implements raReportData {
   }
   
   public int getCAGENT() {
-    try{
+    if (ds.hasColumn("CAGENT") == null) return fia.getCAGENT();
     return ds.getInt("CAGENT");
-    } catch (Exception e) {
-      return fia.getCAGENT();
-    }
   }
   
   public String getNAZAGENT() {
-    try {
+    if (ds.hasColumn("NAZAGENT") == null) return fia.getNAZAGENT();
     return ds.getString("NAZAGENT");
-    } catch (Exception e) {
-      return fia.getNAZAGENT();
-    }
+  }
+  
+  public String getCPAR() {
+    if (ds.hasColumn("CPAR") == null || ds.isNull("CPAR") || ds.getInt("CPAR") == 0) return "";
+    return Integer.toString(ds.getInt("CPAR"));
+  }
+  
+  public String getNAZPAR() {
+    if (ds.hasColumn("NAZPAR") == null) return "";
+    return ds.getString("NAZPAR");
   }
   
   public double getUkupno() {
+    if (ds.hasColumn("RAC") == null) return 0;
     return ds.getBigDecimal("RAC").doubleValue();
   }
   
   public double getNenaplaceno() {
+    if (ds.hasColumn("RAC") == null) return 0;
     return ds.getBigDecimal("RAC").subtract(ds.getBigDecimal("NAP")).doubleValue();
   }  
   
   public double getNaplaceno() {
+    if (ds.hasColumn("NAP") == null) return 0;
     return ds.getBigDecimal("NAP").doubleValue();
   }
   
   public double getPostotak() {
+    if (ds.hasColumn("POST") == null) return 0;
     return ds.getBigDecimal("POST").doubleValue();
   }
   
   public double getProvizija() {
+    if (ds.hasColumn("PROV") == null) return 0;
     return ds.getBigDecimal("PROV").doubleValue();
   }
   
   public double getIsplaceno() {
+    if (ds.hasColumn("PLAC") == null) return 0;
     return ds.getBigDecimal("PLAC").doubleValue();
   }
   
   public double getOstatak() {
+    if (ds.hasColumn("SALDO") == null) return 0;
     return ds.getBigDecimal("SALDO").doubleValue();
   }
   
@@ -145,22 +155,32 @@ public class repIsplataAgenataZbirno implements raReportData {
   }
   
   public String getVrsta(){
+    if (ds.hasColumn("VRDOK") == null) return "";
     return ds.getString("VRDOK");
   }
   
   public String getDatum(){
+    if (ds.hasColumn("DATDOK") == null) return "";
     return rdu.dataFormatter(ds.getTimestamp("DATDOK"));
   }
   
   public double getIznos(){
+    if (ds.hasColumn("IZNOS") == null) return 0;
     return ds.getBigDecimal("IZNOS").doubleValue();
   }
   
   public int getBroj(){
+    if (ds.hasColumn("BRDOK") == null) return 0;
     return ds.getInt("BRDOK");
   }
   
+  public String getPNBZ2(){
+    if (ds.hasColumn("PNBZ2") == null) return "";
+    return ds.getString("PNBZ2");
+  }
+  
   public String getStatusNaplaceno(){
+    if (ds.hasColumn("STATNAP") == null) return "";
     return ds.getString("STATNAP");
   }
 }
