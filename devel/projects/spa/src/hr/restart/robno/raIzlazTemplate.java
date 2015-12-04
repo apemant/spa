@@ -24,6 +24,7 @@ import hr.restart.baza.*;
 import hr.restart.pos.presBlag;
 import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raUser;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraTable2;
@@ -33,6 +34,7 @@ import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raTableColumnModifier;
+import hr.restart.swing.raTableModifier;
 import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
 
@@ -57,6 +59,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
@@ -68,6 +71,7 @@ import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
+import com.sun.org.apache.xml.internal.serialize.Printer;
 
 
 abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
@@ -119,7 +123,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	dlgArtHelper dah;
 
 	String srcString;
-	String keyforRN = null, keyfordod;
+	String keyforRN = null, keyfordod, keyforprd;
 
 	Integer Broj;
 
@@ -206,6 +210,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 
 	boolean hideKup = false;
 	boolean allowNabedit = false;
+	
+	creatorPRD cprd = null;
 
 	// private String vrzal="";
 
@@ -792,7 +798,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 			normativPresOK();
 		}
 	};
-
+	
 	hr.restart.swing.raTableColumnModifier TCM;
 
 	hr.restart.swing.raTableColumnModifier TCM1;
@@ -864,6 +870,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 				return 27;
 			}
 		};
+		
+		
 
 		TCM1 = new hr.restart.swing.raTableColumnModifier("PJ", new String[] {
 				"PJ", "NAZPJ" }, new String[] { "CPAR", "PJ" }, dm.getPjpar());
@@ -896,6 +904,32 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		raMaster.getJpTableView().addTableModifier(TCM);
 		raMaster.getJpTableView().addTableModifier(TCM1);
 		raMaster.getJpTableView().addTableModifier(TCM2);
+		
+		raMaster.getJpTableView().addTableModifier(new raTableModifier() {
+		  Variant v = new Variant();
+          public boolean doModify() {
+            if (getTable() instanceof JraTable2) {
+              JraTable2 jtab = (JraTable2)getTable();
+              Column dsCol = jtab.getDataSetColumn(getColumn());
+              if (dsCol == null) return false;
+              return dsCol.getColumnName().equals("PROV");
+            }
+            return false;
+          }
+          public void modify() {
+            getMasterSet().getVariant("CAGENT", getRow(), v);
+            if (v.isNull() || v.getInt() == 0) return;
+            if (!lD.raLocate(dm.getAgenti(), "CAGENT", v.toString())) return;
+            String col = "RUC";
+            if (dm.getAgenti().getString("VRSTAPROV").equals("F") ||
+                dm.getAgenti().getString("VRSTAPROV").equals("N")) col = "UIRAC";
+            getMasterSet().getVariant("PROVPOST", getRow(), v);
+            BigDecimal post = v.getBigDecimal();
+            if (post.signum() == 0) post = dm.getAgenti().getBigDecimal("POSTOPROV");
+            getMasterSet().getVariant(col, getRow(), v);
+            setComponentText(Aus.formatBigDecimal(Aus.to2(v.getBigDecimal().multiply(post).movePointLeft(2))));
+          }
+        });
 
 		raMaster.installSelectionTracker("BRDOK");
 		// raMaster.getJpTableView().addTableModifier(TCMORGS);
@@ -1396,6 +1430,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	public void revive() {
 		// sreðivanje prijenosa
 	  
+	  updatePrdStatus(keyforprd, "N");
+	  
 		//VarStr filter = new VarStr();
 		String[] kkey = rCD.getKeyColumns(getMasterSet().getTableName());
 		
@@ -1447,6 +1483,20 @@ ST.prn(radninal);
 			raTransaction.saveChanges(qdsprij);
 		}
 	}
+	
+	private void updatePrdStatus(String prdBroj, String status) {
+	  if ((what_kind_of_dokument.equals("ROT") || what_kind_of_dokument.equals("RAC")) 
+	        && prdBroj != null && prdBroj.length() > 0) {
+        Condition prdCond = repUtil.getCondFromBroj(prdBroj);
+        if (prdCond != null) {
+          QueryDataSet prd = doki.getDataModule().getTempSet(prdCond);
+          if (prd.rowCount() == 1) {
+            prd.setString("STATIRA", status);
+            raTransaction.saveChanges(prd);
+          }
+        }
+      }
+	}
 
 	final public boolean doWithSaveMaster(char mode) {
 
@@ -1461,6 +1511,8 @@ ST.prn(radninal);
 				raTransaction.saveChanges(vttextzag);
 				raMaster.markChange("vttext");
 			}
+			if (mode == 'I') updatePrdStatus(keyforprd, "N");
+			updatePrdStatus(getMasterSet().getString("BRPRD"), "P");
 		}
 
 		if (mode == 'B') { // Brisanje mastera
@@ -1616,6 +1668,7 @@ ST.prn(radninal);
         if (mode == 'I') {
           changeCpar = getMasterSet().getInt("CPAR");  // ab.f
           changeNamj = getMasterSet().getString("CNAMJ");
+          prepareOldMasterValues();
         }
 
 		if (MP.panelBasic != null) {
@@ -1840,6 +1893,7 @@ ST.prn(radninal);
                    getMasterSet().getString("GOD")   + "-" + 
                    String.valueOf(getMasterSet().getInt("BRDOK"));
 		keyfordod = repUtil.getFormatBroj(getMasterSet());
+		keyforprd = getMasterSet().getString("BRPRD");
 	}
 
 	public void prepareOldDetailValues() {
@@ -2541,6 +2595,237 @@ ST.prn(radninal);
       DP.rpcart.setExtraSklad(getDetailSet().getString("CSKLART"));
 
 		return DodatnaValidacijaDetail();
+	}
+	
+	private boolean checkJitNalog(boolean isStanje) {
+	  DataSet norm = Aut.getAut().expandArt(getDetailSet(), true);
+	  StorageDataSet err = stdoki.getDataModule().getScopedSet("CSKL CART CART1 BC NAZART JM KOL KOL1 KOL2");
+	  err.getColumn("KOL1").setCaption("Stanje");
+	  err.getColumn("KOL2").setCaption("Rezultat");
+	  if (norm.rowCount() == 0 || (norm.rowCount() == 1 && norm.getInt("CART") == getDetailSet().getInt("CART"))) {
+	    DP.jtfKOL.requestFocus();
+	    JOptionPane.showMessageDialog(raDetail.getWindow(),
+	        isStanje ?
+            "Kolièina je veæa nego kolièina na zalihi (a ne postoji normativ artikla)!" :
+            "Artikla nema na stanju (a ne postoji ni normativ artikla)!",
+            "Greška",
+            javax.swing.JOptionPane.ERROR_MESSAGE);
+	    return false;
+	  }
+	  String[] cc = {"CSKL", "GOD"};
+	  String[] ncc = {"CART", "CART1", "BC", "NAZART", "JM", "KOL"};
+	  QueryDataSet sta = Stanje.getDataModule().getTempSet(
+	      Condition.whereAllEqual(cc, getMasterSet()).and(Condition.in("CART", norm)));
+	  sta.open();
+	  for (norm.first(); norm.inBounds(); norm.next())
+	    if (raVart.isStanje(norm.getInt("CART"))) {
+	      if (!lD.raLocate(sta, "CART", norm) || sta.getBigDecimal("KOL").compareTo(norm.getBigDecimal("KOL")) < 0) {
+	        err.insertRow(false);
+	        dM.copyColumns(norm, err, ncc);
+	        err.setString("CSKL", getMasterSet().getString("CSKL"));
+	        err.setUnassignedNull("KOL1");
+	        err.setUnassignedNull("KOL2");
+	        if (sta.getInt("CART") == norm.getInt("CART")) {
+	          Aus.set(err, "KOl1", sta, "KOL");
+	          Aus.sub(err, "KOL2", "KOL1", "KOL");
+	        }
+	      }
+	    }
+	  
+	  if (err.rowCount() == 0) {
+	    if (JOptionPane.showConfirmDialog(raDetail.getWindow(), 
+	        new raMultiLineMessage("Kolièina je veæa nego na zalihi, " +
+	    		"no postoji normativ i dovoljna zaliha materijala na skladištu. " +
+	    		"Želite li napraviti automatski radni nalog?"), 
+	        "Rastav normativa", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return false;
+	    
+	    if (!isStanje) {
+	      AST.gettrenSTANJE().insertRow(false);
+          dM.copyColumns(getDetailSet(), AST.gettrenSTANJE(), 
+              new String[] {"CSKL", "GOD", "CART"});
+          nulaStanje(AST.gettrenSTANJE());
+          if (lD.raLocate(dM.getDataModule().getArtikli(), "CART", getDetailSet()))
+            dM.copyColumns(dM.getDataModule().getArtikli(), AST.gettrenSTANJE(), new String[] {"VC", "MC"});
+          AST.gettrenSTANJE().saveChanges();
+	    }
+	    return createJitNalog(false);
+	  }
+	  
+	  if (JOptionPane.showConfirmDialog(raDetail.getWindow(), 
+	      new raMultiLineMessage("Kolièina je veæa nego na zalihi, " +
+          "no postoji normativ ali i nedovoljna zaliha materijala na skladišku. " +
+          "Želite li detaljni prikaz nedostajuæeg materijala?"),
+        "Rastav normativa", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+	    frmTableDataView view = new frmTableDataView();
+	    view.setDataSet(err);
+	    view.setTitle("Nedostajuæi materijal za rastav normativa");
+	    view.setSize(640, 300);
+	    view.setSaveName("Pregled-manjka-materijala-autoRNL");
+	    view.setLocationRelativeTo(null);
+	    view.jp.getMpTable().setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+	    view.setVisibleCols(new int[] {Aut.getAut().getCARTdependable(1, 2, 3), 4, 5, 6, 7, 8});
+	    view.show();
+	  }
+	  return false;
+	}
+	
+	
+	boolean createJitNalog(boolean multiSklad) {
+	  raProcess.runChild(raDetail.getWidth(), new Runnable() {
+        public void run() {
+          if (!runJitNalogTrans()) raProcess.fail();
+        }
+      });
+	  if (raProcess.isFailed())
+	    JOptionPane.showMessageDialog(raDetail.getWindow(),
+          "Rastav normativa nije uspio (pokušajte kasnije)!",
+          "Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
+    
+      return raProcess.isCompleted();
+	}
+	  
+	boolean runJitNalogTrans() {
+	  return new raLocalTransaction() {
+        public boolean transaction() throws Exception {
+          
+          lD.raLocate(dm.getSklad(), "CSKL", getMasterSet());
+          String corg = dm.getSklad().getString("CORG");
+          String vrzal = dm.getSklad().getString("VRZAL");
+          
+          String knjig = OrgStr.getKNJCORG(false);
+          String cps = frmParam.getParam("zapod", "knjigCpar"+knjig, "",
+              "Šifra partnera koji predstavlja knjigovodstvo "+knjig);
+          int cpar = Aus.getNumber(cps);
+          
+          QueryDataSet rnlz = RN.getDataModule().openEmptySet();
+          rnlz.insertRow(false);
+          rnlz.setString("CSKL", corg);
+          rnlz.setString("VRDOK", "RNL");
+          rnlz.setString("CUSEROTVORIO", getMasterSet().getString("CUSER"));
+          rnlz.setString("CUSEROBRAC", getMasterSet().getString("CUSER"));
+          rnlz.setString("STATUS", "Z");
+          rnlz.setString("SERPR", "P");
+          rnlz.setTimestamp("DATDOK", getMasterSet().getTimestamp("DATDOK"));
+          rnlz.setString("OPIS", "Automatski radni nalog");
+          util.getBrojDokumenta(rnlz);
+          rnlz.setString("CRADNAL", "RNL-"+corg+"/"+rnlz.getString("GOD")+"-"+rnlz.getInt("BRDOK"));
+          raTransaction.saveChanges(rnlz);
+          
+          QueryDataSet izdz = doki.getDataModule().openEmptySet();
+          String tr = frmParam.getParam("robno", "trosProiz", "01", "Šifra vrste troška za automatski radni nalog");
+          izdz.insertRow(false);
+          izdz.setString("CSKL", getMasterSet().getString("CSKL"));
+          izdz.setString("CUSER", getMasterSet().getString("CUSER"));
+          izdz.setString("VRDOK", "IZD");
+          izdz.setTimestamp("DATDOK", getMasterSet().getTimestamp("DATDOK"));
+          izdz.setString("CORG", corg);          
+          izdz.setString("CVRTR", tr);
+          izdz.setString("CRADNAL", rnlz.getString("CRADNAL"));
+          Util.getUtil().getBrojDokumenta(izdz);
+          raTransaction.saveChanges(izdz);
+          
+          int rbri = 0;
+          
+          QueryDataSet rnls = stdoki.getDataModule().openEmptySet();
+          rnls.insertRow(false);
+          dM.copyColumns(rnlz, rnls, util.mkey);
+          rnls.setString("CRADNAL", rnlz.getString("CRADNAL"));
+          rnls.setShort("RBR", (short) 1);
+          rnls.setInt("RBSID", 1);
+          Aut.getAut().copyArtFields(rnls, getDetailSet());
+          rnls.setString("ID_STAVKA", raControlDocs.getKey(rnls, util.dikey, "stdoki"));
+          
+          AST.gettrenSTANJE().refresh();
+          BigDecimal kol = getDetailSet().getBigDecimal("KOL");
+          BigDecimal need = kol.subtract(AST.gettrenSTANJE().getBigDecimal("KOL"));
+          System.out.println("KOL " + kol + " NEED " + need);
+          if (need.signum() <= 0) return false;
+          
+          rnls.setBigDecimal("KOL", need);
+          
+          QueryDataSet izds = stdoki.getDataModule().openEmptySet();
+
+          raKalkulBDDoc lrKD = new raKalkulBDDoc();
+          String[] cc = {"CSKL", "GOD"};
+          String[] icols = {"CART", "CART1", "BC", "NAZART", "JM", "KOL"};
+          DataSet norm = Aut.getAut().expandArt(rnls, true);
+          QueryDataSet sta = Stanje.getDataModule().openTempSet(
+              Condition.whereAllEqual(cc, getMasterSet()).and(Condition.in("CART", norm)));
+          
+          QueryDataSet vti = VTRnl.getDataModule().openEmptySet();
+          for (norm.first(); norm.inBounds(); norm.next()) {    
+            if (raVart.isStanje(norm.getInt("CART"))) {
+                // Aut.getAut().artTipa(exp.getInt("CART"), "PRM")) {
+              vti.insertRow(false);
+              vti.setString("CRADNAL", rnlz.getString("CRADNAL"));
+              vti.setInt("RBSRNL", 1);
+              vti.setString("BRANCH", norm.getString("BRANCH"));
+              vti.setInt("RBSIZD", ++rbri);
+              
+              izds.insertRow(false);
+              dM.copyColumns(izdz, izds, util.mkey);
+              dM.copyColumns(norm, izds, icols);
+              izds.setShort("RBR", (short) rbri);
+              izds.setInt("RBSID", rbri);
+              izds.setInt("RBSRN", 1);
+              izds.setString("CRADNAL", rnlz.getString("CRADNAL"));
+              izds.setString("ID_STAVKA", raControlDocs.getKey(izds, util.dikey, "stdoki"));
+              izds.setString("VEZA", rnls.getString("ID_STAVKA"));
+              vti.setString("VEZA", izds.getString("ID_STAVKA"));
+              
+              if (!lD.raLocate(sta, "CART", izds)) return false;
+              
+              lrKD.stanje.Init();
+              lc.TransferFromDB2Class(sta,lrKD.stanje);
+              lrKD.stanje.sVrSklad=vrzal;
+              lrKD.stavkaold.Init();
+              lrKD.stavka.Init();
+              lrKD.stavka.kol = izds.getBigDecimal("KOL");
+              
+              lrKD.KalkulacijaStavke("IZD","KOL",'N',getMasterSet().getString("CSKL"),false);
+              lrKD.KalkulacijaStanje("IZD");
+              lc.TransferFromClass2DB(izds,lrKD.stavka);
+              lc.TransferFromClass2DB(sta,lrKD.stanje);
+            }
+          }
+          raTransaction.saveChanges(vti);
+          raTransaction.saveChanges(rnls);
+          raTransaction.saveChanges(izds);
+          raTransaction.saveChanges(sta);
+          
+          QueryDataSet predz = Doku.getDataModule().openEmptySet();
+          predz.insertRow(false);
+          predz.setString("CSKL", getMasterSet().getString("CSKL"));
+          predz.setString("CORG", corg);
+          predz.setString("VRDOK", "PRE");
+          predz.setString("CUSER", getMasterSet().getString("CUSER"));
+          predz.setBigDecimal("RANDMAN", Aus.one0);
+          predz.setTimestamp("DATDOK", getMasterSet().getTimestamp("DATDOK"));
+          predz.setString("OPIS", "Automatska predatnica");
+          util.getBrojDokumenta(predz);
+          predz.setString("CRADNAL", rnlz.getString("CRADNAL"));
+          raTransaction.saveChanges(predz);
+          
+          QueryDataSet preds = Stdoku.getDataModule().openEmptySet();
+          if (cprd == null) cprd = new creatorPRD();
+          
+          if (!cprd.creatPRD(rnls, predz.getString("CSKL"), predz.getTimestamp("DATDOK"), 
+              predz.getString("CRADNAL"), predz.getBigDecimal("RANDMAN"), predz.getInt("BRDOK"), preds)) {
+            cprd.printErrors();
+            return false;
+          }
+        
+          raTransaction.saveChanges(preds);
+          raTransaction.saveChanges(cprd.getStanje());
+          raTransaction.saveChanges(dm.getVTPred());
+          raTransaction.saveChanges(cprd.getStavkeRN());
+          
+          AST.gettrenSTANJE().refresh();
+          lc.TransferFromDB2Class(AST.gettrenSTANJE(), rKD.stanje);
+
+          return true;
+        }
+      }.execTransaction();
 	}
 
 	public int nextRbr() {
@@ -4248,16 +4533,22 @@ System.out.println("findCjenik::else :: "+sql);
 		if (TD.isDocDiraZalihu(what_kind_of_dokument)) {
 		  if (!isUslugaOrTranzit()) {
 		    if (!isStanje) {
-		      DP.jtfKOL.requestFocus();
-              JOptionPane.showMessageDialog(raDetail.getWindow(),
-                 "Artikla nema na stanju!", "Greška", 
-                 JOptionPane.ERROR_MESSAGE);
-              return false;
+		      if (TD.isDocFinanc(what_kind_of_dokument) && raVart.isNorma(getDetailSet().getInt("CART"))) {
+		        if (!checkJitNalog(false)) return false;
+		      } else {
+		        DP.jtfKOL.requestFocus();
+                JOptionPane.showMessageDialog(raDetail.getWindow(),
+                    "Artikla nema na stanju!", "Greška", 
+                    JOptionPane.ERROR_MESSAGE);
+                return false;
+		      }
 		    }
 		    lc.TransferFromDB2Class(AST.gettrenSTANJE(), rKD.stanje);
 	        rKD.stanje.sVrSklad = AST.VrstaZaliha();
 				int i = rKD.TestStanje();
-				if (isTranzit || isMinusAllowed) {
+				if (i == -1 && TD.isDocFinanc(what_kind_of_dokument) && raVart.isNorma(getDetailSet().getInt("CART"))) {
+				  if (!checkJitNalog(true)) return false;
+				} else if (isTranzit || isMinusAllowed) {
 				  // nista
 				} else if (i == -1) {
 					DP.jtfKOL.requestFocus();
@@ -4545,6 +4836,34 @@ System.out.println("findCjenik::else :: "+sql);
 	  oldfield.copyTo(dodfield);
 	  if (dlg.show(raMaster.getWindow(), all, "Dodatni podaci"))
 	    dodfield.copyTo(oldfield);
+	}
+	
+	public void getPRD() {
+	  if (!what_kind_of_dokument.equals("ROT") && !what_kind_of_dokument.equals("RAC")) return;
+	  
+	    
+	    DataSet prd = doki.getDataModule().openTempSet(
+	            "vrdok='PRD' and god>='" + (Aus.getNumber(val.findYear()) - 1) +
+	            "' and statira='N' and uirac>0 and " + OrgStr.getCorgsKnjigCond("CSKL"));
+
+	    try {
+	      lD.saveName = "dohvat-prd-for-rac";
+	      List modif = new ArrayList();
+	      modif.add(new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, dm.getPartneri()));
+	      lD.modifiers = modif;
+	      lD.setLookMode(lookupData.INDIRECT);
+	      String[] ret = lD.lookUp(raDetail.getWindow(), prd,
+	          util.mkey, new String[] {"", "", "", ""}, new int[] {1,4,5,6,44});
+
+	      if (ret != null && ret[0] != null && ret[0].length() > 0 && lD.raLocate(prd, util.mkey, ret)) {
+	        getMasterSet().setString("BRPRD", repUtil.getFormatBroj(prd));
+	        getMasterSet().setTimestamp("DATPRD", prd.getTimestamp("DATDOK"));
+	      }
+	    } finally {
+	      lD.saveName = null;
+	      lD.modifiers = null;
+	    }
+	  
 	}
 	
 	void fillDod() {
