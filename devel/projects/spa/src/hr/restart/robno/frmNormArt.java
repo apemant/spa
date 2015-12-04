@@ -84,8 +84,10 @@ public class frmNormArt extends raMatPodaci {
   }
 	
 	public void SetFokus(char mode) {
-		if (mode == 'N') {
+	  if (mode == 'N') {
       getRaQueryDataSet().setInt("CARTNOR", cartnor);
+      jp.EraseFields();
+      jp.rpc.EnabDisab(true);
       jp.rpc.setCART();
     } else if (mode == 'I') {
       jp.jraKOL.requestFocus();
@@ -123,13 +125,6 @@ public class frmNormArt extends raMatPodaci {
     return true;
 	}
 	
-	public void AfterSave(char mode) {
-    if (mode == 'N') {
-      jp.EraseFields();
-      jp.rpc.EnabDisab(true);
-    }
-  }
-
   public boolean ValDPEscape(char mode) {
     if (mode == 'N' && jp.rpcLostFocus) {
       jp.rpc.EnabDisab(true);
