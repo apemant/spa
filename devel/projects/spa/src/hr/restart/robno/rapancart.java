@@ -634,7 +634,8 @@ System.out.println("layheight="+lay.getHeight());
         if (!jrfCART.isEmpty() && AST.findStanje(getGodina(),getCskl(),getTabela().getInt("CART"))) {
             //AST.findStanjeUnconditional(getGodina(),getCskl(),getTabela().getInt("CART"));
             Glupan.open();
-            Glupan.setBigDecimal("KOL",getStanjeKOL(getGodina(),getCskl(),getTabela().getInt("CART")));
+            Glupan.setBigDecimal("KOL", AST.gettrenSTANJE().getBigDecimal(isKolSkladScreen() ? "KOLSKLAD" : "KOL"));
+                //getStanjeKOL(getGodina(),getCskl(),getTabela().getInt("CART")));
             Glupan.setBigDecimal("REZKOL",AST.gettrenSTANJE().getBigDecimal("KOLREZ"));
             Glupan.setBigDecimal("TREKOL", hr.restart.robno.Util.getUtil().negateValue(Glupan.getBigDecimal("KOL"), Glupan.getBigDecimal("REZKOL")));
         }
