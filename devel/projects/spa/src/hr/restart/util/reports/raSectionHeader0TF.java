@@ -87,8 +87,8 @@ public class raSectionHeader0TF extends raReportSection {
   private String[] TextMJProps = new String[] {"MJ", "", "", "", "", "", "", "", "640", "1380", 
      "4360", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "", ""};
   public raReportElement LabelDospijeceDatum;
-  private String[] LabelDospijeceDatumProps = new String[] {"Dospije\u0107e/Datum", "", "5460", 
-     "1480", "1740", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
+  private String[] LabelDospijeceDatumProps = new String[] {"Dospije\u0107e/Datum", "", "5200", 
+     "1480", "2000", "220", "", "", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right"};
   public raReportElement TextSgetDATDOSP;
   private String[] TextSgetDATDOSPProps = new String[] {"SgetDATDOSP", "", "", "", "", "", "", "", 
      "9600", "1480", "1240", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", 
@@ -395,9 +395,9 @@ public class raSectionHeader0TF extends raReportSection {
         raReportSection right1 = this.getView(LabelR_A_C_U_N, LabelR_A_C_U_N);
         raReportSection right2 = this.getView(LabelBroj, LabelR1);
         left.moveRightCm(9.5);
-        right1.moveLeft(5760);
-        right2.moveLeft(5760);
-        Line3.setLeft(Line3.getLeft()-5760);
+        right1.moveLeft(5660);
+        right2.moveLeft(5660);
+        Line3.setLeft(Line3.getLeft()-5660);
       }
     }
   }
