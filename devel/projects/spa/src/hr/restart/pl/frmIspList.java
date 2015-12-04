@@ -634,13 +634,12 @@ public class frmIspList extends frmIzvjestajiPL {
     worker.povDS = dm.getPovjerioci();
     createCachept(StDSradnici);
 
-    for (ds.first(); ds.inBounds(); ds.next()) {
-      ld.raLocate(getVrprim(), new String[] {"CVRP"}, new String[] {""+ds.getShort("CVRP")});
-      if (isArh) {
-        if (rbrObr == ds.getShort("RBROBR")
+    for (ds.first(); ds.inBounds(); ds.next())      
+      if (!isArh || (rbrObr == ds.getShort("RBROBR")
             && mjObr == ds.getShort("MJOBR")
-            && godObr == ds.getShort("GODOBR")){
+            && godObr == ds.getShort("GODOBR"))) {
           System.out.println(ds);
+          ld.raLocate(getVrprim(), new String[] {"CVRP"}, new String[] {""+ds.getShort("CVRP")});
           if (raParam.getParam(getVrprim(), 1).equals("D")) {  // Primanja
             _naziv.append(getVrprim().getString("NAZIV")).append("\n");
             _sati.append(format(ds, "SATI")).append("\n");
@@ -660,27 +659,7 @@ public class frmIspList extends frmIzvjestajiPL {
           primSati.add();
           
         }
-      } else{
-        System.out.println(ds);
-        if (raParam.getParam(getVrprim(), 1).equals("D")) {  // Primanja
-          _naziv.append(getVrprim().getString("NAZIV")).append("\n");
-          _sati.append(format(ds, "SATI")).append("\n");
-          _koef.append(format(ds, "KOEF")).append("\n");
-          _bruto.append(format(ds, "BRUTO")).append("\n");
-          _neto.append(format(ds, getNetoColParam())).append("\n");
-          primIznos.add();
-        }
-        if (raParam.getParam(getVrprim(), 1).equals("N") &&
-            raParam.getParam(getVrprim(), 2).equals("N")) {  // Naknade
-          _nazivN.append(getVrprim().getString("NAZIV")).append("\n");
-          _satiN.append(format(ds, "SATI")).append("\n");
-          _iznosN.append(format(ds, getNetoColParam())).append("\n");
-          primIznos.add(getNetoColParam());
-          nedop = nedop.add(ds.getBigDecimal(getNetoColParam()));
-        }
-        primSati.add();
-      }
-    }
+      
     _naziv.setLength(Math.max(0, _naziv.length() - 1));
     _sati.setLength(Math.max(0, _sati.length() - 1));
     _koef.setLength(Math.max(0, _koef.length() - 1));
@@ -695,25 +674,23 @@ public class frmIspList extends frmIzvjestajiPL {
     ds = getKreditiSet(crad);
     StringBuffer _nazivK = new StringBuffer();
     StringBuffer _iznosK = new StringBuffer();
-    for (ds.first(); ds.inBounds(); ds.next()) {
-      if (isArh) {
-        if (rbrObr == ds.getShort("RBROBR")
+    for (ds.first(); ds.inBounds(); ds.next())
+      if (!isArh || (rbrObr == ds.getShort("RBROBR")
             && mjObr == ds.getShort("MJOBR")
-            && godObr == ds.getShort("GODOBR")){
+            && godObr == ds.getShort("GODOBR"))) {
           ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
-          _nazivK.append(getVrodb().getString("OPISVRODB")).append(getKreditInfo(ds)).append("\n");
           _iznosK.append(format(ds, "OBRIZNOS")).append("\n");
-          if (raParam.getParam(getVrodb(), 1).equals("D")) fillZastRac(ds);
-          else fillKred(ds);
+          if (raParam.getParam(getVrodb(), 1).equals("D")) {
+            fillZastRac(ds);
+            _nazivK.append("Isplata radniku na raèun iz èl. 212. Ovršnog zakona\n");
+            _nazivK.append("IBAN: " + getIBANZAS() + " kod " + getBANKAZAS() + "\n");
+            _iznosK.append("\n");
+          } else {
+            fillKred(ds);
+            _nazivK.append(getVrodb().getString("OPISVRODB")).append(getKreditInfo(ds)).append("\n");
+          }
         }
-      } else {
-        ld.raLocate(getVrodb(), new String[] {"CVRODB"}, new String[] {""+ds.getShort("CVRODB")});
-        _nazivK.append(getVrodb().getString("OPISVRODB")).append(getKreditInfo(ds)).append("\n");
-        _iznosK.append(format(ds, "OBRIZNOS")).append("\n");
-        if (raParam.getParam(getVrodb(), 1).equals("D")) fillZastRac(ds);
-        else fillKred(ds);
-      }
-    }
+
     _nazivK.setLength(Math.max(0, _nazivK.length() - 1));
     _iznosK.setLength(Math.max(0, _iznosK.length() - 1));
 
@@ -1063,21 +1040,24 @@ System.out.println("KreditInfo za "+ds);
   }
   
   private String period(short o, short d, short g, short m) {
-    return "Obraèun plaæe za " + raDateUtil.getraDateUtil().dataFormatter(Aus.createTimestamp(g, m, o))+" - "+ 
-        raDateUtil.getraDateUtil().dataFormatter(Aus.createTimestamp(g, m, d));
+    return "Razdoblje na koje se plaæa odnosi:\ngodina " + g + ", mjesec " + m + ", dani u mjesecu od " + o + " do " + d;
+    //return "Obraèun plaæe za " + raDateUtil.getraDateUtil().dataFormatter(Aus.createTimestamp(g, m, o))+" - "+ 
+//        raDateUtil.getraDateUtil().dataFormatter(Aus.createTimestamp(g, m, d));//
   }
 
   public String getObracun(short g, short m, short r){
-    /*DataSet rs = RSPeriodarh.getDataModule().getTempSet(Condition.whereAllEqual(new String[] {"CRADNIK", "GODOBR", "MJOBR", "RBROBR"}, StDSradnici));
+    DataSet rs = RSPeriodarh.getDataModule().getTempSet(Condition.whereAllEqual(new String[] {"CRADNIK", "GODOBR", "MJOBR", "RBROBR"}, StDSradnici));
     rs.open();
     Variant odd = Aus.min(rs, "ODDANA");
     Variant dod = Aus.max(rs, "DODANA");
-    return period(odd.getShort(), dod.getShort(), StDSradnici.getShort("GODOBR"), StDSradnici.getShort("MJOBR"));*/
-    String mjOd;
+    return period(odd.getShort(), dod.getShort(), StDSradnici.getShort("GODOBR"), StDSradnici.getShort("MJOBR"));
+    /*String mjOd;
     if (m < (short)10) mjOd = "0"+m;
     else mjOd = ""+m;
     return  "Obra\u010Dun pla\u0107e za ".concat(mjOd).concat(". mjesec ").concat(""+g+".").concat(" (rbr. "+r+")");
     //return periodPlace(g, m);
+
+     */
   }
   private String periodPlace(short g, short m) {
     String ret = "Obra\u010Dun pla\u0107e za ";
@@ -1468,8 +1448,8 @@ System.out.println("KreditInfo za "+ds);
 System.out.println(porezi);
       String s = "Porez "+
       //justFormat(porezi.getBigDecimal("OBRIZNOS").divide(porezi.getBigDecimal("OBRSTOPA"),4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)))
-      format(porezi,"OBROSN")
-      +" x "+format(porezi,"OBRSTOPA")+"%";
+      format(porezi,"OBRSTOPA")+"%"
+      +" x "+format(porezi,"OBROSN");
       cachept.put(porezi.getShort("RBRODB")+"",s);
       if (porezi.getBigDecimal("OBRIZNOS").signum() > 0) {
         if (stopepor.length() == 0) stopepor = "porez ";

@@ -395,7 +395,7 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
   public String getFirstLine(){
     String ziro = rpm.getLogoZiro();
     if (!ziro.startsWith("HR")) ziro = frmVirmani.getIBAN_HR(ziro, true);
-    return fil.shouldPrintLogo()?"":rpm.getTwoLine()+ "\nIBAN: " + ziro; /*+"  OIB: "+rpm.getLogoOIB()*/;
+    return rpm.getTwoLine()+ "\nIBAN: " + ziro; /*+"  OIB: "+rpm.getLogoOIB();*/
   }
   public String getSecondLine(){
     return rpm.getSecondLine();
