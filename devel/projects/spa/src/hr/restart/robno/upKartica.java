@@ -111,6 +111,10 @@ public class upKartica extends raUpitFat {
   JLabel jLabel1 = new JLabel();
   JPanel jPanel3 = new JPanel();
   JPanel jp = new JPanel();
+  
+  /*JraCheckBox jcbNDO = new JraCheckBox();
+  JraCheckBox jcbNKU = new JraCheckBox();*/
+  
   dM dm;
   static upKartica upk;
   
@@ -174,7 +178,7 @@ public class upKartica extends raUpitFat {
 
     vrzal = lookupData.getlookupData().raLookup(dm.getSklad(), new String[] {"CSKL"}, new String[] {rpcskl.getCSKL()}).getString("VRZAL");
     
-    qStr = rdUtil.getUtil().getKarticaArtikla(cart, vrzal, rpcskl.getCSKL(), rut.getDoc("DOKU", "STDOKU"), rut.getDoc("DOKI", "STDOKI"), newDateZ);
+    qStr = rdUtil.getUtil().getKarticaArtikla(cart, vrzal, rpcskl.getCSKL(), rut.getDoc("DOKU", "STDOKU"), rut.getDoc("DOKI", "STDOKI"), newDateZ, false, false);
 
 //    System.out.println("qdst KARTICA : " + qStr);
     
@@ -295,7 +299,6 @@ public class upKartica extends raUpitFat {
             card.setBigDecimal(8, rut.divideValue(
                 card.getBigDecimal("SIZN"), card.getBigDecimal("SKOL")));
           } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
           }
 //          System.out.println("row E : " + card.getRow());
@@ -325,6 +328,7 @@ public class upKartica extends raUpitFat {
   }
   
   protected void additionalDisable(){
+    // for override
   }
 
   private boolean vratiGreske()
@@ -399,6 +403,8 @@ public class upKartica extends raUpitFat {
     tds.setTimestamp("zavDatum", 
         ut.getToday(ut.getYearBegin(god), ut.getYearEnd(god)));
     jcbDonos.setSelected(false);
+    /*jcbNDO.setSelected(false);
+    jcbNKU.setSelected(false);*/
     initialized = true;
   }
   
@@ -411,6 +417,8 @@ public class upKartica extends raUpitFat {
       tds.setTimestamp("zavDatum", out.to);
       tds.setTimestamp("pocDatum", out.from);
       jcbDonos.setSelected(false);
+      /*jcbNDO.setSelected(false);
+      jcbNKU.setSelected(false);*/
       rpcskl.setCSKL(out.cskl);
       rpcart.setCART(out.art);
       SwingUtilities.invokeLater(new Runnable() {
@@ -476,6 +484,14 @@ public class upKartica extends raUpitFat {
     jcbDonos.setHorizontalAlignment(SwingConstants.RIGHT);
     jcbDonos.setHorizontalTextPosition(SwingConstants.LEFT);
     jcbDonos.setText("Prikaz donosa");
+    
+    /*jcbNDO.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbNDO.setHorizontalTextPosition(SwingConstants.LEFT);
+    jcbNDO.setText("Narudžbe dobavljaèu");
+    
+    jcbNKU.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbNKU.setHorizontalTextPosition(SwingConstants.LEFT);
+    jcbNKU.setText("Narudžbe kupca");*/
 
     jp.setLayout(borderLayout1);
     jp.setMinimumSize(new Dimension(650, 165));
@@ -485,11 +501,44 @@ public class upKartica extends raUpitFat {
     jPanel3.add(jtfPocDatum, new XYConstraints(150, 5, 100, -1));
     jPanel3.add(jtfZavDatum, new XYConstraints(255, 5, 100, -1));
     jPanel3.add(jcbDonos,    new XYConstraints(465, 5, 140, -1));
+    /*jPanel3.add(jcbNKU,    new XYConstraints(405, 30, 200, -1));
+    jPanel3.add(jcbNDO,    new XYConstraints(155, 30, 200, -1));*/
     jp.add(rpcart, BorderLayout.CENTER);
     jp.add(rpcskl, BorderLayout.NORTH);
     
     getJPTV().addTableModifier(new raTableRunningSum("SIZN"));
     getJPTV().addTableModifier(new raTableRunningSum("SKOL"));
+    /*getJPTV().addTableModifier(new raTableModifier() {
+      Variant shared = new Variant();
+      Color NDO = Color.green;
+      Color NDOb = Color.green.darker().darker();
+      Color NKU = Color.red;
+      Color NKUb = Color.red;
+      public boolean doModify() {
+        if (getTable() instanceof JraTable2) {
+          JraTable2 tab = (JraTable2) getTable();
+          if (tab.getDataSet().getRowCount() > 0 && 
+              tab.getDataSet().hasColumn("VRDOK") != null) {
+            tab.getDataSet().getVariant("VRDOK", getRow(), shared);
+            String vrdok = shared.toString(); 
+            return "NDO".equals(vrdok) || "NKU".equals(vrdok);
+          }
+        }
+        return false;
+      }
+      
+      public void modify() {
+        JComponent jRenderComp = (JComponent) renderComponent;
+        boolean ul = "NDO".equals(shared.toString());
+        if (isSelected()) {
+          jRenderComp.setBackground(ul ? NDOb : NKUb);
+          jRenderComp.setForeground(Color.black);
+        } else {
+          //jRenderComp.setBackground(getTable().getBackground());
+          jRenderComp.setForeground(ul ? NDO : NKU);
+        }
+      }
+    });*/
     
     installResetButton();
 
@@ -504,6 +553,7 @@ public class upKartica extends raUpitFat {
 //  this.addReport("hr.restart.robno.repKartica2Reda", "Ispis kartice artikla - 2 reda", 5);
   this.addReport("hr.restart.robno.repKartica","hr.restart.robno.repKartica","Kartica", "Ispis kartice artikla");
   this.addReport("hr.restart.robno.repKartica2Reda","hr.restart.robno.repKartica2Reda","Kartica2Reda", "Ispis kartice artikla - 2 reda");
+  this.addReport("hr.restart.robno.repKarticaSkl","hr.restart.robno.repKartica","SkladKartica", "Ispis kolièinske kartice artikla");
   }
   /**
    * Prikazivanje defaultnih vrijednosti
