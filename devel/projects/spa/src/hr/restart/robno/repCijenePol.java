@@ -107,10 +107,10 @@ public class repCijenePol implements raReportData { //sg.com.elixir.reportwriter
   
   public String getCijenaKG()
   {
-    if (!ds.getString("JMPAK").equals("kg") || ds.getBigDecimal("BRJED").signum() == 0) return "";
+    if (ds.getBigDecimal("BRJED").signum() == 0) return "";
     
     BigDecimal ckg = ds.getBigDecimal("ZC").divide(ds.getBigDecimal("BRJED"), 2, BigDecimal.ROUND_HALF_UP);
-    return "(" + Aus.formatBigDecimal(ckg) + " kn/kg)";
+    return "(" + Aus.formatBigDecimal(ckg) + " kn/"+ds.getString("JMPAK")+")";
   }
 
   public String getSifra()
