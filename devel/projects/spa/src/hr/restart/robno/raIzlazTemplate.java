@@ -123,7 +123,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	dlgArtHelper dah;
 
 	String srcString;
-	String keyforRN = null, keyfordod, keyforprd;
+	String keyforRN = null, keyfordod;
 
 	Integer Broj;
 
@@ -1430,7 +1430,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	public void revive() {
 		// sreðivanje prijenosa
 	  
-	  updatePrdStatus(keyforprd, "N");
+	  //updatePrdStatus(keyforprd, "N");
 	  
 		//VarStr filter = new VarStr();
 		String[] kkey = rCD.getKeyColumns(getMasterSet().getTableName());
@@ -1484,7 +1484,7 @@ ST.prn(radninal);
 		}
 	}
 	
-	private void updatePrdStatus(String prdBroj, String status) {
+	/*private void updatePrdStatus(String prdBroj, String status) {
 	  if ((what_kind_of_dokument.equals("ROT") || what_kind_of_dokument.equals("RAC")) 
 	        && prdBroj != null && prdBroj.length() > 0) {
         Condition prdCond = repUtil.getCondFromBroj(prdBroj);
@@ -1496,7 +1496,7 @@ ST.prn(radninal);
           }
         }
       }
-	}
+	}*/
 
 	final public boolean doWithSaveMaster(char mode) {
 
@@ -1511,8 +1511,8 @@ ST.prn(radninal);
 				raTransaction.saveChanges(vttextzag);
 				raMaster.markChange("vttext");
 			}
-			if (mode == 'I') updatePrdStatus(keyforprd, "N");
-			updatePrdStatus(getMasterSet().getString("BRPRD"), "P");
+			/*if (mode == 'I') updatePrdStatus(keyforprd, "N");
+			updatePrdStatus(getMasterSet().getString("BRPRD"), "P");*/
 		}
 
 		if (mode == 'B') { // Brisanje mastera
@@ -1893,7 +1893,7 @@ ST.prn(radninal);
                    getMasterSet().getString("GOD")   + "-" + 
                    String.valueOf(getMasterSet().getInt("BRDOK"));
 		keyfordod = repUtil.getFormatBroj(getMasterSet());
-		keyforprd = getMasterSet().getString("BRPRD");
+		//keyforprd = getMasterSet().getString("BRPRD");
 	}
 
 	public void prepareOldDetailValues() {
@@ -2674,6 +2674,9 @@ ST.prn(radninal);
 	  raProcess.runChild(raDetail.getWidth(), new Runnable() {
         public void run() {
           if (!runJitNalogTrans()) raProcess.fail();
+          AST.findStanjeFor(getDetailSet(), isOJ);
+          rKD.stanje.sVrSklad = AST.VrstaZaliha();
+          Kalkulacija("KOL");
         }
       });
 	  if (raProcess.isFailed())
@@ -2683,7 +2686,7 @@ ST.prn(radninal);
     
       return raProcess.isCompleted();
 	}
-	  
+	 
 	boolean runJitNalogTrans() {
 	  return new raLocalTransaction() {
         public boolean transaction() throws Exception {
@@ -2820,9 +2823,6 @@ ST.prn(radninal);
           raTransaction.saveChanges(dm.getVTPred());
           raTransaction.saveChanges(cprd.getStavkeRN());
           
-          AST.gettrenSTANJE().refresh();
-          lc.TransferFromDB2Class(AST.gettrenSTANJE(), rKD.stanje);
-
           return true;
         }
       }.execTransaction();
@@ -4533,7 +4533,8 @@ System.out.println("findCjenik::else :: "+sql);
 		if (TD.isDocDiraZalihu(what_kind_of_dokument)) {
 		  if (!isUslugaOrTranzit()) {
 		    if (!isStanje) {
-		      if (TD.isDocFinanc(what_kind_of_dokument) && raVart.isNorma(getDetailSet().getInt("CART"))) {
+		      if ((TD.isDocFinanc(what_kind_of_dokument) || "IZD".equals(what_kind_of_dokument))
+		          && raVart.isNorma(getDetailSet().getInt("CART"))) {
 		        if (!checkJitNalog(false)) return false;
 		      } else {
 		        DP.jtfKOL.requestFocus();
@@ -4546,7 +4547,8 @@ System.out.println("findCjenik::else :: "+sql);
 		    lc.TransferFromDB2Class(AST.gettrenSTANJE(), rKD.stanje);
 	        rKD.stanje.sVrSklad = AST.VrstaZaliha();
 				int i = rKD.TestStanje();
-				if (i == -1 && TD.isDocFinanc(what_kind_of_dokument) && raVart.isNorma(getDetailSet().getInt("CART"))) {
+				if (i == -1 && (TD.isDocFinanc(what_kind_of_dokument) || "IZD".equals(what_kind_of_dokument))
+				    && raVart.isNorma(getDetailSet().getInt("CART"))) {
 				  if (!checkJitNalog(true)) return false;
 				} else if (isTranzit || isMinusAllowed) {
 				  // nista
