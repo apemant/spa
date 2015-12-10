@@ -83,7 +83,7 @@ public class MailOptions extends propsDialog {
     data = new StorageDataSet();
     data.setColumns(new Column[] {
         dM.createTimestampColumn("DATE",  "Vrijeme"),
-        dM.createStringColumn("REC", "Primatelj", 50),
+        dM.createStringColumn("REC", "Primatelj", 500),
         dM.createStringColumn("FILE", "Datoteka", 100),
         dM.createStringColumn("SENT", "Poslano", 10)
     });
