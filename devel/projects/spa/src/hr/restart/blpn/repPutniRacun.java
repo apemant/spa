@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class repPutniRacun implements sg.com.elixir.reportwriter.datasource.IDataProvider {
 
@@ -214,7 +215,8 @@ public class repPutniRacun implements sg.com.elixir.reportwriter.datasource.IDat
     hmPT.clear();
     hmNC.clear();
     hmXX.clear();
-
+System.out.println(detail);
+System.out.println(((QueryDataSet) detail).getOriginalQueryString());
     iznosDN = "";
     iznosNC = "";
     iznosPT = "";
