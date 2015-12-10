@@ -94,7 +94,7 @@ public class repUtil {
     VarStr fb = new VarStr(formatBroj);
     String[] elems = fb.replace('/', '-').split('-');
     if (elems == null || elems.length != 4) return null;
-    return Condition.equal("CSKL", elems[0]).and(Condition.equal("VRDOK", elems[1])).
+    return Condition.equal("VRDOK", elems[0]).and(Condition.equal("CSKL", elems[1])).
       and(Condition.equal("GOD", elems[2]).and(Condition.equal("BRDOK", Aus.getNumber(elems[3]))));
   }
 
