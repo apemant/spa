@@ -1598,7 +1598,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 			uplata.getDataSet().setBigDecimal("UPLATA",
 					qdsPojedIzlaz.getBigDecimal("SALDO"));
-			datupl.getDataSet().setTimestamp("datupl",
+			if (tds.isNull("DATUPL"))
+			  datupl.getDataSet().setTimestamp("datupl",
 					hr.restart.util.Valid.getValid().findDate(false, danasUpl ? 0 : -1));
 			
 			upls = UplRobno.getDataModule().getTempSet("CDOC RBR NAP DATUM IZNOS",
