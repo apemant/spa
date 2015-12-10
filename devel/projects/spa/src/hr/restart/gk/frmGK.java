@@ -59,6 +59,7 @@ public class frmGK extends startFrame {
   JMenuItem jmiIzvodi = new JMenuItem();
   JMenuItem jmiSKRac = new JMenuItem();
   JMenuItem jmiSKRacRaz = new JMenuItem();
+  JMenuItem jmiSKKomp = new JMenuItem();
   JMenuItem jmiRobno = new JMenuItem();
   JMenuItem jmiBlag = new JMenuItem();
   JMenuItem jmiPN = new JMenuItem();
@@ -208,6 +209,13 @@ public class frmGK extends startFrame {
     jmiSKRacRaz.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiSKRacRaz_actionPerformed(e);
+      }
+    });
+    
+    jmiSKKomp.setText("SK kompenzacije");
+    jmiSKKomp.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiSKKomp_actionPerformed(e);
       }
     });
     jmiRobno.setText("Robno - materijalno");
@@ -365,6 +373,9 @@ public class frmGK extends startFrame {
     if ("D".equalsIgnoreCase(frmParam.getParam("gk", "skRaz", "N", 
     		"Opcija za knjiženje razlika u saldu SK dokumenata (D,N)")))
     				jmKnjizenja.add(jmiSKRacRaz);
+    
+    jmKnjizenja.add(jmiSKKomp);
+    
     jmKnjizenja.add(jmiRobno);
     jmKnjizenja.add(jmiBlag);
     jmKnjizenja.add(jmiPN);
@@ -483,6 +494,10 @@ public class frmGK extends startFrame {
   
   void jmiSKRacRaz_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.gk.frmKnjSkDiff","Knjiženje razlika raèuna i uplata SK");
+  }
+  
+  void jmiSKKomp_actionPerformed(ActionEvent e) {
+    showFrame("hr.restart.gk.frmKnjSkKomp","Knjiženje kompenzacija");
   }
 
   void jmiRobno_actionPerformed(ActionEvent e) {
