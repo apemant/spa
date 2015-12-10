@@ -235,7 +235,9 @@ public class ElixirToJasperConverter {
           band.addElement(te1);
         if (te1.getY() + te1.getHeight() > maxy)
           maxy = te1.getY() + te1.getHeight();
-      } else e.setPositionType(JRElement.POSITION_TYPE_FLOAT);
+      } else if (e.getPositionType() == 99) 
+        e.setPositionType(JRElement.POSITION_TYPE_FIX_RELATIVE_TO_TOP);
+      else e.setPositionType(JRElement.POSITION_TYPE_FLOAT);
       
       if (!grow && e.getY() < band.getHeight() && 
           e.getY() + e.getHeight() > band.getHeight())
@@ -463,6 +465,14 @@ public class ElixirToJasperConverter {
       pw.setValueClass(Boolean.class);
       tf.setPrintWhenExpression(pw);
       data.setUsedGetter("UIUprint");
+    }
+    if (cs.indexOf("XRP")==0) {
+      JRDesignExpression pw = new JRDesignExpression();
+      pw.setText("$F{XRPprint}");
+      pw.setValueClass(Boolean.class);
+      tf.setPrintWhenExpression(pw);
+      tf.setPositionType((byte) 99);
+      data.setUsedGetter("XRPprint");
     }
     tf.setBlankWhenNull(true);
     tf.setWrapAllowed(!ev.NO.equals(m.getPropertyValue(ep.GROW)));

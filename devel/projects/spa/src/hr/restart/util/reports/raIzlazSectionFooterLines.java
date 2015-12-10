@@ -109,12 +109,12 @@ public class raIzlazSectionFooterLines extends raReportSection {
      "740", "2180", "240", "", "", "", "", "", "", "Lucida Bright", "9",(getParametarBoldIBP() ? raElixirPropertyValues.BOLD : ""), "", "", "Right"};
   public raReportElement Text4;
   private String[] Text4Props = new String[] {
-     "=(+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\"))", "", "",
+     "=(dsum \"UKPOR3\")", "", "",
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9120", "1020", "1700", "240", "", "",
      "", "", "", "", "Lucida Bright", "9", "", "", "", "Right", ""};
   public raReportElement Textv4;
   private String[] Textv4Props = new String[] {
-     "=(+ (+ (dsum \"POR1V\") (dsum \"POR2V\")) (dsum \"POR3V\"))", "", "",
+     "=(dsum \"UKPOR3V\")", "", "",
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9120", "1020", "1700", "240", "", "",
      "", "", "", "", "Lucida Bright", "9", "", "", "", "Right", ""};
   public raReportElement LabelUkupno_porez;
@@ -122,12 +122,12 @@ public class raIzlazSectionFooterLines extends raReportSection {
      "2180", "240", "", "", "", "", "", "", "Lucida Bright", "9", "", "", "", "Right"};
   public raReportElement Text5;
   private String[] Text5Props = new String[] {
-     "=(+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")))", "", "",
+     "=(dsum \"IPRODSP\")", "", "",
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9120", "1300", "1700", "240", "", "",
      "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right", ""};
   public raReportElement Textv5;
   private String[] Textv5Props = new String[] {
-     "=(+ (dsum \"IPRODBPV\") (+ (+ (dsum \"POR1V\") (dsum \"POR2V\")) (dsum \"POR3V\")))", "", "",
+     "=(dsum \"IPRODSPV\")", "", "",
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9120", "1300", "1700", "240", "", "",
      "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right", ""};
   public raReportElement LabelUkupno_s_porezom;
@@ -160,13 +160,13 @@ public class raIzlazSectionFooterLines extends raReportSection {
      "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right", ""};
   public raReportElement Text9;
   private String[] Text9Props = new String[] {
-     "=(+ (- (dsum \"IPRODBP\") [UIU]) (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\")))", "", "",
+     "=(- (dsum \"IPRODSP\") [UIU])", "", "",
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9120", "1940", "1700", "240", "", "",
      "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right", ""};
   
   public raReportElement Textv9;
   private String[] Textv9Props = new String[] {
-     "=(+ (- (dsum \"IPRODBPV\") [UIUV]) (+ (+ (dsum \"POR1V\") (dsum \"POR2V\")) (dsum \"POR3V\")))", "", "",
+     "=(- (dsum \"IPRODSPV\") [UIUV])", "", "",
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9120", "1940", "1700", "240", "", "",
      "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right", ""};
   
@@ -206,6 +206,67 @@ public class raIzlazSectionFooterLines extends raReportSection {
   public raReportElement LabelSlovima_;
   private String[] LabelSlovima_Props = new String[] {"Slovima :", "", "", "1720", "840", "220", "",
      "", "", "", "", "", "Lucida Bright", "8", "", "", "", ""};  
+  
+  public raReportElement Text101;
+  private String[] Text101Props = new String[] {
+     "XRPOsnLabel", "", "", "", "", "", "", "", "7220",
+     "1700", "1200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text102;
+  private String[] Text102Props = new String[] {
+     "XRPPorLabel", "", "", "", "", "", "", "", "8420",
+     "1700", "1200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text103;
+  private String[] Text103Props = new String[] {
+     "XRPUkLabel", "", "",
+     "", "", "", "", "", "9620", "1700", "1200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text104;
+  private String[] Text104Props = new String[] {
+     "XRPPredLabel", "", "",
+     "", "", "", "", "", "4000", "1960", "3200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text105;
+  private String[] Text105Props = new String[] {
+     "XRPOsnPred", "", "", 
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "7220",
+     "1960", "1200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text106;
+  private String[] Text106Props = new String[] {
+     "XRPPorPred", "", "", 
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "8420",
+     "1960", "1200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text107;
+  private String[] Text107Props = new String[] {
+     "XRPUkPred", "", "",
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9620", "1960", "1200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text108;
+  private String[] Text108Props = new String[] {
+     "XRPRazLabel", "", "",
+     "", "", "", "", "", "4000", "2220", "3200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text109;
+  private String[] Text109Props = new String[] {
+     "=(- (dsum \"IPRODBP\") [XRPOsnPred])", "", "", 
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "7220",
+     "2220", "1200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text110;
+  private String[] Text110Props = new String[] {
+     "=(- (dsum \"UKPOR3\") [XRPPorPred])", "", "", 
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "8420",
+     "2220", "1200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
+  public raReportElement Text111;
+  private String[] Text111Props = new String[] {
+     "=(- (dsum \"IPRODSP\") [XRPUkPred])", "", "",
+     "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9620", "2220", "1200", "240", "", "",
+     "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right", ""};
+
 
   public raIzlazSectionFooterLines(raReportTemplate owner) {
     super(owner.template.getModel(raElixirProperties.SECTION_FOOTER + 1));
@@ -268,13 +329,24 @@ public class raIzlazSectionFooterLines extends raReportSection {
     Line5 = addModel(ep.LINE, Line5Props);
     TextSLOVIMA = addModel(ep.TEXT, TextSLOVIMAProps);
     LabelSlovima_ = addModel(ep.LABEL, LabelSlovima_Props);
+    Text101 = addModel(ep.TEXT, Text101Props);
+    Text102 = addModel(ep.TEXT, Text102Props);
+    Text103 = addModel(ep.TEXT, Text103Props);
+    Text104 = addModel(ep.TEXT, Text104Props);
+    Text105 = addModel(ep.TEXT, Text105Props);
+    Text106 = addModel(ep.TEXT, Text106Props);
+    Text107 = addModel(ep.TEXT, Text107Props);
+    Text108 = addModel(ep.TEXT, Text108Props);
+    Text109 = addModel(ep.TEXT, Text109Props);
+    Text110 = addModel(ep.TEXT, Text110Props);
+    Text111 = addModel(ep.TEXT, Text111Props);
   }
   
   protected boolean getParametarBoldIBP(){
     return frmParam.getFrmParam().getParam("robno","boldIBP","N","Bold iznos bez poreza N - ne, D - da").equalsIgnoreCase("D");
   }
 
-  private void modifyThis() {
+  void modifyThis() {
     if (repIzlazni.isReportValute() && frmParam.getParam("robno", "doubleValute", "D", 
         "Ispis raèuna u valuti u dva iznosa (D,N)?").equalsIgnoreCase("D")) {
       getView(LabelUkupno, Text9).moveDown(200);
