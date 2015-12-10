@@ -88,6 +88,7 @@ public class ReportMailDialog extends JraDialog {
     jrEMADR.setSearchMode(1);
     jrEMADR.setNavButton(jbGet);
     jrEMADR.setHandleError(false);
+    jrEMADR.setFocusLostOnShow(false);
     jpEMADR.add(jlKome, BorderLayout.WEST);
     jpEMADR.add(jrEMADR, BorderLayout.CENTER);
     
