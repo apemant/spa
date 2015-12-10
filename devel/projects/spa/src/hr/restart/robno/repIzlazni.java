@@ -22,6 +22,7 @@ import hr.restart.baza.RN;
 import hr.restart.baza.RN_subjekt;
 import hr.restart.baza.VTText;
 import hr.restart.baza.dM;
+import hr.restart.baza.doki;
 import hr.restart.baza.dokidod;
 import hr.restart.baza.stdoki;
 import hr.restart.baza.vtrabat;
@@ -84,6 +85,11 @@ public class repIzlazni implements raReportData {
   protected String naps = "";
   protected HashSet allNaps = new HashSet();
   
+  protected boolean predveza = false;
+  protected BigDecimal predosn, predukup;
+  protected String predlabel;
+  
+  
   public repIzlazni() {
     this(true);
 //    System.out.println("repIzlazni <- triba li ovaj ispis na stdio kome??");
@@ -103,6 +109,7 @@ public class repIzlazni implements raReportData {
       nacPl();
       setZnacajkeSubjekta();
       checkSpecGroup();
+      checkPredVeza();
       lastDok = getFormatBroj();
       naps = "";
       allNaps.clear();
@@ -140,6 +147,23 @@ public class repIzlazni implements raReportData {
 
   }
   
+  private void checkPredVeza() {
+    predveza = false;
+    System.out.println(ds.getString("BRPRD"));
+    Condition predCond = repUtil.getCondFromBroj(ds.getString("BRPRD"));
+    System.out.println(predCond);
+    if (predCond != null) {
+      DataSet prd = doki.getDataModule().openTempSet(predCond);
+      if (prd.rowCount() == 1) {
+        predveza = true;
+        DataSet stprd = stdoki.getDataModule().openTempSet(predCond);
+        predosn = Aus.sum("IPRODBP", stprd);
+        predukup = Aus.sum("IPRODSP", stprd);
+        predlabel = "Raè. za predujam " + prd.getString("PNBZ2");
+      }
+    }
+  }
+  
   public static boolean isReportForeign() {
     return hr.restart.util.reports.dlgRunReport
         .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz();
@@ -169,6 +193,7 @@ public class repIzlazni implements raReportData {
       rekapPorez();
       nacPl();
       setZnacajkeSubjekta();
+      checkPredVeza();
       dokChanged();
       dineto = diprodbp = diprodsp = Aus.zero2;
     }
@@ -917,6 +942,14 @@ public class repIzlazni implements raReportData {
   public double getUIUV() {
     return orig == null ? getUIU() : orig.getBigDecimal("UIU").doubleValue();
   }
+    
+  public double getUKPOR3V() {
+    return getPOR1V() + getPOR2V() + getPOR3V();
+  }
+  
+  public double getIPRODSPV() {
+    return orig == null ? getIPRODSP() : orig.getBigDecimal("IPRODSP").doubleValue();
+  }
   
   public String getDOMNAZ() {
     return hr.restart.zapod.Tecajevi.getDomOZNVAL();
@@ -992,8 +1025,44 @@ public BigDecimal getPOR3() {
     return ds.getBigDecimal("UIU").doubleValue();
   }
   
+  public Boolean getXRPprint() {
+    return new Boolean(predveza);
+  }
+  
+  public String getXRPOsnLabel() {
+    return "Osnovica";
+  }
+  
+  public String getXRPPorLabel() {
+    return "Porez";
+  }
+  
+  public String getXRPUkLabel() {
+    return "Ukupno";
+  }
+  
+  public String getXRPPredLabel() {
+    return predlabel;
+  }
+  
+  public BigDecimal getXRPOsnPred() {
+    return predosn;
+  }
+  
+  public BigDecimal getXRPPorPred() {
+    return predukup.subtract(predosn);
+  }
+
+  public BigDecimal getXRPUkPred() {
+    return predukup;
+  }
+  
+  public String getXRPRazLabel() {
+    return "Razlika / za platiti";
+  }
+    
   public Boolean getUIUprint() {
-    return new Boolean(getUIU() > 0);
+    return new Boolean(!predveza && getUIU() > 0);
   }
   
   public String getUIUlabel() {
