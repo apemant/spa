@@ -43,6 +43,7 @@ public class menuIzvMalo extends JMenu {
   JMenuItem jmSpecKart = new JMenuItem();
   JMenuItem jmIzvNacPl = new JMenuItem();
   JMenuItem jmCijenePol = new JMenuItem();
+  JMenuItem jmPartNal = new JMenuItem();
   JMenuItem jmDeklaracije = new JMenuItem();
   JMenuItem jmIzvArt = new JMenuItem();
   JMenuItem jmOstaliRep = new JMenuItem();
@@ -116,6 +117,12 @@ public class menuIzvMalo extends JMenu {
         jmCijenePol_actionPerformed(e);
       }
     });
+    jmPartNal.setText("Ispis adresa kupaca");
+    jmPartNal.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmPartNal_actionPerformed(e);
+      }
+    });
     jmDeklaracije.setText("Ispis deklaracije");
     jmDeklaracije.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -166,6 +173,7 @@ public class menuIzvMalo extends JMenu {
     this.add(jmSpecKart);
     this.add(jmCijenePol);
     this.add(jmDeklaracije);
+    this.add(jmPartNal);
     this.addSeparator();
     this.add(jmKPR);
     this.add(jmZOP);
@@ -199,6 +207,9 @@ public class menuIzvMalo extends JMenu {
   }
   void jmCijenePol_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmCijenePolDva", jmCijenePol.getText());
+  }
+  void jmPartNal_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.robno.raPartNal", jmPartNal.getText());
   }
   void jmDeklaracije_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmDeklaracija", jmDeklaracije.getText());
