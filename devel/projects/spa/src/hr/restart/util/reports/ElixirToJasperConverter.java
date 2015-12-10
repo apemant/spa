@@ -466,7 +466,7 @@ public class ElixirToJasperConverter {
       tf.setPrintWhenExpression(pw);
       data.setUsedGetter("UIUprint");
     }
-    if (cs.indexOf("XRP")==0) {
+    if (cs.indexOf("XRP")>=0) {
       JRDesignExpression pw = new JRDesignExpression();
       pw.setText("$F{XRPprint}");
       pw.setValueClass(Boolean.class);
