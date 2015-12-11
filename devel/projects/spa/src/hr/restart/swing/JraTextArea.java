@@ -17,6 +17,10 @@
 ****************************************************************************/
 package hr.restart.swing;
 
+import hr.restart.util.raMatPodaci;
+
+import java.awt.Container;
+import java.awt.Window;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -91,4 +95,47 @@ public class JraTextArea extends JdbTextArea {
   public int getRowsText() {
     return rowsText;
   }
+  public void addNotify() {
+    super.addNotify();
+    AWTKeyboard.registerKeyListener(this, new MyKeyListener());    
+  }
+  
+  public void removeNotify() {
+    super.removeNotify();
+    AWTKeyboard.unregisterComponent(this);
+  }
+  
+  void copyPrevious() {
+    Container c = this;
+    while (c != null) {
+        if (c instanceof Window) break;
+        if (c instanceof JraPanel && ((JraPanel) c).getOwner() != null)
+            break;
+        c = c.getParent();
+    }
+    if (c instanceof JraPanel) {
+        raMatPodaci owner = ((JraPanel) c).getOwner();
+        owner.restorePreviousValue(this);
+    }
+  }
+  
+  class MyKeyListener extends java.awt.event.KeyAdapter {
+    public void keyPressed(KeyEvent e) {
+        if  (e.getKeyCode()==e.VK_F4) {
+            try {
+                copyPrevious();
+                e.consume();
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
+        } else if  (e.getKeyCode()==e.VK_F10) {
+          try {
+            dataBinder.postText2();
+          } catch (Exception ex){
+            e.consume();
+          }
+      }
+    }
+  }
+  
 }
