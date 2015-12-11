@@ -217,7 +217,10 @@ public class upUnFuckDoc extends raUpitFat {
     jtfZavDatum.setColumnName("zavDatum");
     jtfZavDatum.setText("");
     jtfZavDatum.setHorizontalAlignment(SwingConstants.CENTER);
-
+  
+    getJPTV().addTableModifier(new hr.restart.swing.raTableColumnModifier("CPAR", 
+        new String[] {"CPAR", "NAZPAR" }, dm.getPartneri()));
+    
     showDefaultValues();
   }
 
