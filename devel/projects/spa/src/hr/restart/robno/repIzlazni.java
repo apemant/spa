@@ -75,6 +75,7 @@ public class repIzlazni implements raReportData {
   private String specGroup;
   private String specText, matText, radText;
   private String specForm, fiskForm;
+  private String inoNap, euNap;
   
   protected BigDecimal dineto, diprodbp, diprodsp;
     
@@ -82,7 +83,7 @@ public class repIzlazni implements raReportData {
   
   protected String lastDok = null;
   
-  protected String naps = "";
+  protected String naps = "", pnaps = "";
   protected HashSet allNaps = new HashSet();
   
   protected boolean predveza = false;
@@ -105,16 +106,10 @@ public class repIzlazni implements raReportData {
 //      sysoutTEST s = new sysoutTEST(false);
 //      s.prn(ds);
       ru.setDataSet(ds);
-      rekapPorez();
-      nacPl();
-      setZnacajkeSubjekta();
-      checkSpecGroup();
-      checkPredVeza();
       lastDok = getFormatBroj();
-      naps = "";
-      allNaps.clear();
-      dineto = diprodbp = diprodsp = Aus.zero2;
     }
+    initDok();
+    checkSpecGroup();
   	setParams();
     cache.clear();
     //dm.getVTText().refresh();    
@@ -188,20 +183,30 @@ public class repIzlazni implements raReportData {
     String nowDok = getFormatBroj();
     if (lastDok != null && !nowDok.equals(lastDok)) {
       lastDok = nowDok;
-      naps = "";
       modParams();
-      rekapPorez();
-      nacPl();
-      setZnacajkeSubjekta();
-      checkPredVeza();
+      initDok();
       dokChanged();
-      dineto = diprodbp = diprodsp = Aus.zero2;
     }
     dineto = dineto.add(ds.getBigDecimal("INETO"));
     diprodbp = diprodbp.add(ds.getBigDecimal("IPRODBP"));
     diprodsp = diprodsp.add(ds.getBigDecimal("IPRODSP"));
     checkNap();
     return this;
+  }
+  
+  private void initDok() {
+    rekapPorez();
+    nacPl();
+    setZnacajkeSubjekta();
+    checkPredVeza();
+    naps = "";
+    allNaps.clear();
+    dineto = diprodbp = diprodsp = Aus.zero2;
+    pnaps = "";
+    if (getCPAR() != 0 && lD.raLocate(dm.getPartneri(), "CPAR", ds)) {
+      if (dm.getPartneri().getString("DI").equals("E")) pnaps = euNap;
+      if (dm.getPartneri().getString("DI").equals("I")) pnaps = inoNap;
+    }
   }
   
   protected void dokChanged() {
@@ -2035,6 +2040,10 @@ public BigDecimal getIPRODSP() {
   public String getARTNAP() {
     return naps;
   }
+  
+  public String getPARTNAP() {
+    return pnaps;
+  }
 
   // radni nalozi handlers
 
@@ -2292,6 +2301,17 @@ public BigDecimal getIPRODSP() {
     gotpar = "D".equalsIgnoreCase(
         frmParam.getParam("robno", "gotPar", "N",
         "Gotovinski raèuni za partnere (D,N)"));
+    inoNap = frmParam.getParam("robno", "inoNap", "",
+        "Šifra napomene za raèune za inozemne partnere (PARTNAP)");
+    euNap = frmParam.getParam("robno", "euNap", "",
+        "Šifra napomene za raèune za partnere iz EU (PARTNAP)");
+    
+    if (inoNap.length() > 0 && lD.raLocate(dm.getNapomene(), "CNAP", inoNap))
+      inoNap = dm.getNapomene().getString("NAZNAP");
+    else inoNap = "";
+    if (euNap.length() > 0 && lD.raLocate(dm.getNapomene(), "CNAP", euNap))
+      euNap = dm.getNapomene().getString("NAZNAP");
+    else euNap = "";
     
     String npref = frmParam.getParam("robno", "prefixPar" + getCSKL());
     if (npref != null) prefn = npref;
