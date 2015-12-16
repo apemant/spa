@@ -260,6 +260,9 @@ public class upNezaracunatiDokumentiObrRac extends raUpitFat {
     jp.add(jtfZavDatum, new XYConstraints(255, 70, 100, -1));
     jp.add(jlDatum1, new XYConstraints(15, 72, -1, -1));
     jp.add(rcmbVrstaRacuna,  new XYConstraints(360, 70, 245, 21));
+    
+    getJPTV().addTableModifier(new hr.restart.swing.raTableColumnModifier("CPAR", 
+        new String[] {"CPAR", "NAZPAR" }, dm.getPartneri()));
   }
   
   public boolean isIspis() {
