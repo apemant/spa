@@ -145,7 +145,8 @@ public class frmSkladiste extends raMatPodaci {
     {res.getString("rcbVRZALmalo_text"),"M"},
     {"Nabavna cijena - FIFO","F"},
     {"Nabavna cijena - LIFO","L"},
-    {"Nabavna cijena - HIFO","H"}
+    {"Nabavna cijena - HIFO","H"},
+    {"Fiksna nabavna cijena","X"}
     });
     rcbTIPSKL.setRaDataSet(getRaQueryDataSet());
     rcbTIPSKL.setRaColumn("TIPSKL");
