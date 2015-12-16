@@ -1814,6 +1814,7 @@ System.out.println(StavkeSet.getInt("CARt"));
 		
 		if (AST.gettrenSTANJE().getRowCount() != 0) {
 			lc.TransferFromDB2Class(AST.gettrenSTANJE(), rKD.stanje);
+			if (Artikli.loc(rIT.getDetailSet())) rKD.setupArt(Artikli.get());
 			rKD.setWhat_kind_of_document(rIT.what_kind_of_dokument);
 			rKD.setVrzal(rIT.getDetailSet().getString("CSKL"));
 			rKD.kalkSkladPart();

@@ -31,6 +31,7 @@ public class raKalkulBDDoc extends raTopCalcUtil {
   private BigDecimal Nula = Aus.zero2;
   private BigDecimal tmpBD = Aus.zero2;
   private BigDecimal tmpBD2 = Aus.zero2;
+  public BigDecimal anc, avc, amc;
 
   private BigDecimal tmpBDMC = Aus.zero2;
   private boolean isMCFix = false;
@@ -161,12 +162,23 @@ public class raKalkulBDDoc extends raTopCalcUtil {
       kalkResetSkladPart();
     }
   }
+  
+  public void setupArt(ReadRow art) {
+    anc = art.getBigDecimal("NC");
+    avc = art.getBigDecimal("VC");
+    amc = art.getBigDecimal("MC");
+  }
 
   public void SetupPriceForSkladSide(){
     stavka.nc   = stanje.nc;
     stavka.vc   = stanje.vc;
     stavka.mc   = stanje.mc;
     stavka.zc   = stanje.zc;
+    if (stanje.sVrSklad.equals("X")) {
+      stavka.nc = stavka.zc = anc;
+      stavka.vc = avc;
+      stavka.mc = amc;
+    }
   }
 
   /**

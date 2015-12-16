@@ -4419,6 +4419,7 @@ System.out.println("findCjenik::else :: "+sql);
 		lc.TransferFromDB2Class(AST.gettrenSTANJE(), rKD.stanje);
 		// rKD.setVrzal(vrzal);
 		// rKD.stavka.rezkol = getMasterSet().getString("REZKOL");
+		if (Artikli.loc(getDetailSet())) rKD.setupArt(Artikli.get());
 		rKD.KalkulacijaStavke(what_kind_of_dokument, how, raDetail.getMode(),
 				getMasterSet().getString("CSKL"), isMaloprodajnaKalkulacija);
 		rKD.KalkulacijaStanje(what_kind_of_dokument);
@@ -4427,8 +4428,8 @@ System.out.println("findCjenik::else :: "+sql);
 			Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
 		if (what_kind_of_dokument.equals("OTP")) {
 	       if (how.equals("FC") || how.equals("FMC")) {
-	         lD.raLocate(dm.getArtikli(), "CART", getDetailSet());
-	         lD.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli());
+	         //lD.raLocate(dm.getArtikli(), "CART", getDetailSet());
+	         lD.raLocate(dm.getPorezi(), "CPOR", Artikli.get());
 	         if (how.equals("FC"))
 	           oldmc = oldvc.multiply(dm.getPorezi().getBigDecimal("UKUPOR").movePointLeft(2).add(Aus.one0)).setScale(2, BigDecimal.ROUND_HALF_UP);
 	         else oldvc = oldmc.divide(dm.getPorezi().getBigDecimal("UKUPOR").movePointLeft(2).add(Aus.one0), 2, BigDecimal.ROUND_HALF_UP);

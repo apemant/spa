@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.JraTextMultyKolField;
@@ -469,6 +470,8 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     AST.findStanjeUnconditional(getMasterSet().getString("GOD"),
         getMasterSet().getString("CSKLIZ"),
                     getDetailSet().getInt("CART"));
+    if (Artikli.loc(getDetailSet()))
+      rKM.setupArt(Artikli.get().getBigDecimal("NC"), Artikli.get().getBigDecimal("VC"), Artikli.get().getBigDecimal("MC"));
     StanjeIzlaz = AST.gettrenSTANJE();
     ASTUL.findStanjeUnconditional(getMasterSet().getString("GOD"),
         getMasterSet().getString("CSKLUL"),
@@ -563,10 +566,8 @@ public class raMEI extends hr.restart.util.raMasterDetail{
   }
   public boolean ValDPEscapeDetail(char mode) {
     if (mode=='N') {
-      if (this.raDM.rpcart.getCART().trim().equals("")) {
+      if (this.raDM.rpcart.getCART().trim().equals("")) 
         return true;
-      }
-      else {
 
         rKM.stavka.Init();
         rKM.stavkaold.Init();
@@ -576,11 +577,8 @@ public class raMEI extends hr.restart.util.raMasterDetail{
         this.raDM.rpcart.setCART();
         this.raDM.rpcart.SetDefFocus();
         return false;
-      }
     }
-    else {
-      return true;
-    }
+    return true;
   }
 
   public void after_lookUp(){

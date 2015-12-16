@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
@@ -474,23 +475,19 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
 
   public boolean ValDPEscapeDetail(char mode) {
     if (mode=='N') {
-      if (this.raDM.rpcart.getCART().trim().equals("")) {
+      if (this.raDM.rpcart.getCART().trim().equals("")) 
         return true;
-      }
-      else {
-        ClearStmeskla();
+
+      ClearStmeskla();
         raDM.TDS.Clean();
         this.raDM.enable_rapancart(true);
         this.raDM.enable_rest(false);
         this.raDM.rpcart.setCART();
         this.raDM.rpcart.SetDefFocus();
         return false;
-      }
     }
-    else {
       this.raDM.InitRaPanCartDP();
       return true;
-    }
   }
 
   public String PrepSql(boolean detail){
@@ -540,6 +537,10 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
       StanjeIzlaz.setString("CSKL", getDetailSet().getString("CSKLIZ"));
       StanjeIzlaz.post();
     }
+    
+    if (Artikli.loc(getDetailSet()))
+      rKM.setupArt(Artikli.get().getBigDecimal("NC"), Artikli.get().getBigDecimal("VC"), Artikli.get().getBigDecimal("MC"));
+    
     //SanityCheck.stanjeArt(StanjeIzlaz, getDetailSet(), "CSKLIZ");
 
 //    ASTUL.gettrenSTANJE(getDetailSet().getString("GOD"),

@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.SEQ;
 import hr.restart.baza.VTprijenos;
 import hr.restart.sisfun.frmParam;
@@ -152,6 +153,8 @@ public class raAutoOtpfromRac {
               "stdoki"));
       stavke_otp.setString("VEZA", stav.getString("ID_STAVKA"));
       stavke_otp.setString("REZKOL", stav.getString("REZKOL"));
+      
+      if (Artikli.loc(stav)) rKD.setupArt(Artikli.get());
     
       rKD.stanje.Init();
       rKD.stavka.Init();

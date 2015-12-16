@@ -26,6 +26,7 @@ public class raKalkulBDMeskla {
   public raFakeBDStmeskla stavkaold;
   public raFakeBDStanje stanjeul;
   public raFakeBDStanje stanjeiz;
+  public BigDecimal anc, avc, amc;
   public raKalkulBDStanje rKS = new raKalkulBDStanje();
   private BigDecimal Sto = new BigDecimal("100.00");
   private BigDecimal Nula = Aus.zero2;
@@ -58,6 +59,11 @@ public class raKalkulBDMeskla {
     stavka.snc        = stanjeul.nc;
     stavka.svc        = stanjeul.vc;
     stavka.smc        = stanjeul.mc;
+    if (stanjeul.sVrSklad.equals("X")) {
+      stavka.snc = anc;
+      stavka.svc = avc;
+      stavka.smc = amc;
+    }
   }
 
   public void returnOldPrice() {
@@ -73,12 +79,23 @@ public class raKalkulBDMeskla {
     }
   }
 
+  public void setupArt(BigDecimal nc, BigDecimal vc, BigDecimal mc) {
+    anc = nc;
+    avc = vc;
+    amc = mc;
+  }
+  
   public void setupPriceMEU(){
 
     initTmp();
     stavka.nc = stanjeul.nc;
     stavka.vc = stanjeul.vc;
     stavka.mc = stanjeul.mc;
+    if (stanjeul.sVrSklad.equals("X")) {
+      stavka.nc = stavka.zcul = anc;
+      stavka.vc = avc;
+      stavka.mc = amc;
+    }
 //    stavka.zc = stanjeul.zc;
 //    stavka.pmar = (stavka.vc-stavka.nc)/(stavka.nc/100);
     tmpBD  = stavka.vc.subtract(stavka.nc);
@@ -126,10 +143,17 @@ public class raKalkulBDMeskla {
 
   public void setupPrice(){
     initTmp();
+        
     stavka.nc = stanjeiz.nc;
     stavka.vc = stanjeiz.vc;
     stavka.mc = stanjeiz.mc;
     stavka.zc = stanjeiz.zc;
+    
+    if (stanjeiz.sVrSklad.equals("X")) {
+      stavka.nc = stavka.zc = stavka.zcul = anc;
+      stavka.vc = avc;
+      stavka.mc = amc;
+    }
     
     if ( stanjeul.sVrSklad.equals("N")) {
     	stavka.zcul = stavka.nc;
@@ -176,7 +200,7 @@ public class raKalkulBDMeskla {
     tmpBD2 = stavka.kol.multiply(stavka.vc).setScale(2,BigDecimal.ROUND_HALF_UP);
     stavka.iporiz = tmpBD.subtract(tmpBD2);
 //
-    if ( stanjeiz.sVrSklad.equals("N")) {
+    if ( stanjeiz.sVrSklad.equals("N") || stanjeiz.sVrSklad.equals("X")) {
       stavka.imariz    = Nula;
       stavka.iporiz    = Nula;
     }
@@ -194,7 +218,7 @@ public class raKalkulBDMeskla {
     tmpBD2 = stavka.kol.multiply(stavka.vc).setScale(2,BigDecimal.ROUND_HALF_UP);
     stavka.iporul = tmpBD.subtract(tmpBD2);
 //
-    if ( stanjeul.sVrSklad.equals("N")) {
+    if ( stanjeul.sVrSklad.equals("N") || stanjeiz.sVrSklad.equals("X")) {
       stavka.imarul    = Nula ;
       stavka.iporul    = Nula ;
       stavka.porav     = Nula ;

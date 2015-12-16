@@ -222,7 +222,7 @@ System.out.println("stanje.kolsklad "+stanje.kolsklad);
 
   private void setupZC(raFakeBDStanje stanje){
 
-    if ( stanje.sVrSklad.equals("N")){
+    if ( stanje.sVrSklad.equals("N") ||  stanje.sVrSklad.equals("X")){
       stanje.zc    = stanje.nc;
     } else if ( stanje.sVrSklad.equals("V")) {
       stanje.zc    = stanje.vc;
