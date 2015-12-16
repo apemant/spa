@@ -103,10 +103,7 @@ public class raDataSet extends QueryDataSet {
     remember(getTableName().toLowerCase());
     return super.open();*/
     if (!isOpen() || dsync || inOpenMethod) {
-      if (!dsync && !inOpenMethod) {
-        Refresher.postpone();
-        dM.getSynchronizer().markAsFresh(this);
-      }
+      if (!dsync && !inOpenMethod) Refresher.postpone();
       long start = System.currentTimeMillis();
       boolean ret = super.open();
       long end = System.currentTimeMillis();
@@ -114,6 +111,8 @@ public class raDataSet extends QueryDataSet {
         System.out.println("Opened "+getTableName()+
             " (" + getQuery().getQueryString() + ") in "+ (end - start) + "ms");
       }
+      if (!dsync && !inOpenMethod) 
+        dM.getSynchronizer().markAsFresh(this);
       return ret;
     }
     try {
