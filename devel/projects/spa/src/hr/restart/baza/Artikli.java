@@ -17,7 +17,10 @@
 ****************************************************************************/
 package hr.restart.baza;
 
+import hr.restart.util.HashDataSet;
+
 import com.borland.dx.dataset.DataModule;
+import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Artikli extends KreirDrop implements DataModule {
@@ -25,6 +28,8 @@ public class Artikli extends KreirDrop implements DataModule {
   private static Artikli inst = new Artikli();
   QueryDataSet artikliaktiv = new raDataSet();
   QueryDataSet artikliroba = new raDataSet();
+  HashDataSet aktivhash;
+  int dsSerial = -1;
 
   {
     createFilteredDataSet(artikliaktiv, "aktiv = 'D'");
@@ -42,6 +47,32 @@ public class Artikli extends KreirDrop implements DataModule {
 
   public com.borland.dx.sql.dataset.QueryDataSet getAktiv() {
     return artikliaktiv;
+  }
+  
+  private static void checkHash() {
+    if (inst.aktivhash == null) {
+      inst.aktivhash = new HashDataSet(inst.artikliaktiv, "CART");
+      inst.dsSerial = dM.getSynchronizer().getSerialNumber("ARTIKLI");
+    } else {
+      int now = dM.getSynchronizer().getSerialNumber("ARTIKLI");
+      if (now != inst.dsSerial)
+        inst.aktivhash = new HashDataSet(inst.artikliaktiv, "CART");
+      inst.dsSerial = now;
+    }
+  }
+  
+  public static boolean loc(ReadRow art) {
+    checkHash();
+    return inst.aktivhash.loc(art);
+  }
+  
+  public static boolean loc(int art) {
+    checkHash();
+    return inst.aktivhash.loc(Integer.toString(art));
+  }
+  
+  public static ReadRow get() {
+    return inst.aktivhash.get();
   }
   
   /*public void fixSort() {

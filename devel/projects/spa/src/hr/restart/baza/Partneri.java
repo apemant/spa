@@ -17,7 +17,10 @@
 ****************************************************************************/
 package hr.restart.baza;
 
+import hr.restart.util.HashDataSet;
+
 import com.borland.dx.dataset.DataModule;
+import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class Partneri extends KreirDrop implements DataModule {
@@ -28,6 +31,8 @@ public class Partneri extends KreirDrop implements DataModule {
   QueryDataSet partnerikup = new raDataSet();
   QueryDataSet partneridob = new raDataSet();
   QueryDataSet partnerioboje = new raDataSet();
+  HashDataSet aktivhash;
+  int dsSerial = -1;
 
   {
     createFilteredDataSet(partneriaktiv, "aktiv = 'D'");
@@ -56,6 +61,32 @@ public class Partneri extends KreirDrop implements DataModule {
 
   public com.borland.dx.sql.dataset.QueryDataSet getOboje() {
     return partnerioboje;
+  }
+  
+  private static void checkHash() {
+    if (inst.aktivhash == null) {
+      inst.aktivhash = new HashDataSet(inst.partneriaktiv, "CPAR");
+      inst.dsSerial = dM.getSynchronizer().getSerialNumber("PARTNERI");
+    } else {
+      int now = dM.getSynchronizer().getSerialNumber("PARTNERI");
+      if (now != inst.dsSerial)
+        inst.aktivhash = new HashDataSet(inst.partneriaktiv, "CPAR");
+      inst.dsSerial = now;
+    }
+  }
+  
+  public static boolean loc(ReadRow part) {
+    checkHash();
+    return inst.aktivhash.loc(part);
+  }
+  
+  public static boolean loc(int part) {
+    checkHash();
+    return inst.aktivhash.loc(Integer.toString(part));
+  }
+  
+  public static ReadRow get() {
+    return inst.aktivhash.get();
   }
 
   public boolean isAutoRefresh() {
