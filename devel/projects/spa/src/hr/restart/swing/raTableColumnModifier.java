@@ -67,9 +67,10 @@ public class raTableColumnModifier extends raTableModifier {
     dsColsReplace = columnsReplace;
     if (setToSearch != null) {
       setToSearch = getScopedSet(setToSearch, keyColumnsSearch, columnsReplace);
-      if (setToSearch instanceof raDataSet) ((raDataSet) setToSearch).enableSync(false);
+      //if (setToSearch instanceof raDataSet) ((raDataSet) setToSearch).enableSync(false);
       dsToSearch = keyColumns.length == 1 ? new HashDataSet(setToSearch, keyColumnsSearch[0]) : new HashDataSet(setToSearch, keyColumnsSearch);
-      if (setToSearch instanceof raDataSet) ((raDataSet) setToSearch).enableSync(true);
+      dsSerial = dM.getSynchronizer().getSerialNumber(dsToSearch.get().getTableName());
+      //if (setToSearch instanceof raDataSet) ((raDataSet) setToSearch).enableSync(true);
     }
     
     dsColsKey = keyColumns;
@@ -91,6 +92,7 @@ public class raTableColumnModifier extends raTableModifier {
         else orig = new QueryDataSet();
         Aus.setFilter((QueryDataSet) orig, nq);
         System.out.println(nq);
+        orig.open();
       }
     }
     
