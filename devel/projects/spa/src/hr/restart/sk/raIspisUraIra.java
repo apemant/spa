@@ -533,7 +533,7 @@ public class raIspisUraIra extends raFrame {
   
   // WARNING:  HARDCODED!!
   private BigDecimal getColValue(DataSet ds, boolean ulaz) {
-    if ((ulaz && ds.getShort("CKOLONE") == 9) ||
+    if ((ulaz && ds.getShort("CKOLONE") == utot) ||
         (!ulaz && ds.getShort("CKOLONE") != 6))
       return ds.getBigDecimal("IP").subtract(ds.getBigDecimal("ID"));
     return ds.getBigDecimal("ID").subtract(ds.getBigDecimal("IP"));
@@ -670,6 +670,7 @@ public class raIspisUraIra extends raFrame {
     }
   }
 
+  int utot = 9;
   void findUraIra(String ui, boolean addSums) {
     int skiprbr = 0, rbr = 0, broj = 1;
     boolean extbr = false;
@@ -694,6 +695,7 @@ public class raIspisUraIra extends raFrame {
       c7.set(2013,6,1,0,0,0);
       firsty = new Timestamp(c7.getTimeInMillis());
     }
+    if (dmfrom.before(new Timestamp(c7.getTimeInMillis()))) utot = 10;
     Timestamp lasty = ut.addDays(firstm, -1);
     setUraIraDataSet(ui);
     DataSet ds;
