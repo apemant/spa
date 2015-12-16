@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.RN;
 import hr.restart.baza.Sklad;
@@ -451,19 +452,12 @@ public class raIZD extends raIzlazTemplate  {
       getDetailSet().setString("VRDOK",getMasterSet().getString("VRDOK"));
       getDetailSet().setInt("BRDOK",getMasterSet().getInt("BRDOK"));
       getDetailSet().setShort("RBR", ++myrbr);
-      getDetailSet().setInt("RBSID", (int) ++myrbs);
+      getDetailSet().setInt("RBSID", ++myrbs);
       
       getDetailSet().setInt("CART", sta.getInt("CART"));
-      if (hr.restart.util.lookupData.getlookupData().
-          raLocate(dm.getAllArtikli(),new String[] {"CART"},
-      new String[] {String.valueOf(sta.getInt("CART"))})){
-      	System.out.println(dm.getAllArtikli().getString("NAZART"));      	
-      	
-        getDetailSet().setString("CART1",dm.getAllArtikli().getString("CART1"));
-        getDetailSet().setString("BC",dm.getAllArtikli().getString("BC"));
-        getDetailSet().setString("NAZART",dm.getAllArtikli().getString("NAZART"));
-        getDetailSet().setString("JM",dm.getAllArtikli().getString("JM"));
-      }
+      if (Artikli.loc(sta))
+        dM.copyColumns(Artikli.get(), getDetailSet(), new String[] {"CART1", "BC", "NAZART", "JM"});
+
       getDetailSet().setString("ID_STAVKA", raControlDocs.getKey(getDetailSet(), idkey, "stdoki"));
       
       rKD.stavka.kol = Aus.zero3;
@@ -541,16 +535,11 @@ System.out.println("nisam nasao "+realStavke.getInt("CARTZAM"));
       getDetailSet().setInt("RBSID", (int) getDetailSet().getShort("RBR"));
 
       getDetailSet().setInt("CART",realStavke.getInt("CARTZAM"));
-      if (hr.restart.util.lookupData.getlookupData().
-          raLocate(dm.getAllArtikli(),new String[] {"CART"},
-      new String[] {String.valueOf(realStavke.getInt("CARTZAM"))})){
-System.out.println(dm.getAllArtikli().getString("NAZART"));      	
-      	
-        getDetailSet().setString("CART1",dm.getAllArtikli().getString("CART1"));
-        getDetailSet().setString("BC",dm.getAllArtikli().getString("BC"));
-        getDetailSet().setString("NAZART",dm.getAllArtikli().getString("NAZART"));
-        getDetailSet().setString("JM",dm.getAllArtikli().getString("JM"));
+      if (Artikli.loc(realStavke.getInt("CARTZAM"))) {
+        dM.copyColumns(Artikli.get(), getDetailSet(), new String[] {"CART1", "BC", "NAZART", "JM"});
+        rKD.setupArt(Artikli.get());
       }
+
       getDetailSet().setBigDecimal("KOL",realStavke.getBigDecimal("KOLZAM"));
       getDetailSet().setString("CRADNAL",MP.panelBasic.jpRN.getCRADNAL());
 //      getDetailSet().setTimestamp("CRADNAL",MP.panelBasic.jpRN.g.getCRADNAL());
