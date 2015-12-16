@@ -698,6 +698,7 @@ public class raExtendedTable extends JraTable2 {
     try {
       out = new FileOutputStream(output);
       wb.write(out);
+      wb.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
