@@ -280,8 +280,7 @@ public class frmBankSpec extends frmIzvjestajiPL{
 
     if(jlrCorg.getText().equals(""))
     	cOrgAdd = OrgStr.getCorgsKnjigCond().qualified("radnicipl").toString();
-    else
-      cOrgAdd = "radnicipl.corg='"+jlrCorg.getText()+"'";
+    else cOrgAdd = OrgStr.getCorgsCond(jlrCorg.getText()).qualified("radnicipl").toString();
 
     if(!jlfCIspMJ.getText().equals(""))
       ispMjAdd = " and radnicipl.cisplmj="+jlfCIspMJ.getText();
@@ -365,6 +364,9 @@ p18 Datum predaje
     
     fV.save(false);
     repDiskZapUN.setVrstaNalogaUDatoteci("4");
+    repDiskZapUN.setRbrIspisa(fieldSet.getShort("RBROD"));
+    
+    
     if(qds.getRowCount() > 0)
       return true;
     return false;
