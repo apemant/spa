@@ -37,6 +37,7 @@ public class repDiskZapUN extends repDisk {
   repMemo memo = repMemo.getrepMemo();
   public String fileName="";
   private static String vrstaNalogaUDatoteci = null;//"1";
+  private static String vrPrim = "100";//"1";
 
   public repDiskZapUN() {
     super(1000);
@@ -132,6 +133,11 @@ public class repDiskZapUN extends repDisk {
   public static void setVrstaNalogaUDatoteci(String _vrstaNalogaUDatoteci) {
     vrstaNalogaUDatoteci = _vrstaNalogaUDatoteci;
   }
+  
+  public static void setRbrIspisa(int rbr) {
+    vrPrim = frmParam.getParam("pl", "vrPrim" + rbr, "100", "Šifra vrste primanja za rbr obraèuna " + rbr);
+  }
+  
   private String datumParser(String datum, int i)
   {
     if(i==0) //DDMMGG
@@ -296,7 +302,7 @@ public class repDiskZapUN extends repDisk {
         sb.replace(362,362+pnbo1.length(),pnbo1);
         sb.replace(366,366+pnbo2.length(),pnbo2);
         if (getVrstaNalogaUDatoteci().equals("4")) {
-          sb.replace(548, 551, "100"); //sifra vrste osobnog primanja
+          sb.replace(548, 551, vrPrim); //sifra vrste osobnog primanja
         }
         sb.replace(546, 546+1, "3");//troskovna opcija
         
