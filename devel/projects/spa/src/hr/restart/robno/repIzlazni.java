@@ -108,9 +108,9 @@ public class repIzlazni implements raReportData {
       ru.setDataSet(ds);
       lastDok = getFormatBroj();
     }
-    initDok();
     checkSpecGroup();
   	setParams();
+  	initDok();
     cache.clear();
     //dm.getVTText().refresh();    
   }
