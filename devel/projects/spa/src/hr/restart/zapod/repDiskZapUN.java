@@ -367,17 +367,18 @@ public class repDiskZapUN extends repDisk {
 
   private String getSvotaPN(String zr, short rbr)
   {
-    String svota, temp;
+    String temp;
 /*
  //ANDREJ: Ovo je totalna nebuloza i nemrem dokuciti cemu sluzi ovaj maliciozni kod 
     String qStr = "select iznos as iznos from virmani where brracuk='"+zr+"' and rbr="+rbr;
     QueryDataSet ds = Util.getNewQueryDataSet(qStr);
     ds.open();
 */
-    temp = qds.getBigDecimal("IZNOS").toString();
-    svota = temp.substring(0,temp.indexOf("."))+temp.substring(temp.indexOf(".")+1, temp.length());
+    temp = qds.getBigDecimal("IZNOS").movePointRight(2).toBigInteger().toString();
+    
+    //svota = temp.substring(0,temp.indexOf("."))+temp.substring(temp.indexOf(".")+1, temp.length());
 
-    return formatString(svota,15);
+    return formatString(temp,15);
   }
   private String getBrNaloga(String zr, String ckey)
   {
@@ -395,3 +396,11 @@ public class repDiskZapUN extends repDisk {
       return vl.maskString(str,'0',len);
   }
 }
+
+
+
+
+
+
+
+
