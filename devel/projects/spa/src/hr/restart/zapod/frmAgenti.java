@@ -20,8 +20,10 @@ package hr.restart.zapod;
 
 
 import hr.restart.baza.dM;
+import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raCommonClass;
@@ -97,6 +99,10 @@ public class frmAgenti extends raMatPodaci {
 
   JraTextField jrEMADR = new JraTextField();
   dlgTotalAgent dtp = new dlgTotalAgent();
+  
+  JlrNavField jlrCNAC = new JlrNavField();
+  JlrNavField jlrNAZNAC = new JlrNavField();
+  JraButton jbCNAC = new JraButton();
 
   public frmAgenti() {
 
@@ -177,11 +183,24 @@ public class frmAgenti extends raMatPodaci {
 
     jcbAktivan.setUnselectedDataValue("N");
 
+    
+    jlrCNAC.setColumnName("CNAC");
+    jlrCNAC.setDataSet(getRaQueryDataSet());
+    jlrCNAC.setColNames(new String[] {"NAZNAC"});
+    jlrCNAC.setTextFields(new javax.swing.text.JTextComponent[] {jlrNAZNAC});
+    jlrCNAC.setRaDataSet(dm.getNacotp());
+    jlrCNAC.setSearchMode(0);
+    jlrCNAC.setVisCols(new int[] {0,1});
+    jlrCNAC.setNavButton(jbCNAC);
+    
+    jlrNAZNAC.setSearchMode(1);
+    jlrNAZNAC.setColumnName("NAZNAC");
+    jlrNAZNAC.setNavProperties(jlrCNAC);
 
 
     xYLayout1.setWidth(570);
 
-    xYLayout1.setHeight(126);
+    xYLayout1.setHeight(151);
 
     jlAgent.setText("Agent");
 
@@ -203,6 +222,10 @@ public class frmAgenti extends raMatPodaci {
 
     jp.add(new JLabel("E-Mail"), new XYConstraints(15, 80, -1, -1));
     jp.add(jrEMADR, new XYConstraints(150, 80, 405, -1));
+    jp.add(new JLabel("Otprema"),  new XYConstraints(15, 105, -1, -1));
+    jp.add(jlrCNAC,  new XYConstraints(150, 105, 100, -1));
+    jp.add(jlrNAZNAC,    new XYConstraints(255, 105, 270, -1));
+    jp.add(jbCNAC,    new XYConstraints(534, 105, 21, 21));
     
     
     this.addOption(new raNavAction("Promet", raImages.IMGMOVIE, KeyEvent.VK_F7) {
