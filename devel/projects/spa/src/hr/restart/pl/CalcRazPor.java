@@ -140,10 +140,13 @@ public class CalcRazPor {
     //get data
     String inqrange = raPlObrRange.getInQueryIsp(_godina,1,_godina,12,"");
     Condition condcradnik = Condition.equal("CRADNIK",cradnik);
+    String totalcond = condcradnik+" and "+inqrange;
     if (cradnik.contains("@")) {//hackchuga samo takva za oj4
-      condcradnik = Condition.in("CRADNIK", new String[] {cradnik,cradnik.substring(0,cradnik.indexOf("@"))});
+      Condition othercradnik = Condition.equal("CRADNIK", cradnik.substring(0,cradnik.indexOf("@")));
+      String otherinqrange = raPlObrRange.getInQueryIsp(_godina,1,_godina,12,"",cradnik.substring(cradnik.indexOf("@") + 1));
+      totalcond = "(" + totalcond + ") or (" + othercradnik+" and "+otherinqrange + ")";
     }
-    QueryDataSet raddata = Kumulradarh.getDataModule().getTempSet(condcradnik+" and "+inqrange);
+    QueryDataSet raddata = Kumulradarh.getDataModule().getTempSet(totalcond);
     if (log.isDebugEnabled()) {
       log.debug(raddata.getQuery().getQueryString());
     }
@@ -152,7 +155,7 @@ public class CalcRazPor {
     StorageDataSet orgdata = new StorageDataSet();
     QueryDataSet orgdataqry = Util.getNewQueryDataSet(
         "SELECT godobr, mjobr, rbrobr, datumispl, MINPL FROM kumulorgarh WHERE "
-        +Condition.equal("CORG",corg)+" AND "+inqrange+" AND sati>0"
+        +Condition.equal("CORG",corg)+" AND "+inqrange
         );
       orgdata.setColumns(orgdataqry.cloneColumns());
       String oldmonth="##";
@@ -469,7 +472,7 @@ System.out.println(_q);
     lastarh.open();
     QueryDataSet lastodbici = Util.getNewQueryDataSet(_q = "SELECT odbiciarh.obrstopa FROM odbiciarh,kumulorgarh WHERE " +
         "odbiciarh.godobr = kumulorgarh.godobr AND odbiciarh.mjobr = kumulorgarh.mjobr AND odbiciarh.rbrobr = kumulorgarh.rbrobr AND " +
-        Condition.equal("DATUMISPL", lastarh) + " AND "+olakqry);
+        Condition.equal("DATUMISPL", lastarh).and(Condition.equal("KNJIG", dlgGetKnjig.getKNJCORG())) + " AND "+olakqry);
 System.out.println(_q);
     lastodbici.open();
     BigDecimal lastkoef = getSum(lastodbici, "OBRSTOPA");
