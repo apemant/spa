@@ -16,6 +16,7 @@
 **
 ****************************************************************************/
 package hr.restart.robno;
+import hr.restart.baza.Artikli;
 import hr.restart.util.raTransaction;
 
 import javax.swing.JOptionPane;
@@ -222,6 +223,9 @@ public class raMEU extends raMEI {
     ASTUL.findStanjeUnconditional(getMasterSet().getString("GOD"),
             getMasterSet().getString("CSKLUL"),
             getDetailSet().getInt("CART"));
+    if (Artikli.loc(getDetailSet()))
+      rKM.setupArt(Artikli.get().getBigDecimal("NC"), Artikli.get().getBigDecimal("VC"), Artikli.get().getBigDecimal("MC"));
+
     StanjeUlaz =  ASTUL.gettrenSTANJE();
     lc.TransferFromDB2Class(StanjeUlaz,rKM.stanjeul);
     rKM.stanjeul.sVrSklad=ASTUL.VrstaZaliha(getMasterSet().getString("CSKLUL"));
