@@ -80,6 +80,7 @@ public class raKalkulBDMeskla {
   }
 
   public void setupArt(BigDecimal nc, BigDecimal vc, BigDecimal mc) {
+    System.out.println("Setup art " + nc + " " + vc + " " + mc);
     anc = nc;
     avc = vc;
     amc = mc;
@@ -92,7 +93,7 @@ public class raKalkulBDMeskla {
     stavka.vc = stanjeul.vc;
     stavka.mc = stanjeul.mc;
     if (stanjeul.sVrSklad.equals("X")) {
-      stavka.nc = stavka.zcul = anc;
+      stavka.nc = stavka.zcul = stavka.zc = anc;
       stavka.vc = avc;
       stavka.mc = amc;
     }
@@ -218,7 +219,7 @@ public class raKalkulBDMeskla {
     tmpBD2 = stavka.kol.multiply(stavka.vc).setScale(2,BigDecimal.ROUND_HALF_UP);
     stavka.iporul = tmpBD.subtract(tmpBD2);
 //
-    if ( stanjeul.sVrSklad.equals("N") || stanjeiz.sVrSklad.equals("X")) {
+    if ( stanjeul.sVrSklad.equals("N") || stanjeul.sVrSklad.equals("X")) {
       stavka.imarul    = Nula ;
       stavka.iporul    = Nula ;
       stavka.porav     = Nula ;
