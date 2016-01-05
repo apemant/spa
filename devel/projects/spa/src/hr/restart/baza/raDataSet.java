@@ -98,25 +98,27 @@ public class raDataSet extends QueryDataSet {
    * Oveeridano za provjeru azurnosti dataseta.
    */
   public boolean open() {
-    if (dM.isMinimal()) return super.open();
+    if (inOpenMethod || dM.isMinimal()) return super.open();
+    try {
+      inOpenMethod = true;
+    
     /*if (!memorized && (propagateChangesEnabled = (getTableName() != null)))
     remember(getTableName().toLowerCase());
     return super.open();*/
-    if (!isOpen() || dsync || inOpenMethod) {
-      if (!dsync && !inOpenMethod) Refresher.postpone();
-      long start = System.currentTimeMillis();
-      boolean ret = super.open();
-      long end = System.currentTimeMillis();
-      if (end - start > 500) {
-        System.out.println("Opened "+getTableName()+
-            " (" + getQuery().getQueryString() + ") in "+ (end - start) + "ms");
+      
+      if (!isOpen() || dsync) {
+        if (!dsync) Refresher.postpone();
+        long start = System.currentTimeMillis();
+        boolean ret = super.open();
+        long end = System.currentTimeMillis();
+        if (end - start > 500) {
+          System.out.println("Opened "+getTableName()+
+              " (" + getQuery().getQueryString() + ") in "+ (end - start) + "ms");
+        }
+        if (!dsync) dM.getSynchronizer().markAsFresh(this);
+        return ret;
       }
-      if (!dsync && !inOpenMethod) 
-        dM.getSynchronizer().markAsFresh(this);
-      return ret;
-    }
-    try {
-      inOpenMethod = true;
+
       long start = System.currentTimeMillis();
       dM.getSynchronizer().synchronize(this);
       long end = System.currentTimeMillis();
