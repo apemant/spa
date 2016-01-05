@@ -603,7 +603,8 @@ public class checkKartica {
               found = true;
               break;
           }
-      } else if (TypeDoc.getTypeDoc().isDocStdoku(kartica.getString("VRDOK"))) {
+      } else if (TypeDoc.getTypeDoc().isDocStdoku(kartica.getString("VRDOK")) 
+          && !kartica.getString("VRDOK").equals("PTE")) {
         found = true;
         break;
       }
@@ -630,6 +631,8 @@ public class checkKartica {
 	public void Izlaz() {
 	  
 	  boolean knj = knjHead.contains(getHeaderKey(kartica));
+	  
+	  if (!fixMes && kartica.getString("VRDOK").equals("MES")) knj = true;
 	  	  
 	  while (!knj && goingNeg() && pullUlaz());
 	  
@@ -641,16 +644,18 @@ public class checkKartica {
 	    
 	  }
 */
+	  BigDecimal kol = kartica.getBigDecimal("KOL");
+	  if (kartica.getString("VRDOK").equals("INV") || kartica.getString("VRDOK").equals("PTE"))
+	    kol = kol.negate();
 	    
 		karticatmp.setBigDecimal("KOL_TRENUTNO", karticatmp.getBigDecimal(
-				"KOL_TRENUTNO").subtract(kartica.getBigDecimal("KOL")));
+				"KOL_TRENUTNO").subtract(kol));
 		
 		//maxMinus = maxMinus.min(karticatmp.getBigDecimal("KOL_TRENUTNO"));
 
 		if (knj) Aus.sub(karticatmp, "IZAD_TRENUTNO", kartica, "IZAD");
 		else karticatmp.setBigDecimal("IZAD_TRENUTNO", karticatmp.getBigDecimal(
-				"IZAD_TRENUTNO").subtract(
-				kartica.getBigDecimal("KOL").multiply(
+				"IZAD_TRENUTNO").subtract(kol.multiply(
 						karticatmp.getBigDecimal("ZC_GOOD"))));
 
 		kartica.setBigDecimal("KOL_TRENUTNO", karticatmp
@@ -682,8 +687,8 @@ public class checkKartica {
 
 		if (knj) Aus.sub(karticatmp, "INAB_TRENUTNO", kartica, "INAB");
 		else karticatmp.setBigDecimal("INAB_TRENUTNO", (karticatmp
-				.getBigDecimal("INAB_TRENUTNO").subtract(kartica.getBigDecimal(
-				"KOL").multiply(kartica.getBigDecimal("NC_GOOD")))).setScale(2,
+				.getBigDecimal("INAB_TRENUTNO").subtract(kol.
+				    multiply(kartica.getBigDecimal("NC_GOOD")))).setScale(2,
 				BigDecimal.ROUND_HALF_UP));
 		
 		kartica.setBigDecimal("INAB_TRENUTNO", karticatmp
@@ -811,7 +816,8 @@ public class checkKartica {
 
 		// ulazi su svetinja !!!
 		
-		if (kartica.getString("VRDOK").equalsIgnoreCase("INV")){
+		if ((kartica.getString("VRDOK").equalsIgnoreCase("INV") || kartica.getString("VRDOK").equalsIgnoreCase("PTE"))
+		    && !knjHead.contains(getHeaderKey(kartica))) {
 			Izlaz();
 			return;
 		}
@@ -1417,7 +1423,7 @@ public class checkKartica {
           izlazi.setBigDecimal("ISP", kartica.getBigDecimal("ISP_GOOD"));
           izlazi.setBigDecimal("IRAZ", kartica.getBigDecimal("IZAD_GOOD"));
           izlazi.post();
-				} else if (kartica.getString("VRDOK").equalsIgnoreCase("INV")) {
+				} else if (kartica.getString("VRDOK").equalsIgnoreCase("INV") || kartica.getString("VRDOK").equalsIgnoreCase("PTE")) {
           String key = getRowKey(kartica);
           if (!ulazRows.containsKey(key)) {
             fatal.addError("Ne mogu pronaæi stavku ulaza "+key);
