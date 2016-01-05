@@ -123,6 +123,7 @@ ZAPORKA;text;30;;;Zaporka;*
 POSTOPROV;numeric;10,2;;;Provizija
 VRSTAPROV;char;1;;F;Vrsta provizije
 EMADR;char;60;;;E-mail;15
+CNAC;char;3;;;Otprema;5
 
 $VTCparHist
 CPAR;int;6;pkey;;Partner
