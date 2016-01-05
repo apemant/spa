@@ -98,7 +98,7 @@ public class ftpVersionWorker {
     no_curr = 1;
     while (pverkeys_local.hasMoreElements()) {
       String pverkey = pverkeys_local.nextElement().toString();
-      if (!pversions.containsKey(pverkey)) {
+      if (!pversions.containsKey(pverkey) && !(pverkey.startsWith("tools") && pverkey.endsWith(".jar"))) {
         ftpStart.splashMessg("Brisanje starih datoteka ("+no_curr+") ...");
         File delfin = new File(verProps.getProperty("locallib")+File.separator+pverkey);
         if (delfin.delete()) ftpStart.splashMessg(no_curr+" obrisan!");
