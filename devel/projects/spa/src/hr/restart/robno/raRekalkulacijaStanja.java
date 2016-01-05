@@ -200,7 +200,7 @@ public class raRekalkulacijaStanja extends raUpitLite {
           "Ne postoji slog u tabeli skladište za cskl="+cskl);
     }
     if (log.isDebugEnabled()) log.debug("vrzal=" + vrzal);    
-    if (vrzal == null || vrzal.length() != 1 || "NVM".indexOf(vrzal) < 0) {
+    if (vrzal == null || vrzal.length() != 1 || "NVMX".indexOf(vrzal) < 0) {
       rpcskl.jrfCSKL.requestFocus();
       JOptionPane.showMessageDialog(this.getWindow(),
           "Pogrešna vrsta zalihe ("+vrzal+") na skladištu "+cskl+"!", 
@@ -1000,7 +1000,7 @@ public class raRekalkulacijaStanja extends raUpitLite {
 	public void kalkulateZC(DataSet stanje) {
     if (log.isDebugEnabled()) 
       log.debug("KOL =" + stanje.getBigDecimal("KOL"));
-		if (vrzal.equalsIgnoreCase("N")) {
+		if (vrzal.equalsIgnoreCase("N") || vrzal.equalsIgnoreCase("X")) {
 			if (stanje.getBigDecimal("KOL").abs().doubleValue() < 0.999 || 
 			    stanje.getBigDecimal("KOL").signum() != stanje.getBigDecimal("VRI").signum()) {
 			  if (isNewArt) {
