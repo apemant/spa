@@ -204,7 +204,7 @@ public class raPopListaInv extends raUpitLite {
 
     jcbIspisStanjeNula.setHorizontalAlignment(SwingConstants.TRAILING);
     jcbIspisStanjeNula.setHorizontalTextPosition(SwingConstants.LEADING);
-    jcbIspisStanjeNula.setText("Ispis artikala sa stanjem nula     ");
+    jcbIspisStanjeNula.setText("Ispis artikala bez ulaza u godini");
     jcbIspisStanjeNula.setSelected(true);
 
     radioSortButton.setHorizontalTextPosition(SwingConstants.TRAILING);
@@ -244,7 +244,7 @@ public class raPopListaInv extends raUpitLite {
     mainPanel.add(jlDatum,    new XYConstraints(15, 55, -1, -1));
     mainPanel.add(jraDATINV,    new XYConstraints(150, 55, 100, -1));
     mainPanel.add(jlSljed,    new XYConstraints(15, 90, -1, -1));
-    mainPanel.add(jcbIspisStanjeNula,       new XYConstraints(291, 55, 259, 19));
+    mainPanel.add(jcbIspisStanjeNula,       new XYConstraints(270, 55, 280, 19));
 
     mainPanel.add(panel01,          new XYConstraints(150, 80, 400, -1));
 
@@ -277,7 +277,7 @@ public class raPopListaInv extends raUpitLite {
     String stanjeNula = "";
     if (jrbSortiranjePoNAZART.isSelected()) sortBy = "NAZART";
     else sortBy = hr.restart.sisfun.frmParam.getParam("robno","indiCart");
-    if (!jcbIspisStanjeNula.isSelected()) stanjeNula = " and kol > 0 ";
+    if (!jcbIspisStanjeNula.isSelected()) stanjeNula = " and kolul > 0 ";
 
     datumInv = fieldSet.getTimestamp("datum");
     
