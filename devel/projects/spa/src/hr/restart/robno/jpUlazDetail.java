@@ -17,9 +17,11 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stdoku;
 import hr.restart.baza.dM;
+import hr.restart.baza.raDataSet;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
@@ -46,6 +48,7 @@ import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.TableDataSet;
+import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -170,6 +173,8 @@ public class jpUlazDetail extends JPanel {
       jtfDC_focusLost(null);
     }
   };
+  boolean onlySklad = false;
+  QueryDataSet skladArt = null;
 //  raArtiklUnos rpcart = new raArtiklUnos() {
   rapancart rpcart = new rapancart(1){
     public void nextTofocus(){
@@ -180,6 +185,9 @@ public class jpUlazDetail extends JPanel {
       if (rpcart.getCART().length() > 0)
       	MYmetToDo_after_lookUp();
     }
+    public QueryDataSet getRaDataSet() {
+      return onlySklad ? getArtikliSet() : super.getRaDataSet();
+    };
   };
   
   JraButton trans = new JraButton();
@@ -254,6 +262,15 @@ public class jpUlazDetail extends JPanel {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+  
+  QueryDataSet getArtikliSet() {
+    if (skladArt != null) return skladArt;
+    skladArt = new raDataSet();
+    
+    Artikli.getDataModule().setFilter(skladArt, raVart.getStanjeCond());
+    skladArt.open();
+    return skladArt;
   }
   
   public void setTransEnabled(boolean enab) {

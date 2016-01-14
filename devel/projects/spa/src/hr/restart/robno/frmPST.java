@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
+
 
 /**
  * <p>Title: Robno poslovanje</p>
@@ -54,6 +56,11 @@ public class frmPST extends frmUlazTemplate {
     raMaster.getRepRunner().addReport("hr.restart.robno.repPocetnoStanje","Poèetno stanje - kolièine",2);
     raMaster.getRepRunner().addReport("hr.restart.robno.repPocetnoStanjeExtendedVersion","Poèetno stanje - vrijednosti",2);
     raMaster.getRepRunner().addReport("hr.restart.robno.repPocetnoStanjeMegablastVersion","Poèetno stanje - kalkulacije",2);
+  }
+  
+  public void beforeShowMaster() {
+    jpDetail.onlySklad = frmParam.getParam("robno", "onlySkladArt", "N", 
+        "Dopustiti samo artikle sa stanjem na ulazima (D,N)").equals("D");
   }
   public void SetFokusMaster(char mode) {
   	

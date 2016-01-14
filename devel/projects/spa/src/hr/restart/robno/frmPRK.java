@@ -161,6 +161,9 @@ public class frmPRK extends frmUlazTemplate implements IZavtrHandler {
     
     jpDetail.setTransEnabled(isTranzit || isNar);
     jpDetail.setTransOpis(isTranzit);
+    
+    jpDetail.onlySklad = frmParam.getParam("robno", "onlySkladArt", "N", 
+        "Dopustiti samo artikle sa stanjem na ulazima (D,N)").equals("D");
   }
   
   public boolean doWithSaveMaster(char mode) {
