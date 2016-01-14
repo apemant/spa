@@ -3268,6 +3268,18 @@ System.out.println("findCjenik::else :: "+sql);
 								getMasterSet().getTimestamp("DATDOSP")) / 24.));
 	}
     
+	int cagent = -1;
+	public void after_lookUpAGENT() {
+	  if (raMaster.getMode() == 'N' && getMasterSet().getInt("CAGENT") != 0 && getMasterSet().getInt("CAGENT") != cagent) {
+	    
+	    cagent = getMasterSet().getInt("CAGENT");
+	    
+	    QueryDataSet temp = Agenti.getDataModule().openTempSet(Condition.equal("CAGENT", getMasterSet()));
+	    if (temp.rowCount() > 0 && temp.getString("CNAC").length() > 0)
+	      getMasterSet().setString("CNAC", temp.getString("CNAC"));
+	  }
+	}
+	
     private int cpar=-1;
 
 	public void after_lookUpCPAR() {

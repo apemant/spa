@@ -1641,9 +1641,25 @@ SwingUtilities.invokeLater(new Runnable(){
 
 		JraButton jbAgent = new JraButton();
 
-		JlrNavField jrfAgent = new JlrNavField();
+		JlrNavField jrfAgent = new JlrNavField() {
+		  public void after_lookUp() {
+		    SwingUtilities.invokeLater(new Runnable(){
+              public void run() {
+                fDI.after_lookUpAGENT();
+              }
+            });
+		  }
+		};
 
-		JlrNavField jrfNAZAgent = new JlrNavField();
+		JlrNavField jrfNAZAgent = new JlrNavField() {
+		  public void after_lookUp() {
+            SwingUtilities.invokeLater(new Runnable(){
+              public void run() {
+                fDI.after_lookUpAGENT();
+              }
+            });
+          }
+		};
 
 		JLabel jlZiro = new JLabel("ŽR");
 
