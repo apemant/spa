@@ -515,6 +515,11 @@ public class presBlag extends PreSelect {
     return myorg.getString("FPOJED").equalsIgnoreCase("G");
   }
   
+  public static boolean isFiskOJ(DataSet ms) {
+    findOJ(ms);
+    return myorg.getString("FPOJED").equalsIgnoreCase("O");
+  }
+  
   public static String getFiskPP(DataSet ms) {
     findOJ(ms);
     return myorg.getString("FPP");
@@ -543,7 +548,7 @@ public class presBlag extends PreSelect {
   
   public static String getSeqOpis(DataSet ms) {
     findOJ(ms);
-    if (myorg.getString("FPOJED").equals("D")) 
+    if (myorg.getString("FPOJED").equals("D") || myorg.getString("FPOJED").equals("O")) 
       return "FISK-" + myorg.getString("CCERT") + "-" + myorg.getString("FPP") + "-" + ms.getString("GOD");
     
     if (!myorg.getString("FPOJED").equals("G") || "GRC|GOT|GRN".indexOf(ms.getString("VRDOK")) < 0) 
