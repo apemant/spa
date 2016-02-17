@@ -30,6 +30,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
+import sun.awt.X11.XPanelPeer;
+
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.Variant;
@@ -80,6 +82,32 @@ public class XYPanel extends JraPanel {
 	public XYPanel(DataSet ds) {
 		this();
 		this.ds = ds;
+	}
+	
+	public XYPanel configWid(int shortwid, int intwid, int normwid, int stextwid, int textwid, int longwid) {
+	  if (shortwid > 0) s3_wid = shortwid;
+	  if (intwid > 0) i_wid = intwid;
+	  if (normwid > 0 ) s12_wid = n_wid = t_wid = cwidth = normwid;
+	  if (stextwid > 0) s30_wid = stextwid;
+	  if (textwid > 0) s50_wid = textwid;
+	  if (longwid > 0) ss_wid = longwid;
+	  return this;
+	}
+	
+	public XYPanel normw(int normwid) {
+	  s12_wid = n_wid = t_wid = cwidth = normwid;
+	  return this;
+	}
+	
+	public XYPanel textw(int textwid) {
+	  s50_wid = textwid;
+      return this;
+    }
+	
+	public XYPanel configPos(int leftpos, int textpos) {
+	  left = leftpos;
+	  text = textpos;
+	  return this;
 	}
 	
 	public void setDataSet(DataSet ds) {
