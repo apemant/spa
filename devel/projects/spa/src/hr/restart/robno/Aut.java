@@ -733,13 +733,14 @@ public class Aut {
     gr.open();
     for (gr.first(); gr.inBounds(); gr.next())
       allgr.put(gr.getString("CGRART"), gr.getString("CGRARTPRIP"));
-    for (Iterator i = allgr.keySet().iterator(); i.hasNext(); ) {
-      String g = (String) i.next();
+    for (Iterator i = allgr.entrySet().iterator(); i.hasNext(); ) {
+      Map.Entry e = (Map.Entry) i.next();
+      String g = (String) e.getKey();
       String pr = g;
       while (allgr.containsKey(pr) && !tops.contains(pr) 
           && !pr.equals(allgr.get(pr)))
         pr = (String) allgr.get(pr);
-      allgr.put(g, pr);
+      e.setValue(pr);
     }
     for (Iterator i = allgr.values().iterator(); i.hasNext(); ) {
       String pr = (String) i.next();
