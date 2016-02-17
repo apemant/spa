@@ -3,7 +3,10 @@ package hr.restart.sk;
 import hr.restart.baza.Condition;
 import hr.restart.baza.IzvjPDV;
 import hr.restart.baza.Orgpl;
+import hr.restart.baza.Partneri;
+import hr.restart.baza.Skstavke;
 import hr.restart.baza.StIzvjPDV;
+import hr.restart.baza.UIstavke;
 import hr.restart.baza.dM;
 import hr.restart.pl.raIzvjestaji;
 import hr.restart.robno.raDateUtil;
@@ -11,6 +14,8 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraComboBox;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
+import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raTableColumnModifier;
 import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
@@ -28,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.jar.JarInputStream;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -37,6 +43,8 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataRow;
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
@@ -52,7 +60,8 @@ public class frmPDV2 extends raUpitFat {
   JraTextField jraPoctDat = new JraTextField();
   JraTextField jraKrajDat = new JraTextField();
     
-  JraComboBox jraObrazac = new JraComboBox(new String[] {"Obrazac PDV","Obrazac PDV-S","Obrazac ZP","Obrazac PDV-K", "Obrazac JOPPD (plaæe)", "Obrazac JOPPD (p.n.)", "Obrazac PDV za 2013", "Obrazac PPO 2013/2014"});
+  JraComboBox jraObrazac = new JraComboBox(new String[] {"Obrazac PDV","Obrazac PDV-S","Obrazac ZP","Obrazac PDV-K", 
+      "Obrazac JOPPD (plaæe)", "Obrazac JOPPD (p.n.)", "Obrazac PPO", "Obrazac OPZ"});
   XYLayout xYlay = new XYLayout();
   StorageDataSet stds = new StorageDataSet();
   hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
@@ -157,7 +166,7 @@ public class frmPDV2 extends raUpitFat {
   protected void delete() {
     int pick = jraObrazac.getSelectedIndex();
     if (pick == 0 || pick == 3) return;
-    if (JOptionPane.showConfirmDialog(null, "Jeste li sigurni da želite obrisati red?", "Pozor", JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
+    if (JOptionPane.showConfirmDialog(getWindow(), "Jeste li sigurni da želite obrisati red?", "Pozor", JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
       getJPTV().getStorageDataSet().deleteRow();
       getJPTV().fireTableDataChanged();
     }
@@ -166,6 +175,30 @@ public class frmPDV2 extends raUpitFat {
   public boolean Validacija() {
     if (jraObrazac.getSelectedIndex() == 5)
       return JOPPDPN.checkPeriod();
+    if (jraObrazac.getSelectedIndex() == 7) {
+      String yod = ut.getYear(getDatumOd());
+      String ydo = ut.getYear(getDatumDo());
+      
+      if (!yod.equals(ydo)) {
+        JOptionPane.showMessageDialog(getWindow(), "Razdoblje mora biti unutar iste godine!", "Greška", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+      
+      if (yod.equals("2015")) {
+        if (!ut.sameDay(getDatumOd(), ut.getYearBegin(yod)) ||
+            !ut.sameDay(getDatumDo(), ut.getYearEnd(ydo))) {
+          JOptionPane.showMessageDialog(getWindow(), "Za 2015. godinu razdoblje mora biti cijela godina!", "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+      } else {
+        if (!ut.sameDay(getDatumOd(), ut.getFirstDayOfMonth(getDatumOd())) ||
+            !ut.sameDay(getDatumDo(), ut.getLastDayOfMonth(getDatumDo())) ||
+            !ut.sameDay(ut.addMonths(getDatumOd(), 3), ut.getFirstDayOfMonth(getDatumDo()))) {
+          JOptionPane.showMessageDialog(getWindow(), "Razdoblje mora biti kvartalno!", "Greška", JOptionPane.ERROR_MESSAGE);
+          return false;
+        }
+      }
+    }
     return true;
   }
 
@@ -198,12 +231,16 @@ public class frmPDV2 extends raUpitFat {
       JOPPDPN.doJOPPD();
       break;
       
-    case 6:
+/*    case 6:
       doPDV13();
       break;
-
-    case 7:
+*/
+    case 6:
       doPPO20132014();
+      break;
+      
+    case 7:
+      doOPZ();
       break;
       
     default:
@@ -239,8 +276,12 @@ public class frmPDV2 extends raUpitFat {
       addJOPPD();
       break;
       
-    case 7:
+    case 6:
       addPPO();
+      break;
+      
+    case 7:
+      addOPZ();
       break;
       
     default:
@@ -265,6 +306,12 @@ public class frmPDV2 extends raUpitFat {
   private void addPPO() {
     addGeneric();
   }
+  private void addOPZ() {
+    getJPTV().getStorageDataSet().last();
+    getJPTV().getStorageDataSet().insertRow(false);
+    getJPTV().getStorageDataSet().setBigDecimal("SSALDO", Aus.zero2);
+    addGeneric_part2();
+  }
   private void addGeneric() {
     addGeneric_part1();
     addGeneric_part2();
@@ -284,7 +331,7 @@ public class frmPDV2 extends raUpitFat {
   }
   
   public boolean runFirstESC() {
-    return true;
+    return getJPTV().getStorageDataSet() != null;
   }
 
   public void firstESC() {
@@ -319,11 +366,153 @@ public class frmPDV2 extends raUpitFat {
     clearJop();
     jraObrazac.setSelectedIndex(0);
   }
+  
+  StorageDataSet setOPZ;
+  public StorageDataSet getSetOPZ() {
+    return setOPZ;
+  }
+  
+  private void doOPZ() {
+    String kkonta = frmParam.getParam("sk", "opzKonta", "12*", "Popis konta (moguæa zvjezdica) kupaca za OPZ");
+    String pkonta = frmParam.getParam("sk", "opzKontaPor", "2*", "Popis konta (moguæa zvjezdica) PDV-a za OPZ");
+    
+    String[] kka = kkonta.indexOf(',') > 0 ? new VarStr(kkonta).splitTrimmed(',') : new VarStr(kkonta).split();
+    String[] pka = pkonta.indexOf(',') > 0 ? new VarStr(pkonta).splitTrimmed(',') : new VarStr(pkonta).split();
+    
+    raGlob[] kg = new raGlob[kka.length];
+    raGlob[] pg = new raGlob[pka.length];
+    
+    for (int i = 0; i < kka.length; i++)
+      kg[i] = new raGlob(kka[i]);
+    
+    for (int i = 0; i < pka.length; i++)
+      pg[i] = new raGlob(pka[i]);
+    
+    HashSet kk = new HashSet();
+    HashSet pk = new HashSet();
+    
+    DataSet akon = dm.getKontaAnalitic();
+    akon.open();
+    for (akon.first(); akon.inBounds(); akon.next()) {
+      String kon = akon.getString("BROJKONTA");
+      String saldak = akon.getString("SALDAK");
+      if (saldak.equalsIgnoreCase("K"))
+        for (int i = 0; i < kg.length; i++)
+          if (kg[i].matches(kon)) {
+            kk.add(kon);
+            break;
+          }
+      if (saldak.equalsIgnoreCase("F"))
+        for (int i = 0; i < pg.length; i++)
+          if (pg[i].matches(kon)) {
+            pk.add(kon);
+            break;
+          }
+    }
+    
+    System.out.println("saldak: " + kk);
+    System.out.println("porez: " + pk);
+    
+    Timestamp nadan = stds.getTimestamp("DATUMDO");
+    
+    setOPZ = Aus.createSet("Partneri.OIB .NAZPAR Skstavke.BROJDOK .DATDOK .DATDOSP .SSALDO .SALDO PDV.2 {Status}OPIS:100");
+    
+    QueryDataSet sk = Skstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK DATDOK DATDOSP SSALDO SALDO CSKSTAVKE OZNVAL TECAJ",
+        Aus.getKnjigCond().and(Condition.from("DATUMKNJ", Aus.getGkYear(nadan))).and(Condition.till("DATDOSP", nadan)).
+        and(Condition.till("DATDOK", nadan)).and(Aus.getVrdokCond(true, true)).and(Condition.in("BROJKONTA", kk)).
+        and(Condition.where("SALDO", Condition.GREATER_THAN, Aus.zero0)).and(Condition.diff("POKRIVENO", "X")));
+    
+    System.out.println("input: " + sk.getOriginalQueryString());
+    
+    Timestamp dfrom = ut.addMonths(ut.getFirstDayOfMonth(nadan), 2);
+    Condition c = Aus.getKnjigCond().and(Aus.getVrdokCond(true)).and(Condition.from("DATDOK", dfrom));
+    
+    raSaldaKonti.updateOutOfRangeSaldo(sk, c);
+    
+    QueryDataSet osk = Skstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK SSALDO",
+        Aus.getKnjigCond().and(Condition.from("DATUMKNJ", Aus.getGkYear(nadan)).not()).
+        and(Aus.getVrdokCond(true, true)).and(Condition.in("BROJKONTA", kk)));
+    
+    System.out.println("olds: " + osk.getOriginalQueryString());
+    
+    VarStr buf = new VarStr();
+    HashMap oldmap = new HashMap();
+    for (osk.first(); osk.inBounds(); osk.next()) {
+      String key = buf.clear().append(osk.getInt("CPAR")).append('|').append(osk.getString("VRDOK")).
+          append('|').append(osk.getString("BROJDOK")).toString();
+      oldmap.put(key, osk.getBigDecimal("SSALDO"));
+    }
+
+    
+    QueryDataSet ui = UIstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK IP", 
+        Aus.getKnjigCond().and(Condition.in("BROJKONTA", pk)).
+        and(Condition.where("IP", Condition.GREATER_THAN, Aus.zero0)));
+    
+    System.out.println("ui: " + ui.getOriginalQueryString());
+    
+    HashMap uimap = new HashMap();
+    
+    for (ui.first(); ui.inBounds(); ui.next()) {
+      String key = buf.clear().append(ui.getInt("CPAR")).append('|').append(ui.getString("VRDOK")).
+          append('|').append(ui.getString("BROJDOK")).toString();
+      BigDecimal old = (BigDecimal) uimap.get(key);
+      if (old == null) old = ui.getBigDecimal("IP");
+      else old = old.add(ui.getBigDecimal("IP"));
+      uimap.put(key, old);
+    }
+    
+    for (sk.first(); sk.inBounds(); sk.next()) {
+      String key = buf.clear().append(sk.getInt("CPAR")).append('|').append(sk.getString("VRDOK")).
+          append('|').append(sk.getString("BROJDOK")).toString();
+      
+      boolean ps = sk.getString("BROJDOK").startsWith("PS") && sk.getString("BROJDOK").indexOf(':') > 0;
+      if (ps) key = buf.clear().append(sk.getInt("CPAR")).append('|').append(sk.getString("VRDOK")).
+        append('|').append(sk.getString("BROJDOK").substring(sk.getString("BROJDOK").indexOf(':') + 1)).toString();
+      
+      setOPZ.insertRow(false);
+      if (!Partneri.loc(sk)) setOPZ.setString("OPIS", "Greška: nepoznat partner - " +sk.getInt("CPAR"));
+      else {
+        setOPZ.setString("OIB", Partneri.get().getString("OIB"));
+        setOPZ.setString("NAZPAR", Partneri.get().getString("NAZPAR"));
+      }
+      
+      setOPZ.setTimestamp("DATDOK", sk.getTimestamp("DATDOK"));
+      setOPZ.setTimestamp("DATDOSP", sk.getTimestamp("DATDOSP"));
+      Aus.set(setOPZ, "SALDO", sk);
+      if (!ps) {
+        setOPZ.setString("BROJDOK", sk.getString("BROJDOK"));
+        Aus.set(setOPZ, "SSALDO", sk);
+        BigDecimal por = (BigDecimal) uimap.get(key);
+        setOPZ.setBigDecimal("PDV", por == null ? Aus.zero2 : por);
+        if (por == null) setOPZ.setString("OPIS", "Nepoznat iznos poreza");
+      } else {
+        setOPZ.setString("BROJDOK", sk.getString("BROJDOK").substring(sk.getString("BROJDOK").indexOf(':') + 1));
+        BigDecimal iznos = (BigDecimal) oldmap.get(key);
+        if (iznos != null) setOPZ.setBigDecimal("SSALDO", iznos);
+        else {
+          Aus.set(setOPZ, "SSALDO", sk);
+          setOPZ.setString("OPIS", "Nepoznat originalni raèun");
+        }
+        BigDecimal por = (BigDecimal) uimap.get(key);
+        if (por != null) setOPZ.setBigDecimal("PDV", por);
+        else if (iznos == null)
+          setOPZ.setString("OPIS", "Nepoznat originalni raèun i originalni iznos poreza");
+        else setOPZ.setString("OPIS", "Nepoznat originalni iznos poreza");
+      }
+    }
+    setOPZ.setTableName("setOPZ");
+    setDataSetAndSums(setOPZ, new String[] {"SSALDO","SALDO","PDV"});
+    killAllReports();
+    addReport("hr.restart.sk.repOPZDisk", "Datoteka OPZ-STAT-1 za e-poreznu");
+    setTitle("Obrazac OPZ-STAT-1 za period "+raDateUtil.getraDateUtil().dataFormatter(getDatumOd())+" - "+raDateUtil.getraDateUtil().dataFormatter(getDatumDo()));
+  }
 
   StorageDataSet setZP;
   public StorageDataSet getSetZP() {
     return setZP;
   }
+  
+ 
   
   private void doZP() {
     setZP = new StorageDataSet();
@@ -391,7 +580,8 @@ public class frmPDV2 extends raUpitFat {
     dm.getPartneri().open();
     int rbr = 0;
     for (upitP.first(); upitP.inBounds(); upitP.next()) {
-      if (!lookupData.getlookupData().raLocate(setPPO, new String[]{"CPAR","DATUMOD"}, new String[]{upitP.getInt("CPAR")+"",Util.getUtil().getFirstDayOfMonth(upitP.getTimestamp("DATPRI")).toString()})) {//TU PO cpar i datumOD
+      if (!lookupData.getlookupData().raLocate(setPPO, new String[]{"CPAR","DATUMOD"}, 
+          new String[]{upitP.getInt("CPAR")+"",ut.getFirstDayOfMonth(upitP.getTimestamp("DATPRI")).toString()})) {//TU PO cpar i datumOD
         if (lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", upitP.getInt("CPAR")+"")) {
           String oib =  dm.getPartneri().getString("OIB");
           setPPO.insertRow(false);
@@ -399,8 +589,8 @@ public class frmPDV2 extends raUpitFat {
           setPPO.setInt("RBR", rbr);
           setPPO.setInt("CPAR", upitP.getInt("CPAR"));
           setPPO.setString("OIB", oib);
-          setPPO.setTimestamp("DATUMOD", Util.getUtil().getFirstDayOfMonth(upitP.getTimestamp("DATPRI")));
-          setPPO.setTimestamp("DATUMDO", Util.getUtil().getLastDayOfMonth(upitP.getTimestamp("DATPRI")));
+          setPPO.setTimestamp("DATUMOD", ut.getFirstDayOfMonth(upitP.getTimestamp("DATPRI")));
+          setPPO.setTimestamp("DATUMDO", ut.getLastDayOfMonth(upitP.getTimestamp("DATPRI")));
           setPPO.setBigDecimal("VRI", Aus.zero2);
           setPPO.setBigDecimal("POR", Aus.zero2);
         } else {
@@ -798,6 +988,10 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
   public java.sql.Timestamp getDatumDo(){
     return stds.getTimestamp("DATUMDO");
   }
+  
+  public java.sql.Timestamp getNextMonth(){
+    return ut.getLastDayOfMonth(ut.addMonths(ut.getFirstDayOfMonth(stds.getTimestamp("DATUMDO")), 1));
+  }
 
   public String navDoubleClickActionName() {
     return "Izmjena";
@@ -881,12 +1075,16 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
       updJOPPDPN();
       break;
       
-    case 6:
+/*    case 6:
       updPDV();
       break;
-            
-    case 7:
+*/            
+    case 6:
       updPPO();
+      break;
+      
+    case 7:
+      updOPZ();
       break;
             
     default:
@@ -905,6 +1103,26 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
 
   private void updPDV_K() {
     updPDV(setPDV_K);
+  }
+  
+  private void updOPZ() {
+    
+    XYPanel pan = new XYPanel(setOPZ).configWid(0, 0, 120, 120, 245, 0).configPos(15, 200);
+    
+    pan.label("Partner").nav("OIB NAZPAR", dm.getPartneri()).nl();
+    pan.label("Broj dokumenta").text("BROJDOK").nl();
+    pan.label("Datum / valuta").text("DATDOK").text("DATDOSP").nl();
+    pan.label("Iznos / saldo").text("SSALDO").text("SALDO").nl();
+    pan.label("Iznos poreza").text("PDV").nl().expand();
+    pan.getNav("NAZPAR").setDataSet(setOPZ);
+    
+    DataRow old = new DataRow(setOPZ);
+    dM.copyColumns(setOPZ, old);
+    
+    raInputDialog upd = new raInputDialog();
+    if (!upd.show(getWindow(), pan, "Izmjena stavke OPZ")) {
+      dM.copyColumns(old, setOPZ);
+    } else getJPTV().fireTableDataChanged();
   }
 
   private JraDialog dlgPPO;
@@ -1060,6 +1278,8 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
   private void updPDV() {
     updPDV(setPDV);
   }
+  
+ 
   
   private void updPDV(final StorageDataSet set_p) {
     izvjpdv_k_all.open();
