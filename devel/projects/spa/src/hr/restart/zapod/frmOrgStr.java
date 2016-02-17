@@ -311,7 +311,8 @@ public class frmOrgStr extends raMatPodaci {
     rcbFNU.setRaItems(new String[][] {
         {"Brojaè po poslovnom prostoru","D"},
         {"Brojaè po naplatnom ureðaju","N"},
-        {"Razdvojeni gotovinski raèuni","G"}
+        {"Razdvojeni gotovinski raèuni","G"},
+        {"OJ kao naplatni ureðaj","O"}
       });
     
     jraCert.setDataSet(getRaQueryDataSet());
