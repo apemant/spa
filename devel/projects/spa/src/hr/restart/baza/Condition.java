@@ -115,6 +115,16 @@ public abstract class Condition {
    */
   public static final int IN_LIST = 7;
   
+  /**
+   * Konstanta koja oznacava operaciju LIKE X%.
+   */
+  public static final int STARTS = 8;
+  
+  /**
+   * Konstanta koja oznacava operaciju LIKE %X%.
+   */
+  public static final int CONTAINS = 9;
+  
   
   static final int RAW = -1;
 
@@ -302,6 +312,14 @@ public abstract class Condition {
         throw new UnsupportedOperationException("Condition.equal() ne podrzava "+
           Variant.typeName(ds.getColumn(dsc).getDataType()));
     }
+  }
+  
+  public static Condition startsWith(String colname, String value) {
+    return where(colname, STARTS, value);
+  }
+  
+  public static Condition contains(String colname, String value) {
+    return where(colname, CONTAINS, value);
   }
   
   public static Condition diff(String colname, String value) {
@@ -578,6 +596,10 @@ class SimpleCondition extends Condition {
           append(((Object[]) val)[0]).append(del).append(" AND ").
           append(del).append(((Object[]) val)[1]).append(del).toString();
     else if (condition == IN_LIST) return createList(ret);
+    else if (condition == STARTS) return ret.insert(0, "UPPER(").
+          append(") LIKE '").append(val.toString().toUpperCase()).append("%'").toString();
+    else if (condition == CONTAINS) return ret.insert(0, "UPPER(").
+          append(") LIKE '%").append(val.toString().toUpperCase()).append("%'").toString();
     else return ret.append(ops[condition]).append(del).
       append(val).append(del).toString();
   }
