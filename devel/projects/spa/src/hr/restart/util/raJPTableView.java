@@ -390,6 +390,12 @@ public class raJPTableView extends JPanel {
     }
   }
   
+  public void clearSummary() {
+    summary = null;
+    jScrollPaneTable.setViewportView(mpTable);
+    jScrollPaneTable.setColumnHeaderView(mpTable.getTableHeader());
+  }
+  
   public void installSummary(JComponent mpDod, int spacing, boolean trailing) {
     jScrollPaneTable.setViewportView(null);
     
