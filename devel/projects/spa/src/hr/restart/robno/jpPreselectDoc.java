@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
@@ -31,8 +32,11 @@ import java.awt.Font;
 import java.sql.Timestamp;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+
+import sun.misc.Perf.GetPerfAction;
 
 import com.borland.dx.dataset.DataRow;
 import com.borland.jbcl.layout.XYConstraints;
@@ -297,13 +301,23 @@ abstract public class jpPreselectDoc extends PreSelect {
   public boolean Validacija() {
     if (hr.restart.util.Valid.getValid().isEmpty(this.jrfCSKL))
       return false;
+    
+    if (raDokument != null) {
+      String table = TypeDoc.getTypeDoc().isCsklSklad(raDokument) ? "SKLAD" : "ORGSTRUKTURA";
+      if (!raUser.getInstance().canAccessTable(table, jrfCSKL.getText() ,"P")) {
+        jrfCSKL.requestFocus();
+        JOptionPane.showMessageDialog(getPreSelDialog(), "Nemate pravo na pregled!!", "UPOZORENJE!", JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+    }
+    
     // zakomentir'o sg.!f
 //    if (getSelRow().getInt("BRDOK")>0) {
 //      getSelRow().setTimestamp("DATDOK-from",hr.restart.robno.Util.getUtil().findFirstDayOfYear(Integer.parseInt(vl.findYear())));
 //    }
     if (!hr.restart.util.Util.getUtil().isValidRange(getSelRow().getTimestamp("DATDOK-from"), getSelRow().getTimestamp("DATDOK-to"))) {
       jtfDATUMOD.requestFocus();
-      javax.swing.JOptionPane.showConfirmDialog(null,
+      javax.swing.JOptionPane.showConfirmDialog(getPreSelDialog(),
           "Datum od je veæi od datuma do ili godine nisu identiène","Greska",
              javax.swing.JOptionPane.DEFAULT_OPTION,javax.swing.JOptionPane.ERROR_MESSAGE);
       return false;
