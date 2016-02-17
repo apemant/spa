@@ -2772,7 +2772,7 @@ $napomene
 LOKK;char;1;;N;LOKK;*
 AKTIV;char;1;;D;AKTIV;*
 CNAP;char;3;pkey;;Šifra;5
-NAZNAP;char;200;;;Naziv;30
+NAZNAP;char;1000;;;Naziv;30
 
 $norme
 LOKK;char;1;;N;Lokk;*
