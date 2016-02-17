@@ -125,6 +125,10 @@ public class raHideDataModifier extends raTableModifier {
     
   }
   
+  public boolean isAny() {
+    return allvis.size() > 0;
+  }
+  
   void updateVisList() {
     nvis.clear();
     for (Iterator i = allvis.keySet().iterator(); i.hasNext(); ) {
