@@ -1307,6 +1307,8 @@ public class raPilot extends raFrame {
     if (detach)
       detach(true);
 
+    ((raExtendedTable) view.jp.getMpTable()).setForcePage(false);
+    view.jp.clearSummary();
     view.clearColumns();
 
 //    System.out.println(hr.restart.util.Util.getUtil().arrayString(colsListed));
@@ -1460,6 +1462,8 @@ public class raPilot extends raFrame {
     
     detach((ds instanceof QueryDataSet) && !offline);
 
+    ((raExtendedTable) view.jp.getMpTable()).setForcePage(false);
+    view.jp.clearSummary();
     view.clearColumns();
     int[] cols = getVisibleCols();
     if (cols == null) return;
@@ -1488,6 +1492,28 @@ public class raPilot extends raFrame {
             }
         }
       }      
+    }
+    
+    try {
+      if (bshInterpreter.get("force") != null) {
+        ((raExtendedTable) view.jp.getMpTable()).setForcePage(true);
+      }
+      if (bshInterpreter.get("summary") != null) {
+        DataSet sumds = (DataSet) bshInterpreter.get("summary");
+        
+        raExtendedTable summary = new raExtendedTable();
+        summary.setDataSet(sumds);
+        summary.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        summary.setCellSelectionEnabled(false);
+        summary.clearSelection();
+        summary.setAlternateColor(false);
+        summary.setBackground(view.jp.getBackground());
+        
+        view.jp.installSummary(summary, 10, false);
+      }
+    } catch (EvalError e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
     
     if (cols.length == 0) {
