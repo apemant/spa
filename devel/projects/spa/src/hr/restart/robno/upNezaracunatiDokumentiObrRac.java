@@ -164,6 +164,7 @@ public class upNezaracunatiDokumentiObrRac extends raUpitFat {
   
   private String upitString(){
     String upitnik,cskl,vrdok,period,partner = "";
+    String vart = "AND " + raVart.getStanjeCond() + " ";
     
     if (!fieldSet.getString("CPAR").equalsIgnoreCase("")) partner = "AND doki.cpar = '"+fieldSet.getString("CPAR")+"' ";
     
@@ -175,30 +176,30 @@ public class upNezaracunatiDokumentiObrRac extends raUpitFat {
     cskl = "AND doki.cskl = '"+fieldSet.getString("CORG")+"' ";
     
     upitnik = "SELECT "+
-
-    "max(doki.vrdok)as vrdok, "+ 
-    "max(doki.cskl) as cskl, "+
+ 
+    "doki.cskl, doki.vrdok, doki.brdok, "+
     "max(doki.god) as god, "+
-    "max(doki.brdok) as brdok, "+ 
     "max(doki.cpar) as cpar, "+
     "max(doki.datdok) as datdok, "+ 
     "count(*) as bnzs, "+ 
     "max(doki.uirac) as iznos "+ 
 
-    "FROM doki, stdoki "+
+    "FROM doki, stdoki, artikli "+
     "WHERE doki.cskl = stdoki.cskl "+
     "AND doki.vrdok = stdoki.vrdok "+
     "AND doki.god = stdoki.god "+
     "AND doki.brdok = stdoki.brdok "+
-    "AND doki.status = 'N' "+
+    "AND stdoki.cart = artikli.cart "+
+    "AND (stdoki.veza = '' OR stdoki.veza is null) "+
     "AND (doki.cradnal is null or doki.cradnal='') "+
     
     cskl +
     partner +
     vrdok +
     period +
+    vart +
     
-    "group by doki.vrdok,doki.brdok";
+    "group by doki.cskl,doki.vrdok,doki.brdok";
     
     System.out.println(upitnik);
     

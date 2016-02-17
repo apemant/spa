@@ -400,9 +400,7 @@ public class rapancart extends JPanel {
     InitParam();
     jrfCART.setTextFields(new javax.swing.text.JTextComponent[] {jrfCART1,jrfBC,jrfNAZART,jrfJM,jrfCGRART,jrfCPOR,jrfISB,jrfVRART});
 //    jrfCART.setRaDataSet(dm.getArtikli());
-    jrfCART.setRaDataSet(getRaDataSet());
-//    jrfCART.setRaDataSet(hr.restart.baza.Artikli.getDataModule().getFilteredDataSet(""));
-    jrfCART.getRaDataSet().open();
+    
 
     jrfCART1.setColumnName("CART1");
     jrfCART1.setSearchMode(3);
@@ -814,6 +812,9 @@ System.out.println("layheight="+lay.getHeight());
   public void setTabela(QueryDataSet tabela) {
     this.tabela=tabela;
     enableUsluga = true;
+    jrfCART.setRaDataSet(getRaDataSet());
+//  jrfCART.setRaDataSet(hr.restart.baza.Artikli.getDataModule().getFilteredDataSet(""));
+    jrfCART.getRaDataSet().open();
 //    enableUsluga = tabela != null && tabela.hasColumn("CART") != null &&
 //      "stdoki".equalsIgnoreCase(tabela.hasColumn("CART").getTableName());
     if (tabela != null && tabela.hasColumn("CART") != null &&
@@ -974,6 +975,10 @@ System.out.println("layheight="+lay.getHeight());
       jraKOL.setVisible(false);
       jraREZKOL.setVisible(false);
       jraTREKOL.setVisible(false);
+      
+      jrfCART.setRaDataSet(getRaDataSet());
+
+      jrfCART.getRaDataSet().open();
 //      jrfJM.setVisible(false);
 //      this.setPreferredSize(new Dimension(645, extraSklad ? 100 + sklay.getWidth() : 100));
     }
