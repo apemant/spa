@@ -244,6 +244,7 @@ public class raPONOJ extends raIzlazTemplate {
         }
 		DP.resizeDP();
 		raDetail.addOption(rnvCopyPon, 6, false);
+		raDetail.addOption(rnvMultiPon, 7, false);
 		
 		raMaster.addOption(rnvCopy, 4, false);
 		

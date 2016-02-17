@@ -93,6 +93,7 @@ public class raPON extends raIzlazTemplate {
 		rCD.setisNeeded(false);
 		DP.resizeDP();
 		raDetail.addOption(rnvCopyPon, 6, false);
+		raDetail.addOption(rnvMultiPon, 7, false);
 	}
 
 	public void RestPanelSetup() {

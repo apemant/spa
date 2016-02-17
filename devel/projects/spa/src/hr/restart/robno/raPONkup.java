@@ -88,6 +88,7 @@ public class raPONkup extends raIzlazTemplate  {
       this.setVisibleColsMaster(new int[] {4,5,9});
       DP.resizeDP();
       raDetail.addOption(rnvCopyPon, 6, false);
+      raDetail.addOption(rnvMultiPon, 7, false);
     }
 
     boolean gotovin = true;

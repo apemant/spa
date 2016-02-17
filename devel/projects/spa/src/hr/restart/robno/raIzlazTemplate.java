@@ -401,6 +401,13 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
     	}
     };
     
+    raNavAction rnvMultiPon = new raNavAction("Dodavanje više artikala na ponudu", 
+        raImages.IMGALIGNJUSTIFY, KeyEvent.VK_UNDEFINED) {
+      public void actionPerformed(ActionEvent e) {
+        selectMulti();
+      }
+    };
+    
     raNavAction rnvEDI = new raNavAction("Prebacivanje dokumenta putem EDI", 
         raImages.IMGEXPORT, KeyEvent.VK_UNDEFINED) {
       public void actionPerformed(ActionEvent e) {
@@ -604,7 +611,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
            getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
            getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
            getMasterSet().setString("FOK", "D");
-           getMasterSet().setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
+           if (presBlag.isFiskOJ(ms)) getMasterSet().setInt("FNU", Integer.parseInt(ms.getString("CSKL")));
+           else getMasterSet().setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
            getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
            if (resetSysdat.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
            getMasterSet().saveChanges();
@@ -636,7 +644,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
           getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
           getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
           getMasterSet().setString("FOK", "D");
-          getMasterSet().setInt("FNU", presBlag.getFiskNap(ms));
+          if (!presBlag.isFiskOJ(ms)) getMasterSet().setInt("FNU", presBlag.getFiskNap(ms)); 
+          else getMasterSet().setInt("FNU", Integer.parseInt(ms.getString("CSKL"))); 
           getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
           if (resetSysdat.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
           getMasterSet().saveChanges();
@@ -697,7 +706,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
          getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
          getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
          getMasterSet().setString("FOK", "D");
-         getMasterSet().setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
+         if (presBlag.isFiskOJ(ms)) getMasterSet().setInt("FNU", Integer.parseInt(ms.getString("CSKL")));
+         else getMasterSet().setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
          getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
          if (resetSysdat.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
          getMasterSet().saveChanges();
@@ -724,7 +734,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
         getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
         getMasterSet().setString("FOK", "D");
-        getMasterSet().setInt("FNU", presBlag.getFiskNap(ms));
+        if (!presBlag.isFiskOJ(ms)) getMasterSet().setInt("FNU", presBlag.getFiskNap(ms));
+        else getMasterSet().setInt("FNU", Integer.parseInt(ms.getString("CSKL")));
         getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
         if (resetSysdat.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
         getMasterSet().saveChanges();
@@ -3842,7 +3853,106 @@ System.out.println("findCjenik::else :: "+sql);
 	    return Aus.string(chars - txt.length(), '0').concat(txt);
 	  return txt;
 	}
+
 	
+	public void selectMulti() {
+	  final rapancart doh = new rapancart();
+	  doh.setBorder(null);
+	  doh.setMode("DOH");
+	  
+	  raInputDialog rid = new raInputDialog() {
+	    protected boolean checkOk() {
+	      if (doh.jrfCART1.isEmpty() && doh.jrfBC.isEmpty() && doh.jrfNAZART.isEmpty() && doh.jrfCGRART.isEmpty()) {
+	        JOptionPane.showMessageDialog(win, "Potrebno je unijeti ili grupu ili dio naziva ili šifre!", "Greška",
+	            JOptionPane.ERROR_MESSAGE);
+	        return false;
+	      }
+	      if (!doh.jrfCGRART.isEmpty()) {
+	        if (Grupart.getDataModule().getRowCount(Condition.equal("CGRART", doh.jrfCGRART.getText())) == 0) {
+	          doh.jrfCGRART.requestFocus();
+	          JOptionPane.showMessageDialog(win, "Nepostojeæa grupa artikala!", "Greška",
+	                JOptionPane.ERROR_MESSAGE);
+	        }
+	      }
+	      return true;
+	    };
+	  };
+	  
+	  if (!rid.show(raDetail.getWindow(), doh, "Dodavanje više artikala")) return;
+	  
+	  Condition c = Condition.equal("AKTIV", "D");
+	  if (!doh.jrfCART1.isEmpty()) c = c.and(Condition.startsWith("CART1", doh.jrfCART1.getText()));
+	  if (!doh.jrfBC.isEmpty()) c = c.and(Condition.startsWith("BC", doh.jrfBC.getText()));
+	  if (!doh.jrfNAZART.isEmpty()) c = c.and(Condition.contains("NAZART", doh.jrfNAZART.getText()));
+	  if (!doh.jrfCGRART.isEmpty()) c = c.and(Condition.equal("CGRART", doh.jrfCGRART.getText()));
+	  System.out.println(c);
+	  
+	  DataSet art = Artikli.getDataModule().openTempSet(c);
+	  short myrbr = Aus.max(getDetailSet(), "RBR").getShort();
+	  int rbs = Aus.max(getDetailSet(), "RBSID").getInt();
+	  for (art.first(); art.inBounds(); art.next()) {
+	    getDetailSet().insertRow(false);
+	    getDetailSet().setString("CSKL",getMasterSet().getString("CSKL"));
+	    getDetailSet().setString("CSKLART",getMasterSet().getString("CSKL"));
+	    getDetailSet().setString("GOD",getMasterSet().getString("GOD"));
+	    getDetailSet().setString("VRDOK",getMasterSet().getString("VRDOK"));
+	    getDetailSet().setInt("BRDOK",getMasterSet().getInt("BRDOK"));
+	    getDetailSet().setShort("RBR", ++myrbr);
+	    getDetailSet().setInt("RBSID", ++rbs);
+	    getDetailSet().setBigDecimal("KOL", Aus.one0);
+	    Aut.getAut().copyArtFields(getDetailSet(), art);
+	    
+	    if (lD.raLocate(dm.getNamjena(), "CNAMJ", getMasterSet()) &&
+	        dm.getNamjena().getString("POREZ").equals("N")) {
+            getDetailSet().setBigDecimal("PPOR1", Aus.zero2);
+            getDetailSet().setBigDecimal("PPOR2", Aus.zero2);
+            getDetailSet().setBigDecimal("PPOR3", Aus.zero2);
+            
+        } else {
+          if (lD.raLocate(dm.getPorezi(), "CPOR", art)) {
+            dm.getPorezi().enableDataSetEvents(false);
+
+            getDetailSet().setBigDecimal("PPOR1",
+                  dm.getPorezi().getBigDecimal("POR1"));
+            getDetailSet().setBigDecimal("PPOR2",
+                  dm.getPorezi().getBigDecimal("POR2"));
+            getDetailSet().setBigDecimal("PPOR3",
+                  dm.getPorezi().getBigDecimal("POR3"));
+            getDetailSet().setBigDecimal("UPPOR",
+                  dm.getPorezi().getBigDecimal("UKUPOR"));
+
+            dm.getPorezi().enableDataSetEvents(true);
+          } else {
+            getDetailSet().setBigDecimal("PPOR1", Aus.zero2);
+            getDetailSet().setBigDecimal("PPOR2", Aus.zero2);
+            getDetailSet().setBigDecimal("PPOR3", Aus.zero2);
+          }
+        }
+	    
+	    Aus.set(getDetailSet(), "FC", art, "VC");
+	    Aus.set(getDetailSet(), "FVC", art, "VC");
+	    Aus.set(getDetailSet(), "VC", art);
+	    Aus.set(getDetailSet(), "MC", art);
+	    
+	    rKD.stavkaold.Init();
+        rKD.stavka.Init();
+        lc.TransferFromDB2Class(getDetailSet(),rKD.stavka);
+          
+        rKD.KalkulacijaStavke("PON","KOL",'N',getMasterSet().getString("CSKL"),false);
+        //if (!nar) rKD.KalkulacijaStanje("GOT");
+        lc.TransferFromClass2DB(getDetailSet(),rKD.stavka);
+        //if (!nar) lc.TransferFromClass2DB(sta,rKD.stanje);
+        Aus.add(getMasterSet(), "UIRAC", getDetailSet(), "IPRODSP");
+        Aus.add(getMasterSet(), "RUC", getDetailSet(), "IPRODSP");
+
+        getDetailSet().setString("ID_STAVKA",
+          raControlDocs.getKey(getDetailSet(), new String[] { "cskl",
+              "vrdok", "god", "brdok", "rbsid" }, "stdoki"));
+        getDetailSet().post();
+	  }
+	  raTransaction.saveChangesInTransaction(new QueryDataSet[] {getMasterSet(), getDetailSet()});
+	  raDetail.getJpTableView().fireTableDataChanged();
+	}
 	
 		
 	public void selectDoc() {
@@ -5496,8 +5606,10 @@ System.out.println("findCjenik::else :: "+sql);
           rKD.stavkaold.Init();
           rKD.setWhat_kind_of_document(ds.getString("VRDOK"));
           
-          if (lD.raLocate(dm.getArtikli(), "CART", String.valueOf(ds.getInt("CART")))) {
-            if (lD.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"))) {
+          /*if (lD.raLocate(dm.getArtikli(), "CART", String.valueOf(ds.getInt("CART")))) {
+            if (lD.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"))) {*/
+          if (Artikli.loc(ds)) {
+            if (lD.raLocate(dm.getPorezi(), "CPOR", Artikli.get().getString("CPOR"))) {
               ds.setBigDecimal("PPOR1", dm.getPorezi().getBigDecimal("POR1"));
               ds.setBigDecimal("PPOR2", dm.getPorezi().getBigDecimal("POR2"));
               ds.setBigDecimal("PPOR3", dm.getPorezi().getBigDecimal("POR3"));
