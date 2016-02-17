@@ -367,6 +367,9 @@ public class JraTable2 extends JTable implements JraTableInterface {
     this.getTableHeader().setDefaultRenderer(new HeaderTableCellRenderer());
 
     this.setRowHeight(ADDITIONAL_ROWHEIGHT + startFrame.getFontDelta());
+    
+    
+    raHideDataModifier.inst.isAny();
 
   }
   public static int ADDITIONAL_ROWHEIGHT = 21;
@@ -765,8 +768,9 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
     TableColumn tabCol = getColumnModel().getColumn(modelCol);
 
-    Column dataCol = getDataSetColumn(modelCol);
-
+    //Column dataCol = getDataSetColumn(modelCol);
+    Column dataCol = tabModel.getCols()[convertColumnIndexToModel(modelCol)];
+    
     raTableColumnModifier cModifier = getTableModifierForColumn(dataCol.getColumnName());
 
     int width = 0;
@@ -1505,10 +1509,13 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
         }
         
-        raHideDataModifier.inst.setValues(table,value,isSelected,hasFocus,row,column,this_component);
-        if (raHideDataModifier.inst.doModify()) {
-          raHideDataModifier.inst.modify();
-          this_component = raHideDataModifier.inst.renderComponent;
+        
+        if (raHideDataModifier.inst.isAny()) {
+          raHideDataModifier.inst.setValues(table,value,isSelected,hasFocus,row,column,this_component);
+          if (raHideDataModifier.inst.doModify()) {
+            raHideDataModifier.inst.modify();
+            this_component = raHideDataModifier.inst.renderComponent;
+          }
         }
 
       }
