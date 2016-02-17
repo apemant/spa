@@ -194,6 +194,7 @@ public class checkKartica {
 		tkal.setVisible(com.borland.jb.util.TriStateProperty.TRUE);
 		Column opis = dm.getDoki().getColumn("OPIS").cloneColumn();
 		opis.setCaption("Opis greske");
+		opis.setWidth(50);
 		Column dobar = dm.getDoki().getColumn("LOKK").cloneColumn();
 		dobar.setColumnName("DOBAR");
 		dobar.setCaption("Ispravnost");
