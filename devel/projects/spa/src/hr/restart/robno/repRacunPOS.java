@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Pos;
 import hr.restart.baza.dM;
 import hr.restart.pos.frmMasterBlagajna;
 import hr.restart.pos.presBlag;
@@ -28,6 +30,9 @@ import hr.restart.util.reports.mxReport;
 import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import com.borland.dx.dataset.Column;
@@ -60,7 +65,7 @@ public class repRacunPOS extends mxReport {
   int width = 40;
   int dbWidth = width/2;
   String doubleLineSep, uk, oib, specForm, pcorg, dw, nw;
-  boolean ispSif, oneRow, pop, cash, isnac, isw;
+  boolean ispSif, oneRow, pop, cash, isnac, isw, fakejir;
   
   BigDecimal pov;
 
@@ -91,6 +96,8 @@ public class repRacunPOS extends mxReport {
         "Format broja raèuna na POS-u");
     pcorg = frmParam.getParam("pos", "posCorg", "",
       "OJ za logotip na POS-u");
+    fakejir = frmParam.getParam("pos", "jir", "N",
+        "Jir", true).equalsIgnoreCase("D");
     dw = getParamStr(frmParam.getParam("pos", "doubleWidth", "\\u000E", "Komanda za dvostruki ispis", true));
     nw = getParamStr(frmParam.getParam("pos", "normalWidth", "\\u0014", "Komanda za normalni ispis", true));
     isw = dw.length() > 0;
@@ -223,7 +230,7 @@ public class repRacunPOS extends mxReport {
          "<$newline$>"+
 //         "<$newline$>"+
          getBlagajnaOperater(prodMjesto,user)+"<$newline$>"+
-         (presBlag.isFiskal(master) && master.getString("FOK").equals("D") ? getFisk() : "") +
+         (presBlag.isFiskal(master) && master.getString("FOK").equals("D") ? getFisk() : getEmptyFisk()) +
          getLastPadding() +
          //"\u001B\u0064\u0000"//+"\u0007" //"\07"
          getLastEscapeString()
@@ -249,8 +256,30 @@ public class repRacunPOS extends mxReport {
     return ret;
   }*/
   
+  HashSet jirs = new HashSet();
+  ArrayList allj = new ArrayList();
+  
+  private String getEmptyFisk() {
+    if (!fakejir || !presBlag.isFiskal(master)) return "";
+    
+    if (jirs.size() == 0) {
+      DataSet ds = Pos.getDataModule().getTempSet("JIR", Condition.emptyString("JIR").not());
+      ds.open();
+      for (ds.first(); ds.inBounds(); ds.next())
+        jirs.add(ds.getString("JIR"));
+      allj.addAll(jirs);
+    }
+    
+    return "ZKI: " + presBlag.getFis("GRC", master.getString("CSKL")).generateZKI(frmMasterBlagajna.getInstance().getRacType(master)) + "<$newline$>" +
+      "JIR: " + allj.get(new Random().nextInt(allj.size()))  + "<$newline$><$newline$>";
+  }
+  
   private String getFisk() {
     System.out.println("fisk string");
+    if (fakejir && master.getString("JIR").length() > 0)
+      if (jirs.add(master.getString("JIR")))
+        allj.add(master.getString("JIR"));
+    
     //System.out.println(frmMasterBlagajna.getInstance().rtype);
     return "ZKI: " + presBlag.getFis("GRC", master.getString("CSKL")).generateZKI(frmMasterBlagajna.getInstance().getRacType(master)) + "<$newline$>" +
       "JIR: " + master.getString("JIR") + "<$newline$><$newline$>";
@@ -509,7 +538,8 @@ public class repRacunPOS extends mxReport {
     String ractex = "<$newline$><#RAÈUN br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
     if (presBlag.isFiskal(master) && !master.getString("FOK").equals("D") && 
         !master.getTimestamp("DATDOK").before(Aus.createTimestamp(2013, 4, 1)))
-      ractex = "<$newline$><#PREDRAÈUN br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
+      ractex = fakejir ? "<$newline$><#RAÈ. br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>" :
+        "<$newline$><#PREDRAÈUN br. " + getBRDOK() + "|"+(width-2)+"|left#><$newline$>";
     
     return ractex;
 //        "\u001B\u0045<#"+ru.getFormatBroj()+"|20|center#>\u001B\u0046<$newline$>";
@@ -520,6 +550,10 @@ public class repRacunPOS extends mxReport {
     if (presBlag.isFiskal(master) && master.getString("FOK").equals("D")) {
       return master.getInt("FBR") + "-" + master.getString("FPP") + "-" + master.getInt("FNU");
     }
+    if (fakejir && presBlag.isFiskal(master)) {
+      return master.getInt("BRDOK") + "-" + presBlag.findOJ(master).getString("FPP") + "-1";
+    }
+    
     if (specForm == null || specForm.length() == 0)
       return Integer.toString(getDataSet().getInt("BRDOK"));
 
