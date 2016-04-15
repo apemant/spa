@@ -21,25 +21,9 @@ import hr.apis_it.fin._2012.types.f73.PdvType;
 import hr.apis_it.fin._2012.types.f73.PorezType;
 import hr.apis_it.fin._2012.types.f73.RacunType;
 import hr.apis_it.fin._2012.types.f73.RacunZahtjev;
-import hr.restart.baza.Artikli;
-import hr.restart.baza.Condition;
-import hr.restart.baza.Pos;
-import hr.restart.baza.Rate;
-import hr.restart.baza.Refresher;
-import hr.restart.baza.Stanje;
-import hr.restart.baza.Stpos;
-import hr.restart.baza.dM;
-import hr.restart.baza.stdoki;
-import hr.restart.robno.Aut;
-import hr.restart.robno.Rbr;
+import hr.restart.baza.*;
+import hr.restart.robno.*;
 import hr.restart.robno.Util;
-import hr.restart.robno._Main;
-import hr.restart.robno.allStanje;
-import hr.restart.robno.dlgKupac;
-import hr.restart.robno.frmPlacanje;
-import hr.restart.robno.presPOS;
-import hr.restart.robno.raVart;
-import hr.restart.robno.repFISBIH;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raUser;
@@ -67,6 +51,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -1651,7 +1636,19 @@ public class frmMasterBlagajna extends raMasterDetail {
       if (def.length != 2) return false;
       rms.put(def[0], def[1]);
     }
+    System.out.println("printeri: " + rms);
+    HashSet prns = new HashSet(rms.values());
+    System.out.println("printeri: " + prns);
     Map mgr = Aut.getAut().getPodgrupe(rms.keySet());
+    System.out.println("grupe: " + mgr);
+    
+    for (Iterator i = mgr.entrySet().iterator(); i.hasNext(); ) {
+      Map.Entry e = (Map.Entry) i.next();      
+      e.setValue(rms.get(e.getValue()));
+    }
+    
+    System.out.println("Rezultat: " + mgr);
+    
     QueryDataSet det = getDetailSet();
     
     boolean needSave = false;
@@ -1660,26 +1657,43 @@ public class frmMasterBlagajna extends raMasterDetail {
 
     det.enableDataSetEvents(false);
     int orow = det.getRow();
+    
+    det.setSort(new SortDescriptor(new String[] {"SORTGR", "CART"}));
+    int lastcart = -1;
+    
+    
     System.out.println("row: "+orow);
-    for (Iterator i = rms.keySet().iterator(); i.hasNext(); ) {
-      String gr = (String) i.next();
-      System.out.println("Ispis za grupu "+gr+" : "+rms.get(gr));
+    for (Iterator i = prns.iterator(); i.hasNext(); ) {
+      //String gr = (String) i.next();
+      String pr = (String) i.next();
+      //System.out.println("Ispis za grupu "+gr+" : "+rms.get(gr));
+      System.out.println("Ispis za printer "+pr);
       narSet = Stpos.getDataModule().getReadonlySet();
       for (det.first(); det.inBounds(); det.next()) {
         if ((ina == 1 || det.getString("AKTIV").equalsIgnoreCase("D")) &&
             ld.raLocate(dm.getArtikli(), "CART", Integer.toString(det.getInt("CART"))) 
-            && gr.equals(mgr.get(dm.getArtikli().getString("CGRART")))) {
-          narSet.insertRow(false);
-          dM.copyDestColumns(det, narSet);
+            && pr.equals(mgr.get(dm.getArtikli().getString("CGRART")))) {
+          if (!saveChanges) det.setInt("BRDOK", getMasterSet().getInt("BRDOK"));
+          if (det.getInt("CART") == lastcart && narSet.rowCount() > 0 &&
+              VTText.getDataModule().getRowCount(Condition.equal(
+                  "CKEY", raControlDocs.getKey(narSet, "stpos"))) == 0 &&
+              VTText.getDataModule().getRowCount(Condition.equal(
+                   "CKEY", raControlDocs.getKey(det, "stpos"))) == 0) {
+            Aus.add(narSet, "KOL", det);
+          } else {
+            narSet.insertRow(false);
+            dM.copyDestColumns(det, narSet);
+            narSet.setInt("BRDOK", getMasterSet().getInt("BRDOK"));
+            narSet.post();
+          }
           det.setString("AKTIV", "N");
-          narSet.setInt("BRDOK", getMasterSet().getInt("BRDOK"));
-          narSet.post();
-          System.out.println(narSet);
+          System.out.println("ina " + ina + "  " + narSet); 
+          lastcart = det.getInt("CART");
           needSave = true;
         }
       }
       if (narSet.rowCount() > 0) {
-        narDest = (String) rms.get(gr);
+        narDest = pr;
         raDetail.getRepRunner().setOneTimeDirectReport("hr.restart.robno.repNarPOS");
         System.out.println("Zovem Funkcija_ispisa ... za destinaciju "+narDest);
         raDetail.Funkcija_ispisa();
@@ -1691,7 +1705,7 @@ public class frmMasterBlagajna extends raMasterDetail {
         }*/
       }
     }
-    
+    det.setSort(null);
     det.enableDataSetEvents(true);
     det.goToClosestRow(orow);
     
