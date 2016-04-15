@@ -353,13 +353,13 @@ public abstract class raPanStats extends raUpitFat {
       JOptionPane.showMessageDialog(jtfPocDatum.getTopLevelAncestor(),
         "Po\u010Detni datum ve\u0107i od završnog !","Greška",JOptionPane.ERROR_MESSAGE);
       return false;
-    } else */if (!Valid.getValid().findYear(fieldSet.getTimestamp("pocDatum")).
+    } else *//*if (!Valid.getValid().findYear(fieldSet.getTimestamp("pocDatum")).
         		equalsIgnoreCase(Valid.getValid().findYear(fieldSet.getTimestamp("zavDatum")))){
       jtfPocDatum.requestFocus();
       JOptionPane.showMessageDialog(jtfPocDatum.getTopLevelAncestor(),
         "Period nije u istoj godini !","Greška",JOptionPane.ERROR_MESSAGE);
       return false;
-    }
+    }*/
     
     
     
