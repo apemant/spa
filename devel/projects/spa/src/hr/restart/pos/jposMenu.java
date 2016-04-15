@@ -21,6 +21,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Pos;
 import hr.restart.robno.raPOS;
 import hr.restart.robno.repFISBIH;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.PreSelect;
 import hr.restart.util.raLoader;
 import hr.restart.util.raProcess;
@@ -60,6 +61,7 @@ public class jposMenu extends JMenu {
   public JMenuItem jmKPR = new JMenuItem();
   public JMenuItem jmPregledKPR = new JMenuItem();
   public JMenuItem jmFISBIH = new JMenuItem();
+  public JMenuItem jmArtPon = new JMenuItem();
 
   public jposMenu(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -117,6 +119,12 @@ public class jposMenu extends JMenu {
     jmFISBIH.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmFISBIH_actionPerformed(e);
+      }
+    });
+    jmArtPon.setText("Dnevna ponuda");
+    jmArtPon.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmArtPon_actionPerformed(e);
       }
     });
     jmKartica.setText("Kartica artikla");
@@ -193,11 +201,20 @@ public class jposMenu extends JMenu {
       addSeparator();
       add(jmFISBIH);
     }
+    if (frmParam.getParam("pos", "grupaPonuda", "", "Šifra grupe artikala za dnevnu ponudu").length() > 0) {
+      addSeparator();
+      add(jmArtPon);
+    }
   }
 
   public void jmFISBIH_actionPerformed(ActionEvent e) {
     // TODO Auto-generated method stub
     SF.showFrame("hr.restart.robno.FISBIHIzvjestaji", jmFISBIH.getText());
+  }
+  
+  public void jmArtPon_actionPerformed(ActionEvent e) {
+    // TODO Auto-generated method stub
+    SF.showFrame("hr.restart.pos.frmArtikliPonuda", jmArtPon.getText());
   }
 
   long lastTrans = 0;
