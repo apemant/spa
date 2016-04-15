@@ -22,6 +22,7 @@ import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.dlgGetKnjig;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -35,6 +36,9 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.jar.JarInputStream;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -130,6 +134,23 @@ public class frmPDV2 extends raUpitFat {
                 datePanel.repaint();
               }
             });
+          } else if (jraObrazac.getSelectedIndex() == 7) {
+            if (vl.getToday().before(Aus.createTimestamp(2016, 5, 1))) {
+              stds.setTimestamp("DATUMOD", Aus.createTimestamp(2015, 1, 1));
+              stds.setTimestamp("DATUMDO", Aus.createTimestamp(2015, 12, 31));
+            } else {
+              int month = Integer.parseInt(ut.getMonth(vl.getToday()));
+              int year = Integer.parseInt(ut.getYear(vl.getToday()));
+              if (month < 2) stds.setTimestamp("DATUMOD", Aus.createTimestamp(year - 1, 10, 1));
+              else if (month < 5) stds.setTimestamp("DATUMOD", Aus.createTimestamp(year, 1, 1));
+              else if (month < 8) stds.setTimestamp("DATUMOD", Aus.createTimestamp(year, 4, 1));
+              else if (month < 11) stds.setTimestamp("DATUMOD", Aus.createTimestamp(year, 7, 1));
+              else stds.setTimestamp("DATUMOD", Aus.createTimestamp(year, 10, 1));
+              stds.setTimestamp("DATUMDO", ut.getLastDayOfMonth(ut.addMonths(stds.getTimestamp("DATUMOD"), 2)));
+            }
+          } else if (jraObrazac.getSelectedIndex() < 4) {
+            stds.setTimestamp("DATUMOD", ut.getFirstDayOfMonth(ut.addMonths(vl.getToday(), -1)));
+            stds.setTimestamp("DATUMDO", ut.getLastDayOfMonth(ut.addMonths(vl.getToday(), -1)));
           }
           datePanel.validate();
           System.err.println("jraObrazac.itemStateChanged");
@@ -162,6 +183,9 @@ public class frmPDV2 extends raUpitFat {
     if (jraObrazac.getSelectedIndex() == 4) {
       JOPPD.alati();
     }
+    if (jraObrazac.getSelectedIndex() == 7) {
+      OPZ_alati();
+    }
   }
   protected void delete() {
     int pick = jraObrazac.getSelectedIndex();
@@ -170,6 +194,42 @@ public class frmPDV2 extends raUpitFat {
       getJPTV().getStorageDataSet().deleteRow();
       getJPTV().fireTableDataChanged();
     }
+  }
+  
+  void OPZ_alati() {
+      JraDialog dlgAl = new JraDialog(getJframe(), "Alati");
+      dlgAl.setModal(true);
+//      XYLayout xyl = new XYLayout(500,500);
+      JPanel jp = new JPanel(new GridLayout(0, 1, 5, 5));
+      jp.add(new JButton(new AbstractAction("Popravi PDV na raèunima iz PS (oprez!)") {
+        public void actionPerformed(ActionEvent e) {
+          fixPorez();
+        }
+      }));
+      dlgAl.setContentPane(jp);
+      dlgAl.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+      startFrame.getStartFrame().centerFrame(dlgAl, 0, "Alati");
+      dlgAl.show();
+  }
+  
+  void fixPorez() {
+    try {
+      Timestamp cutoff = Aus.createTimestamp(2012, 3, 1);
+      BigDecimal pdv25 = new BigDecimal(25).movePointLeft(2);
+      BigDecimal pdv23 = new BigDecimal(23).movePointLeft(2);
+      pdv25 = Aus.one0.subtract(Aus.one0.divide(Aus.one0.add(pdv25), 20, BigDecimal.ROUND_HALF_UP));
+      pdv23 = Aus.one0.subtract(Aus.one0.divide(Aus.one0.add(pdv23), 20, BigDecimal.ROUND_HALF_UP));
+      
+      getJPTV().enableEvents(false);
+      for (setOPZ.first(); setOPZ.inBounds(); setOPZ.next()) 
+        if (setOPZ.getString("PS").equals("D") && setOPZ.getBigDecimal("PDV").signum() == 0)
+          if (setOPZ.getTimestamp("DATDOK").before(cutoff))
+            setOPZ.setBigDecimal("PDV", setOPZ.getBigDecimal("SSALDO").multiply(pdv23).setScale(2, BigDecimal.ROUND_HALF_UP));
+          else setOPZ.setBigDecimal("PDV", setOPZ.getBigDecimal("SSALDO").multiply(pdv25).setScale(2, BigDecimal.ROUND_HALF_UP)); 
+    } finally {
+      getJPTV().enableEvents(true);
+    }
+    getJPTV().fireTableDataChanged();
   }
   
   public boolean Validacija() {
@@ -414,12 +474,16 @@ public class frmPDV2 extends raUpitFat {
     System.out.println("porez: " + pk);
     
     Timestamp nadan = stds.getTimestamp("DATUMDO");
+    Timestamp from = ut.getFirstSecondOfDay(ut.addDays(ut.addMonths(nadan, -72), 1));
     
-    setOPZ = Aus.createSet("Partneri.OIB .NAZPAR Skstavke.BROJDOK .DATDOK .DATDOSP .SSALDO .SALDO PDV.2 {Status}OPIS:100");
+    Timestamp psdat = ut.getYearBegin(Aus.getFreeYear());
+    String psnal = "-" + Aus.getFreeYear() + "-00-";
     
-    QueryDataSet sk = Skstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK DATDOK DATDOSP SSALDO SALDO CSKSTAVKE OZNVAL TECAJ",
+    setOPZ = Aus.createSet("Partneri.OIB .NAZPAR PS:1 Skstavke.BROJDOK .DATDOK .DATDOSP .SSALDO .SALDO PDV.2 {Status}OPIS:100");
+    
+    QueryDataSet sk = Skstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK DATUMKNJ DATDOK DATDOSP SSALDO SALDO CSKSTAVKE CGKSTAVKE OZNVAL TECAJ",
         Aus.getKnjigCond().and(Condition.from("DATUMKNJ", Aus.getGkYear(nadan))).and(Condition.till("DATDOSP", nadan)).
-        and(Condition.till("DATDOK", nadan)).and(Aus.getVrdokCond(true, true)).and(Condition.in("BROJKONTA", kk)).
+        and(Condition.from("DATDOK", from)).and(Aus.getVrdokCond(true, true)).and(Condition.in("BROJKONTA", kk)).
         and(Condition.where("SALDO", Condition.GREATER_THAN, Aus.zero0)).and(Condition.diff("POKRIVENO", "X")));
     
     System.out.println("input: " + sk.getOriginalQueryString());
@@ -443,7 +507,6 @@ public class frmPDV2 extends raUpitFat {
       oldmap.put(key, osk.getBigDecimal("SSALDO"));
     }
 
-    
     QueryDataSet ui = UIstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK IP", 
         Aus.getKnjigCond().and(Condition.in("BROJKONTA", pk)).
         and(Condition.where("IP", Condition.GREATER_THAN, Aus.zero0)));
@@ -470,6 +533,10 @@ public class frmPDV2 extends raUpitFat {
         append('|').append(sk.getString("BROJDOK").substring(sk.getString("BROJDOK").indexOf(':') + 1)).toString();
       
       setOPZ.insertRow(false);
+      if (ps) setOPZ.setString("PS", "D");
+      else if (ut.sameDay(sk.getTimestamp("DATUMKNJ"), psdat) &&
+          sk.getString("CGKSTAVKE").indexOf(psnal) > 0) setOPZ.setString("PS", "D");
+      else setOPZ.setString("PS", "N");
       if (!Partneri.loc(sk)) setOPZ.setString("OPIS", "Greška: nepoznat partner - " +sk.getInt("CPAR"));
       else {
         setOPZ.setString("OIB", Partneri.get().getString("OIB"));
