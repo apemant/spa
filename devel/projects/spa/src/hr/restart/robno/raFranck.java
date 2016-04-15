@@ -150,7 +150,8 @@ public class raFranck {
     if (out != null) {
       TextFile tf = TextFile.write(out);
       tf.out("DATUM;PPD_IZVOR;PPD_IZLAZ;ARTIKL;ART_PORIJEKLO_PPD;TRZISTE_DRZAVA;" +
-      		"TRGOVINA_HORECA;KOLICINA_KG;VALUTA;RF_UKUPNO_IZNOS;IZNOS_PRODAJE;NI;CK2;NR;ZT;PP");
+      		"TRGOVINA_HORECA;KOLICINA_KG;VALUTA;RF_OR;RF_RAR;RF_DAR;RF_CS;RF_UKUPNO_IZNOS;" +
+      		"IZNOS_PRODAJE;NI;CK2;NR_FIX;NR_VAR;NR_AKC;NR_CS;NR_OSTAL;ZT;PP;CAR");
       
       VarStr line = new VarStr();
       for (ds.first(); ds.inBounds(); ds.next()) {
@@ -162,11 +163,12 @@ public class raFranck {
         line.append(Aus.formatBigDecimal(ds.getBigDecimal("KG"))).append(';');
         line.append("kn;");
         line.append(Aus.formatBigDecimal(ds.getBigDecimal("RAB"))).append(';');
+        line.append("0;0;0;0;");
         line.append(Aus.formatBigDecimal(ds.getBigDecimal("NETO"))).append(';');
         line.append(Aus.formatBigDecimal(ds.getBigDecimal("NI"))).append(';');
         line.append(Aus.formatBigDecimal(ds.getBigDecimal("CK2"))).append(';');
-        line.append("0;0;");
-        line.append(Aus.formatBigDecimal(ds.getBigDecimal("PPK")));
+        line.append("0;0;0;0;0;0;");
+        line.append(Aus.formatBigDecimal(ds.getBigDecimal("PPK"))).append(";0");
         tf.out(line.toString());
       }
       
