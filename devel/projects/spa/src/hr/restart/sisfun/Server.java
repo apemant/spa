@@ -331,6 +331,7 @@ public class Server {
       try {
         InputStream in = client.getInputStream();
         OutputStream out = client.getOutputStream();
+        client.setSoTimeout(5000);
         service.serve(in, out);
       } catch (IOException e) {
         log(e);
