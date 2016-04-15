@@ -97,9 +97,9 @@ TimeTrack TT = new TimeTrack(false);
     if (dt != null) {
       return dt;
     }
-    java.util.Date currDate = new java.util.Date(System.currentTimeMillis());
+    //java.util.Date currDate = new java.util.Date(System.currentTimeMillis());
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd.MM.yyyy");
-    return dateFormat.format(currDate).toString();
+    return dateFormat.format(Valid.getValid().getToday()).toString();
   }
 /**
  * dodaje progressbar u statusbar i ceka na next()
