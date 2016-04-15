@@ -17,7 +17,6 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
