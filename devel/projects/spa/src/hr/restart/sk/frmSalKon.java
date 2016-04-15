@@ -17,19 +17,7 @@
 ****************************************************************************/
 package hr.restart.sk;
 
-import hr.restart.baza.Condition;
-import hr.restart.baza.Doku;
-import hr.restart.baza.KnjigeUI;
-import hr.restart.baza.KreirDrop;
-import hr.restart.baza.Shkonta;
-import hr.restart.baza.Sklad;
-import hr.restart.baza.Skstavke;
-import hr.restart.baza.Skstavkerad;
-import hr.restart.baza.Urdok;
-import hr.restart.baza.VTZtr;
-import hr.restart.baza.Vrshemek;
-import hr.restart.baza.dM;
-import hr.restart.baza.doki;
+import hr.restart.baza.*;
 import hr.restart.blpn.frmUplIspl;
 import hr.restart.robno.TypeDoc;
 import hr.restart.sisfun.Asql;
@@ -39,16 +27,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.swing.raCurrencyTableModifier;
 import hr.restart.swing.raTableColumnModifier;
 import hr.restart.swing.raTableModifier;
-import hr.restart.util.Aus;
-import hr.restart.util.Util;
-import hr.restart.util.Valid;
-import hr.restart.util.lookupData;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raImages;
-import hr.restart.util.raMasterDetail;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raNavBar;
-import hr.restart.util.raTransaction;
+import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.dlgGetKnjig;
 
@@ -1216,7 +1195,13 @@ public class frmSalKon extends raMasterDetail {
       knjui = result[0];
     }
     
-    int retval = raSaldaKonti.knjiziStavku(this.getDetailSet());
+    StorageDataSet uis = Skstavkerad.getDataModule().getReadonlySet();
+    for (getDetailSet().first(); getDetailSet().inBounds(); getDetailSet().next()) {
+      uis.insertRow(false);
+      getDetailSet().copyTo(uis);
+    }
+    
+    int retval = raSaldaKonti.knjiziStavku(uis);
     if (retval != raSaldaKonti.OK) {
       String gr = "Neindeficirana greška!";
       if (retval == raSaldaKonti.DUPLICATE_KEY)
@@ -1255,11 +1240,93 @@ public class frmSalKon extends raMasterDetail {
          "Poruka", JOptionPane.INFORMATION_MESSAGE);
 //    if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Dokument proknjižen. Automatsko pokrivanje?", "Knjiženje",
 //       JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) return;
+    
+    String trans = frmParam.getParam("sk", "autoPrijenosURAIRA", "", "Definicija knjiga za prijenos porezne obaveze");
+    if (!ira && trans.length() > 0) makeTrans(trans, uis);
 
     this.getMasterSet().refresh();
     raMaster.getJpTableView().fireTableDataChanged();
   }
 
+  private void makeTrans(String def, DataSet uis) {
+    String[] defs = new VarStr(def).splitTrimmed('|');
+    for (int i = 0; i < defs.length; i++) {
+      List l = new VarStr(defs[i]).splitAsList();
+      if (l.size() > 0 &&  getDetailSet().getString("CKNJIGE").equals(l.get(0))) {
+        makeTransFor(defs[i], uis);
+        break;
+      }
+    }
+  }
+  
+  private void makeTransFor(String def, DataSet uis) {
+    String[] parts = new VarStr(def).split();
+    String dest = parts.length == 3 && parts[1].equals("->") ? parts[2] : parts[0];
+    
+    if (!ld.raLocate(dm.getKnjigeI(), "CKNJIGE", dest)) {
+      JOptionPane.showMessageDialog(raMaster.getWindow(), "Neispravno definiran PPO: " + 
+          def + " (nepostojeæa knjiga IRA)", "Greška", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    DataSet sh = Shkonta.getDataModule().openTempSet(Condition.equal("CSKL", dm.getKnjigeI())
+        .and(Condition.equal("VRDOK", "IRN")));
+    if (sh.rowCount() == 0) {
+      JOptionPane.showMessageDialog(raMaster.getWindow(), "Neispravno definiran PPO: " + 
+          def + " (nepostojeæa shema za IRA)", "Greška", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    
+    if (sh.rowCount() != uis.rowCount()) {
+      JOptionPane.showMessageDialog(raMaster.getWindow(), "Neispravno definiran PPO: " + 
+          def + " (neispravan broj UI stavaka sheme)", "Greška", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    
+    for (uis.first(); uis.inBounds(); uis.next()) {
+      if (!ld.raLocate(sh, "STAVKA", uis)) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Neispravno definiran PPO: " + 
+            def + " (nepostojeæa stavka sheme " + uis.getShort("STAVKA") +")", "Greška", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      uis.setString("BROJKONTA", sh.getString("BROJKONTA"));
+      short ckolone = 0;
+      try {
+        ckolone = Short.parseShort(sh.getString("POLJE"));
+      } catch (Exception e) {}
+      uis.setShort("CKOLONE", ckolone);
+      BigDecimal id = uis.getBigDecimal("ID");
+      uis.setBigDecimal("ID", uis.getBigDecimal("IP"));
+      uis.setBigDecimal("IP", id);
+      uis.setString("VRDOK", uis.getString("VRDOK").equals("URN") ? "IRN" : "OKK");
+      uis.setString("CSKL", dm.getKnjigeI().getString("CSKL"));
+      uis.setString("BROJDOK", uis.getString("BROJDOK") + "*");
+    }
+    
+    ld.raLocate(uis, "RBS", "1");
+    uis.setString("CGKSTAVKE", "N");
+    uis.setString("EXTBRDOK", uis.getString("EXTBRDOK") + "*");
+
+    int retval = raSaldaKonti.knjiziStavku(uis);
+    if (retval != raSaldaKonti.OK) {
+      String gr = "Neindeficirana greška!";
+      if (retval == raSaldaKonti.DUPLICATE_KEY)
+        gr = "Identi\u010Dna stavka je ve\u0107 potvr\u0111ena!";
+      else if (retval == raSaldaKonti.NO_KONTO || retval == raSaldaKonti.NO_SHEMA) 
+        gr = "Greška u kontnom planu!";
+      else if (retval == raSaldaKonti.NO_VALUTA) gr = "Nepostojeæa valuta!";
+
+      JOptionPane.showMessageDialog(raMaster.getWindow(), gr, "Greška", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    
+    if (!raTransaction.saveChangesInTransaction(new QueryDataSet[] {dm.getSkstavke(), dm.getUIstavke()})) {
+      JOptionPane.showMessageDialog(raMaster.getWindow(), "Transakcija nije uspjela (PPO)!", "Greška",
+          JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    JOptionPane.showMessageDialog(raMaster.getWindow(), "Prijenos porezne obveze prebaèen i u knjigu IRA (" + dest + ").",
+        "Poruka", JOptionPane.INFORMATION_MESSAGE);
+  }
 
   private void copyMasterFields() {
     String[] cols = new String[] {"KNJIG", "CPAR", "CSKL", "VRDOK", "BROJDOK", "CORG",
