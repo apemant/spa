@@ -726,6 +726,7 @@ PPOR3;numeric;15,2;;0;Posto poreza 3;14
 CPRODMJ;char;3;pkey;;Blagajna;5
 REZKOL;char;1;;N;Rezervirano
 SLIJED;short;2;;;Slijed
+SORTGR;int;6;;;Sort grupa
 IDX=cskl,vrdok,god,brdok,cprodmj
 IDX=cart
 
@@ -1306,6 +1307,7 @@ KOL2;numeric;15,3;;0;Poleta
 PPOP;numeric;10,2;;0;Posto popusta
 FC;numeric;17,2;;0;Fakturna cijena
 ID_STAVKA;char;50;;;ID stavka;*
+LOT;char;12;;;Lot
 IDX=cart
 
 $Meskla
