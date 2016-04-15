@@ -539,6 +539,7 @@ public class raReportDescriptor {
       {"hr.restart.robno.repMesklaSpec", "MES", "", ""},
       {"hr.restart.robno.repMesklaExtendedVersion", "MES", "", ""},
       {"hr.restart.robno.repMei", "MEI", "", ""},
+      {"hr.restart.robno.repMeiLOT", "MEI", "", ""},
       {"hr.restart.robno.repMeiExtendedVersion", "MEI", "", ""},
       {"hr.restart.robno.repMeu", "MEU", "", ""},
       {"hr.restart.robno.repMeuExtendedVersion", "MEU", "", ""},
