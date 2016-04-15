@@ -96,6 +96,10 @@ public class repMeskla implements raReportData {
   public String getGOD() {
     return ds.getString("GOD");
   }
+  
+  public String getLOT() {
+    return ds.getString("LOT");
+  }
 
   public int getBRDOK() {
     return ds.getInt("BRDOK");
