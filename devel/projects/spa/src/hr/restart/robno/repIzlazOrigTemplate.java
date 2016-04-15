@@ -86,7 +86,7 @@ public abstract class repIzlazOrigTemplate extends raReportTemplate {
   public abstract raReportSection createSectionFooter1();
   
   public raReportSection createSectionFooter0() {
-    return new raIzlazSectionFooterForCustom(this);    
+    return new raIzlazSectionFooterForCustom(this);
   }
 
   public raReportSection createPageFooter() {
