@@ -979,7 +979,7 @@ public class Util {
     String cskl = ds.getString("CSKL");
     String god = ds.getString("GOD");
     String vrdok = ds.getString("VRDOK");
-    if (TypeDoc.getTypeDoc().isDocOJ(vrdok) || (vrdok.equalsIgnoreCase("PON") && ds.getString("PARAM").equals("OJ"))) {
+    if (TypeDoc.getTypeDoc().isDocOJ(vrdok) || (vrdok.equalsIgnoreCase("PON") && md.getMasterSet().getString("PARAM").equals("OJ"))) {
       cskl = ds.getString("CSKLART");
       if (cskl.trim().length() == 0) {
         JOptionPane.showMessageDialog(md.raDetail.getWindow(),
