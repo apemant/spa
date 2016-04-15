@@ -742,7 +742,7 @@ PREMA NACIONALNOJ KLASIFIKACIJI)]]></text>
 				<reportElement positionType="Float" x="29" y="0" width="55" height="10" forecolor="#000000"/>
 				<box topPadding="1"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="6" isBold="false" pdfEncoding="Cp1250"/>
+					<font fontName="Arial" size="5" isBold="false" pdfEncoding="Cp1250"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{BROJDOK}]]></textFieldExpression>
 			</textField>
