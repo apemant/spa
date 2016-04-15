@@ -274,7 +274,7 @@ public class raReportElement {
   }
   
   public void alterWidth(long width) {
-    setProperty(ep.WIDTH, "" + (getWidth() + (width / 20) * 20));
+    setProperty(ep.WIDTH, "" + (getWidth() + ((int) width / 20) * 20));
   }
   
   /**
@@ -338,7 +338,7 @@ public class raReportElement {
   }
   
   public void moveVert(long top) {
-    setProperty(ep.TOP, "" + (getTop() + (top / 20) * 20));
+    setProperty(ep.TOP, "" + (getTop() + ((int) top / 20) * 20));
   }
 
   /**
@@ -385,7 +385,7 @@ public class raReportElement {
   }
 
   public void moveHor(long left) {
-    setProperty(ep.LEFT, "" + (getLeft() + (left / 20) * 20));
+    setProperty(ep.LEFT, "" + (getLeft() + ((int) left / 20) * 20));
   }
   
   /**
