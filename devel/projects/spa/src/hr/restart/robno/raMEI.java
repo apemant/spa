@@ -126,6 +126,8 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     raDetail.getRepRunner().clearAllReports();
     raMaster.getRepRunner().addReport("hr.restart.robno.repMei","hr.restart.robno.repMeskla","Mei","Me\u0111uskladišnica izlaz");
     raDetail.getRepRunner().addReport("hr.restart.robno.repMei","hr.restart.robno.repMeskla","Mei","Me\u0111uskladišnica izlaz");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repMeiLOT","hr.restart.robno.repMeskla","MeiLOT","Meðuskladišnica izlaz sa šaržom");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repMeiLOT","hr.restart.robno.repMeskla","MeiLOT","Meðuskladišnica izlaz sa šaržom");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMeiExtendedVersion","hr.restart.robno.repMeskla","MeiExtendedVersion","Me\u0111uskladišnica izlaz - vrijednosna");
     raDetail.getRepRunner().addReport("hr.restart.robno.repMeiExtendedVersion","hr.restart.robno.repMeskla","MeiExtendedVersion","Me\u0111uskladišnica izlaz - vrijednosna");
   }
@@ -677,6 +679,9 @@ public class raMEI extends hr.restart.util.raMasterDetail{
           jtfKOL_focusLost();
         }
      };	
+     
+  JraTextField jraLOT = new JraTextField();
+
   
   
   JraTextField jraFC = new JraTextField() {
@@ -740,6 +745,7 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     jraFC.setColumnName("ZC");
     jtfKOL.setColumnName("KOL");
     jraINETO.setColumnName("ZADRAZIZ");
+    jraLOT.setColumnName("LOT");
     /*jtfKOL.addFocusListener(new java.awt.event.FocusAdapter() {
       public void focusLost(FocusEvent e) {
         jtfKOL_focusLost();
@@ -762,6 +768,7 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     jraFC1.setColumnName("VC");
     jraFC2.setColumnName("MC");
     jraINETO.setColumnName("ZADRAZUL");
+    
     /*jraPMAR.addFocusListener(new java.awt.event.FocusAdapter() {
       public void focusLost(FocusEvent e) {
         if (jraPMAR.isValueChanged()) {
@@ -812,34 +819,47 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     jpDetailCenter.add(jraFC2,   new XYConstraints(154, 75, 100, -1));
     jpDetailCenter.add(jlIznos,  new XYConstraints(404, 75,  -1, -1));
     jpDetailCenter.add(jraINETO, new XYConstraints(509, 75, 100, -1));
+    
+    
 
   }
 
   public void add4MEI(){
+    
+    boolean lot = frmParam.getParam("robno", "lotMEI", "N", "Dodati polje za unos šarže na MEI (D,N)?").equalsIgnoreCase("D");
 
-    setPreferredSize(new Dimension(650, 140));
+    setPreferredSize(new Dimension(650, 140 + (lot ? 30 : 0)));
     jpDetailCenter.setLayout(xYLayoutDC1);
     xYLayoutDC1.setHeight(660);
-    xYLayoutDC1.setWidth(90);
+    xYLayoutDC1.setWidth(90 + (lot ? 30 : 0));
     jpDetailCenter.setBorder(BorderFactory.createEtchedBorder());
     jpDetailCenter.add(jlKOL, new XYConstraints(17, 10, -1, -1)); //20,15
     jpDetailCenter.add(jtfKOL, new XYConstraints(108, 10, 130, -1)); //154, 15, 100, -1));
-    jpDetailCenter.add(focusField, new XYConstraints(699, 20, 10, -1)); //633
+    if (!lot) jpDetailCenter.add(focusField, new XYConstraints(699, 20, 10, -1)); //633
     jpDetailCenter.add(jlFC, new XYConstraints(243, 10, -1, -1));    //(20, 45, -1, -1));
     jpDetailCenter.add(jraFC, new XYConstraints(308, 10, 130, -1)); //154, 45, 100, -1))
     jpDetailCenter.add(jlIznos, new XYConstraints(442, 10, -1, -1));    // 340, 45, -1, -1));
     jpDetailCenter.add(jraINETO, new XYConstraints(502, 10, 130, -1)); //445, 45, 100, -1));
+    
+    if (lot) {
+      jpDetailCenter.add(new JLabel("Šarža"),   new XYConstraints(20,  40,  -1, -1));
+      jpDetailCenter.add(jraLOT,   new XYConstraints(108, 40, 100, -1));
+    }
 
-    add(jpDetailCenter, new XYConstraints(0,90, 660, 90  ));
+    add(jpDetailCenter, new XYConstraints(0,90, 660, 90 + (lot ? 30 : 0)));
 
+    if (!lot)
     focusField.addFocusListener(new java.awt.event.FocusAdapter() {
       public void focusGained(FocusEvent e) {
-        jtfKOL.requestFocus();
+        
+          jtfKOL.requestFocus();
       }
     });
   }
 
-  public void addRest(){}
+  public void addRest(){
+    
+  }
   public jpMesklaDetail2() {
     try {
       jbInit();
@@ -856,6 +876,7 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     jraFC1.setDataSet(ds);
     jraFC2.setDataSet(ds);
     jraINETO.setDataSet(ds);
+    jraLOT.setDataSet(ds);
     rpcart.setTabela((QueryDataSet) ds);
     rpcart.setDefParam();
 //    rpcart.setSearchable(false);
