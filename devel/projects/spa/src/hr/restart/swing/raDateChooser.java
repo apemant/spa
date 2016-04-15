@@ -19,43 +19,17 @@ package hr.restart.swing;
 
 import hr.restart.robno.Aut;
 import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
 import hr.restart.util.Util;
+import hr.restart.util.Valid;
+import hr.restart.util.raImages;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.Timer;
+import javax.swing.*;
 
 class DayLabel extends JLabel {
   public static final int BEFORE_FIRST = 0;
@@ -252,6 +226,8 @@ public class raDateChooser {
 
   private static raDateChooser dc = null;
 
+  private JPanel up;
+  private JComboBox god;
   private JDialog main;
   private JraScrollPane v;
   private JPanel jp;
@@ -375,6 +351,7 @@ public class raDateChooser {
       main = new JraDialog((Frame) parent, true);
 
     addDialogListeners();
+    main.getContentPane().add(up, BorderLayout.NORTH);
     main.getContentPane().add(v);
     main.pack();
     if (location == null)
@@ -396,6 +373,7 @@ public class raDateChooser {
       else if (year > c.get(c.YEAR) || (year == c.get(c.YEAR) && i > c.get(c.MONTH))) active = 0;
       jp.add(month[i] = new MonthPanel(year, i, active));
     }
+    if (god != null) god.setSelectedItem(Integer.toString(year));
     highlight = previous = first = last = ref = null;
   }
 
@@ -411,7 +389,7 @@ public class raDateChooser {
     int dw = Aut.getAut().getNumber(frmParam.getParam("sisfun", "datumHoriz"));
     int dh = Aut.getAut().getNumber(frmParam.getParam("sisfun", "datumVert"));
     br = new Rectangle();
-    jp = new JPanel();
+    jp = new ScrollPanel();
     month = new MonthPanel[12];
     setYear(-1);
     columns = Math.max(1, Math.min(4, dw));
@@ -427,6 +405,35 @@ public class raDateChooser {
       month[0].getPreferredSize().height + 10));
     v.getViewport().setPreferredSize(v.getViewport().getMinimumSize());
     v.setViewportView(jp);
+    
+    JraButton prev = new JraButton();
+    JraButton next = new JraButton();
+    prev.setIcon(raImages.getImageIcon(raImages.IMGBACK));
+    next.setIcon(raImages.getImageIcon(raImages.IMGFORWARD));
+    prev.setMargin(new Insets(0,0,0,0));
+    next.setMargin(new Insets(0,0,0,0));
+
+    up = new JPanel(new BorderLayout());
+    JPanel left = new JPanel(new FlowLayout());
+    god = new JComboBox() {
+      public boolean isFocusTraversable() {
+        return false;
+      }
+    };
+    god.setEditable(false);
+    
+    String currg = Valid.getValid().findYear();
+    int max = Aus.getNumber(currg) + 1;
+    for (int i = max-110; i <= max; i++)
+      god.addItem(Integer.toString(i));
+    god.setSelectedItem(currg);
+    left.add(new JLabel("Godina  "));
+    left.add(prev);
+    left.add(god);
+    left.add(next);
+    up.add(left, BorderLayout.WEST);
+    up.add(Box.createHorizontalGlue());
+    
 
     Dimension ps = v.getViewport().getMinimumSize();
     Dimension ns = new Dimension(columns * (ps.width - 5) + 5, dh * (ps.height - 5) + 5);
@@ -479,6 +486,25 @@ public class raDateChooser {
     scroller = new javax.swing.Timer(30, new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (scroll && speed != 0) scrollView();
+      }
+    });
+    
+    god.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED)
+          switchToYear(Aus.getNumber((String) e.getItem()));
+      }
+    });
+    prev.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (god.getSelectedIndex() > 0)
+          god.setSelectedIndex(god.getSelectedIndex() - 1);
+      }
+    });
+    next.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (god.getSelectedIndex() >= 0 && god.getSelectedIndex() < god.getItemCount() - 1)
+          god.setSelectedIndex(god.getSelectedIndex() + 1);
       }
     });
   }
@@ -706,6 +732,7 @@ public class raDateChooser {
     checkHighlightVisible();
   }
 
+  
   private void selectMonth(Component m) {
     if (m instanceof JLabel) {
       String name = ((JLabel) m).getText();
@@ -717,6 +744,18 @@ public class raDateChooser {
             break;
           }
     }
+  }
+  
+  private void switchToYear(int year) {
+    if (year == month[0].getYear()) return;
+    
+    DayLabel oldh = highlight;
+    setYear(year);
+    god.setSelectedItem(Integer.toString(year));
+    setPreferredPanelSize();
+    main.pack();
+    if (oldh != null)
+      setHighlight(oldh.getMonth(), oldh.getDay());
   }
 
   private void setHighlight(DayLabel l) {
@@ -810,6 +849,31 @@ public class raDateChooser {
         }
       }
     });
+  }
+  
+  class ScrollPanel extends JPanel implements Scrollable {
+    public Dimension getPreferredScrollableViewportSize() {
+      return v.getViewport().getPreferredSize();
+    }
+    public int getScrollableUnitIncrement(Rectangle visibleRect,
+        int orientation, int direction) {
+      if (orientation == SwingConstants.HORIZONTAL) return 0;
+      return month[0].getDay(1).getHeight();
+    }
+
+    public int getScrollableBlockIncrement(Rectangle visibleRect,
+        int orientation, int direction) {
+      if (orientation == SwingConstants.HORIZONTAL) return 0;
+      return month[0].getHeight();
+    }
+
+    public boolean getScrollableTracksViewportWidth() {
+      return false;
+    }
+
+    public boolean getScrollableTracksViewportHeight() {
+      return false;
+    }
   }
 }
 
