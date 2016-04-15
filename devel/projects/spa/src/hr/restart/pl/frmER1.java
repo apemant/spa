@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.Condition;
+import hr.restart.baza.Vrsteprim;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
@@ -30,6 +32,7 @@ import hr.restart.util.raUpitLite;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.BorderLayout;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import javax.swing.JLabel;
@@ -146,6 +149,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
     Column colS3 = new Column();
     Column colS4 = new Column();
     Column colS5 = new Column();
+    Column colS6 = new Column();
     Column colAlikvotni = new Column();
 
     colS1 = dm.createBigDecimalColumn("SATIPUNORV");
@@ -153,6 +157,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
     colS3 = dm.createBigDecimalColumn("SATIKRACE");
     colS4 = dm.createBigDecimalColumn("SATIBOL");
     colS5 = dm.createBigDecimalColumn("FONDSATI");
+    colS6 = dm.createBigDecimalColumn("HZZONAK");
     colAlikvotni = dm.createBigDecimalColumn("ALIKVOTNI");
 
     repSet.addColumn(colS1);
@@ -160,6 +165,7 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
     repSet.addColumn(colS3);
     repSet.addColumn(colS4);
     repSet.addColumn(colS5);
+    repSet.addColumn(colS6);
     repSet.addColumn(colAlikvotni);
 
     repSet.getColumn("GODOBRDOH").setRowId(true);
@@ -298,6 +304,10 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
   }
 
   private void makeRepSet() {
+    
+    Condition hzzoprim = Condition.in("CVRP", Vrsteprim.getDataModule().openTempSet(
+        "parametri LIKE 'NN%' AND rsoo!='10' AND rsoo!='' AND rsoo IS NOT NULL"));
+    
     repSet.first();
 
     do{
@@ -327,6 +337,8 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
 //      } else {
 //        System.out.println("ER1_8 ="+er8);
 //      }
+      
+      deductHZZO(hzzoprim);
 
       repSet.setBigDecimal("SATIPUNORV", repSet.getBigDecimal("SATI").subtract(repSet.getBigDecimal("SATIDUZE")).subtract(repSet.getBigDecimal("SATIKRACE")));
     } while (repSet.next());
@@ -341,6 +353,19 @@ System.out.println(god1+"/"+mj1+" - "+god2+"/"+mj2);
       repSet.post();
     }
   }
+  
+  private void deductHZZO(Condition c) {
+    String qstr = "select sum(primanjaarh.bruto) as hzzo from primanjaarh " +
+        " where primanjaarh.cradnik = '"+ fieldSet.getString("CRADNIK") + "'" +
+        " AND primanjaarh.mjobr = "+repSet.getShort("mjobrdoh")+
+            " AND primanjaarh.godobr = "+ repSet.getShort("godobrdoh")+
+            " AND "+c.qualified("primanjaarh");
+    System.out.println(qstr);
+    BigDecimal hzzo = Aus.q(qstr).getBigDecimal("HZZO");
+    Aus.sub(repSet, "NAKNADE", hzzo);
+    Aus.sub(repSet, "NETOPK", hzzo);
+  }
+  
   private String getKnjigovodstvoSQL() {
     String qstr = "SELECT Orgstruktura.naziv, Orgstruktura.mjesto, Orgstruktura.adresa, Orgstruktura.hpbroj, Logotipovi.matbroj "+
                   "FROM Orgstruktura, Logotipovi "+
