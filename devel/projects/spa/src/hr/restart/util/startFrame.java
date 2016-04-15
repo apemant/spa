@@ -22,7 +22,9 @@ import hr.restart.help.raLiteBrowser;
 import hr.restart.help.raSendMessage;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraFrame;
+import hr.restart.swing.XYPanel;
 import hr.restart.swing.raCalculator;
+import hr.restart.swing.raInputDialog;
 import hr.restart.util.mail.LogMailer;
 import hr.restart.util.menus.MenuFactory;
 import hr.restart.util.versions.raVersionInfo;
@@ -47,20 +49,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
-import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
-import javax.swing.JDialog;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
+
+import com.borland.dx.dataset.DataSet;
 
 /**
  * Title:        Utilitys
@@ -415,6 +410,13 @@ public class startFrame extends JraFrame implements Cloneable {
         new raSearchTextFiles().show();
       }
     });
+    
+    JMenuItem jmiChgDat = new JMenuItem("Promijeni datum");
+    jmiChgDat.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        changeDatum();
+      }
+    });
 //Systemski menui
     jmStartFrSys = new javax.swing.JMenu(res.getString("jmStartFrSys"));
 /*
@@ -554,6 +556,8 @@ public class startFrame extends JraFrame implements Cloneable {
     		raUser.getInstance().getUser().equals("test") ||
     		raUser.getInstance().getUser().equals("root")) jmStartFrHelp.add(jmiSearch);
     jmStartFrHelp.addSeparator();
+    jmStartFrHelp.add(jmiChgDat);
+    jmStartFrHelp.addSeparator();
     jmStartFrHelp.add(jmiStartFrHlpAbout);
     jMnuB.add(jmStartFrHelp);
 //    jMnuB.setHelpMenu(jmStartFrHelp);
@@ -601,6 +605,20 @@ public class startFrame extends JraFrame implements Cloneable {
       return ((hr.restart.util.raFrame)frame).getState();
     } else {
       return -1;
+    }
+  }
+  
+  void changeDatum() {
+    raInputDialog dlg = new raInputDialog();
+    DataSet ds = Aus.createSet("@DATUM");
+    ds.setTimestamp("DATUM", Valid.getValid().getToday());
+    
+    XYPanel pan = new XYPanel(ds);
+    pan.label("Datum", 80).text("DATUM").nl().expand();
+    
+    if (dlg.show(this, pan, "Promjena datuma rada")) {
+      Valid.getValid().setToday(ds.getTimestamp("DATUM"));
+      statusMSG();
     }
   }
   /**
@@ -1210,6 +1228,8 @@ System.out.println("Nije modal dialog...Vracam false");
   	if (delta < -2 || delta > 5) delta = 0;
   	if (delta == 0 && family == null) return;
   	
+  	Properties raProps = FileHandler.getProperties(IntParam.PROPSFILENAME, false);
+  	
   	System.out.println("Changing fonts, delta: " + delta + " family: " + family);
   	UIDefaults defs = UIManager.getLookAndFeelDefaults();
   	HashSet keys = new HashSet(defs.keySet());
@@ -1230,9 +1250,17 @@ System.out.println("Nije modal dialog...Vracam false");
       		maxf = in.intValue();
       		oldf = font.getFamily();
       	}
+      	String fontdef = raProps.getProperty(k.toString());
+      	if (fontdef != null && fontdef.indexOf('-') > 0) {
+      	  int pos = fontdef.lastIndexOf('-');
+      	  UIManager.put(k, new FontUIResource(fontdef.substring(0, pos), 
+      	      Font.PLAIN, Aus.getNumber(fontdef.substring(pos + 1))));
+      	  System.out.println("Switching " + k + " to " + UIManager.getFont(k));
+      	  i.remove();
+      	}
       }
-      
   	}
+  	
   	System.out.println("Old family: " + oldf);
 
     for(Iterator i = keys.iterator(); i.hasNext(); ) {
@@ -1242,6 +1270,7 @@ System.out.println("Nije modal dialog...Vracam false");
       	if (font.getFamily().equals(oldf))
       		font = new FontUIResource(family, font.getStyle(), font.getSize());
         UIManager.put(key, font.deriveFont(font.getSize2D() + delta));
+        System.out.println("Switching " + key + " to " + UIManager.getFont(key));
       }
     }
   }

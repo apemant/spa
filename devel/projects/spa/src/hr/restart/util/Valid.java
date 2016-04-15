@@ -844,10 +844,16 @@ public class Valid {
     variant.setTimestamp(new java.sql.Timestamp( calendar.getTime().getTime() ));
     return variant.getTimestamp();
   }
+  
+  Timestamp today = null;
+  public void setToday(Timestamp today) {
+    this.today = today;
+  }
   /**
    *
    */
   public java.sql.Timestamp getToday() {
+    if (today != null) return today;
     return new java.sql.Timestamp(getNowMS());
   }
   
