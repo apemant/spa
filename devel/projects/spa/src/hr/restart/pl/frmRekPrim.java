@@ -343,9 +343,9 @@ public class frmRekPrim extends frmIzvjestajiPL {
   }
 
   public String getBezimeZaSort(String cradnik){
-    vl.execSQL("select prezime from radnici where cradnik='" + cradnik + "'");
+    vl.execSQL("select prezime, ime from radnici where cradnik='" + cradnik + "'");
     vl.RezSet.open();
-    return vl.RezSet.getString("PREZIME");
+    return vl.RezSet.getString("PREZIME") + " " + vl.RezSet.getString("IME");
   }
 
   public String getNaNivou(){
