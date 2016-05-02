@@ -74,7 +74,7 @@ public class frmIzvjestajProdaja extends raUpitFat {
   private BigDecimal minUtr = Aus.zero2;
   private BigDecimal maxUtr = Aus.zero2;
 
-  QueryDataSet mainData = null;
+  StorageDataSet mainData = null;
   
   //HashMap partneriMap = null;
   PartnerCache pc;
@@ -219,8 +219,16 @@ public class frmIzvjestajProdaja extends raUpitFat {
   }
 
   public int[] navVisibleColumns() {
-    if (!seg) return new int[]{0,1,2,3,4,5};
-    return new int[]{0,1,2,3,4,5,6};
+    int fy = Aus.getNumber(ut.getYear(fdata.getTimestamp("DATOD")));
+    int ly = Aus.getNumber(ut.getYear(fdata.getTimestamp("NADAN")));
+    int total = 6;
+    if (ly != fy) total += ly - fy + 1;
+    if (seg) ++total;
+    int[] ret = new int[total + 1];
+    for (int i = 0; i <= total; i++) ret[i] = i;
+    return ret;
+    /*if (!seg) return new int[]{0,1,2,3,4,5};
+    return new int[]{0,1,2,3,4,5,6};*/
   }
 
   public void okPress() {
@@ -231,7 +239,7 @@ public class frmIzvjestajProdaja extends raUpitFat {
   }
 
   public boolean runFirstESC() {
-    if (this.getJPTV().getDataSet() != null) return true;
+    if (this.getJPTV().getStorageDataSet() != null) return true;
     return false;
   }
 
@@ -387,10 +395,10 @@ public class frmIzvjestajProdaja extends raUpitFat {
   protected String getPrometQueryUpit() {
     Condition nd = Condition.between("DATDOK", 
         fdata.getTimestamp("DATOD"), fdata.getTimestamp("NADAN"));
-    String upit = "SELECT min (doki.datdok) as datpf, max(doki.cpar) as cpar, sum(stdoki.ineto) as ineto, sum(stdoki.iprodbp) as iprodbp, sum(stdoki.iprodsp) as iprodsp " +
+    String upit = "SELECT doki.cpar, doki.god, min (doki.datdok) as datpf, sum(stdoki.ineto) as ineto, sum(stdoki.iprodbp) as iprodbp, sum(stdoki.iprodsp) as iprodsp " +
             "FROM doki, stdoki WHERE doki.cskl = stdoki.cskl AND doki.vrdok = stdoki.vrdok " +
             "AND doki.god = stdoki.god AND doki.brdok = stdoki.brdok AND doki.vrdok in ('ROT','RAC','POD') AND " +nd+
-            " AND  doki.cskl = '"+rpc.getCSKL()+"' group by doki.cpar";
+            " AND  doki.cskl = '"+rpc.getCSKL()+"' group by doki.cpar, doki.god";
     return upit;
   }
   
@@ -419,7 +427,33 @@ public class frmIzvjestajProdaja extends raUpitFat {
     }
     dsp.close();
     
-    Column[] columns = new Column[] {
+    VarStr yrs = new VarStr();
+    int fy = Aus.getNumber(ut.getYear(fdata.getTimestamp("DATOD")));
+    int ly = Aus.getNumber(ut.getYear(fdata.getTimestamp("NADAN")));
+    
+    if (fy != ly) 
+      for (int y = fy; y <= ly; y++)
+        yrs.append(" {").append(y).append("}Y").append(y).append(".2");
+
+    HashMap totals = new HashMap();
+    for (prometiSet.first(); prometiSet.inBounds(); prometiSet.next()) {
+      String cpar = String.valueOf(prometiSet.getInt("CPAR"));
+      BigDecimal old = (BigDecimal) totals.get(cpar);
+      if (old == null) old = Aus.zero2;
+      totals.put(cpar, old.add(prometiSet.getBigDecimal("IPRODBP")));
+
+      if (fy != ly) {
+        String key = cpar + "-" + prometiSet.getString("GOD");
+        old = (BigDecimal) totals.get(key);
+        if (old == null) old = Aus.zero2;
+        totals.put(key, old.add(prometiSet.getBigDecimal("IPRODBP")));
+      }
+    }
+
+    mainData = Aus.createSet("{Oznaka}CPAR {Kupac}NAZPAR:150 {Grad}MJ:50 {Dosadašnji promet}SVEUKUPNO.2" + yrs +
+        " {Kupac od}KUPOD:8 {Ukupno mjeseci}BRMJ {Prosjeèni mjeseèni promet}PRPOMJ.2 {Segmentacija}SEG:1");
+    
+    /*Column[] columns = new Column[] {
         dm.createIntColumn("CPAR","Oznaka"),
         dm.createStringColumn("NAZPAR","Kupac",150),
         dm.createBigDecimalColumn("SVEUKUPNO","Dosadašnji promet",2),
@@ -433,7 +467,7 @@ public class frmIzvjestajProdaja extends raUpitFat {
     mainData = new QueryDataSet();
     mainData.setColumns(columns);
     mainData.setRowId("CPAR",true);
-    mainData.open();
+    mainData.open();*/
     
     int brmj = 0;
     
@@ -458,8 +492,15 @@ public class frmIzvjestajProdaja extends raUpitFat {
                     Integer.parseInt(sg), tm, tg);
         total = new BigDecimal(dosadasnjiPrometi.get(cps).toString()); 
       }
+      
+      
+      /*
       if (ld.raLocate(prometiSet, "CPAR", cps))
-        total = total.add(prometiSet.getBigDecimal("IPRODBP"));
+        total = total.add(prometiSet.getBigDecimal("IPRODBP"));*/
+      
+      BigDecimal bp = (BigDecimal) totals.get(cps);
+      if (bp != null) total = total.add(bp);
+      
       BigDecimal pros = total.divide(new BigDecimal(brmj), 2, 
                                 BigDecimal.ROUND_HALF_UP);
       // kontrole min/max. 
@@ -472,8 +513,16 @@ public class frmIzvjestajProdaja extends raUpitFat {
       mainData.setInt("BRMJ", brmj);
       mainData.setInt("CPAR", cpar);
       mainData.setString("NAZPAR", pc.getNameNotNull(cpar));
+      mainData.setString("MJ", pc.getDataNotNull(cpar).getMj());
       mainData.setString("KUPOD", kupacod);
       mainData.setBigDecimal("SVEUKUPNO", total);
+      
+      if (fy != ly) 
+        for (int y = fy; y <= ly; y++) {
+          BigDecimal ybp = (BigDecimal) totals.get(cps + "-" + y);
+          mainData.setBigDecimal("Y" + y, ybp != null ? ybp : Aus.zero2);
+        }
+      
       mainData.setBigDecimal("PRPOMJ",total.
           divide(new BigDecimal(brmj), 2, BigDecimal.ROUND_HALF_UP));
       if (seg) mainData.setString("SEG", getSeg(mainData));
