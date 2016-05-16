@@ -4687,5 +4687,17 @@ CUSER;char;15;;;Agent
 OPIS;char;2000;;;Opis kampanje
 CORG;text;12;;;Org. jed
 
+$Intervencije
+UID;int;6;pkey;;Šifra;*
+CORG;text;12;;;Org. jed
+CUSER;text;15;;;Korisnik
+CPAR;int;6;;;Partner
+STATUS;char;1;;;Status
+DATUM;timestamp;;;;Datum zaprimanja
+NAZIV;text;50;;;Kratki opis
+OPIS;text;2000;;;Opis
+DATZ;timestamp;;;;Datum zatvaranja
+VRSTA;char;1;;;Vrsta inteverncije
+TRAJANJE;int;6;;;Trajanje
 
 #END CRM

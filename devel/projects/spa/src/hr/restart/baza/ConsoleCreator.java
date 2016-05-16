@@ -1040,6 +1040,7 @@ public class ConsoleCreator {
             "hr.restart.baza.Klijenti","hr.restart.baza.Kontosobe","hr.restart.baza.Kontakti",
             "hr.restart.baza.Kanali","hr.restart.baza.KlijentStat",
             "hr.restart.baza.Segmentacija", "hr.restart.baza.Kampanje",
-            "hr.restart.baza.RobSheme", "hr.restart.baza.StRobSheme", "hr.restart.baza.Skripte"
+            "hr.restart.baza.RobSheme", "hr.restart.baza.StRobSheme", "hr.restart.baza.Skripte",
+            "hr.restart.baza.Intervencije"
       };
 }
