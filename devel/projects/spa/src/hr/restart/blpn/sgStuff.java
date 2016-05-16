@@ -26,6 +26,7 @@ import hr.restart.db.raVariant;
 import hr.restart.robno.raDateUtil;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
+import hr.restart.util.HashSum;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
@@ -34,6 +35,8 @@ import hr.restart.util.raTransaction;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import com.borland.dx.dataset.Column;
@@ -284,7 +287,7 @@ public class sgStuff {
    */
   public DataSet getAkontacijaZaObracun(String cpn) {
     String qstr = "select sum(izdatak) as izdatak, sum(pvizdatak) as pvizdatak, oznval from stavblag where cpn='" + cpn +
-        "' and cskl='6' and stavka='1' group by oznval union select sum(izdatak) as izdatak,  sum(pvizdatak) as pvizdatak, oznval from stavkeblarh where cpn='" + cpn +
+        "' and cskl='6' and stavka='1' group by oznval union all select sum(izdatak) as izdatak,  sum(pvizdatak) as pvizdatak, oznval from stavkeblarh where cpn='" + cpn +
         "' and cskl='6' and stavka='1' group by oznval";
     QueryDataSet qds = ut.getNewQueryDataSet(qstr);
     return qds;
@@ -1729,47 +1732,41 @@ System.out.println(qstr);
   }
 
   public DataSet getRazlika(String cpn){
+    
+    
     StorageDataSet tmpRazlika = new StorageDataSet();
-    Column column1 = new Column();
-    Column column2 = new Column();
-    Column column3 = new Column();
+    tmpRazlika.setColumns(new Column[] {
+        dm.createBigDecimalColumn("RAZLIKA"),
+        dm.createBigDecimalColumn("PVRAZLIKA"),
+        dm.createStringColumn("VALUTA",3)
+    });
+    tmpRazlika.open();
+    
+    StorageDataSet isplaceno = (StorageDataSet)getIsplacenaRazlika(cpn);
+    HashSet ispl = new HashSet();
+    for (isplaceno.first(); isplaceno.inBounds(); isplaceno.next())
+      ispl.add(isplaceno.getString("OZNVAL"));    
+      
+    StorageDataSet troskovi = (StorageDataSet)getTroskoveZaObracun(cpn);
+    StorageDataSet akontacija = (StorageDataSet)getAkontacijaZaObracun(cpn);
 
-      try {
-//        column1.setColumnName("RAZLIKA");
-//        column1.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
-//        column1.setDefault("0");
-//        column1.setResolvable(false);
-//        column1.setSqlType(0);
-
-        column1 = dm.createBigDecimalColumn("RAZLIKA");
-
-//        column2.setColumnName("PVRAZLIKA");
-//        column2.setDataType(com.borland.dx.dataset.Variant.BIGDECIMAL);
-//        column2.setDefault("0");
-//        column2.setResolvable(false);
-//        column2.setSqlType(0);
-
-        column2 = dm.createBigDecimalColumn("PVRAZLIKA");
-
-//        column3.setColumnName("VALUTA");
-//        column3.setDataType(com.borland.dx.dataset.Variant.STRING);
-//        column3.setResolvable(false);
-//        column3.setSqlType(0);
-
-        column3 = dm.createStringColumn("VALUTA",0);
-
-        tmpRazlika.setColumns(new Column[]{column1, column2, column3});
-        tmpRazlika.open();
-
+    HashSum iznos = new HashSum(troskovi, "OZNVAL", "IZNOS", true);
+    HashSum pviznos = new HashSum(troskovi, "OZNVAL", "PVIZNOS", true);
+      
+    iznos.subAll(akontacija, "IZDATAK");
+    pviznos.subAll(akontacija, "PVIZDATAK");
+      
+    for (Iterator i = iznos.iterator(); i.hasNext(); ) {
+      String val = (String) i.next();
+      if (!ispl.contains(val)) {
+        tmpRazlika.insertRow(false);
+        tmpRazlika.setString("VALUTA", val);
+        tmpRazlika.setBigDecimal("RAZLIKA", iznos.get(val));
+        tmpRazlika.setBigDecimal("PVRAZLIKA", pviznos.get(val));
       }
-      catch (Exception ex) {
-        tmpRazlika.deleteAllRows();
-      }
-
-      StorageDataSet troskovi = (StorageDataSet)getTroskoveZaObracun(cpn);
-      StorageDataSet akontacija = (StorageDataSet)getAkontacijaZaObracun(cpn);
-      StorageDataSet isplaceno = (StorageDataSet)getIsplacenaRazlika(cpn);
-
+    }
+      
+/*
       troskovi.first();
       boolean insert;
       do{
@@ -1798,15 +1795,14 @@ System.out.println(qstr);
             tmpRazlika.first();
             do {
               if (troskovi.getString("OZNVAL").equals(tmpRazlika.getString("VALUTA"))){
-                tmpRazlika.setBigDecimal("RAZLIKA", troskovi.getBigDecimal("IZNOS").subtract(akontacija.getBigDecimal("IZDATAK")));
-                tmpRazlika.setBigDecimal("PVRAZLIKA", troskovi.getBigDecimal("PVIZNOS").subtract(akontacija.getBigDecimal("PVIZDATAK")));
-                break;
+                tmpRazlika.setBigDecimal("RAZLIKA", tmpRazlika.getBigDecimal("RAZLIKA").subtract(akontacija.getBigDecimal("IZDATAK")));
+                tmpRazlika.setBigDecimal("PVRAZLIKA", tmpRazlika.getBigDecimal("PVRAZLIKA").subtract(akontacija.getBigDecimal("PVIZDATAK")));
               }
             } while (tmpRazlika.next());
             break;
           }
         } while (akontacija.next());
-      } while (troskovi.next());
+      } while (troskovi.next());*/
 
       return tmpRazlika;
   }
