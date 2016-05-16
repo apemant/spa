@@ -109,7 +109,7 @@ public class raObrKumGK {
     frm.getKnjizenje().setSKRacKnj(noSave);
     if (!frm.getKnjizenje().startKnjizenje(frm)) return false;
     frm.setProcessMessage("Izra\u010Dun salda ...");
-    createKontaSet(kum, !invert);
+    createKontaSet(kum, true);
 //    sys.prn(konta);
     frm.setProcessMessage("Formiranje temeljnice...");
     BigDecimal n0 = new BigDecimal(0.);
