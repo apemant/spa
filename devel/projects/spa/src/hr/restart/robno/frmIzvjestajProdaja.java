@@ -450,7 +450,7 @@ public class frmIzvjestajProdaja extends raUpitFat {
       }
     }
 
-    mainData = Aus.createSet("{Oznaka}CPAR {Kupac}NAZPAR:150 {Grad}MJ:50 {Dosadašnji promet}SVEUKUPNO.2" + yrs +
+    mainData = Aus.createSet("{Oznaka}CPAR {Kupac}NAZPAR:150 {Grad}MJ:50 {Grupa}CGRPAR:10 {Dosadašnji promet}SVEUKUPNO.2" + yrs +
         " {Kupac od}KUPOD:8 {Ukupno mjeseci}BRMJ {Prosjeèni mjeseèni promet}PRPOMJ.2 {Segmentacija}SEG:1");
     
     /*Column[] columns = new Column[] {
@@ -514,6 +514,7 @@ public class frmIzvjestajProdaja extends raUpitFat {
       mainData.setInt("CPAR", cpar);
       mainData.setString("NAZPAR", pc.getNameNotNull(cpar));
       mainData.setString("MJ", pc.getDataNotNull(cpar).getMj());
+      mainData.setString("CGRPAR", pc.getDataNotNull(cpar).getGrupa());
       mainData.setString("KUPOD", kupacod);
       mainData.setBigDecimal("SVEUKUPNO", total);
       
