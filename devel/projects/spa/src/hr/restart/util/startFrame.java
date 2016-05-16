@@ -417,6 +417,12 @@ public class startFrame extends JraFrame implements Cloneable {
         changeDatum();
       }
     });
+    JMenuItem jmiZadaci = new JMenuItem("Zadaci");
+    jmiZadaci.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        zadaci();
+      }
+    });
 //Systemski menui
     jmStartFrSys = new javax.swing.JMenu(res.getString("jmStartFrSys"));
 /*
@@ -557,6 +563,7 @@ public class startFrame extends JraFrame implements Cloneable {
     		raUser.getInstance().getUser().equals("root")) jmStartFrHelp.add(jmiSearch);
     jmStartFrHelp.addSeparator();
     jmStartFrHelp.add(jmiChgDat);
+    jmStartFrHelp.add(jmiZadaci);
     jmStartFrHelp.addSeparator();
     jmStartFrHelp.add(jmiStartFrHlpAbout);
     jMnuB.add(jmStartFrHelp);
@@ -620,6 +627,10 @@ public class startFrame extends JraFrame implements Cloneable {
       Valid.getValid().setToday(ds.getTimestamp("DATUM"));
       statusMSG();
     }
+  }
+  
+  void zadaci() {
+    startFrame.getStartFrame().showFrame("hr.restart.zapod.frmIntervencije", "Zadaci i intervencije");
   }
   /**
    * Sredjuje prozore tako da svi budu vidljivi
