@@ -28,6 +28,7 @@ import com.borland.dx.dataset.DataSet;
 public class PartnerCache {
   Map cache = null;
   static int nazwidth = 150;
+  static boolean nazpar;
   
   public PartnerCache(int _nazwidth) {
     nazwidth = _nazwidth;
@@ -47,6 +48,8 @@ public class PartnerCache {
   }
   
   private void createCache(DataSet ds) {
+    nazpar = frmParam.getParam("sk", "nazparext","N",
+        "Prikazati naziv partnera zajedno sa adresom i telefonom (D/N)").equalsIgnoreCase("D");
     cache = new HashMap();
     ds.open();
     for (ds.first(); ds.inBounds(); ds.next())
@@ -69,8 +72,7 @@ public class PartnerCache {
   }
   
   public String getNameNotNull(int cpar) {
-    String name = getName(cpar);
-    return name == null ? "" : name;
+    return getDataNotNull(cpar).getName();
   }
   
   public Data getData(int cpar) {
@@ -81,40 +83,63 @@ public class PartnerCache {
     return (Data) cache.get(p);
   }
   
+  public Data getDataNotNull(int cpar) {
+    if (cache == null)
+      throw new IllegalArgumentException("Cache is disposed");
+    Integer p = new Integer(cpar);
+    if (!cache.containsKey(p)) return Data.empty;
+    return (Data) cache.get(p);
+  }
+  
   public void dispose() {
     cache.clear();
     cache = null;
   }
   
   public static class Data {
+    
+    public static Data empty = new Data().clear();
+    
     private String naziv;
     private String mb;
     private String oib;
     private String grupa;
+    private String mj;
     private short zup;
     private int pbr;
     private int agent;
     public Data() {
       naziv = "Nepoznat partner";
-      mb = oib = grupa = "";
+      mb = oib = grupa = mj = "";
       pbr = agent = -1;
       zup = -1;
     }
     public Data(DataSet ds) {
-      String pripicuk = frmParam.getParam("sk", "nazparext","N","Prikazati naziv partnera zajedno sa adresom i telefonom (D/N)").equalsIgnoreCase("D")?
-          "; "+ds.getString("ADR")+"; "+ds.getString("MJ")+/*"; "+ds.getString("MB")+*/"; "+ds.getString("TEL"):"";
+      String pripicuk = nazpar ? "; "+ds.getString("ADR")+"; "+ds.getString("MJ")+/*"; "+ds.getString("MB")+*/"; "+ds.getString("TEL"):"";
       naziv = ds.getString("NAZPAR")+pripicuk;
       if (naziv.length()>nazwidth) naziv = naziv.substring(0,nazwidth);
       mb = ds.getString("MB");
       oib = ds.getString("OIB");
       zup = ds.getShort("CZUP");
       pbr = ds.getInt("PBR");
+      mj = ds.getString("MJ");
       agent = ds.getInt("CAGENT");
       grupa = ds.getString("CGRPAR");
     }
     
+    private Data clear() {
+      naziv = "";
+      pbr = agent = 0;
+      zup = 0;
+      return this;
+    }
+    
     public String getName() {
       return naziv;
+    }
+    
+    public String getMj() {
+      return mj;
     }
     
     public short getZup() {

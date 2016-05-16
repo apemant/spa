@@ -21,9 +21,7 @@ public class HashSum {
   
   public HashSum(DataSet ds, String keyCol, String valCol, boolean fill) {
     set(ds, keyCol, valCol);
-    if (fill)
-      for (ds.first(); ds.inBounds(); ds.next())
-        add();
+    if (fill) addAll();
   }
   
   public HashSum(DataSet ds, String keyCol, String valCol) {
@@ -38,6 +36,7 @@ public class HashSum {
     this.ds = ds;
     this.keyCol = keyCol;
     this.valCol = valCol;
+    keyType = ds.getColumn(keyCol).getDataType();
     valType = ds.getColumn(valCol).getDataType();
   }
   
@@ -56,6 +55,46 @@ public class HashSum {
     valType = ds.getColumn(valCol).getDataType();
   }
   
+  public void addAll() {
+    for (ds.first(); ds.inBounds(); ds.next())
+      add();
+  }
+  
+  public void subAll() {
+    for (ds.first(); ds.inBounds(); ds.next())
+      sub();
+  }
+  
+  public void addAll(DataSet other) {
+    DataSet old = this.ds;
+    set(other);
+    addAll();
+    set(old);
+  }
+  
+  public void subAll(DataSet other) {
+    DataSet old = this.ds;
+    set(other);
+    subAll();
+    set(old);
+  }
+  
+  public void addAll(DataSet other, String valc) {
+    DataSet old = this.ds;
+    String oldv = this.valCol;
+    set(other, valc);
+    addAll();
+    set(old, oldv);
+  }
+  
+  public void subAll(DataSet other, String valc) {
+    DataSet old = this.ds;
+    String oldv = this.valCol;
+    set(other, valc);
+    subAll();
+    set(old, oldv);
+  }
+  
   protected Object getKey(ReadRow row) {
     if (keyType == Variant.STRING)
       return row.getString(keyCol);
@@ -65,6 +104,8 @@ public class HashSum {
       return Integer.valueOf(row.getShort(keyCol));
     return null;
   }
+  
+  
   
   public void add(ReadRow row) {
     add(getKey(row), valCol);
