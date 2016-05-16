@@ -4658,7 +4658,7 @@ System.out.println("findCjenik::else :: "+sql);
 		    if (!isStanje) {
 		      if ((TD.isDocFinanc(what_kind_of_dokument) || "IZD".equals(what_kind_of_dokument))
 		          && raVart.isNorma(getDetailSet().getInt("CART"))) {
-		        if (!checkJitNalog(false)) return false;
+		        if (!isMinusAllowed && !checkJitNalog(false)) return false;
 		      } else {
 		        DP.jtfKOL.requestFocus();
                 JOptionPane.showMessageDialog(raDetail.getWindow(),
@@ -4672,7 +4672,7 @@ System.out.println("findCjenik::else :: "+sql);
 				int i = rKD.TestStanje();
 				if (i == -1 && (TD.isDocFinanc(what_kind_of_dokument) || "IZD".equals(what_kind_of_dokument))
 				    && raVart.isNorma(getDetailSet().getInt("CART"))) {
-				  if (!checkJitNalog(true)) return false;
+				  if (!isMinusAllowed && !checkJitNalog(true)) return false;
 				} else if (isTranzit || isMinusAllowed) {
 				  // nista
 				} else if (i == -1) {
