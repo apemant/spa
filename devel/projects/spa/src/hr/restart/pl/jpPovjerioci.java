@@ -78,6 +78,7 @@ public class jpPovjerioci extends JPanel {
   JraTextField jraSif2 = new JraTextField();
   JraTextField jraSif3 = new JraTextField();
   JraTextField jraSvrha = new JraTextField();
+  JraTextField jraRid = new JraTextField();
   JraTextField jraZiro = new JraTextField();
   raComboBox jrbNacIsp = new raComboBox();
   JLabel jlPovjerioc = new JLabel();
@@ -146,6 +147,8 @@ public class jpPovjerioci extends JPanel {
     jraSvrha.setColumnName("SVRHA");
     jraSvrha.setDataSet(fPovjerioci.getRaQueryDataSet());
     raMnemonics.createMnemonicLookup(jraSvrha, raVirPlMnWorker.getInstance().getID());
+    jraRid.setColumnName("RID");
+    jraRid.setDataSet(fPovjerioci.getRaQueryDataSet());
     jraZiro.setColumnName("ZIRO");
     jraZiro.setDataSet(fPovjerioci.getRaQueryDataSet());
     raMnemonics.createMnemonicLookup(jraZiro, raVirPlMnWorker.getInstance().getID());
@@ -158,7 +161,7 @@ public class jpPovjerioci extends JPanel {
     });
 
     lay.setWidth(570);
-    lay.setHeight(285);
+    lay.setHeight(310);
     jlPovjerioc.setText("Povjerioc");
     jpDetail.add(jcbAktiv,   new XYConstraints(485, 20, 70, -1));
     jpDetail.add(jlPnbz1,  new XYConstraints(15, 120, -1, -1));
@@ -184,6 +187,8 @@ public class jpPovjerioci extends JPanel {
     jpDetail.add(jraZiro,        new XYConstraints(150, 220, 405, -1));
     jpDetail.add(jlSvrha,   new XYConstraints(15, 245, -1, -1));
     jpDetail.add(jraSvrha,      new XYConstraints(150, 245, 405, -1));
+    jpDetail.add(new JLabel("Stvarni dužnik"),   new XYConstraints(15, 270, -1, -1));
+    jpDetail.add(jraRid,      new XYConstraints(150, 270, 200, -1));
     jpDetail.add(jrbNacIsp,         new XYConstraints(150, 195, 160, -1));
     jpDetail.add(jlNazpov,   new XYConstraints(205, 25, -1, -1));
     jpDetail.add(jlCpov,  new XYConstraints(150, 25, -1, -1));

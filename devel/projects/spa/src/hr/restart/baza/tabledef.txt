@@ -1707,6 +1707,7 @@ DATUMIZV;date;;;;Datum izvršenja;10
 DATUMPR;date;;;;Datum predaje;10
 IBANNT;char;30;;;IBAN raèuna na teret
 IBANUK;char;30;;;IBAN raèuna u korist
+RID;char;20;;;Id stvarnog dužnika
 IDX=ckey
 IDX=rbr
 
@@ -3516,12 +3517,13 @@ PNBZ1;char;2;;;Poziv na broj zaduž (1.dio)
 PNBZ2;char;22;;;Poziv na broj zaduž (2.dio);15
 PNBO1;char;2;;;Poziv na broj odob (1.dio)
 PNBO2;char;22;;;Poziv na broj odob (2.dio);15
-SIF1;char;3;;;Šifra 1
-SIF2;char;3;;;Šifra 2
-SIF3;char;3;;;Šifra 3
+SIF1;char;4;;;Šifra 1
+SIF2;char;4;;;Šifra 2
+SIF3;char;4;;;Šifra 3
 ZIRO;char;40;;;Žiro raèun;15
 SVRHA;char;50;;;Svrha doznake;15
 PARAMETRI;char;20;;;Parametri;*
+RID;char;20;;;Id stvarnog dužnika;10
 
 $Prava
 CPRAVA;short;2;pkey;;Šifra;7
