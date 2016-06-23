@@ -223,6 +223,7 @@ public class checkKartica {
     vrzal = hr.restart.util.Util.getNewQueryDataSet(
         "SELECT vrzal FROM sklad where cskl='" + cskl + "'", true)
         .getString("VRZAL");
+    if (vrzal.equalsIgnoreCase("X")) vrzal="N";
     prepareConditions();
   }
   
