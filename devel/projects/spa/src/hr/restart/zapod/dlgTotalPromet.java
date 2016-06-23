@@ -162,16 +162,16 @@ public class dlgTotalPromet {
   private String procGod;
 
   public static class Results {
-    public BigDecimal rac, upl, nrac, drac, ndrac;
+    public BigDecimal rac, upl, nrac, drac, ndrac, nupl, ndupl;
     public Results() {
-      rac = upl = nrac = drac = ndrac = new BigDecimal(0);
+      rac = upl = nrac = drac = ndrac = nupl = ndupl = new BigDecimal(0);
     }
     public BigDecimal getSaldo() {
-      return rac.add(nrac).subtract(upl);
+      return rac.add(nrac).subtract(upl).subtract(nupl);
     }
     
     public BigDecimal getDospSaldo() {
-      return drac.add(ndrac).subtract(upl);
+      return drac.add(ndrac).subtract(upl).subtract(ndupl);
     }
   }
 
@@ -201,7 +201,7 @@ public class dlgTotalPromet {
     DataSet knj = OrgStr.getSharedKnjig();
     Condition sklDok = Condition.in("VRDOK", new String[] {"ROT", "POD"});
     Condition orgDok = Condition.in("VRDOK", new String[] {"RAC", "TER", "ODB"});
-    String query = "SELECT SUM(uirac) AS uirac FROM doki WHERE "+
+    String query = "SELECT SUM(uirac) AS uirac, sum(platiti) AS platiti FROM doki WHERE "+
         Condition.equal("CPAR", cpar).and(Condition.equal("STATKNJ", "K").not()).
         and((sklDok.and(Condition.in("CSKL", skl))).
         or(orgDok.and(Condition.in("CSKL", knj, "CORG"))));
@@ -209,8 +209,9 @@ public class dlgTotalPromet {
     if (!raProcess.isRunning()) ds.open();
     else raProcess.openDataSet(ds);
     ret.nrac = ds.getBigDecimal("UIRAC");
+    ret.nupl = ds.getBigDecimal("PLATITI");
     
-    String dquery = "SELECT SUM(uirac) AS uirac FROM doki WHERE "+
+    String dquery = "SELECT SUM(uirac) AS uirac, sum(platiti) AS platiti FROM doki WHERE "+
         Condition.equal("CPAR", cpar).and(Condition.equal("STATKNJ", "K").not()).
         and(Condition.till("DATDOSP", today)).
         and((sklDok.and(Condition.in("CSKL", skl))).
@@ -219,6 +220,7 @@ public class dlgTotalPromet {
     if (!raProcess.isRunning()) ds.open();
     else raProcess.openDataSet(ds);
     ret.ndrac = ds.getBigDecimal("UIRAC");
+    ret.ndupl = ds.getBigDecimal("PLATITI");
     return ret;
   }
 
