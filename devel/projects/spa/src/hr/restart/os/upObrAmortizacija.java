@@ -749,14 +749,29 @@ hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(false);
     if (dm.getOS_Metaobrada().getString("VrstaAmor").equals("P") && dm.getOS_Metaobrada().getString("TipAmor").equals("K")) {
       // Siniša: Prepišemo amortizaciju iz OBRADE2 u OS_SREDSTVO
       System.out.println("Apdejt");
-      String _s = "update OS_SREDSTVO set "+
+      /*String _s = "update OS_SREDSTVO set "+
       "Amortizacija = Amortizacija+(select Amortizacija from OS_OBRADA2 where InvBroj=OS_SREDSTVO.InvBroj and CORG=OS_SREDSTVO.cOrg2), "+
       "PAmortizacija = PAmortizacija+(select PAmortizacija from OS_OBRADA2 where InvBroj=OS_SREDSTVO.InvBroj and CORG=OS_SREDSTVO.cOrg2), "+
       "Ispravak = Ispravak + Amortizacija + PAmortizacija, "+
       "Saldo = Osnovica - Ispravak "+
-      "where datlikvidacije is null AND "+getPripOrg();
+      "where datlikvidacije is null AND "+getPripOrg();*/
+      String _s = "update OS_SREDSTVO set "+
+          "Amortizacija = Amortizacija+(select Amortizacija from OS_OBRADA2 where InvBroj=OS_SREDSTVO.InvBroj and CORG=OS_SREDSTVO.cOrg2), "+
+          "PAmortizacija = PAmortizacija+(select PAmortizacija from OS_OBRADA2 where InvBroj=OS_SREDSTVO.InvBroj and CORG=OS_SREDSTVO.cOrg2) "+
+          "where datlikvidacije is null AND "+getPripOrg();
       System.out.println(_s);
       vl.runSQL(_s);
+      _s = "update OS_SREDSTVO set "+
+          "Ispravak = Ispravak + Amortizacija + PAmortizacija "+
+          "where datlikvidacije is null AND "+getPripOrg();
+      System.out.println(_s);
+      vl.runSQL(_s);
+      _s = "update OS_SREDSTVO set "+
+          "Saldo = Osnovica - Ispravak "+
+          "where datlikvidacije is null AND "+getPripOrg();
+      System.out.println(_s);
+      vl.runSQL(_s);
+            
       // Siniša: Dodamo zapis u OS_PROMJENE
       dm.getOS_Obrada2().refresh();
       dm.getOS_Obrada2().open();
