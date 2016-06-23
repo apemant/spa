@@ -615,6 +615,28 @@ public class Aus {
     return true;
   }
   
+  public static boolean checkGKDate(JraTextField knjField) {
+    System.err.println("chk GK date");
+    if (!checkSanityRange(knjField)) return false;
+    Timestamp knjDate = knjField.getDataSet().getTimestamp(knjField.getColumnName());
+    DataSet ds = Knjigod.getDataModule().getTempSet(
+        getCorgCond().and(Condition.equal("APP", "gk")));
+    ds.open();
+    if (ds.rowCount() > 0) {
+      for (ds.first(); ds.inBounds(); ds.next()) {
+        int god = getNumber(ds.getString("GOD"));
+        if (getNumber(Valid.getValid().findYear(knjDate)) < god) {
+          knjField.requestFocus();
+          if (JOptionPane.showConfirmDialog(knjField.getTopLevelAncestor(),
+              "Datum knjiženja nije u tekuæoj knjigovodstvenoj godini! Nastaviti?", "Pogrešna godina",
+              JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return false;
+          return true;
+        }
+      }
+    }
+    return true;
+  }
+  
   /**
    * <p>Metoda koja daje Condition koji zahtjeva da datum dokumenta
    * bude manji ili jednak zadanom, a datum knjizenja unutar knjigovodstvene
