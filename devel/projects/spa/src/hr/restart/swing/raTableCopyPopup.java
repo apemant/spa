@@ -88,13 +88,15 @@ public class raTableCopyPopup extends JPopupMenu {
   private Action add, addAll, set, setAll, sub, subAll, reset,
       selClear, selAll, selectCol, fastAdd, filtShow, filtEq, filtNeq, 
       filtRemove, search, searchAll, tabCond, keyCond, inCond, 
-      inColCond, copyAll, clearAll, replaceAll, performAll, performInit, 
+      inColCond, copyAll, clearAll, replaceAll, performAll, performInit, setSource,
       memorize, compare, dups, copyCol, pasteCol, findZag, findStav;
   private JMenu calcMenu;
   private JMenu adminMenu;
   
   private Map memo = new HashMap();
   private StorageDataSet memSet = null;
+  private DataSet source = null;
+  private String sourceCol = null;
   
   Interpreter bsh = new Interpreter();
   raCalculator calc = raCalculator.getInstance();
@@ -233,6 +235,7 @@ public class raTableCopyPopup extends JPopupMenu {
           "Filtriraj po razlièitim vrijednostima");
       filtRemove.setEnabled(extend && dataset && selectable &&
           jt.getDataSet().getRowFilterListener() != null);
+      setSource.setEnabled(dataset);
       inst.jt.repaint(inst.jt.getCellRect(selRow, selCol, true));
       show(jt, e.getX(), e.getY());
     }
@@ -462,6 +465,11 @@ public class raTableCopyPopup extends JPopupMenu {
         }
       }
     });
+    adminMenu.add(setSource = new AbstractAction("Postavi kao izvor za kopiranje") {
+      public void actionPerformed(ActionEvent e) {
+        setSourceData();
+      }
+    });
     
     bsh.eval(
         "import hr.restart.baza.*;" +
@@ -472,6 +480,32 @@ public class raTableCopyPopup extends JPopupMenu {
         "import com.borland.jb.util.*;" +
         "import java.math.BigDecimal;"
     );
+  }
+  
+  public void clearSourceData() {
+    source = null;
+    sourceCol = null;
+  }
+  
+  void setSourceData() {
+    source = jt.getDataSet();
+    sourceCol = jt.getRealColumnName(selCol);
+  }
+  
+  public boolean isSourceSet() {
+    return source != null;
+  }
+  
+  public String getNextValue() {
+    if (!isSourceSet()) return null;
+    if (!source.inBounds()) {
+      clearSourceData();
+      return null;
+    }
+    Variant v = new Variant();
+    source.getVariant(sourceCol, v);
+    if (!source.next()) clearSourceData();
+    return v.toString();
   }
   
   void selRows(int from, int to) {

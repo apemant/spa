@@ -19,6 +19,7 @@ package hr.restart.swing;
 
 import hr.restart.help.raLiteBrowser;
 import hr.restart.util.Aus;
+import hr.restart.util.JlrNavField;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -63,6 +64,7 @@ public class raDisabledPopup extends JPopupMenu {
   JMenuItem jmiClear = new JMenuItem();
   JMenuItem jmiSearch = new JMenuItem();
   JMenuItem jmiSearchAll = new JMenuItem();
+  JMenuItem jmiSource = new JMenuItem();
 //  JCheckBoxMenuItem jmiCalc = new JCheckBoxMenuItem();
 
   public static void installFor(JraTextField jra) {
@@ -103,6 +105,8 @@ public class raDisabledPopup extends JPopupMenu {
     addSeparator();
     add(jmiSearch);
     add(jmiSearchAll);
+    addSeparator();
+    add(jmiSource);
 //    addSeparator();
 //    add(jmiCalc);
     jmiCopy.setAction(copyAction);
@@ -112,6 +116,7 @@ public class raDisabledPopup extends JPopupMenu {
     jmiSelectAll.setAction(selectAllAction);
     jmiSearch.setAction(searchAction);
     jmiSearchAll.setAction(searchAllAction);
+    jmiSource.setAction(sourceAction);
 //    jmiCalc.setAction(calcAction);
 /*    jra.addMouseListener(popup = new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
@@ -146,6 +151,7 @@ public class raDisabledPopup extends JPopupMenu {
         clearAction.setEnabled(jra.isEnabled() && l > 0);
         searchAction.setEnabled(l > 0);
         searchAllAction.setEnabled(l > 0);
+        sourceAction.setEnabled(raTableCopyPopup.inst.isSourceSet());
 //        calcAction.setEnabled(jra.getFieldMask() instanceof raCalculatorMask);
 //        jmiCalc.setSelected(raCalculatorMask.isActive());
         this.show(e.getComponent(), e.getX(), e.getY());
@@ -214,6 +220,12 @@ public class raDisabledPopup extends JPopupMenu {
     }
   };
   
+  private Action sourceAction = new AbstractAction("Ubaci sljedeæu vrijednost") {
+    public void actionPerformed(ActionEvent e) {
+      sourceInput();
+    }
+  };
+  
   void searchInt(boolean phrase) {
     try {
       String s = jra.getText();
@@ -225,6 +237,16 @@ public class raDisabledPopup extends JPopupMenu {
               Aus.convertToURLFriendly(s)));
     } catch (MalformedURLException e1) {
       e1.printStackTrace();
+    }
+  }
+  
+  void sourceInput() {
+    String ret = raTableCopyPopup.inst.getNextValue();
+    if (ret == null) return;
+    if (jra.isEnabled()) {
+      jra.setText(ret);
+      if (jra instanceof JlrNavField)
+        ((JlrNavField) jra).forceFocLost();
     }
   }
 
