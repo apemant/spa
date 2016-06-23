@@ -477,7 +477,7 @@ public class frmUlazTemplate extends raMasterDetail {
 		if (dm.getSklad().getString("VRZAL").length() == 1)
 			vrzal = dm.getSklad().getString("VRZAL").charAt(0);
 		
-		if ("NVMFLH".indexOf(vrzal) < 0) {
+		if ("NVMFLHX".indexOf(vrzal) < 0) {
 			JOptionPane.showMessageDialog(raDetail.getWindow(),
 			    "Pogrešna vrsta zalihe skladišta! ("+
 			    getMasterSet().getString("CSKL")+")", "Greška",
@@ -749,7 +749,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 		
 		if (!locateSklad()) return;
 		
-		if (vrzal == 'N' || vrzal == 'F' || vrzal == 'F' || vrzal == 'L' || vrzal == 'H')
+		if (vrzal == 'N' || vrzal == 'X' || vrzal == 'F' || vrzal == 'L' || vrzal == 'H')
 			raDetail.calc.run("ZC = NC;  IZAD = INAB;  IMAR = IPOR = 0");
 		else if (vrzal == 'V') {
 			raDetail.calc.run("ZC = VC;  IZAD = IBP;  IPOR = 0");			
