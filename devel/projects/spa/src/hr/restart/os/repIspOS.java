@@ -132,7 +132,7 @@ public class repIspOS implements raReportData {
   }
 
   public double getSadVr() {
-    return (osn-isp);
+    return (getOsnVr() - getIspVr());
   }
 
   public String getOblikListe() {
