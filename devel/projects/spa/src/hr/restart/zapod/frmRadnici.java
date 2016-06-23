@@ -19,6 +19,7 @@ package hr.restart.zapod;
 
 import hr.restart.baza.dM;
 import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.swing.AktivColorModifier;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raMatPodaci;
@@ -124,6 +125,8 @@ public class frmRadnici extends raMatPodaci {
     jpDetail = new jpRadnici(this);
     this.setRaDetailPanel(jpDetail);
     raDataIntegrity.installFor(this);
+    
+    getJpTableView().addTableModifier(new AktivColorModifier());
   }
 
   public void beforeShow()

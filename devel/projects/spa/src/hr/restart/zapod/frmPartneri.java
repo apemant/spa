@@ -26,6 +26,7 @@ import hr.restart.baza.dM;
 import hr.restart.robno.raWebSync;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.swing.AktivColorModifier;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraLabel;
@@ -497,7 +498,8 @@ public class frmPartneri extends raMatPodaci {
     //vp.setPreferredSize(new Dimension(500, 200));
     vp.setViewportView(msg);
     
-
+    getJpTableView().addTableModifier(new AktivColorModifier());
+    
     this.addOption(rnvPJ,3);
     this.addOption(rnvZiro,4);
     this.addOption(rnvKosobe,5);
