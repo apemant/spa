@@ -371,7 +371,7 @@ public class raIZD extends raIzlazTemplate  {
     else {
       if (isStanjeExist4allDSwithMSG()) {
         raZamjenaArtikla pero =  new raZamjenaArtikla(
-        		(Frame) raMaster.getFrameOwner(), realStavkeGreska,realStavke,getMasterSet().getString("CSKL")){
+        		(Frame) raMaster.getFrameOwner(), realStavkeGreska,realStavke,getMasterSet().getString("CSKL"),getMasterSet().getString("GOD")){
           public void setIndikator(boolean indi) {
             indikator = indi;
           }
@@ -406,6 +406,10 @@ public class raIZD extends raIzlazTemplate  {
     }
     upit = upit+") ";
     return upit;
+  }
+  
+  public boolean checkStavkeDel() {
+    return false;
   }
   
   void keyNull() {
