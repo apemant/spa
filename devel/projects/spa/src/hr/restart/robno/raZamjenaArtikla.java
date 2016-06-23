@@ -33,7 +33,10 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -63,10 +66,11 @@ abstract public class raZamjenaArtikla extends JraDialog {
   private raDohvatF8Stanje f8 = new raDohvatF8Stanje();
 //  private JButton zamjena = new JButton();
   String cskl = null;
+  String god = null;
   private SimpleRaPanCart rapancart1 = new SimpleRaPanCart();
   private SimpleRaPanCart rapancart2 = new SimpleRaPanCart(){
     public String keyF8Pressed(Container c,String polje,String value) {
-      return f8.keyF8Pressed(cskl,c,polje,value,
+      return f8.keyF8Pressed(cskl,god,c,polje,value,
                              hr.restart.sisfun.frmParam.getParam("robno","focusCart"));
     }
   };
@@ -145,16 +149,17 @@ abstract public class raZamjenaArtikla extends JraDialog {
     rapancart2.setFocus();
   }
 
-  public raZamjenaArtikla(Frame frame,QueryDataSet ds,DataSet goodds,String cskl) {
+  public raZamjenaArtikla(Frame frame,QueryDataSet ds,DataSet goodds,String cskl,String god) {
 
     super (frame,true);
     this.cskl = cskl;
+    this.god = god;
     goodset = goodds;
-    
-    artsum = new HashSum(goodds, "CART", "KOL", true);
-      
 
-System.out.println("INICJALIZIRAM !!!");
+    System.out.println("INICJALIZIRAM !!!");
+
+    artsum = new HashSum(goodds, "CARTZAM", "KOLZAM", true);
+    artsum.dump();
 
     this.addKeyListener(new KeyAdapter(){
       public void keyPressed(KeyEvent e){
@@ -226,8 +231,17 @@ System.out.println("INICJALIZIRAM !!!");
           "Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
      return false;
    }
-   if (!testStanja(jptv.getDataSet().getInt("CARTZAM"), 
-       artsum.get().subtract(goodset.getBigDecimal("KOLZAM")).add(jptv.getDataSet().getBigDecimal("KOLZAM")))) {
+   BigDecimal sum = artsum.get(jptv.getDataSet());
+   if (sum == null) sum = Aus.zero3;
+   System.out.println("suma cart " + jptv.getDataSet().getInt("CARTZAM") + " = " + sum);
+
+   if (goodset.getInt("CARTZAM") == jptv.getDataSet().getInt("CARTZAM"))
+     sum = sum.subtract(goodset.getBigDecimal("KOLZAM"));
+   sum = sum.add(jptv.getDataSet().getBigDecimal("KOLZAM"));
+   
+   System.out.println("new sum = " + sum);
+
+   if (!testStanja(jptv.getDataSet().getInt("CARTZAM"),  sum)) {
      javax.swing.JOptionPane.showMessageDialog(null,
          "Kolièina je manja nego na zalihi !",
           "Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -242,7 +256,7 @@ System.out.println("INICJALIZIRAM !!!");
 
     if (inReplace) {
     	System.out.println("Binderstatus "+zamjena.getBinder().getDataSet().getString("STATUS"));
-    	boolean loc = ld.raLocate(goodset, "BRANCH", jptv.getDataSet());
+    	boolean loc = ld.raLocate(goodset, "RBSID BRANCH", jptv.getDataSet());
     	
     	if (zamjena.isSelected()) {
     	
