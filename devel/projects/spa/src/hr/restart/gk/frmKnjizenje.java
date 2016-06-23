@@ -347,6 +347,7 @@ public class frmKnjizenje extends JraDialog implements ResetEnabled {
   private boolean myValid() {
     if (vl.isEmpty(jpGetVrnal.jlrCVRNAL)) return false;
     if (vl.isEmpty(jtDATUMKNJ)) return false;
+    if (!Aus.checkGKDate(jtDATUMKNJ)) return false;
     if (vl.isEmpty(jtDATUMDO)) return false;
     return true;
   }

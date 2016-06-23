@@ -576,10 +576,14 @@ public class frmNalozi extends raMasterDetail {
   public boolean ValidacijaMaster(char mod) {
     if (mod == 'N') {
     	if (vl.isEmpty(jpMaster.jtDATUMKNJ)) return false;
+    	
+    	if (!Aus.checkGKDate(jpMaster.jtDATUMKNJ)) return false;
+    	
     	newNalog();
     	if (checkPrev()) return false;
       return true;
     } else if (mod == 'I') {
+      if (!Aus.checkGKDate(jpMaster.jtDATUMKNJ)) return false;
       setStatus();
     }
     return true;
