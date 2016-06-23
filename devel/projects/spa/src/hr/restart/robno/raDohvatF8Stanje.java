@@ -39,7 +39,7 @@ import com.borland.dx.dataset.MetaDataUpdate;
 
 public class raDohvatF8Stanje {
 
-  public String keyF8Pressed(String cSkl, Container c,String polje,String value,String tCartSifparam)  {
+  public String keyF8Pressed(String cSkl, String god, Container c,String polje,String value,String tCartSifparam)  {
 
     Valid vl = hr.restart.util.Valid.getValid();
     JlrNavField jrfCART = new JlrNavField();
@@ -52,7 +52,7 @@ public class raDohvatF8Stanje {
 
     String qStr = "select ARTIKLI.CART AS CART, ARTIKLI.CART1 AS CART1, ARTIKLI.BC AS BC, ARTIKLI.CGRART AS CGRART, ARTIKLI.NAZART AS NAZART,"+
                   " STANJE.KOL AS KOL, STANJE.KOLREZ AS KOLREZ from ARTIKLI, STANJE"+
-                  " where ARTIKLI.CART = STANJE.CART and STANJE.CSKL = '"+cSkl+"' and stanje.kol>0";
+                  " where ARTIKLI.CART = STANJE.CART and STANJE.CSKL = '"+cSkl+"' and STANJE.GOD = '"+god+"' and stanje.kol>0";
     if (!value.equalsIgnoreCase("")) {
       qStr = polje=="CART"?qStr+" and "+polje + "="+value:qStr+" and "+ polje+ " like '"+value+"%'";
       qStr = qStr +" order by "+polje; /// PROXIMITY WARNING
