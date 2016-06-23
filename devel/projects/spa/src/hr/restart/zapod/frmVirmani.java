@@ -382,6 +382,14 @@ public class raTableIBANModifier extends raTableColumnModifier {
     knjigovodstvo = p2;
     ckey= p3;
   }
+  
+  public void add(String p1, String p2, String p3, String p4, String p5,
+      String p6, String p7, String p8, String p9, String p10,
+      String p11, String p12, String p13, String p14, BigDecimal p15,
+      String p16, Timestamp p17,  Timestamp p18)
+  {
+    this.add(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, "");
+  }
 
   /**
    * @add
@@ -407,7 +415,7 @@ public class raTableIBANModifier extends raTableColumnModifier {
   public void add(String p1, String p2, String p3, String p4, String p5,
                   String p6, String p7, String p8, String p9, String p10,
                   String p11, String p12, String p13, String p14, BigDecimal p15,
-                  String p16, Timestamp p17,  Timestamp p18)
+                  String p16, Timestamp p17,  Timestamp p18, String p19)
   {
     if(p15==null) p15 = new BigDecimal(0);
     if(p3==null) p3 = "";
@@ -476,6 +484,7 @@ public class raTableIBANModifier extends raTableColumnModifier {
     getRaQueryDataSet().setString("MJESTO", getAppr(p16,"MJESTO"));
     getRaQueryDataSet().setTimestamp("DATUMIZV", p17);
     getRaQueryDataSet().setTimestamp("DATUMPR", p18);
+    getRaQueryDataSet().setString("RID", p19);
     getRaQueryDataSet().post();
   }
 
@@ -875,6 +884,7 @@ public class raTableIBANModifier extends raTableColumnModifier {
         getJpTableView().enableEvents(false);
 
         try {
+          getRepRunner().removeReport("hr.restart.pl.repSepaDisk");
           getRepRunner().removeReport("hr.restart.zapod.repDiskZap");
           getRepRunner().removeReport("hr.restart.zapod.repDiskZapUN");
           /*getRepRunner().removeReport("hr.restart.zapod.repIspVir");
@@ -888,6 +898,7 @@ public class raTableIBANModifier extends raTableColumnModifier {
           getRepRunner().removeReport("hr.restart.zapod.repVir3A");
           getRepRunner().removeReport("hr.restart.zapod.repVir3Ai");
 
+          getRepRunner().addReport("hr.restart.pl.repSepaDisk", "SEPA XML datoteka");
           getRepRunner().addReport("hr.restart.zapod.repDiskZapUN", "Datoteka za e-plaæanje (IBAN)");
           getRepRunner().addReport("hr.restart.zapod.repDiskZap", "Stara datoteka za e-plaæanje");
 //          getRepRunner().addJasper("hr.restart.zapod.repVir3A", "hr.restart.zapod.rep3Virman", "HUB3A.jrxml", "Ispis odabranog HUB 3A");
