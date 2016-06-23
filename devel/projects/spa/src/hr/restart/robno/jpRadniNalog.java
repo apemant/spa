@@ -139,7 +139,7 @@ public class jpRadniNalog extends JPanel {
   StorageDataSet leftData = new StorageDataSet();
   StorageDataSet rightData = new StorageDataSet();
 
-  JPanel ttp = new JPanel();
+  JPanel ttp = new JPanel(new BorderLayout());
   raTwoTableChooser jpttc = new raTwoTableChooser();
   JDialog selector = null;/* = new JDialog(null, "Odabir materijala iz radnog naloga", true)*/;
   OKpanel okp = new OKpanel() {
