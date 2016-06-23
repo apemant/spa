@@ -1,13 +1,12 @@
 package hr.restart.pos;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.DataSet;
-import com.sun.glass.events.KeyEvent;
-import com.sun.glass.ui.InvokeLaterDispatcher;
 
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
