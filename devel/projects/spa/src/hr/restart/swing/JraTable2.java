@@ -25,7 +25,9 @@ import hr.restart.util.Calc;
 import hr.restart.util.NavigationAdapter;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
+import hr.restart.util.raDataFilter;
 import hr.restart.util.startFrame;
+import hr.restart.util.columnsbean.ColumnsBean;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -50,7 +52,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.RowFilterListener;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -1123,6 +1127,16 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
           showTypeTip();
           e.consume();
+        } 
+      } else if ((e.getModifiers() & e.CTRL_MASK) != 0 && raTypeaheadWindow.isShowing(this)) {
+        if (e.getKeyCode()==e.VK_S) {
+          String tx = speed.toString();
+          if (tx != null && tx.length() > 0 && getDataSet() != null) {
+            Column col = getDataSet().hasColumn(getRealColumnName(selectedCol));
+            if (col != null && col.getDataType() == Variant.STRING)
+              setTextFilter(col.getColumnName(), tx);
+          }
+          e.consume();
         }
       } else if ((e.getModifiers() & e.SHIFT_MASK) != 0) {
         Rectangle vis = getVisibleRect();
@@ -1151,6 +1165,35 @@ public class JraTable2 extends JTable implements JraTableInterface {
       }
     }
 
+  }
+  
+  void setTextFilter(String col, String tx) {
+    RowFilterListener filter = getDataSet().getRowFilterListener();
+    if (filter != null) getDataSet().removeRowFilterListener(filter);
+    
+    DataRow dr = new DataRow(getDataSet());
+    dr.setString(col, tx);
+    raDataFilter nf = anywhere ? raDataFilter.contains(dr, col) 
+            : raDataFilter.beginsWith(dr, col);
+    if (filter instanceof raDataFilter)
+      nf = ((raDataFilter) filter).and(nf);
+    try {
+      getDataSet().addRowFilterListener(nf);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    getDataSet().refilter();
+    
+    if (this instanceof raExtendedTable) {
+      ColumnsBean cb = ((raExtendedTable) this).owner.getColumnsBean();
+      raSelectTableModifier stm = hasSelectionTrackerInstalled();
+      if (stm != null && stm.isNatural()) stm.clearSelection();
+      fireTableDataChanged();
+      if (cb != null && cb.isShowing()) { 
+          cb.checkFilter();
+          cb.checkSelection();
+      }
+    }
   }
 
   private int getVisibleTableRows() {
