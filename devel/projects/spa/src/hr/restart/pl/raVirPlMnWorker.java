@@ -27,6 +27,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Odbici;
 import hr.restart.baza.Radnici;
 import hr.restart.baza.Radnicipl;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sk.JOPPDhndlr;
 import hr.restart.sk.frmPDV2;
 import hr.restart.util.Util;
@@ -61,7 +62,7 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
     return _this;
   }
   private void init() {
-    striped_radpl = Radnicipl.getDataModule().getFilteredDataSet("cradnik, brojtek, drugitek, jmbg","");
+    striped_radpl = Radnicipl.getDataModule().getFilteredDataSet("cradnik, brojtek, drugitek, jmbg, oib","");
     striped_radpl.open();
     radnici = Radnici.getDataModule().copyDataSet();
     radnici.open();
@@ -91,6 +92,14 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
         } else  return "";
         ld.raLocate(dm.getOdbiciobr(), new String[]{"CVRODB", "CRADNIK"}, new String[]{strVrOdb, strRad});
         return dm.getOdbiciobr().getString(ckeySif);
+      }
+    });
+    
+    addVar(new raMnemVar("$prim","Šifra primanja") {
+      public String getText() {
+        ld.raLocate(dm.getOrgpl(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
+        short rbr = dm.getOrgpl().getShort("RBROBR");
+        return frmParam.getParam("pl", "vrPrim" + dm.getOrgpl().getShort("RBROBR"), "100", "Šifra vrste primanja za rbr obraèuna " + rbr);
       }
     });
 
@@ -171,6 +180,13 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
       public String getText() {
         ld.raLocate(striped_radpl, new String[]{"CRADNIK"}, new String[]{strRad});
         return striped_radpl.getString("JMBG");        
+      }
+    });
+    
+    addVar(new raMnemVar("$oib","OIB radnika") {
+      public String getText() {
+        ld.raLocate(striped_radpl, new String[]{"CRADNIK"}, new String[]{strRad});
+        return striped_radpl.getString("OIB");        
       }
     });
     
