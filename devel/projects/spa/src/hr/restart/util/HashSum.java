@@ -214,4 +214,8 @@ public class HashSum {
       tot += ((Double) i.next()).doubleValue();
     return tot;
   }
+  
+  public void dump() {
+    System.out.println(map);
+  }
 }
