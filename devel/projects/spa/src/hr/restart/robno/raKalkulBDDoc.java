@@ -93,6 +93,9 @@ public class raKalkulBDDoc extends raTopCalcUtil {
       kalkFinancPartMC();
     }
     else if (!maloprodajna){
+      if (name_field.equalsIgnoreCase("FVC") && stavka.uprab.compareTo(Aus.one0.movePointRight(2)) < 0)
+        stavka.fc = stavka.fvc.divide(Aus.one0.subtract(stavka.uprab.movePointLeft(2)), 2, BigDecimal.ROUND_HALF_UP);
+      
       kalkFinancPart();
     }
     else if (maloprodajna){
