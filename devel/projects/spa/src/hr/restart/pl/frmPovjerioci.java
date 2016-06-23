@@ -19,6 +19,7 @@ package hr.restart.pl;
 
 import hr.restart.baza.dM;
 import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.swing.AktivColorModifier;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raImages;
@@ -86,6 +87,7 @@ public class frmPovjerioci extends raMatPodaci {
     this.setVisibleCols(new int[] {0, 1, 13});
     jpDetail = new jpPovjerioci(this);
     this.setRaDetailPanel(jpDetail);
+    getJpTableView().addTableModifier(new AktivColorModifier());
     raDataIntegrity.installFor(this);
   }
 

@@ -20,6 +20,7 @@ package hr.restart.pl;
 import hr.restart.baza.Radnicipl;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.swing.AktivColorModifier;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.raTableColumnModifier;
 import hr.restart.util.JlrNavField;
@@ -168,6 +169,8 @@ public class frmRadnicipl extends raMatPodaci {
     this.addOption(rnvIzvProm,4);
     this.addOption(rnvSifre,4);
     this.setRaDetailPanel(jpDetail);
+    
+    getJpTableView().addTableModifier(new AktivColorModifier());
 
     getJpTableView().setNoTablePanel(new frmRadnicipl.jpNoTableGetRadnici(getJpTableView()));
 

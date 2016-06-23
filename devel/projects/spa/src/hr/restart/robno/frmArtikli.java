@@ -28,6 +28,7 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.sk.frmKartica;
+import hr.restart.swing.AktivColorModifier;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
@@ -1133,6 +1134,8 @@ public class frmArtikli extends raMatPodaci {
 //        new String[] {"CART1","BC","TIPART","VRART"});
     
     installSelectionTracker("CART");
+    
+    getJpTableView().addTableModifier(new AktivColorModifier());
     
     jtpArtikli.setSelectedIndex(0);
     

@@ -19,6 +19,7 @@ package hr.restart.pl;
 
 import hr.restart.baza.dM;
 import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.swing.AktivColorModifier;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raImages;
@@ -152,6 +153,7 @@ public class frmVrsteOdb extends raMatPodaci {
     fodbcorg = new frmOdbCorg();
     this.setRaDetailPanel(jpDetail);
     setComboHash();
+    getJpTableView().addTableModifier(new AktivColorModifier());
     raDataIntegrity.installFor(this);
   }
 
