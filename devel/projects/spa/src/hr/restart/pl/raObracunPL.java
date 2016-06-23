@@ -128,6 +128,7 @@ sysoutTEST ST = new sysoutTEST(false);
     uselimitsPOR = _uselimitsPOR;
     uselimitsDOP = _uselimitsDOP;
     calcrazpor = _calcrazpor;
+    raOdbici.clearCache();
     dm.getParametripl().open();
 //    System.out.println("pravim obracun za "+godina+"/"+mjesec+"-"+rbr+" oj: "+corg);
 //    return true;
