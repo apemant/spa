@@ -20,6 +20,7 @@ package hr.restart.swing;
 import hr.restart.baza.Condition;
 import hr.restart.util.Aus;
 import hr.restart.util.IntParam;
+import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raMatPodaci;
 
@@ -632,6 +633,16 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
         if (!this_JraTextField.maskCheck()) {
           this_JraTextField.dataBinder.updateText();
           e.consume();
+        }
+      } else if (e.getKeyCode() == e.VK_Q && e.isControlDown()) {
+        if (this_JraTextField.isEnabled() && raTableCopyPopup.inst.isSourceSet()) {
+          e.consume();
+          String ret = raTableCopyPopup.inst.getNextValue();
+          if (ret != null)  {
+            this_JraTextField.setText(ret);
+            if (this_JraTextField instanceof JlrNavField)
+              ((JlrNavField) this_JraTextField).forceFocLost();
+          }
         }
       } else if (e.getKeyCode()==e.VK_PAGE_DOWN) e.consume();
       else if (e.getKeyCode()==e.VK_PAGE_UP) e.consume();
