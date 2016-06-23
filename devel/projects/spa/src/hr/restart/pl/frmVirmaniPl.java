@@ -230,6 +230,7 @@ public class frmVirmaniPl extends frmVirmani{
       String pbrT = handleEmptyStr(naTerDS.getString("HPBROJ") ,0);
       mainDS.setString("NATERET", nazT + "\n"+adrT+pbrT+mjT);
       mainDS.setString("SVRHA", replaceVars(worker.povDS.getString("SVRHA")));
+      mainDS.setString("RID", replaceVars(worker.povDS.getString("RID")));
       mainDS.setString("PNBZ1", worker.povDS.getString("PNBZ1"));
       mainDS.setString("PNBZ2", replaceVars(worker.povDS.getString("PNBZ2")));
 
@@ -256,9 +257,9 @@ public class frmVirmaniPl extends frmVirmani{
       String mj = handleEmptyStr(worker.povDS.getString("MJESTO"),0);
       String pbr = handleEmptyStr(worker.povDS.getInt("PBR") + "",0);
       mainDS.setString("UKORIST", replaceVars(nazPov+"\n"+adr+pbr+" "+mj));
-      mainDS.setString("SIF1", (worker.povDS.getString("SIF1")+"   ").substring(0,2));
-      mainDS.setString("SIF2", (worker.povDS.getString("SIF2")+"   ").substring(0,2));
-      mainDS.setString("SIF3", (worker.povDS.getString("SIF3")+"   ").substring(0,2));
+      mainDS.setString("SIF1", (worker.povDS.getString("SIF1")+"    ").substring(0,4));
+      mainDS.setString("SIF2", (worker.povDS.getString("SIF2")+"    ").substring(0,4));
+      mainDS.setString("SIF3", (worker.povDS.getString("SIF3")+"    ").substring(0,4));
       mainDS.setString("MJESTO", naTerDS.getString("MJESTO"));
       mainDS.setBigDecimal("IZNOS", sume.getBigDecimal("OBRIZNOS"));
       mainDS.setTimestamp("DATUMIZV", datTS);
@@ -290,6 +291,7 @@ public class frmVirmaniPl extends frmVirmani{
       (Column)dm.getVirmani().getColumn("MJESTO").clone(),
       (Column)dm.getVirmani().getColumn("DATUMIZV").clone(),
       (Column)dm.getVirmani().getColumn("DATUMPR").clone(),
+      (Column)dm.getVirmani().getColumn("RID").clone(),
       (Column)column1.clone()
     });
     mainDS.open();
@@ -316,6 +318,7 @@ public class frmVirmaniPl extends frmVirmani{
         (Column)dm.getVirmani().getColumn("MJESTO").clone(),
         (Column)dm.getVirmani().getColumn("DATUMIZV").clone(),
         (Column)dm.getVirmani().getColumn("DATUMPR").clone(),
+        (Column)dm.getVirmani().getColumn("RID").clone(),
         (Column)column1.clone()
       });
       kumulDS.open();
@@ -351,7 +354,8 @@ public class frmVirmaniPl extends frmVirmani{
                                    kumulDS.getString("PNBZ1"),kumulDS.getString("PNBZ2"),kumulDS.getString("SIF1"),
                                    kumulDS.getString("SIF2"),kumulDS.getString("SIF3"),kumulDS.getString("BRRACUK"),
                                    kumulDS.getString("PNBO1"),kumulDS.getString("PNBO2"),kumulDS.getBigDecimal("IZNOS"),
-                                   kumulDS.getString("MJESTO"), kumulDS.getTimestamp("DATUMIZV"), kumulDS.getTimestamp("DATUMPR"));
+                                   kumulDS.getString("MJESTO"), kumulDS.getTimestamp("DATUMIZV"), kumulDS.getTimestamp("DATUMPR"),
+                                   kumulDS.getString("RID"));
       kumulDS.next();
     }
     // ?????? frmVirmani.getInstance().save();
@@ -427,6 +431,7 @@ public class frmVirmaniPl extends frmVirmani{
       kumulDS.setString("SIF1", mainDS.getString("SIF1"));
       kumulDS.setString("SIF2", mainDS.getString("SIF2"));
       kumulDS.setString("SIF3", mainDS.getString("SIF3"));
+      kumulDS.setString("RID", mainDS.getString("RID"));
       kumulDS.setString("MJESTO", mainDS.getString("MJESTO"));
       kumulDS.setBigDecimal("IZNOS", kumulDS.getBigDecimal("IZNOS").add(mainDS.getBigDecimal("IZNOS")));
       kumulDS.setTimestamp("DATUMIZV", mainDS.getTimestamp("DATUMIZV"));
