@@ -39,9 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataModule;
 import com.borland.dx.dataset.DataSet;
@@ -412,7 +409,8 @@ public class dM implements DataModule {
         cdriverProxy.getMethod("setJdbcDriverClass",new Class[] {String.class})
             .invoke(null, new Object[] {conTIP});
         //DriverProxy.setJdbcDriverClass(conTIP);
-        final BeanFactory beanFactory = new ClassPathXmlApplicationContext("hr/restart/db/replication/logging/replication.xml");
+        final org.springframework.beans.factory.BeanFactory beanFactory = 
+            new org.springframework.context.support.ClassPathXmlApplicationContext("hr/restart/db/replication/logging/replication.xml");
             
         Driver proxy = (Driver)beanFactory.getBean("DriverProxy");
   		
