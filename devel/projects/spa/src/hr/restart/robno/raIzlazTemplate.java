@@ -916,6 +916,28 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 		raMaster.getJpTableView().addTableModifier(TCM1);
 		raMaster.getJpTableView().addTableModifier(TCM2);
 		
+		if (what_kind_of_dokument.equals("PON") && !bPonudaZaKupca) {
+		  raMaster.getJpTableView().addTableModifier(new raTableModifier() {
+		    Variant v = new Variant();
+            public void modify() {
+              ((JraTable2) getTable()).getDataSet().getVariant("TNAZPAR", getRow(), v);
+              setComponentText(v.getString());
+            }
+            
+            public boolean doModify() {
+              if (getTable() instanceof JraTable2) {
+                Column dsCol = ((JraTable2) getTable()).getDataSetColumn(getColumn());
+                if (dsCol == null) return false;
+                if (!dsCol.getColumnName().equals("CPAR")) return false;
+                
+                ((JraTable2) getTable()).getDataSet().getVariant("CPAR", getRow(), v);
+                return v.isNull();
+              }
+              return false;
+            }
+          });
+		}
+		
 		raMaster.getJpTableView().addTableModifier(new raTableModifier() {
 		  Variant v = new Variant();
           public boolean doModify() {
@@ -1813,7 +1835,9 @@ ST.prn(radninal);
 		oldCPAR = getMasterSet().getInt("CPAR");
 		MP.EnabDisabforChange(false);
 		SetFocusIzmjenaExtends();
-
+		if (what_kind_of_dokument.equals("PON") && !bPonudaZaKupca && getMasterSet().isNull("CPAR")) {
+		  MP.panelBasic.jrfNAZPAR.setText(getMasterSet().getString("TNAZPAR"));
+		}
 	}
 
 	public boolean LocalValidacijaMaster() {
@@ -4535,7 +4559,9 @@ System.out.println("findCjenik::else :: "+sql);
 	}
 
 	public void Kalkulacija(String how) {
-	  BigDecimal oldvc = getDetailSet().getBigDecimal("FC");
+	  BigDecimal oldfc = getDetailSet().getBigDecimal("FC");
+	  BigDecimal oldrab = getDetailSet().getBigDecimal("UPRAB");
+	  BigDecimal oldvc = getDetailSet().getBigDecimal("FVC");
 	  BigDecimal oldmc = getDetailSet().getBigDecimal("FMC");
 
 		lc.TransferFromDB2Class(AST.gettrenSTANJE(), rKD.stanje);
@@ -4549,14 +4575,25 @@ System.out.println("findCjenik::else :: "+sql);
 		if (how.equals("KOL") && nabDirect)
 			Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
 		if (what_kind_of_dokument.equals("OTP")) {
-	       if (how.equals("FC") || how.equals("FMC")) {
+	       if (how.equals("FC") || how.equals("FMC") || how.equals("FVC") || how.equals("UPRAB")) {
 	         //lD.raLocate(dm.getArtikli(), "CART", getDetailSet());
 	         lD.raLocate(dm.getPorezi(), "CPOR", Artikli.get());
-	         if (how.equals("FC"))
-	           oldmc = oldvc.multiply(dm.getPorezi().getBigDecimal("UKUPOR").movePointLeft(2).add(Aus.one0)).setScale(2, BigDecimal.ROUND_HALF_UP);
-	         else oldvc = oldmc.divide(dm.getPorezi().getBigDecimal("UKUPOR").movePointLeft(2).add(Aus.one0), 2, BigDecimal.ROUND_HALF_UP);
+	         BigDecimal pm = dm.getPorezi().getBigDecimal("UKUPOR").movePointLeft(2).add(Aus.one0);
+	         BigDecimal rm = Aus.one0.subtract(oldrab.movePointLeft(2));
+	         if (how.equals("FC") || how.equals("UPRAB"))
+	           oldvc = oldfc.multiply(rm).setScale(2, BigDecimal.ROUND_HALF_UP);
+	         else if (how.equals("FVC") && rm.signum() != 0)
+	           oldfc = oldvc.divide(rm, 2, BigDecimal.ROUND_HALF_UP);
+	         else if (how.equals("FMC")) 
+	           oldvc = oldmc.divide(pm, 2, BigDecimal.ROUND_HALF_UP);
+	         
+	         if (!how.equals("FMC"))
+	           oldmc = oldvc.multiply(pm).setScale(2, BigDecimal.ROUND_HALF_UP);
+	         else if (rm.signum() != 0)
+               oldfc = oldvc.divide(rm, 2, BigDecimal.ROUND_HALF_UP);
 	       }
-	       getDetailSet().setBigDecimal("FC", oldvc);
+	       getDetailSet().setBigDecimal("FC", oldfc);
+	       getDetailSet().setBigDecimal("UPRAB", oldrab);
 	       getDetailSet().setBigDecimal("FVC", oldvc);
 	       getDetailSet().setBigDecimal("FMC", oldmc);
 	    }
@@ -4889,6 +4926,12 @@ System.out.println("findCjenik::else :: "+sql);
               new String[] {"DATDOK"};
       dcz.setUpClass(this);
       dcz.setDataSetKey(new String[] { "CSKL", "GOD", "VRDOK", "BRDOK" }, dods);
+      
+      dcz.removeModifier(TCM);
+      if (prep == null ? qDS.hasColumn("CPAR") != null : 
+        prep.hasColumn("CPAR") != null)
+        dcz.addModifier(TCM);
+      
       dcz.initialise();
       if (prep == null) {
         dcz.pack();
