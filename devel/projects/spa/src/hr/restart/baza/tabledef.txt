@@ -846,6 +846,7 @@ FNU;int;6;;;Broj naplatnog ureðaja
 CGKSTAVKE;text;38;idx;;Stavka naloga
 RUC;numeric;15,2;;0;Razlika u cijeni;14
 PROV;numeric;15,2;;0;Iznos provizije;14
+TNAZPAR;char;100;;;Naziv partnera
 IDX=cpar
 
 $stdoki
@@ -1927,6 +1928,7 @@ BRDOM;char;10;;;Broj domicilne banke
 BRPOSL;char;10;;;Broj poslovnice banke
 PARAMETRI;char;20;;;Parametri;*
 PREFIKS;char;10;;;Prefiks raèuna u banci
+BATCHB;char;1;;N;Batch booking
 
 $Blagajna
 LOKK;char;1;;N;Status zauzetosti;*
