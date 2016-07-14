@@ -52,6 +52,7 @@ public class jpBankePL extends JPanel {
   JLabel jlNazbanke = new JLabel();
   JraButton jbSelCpov = new JraButton();
   JraCheckBox jcbAktiv = new JraCheckBox();
+  JraCheckBox jcbBatch = new JraCheckBox();
   JraTextField jraBrdom = new JraTextField();
   JraTextField jraBrposl = new JraTextField();
   JraTextField jraCbanke = new JraTextField();
@@ -96,6 +97,15 @@ public class jpBankePL extends JPanel {
     jcbAktiv.setSelectedDataValue("D");
     jcbAktiv.setText("Aktivan");
     jcbAktiv.setUnselectedDataValue("N"); /**@todo: Definirati vrijednosti checkboxa */
+    
+    jcbBatch.setColumnName("BATCHB");
+    jcbBatch.setDataSet(fBankePL.getRaQueryDataSet());
+    jcbBatch.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbBatch.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbBatch.setSelectedDataValue("D");
+    jcbBatch.setText("Batch booking");
+    jcbBatch.setUnselectedDataValue("N");
+    
     jraBrdom.setColumnName("BRDOM");
     jraBrdom.setDataSet(fBankePL.getRaQueryDataSet());
     jraBrposl.setColumnName("BRPOSL");
@@ -122,7 +132,7 @@ public class jpBankePL extends JPanel {
 
     jlBanka.setText("Banka");
     jpDetail.add(jbSelCpov,        new XYConstraints(533, 65, 21, 21));
-    jpDetail.add(jcbAktiv,     new XYConstraints(460, 15, 70, -1));
+    jpDetail.add(jcbAktiv,     new XYConstraints(450, 15, 80, -1));
     jpDetail.add(jlBrdom,  new XYConstraints(15, 90, -1, -1));
     jpDetail.add(jlCpov,  new XYConstraints(15, 65, -1, -1));
     jpDetail.add(jlrCpov,  new XYConstraints(150, 65, 50, -1));
@@ -137,6 +147,7 @@ public class jpBankePL extends JPanel {
     jpDetail.add(jlBanka,   new XYConstraints(15, 40, -1, -1));
     jpDetail.add(new JLabel("Prefiks žiro"),  new XYConstraints(15, 115, -1, -1));
     jpDetail.add(jraPrefiks, new XYConstraints(150, 115, 100, -1));
+    jpDetail.add(jcbBatch,     new XYConstraints(330, 115, 200, -1));
     this.add(jpDetail, BorderLayout.CENTER);
   }
 }
