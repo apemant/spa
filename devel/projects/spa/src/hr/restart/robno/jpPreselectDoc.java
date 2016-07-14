@@ -22,6 +22,7 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.PreSelect;
 import hr.restart.util.raMasterDetail;
@@ -315,6 +316,11 @@ abstract public class jpPreselectDoc extends PreSelect {
 //    if (getSelRow().getInt("BRDOK")>0) {
 //      getSelRow().setTimestamp("DATDOK-from",hr.restart.robno.Util.getUtil().findFirstDayOfYear(Integer.parseInt(vl.findYear())));
 //    }
+    
+    if (frmParam.getParam("robno", "allowMultiGod", "D", "Dopustiti dohvat više godina na predselekciji (D,N)?").equalsIgnoreCase("D")) {
+      if (!Aus.checkDateRange(jtfDATUMOD, jtfDATUMDO)) return false;
+    } else
+    
     if (!hr.restart.util.Util.getUtil().isValidRange(getSelRow().getTimestamp("DATDOK-from"), getSelRow().getTimestamp("DATDOK-to"))) {
       jtfDATUMOD.requestFocus();
       javax.swing.JOptionPane.showConfirmDialog(getPreSelDialog(),
