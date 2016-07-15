@@ -58,23 +58,35 @@ public class repOTPfinTemplate extends repOTPvriOrigTemplate {
   public raReportSection createSectionHeader1() {
     raReportSection sect = super.createSectionHeader1();
     
+    raReportElement naz = LabelNaziv_artikla.defaultAlterer();
+    raReportElement jm = LabelJmj.defaultAlterer();
     raReportElement kol = LabelKolicina.defaultAlterer();
-    raReportElement vc = LabelCijena.defaultAlterer();
-    raReportElement vri = LabelVrijednost.defaultAlterer();    
-    vri.setCaption("Iznos");
-    raReportElement mc = sect.copyToModify(vc);
+    raReportElement fc = LabelCijena.defaultAlterer();
+    raReportElement mc = LabelVrijednost.defaultAlterer();
     mc.setCaption("Cijena s PDV");
+    raReportElement pop = sect.copyToModify(kol);
+    pop.setCaption("Popust");
+    raReportElement vc = sect.copyToModify(fc);
+    vc.setCaption("Cijena s pop.");
     
-    long total = vri.getLeft() + vri.getWidth() - kol.getLeft();
-    long spacing = vc.getLeft() - kol.getLeft() - kol.getWidth();
+    int xdiff = (int) jm.getWidth() / 2;
+    long spacing = jm.getLeft() - naz.getLeft() - naz.getWidth();
     
-    kol.setWidth((long) (total * 0.2));
-    vc.setLeft(kol.getLeft() + kol.getWidth() + spacing);
-    vc.setWidth((long) (total * 0.25));
+    naz.alterWidth(-xdiff);
+    jm.moveHor(-xdiff);
+    kol.moveHor(-xdiff);
+    
+    long total = mc.getLeft() + mc.getWidth() - kol.getLeft();
+    
+    kol.setWidth((long) (total * 0.15));
+    fc.setLeft(kol.getLeft() + kol.getWidth() + spacing);
+    fc.setWidth((long) (total * 0.20));    
+    pop.setLeft(fc.getLeft() + fc.getWidth() + spacing);
+    pop.setWidth((long) (total * 0.15));
+    vc.setLeft(pop.getLeft() + pop.getWidth() + spacing);
+    vc.setWidth((long) (total * 0.24));
     mc.setLeft(vc.getLeft() + vc.getWidth() + spacing);
-    mc.setWidth((long) (total * 0.25));
-    vri.setLeft(mc.getLeft() + mc.getWidth() + spacing);
-    vri.setWidth(total - vri.getLeft() + kol.getLeft());
+    mc.setWidth(total - mc.getLeft() + kol.getLeft());
     return sect;
   }
   
@@ -82,25 +94,36 @@ public class repOTPfinTemplate extends repOTPvriOrigTemplate {
   public raReportSection createDetail() {
     raReportSection sect = super.createDetail();
     
+    raReportElement naz = TextNAZART.defaultAlterer();
+    raReportElement jm = TextJM.defaultAlterer();
     raReportElement kol = TextKOL.defaultAlterer();
-    raReportElement vc = TextZC.defaultAlterer();
-    vc.setControlSource("FVC");
-    raReportElement vri = TextIRAZ.defaultAlterer();    
-    vri.setControlSource("FIZNOS");
-    raReportElement mc = sect.copyToModify(vc);
+    raReportElement fc = TextZC.defaultAlterer();
+    fc.setControlSource("FC");
+    raReportElement mc = TextIRAZ.defaultAlterer();    
     mc.setControlSource("FMC");
+    raReportElement pop = sect.copyToModify(kol);
+    pop.setControlSource("UPRAB");
+    raReportElement vc = sect.copyToModify(fc);
+    vc.setControlSource("FVC");
     
-    long total = vri.getLeft() + vri.getWidth() - kol.getLeft();
-    long spacing = vc.getLeft() - kol.getLeft() - kol.getWidth();
+    int xdiff = (int) jm.getWidth() / 2;
+    long spacing = jm.getLeft() - naz.getLeft() - naz.getWidth();
     
-    kol.setWidth((long) (total * 0.2));
-    vc.setLeft(kol.getLeft() + kol.getWidth() + spacing);
-    vc.setWidth((long) (total * 0.25));
+    naz.alterWidth(-xdiff);
+    jm.moveHor(-xdiff);
+    kol.moveHor(-xdiff);
+    
+    long total = mc.getLeft() + mc.getWidth() - kol.getLeft();
+    
+    kol.setWidth((long) (total * 0.15));
+    fc.setLeft(kol.getLeft() + kol.getWidth() + spacing);
+    fc.setWidth((long) (total * 0.20));    
+    pop.setLeft(fc.getLeft() + fc.getWidth() + spacing);
+    pop.setWidth((long) (total * 0.15));
+    vc.setLeft(pop.getLeft() + pop.getWidth() + spacing);
+    vc.setWidth((long) (total * 0.24));
     mc.setLeft(vc.getLeft() + vc.getWidth() + spacing);
-    mc.setWidth((long) (total * 0.25));
-    vri.setLeft(mc.getLeft() + mc.getWidth() + spacing);
-    vri.setWidth(total - vri.getLeft() + kol.getLeft());
-    
+    mc.setWidth(total - mc.getLeft() + kol.getLeft());
     return sect;
   }
   
