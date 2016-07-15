@@ -268,6 +268,10 @@ public class raROT extends raIzlazTemplate  {
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniNorm","hr.restart.robno.repIzlazniNorm","RacuniNorm","Raèun-otpremnica s normativima");
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniSifKup","hr.restart.robno.repRacuniPnP","ROTSifKup","Raèun-otpremnica sa šifrom kupca");
      
+     raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniGroup",
+         "hr.restart.robno.repGroupIzlazni", "RacuniGroup",
+         ReportValuteTester.titleROT1R + " po grupama artikala");
+     
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuni2","hr.restart.robno.repIzlazni","Racuni2",ReportValuteTester.titleROT2R);
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuni2V","hr.restart.robno.repIzlazni","Racuni2",ReportValuteTester.titleROT2RV);
      raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniSifKupPak","hr.restart.robno.repRacuniPnP","RacuniSifKupPak","Raèun-otpremnica sa šifrom kupca i pakiranjem");
@@ -331,6 +335,10 @@ System.err.println("getMasterSet().getInt(FBR) = "+getMasterSet().getInt("FBR"))
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniPnP","hr.restart.robno.repRacuniPnP","RacuniPnP","Raèun-otpremnica s popustima");
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniNorm","hr.restart.robno.repIzlazniNorm","RacuniNorm","Raèun-otpremnica s normativima");
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniSifKup","hr.restart.robno.repRacuniPnP","ROTSifKup","Raèun-otpremnica sa šifrom kupca");
+     
+     raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniGroup",
+         "hr.restart.robno.repGroupIzlazni", "RacuniGroup",
+         ReportValuteTester.titleROT1R + " po grupama artikala");
      
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuni2","hr.restart.robno.repIzlazni","Racuni2",ReportValuteTester.titleROT2R);
      raDetail.getRepRunner().addReport("hr.restart.robno.repRacuni2V","hr.restart.robno.repIzlazni","Racuni2",ReportValuteTester.titleROT2RV);
