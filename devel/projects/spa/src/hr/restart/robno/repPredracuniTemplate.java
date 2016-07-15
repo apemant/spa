@@ -61,7 +61,7 @@ public class repPredracuniTemplate extends repIzlazOrigTemplate {
     textSgetDatug.setTop(topNar);
     sh.LabelR_A_C_U_N.setDefault(ep.CAPTION, "\nRA\u010CUN ZA PREDUJAM");
     sh.LabelDospijeceDatum.setDefault(ep.CAPTION, "Datum primitka predujma");
-    sh.defaultAltererSect().removeModel(sh.TextSgetDDOSP);
+    sh.removeModel(sh.TextSgetDDOSP);
     return sh;
   }
 

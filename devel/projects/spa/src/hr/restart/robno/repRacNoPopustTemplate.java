@@ -63,7 +63,7 @@ public class repRacNoPopustTemplate extends repIzlazOrigTemplate {
    
     if ("D".equalsIgnoreCase(frmParam.getParam("robno", "rnpTri", "N",
         "Raèun bez popusta u Tri-formatu"))) {
-      sh.defaultAltererSect().removeModels(new raReportElement[]
+      sh.removeModels(new raReportElement[]
          {sh.LabelDatum_isporuke, sh.TextSgetDVO, sh.LabelNarudzba,
           sh.TextBRNARIZ, sh.LabelIzlazni_dokument, sh.TextBRDOKIZ});
       sh.defaultAltererSect().getView(sh.LabelMjestoDatum, 
@@ -103,7 +103,7 @@ public class repRacNoPopustTemplate extends repIzlazOrigTemplate {
     if ("D".equalsIgnoreCase(frmParam.getParam("robno", "rnpTri", "N",
     "Raèun bez popusta u Tri-formatu"))) {
       
-      sh.defaultAltererSect().removeModels(new raReportElement[] {
+      sh.removeModels(new raReportElement[] {
           sh.LabelREKAPITULACIJA_POREZA, sh.LabelGrupa, sh.Label2,
           sh.LabelOsnovica, sh.LabelPorez, sh.TextPorezDepartmentCPOR,
           sh.TextPorezDepartmentCrtica, sh.TextPorezDepartmentIPRODBP,

@@ -62,7 +62,7 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
     sh.defaultAltererSect().getView(sh.LabelNacin_placanja, sh.TextNAZNACPL).moveUp(
         sh.LabelNacin_placanja.defaultAlterer().getTop() - sh.LabelNarudzba.defaultAlterer().getTop());
     
-    sh.defaultAltererSect().removeModels(new raReportElement[] {
+    sh.removeModels(new raReportElement[] {
         sh.LabelNarudzba, sh.TextBRNARIZ, sh.TextSgetDATNARIZ,
         sh.LabelIzlazni_dokument, sh.TextBRDOKIZ, sh.TextLABDOD, 
         sh.TextTEXTDOD, sh.LabelIsporuka, 
@@ -132,7 +132,7 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
     long rbrGain = sh.LabelSifra.defaultAlterer().getLeft() - sh.LabelRbr.defaultAlterer().getLeft();
     long kolGain = sh.LabelKolicina.defaultAlterer().getWidth() * 4 / 10;
         
-    sh.defaultAltererSect().removeModel(sh.LabelRbr);
+    sh.removeModel(sh.LabelRbr);
     sh.LabelSifra.defaultAlterer().setLeft(sh.LabelSifra.defaultAlterer().getLeft() - rbrGain);
     sh.LabelKolicina.defaultAlterer().setWidth(sh.LabelKolicina.defaultAlterer().getWidth() - kolGain);
     sh.LabelKolicina.defaultAlterer().setLeft(sh.LabelKolicina.defaultAlterer().getLeft() + kolGain);
@@ -168,7 +168,7 @@ public class repRacGroupTemplate extends repIzlazGroupOrigTemplate {
     long rbrGain = sh.TextCART.defaultAlterer().getLeft() - sh.TextRBR.defaultAlterer().getLeft();
     long kolGain = sh.TextKOL.defaultAlterer().getWidth() * 4 / 10;
     
-    sh.defaultAltererSect().removeModel(sh.TextRBR);
+    sh.removeModel(sh.TextRBR);
     sh.TextCART.defaultAlterer().setLeft(sh.TextCART.defaultAlterer().getLeft() - rbrGain);
     sh.TextKOL.defaultAlterer().setWidth(sh.TextKOL.defaultAlterer().getWidth() - kolGain);
     sh.TextKOL.defaultAlterer().setLeft(sh.TextKOL.defaultAlterer().getLeft() + kolGain);
