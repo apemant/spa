@@ -230,7 +230,10 @@ public class repIzlazni implements raReportData {
     return ds.getString("LOT");
   }
 
-  public String getPARTNER(){   
+  public String getPARTNER(){
+    if (ds.isNull("CPAR") && ds.getString("TNAZPAR").length() > 0) 
+      return ds.getString("TNAZPAR");
+
     String cached = cache.getValue("PARTNER", Integer.toString(ds.getInt("CPAR")));
     if (cached != null) return cached;
     colname[0] = "CPAR";
@@ -318,7 +321,10 @@ public class repIzlazni implements raReportData {
     return "\n" + prefn + getNAZPAR();
   }
 
-  public String getNAZPAR() {    
+  public String getNAZPAR() {
+    if (ds.isNull("CPAR") && ds.getString("TNAZPAR").length() > 0) 
+      return ds.getString("TNAZPAR");
+    
     String cached = cache.getValue("NAZPAR", ds.getInt("CPAR")+"-"+ds.getInt("PJ"));
     if (cached != null) return cached;
     colname[0] = "CPAR";
@@ -475,18 +481,19 @@ public class repIzlazni implements raReportData {
     String cached = cache.getValue("MB", Integer.toString(ds.getInt("CPAR")));
     if (cached != null) return cached;
     String result = "";
+    
     if (!oib.equalsIgnoreCase("MB")) {
       colname[0] = "CPAR";
       String br = ru.getSomething(colname,dm.getPartneri(),"OIB").toString();
       if (br.length() == 0) result = "";
-      else result = "OIB " + br;
+      else result = (isReportForeign() ? "" : "OIB ") + br;
     } 
     if (oib.equalsIgnoreCase("MB") || result.length() == 0) {
       colname[0] = "CPAR";
       String mb = ru.getSomething(colname,dm.getPartneri(),"MB").toString();
       if (mb.length() == 0) result = "";
-      else result = "MB " + mb; 
-    }    
+      else result = (isReportForeign() ? "" : "MB ") + mb; 
+    }
     return cache.returnValue(result);
   }
 
@@ -1626,6 +1633,10 @@ public BigDecimal getIPRODSP() {
     return Aus.formatBigDecimal(diprodsp);
   }
   
+  public String getPREFDISP() {
+    return getPREFIX() + getDISP();
+  }
+  
   public String getDKINETO() {
     return Aus.formatBigDecimal(dineto.multiply(getTECAJ()).divide(raSaldaKonti.getJedVal(getOZNVAL()), 2, BigDecimal.ROUND_HALF_UP));
   }
@@ -1825,12 +1836,12 @@ public BigDecimal getIPRODSP() {
    if (!oib.equalsIgnoreCase("MB")) {
      String br = ru.getSomething(colname,dm.getKupci(),"OIB").toString();
      if (br.length() == 0) result = "";
-     else result = "OIB " + br;
+     else result = (isReportForeign() ? "" : "OIB ") + br;
    } 
    if (oib.equalsIgnoreCase("MB") || result.length() == 0) {
      String mb = ru.getSomething(colname,dm.getKupci(),"JMBG").toString();
      if (mb.length() == 0) result = "";
-     else result = "MB " + mb; 
+     else result = (isReportForeign() ? "" : "MB ") + mb; 
    }   
    return cache.returnValue(result);
   }
