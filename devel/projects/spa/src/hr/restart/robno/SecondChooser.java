@@ -31,6 +31,7 @@ import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.raMultiLineMessage;
+import hr.restart.swing.raTableModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.LinkClass;
 import hr.restart.util.OKpanel;
@@ -1373,6 +1374,16 @@ System.out.println(StavkeSet.getInt("CARt"));
 	public QueryDataSet getRightSet() {
 		return DesniSet;
 	}
+	
+	public void addModifier(raTableModifier mod) {
+	  rTTC.getLeftJPTW().addTableModifier(mod);
+	  rTTC.getRightJPTW().addTableModifier(mod);
+	}
+	
+	public void removeModifier(raTableModifier mod) {
+	  rTTC.getLeftJPTW().removeTableModifier(mod);
+      rTTC.getRightJPTW().removeTableModifier(mod);
+	}
 
 	public SecondChooser(String title) {
 
@@ -1555,7 +1566,8 @@ System.out.println(StavkeSet.getInt("CARt"));
 		 * StavkeSet.getString("VRDOK") + "-" +
 		 * TD.isDocSklad(StavkeSet.getString("VRDOK")));
 		 */
-		
+		if (StavkeSet.getString("VRDOK").equals("OTP"))
+		  rIT.getDetailSet().setString("LOT", StavkeSet.getString("LOT"));
 		
 		rIT.getDetailSet().setString("REZKOL", StavkeSet.getString("REZKOL"));
 
@@ -1689,10 +1701,12 @@ System.out.println(StavkeSet.getInt("CARt"));
         if (copySklad) {
           if (StavkeSet.getString("VRDOK").equals("OTP") && StavkeSet.getBigDecimal("FC").signum() > 0) {
             Aus.set(rIT.getDetailSet(), "FC", StavkeSet);
+            Aus.set(rIT.getDetailSet(), "UPRAB", StavkeSet);
             Aus.set(rIT.getDetailSet(), "FVC", StavkeSet);
             Aus.set(rIT.getDetailSet(), "FMC", StavkeSet);            
           } else {
             Aus.set(rIT.getDetailSet(), "FC", StavkeSet, "VC");
+            Aus.clear(rIT.getDetailSet(), "UPRAB");
             Aus.set(rIT.getDetailSet(), "FVC", StavkeSet, "VC");
             Aus.set(rIT.getDetailSet(), "FMC", StavkeSet, "MC");
           }
