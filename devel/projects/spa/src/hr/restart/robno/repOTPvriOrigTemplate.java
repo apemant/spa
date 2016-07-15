@@ -90,7 +90,7 @@ public abstract class repOTPvriOrigTemplate extends raReportTemplate {
   private String[] TextCARTProps = new String[] {"CART", "", "", "", "", "", "", "", "440", "",
      "1700", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
   public raReportElement TextJM;
-  private String[] TextJMProps = new String[] {"JM", "", "", "", "", "", "", "", "6060", "", "480",
+  private String[] TextJMProps = new String[] {"JM", "", "", "", "", "", "", "", "6020", "", "520",
      "220", "", "Gray", "", "", "", "", "Lucida Bright", "8", "", "", "", "", ""};
   public raReportElement TextKOL;
   private String[] TextKOLProps = new String[] {"KOL", "", "",
