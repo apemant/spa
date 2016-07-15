@@ -79,7 +79,7 @@ public class repInvoiceNewTemplate extends repIzlazOrigTemplate {
 
   public raReportSection createSectionFooter1() {
     raIzlazSectionFooterLines sf = new raIzlazSectionFooterLines(this);
-    sf.defaultAltererSect().removeModels(new raReportElement[] {
+    sf.removeModels(new raReportElement[] {
         sf.LabelREKAPITULACIJA_POREZA, sf.LabelGrupa, sf.LabelPorez, sf.LabelOsnovica, sf.Label2, 
         sf.TextPorezDepartmentUKUPOR, sf.TextPorezDepartmentCrtica, sf.TextPorezDepartmentCPOR, 
         sf.TextPorezDepartmentPOR1, sf.TextPorezDepartmentIPRODBP, sf.TextSLOVIMA, sf.LabelSlovima_
