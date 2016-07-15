@@ -9,7 +9,7 @@ public class raDetailRacSif extends raReportSection {
   public raReportElement TextRBR;
   private String[] TextRBRProps = new String[] {"RBR", "", "", "", "", "", "", "", "", "", "440", 
      "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", "No"};
-  public raReportElement Text1;
+/*  public raReportElement Text1;
   private String[] Text1Props = new String[] {"=(if (= [ImaPor1] 1) (put-var \"tpor1\" 1) \"\")", 
      "", "", "", "No", "", "", "", "2300", "", "0", "0", "", "", "", "", "", "", "", "", "", "", "", 
      "", ""};
@@ -20,7 +20,7 @@ public class raDetailRacSif extends raReportSection {
   public raReportElement Text3;
   private String[] Text3Props = new String[] {"=(if (= [ImaPor3] 1) (put-var \"tpor3\" 1) \"\")", 
      "", "", "", "No", "", "", "", "3120", "", "0", "0", "", "", "", "", "", "", "Arial", "9", "", 
-     "", "", "", ""};
+     "", "", "", ""};*/
   public raReportElement TextSSIF;
   private String[] TextSSIFProps = new String[] {"STRANASIFRA", "", "", "", "", "", "Yes", "Yes", "1300", "", 
      "880", "220", "", "", "", "", "", "", "Lucida Bright", "8", "", "", "", "", "No"};
@@ -72,9 +72,9 @@ public class raDetailRacSif extends raReportSection {
 
   private void addElements() {
     TextRBR = addModel(ep.TEXT, TextRBRProps);
-    Text1 = addModel(ep.TEXT, Text1Props);
+/*    Text1 = addModel(ep.TEXT, Text1Props);
     Text2 = addModel(ep.TEXT, Text2Props);
-    Text3 = addModel(ep.TEXT, Text3Props);
+    Text3 = addModel(ep.TEXT, Text3Props);*/
     TextSSIF = addModel(ep.TEXT, TextSSIFProps);
     TextINETO = addModel(ep.TEXT, TextINETOProps);
     TextCART = addModel(ep.TEXT, TextCARTProps);
