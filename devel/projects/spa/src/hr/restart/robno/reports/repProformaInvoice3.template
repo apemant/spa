@@ -2152,7 +2152,7 @@ OFFER</Property>
           <Model Name="Label24">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label24</Property>
-               <Property Name="Caption">Netto</Property>
+               <Property Name="Caption">Amount</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">6860</Property>
                <Property Name="Top">180</Property>
@@ -2175,7 +2175,7 @@ OFFER</Property>
           <Model Name="Label34">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label34</Property>
-               <Property Name="Caption">Brutto</Property>
+               <Property Name="Caption">Total amount</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">6860</Property>
                <Property Name="Top">740</Property>
@@ -2295,11 +2295,10 @@ OFFER</Property>
           <Model Name="Text48">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text48</Property>
-               <Property Name="Control Source">=(+ (dsum &quot;IPRODBP&quot;) (+ (+ (dsum &quot;POR1&quot;) (dsum &quot;POR2&quot;)) (dsum &quot;POR3&quot;)))</Property>
+               <Property Name="Control Source">PREFDISP</Property>
                <Property Name="Running Sum">No</Property>
                <Property Name="Locale">Template Locale</Property>
-               <Property Name="Format">Number|false|1|309|2|2|true|3|false</Property>
-               <Property Name="Visible">Yes</Property>
+               <Property Name="Format">None</Property>
                <Property Name="Hide Duplicates">No</Property>
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
