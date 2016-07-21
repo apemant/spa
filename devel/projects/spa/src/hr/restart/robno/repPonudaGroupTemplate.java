@@ -23,6 +23,7 @@ import hr.restart.util.reports.raIzlazGroupSectionHeader;
 import hr.restart.util.reports.raIzlazSectionFooterLines;
 import hr.restart.util.reports.raIzlazSectionHeaderLines;
 import hr.restart.util.reports.raPONSectionHeader0TF;
+import hr.restart.util.reports.raPonIzlazDetail;
 import hr.restart.util.reports.raReportElement;
 import hr.restart.util.reports.raReportSection;
 /**
@@ -95,7 +96,7 @@ public class repPonudaGroupTemplate extends repIzlazGroupOrigTemplate {
   }
 
   public raReportSection createDetail() {
-    raIzlazDetail sh = new raIzlazDetail(this);
+    raPonIzlazDetail sh = new raPonIzlazDetail(this);
     //sh.TextRBR.defaultAlterer().setControlSource("RBRDUMMY");
     long rbrGain = sh.TextCART.defaultAlterer().getLeft() - sh.TextRBR.defaultAlterer().getLeft();
     long kolGain = sh.TextKOL.defaultAlterer().getWidth() * 4 / 10;
