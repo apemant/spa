@@ -26,6 +26,8 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
+import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raSelectTableModifier;
 import hr.restart.util.*;
@@ -73,6 +75,12 @@ final public class raRAC extends raIzlazTemplate {
         public void actionPerformed(ActionEvent e) {
             ispisiizradaOTP();
         }
+    };
+    
+    raNavAction rnvLot = new raNavAction("Promjena šarže", raImages.IMGALIGNJUSTIFY, KeyEvent.VK_F11) {
+      public void actionPerformed(ActionEvent e) {
+        chgLot();
+      }
     };
     
     //  a REALLY REALLY ugly hardcoded hack
@@ -281,6 +289,28 @@ final public class raRAC extends raIzlazTemplate {
         raMaster.getRepRunner().addJasperHook("hr.restart.robno.repInvoice", jhook);
         raMaster.getRepRunner().addJasperHook("hr.restart.robno.repRacGroup", jhook);
         
+    }
+    
+    void chgLot() {
+      if (getDetailSet().rowCount() == 0) return;
+      
+      raInputDialog dlglot = new raInputDialog() {
+          protected void init() {
+              XYPanel panlot = new XYPanel().label("Šarža / lot").text("LOT", 120).expand();
+              setParams("Promjena šarže", panlot, panlot.getText("LOT")); 
+          }
+          protected void beforeShow() {
+            ((JraTextField) getValue()).setText(getDetailSet().getString("LOT"));
+          }
+      };
+
+      if (dlglot.show(raDetail.getWindow())) {
+          String cgnew = ((JraTextField) dlglot.getValue()).getText();
+          
+          getDetailSet().setString("LOT",  cgnew);
+          getDetailSet().saveChanges();
+          raDetail.getJpTableView().fireTableDataChanged();
+      }
     }
     
     void adjust(JasperDesign design) {
@@ -499,6 +529,10 @@ final public class raRAC extends raIzlazTemplate {
           }, 6, false);
           
           initTrans();
+        }
+        
+        if (raIzlazTemplate.isShowLot()) {
+          raDetail.addOption(rnvLot, 6, false);
         }
         
         MP.panelBasicExt.jlrCNACPL.setRaDataSet(dm.getNacplB());
