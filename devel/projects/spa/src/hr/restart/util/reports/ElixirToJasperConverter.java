@@ -302,23 +302,36 @@ public class ElixirToJasperConverter {
     setBounds(img, m);
     img.setLazy(false);
     img.setScaleImage(m.getPropertyValue(ep.SIZE_MODE).equals(ev.STRETCH)
-        ? JRImage.SCALE_IMAGE_FILL_FRAME : JRImage.SCALE_IMAGE_CLIP);
+        ? JRImage.SCALE_IMAGE_FILL_FRAME : JRImage.SCALE_IMAGE_RETAIN_SHAPE);
     img.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_CENTER);
     img.setHorizontalAlignment(JRAlignment.VERTICAL_ALIGN_MIDDLE);
     img.setMode(JRDesignElement.MODE_OPAQUE);
     
-    JRDesignExpression exp = new JRDesignExpression();
-    exp.setValueClassName("java.lang.String");
-    try {
-      URL ui = new URL(m.getPropertyValue(ep.PICTURE));
-      ui.openConnection();
-      exp.addTextChunk("\""+m.getPropertyValue(ep.PICTURE)+"\"");
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      exp.addTextChunk("");
+    if (m.getPropertyValue(ep.PICTURE).equals("$art")) {
+      //img.setLazy(true);
+      img.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_LEFT);
+      img.setHorizontalAlignment(JRAlignment.VERTICAL_ALIGN_TOP);
+      JRDesignExpression exp = new JRDesignExpression();
+      exp.setValueClassName("java.awt.Image");
+      exp.addTextChunk("hr.restart.util.ImageLoad.loadImageArt(");
+      exp.addFieldChunk("SgetCART");
+      data.setUsedGetter("SgetCART");
+      exp.addTextChunk(")");
+      img.setExpression(exp);
+    } else {    
+      JRDesignExpression exp = new JRDesignExpression();
+      exp.setValueClassName("java.lang.String");
+      try {
+        URL ui = new URL(m.getPropertyValue(ep.PICTURE));
+        ui.openConnection();
+        exp.addTextChunk("\""+m.getPropertyValue(ep.PICTURE)+"\"");
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        exp.addTextChunk("");
+      }
+      System.out.println(m.getPropertyValue(ep.PICTURE));
+      img.setExpression(exp);
     }
-    System.out.println(m.getPropertyValue(ep.PICTURE));
-    img.setExpression(exp);
     return img;
   }
   
