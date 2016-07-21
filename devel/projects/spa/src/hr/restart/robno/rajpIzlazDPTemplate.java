@@ -499,6 +499,8 @@ public class rajpIzlazDPTemplate extends JPanel {
 		jlNABTR.setHorizontalAlignment(SwingConstants.RIGHT);
 		//    jraIPRODSP.setEditable(false);
 		
+		jraLOT.setColumnName("LOT");
+		
 		jraRNC.setColumnName("RNC");
 		jraRNC.setDataSet(fDI.getDetailSet());
 
@@ -578,6 +580,10 @@ public class rajpIzlazDPTemplate extends JPanel {
 		if ((fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") ||
 				fDI.what_kind_of_dokument.equalsIgnoreCase("ODB")) && raIzlazTemplate.isNabDirect())
 			xYLayoutDC.setHeight(80);
+		
+		if (fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") && raIzlazTemplate.isShowLot())
+		  xYLayoutDC.setHeight(xYLayoutDC.getHeight() + 30);
+		
 		xYLayoutDC.setWidth(660);
 		/*jpDetailCenter.setBorder(BorderFactory.createEtchedBorder());
 		if (rpcart.isbPrikazKolicina()) {
@@ -704,6 +710,12 @@ public class rajpIzlazDPTemplate extends JPanel {
     	jpDetailCenter.add(jraRNC, new XYConstraints(395, 50, 110, -1));
     	jpDetailCenter.add(jraRINAB, new XYConstraints(510, 50, 110, -1));
     }	
+    if (fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") && raIzlazTemplate.isShowLot()) {
+      int y = raIzlazTemplate.isNabDirect() ? 80 : 50;
+      jraLOT.setDataSet(fDI.getDetailSet());
+      jpDetailCenter.add(new JLabel("Šarža"), new XYConstraints(395, y, -1, -1));
+      jpDetailCenter.add(jraLOT, new XYConstraints(510, y, 110, -1));
+    }
   }
 
 	public void addRestGRNGOT() {
@@ -837,7 +849,7 @@ public class rajpIzlazDPTemplate extends JPanel {
                 fDI.MfocusGained(e);
             }
         });
-		jpDetailCenter.add(new JLabel("Šarža"), new XYConstraints(380, 41, -1, -1));
+		jpDetailCenter.add(new JLabel("Šarža"), new XYConstraints(320, 41, -1, -1));
 		jpDetailCenter.add(jraLOT, new XYConstraints(460, 41, 150, -1));
 		jpDetailCenter.add(new JLabel("Pakiranja"), new XYConstraints(18, 41, -1, -1));
 		jpDetailCenter.add(jraPAK, new XYConstraints(153, 41, 150, -1));
@@ -909,6 +921,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 		jraPORER.setDataSet(fDI.getDetailSet());
 		jraRNC.setDataSet(fDI.getDetailSet());
 		jraRINAB.setDataSet(fDI.getDetailSet());
+		jraLOT.setDataSet(fDI.getDetailSet());
 		rpcart.setTabela(fDI.getDetailSet());
 		rpcart.setParam(hr.restart.sisfun.frmParam
 				.getParam("robno", "indiCart"));
