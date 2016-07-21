@@ -826,6 +826,10 @@ public class repIzlazni implements raReportData {
     return ds.getString("BC");
   }
   
+  public String SgetCART() {
+    return String.valueOf(ds.getInt("CART"));
+  }
+  
   public String getCART() {
 //    return Aut.getAut().getCARTdependable(ds);
 //    return Aut.getAut().getIzlazCARTdep(ds);
