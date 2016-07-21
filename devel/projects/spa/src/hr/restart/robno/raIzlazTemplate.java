@@ -836,15 +836,21 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 
 	abstract public void initialiser();
 	
-	static boolean nabDirect;
+	static boolean nabDirect, showLot;
 	static {
 		nabDirect = frmParam.getParam("robno" ,"nabDirect", "N",
 				"Moguænost unosa nabavnog iznosa na raèunima (D,N)").equalsIgnoreCase("D");
+		showLot = frmParam.getParam("robno" ,"showLot", "N",
+            "Moguænost unosa lota na raèunima (D,N)").equalsIgnoreCase("D");
 	}
 	
 	public static boolean isNabDirect() {
 		return nabDirect;
 	}
+	
+	public static boolean isShowLot() {
+      return showLot;
+    }
 
 	public raIzlazTemplate() {
 
