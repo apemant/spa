@@ -992,7 +992,8 @@ public class JraTable2 extends JTable implements JraTableInterface {
   public void processTableKeyTyped(KeyEvent e) {
     if (!altEnabled) return;
     if (AWTKeyboard.getFocusedComponent() instanceof JTextComponent) return;
-    if (isShowing() && !e.isConsumed() && getDataSet() != null && isEnabled() && selectedCol != -1) {
+    if (isShowing() && !e.isConsumed() && ((e.getModifiers() & e.ALT_MASK) == 0) && 
+        getDataSet() != null && isEnabled() && selectedCol != -1) {
       char ch = e.getKeyChar();
       if (!Character.isISOControl(ch) && (ch != ' ' || speed.length() > 0)) {
         if (!raTypeaheadWindow.isShowing(this)) clearSpeedHistory();
@@ -1127,9 +1128,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
           showTypeTip();
           e.consume();
-        } 
-      } else if ((e.getModifiers() & e.CTRL_MASK) != 0 && raTypeaheadWindow.isShowing(this)) {
-        if (e.getKeyCode()==e.VK_S) {
+        } else if (e.getKeyCode()==e.VK_S) {
           String tx = speed.toString();
           if (tx != null && tx.length() > 0 && getDataSet() != null) {
             Column col = getDataSet().hasColumn(getRealColumnName(selectedCol));
