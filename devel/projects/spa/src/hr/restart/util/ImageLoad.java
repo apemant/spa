@@ -14,6 +14,7 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import com.borland.dx.dataset.DataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 import java.awt.event.*;
@@ -245,6 +246,16 @@ public class ImageLoad implements ActionListener{
       }
       return null;
 	}
+	
+	public static Image loadImageArt(String cart) {
+	  QueryDataSet ds = Imageinfo.getDataModule().getQueryDataSet();
+	  ds.open();
+	  System.out.println("cart " + cart);
+	  lookupData.getlookupData().raLocate(ds, new String[] {"TABLICA","CKEY"}, new String[] {"artikli", cart});
+	  System.out.println(ds);
+	  return loadImage(ds).getImage();
+	}
+	
 	private static String[] parseUrl(String url) {
     StringTokenizer tok = new StringTokenizer(url,":");
     String protocol = tok.nextToken();
