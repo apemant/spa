@@ -21,6 +21,7 @@ import hr.restart.util.reports.raIzlazDetail;
 import hr.restart.util.reports.raIzlazSectionFooterLines;
 import hr.restart.util.reports.raIzlazSectionHeaderLines;
 import hr.restart.util.reports.raPONSectionHeader0TF;
+import hr.restart.util.reports.raPonIzlazDetail;
 import hr.restart.util.reports.raReportSection;
 /**
  * <p>Title: </p>
@@ -58,7 +59,7 @@ public class repPonudaTemplate extends repIzlazOrigTemplate {
   }
 
   public raReportSection createDetail() {
-    return new raIzlazDetail(this);
+    return new raPonIzlazDetail(this);
   }
 
   public raReportSection createSectionFooter1() {
