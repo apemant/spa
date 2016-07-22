@@ -899,6 +899,8 @@ public class raTableIBANModifier extends raTableColumnModifier {
           getRepRunner().removeReport("hr.restart.zapod.repVir3Ai");
 
           getRepRunner().addReport("hr.restart.pl.repSepaDisk", "SEPA XML datoteka");
+          getRepRunner().addReport("hr.restart.pl.repSepaDiskBatch", "SEPA XML datoteka (batch)");
+          getRepRunner().addReport("hr.restart.pl.repSepaDiskNonBatch", "SEPA XML datoteka (non-batch)");
           getRepRunner().addReport("hr.restart.zapod.repDiskZapUN", "Datoteka za e-plaæanje (IBAN)");
           getRepRunner().addReport("hr.restart.zapod.repDiskZap", "Stara datoteka za e-plaæanje");
 //          getRepRunner().addJasper("hr.restart.zapod.repVir3A", "hr.restart.zapod.rep3Virman", "HUB3A.jrxml", "Ispis odabranog HUB 3A");
