@@ -642,7 +642,9 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
             this_JraTextField.setText(ret);
             if (this_JraTextField instanceof JlrNavField)
               ((JlrNavField) this_JraTextField).forceFocLost();
-          }
+            else if (maskCheck())
+              FocusManager.getCurrentManager().focusNextComponent(JraTextField.this);
+          } 
         }
       } else if (e.getKeyCode()==e.VK_PAGE_DOWN) e.consume();
       else if (e.getKeyCode()==e.VK_PAGE_UP) e.consume();
