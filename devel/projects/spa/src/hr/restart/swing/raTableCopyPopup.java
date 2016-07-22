@@ -88,7 +88,7 @@ public class raTableCopyPopup extends JPopupMenu {
   private Action add, addAll, set, setAll, sub, subAll, reset,
       selClear, selAll, selectCol, fastAdd, filtShow, filtEq, filtNeq, 
       filtRemove, search, searchAll, tabCond, keyCond, inCond, 
-      inColCond, copyAll, clearAll, replaceAll, performAll, performInit, setSource,
+      inColCond, copyAll, clearAll, replaceAll, performAll, performInit, setSource, removeSource,
       memorize, compare, dups, copyCol, pasteCol, findZag, findStav;
   private JMenu calcMenu;
   private JMenu adminMenu;
@@ -97,6 +97,7 @@ public class raTableCopyPopup extends JPopupMenu {
   private StorageDataSet memSet = null;
   private DataSet source = null;
   private String sourceCol = null;
+  private List sourceCols = null;
   
   Interpreter bsh = new Interpreter();
   raCalculator calc = raCalculator.getInstance();
@@ -236,6 +237,10 @@ public class raTableCopyPopup extends JPopupMenu {
       filtRemove.setEnabled(extend && dataset && selectable &&
           jt.getDataSet().getRowFilterListener() != null);
       setSource.setEnabled(dataset);
+      setSource.putValue(Action.NAME, !isSourceSet() || (source != jt.getDataSet()) ?
+          "Postavi kolonu kao izvor za kopiranje" :
+          "Dodaj kolonu kao " + (sourceCols == null ? 2 : sourceCols.size() + 1) + ". izvor za kopiranje");
+      removeSource.setEnabled(dataset && isSourceSet());
       inst.jt.repaint(inst.jt.getCellRect(selRow, selCol, true));
       show(jt, e.getX(), e.getY());
     }
@@ -465,9 +470,15 @@ public class raTableCopyPopup extends JPopupMenu {
         }
       }
     });
-    adminMenu.add(setSource = new AbstractAction("Postavi kao izvor za kopiranje") {
+    adminMenu.addSeparator();
+    adminMenu.add(setSource = new AbstractAction("Postavi kolonu kao izvor za kopiranje") {
       public void actionPerformed(ActionEvent e) {
         setSourceData();
+      }
+    });
+    adminMenu.add(removeSource = new AbstractAction("Poništi izvor za kopiranje") {
+      public void actionPerformed(ActionEvent e) {
+        clearSourceData();
       }
     });
     
@@ -485,11 +496,21 @@ public class raTableCopyPopup extends JPopupMenu {
   public void clearSourceData() {
     source = null;
     sourceCol = null;
+    sourceCols = null;
   }
   
   void setSourceData() {
-    source = jt.getDataSet();
-    sourceCol = jt.getRealColumnName(selCol);
+    if (source == null || source != jt.getDataSet()) {
+      source = jt.getDataSet();
+      sourceCol = jt.getRealColumnName(selCol);
+      sourceCols = null;
+    } else {
+      if (sourceCols == null) {
+        sourceCols = new ArrayList();
+        sourceCols.add(sourceCol);
+      }
+      sourceCols.add(jt.getRealColumnName(selCol));
+    }
   }
   
   public boolean isSourceSet() {
@@ -504,7 +525,11 @@ public class raTableCopyPopup extends JPopupMenu {
     }
     Variant v = new Variant();
     source.getVariant(sourceCol, v);
-    if (!source.next()) clearSourceData();
+    if (sourceCols != null) {
+      int idx = (sourceCols.indexOf(sourceCol) + 1) % sourceCols.size();
+      sourceCol = (String) sourceCols.get(idx);
+      if (idx == 0 && !source.next()) clearSourceData();
+    } else if (!source.next()) clearSourceData();
     return v.toString();
   }
   
