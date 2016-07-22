@@ -1601,7 +1601,7 @@ Podsjetnik za plaćanje</Property>
           <Model Name="Label42">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label42</Property>
-               <Property Name="Caption">Podsjećamo Vas da čim prije platite račune kojima je istekao rok za uplatu.</Property>
+               <Property Name="Caption">Molimo Vas da čim prije platite račune kojima je istekao rok za uplatu.</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">60</Property>
                <Property Name="Top">1340</Property>
