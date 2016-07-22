@@ -34,13 +34,27 @@ import hr.restart.util.raMatPodaci;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raNavBar;
 import hr.restart.util.startFrame;
+import hr.restart.util.reports.JasperHook;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
+
+import net.sf.jasperreports.compilers.JRGroovyCompiler;
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JRStaticText;
+import net.sf.jasperreports.engine.JRTextField;
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.dataset.Variant;
@@ -435,5 +449,35 @@ public class frmKartica extends raMatPodaci {
         pres.showPreselect(frmKartica.this, "Pojedina\u010Dni pregled");
       }
     }, 3, false);
-  }  
+    
+    this.getRepRunner().addJasperHook("hr.restart.sk.repPnP", new JasperHook() {
+      public void adjustDesign(String reportName, JasperDesign design) {
+        if (frmParam.getParam("sk", "removePodDug", "N", "Maknuti dugovanje s podsjetnika za plaæanje (D,N)").equalsIgnoreCase("D"))
+          removePodDug(design);
+      }
+    });
+  }
+  
+  public static void removePodDug(JasperDesign design) {
+    JRGroup[] grs = design.getGroups();
+    List rem = new ArrayList();
+    for (int i = 0; i < grs.length; i++) {
+      JRBand bn = grs[i].getGroupFooterSection().getBands()[0];
+      JRElement[] els = bn.getElements();
+      for (int j = 0; j < els.length; j++) { 
+        if (els[j] instanceof JRTextField) {
+          JRDesignExpression ex = (JRDesignExpression) ((JRTextField) els[j]).getExpression();
+          if (ex.getText().indexOf("DOSPSALDO") >= 0 || ex.getText().indexOf("TOTALSALDO") >= 0) 
+            rem.add(els[j]);
+        }
+        if (els[j] instanceof JRStaticText) {
+          if (((JRStaticText) els[j]).getText().indexOf("Dospjela dugovanja") >= 0 ||
+              ((JRStaticText) els[j]).getText().indexOf("Ukupna dugovanja") >= 0)
+             rem.add(els[j]);
+        }
+      }
+      for (int j = 0; j < rem.size(); j++)
+        ((JRDesignBand) bn).removeElement((JRDesignElement) rem.get(j));
+    }
+  }
 }

@@ -35,6 +35,7 @@ import hr.restart.util.raNavAction;
 import hr.restart.util.raProcess;
 import hr.restart.util.startFrame;
 import hr.restart.util.reports.JTablePrintRun;
+import hr.restart.util.reports.JasperHook;
 import hr.restart.util.reports.raReportDescriptor;
 import hr.restart.util.reports.raRunReport;
 
@@ -50,6 +51,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.swing.SwingUtilities;
+
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.MetaDataUpdate;
@@ -680,6 +683,13 @@ public class frmDugPot extends raFrame {
     jp.getNavBar().addOption(new raNavAction("Izlaz", raImages.IMGX, KeyEvent.VK_ESCAPE) {
       public void actionPerformed(ActionEvent e) {
         frmDugPot.this.hide();
+      }
+    });
+    
+    this.getRepRunner().addJasperHook("hr.restart.sk.repPnP", new JasperHook() {
+      public void adjustDesign(String reportName, JasperDesign design) {
+        if (frmParam.getParam("sk", "removePodDug", "N", "Maknuti dugovanje s podsjetnika za plaæanje (D,N)").equalsIgnoreCase("D"))
+          frmKartica.removePodDug(design);
       }
     });
 
