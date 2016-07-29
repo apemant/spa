@@ -44,6 +44,9 @@ public class ArchiveConverter {
     StorageDataSet outobarh = Aus.createSet("GODOBR MJOBR RBROBR COBUS CRADNIK:6 IZNOS.2");
    
     
+    
+    
+    
     Condition corgs = OrgStr.getCorgsCond(knjig);
     
     DataSet kums = Kumulorgarh.getDataModule().openTempSet(corgs);
@@ -54,15 +57,11 @@ public class ArchiveConverter {
     
     DataSet prim = Primanjaarh.getDataModule().openTempSet(corgs);
     
-    DataSet odb = Odbiciarh.getDataModule().openTempSet(crads);
-    
-    
-    
+    DataSet odb = Odbiciarh.getDataModule().openTempSet(crads);   
     
     for (kums.first(); kums.inBounds(); kums.next()) {
       
     }
-    
     
     
   }
