@@ -253,7 +253,7 @@ public class frmPDV2 extends raUpitFat {
       } else {
         if (!ut.sameDay(getDatumOd(), ut.getFirstDayOfMonth(getDatumOd())) ||
             !ut.sameDay(getDatumDo(), ut.getLastDayOfMonth(getDatumDo())) ||
-            !ut.sameDay(ut.addMonths(getDatumOd(), 3), ut.getFirstDayOfMonth(getDatumDo()))) {
+            !ut.sameDay(ut.addMonths(getDatumOd(), 2), ut.getFirstDayOfMonth(getDatumDo()))) {
           JOptionPane.showMessageDialog(getWindow(), "Razdoblje mora biti kvartalno!", "Greška", JOptionPane.ERROR_MESSAGE);
           return false;
         }
@@ -481,10 +481,11 @@ public class frmPDV2 extends raUpitFat {
     
     setOPZ = Aus.createSet("Partneri.OIB .NAZPAR PS:1 Skstavke.BROJDOK .DATDOK .DATDOSP .SSALDO .SALDO PDV.2 {Status}OPIS:100");
     
-    QueryDataSet sk = Skstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK DATUMKNJ DATDOK DATDOSP SSALDO SALDO CSKSTAVKE CGKSTAVKE OZNVAL TECAJ",
-        Aus.getKnjigCond().and(Condition.from("DATUMKNJ", Aus.getGkYear(nadan))).and(Condition.till("DATDOSP", nadan)).
-        and(Condition.from("DATDOK", from)).and(Aus.getVrdokCond(true, true)).and(Condition.in("BROJKONTA", kk)).
-        and(Condition.where("SALDO", Condition.GREATER_THAN, Aus.zero0)).and(Condition.diff("POKRIVENO", "X")));
+    QueryDataSet sk = Skstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK DATUMKNJ DATDOK DATDOSP ID IP SSALDO SALDO CSKSTAVKE CGKSTAVKE OZNVAL TECAJ",
+        //Aus.getKnjigCond().and(Condition.from("DATUMKNJ", Aus.getGkYear(nadan))).and(Condition.till("DATDOSP", nadan)).
+        Aus.getKnjigCond().and(Aus.getCurrGKDatumCond(nadan)).and(Condition.till("DATDOSP", nadan)).
+        and(Condition.from("DATDOK", from)).and(Aus.getVrdokCond(true, true)).
+        and(Condition.in("BROJKONTA", kk)).and(Condition.diff("POKRIVENO", "X")));
     
     System.out.println("input: " + sk.getOriginalQueryString());
     
@@ -509,7 +510,7 @@ public class frmPDV2 extends raUpitFat {
 
     QueryDataSet ui = UIstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK IP", 
         Aus.getKnjigCond().and(Condition.in("BROJKONTA", pk)).
-        and(Condition.where("IP", Condition.GREATER_THAN, Aus.zero0)));
+        and(Condition.where("IP", Condition.NOT_EQUAL, Aus.zero0)));
     
     System.out.println("ui: " + ui.getOriginalQueryString());
     
@@ -525,6 +526,8 @@ public class frmPDV2 extends raUpitFat {
     }
     
     for (sk.first(); sk.inBounds(); sk.next()) {
+      if (sk.getBigDecimal("SALDO").signum() == 0) continue;
+      
       String key = buf.clear().append(sk.getInt("CPAR")).append('|').append(sk.getString("VRDOK")).
           append('|').append(sk.getString("BROJDOK")).toString();
       
@@ -640,7 +643,7 @@ public class frmPDV2 extends raUpitFat {
     
   }
   private void fillsetPPO(String param, String col) {
-    String qrycommon = getQryCommon(", skstavke.datpri ");
+    String qrycommon = getPPOQryCommon();
     String orovi = getOrovi(param);
     if (orovi == null) return;
     QueryDataSet upitP = Aus.q(qrycommon + orovi);
@@ -648,7 +651,7 @@ public class frmPDV2 extends raUpitFat {
     int rbr = 0;
     for (upitP.first(); upitP.inBounds(); upitP.next()) {
       if (!lookupData.getlookupData().raLocate(setPPO, new String[]{"CPAR","DATUMOD"}, 
-          new String[]{upitP.getInt("CPAR")+"",ut.getFirstDayOfMonth(upitP.getTimestamp("DATPRI")).toString()})) {//TU PO cpar i datumOD
+          new String[]{upitP.getInt("CPAR")+"",ut.getFirstDayOfMonth(upitP.getTimestamp("DATDOK")).toString()})) {//TU PO cpar i datumOD
         if (lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", upitP.getInt("CPAR")+"")) {
           String oib =  dm.getPartneri().getString("OIB");
           setPPO.insertRow(false);
@@ -656,8 +659,8 @@ public class frmPDV2 extends raUpitFat {
           setPPO.setInt("RBR", rbr);
           setPPO.setInt("CPAR", upitP.getInt("CPAR"));
           setPPO.setString("OIB", oib);
-          setPPO.setTimestamp("DATUMOD", ut.getFirstDayOfMonth(upitP.getTimestamp("DATPRI")));
-          setPPO.setTimestamp("DATUMDO", ut.getLastDayOfMonth(upitP.getTimestamp("DATPRI")));
+          setPPO.setTimestamp("DATUMOD", ut.getFirstDayOfMonth(upitP.getTimestamp("DATDOK")));
+          setPPO.setTimestamp("DATUMDO", ut.getLastDayOfMonth(upitP.getTimestamp("DATDOK")));
           setPPO.setBigDecimal("VRI", Aus.zero2);
           setPPO.setBigDecimal("POR", Aus.zero2);
         } else {
@@ -678,6 +681,16 @@ public class frmPDV2 extends raUpitFat {
         "AND uistavke.vrdok = skstavke.vrdok AND uistavke.brojdok = skstavke.brojdok AND uistavke.cknjige = skstavke.cknjige " +
         "WHERE skstavke.knjig='"+dlgGetKnjig.getKNJCORG()+"' AND "+
         Condition.between("DATPRI", frmPDV2.getInstance().getDatumOd(), frmPDV2.getInstance().getDatumDo()).qualified("skstavke")+
+        " AND ";
+  }
+  
+  private String getPPOQryCommon() {
+    return "SELECT skstavke.cpar, (uistavke.ID+uistavke.IP) as val, skstavke.datdok " +
+        "FROM skstavke INNER JOIN uistavke ON uistavke.knjig = skstavke.knjig AND uistavke.cpar = skstavke.cpar " +
+        "AND uistavke.vrdok = skstavke.vrdok AND uistavke.brojdok = skstavke.brojdok AND uistavke.cknjige = skstavke.cknjige " +
+        "WHERE skstavke.knjig='"+dlgGetKnjig.getKNJCORG()+"' AND "+ 
+        Aus.getCurrGKDatumCond(frmPDV2.getInstance().getDatumDo()).
+        and(Condition.from("DATDOK", frmPDV2.getInstance().getDatumOd())).qualified("skstavke")+
         " AND ";
   }
 
@@ -1182,6 +1195,9 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
     pan.label("Iznos / saldo").text("SSALDO").text("SALDO").nl();
     pan.label("Iznos poreza").text("PDV").nl().expand();
     pan.getNav("NAZPAR").setDataSet(setOPZ);
+    pan.getNav("OIB").setSearchMode(2);
+    pan.getNav("OIB").setFocusLostOnShow(false);
+    pan.getNav("NAZPAR").setFocusLostOnShow(false);
     
     DataRow old = new DataRow(setOPZ);
     dM.copyColumns(setOPZ, old);
