@@ -1,37 +1,34 @@
 package hr.restart.util;
 
-import hr.restart.baza.Condition;
 import hr.restart.baza.Imageinfo;
 import hr.restart.db.raVariant;
 import hr.restart.sisfun.frmParam;
-import hr.restart.swing.JraButton;
 import hr.restart.swing.JraDialog;
-import hr.restart.util.OKpanel;
 
-import javax.swing.Icon;
-import javax.swing.JFrame;
-import java.awt.*;
-
-import javax.swing.*;
-
-import com.borland.dx.dataset.DataSet;
-import com.borland.dx.sql.dataset.QueryDataSet;
-
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageProducer;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.StringTokenizer;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+
+import com.borland.dx.sql.dataset.QueryDataSet;
 
 
 
