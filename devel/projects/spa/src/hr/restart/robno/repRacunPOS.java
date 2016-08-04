@@ -208,9 +208,9 @@ public class repRacunPOS extends mxReport {
          (oneRow ? "<$newline$>" : doubleLineSep+"<$newline$>")+ getDetailHeader() +
          doubleLineSep+getManualDetail());
      detail[0] = (!ispSif ? "<#RBR|3|right#>  <#NAZART|"+(width-6)+"|left#><$newline$>" :
-         Aut.getAut().getCARTdependable("<#RBR|3|right#> <#CART|7|left#> <#NAZART|"+(width-12)+"|left#><$newline$>",
-                                        "<#RBR|3|right#> <#CART1|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>",
-                                        "<#RBR|3|right#> <#BC|13|left#> <#NAZART|"+(width-18)+"|left#><$newline$>"))+     /** @todo prilagodit cart, cart1, bc uvjetima */
+         Aut.getAut().getCARTdependable("<#CART|7|left#> <#NAZART|"+(width-8)+"|left#><$newline$>",
+                                        "<#CART1|13|left#> <#NAZART|"+(width-14)+"|left#><$newline$>",
+                                        "<#BC|13|left#> <#NAZART|"+(width-14)+"|left#><$newline$>"))+     /** @todo prilagodit cart, cart1, bc uvjetima */
           (!pop ? "<#KOL|9|right#>   <#JM|3|left#> <#MC|11|right#> <#"+uk+"|"+(width-28)+"|right#>"
               : "<#KOL|9|right#>  <#JM|3|left#> <#MC|9|right#>   <#PPOPUST1|5|right#> <#"+uk+"|"+(width-33)+"|right#>");
      if (!oneRow) this.setDetail(detail);
@@ -288,9 +288,9 @@ public class repRacunPOS extends mxReport {
   private String getDetailHeader() {
     if (oneRow) return "NAZIV" + Aus.spc(width-24) +  "KOL  CIJENA   IZNOS<$newline$>";
     return (!ispSif ? "RBR  NAZIV<$newline$>" :
-      Aut.getAut().getCARTdependable("RBR ŠIFRA   NAZIV<$newline$>",
-                                     "RBR OZNAKA        NAZIV<$newline$>",
-                                     "RBR BARCODE       NAZIV<$newline$>")
+      Aut.getAut().getCARTdependable("ŠIFRA   NAZIV<$newline$>",
+                                     "OZNAKA        NAZIV<$newline$>",
+                                     "BARCODE       NAZIV<$newline$>")
                                      )+   /** @todo prilagodit cart, cart1, bc uvjetima */
       (!pop ? " KOLIÈINA   JM       CIJENA       "+getRazlikaWidthBlank()+"IZNOS<$newline$>"
           : " KOLIÈINA  JM     CIJENA   % POP  "+Aus.spc(width-39)+"IZNOS<$newline$>");
