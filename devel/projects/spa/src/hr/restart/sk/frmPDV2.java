@@ -501,6 +501,25 @@ public class frmPDV2 extends raUpitFat {
     System.out.println("olds: " + osk.getOriginalQueryString());
     
     VarStr buf = new VarStr();
+    HashSet fmp = new HashSet();
+    // devilish prvi mjesec nakon godišnje obrade
+    if (psdat.after(nadan) && ut.sameDay(nadan, ut.getLastDayOfYear(nadan)) ) {
+      QueryDataSet nskf = Skstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK DATUMKNJ DATDOK DATDOSP ID IP SSALDO SALDO CSKSTAVKE CGKSTAVKE OZNVAL TECAJ",
+          //Aus.getKnjigCond().and(Condition.from("DATUMKNJ", Aus.getGkYear(nadan))).and(Condition.till("DATDOSP", nadan)).
+          Aus.getKnjigCond().and(Condition.from("DATUMKNJ", ut.getFirstDayOfYear(dfrom))).and(Condition.till("DATDOSP", nadan)).
+          and(Condition.from("DATDOK", from)).and(Aus.getVrdokCond(true, true)).
+          and(Condition.in("BROJKONTA", kk)).and(Condition.diff("POKRIVENO", "X")));
+      
+      raSaldaKonti.updateOutOfRangeSaldo(nskf, c);
+      for (nskf.first(); nskf.inBounds(); nskf.next()) {
+        if (nskf.getBigDecimal("SALDO").signum() == 0 &&
+            nskf.getString("BROJDOK").startsWith("PS" + ut.getYear(dfrom) + ":")) 
+          fmp.add(buf.clear().append(nskf.getInt("CPAR")).append('|').append(nskf.getString("VRDOK")).
+              append('|').append(nskf.getString("BROJDOK")).toString());
+      }
+      System.out.println("Poks:" + fmp);
+    }
+    
     HashMap oldmap = new HashMap();
     for (osk.first(); osk.inBounds(); osk.next()) {
       String key = buf.clear().append(osk.getInt("CPAR")).append('|').append(osk.getString("VRDOK")).
@@ -527,13 +546,18 @@ public class frmPDV2 extends raUpitFat {
     
     for (sk.first(); sk.inBounds(); sk.next()) {
       if (sk.getBigDecimal("SALDO").signum() == 0) continue;
-      
+            
       String key = buf.clear().append(sk.getInt("CPAR")).append('|').append(sk.getString("VRDOK")).
           append('|').append(sk.getString("BROJDOK")).toString();
       
       boolean ps = sk.getString("BROJDOK").startsWith("PS") && sk.getString("BROJDOK").indexOf(':') > 0;
       if (ps) key = buf.clear().append(sk.getInt("CPAR")).append('|').append(sk.getString("VRDOK")).
         append('|').append(sk.getString("BROJDOK").substring(sk.getString("BROJDOK").indexOf(':') + 1)).toString();
+      
+      if (fmp.size() > 0 && fmp.contains(buf.insert(buf.lastIndexOf('|') + 1, "PS" + ut.getYear(dfrom) + ":").truncate(50).toString())) {
+        System.out.println("found to skip: " + sk);
+        continue;
+      }
       
       setOPZ.insertRow(false);
       if (ps) setOPZ.setString("PS", "D");
