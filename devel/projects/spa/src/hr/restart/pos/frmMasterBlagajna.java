@@ -357,8 +357,6 @@ public class frmMasterBlagajna extends raMasterDetail {
     pov = Aus.getDecNumber(frmParam.getParam("robno", "iznosPov", "0.5",
         "Iznos povratne naknade"));
     
-    
-    
     if (raUser.getInstance().isSuper() && "D".equalsIgnoreCase(
         frmParam.getParam("pos", "vrijemeRac", "N",
         "Prikazati vrijeme na racunima POS (D,N)"))) { 
@@ -431,6 +429,13 @@ public class frmMasterBlagajna extends raMasterDetail {
                 false);
         return false;
     }
+    if (!getMasterSet().getString("FOK").equalsIgnoreCase("N")) {
+      setUserCheckMsg(
+              "Korisnik ne može promijeniti dokument jer je fiskaliziran !",
+              false);
+      return false;
+    }
+    
     restoreUserCheckMessage();
     return true;
   }
@@ -652,7 +657,7 @@ public class frmMasterBlagajna extends raMasterDetail {
       jpBl.fokus('N');
       //      jpBl.jrfCART.requestFocusLater();
     }
-    else if (mode == 'I' && (raUser.getInstance().isSuper() || presBlag.isSuper)) {
+    else if (mode == 'I') {
       jpBl.disab('I', isUsluga);
       jpBl.jtfKOL.requestFocus();
       jpBl.jtfKOL.selectAll();
@@ -692,31 +697,22 @@ public class frmMasterBlagajna extends raMasterDetail {
   String delstr;
   DataRow delRow;
   public boolean DeleteCheckMaster() {
-  	if (raUser.getInstance().isSuper() || presBlag.isSuper) {
+  	
   	  if (!util.checkSeq("BL-"+cskl+"GRC"+god+"-"+rm, 
   	    Integer.toString(getMasterSet().getInt("BRDOK")))) return false;
   	  delRow = new DataRow(getMasterSet(), key);
   	  dM.copyColumns(getMasterSet(), delRow, key);
   	  	brojchek=getMasterSet().getInt("BRDOK");
   	    delstr = "BL-"+cskl+"GRC"+getMasterSet().getString("GOD")+"-"+getMasterSet().getString("CPRODMJ");
-  	}
-  	else {
-        javax.swing.JOptionPane.showMessageDialog(raMaster,"Nemate prava na brisanje dokumenta !","Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
-  		return false;
-  	}
-    return (getMasterSet().getString("STATUS").equalsIgnoreCase("N") && !getMasterSet().getString("FOK").equalsIgnoreCase("D"));
+  
+  	 return (getMasterSet().getString("STATUS").equalsIgnoreCase("N") && !getMasterSet().getString("FOK").equalsIgnoreCase("D"));
   }
   public boolean DeleteCheckDetail() {
-  	if (raUser.getInstance().isSuper() || presBlag.isSuper) {
   	  	tmpIZNOS=getDetailSet().getBigDecimal("IZNOS");
   	    tmpUKUPNO=getDetailSet().getBigDecimal("UKUPNO");
   	    delStavka=getDetailSet().getShort("RBR");
-  	}
-  	else {
-        javax.swing.JOptionPane.showMessageDialog(raDetail,"Nemate prava na brisanje stavaka !","Greška",javax.swing.JOptionPane.ERROR_MESSAGE);
-  		return false;  		
-  	}
-    return super.DeleteCheckDetail();
+
+  	  return super.DeleteCheckDetail();
   }
   public void AfterSaveDetail(char mode) {
     if ((mode == 'N') || (mode== 'I')) {
@@ -1439,6 +1435,10 @@ public class frmMasterBlagajna extends raMasterDetail {
       raDetail.getJpTableView().enableEvents(true);
     }
     
+  }
+  
+  public boolean isFisk() {
+    return getMasterSet().getString("FOK").equalsIgnoreCase("D");
   }
   
   
