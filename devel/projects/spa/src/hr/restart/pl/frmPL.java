@@ -457,7 +457,7 @@ public class frmPL extends startFrame {
         jmiGenericArh_actionPerformed(e);
       }
     });
-    jmiM4.setText("M-4");
+    jmiM4.setText("M-4 / MPP-1");
     jmiM4.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiM4_actionPerformed(e);

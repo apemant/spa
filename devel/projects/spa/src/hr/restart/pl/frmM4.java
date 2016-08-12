@@ -17,15 +17,23 @@
 ****************************************************************************/
 package hr.restart.pl;
 
+import hr.restart.baza.dM;
+import hr.restart.sisfun.frmTableDataView;
+import hr.restart.swing.JraTextField;
+import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
+import hr.restart.util.reports.raReportDescriptor;
 import hr.restart.zapod.OrgStr;
 
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
 
 public class frmM4 extends frmIzvjestajiPL{
   hr.restart.util.Util ut = new hr.restart.util.Util();
@@ -48,6 +56,8 @@ public class frmM4 extends frmIzvjestajiPL{
   StorageDataSet rep01 = new StorageDataSet();
   StorageDataSet rep02 = new StorageDataSet();
   StorageDataSet sum02 = new StorageDataSet();
+  
+  JraTextField jraVrsta = new JraTextField();
 
   String regbrMIO;
 
@@ -63,7 +73,11 @@ public class frmM4 extends frmIzvjestajiPL{
     jPanel2.remove(jlRbr);
     jlMjGodOd.setText("Godina");
     jraGodinaOd.setHorizontalAlignment(SwingConstants.CENTER);
+    
+    jPanel2.add(jraVrsta, new XYConstraints(490, 0, 60, -1));
+    jPanel2.add(new JLabel("Vrsta prijave"), new XYConstraints(320, 0, -1, -1));
 
+    this.addJasper("hr.restart.pl.repMPP1", "hr.restart.pl.repMPP1", "MPP1.jrxml", "Obrazac MPP-1");
     this.addReport("hr.restart.pl.repM4main", "hr.restart.pl.repM4main", "M4main", "Obrazac M-4");
     this.addReport("hr.restart.pl.repM4table1_V2_0", "hr.restart.pl.repM4tables", "M4table1_V2_0", "Tablica 01/6");
     this.addReport("hr.restart.pl.repM4table2_V2_0", "hr.restart.pl.repM4tables", "M4table2_V2_0", "Tablica 03/6");
@@ -87,6 +101,7 @@ public class frmM4 extends frmIzvjestajiPL{
     jlrCorg.forceFocLost();
     jraGodinaOd.setText("");
     jraGodinaOd.requestFocus();
+    jraVrsta.setText("04");
   }
 
   public boolean Validacija(){
@@ -101,6 +116,36 @@ public class frmM4 extends frmIzvjestajiPL{
       return false;
     }
     return true;
+  }
+  
+  public boolean ispisNow() {
+    if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(this,
+        "Prikazati rezultat za MPP-1 u tablici?", "Tablièni prikaz",
+        JOptionPane.OK_CANCEL_OPTION)) return true;
+    
+    showTable();
+    firstESC();
+    return false;
+  }
+  
+  void showTable() {
+    
+    String[] hcs = new VarStr("NAZIVRM REGBRMIO GODSTAZ BENSTAZ CLANOMF ORGREGMIO").split();
+    
+    for (int i = 0; i < hcs.length; i++)
+      rep01.getColumn(hcs[i]).setVisible(0);
+    
+    rep01.getColumn("BRUTO1").setCaption("HZZO");
+    rep01.getColumn("BRUTO2").setCaption("RH");
+    rep01.getColumn("BRUTO3").setCaption("CSS");
+    
+    frmTableDataView view = new frmTableDataView(true, false, false);
+    view.setTitle("Podaci za MPP-1");
+    view.setDataSet(rep01);
+    view.setSaveName("mpp1");
+    view.setCustomReport(raReportDescriptor.create("hr.restart.pl.repMPP1", "hr.restart.pl.repMPP1", "MPP1.jrxml", "Obrazac MPP-1", true));
+    view.show();
+    view.resizeLater(); // 4817622   091 2000 171
   }
 
   public void okPress(){
@@ -128,11 +173,11 @@ public class frmM4 extends frmIzvjestajiPL{
   }
 
   private void kumulradarh(){
-    String kra = "select cradnik, sum(bruto) as osnosig from kumulradarh "+
+    String kra = "select cradnik, sum(bruto) as osnosig, count(distinct mjobr) as mj from kumulradarh "+
                  "where godobr = " + fieldSet.getShort("GODINAOD") +
                  " and " + OrgStr.getCorgsCond(fieldSet.getString("CORG")) +
                  " group by cradnik";
-//    System.out.println("KUMULRADARH : " + kra);
+    System.out.println("KUMULRADARH : " + kra);
     this.oosig = ut.getNewQueryDataSet(kra);
   }
 
@@ -208,7 +253,7 @@ public class frmM4 extends frmIzvjestajiPL{
   private void osnovno(){
     String basic ="select radnici.corg, radnici.cradnik, radnici.ime, radnici.prezime, radmj.nazivrm, "+
                                                                        /** @todo benstaz???? */
-                  "radnicipl.regbrmio, radnicipl.jmbg, radnicipl.godstaz, (0) as benstaz, radnicipl.clanomf "+
+                  "radnicipl.regbrmio, radnicipl.brradknj, radnicipl.jmbg, radnicipl.oib, radnicipl.godstaz, (0) as benstaz, radnicipl.clanomf "+
                   "from radnici, radnicipl, radmj "+
                   "WHERE radnici.cradnik = radnicipl.cradnik "+
                   "AND radnicipl.cradmj = radmj.cradmj "+
@@ -325,6 +370,8 @@ public class frmM4 extends frmIzvjestajiPL{
       rep01.addColumn((Column)bruto1.clone());
       rep01.addColumn((Column)bruto2.clone());
       rep01.addColumn((Column)bruto3.clone());
+      rep01.addColumn(dM.createIntColumn("MJ"));
+      rep01.addColumn(dM.createStringColumn("DANA", 2));
 
       rep01.open();
     }
@@ -405,6 +452,8 @@ public class frmM4 extends frmIzvjestajiPL{
       rep01.setString("PREZIME", basic.getString("PREZIME"));
       rep01.setString("NAZIVRM", basic.getString("NAZIVRM"));
       rep01.setString("REGBRMIO", basic.getString("REGBRMIO"));
+      rep01.setString("BRRADKNJ", basic.getString("BRRADKNJ"));
+      rep01.setString("OIB", basic.getString("OIB"));
       rep01.setString("JMBG", basic.getString("JMBG"));
       rep01.setString("IME", basic.getString("IME"));
       rep01.setShort("GODSTAZ", basic.getShort("GODSTAZ"));
@@ -415,32 +464,33 @@ public class frmM4 extends frmIzvjestajiPL{
     rep01.first();
     lookupData ld = lookupData.getlookupData();
     do {
-      if (!raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_1).equals("")){
-        ld.raLocate(hzzo, new String[] {"CRADNIK"}, new String[] {rep01.getString("CRADNIK")});
-        rep01.setBigDecimal("BRUTO1", hzzo.getBigDecimal("BRUTO"));
-      } else {
-        rep01.setBigDecimal("BRUTO1", NULA);
-      }
+      if (!raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_1).equals("") &&
+        ld.raLocate(hzzo, new String[] {"CRADNIK"}, new String[] {rep01.getString("CRADNIK")}))
+          rep01.setBigDecimal("BRUTO1", hzzo.getBigDecimal("BRUTO"));
+      else rep01.setBigDecimal("BRUTO1", NULA);
 
-      if (!raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_2).equals("")){
-        ld.raLocate(rh, new String[] {"CRADNIK"}, new String[] {rep01.getString("CRADNIK")});
+      if (!raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_2).equals("") &&
+        ld.raLocate(rh, new String[] {"CRADNIK"}, new String[] {rep01.getString("CRADNIK")}))
         rep01.setBigDecimal("BRUTO2", rh.getBigDecimal("BRUTO"));
-      } else {
-        rep01.setBigDecimal("BRUTO2", NULA);
-      }
+      else rep01.setBigDecimal("BRUTO2", NULA);
 
-      if (!raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_3).equals("")){
-        ld.raLocate(ss, new String[] {"CRADNIK"}, new String[] {rep01.getString("CRADNIK")});
+      if (!raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjestaji.M4_3).equals("") &&
+        ld.raLocate(ss, new String[] {"CRADNIK"}, new String[] {rep01.getString("CRADNIK")}))
         rep01.setBigDecimal("BRUTO3", ss.getBigDecimal("BRUTO"));
+      else rep01.setBigDecimal("BRUTO3", NULA);
+      
+      if (ld.raLocate(oosig, new String[] {"CRADNIK"}, new String[] {rep01.getString("CRADNIK")})) {
+        rep01.setBigDecimal("BRUTO", oosig.getBigDecimal("OSNOSIG"));
+        rep01.setInt("MJ", oosig.getInt("MJ"));
       } else {
-        rep01.setBigDecimal("BRUTO3", NULA);
+        rep01.setBigDecimal("BRUTO", NULA);
+        rep01.setInt("MJ", 0);
       }
-
-      ld.raLocate(oosig, new String[] {"CRADNIK"}, new String[] {rep01.getString("CRADNIK")});
-      rep01.setBigDecimal("BRUTO", oosig.getBigDecimal("OSNOSIG"));
-
     } while(rep01.next());
-
+    
+    for (rep01.first(); rep01.inBounds(); )
+      if (rep01.getInt("MJ") > 0) rep01.next();
+      else rep01.deleteRow();
   }
 
   private void setrepset2(){
@@ -562,5 +612,9 @@ public class frmM4 extends frmIzvjestajiPL{
 
   public String getRBMIO(){
     return regbrMIO;
+  }
+  
+  public String getVrsta() {
+    return jraVrsta.getText();
   }
 }
