@@ -107,6 +107,11 @@ public class repMemo  {
       (ds.getString("OIB").length() == 0 ? "" : ", OIB " + ds.getString("OIB")); 
   }
   
+  public String getOneLineNoOIB() {
+    return ds.getString("nazivlog") + ", " + ds.getString("adresa") + (ds.getInt("pbr") == 0 ? "" : ", " +
+        ds.getInt("pbr") + " " + ds.getString("mjesto"));
+  }
+  
   public String getTwoLine() {
     return ds.getString("nazivlog") + ", " + ds.getString("adresa") + (ds.getInt("pbr") == 0 ? "" : ", " +
       ds.getInt("pbr") + " " + ds.getString("mjesto")) +
