@@ -885,8 +885,11 @@ public class raTableIBANModifier extends raTableColumnModifier {
 
         try {
           getRepRunner().removeReport("hr.restart.pl.repSepaDisk");
+          getRepRunner().removeReport("hr.restart.pl.repSepaDiskBatch");
+          getRepRunner().removeReport("hr.restart.pl.repSepaDiskNonBatch");
           getRepRunner().removeReport("hr.restart.zapod.repDiskZap");
           getRepRunner().removeReport("hr.restart.zapod.repDiskZapUN");
+          
           /*getRepRunner().removeReport("hr.restart.zapod.repIspVir");
           getRepRunner().removeReport("hr.restart.zapod.repIspVir2");*/
           getRepRunner().removeReport("hr.restart.zapod.repIspVirNewSmall");
@@ -897,7 +900,6 @@ public class raTableIBANModifier extends raTableColumnModifier {
           getRepRunner().removeReport("hr.restart.zapod.repVirmani");
           getRepRunner().removeReport("hr.restart.zapod.repVir3A");
           getRepRunner().removeReport("hr.restart.zapod.repVir3Ai");
-
           getRepRunner().addReport("hr.restart.pl.repSepaDisk", "SEPA XML datoteka");
           getRepRunner().addReport("hr.restart.pl.repSepaDiskBatch", "SEPA XML datoteka (batch)");
           getRepRunner().addReport("hr.restart.pl.repSepaDiskNonBatch", "SEPA XML datoteka (non-batch)");
