@@ -356,9 +356,9 @@ sysoutTEST ST = new sysoutTEST(false);
           primanja.setBigDecimal("DOPRINOSI",ut.setScale(doprinosi,2));
           if (raParam.getParam(_vrsteprim,2).equals("N")) {//obraèunava se doprinos ali ne porez - treba izbaciti iz bruta
             addBigDec_kumulrad("BRUTO", primanja.getBigDecimal("BRUTO").negate());
-            addBigDec_kumulrad("NETO", primanja.getBigDecimal("BRUTO").negate());
+            addBigDec_kumulrad("NETO", primanja.getBigDecimal("NETO").negate());
             addBigDec_kumulorg("BRUTO", primanja.getBigDecimal("BRUTO").negate());
-            addBigDec_kumulorg("NETO", primanja.getBigDecimal("BRUTO").negate());
+            addBigDec_kumulorg("NETO", primanja.getBigDecimal("NETO").negate());
           }
         } else {
           primanja.setBigDecimal("DOPRINOSI",nula);
