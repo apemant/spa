@@ -314,8 +314,8 @@ public class raDbaseCreator {
     if (fc.showSaveDialog(parent) != JFileChooser.APPROVE_OPTION) return;
     
     File out = fc.getSelectedFile();
-    if (!out.isDirectory() && !out.getName().toLowerCase().endsWith(".zip"))
-      out = new File(out.getParent(), out.getName() + ".zip");
+    /*if (!out.isDirectory() && !out.getName().toLowerCase().endsWith(".zip"))
+      out = new File(out.getParent(), out.getName() + ".zip");*/
     
     if (out.exists() && !out.isDirectory()) {
       if (JOptionPane.showConfirmDialog(parent, 
