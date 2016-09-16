@@ -280,7 +280,7 @@ public class dlgExit extends JWindow {
     } else if (res == 3) { //backup
       try {
         File bdir = new File(System.getProperty("user.dir")+File.separator+"backups");
-        String sufix = ".zip";
+        String sufix = ".zako";
         String bfname = "raBackup-"+new java.sql.Timestamp(System.currentTimeMillis()).toString().substring(0,10);
         int a = 1;
         File bfile = null;
