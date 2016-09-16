@@ -187,8 +187,13 @@ public class raImportRac {
     String nazpar = partn.getChildText("Name");
     if (ld.raLocate(dm.getPartneri(), "OIB", oib))
       sk.setInt("CPAR", dm.getPartneri().getInt("CPAR"));
-    else throw new RuntimeException("Nepoznat OIB: "+ oib + 
-        " dokument " + sk.getString("BROJDOK")); 
+    else {
+      String id = partn.getChildText("ID");
+      if (ld.raLocate(dm.getPartneri(), "OIB", id))
+        sk.setInt("CPAR", dm.getPartneri().getInt("CPAR"));
+      else throw new RuntimeException("Nepoznat OIB: "+ oib + 
+        " dokument " + sk.getString("BROJDOK"));
+    }
     
     sk.setString("BROJKONTA", getKonto("6"));
     sk.setString("CSKSTAVKE", raSaldaKonti.findCSK(sk));
