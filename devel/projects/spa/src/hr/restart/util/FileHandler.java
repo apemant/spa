@@ -46,6 +46,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class FileHandler {
+  public static final int BUFFER_SIZE = 512*1024;
+  
   public FileOutputStream fileOutputStream;
   private Writer writer;
   public FileInputStream fileInputStream;
@@ -455,16 +457,24 @@ public class FileHandler {
       java.util.zip.ZipOutputStream zout = new java.util.zip.ZipOutputStream(
         new FileOutputStream(zippedFile));
       zout.setLevel(java.util.zip.Deflater.BEST_SPEED);
+      byte[] buffer = new byte[BUFFER_SIZE];
+      
       for (int i = 0; i < filesToZip.length; i++) {
         File fileToZip = filesToZip[i];
 	      zout.putNextEntry(new java.util.zip.ZipEntry(fileToZip.getName()));
 	      FileInputStream reader = new FileInputStream(fileToZip);
-	      int len = (int)fileToZip.length();
-	      byte[] buffer = new byte[len];
-	      int readed = reader.read(buffer);
-	      if (readed != len) throw new RuntimeException("Neispravna duljina baze "+readed+" <> "+len);
-	      zout.write(buffer);
-	      reader.close();
+	      try {
+    	      int len = (int)fileToZip.length();
+    	      while (len > 0) {
+    	        int readed = reader.read(buffer, 0, Math.min(len, BUFFER_SIZE));
+    	        if (readed != Math.min(len, BUFFER_SIZE)) 
+    	          throw new RuntimeException("Neispravna duljina baze "+readed+" <> "+len);
+    	        zout.write(buffer, 0, readed);
+    	        len -= readed;
+    	      }
+	      } finally {
+	        reader.close();
+	      }
       }
       zout.close();
       
