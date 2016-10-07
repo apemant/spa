@@ -1889,8 +1889,13 @@ public class frmMasterBlagajna extends raMasterDetail {
           ms.saveChanges();
         }
         
+        boolean nong = false;
+        if (lookupData.getlookupData().raLocate(dM.getDataModule().getNacpl(), "CNACPL", ms.getString("CNACPL")))
+          nong = dM.getDataModule().getNacpl().getString("SALDAK").equalsIgnoreCase("D");
+        else nong = ms.getString("CNACPL").equals("V") || ms.getString("CNACPL").equals("T");
+        
         String oib = getUserOIB(ms);
-        if (oib == null || oib.length() == 0) ms.setString("JIR", "#");
+        if (nong || oib == null || oib.length() == 0) ms.setString("JIR", "#");
         else {
    
     Timestamp datvri = new Timestamp(System.currentTimeMillis());
