@@ -229,13 +229,14 @@
 		<groupExpression><![CDATA[$F{FINALSORTER}]]></groupExpression>
 		<groupHeader>
 			<band height="605" splitType="Prevent">
-				<textField isStretchWithOverflow="true">
+				<staticText>
 					<reportElement positionType="Float" x="0" y="28" width="537" height="20" forecolor="#000000"/>
+					<box topPadding="1" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 						<font fontName="Arial" size="14" isBold="true" pdfEncoding="Cp1250"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["\nOBRAČUN ISPLAĆENE PLAĆE"]]></textFieldExpression>
-				</textField>
+					<text><![CDATA[OBRAČUN ISPLAĆENE PLAĆE]]></text>
+				</staticText>
 				<staticText>
 					<reportElement positionType="Float" mode="Opaque" x="0" y="443" width="537" height="13" forecolor="#000000" backcolor="#F5F5F5"/>
 					<box topPadding="1" leftPadding="2"/>
