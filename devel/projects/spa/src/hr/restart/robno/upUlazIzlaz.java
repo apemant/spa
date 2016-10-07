@@ -335,6 +335,9 @@ public class upUlazIzlaz extends raUpitFat {
             "IPRODBP", "UIRAB", "ZARADA", "INAB", "IMAR", "IPOR", "IRAZ"});
         this.addReport("hr.restart.robno.repIzdok", "hr.restart.robno.repIzdok",
                        "Izdok", "Pregled izlaznih dokumenata");
+        
+        this.setTitle("Izlazni dokumenti  u razdoblju od " + 
+              Aus.formatTimestamp(tds.getTimestamp("pocDatum")) + " do " + Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
       }
       else {
         String[] cc = new String[] {"CUSER", "CSKL", "DATDOK","BRDOK","VRDOK","UIPRPOR",
@@ -361,6 +364,8 @@ public class upUlazIzlaz extends raUpitFat {
             "IRAB", "IZT", "INAB", "IMAR", "IPOR", "IZAD"});
         this.addReport("hr.restart.robno.repUldok", "hr.restart.robno.repUldok",
                        "Uldok", "Pregled ulaznih dokumenata");
+        this.setTitle("Ulazni dokumenti  u razdoblju od " + 
+            Aus.formatTimestamp(tds.getTimestamp("pocDatum")) + " do " + Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
       }
   }
   
@@ -615,6 +620,7 @@ public class upUlazIzlaz extends raUpitFat {
     rcbULIZ.this_itemStateChanged();
     rcbKNJIZ.this_itemStateChanged();
     rcbPLAC.this_itemStateChanged();
+    this.setTitle("Ulazni/izlazni dokumenti");
 
     izdok.empty();
     uldok.empty();
