@@ -77,7 +77,7 @@ public class repIzlazni implements raReportData {
   private String specForm, fiskForm;
   private String inoNap, euNap;
   
-  protected BigDecimal dineto, diprodbp, diprodsp;
+  protected BigDecimal dineto, diprodbp, diprodsp, dipor;
     
   protected raStringCache cache = new raStringCache();
   
@@ -187,6 +187,7 @@ public class repIzlazni implements raReportData {
       initDok();
       dokChanged();
     }
+    dipor = dipor.add(ds.getBigDecimal("POR1")).add(ds.getBigDecimal("POR2")).add(ds.getBigDecimal("POR3"));
     dineto = dineto.add(ds.getBigDecimal("INETO"));
     diprodbp = diprodbp.add(ds.getBigDecimal("IPRODBP"));
     diprodsp = diprodsp.add(ds.getBigDecimal("IPRODSP"));
@@ -201,7 +202,7 @@ public class repIzlazni implements raReportData {
     checkPredVeza();
     naps = "";
     allNaps.clear();
-    dineto = diprodbp = diprodsp = Aus.zero2;
+    dineto = diprodbp = diprodsp = dipor = Aus.zero2;
     pnaps = "";
     if (getCPAR() != 0 && lD.raLocate(dm.getPartneri(), "CPAR", ds)) {
       if (dm.getPartneri().getString("DI").equals("E")) pnaps = euNap;
@@ -931,6 +932,10 @@ public class repIzlazni implements raReportData {
     return ds.getBigDecimal("INETO").doubleValue();
   }
   
+  public double getFCV() {
+    return orig == null ? getFC().doubleValue() : orig.getBigDecimal("FC").doubleValue();
+  }
+  
   public double getINETOV() {
     return orig == null ? getINETO() : orig.getBigDecimal("INETO").doubleValue();
   }
@@ -1066,7 +1071,7 @@ public BigDecimal getPOR3() {
   }
   
   public BigDecimal getXRPPorPred() {
-    return predukup.subtract(predosn);
+    return predukup == null ? null : predukup.subtract(predosn);
   }
 
   public BigDecimal getXRPUkPred() {
@@ -1627,6 +1632,10 @@ public BigDecimal getIPRODSP() {
   
   public String getDINETO() {
     return Aus.formatBigDecimal(dineto);
+  }
+  
+  public String getDIPOR() {
+    return Aus.formatBigDecimal(dipor);
   }
   
   public String getDIBP() {
