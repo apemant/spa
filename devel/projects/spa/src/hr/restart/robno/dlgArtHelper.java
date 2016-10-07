@@ -37,7 +37,7 @@ public class dlgArtHelper extends raFrame {
   JLabel lab = new JLabel();
   raJPTableView jptv = new raJPTableView(true) {
     public void mpTable_doubleClicked() {
-    	if (jptv.getDataSet().rowCount() > 0 && jptv.getDataSet().getString("VRDOK").length() > 0)
+    	if (jptv.getStorageDataSet().rowCount() > 0 && jptv.getStorageDataSet().getString("VRDOK").length() > 0)
     		Util.getUtil().showDocs(jptv, cart);
     }
     public void mpTable_killFocus(java.util.EventObject e) {};
