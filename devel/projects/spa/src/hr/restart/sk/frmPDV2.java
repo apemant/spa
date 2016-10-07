@@ -8,6 +8,7 @@ import hr.restart.baza.Skstavke;
 import hr.restart.baza.StIzvjPDV;
 import hr.restart.baza.UIstavke;
 import hr.restart.baza.dM;
+import hr.restart.baza.doki;
 import hr.restart.pl.raIzvjestaji;
 import hr.restart.robno.raDateUtil;
 import hr.restart.sisfun.frmParam;
@@ -481,13 +482,23 @@ public class frmPDV2 extends raUpitFat {
     
     setOPZ = Aus.createSet("Partneri.OIB .NAZPAR PS:1 Skstavke.BROJDOK .DATDOK .DATDOSP .SSALDO .SALDO PDV.2 {Status}OPIS:100");
     
-    QueryDataSet sk = Skstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK DATUMKNJ DATDOK DATDOSP ID IP SSALDO SALDO CSKSTAVKE CGKSTAVKE OZNVAL TECAJ",
+    QueryDataSet sk = Skstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK DATUMKNJ DATDOK DATDOSP OPIS ID IP SSALDO SALDO CSKSTAVKE CGKSTAVKE OZNVAL TECAJ",
         //Aus.getKnjigCond().and(Condition.from("DATUMKNJ", Aus.getGkYear(nadan))).and(Condition.till("DATDOSP", nadan)).
         Aus.getKnjigCond().and(Aus.getCurrGKDatumCond(nadan)).and(Condition.till("DATDOSP", nadan)).
         and(Condition.from("DATDOK", from)).and(Aus.getVrdokCond(true, true)).
         and(Condition.in("BROJKONTA", kk)).and(Condition.diff("POKRIVENO", "X")));
     
     System.out.println("input: " + sk.getOriginalQueryString());
+    HashMap fisks = null;
+    if (frmParam.getParam("sk", "opzFisk", "N", "Fiskalni brojevi raèuna na OPZ-STAT-1 (D,N)?").equalsIgnoreCase("D")) {
+      fisks = new HashMap();
+      DataSet foks = doki.getDataModule().openTempSet("CSKL GOD VRDOK BRDOK PNBZ2", 
+          Condition.equal("FOK", "D").and(Condition.from("DATDOK", Aus.createTimestamp(2013, 7, 1))));
+      for (foks.first(); foks.inBounds(); foks.next()) 
+        if (!foks.getString("PNBZ2").startsWith("*"))
+          fisks.put(foks.getString("CSKL") + "-" + foks.getString("GOD") + "-"
+              + foks.getString("VRDOK") + "-" + foks.getInt("BRDOK"), foks.getString("PNBZ2"));
+    }
     
     Timestamp dfrom = ut.addMonths(ut.getFirstDayOfMonth(nadan), 2);
     Condition c = Aus.getKnjigCond().and(Aus.getVrdokCond(true)).and(Condition.from("DATDOK", dfrom));
@@ -592,6 +603,11 @@ public class frmPDV2 extends raUpitFat {
         else if (iznos == null)
           setOPZ.setString("OPIS", "Nepoznat originalni raèun i originalni iznos poreza");
         else setOPZ.setString("OPIS", "Nepoznat originalni iznos poreza");
+      }
+      if (fisks != null && sk.getString("OPIS").startsWith("Dokument ")) {
+        String oldb = new VarStr(sk.getString("OPIS")).split()[1];
+        String newb = (String) fisks.get(oldb);
+        if (newb != null) setOPZ.setString("BROJDOK", newb);
       }
     }
     setOPZ.setTableName("setOPZ");
