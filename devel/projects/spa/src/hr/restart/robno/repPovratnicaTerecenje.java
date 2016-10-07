@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
@@ -41,9 +42,11 @@ public class repPovratnicaTerecenje implements raReportData { //implements sg.co
   Valid vl = Valid.getValid();
   hr.restart.util.Util ut = hr.restart.util.Util.getUtil();
   static double suma;
+  boolean calcpor = false;
   public repPovratnicaTerecenje() {
     suma=0;
 //    rekapPorez();
+    calcpor = frmParam.getParam("robno", "calcPTEpor", "N", "Raèunati pretporez na PTE (D,N)?").equalsIgnoreCase("D");
     calculatePP();
 //    sysoutTEST s = new sysoutTEST(false);
 //    s.prn(ds);
@@ -460,10 +463,9 @@ public class repPovratnicaTerecenje implements raReportData { //implements sg.co
     return ds.getBigDecimal("UIRAB").doubleValue();
   }
 
-  public double getUIPRPOR(){
-    return ds.getBigDecimal("UIPRPOR").doubleValue();
+  public BigDecimal getUIPRPOR(){
+    return ds.getBigDecimal("UIPRPOR");
   }
-
 
   public BigDecimal getUPZT1() {
 	 return ds.getBigDecimal("UPZT1");
@@ -762,14 +764,14 @@ public class repPovratnicaTerecenje implements raReportData { //implements sg.co
     ds.first();
     do {
       prpor = prpor.add(ds.getBigDecimal("INAB").multiply(posto.divide(new BigDecimal("100.00"),BigDecimal.ROUND_HALF_UP)));
-      ukupno = ukupno.add(ds.getBigDecimal("INAB").add(ds.getBigDecimal("INAB").multiply(posto.divide(new BigDecimal("100.00"),BigDecimal.ROUND_HALF_UP))));
+      ukupno = ukupno.add(ds.getBigDecimal("INAB"));
 //      System.out.println("INAB = "+ ds.getBigDecimal("INAB") +"Prpor = "+ prpor +" ukupno = "+ ukupno);
     } while(ds.next());
     ds.first();
   }
   
   public BigDecimal getUKUPNO(){
-    return ukupno;
+    return calcpor ? ukupno.add(prpor) : ukupno.add(getUIPRPOR());
 //	 ru.setDataSet(ds);
 //	 getPorezPos();
 //	 colname[0] ="CPOR";
@@ -777,7 +779,7 @@ public class repPovratnicaTerecenje implements raReportData { //implements sg.co
   }
   
   public BigDecimal getPRPOR(){
-    return prpor;
+    return calcpor ? prpor : getUIPRPOR();
 //	 ru.setDataSet(ds);
 //	 getPorezPos();
 //	 colname[0] ="CPOR";
