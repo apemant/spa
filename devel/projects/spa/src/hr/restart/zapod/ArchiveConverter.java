@@ -10,6 +10,7 @@ import com.borland.dx.dataset.StorageDataSet;
 
 import hr.restart.baza.*;
 import hr.restart.util.Aus;
+import hr.restart.util.HashDataSet;
 import hr.restart.util.lookupData;
 
 
@@ -187,8 +188,14 @@ public class ArchiveConverter {
     DataSet odb = Odbiciarh.getDataModule().openTempSet(crads);   
     
     for (kums.first(); kums.inBounds(); kums.next()) {
-      
+      outkum.insertRow(false);
+      dM.copyColumns(kums, outkum, new String[] {"GODOBR", "MJOBR", "RBROBR", "CORG", "KNJIG", 
+          "MINPL", "MINOSDOP", "OSNPOR1", "OSNPOR2", "OSNPOR3", "SATIMJ"});
     }
+    
+    HashDataSet hashk = new HashDataSet(kums, new String[] {"GODOBR", "MJOBR", "RBROBR"});
+    
+    
   }
   
   boolean isOdb(DataSet vrodb, String nivo, String tip, String vrsta, String osn) {
