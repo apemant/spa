@@ -1495,7 +1495,7 @@ public class dlgRunReport {
           dpar.setName("cform");
           dpar.setValueClassName("java.text.NumberFormat");
           NumberFormat nform = NumberFormat.getInstance();
-          nform.setMaximumFractionDigits(2);
+          nform.setMinimumFractionDigits(2);
           nform.setMaximumFractionDigits(2);
           Map params = new HashMap();
           params.put("cform", nform);
