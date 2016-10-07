@@ -240,7 +240,7 @@ public class repIspListCorg implements raReportData {//implements sg.com.elixir.
     return fil.getTotalIznosNa();
   }
   public BigDecimal getBruto2() {
-    return getTotalDoprinosiNa().add(getTotalBruto());
+    return getTotalDoprinosiNa().add(getTotalBruto()).add(getTotalNaknade());
   }
   public BigDecimal getDohodak() {
     return radnici.getBigDecimal("NETO");

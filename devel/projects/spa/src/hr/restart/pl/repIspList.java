@@ -245,7 +245,7 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
     return fil.getTotalIznosNa();
   }
   public BigDecimal getBruto2() {
-    return getTotalDoprinosiNa().add(getTotalBruto());
+    return getTotalDoprinosiNa().add(getTotalBruto()).add(getTotalNaknade());
   }
   public BigDecimal getDohodak() {
     return radnici.getBigDecimal("NETO");
