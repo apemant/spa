@@ -322,8 +322,13 @@ final public class raRAC extends raIzlazTemplate {
           if (els[j] instanceof JRTextField) {
             JRDesignExpression ex = (JRDesignExpression) ((JRTextField) els[j]).getExpression();
             if (ex.getText().indexOf("sum_Section0_") >= 0) {
-              ex.setText("$F{PREFIX} + $P{cform}.format(" + ex.getText() + ")");
-              ex.setValueClassName("java.lang.String");
+              if (ex.getText().indexOf("IPRODBPV") >= 0 || ex.getText().indexOf("POR1V") >= 0) {
+                ex.setText("$P{cform}.format(" + ex.getText() + ")");
+                ex.setValueClassName("java.lang.String");
+              } else {
+                ex.setText("$F{PREFIX} + $P{cform}.format(" + ex.getText() + ")");
+                ex.setValueClassName("java.lang.String");
+              }
             }
           }
 
