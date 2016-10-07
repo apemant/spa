@@ -218,7 +218,7 @@ class AutoComplete {
   public String get(String prefix, int context) {
     String[] comps = getAll(prefix, context);
     if (comps.length != 1) return "";
-    else return comps[0];
+    return comps[0];
   }
 
   public String[] getAll(String prefix, int context) {
@@ -1512,7 +1512,6 @@ public class raPilot extends raFrame {
         view.jp.installSummary(summary, 10, false);
       }
     } catch (EvalError e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     
@@ -2672,7 +2671,7 @@ class PropsDialog {
     }
     dlg.pack();
     dlg.setLocationRelativeTo(owner);
-    dlg.show();
+    dlg.setVisible(true);
     tags.clear();
     for (data.first(); data.inBounds(); data.next())
       tags.put(data.getString("IME"), new Tag(data));
@@ -2711,7 +2710,7 @@ class PropsDialog {
     });
     okp.registerOKPanelKeys(edit);
     edit.setLocationRelativeTo(dlg);
-    edit.show();
+    edit.setVisible(true);
   }
 
   void closeEdit() {
@@ -2843,7 +2842,7 @@ class ArgumentDialog {
     dlg.pack();
     dlg.setLocationRelativeTo(owner);
     initDefaults();
-    dlg.show();
+    dlg.setVisible(true);
   }
 
   void dispose() {
