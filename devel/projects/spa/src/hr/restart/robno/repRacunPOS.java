@@ -285,6 +285,8 @@ public class repRacunPOS extends mxReport {
   
   private String getFisk() {
     System.out.println("fisk string");
+    if (master.getString("JIR").length() == 0 || master.getString("JIR").startsWith("#")) return "";
+    
     if (fakejir && master.getString("JIR").length() > 0)
       if (jirs.add(master.getString("JIR")))
         allj.add(master.getString("JIR"));
@@ -655,6 +657,17 @@ public class repRacunPOS extends mxReport {
     if (!sadrzaj.equals("")){
       footing = "<#"+sadrzaj+"|"+width+"|center#><$newline$>";
     }
+    
+    boolean nong = false;
+    if (lD.raLocate(dm.getNacpl(), "CNACPL", master.getString("CNACPL")))
+      nong = dm.getNacpl().getString("SALDAK").equalsIgnoreCase("D");
+    else nong = master.getString("CNACPL").equals("V") || master.getString("CNACPL").equals("T");
+    
+    if (nong) {
+      sadrzaj = frmParam.getParam("pos", "racFooting", "", "Tekst za bezgotovinske raèune");
+      if (sadrzaj.length() > 0) footing = breakLines(sadrzaj, false);
+    }
+    
     if (!presBlag.isFiskPDV(master)) {      
       footing = breakLines(frmParam.getParam("pos", "noPDV", 
           "PDV nije obraèunat sukladno èlanku 90|stavak 1. zakona o PDV-u|",
