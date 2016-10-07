@@ -387,17 +387,20 @@ public class raCustomSection implements raElixirProperties, raElixirPropertyValu
           else if (sect.getString("ALIGN").equalsIgnoreCase("R"))
             el.setTextAlign(raElixirPropertyValues.RIGHT);
           else el.setTextAlign(raElixirPropertyValues.CENTER);
-        } else if (sect.getString("TIP").equalsIgnoreCase("P")) {
-          raReportElement pic = original.addModel(IMAGE, null);
-          pic.setLeft((long) sect.getInt("HPOS") * 20);
-          pic.setTop((long) sect.getInt("VPOS") * 20 + height);
-          pic.setWidth((long) sect.getInt("SIRINA") * 20);
-          pic.setHeight((long) sect.getInt("VISINA") * 20);
+        } else if (sect.getString("TIP").equalsIgnoreCase("P") && 
+            sect.getString("TEKST") != null && sect.getString("TEKST").length() > 0) {
           String pict = findPicture(sect.getString("TEKST"));
-          System.out.println(pict);
-          pic.setPicture(pict);
-          pic.setAlignment(CENTER);
-          pic.setSizeMode(sect.getString("ALIGN").equalsIgnoreCase("Z") ? STRETCH : CLIP);
+          if (pict != null && pict.length() > 0) {
+            raReportElement pic = original.addModel(IMAGE, null);
+            pic.setLeft((long) sect.getInt("HPOS") * 20);
+            pic.setTop((long) sect.getInt("VPOS") * 20 + height);
+            pic.setWidth((long) sect.getInt("SIRINA") * 20);
+            pic.setHeight((long) sect.getInt("VISINA") * 20);
+            System.out.println(pict);
+            pic.setPicture(pict);
+            pic.setAlignment(CENTER);
+            pic.setSizeMode(sect.getString("ALIGN").equalsIgnoreCase("Z") ? STRETCH : CLIP);
+          }
         } else if (sect.getString("TIP").equalsIgnoreCase("H")) {
           raReportElement line = original.addModel(LINE, null);
           line.setLeft((long) sect.getInt("HPOS") * 20);
@@ -435,7 +438,7 @@ public class raCustomSection implements raElixirProperties, raElixirPropertyValu
   private static String findPicture(String src) {
     try {
       File f = Aus.findFileAnywhere(src);
-      if (f != null) return f.toURL().toString();
+      if (f != null) return f.toURI().toURL().toString();
       java.net.URL url = new java.net.URL(src);
       if (url.getProtocol().equalsIgnoreCase("http")) return url.toString();
       return "";
