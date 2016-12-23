@@ -41,20 +41,17 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import javax.swing.FocusManager;
 import javax.swing.InputMap;
@@ -163,6 +160,10 @@ public class Aus {
     ds.setBigDecimal(dest, zero0);
   }
   
+  public static void clear(ReadWriteRow ds, String[] dest) {
+    for (int i = 0; i < dest.length; i++) clear(ds, dest[i]);
+  }
+  
   public static void set(ReadWriteRow ds, String dest, BigDecimal num) {
     ds.setBigDecimal(dest, num);
   }
@@ -265,8 +266,15 @@ public class Aus {
     mul(ds, dest, row.getBigDecimal(src));
   }
   
-  public static void addSub(ReadWriteRow ds, String dest, 
-        ReadRow row, String src, BigDecimal num) {
+  public static void neg(ReadWriteRow ds, String dest) {
+    ds.setBigDecimal(dest, ds.getBigDecimal(dest).negate());
+  }
+  
+  public static void neg(ReadWriteRow ds, String[] dest) {
+    for (int i = 0; i < dest.length; i++) neg(ds, dest[i]);
+  }
+  
+  public static void addSub(ReadWriteRow ds, String dest, ReadRow row, String src, BigDecimal num) {
     add(ds, dest, row.getBigDecimal(src).subtract(num));
   }
   
@@ -1610,5 +1618,320 @@ public class Aus {
       buf.replaceAll(our[i], asc[i]);
     
     return buf.toString();
+  }
+  
+  public static int simpleCode(int code) {
+    DesEncrypter des = new DesEncrypter("1restart2");
+    Timestamp now = getNow();
+    String out = des.encrypt(code + now.toString());
+    int ret = 0;
+    for (int ch = 0; ch < 5 && ch < out.length(); ch++)
+      ret = ret * 17 + out.charAt(ch);
+    
+    return ret % 90000 + 10000;
+  }
+  
+  public static Timestamp getNow() {
+    Timestamp now = new Timestamp(System.currentTimeMillis());
+    String server = IntParam.getTag("time.server");
+    if (server == null || server.length() == 0) return now;
+    
+    try {
+      org.apache.commons.net.ntp.NTPUDPClient client = new org.apache.commons.net.ntp.NTPUDPClient();
+      // We want to timeout if a response takes longer than 10 seconds
+      client.setDefaultTimeout(10000);
+      try {
+        client.open();
+        InetAddress host = InetAddress.getByName(server);
+        System.out.println("> " + host.getHostName() + "/" + host.getHostAddress());
+        org.apache.commons.net.ntp.TimeInfo info = client.getTime(host);
+        
+        now = new Timestamp(info.getMessage().getTransmitTimeStamp().getTime());
+        /*
+        org.apache.commons.net.ntp.NtpV3Packet message = info.getMessage();
+        int stratum = message.getStratum();
+        String refType;
+        if (stratum <= 0) {
+            refType = "(Unspecified or Unavailable)";
+        } else if (stratum == 1) {
+            refType = "(Primary Reference; e.g., GPS)"; // GPS, radio clock, etc.
+        } else {
+            refType = "(Secondary Reference; e.g. via NTP or SNTP)";
+        }
+        // stratum should be 0..15...
+        System.out.println(" Stratum: " + stratum + " " + refType);
+        int version = message.getVersion();
+        int li = message.getLeapIndicator();
+        System.out.println(" leap=" + li + ", version="
+                + version + ", precision=" + message.getPrecision());
+
+        System.out.println(" mode: " + message.getModeName() + " (" + message.getMode() + ")");
+        int poll = message.getPoll();
+        // poll value typically btwn MINPOLL (4) and MAXPOLL (14)
+        System.out.println(" poll: " + (poll <= 0 ? 1 : (int) Math.pow(2, poll))
+                + " seconds" + " (2 ** " + poll + ")");
+        double disp = message.getRootDispersionInMillisDouble();
+        System.out.println(" rootdelay=" + numberFormat.format(message.getRootDelayInMillisDouble())
+                + ", rootdispersion(ms): " + numberFormat.format(disp));
+
+        int refId = message.getReferenceId();
+        String refAddr = org.apache.commons.net.ntp.NtpUtils.getHostAddress(refId);
+        String refName = null;
+        if (refId != 0) {
+            if (refAddr.equals("127.127.1.0")) {
+                refName = "LOCAL"; // This is the ref address for the Local Clock
+            } else if (stratum >= 2) {
+                // If reference id has 127.127 prefix then it uses its own reference clock
+                // defined in the form 127.127.clock-type.unit-num (e.g. 127.127.8.0 mode 5
+                // for GENERIC DCF77 AM; see refclock.htm from the NTP software distribution.
+                if (!refAddr.startsWith("127.127")) {
+                    try {
+                        InetAddress addr = InetAddress.getByName(refAddr);
+                        String name = addr.getHostName();
+                        if (name != null && !name.equals(refAddr)) {
+                            refName = name;
+                        }
+                    } catch (UnknownHostException e) {
+                        // some stratum-2 servers sync to ref clock device but fudge stratum level higher... (e.g. 2)
+                        // ref not valid host maybe it's a reference clock name?
+                        // otherwise just show the ref IP address.
+                        refName = org.apache.commons.net.ntp.NtpUtils.getReferenceClock(message);
+                    }
+                }
+            } else if (version >= 3 && (stratum == 0 || stratum == 1)) {
+                refName = org.apache.commons.net.ntp.NtpUtils.getReferenceClock(message);
+                // refname usually have at least 3 characters (e.g. GPS, WWV, LCL, etc.)
+            }
+            // otherwise give up on naming the beast...
+        }
+        if (refName != null && refName.length() > 1) {
+            refAddr += " (" + refName + ")";
+        }
+        System.out.println(" Reference Identifier:\t" + refAddr);
+
+        org.apache.commons.net.ntp.TimeStamp refNtpTime = message.getReferenceTimeStamp();
+        System.out.println(" Reference Timestamp:\t" + refNtpTime + "  " + refNtpTime.toDateString());
+
+        // Originate Time is time request sent by client (t1)
+        org.apache.commons.net.ntp.TimeStamp origNtpTime = message.getOriginateTimeStamp();
+        System.out.println(" Originate Timestamp:\t" + origNtpTime + "  " + origNtpTime.toDateString());
+
+        long destTime = info.getReturnTime();
+        // Receive Time is time request received by server (t2)
+        org.apache.commons.net.ntp.TimeStamp rcvNtpTime = message.getReceiveTimeStamp();
+        System.out.println(" Receive Timestamp:\t" + rcvNtpTime + "  " + rcvNtpTime.toDateString());
+
+        // Transmit time is time reply sent by server (t3)
+        org.apache.commons.net.ntp.TimeStamp xmitNtpTime = message.getTransmitTimeStamp();
+        System.out.println(" Transmit Timestamp:\t" + xmitNtpTime + "  " + xmitNtpTime.toDateString());
+
+        // Destination time is time reply received by client (t4)
+        org.apache.commons.net.ntp. TimeStamp destNtpTime = org.apache.commons.net.ntp.TimeStamp.getNtpTime(destTime);
+        System.out.println(" Destination Timestamp:\t" + destNtpTime + "  " + destNtpTime.toDateString());
+
+        info.computeDetails(); // compute offset/delay if not already done
+        Long offsetValue = info.getOffset();
+        Long delayValue = info.getDelay();
+        String delay = (delayValue == null) ? "N/A" : delayValue.toString();
+        String offset = (offsetValue == null) ? "N/A" : offsetValue.toString();
+
+        System.out.println(" Roundtrip delay(ms)=" + delay
+                + ", clock offset(ms)=" + offset); // offset in ms
+        */
+        
+      } catch (Exception e) {
+        //
+      }
+      client.close();
+    } catch (Exception e) {
+      //
+    }
+    System.out.println("server time " + now);
+    return now;
+  }
+  
+  public static Connection getMainConnection() {
+    String url = null, tip = null, user = null, pass = null;
+    
+    Properties props = new Properties();
+    FileHandler.loadProperties("base.properties", props, false);
+    
+    url = props.getProperty("url1");
+    if (url != null) {
+      tip = props.getProperty("tip1", props.getProperty("tip"));
+      user = props.getProperty("user1", props.getProperty("user"));
+      pass = props.getProperty("pass1", props.getProperty("pass"));
+    }
+    
+    if (url == null || tip == null || user == null || pass == null) {
+      props.clear();
+      FileHandler.loadProperties("restart.properties", props, false);
+      
+      url = props.getProperty("url");
+      tip = props.getProperty("tip");
+      user = props.getProperty("user");
+      pass = props.getProperty("pass");
+    }
+    return getConnection(url, tip, user, pass);
+  }
+  
+  public static Connection getConnection(String url, String tip, String user, String pass) {
+    if (url == null || tip == null || user == null || pass == null) return null;
+    
+    try {
+      Class.forName(tip);
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+      return null;
+    }
+    try {
+      return DriverManager.getConnection(url, user, pass);
+    } catch(SQLException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+  
+  public static class Data {
+    public BigDecimal bruto, mio1, mio2, pmio1, pmio2, dohodak, osnodb, koef, odbitak, osnovica, 
+            stopa1, stopa2, stopa3, osn1, osn2, osn3, por1, por2, por3, poruk, stopaprir, prir, neto, zos, zap, oz, bruto2;
+    
+    public Data() {
+        bruto = mio1 = mio2 = pmio1 = pmio2 = dohodak = osnodb = koef = odbitak = osnovica = stopa1 = stopa2 = stopa3 = 
+                osn1 = osn2 = osn3 = por1 = por2 = por3 = poruk = stopaprir = prir = neto = zos = zap = oz = bruto2 = BigDecimal.ZERO;
+    }
+  }
+  
+  private static class Params {
+    public static BigDecimal mio1 = new BigDecimal("15.00");
+    public static BigDecimal mio2 = new BigDecimal("5.00");
+    public static BigDecimal mio = new BigDecimal("20.00");
+    
+    public static BigDecimal odb = new BigDecimal("2600.00");
+    public static BigDecimal koef = new BigDecimal("1");
+    public static BigDecimal dk = new BigDecimal("0.5");
+    public static BigDecimal dn = new BigDecimal("0.2");
+    public static BigDecimal dinc = new BigDecimal("0.1");
+    
+    public static BigDecimal por1 = new BigDecimal("12.00");
+    public static BigDecimal por2 = new BigDecimal("25.00");
+    public static BigDecimal por3 = new BigDecimal("40.00");
+    
+    public static BigDecimal razred1 = new BigDecimal("2200.00");
+    public static BigDecimal razred2 = new BigDecimal("11000.00");
+  }
+
+  public static Data findPlaca(BigDecimal iznos, boolean bruto, boolean stup2, int djece, int uzdr, BigDecimal prirez) {
+    if (bruto) return findByBruto(iznos, stup2, getKoef(djece, uzdr), prirez);
+    return findByNeto(iznos, stup2, getKoef(djece, uzdr), prirez);
+  }
+
+  private static BigDecimal limit(BigDecimal num, BigDecimal max) {
+    if (num.compareTo(max) > 0) return max;
+    return num;
+  }
+
+  private static BigDecimal getKoef(int djece, int uzdr) {
+    BigDecimal koef = Params.koef;
+    BigDecimal dk = Params.dk;
+    BigDecimal dn = Params.dn;
+    for (int d = 1; d <= djece; d++) {
+        koef = koef.add(dk);
+        dk = dk.add(dn);
+        dn = dn.add(Params.dinc);
+    }
+    for (int u = 1; u <= uzdr; u++)
+        koef = koef.add(Params.dk);
+    
+    return koef;
+  }
+
+  private static Data findByBruto(BigDecimal bruto, boolean stup2, BigDecimal koef, BigDecimal prirez) {
+    Data ret = new Data();
+    
+    ret.bruto = bruto.setScale(2, BigDecimal.ROUND_HALF_UP);
+    if (stup2) {
+        ret.pmio1 = Params.mio1;
+        ret.pmio2 = Params.mio2;
+    } else 
+        ret.pmio1 = Params.mio;
+
+    ret.mio1 = bruto.multiply(ret.pmio1).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP);
+    ret.mio2 = bruto.multiply(ret.pmio2).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP);
+    ret.dohodak = ret.bruto.subtract(ret.mio1).subtract(ret.mio2);
+    
+    ret.osnodb =  Params.odb;
+    ret.koef = koef;
+    ret.odbitak = ret.osnodb.multiply(ret.koef).setScale(2, BigDecimal.ROUND_HALF_UP);
+    if (ret.odbitak.compareTo(ret.dohodak) > 0) ret.odbitak = ret.dohodak;
+    ret.osnovica = ret.dohodak.subtract(ret.odbitak);
+    ret.stopa1 = Params.por1;
+    ret.stopa2 = Params.por2;
+    ret.stopa3 = Params.por3;
+    BigDecimal osn = ret.osnovica;
+    ret.osn1 = limit(osn, Params.razred1);
+    osn = osn.subtract(ret.osn1);
+    ret.osn2 = limit(osn, Params.razred2);
+    ret.osn3 = osn.subtract(ret.osn2);
+    ret.por1 = ret.osn1.multiply(Params.por1).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP);
+    ret.por2 = ret.osn2.multiply(Params.por2).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP);
+    ret.por3 = ret.osn3.multiply(Params.por3).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP);
+    ret.poruk = ret.por1.add(ret.por2).add(ret.por3);
+    ret.stopaprir = prirez;
+    ret.prir = ret.poruk.multiply(prirez).movePointLeft(2).setScale(2, BigDecimal.ROUND_HALF_UP);
+    ret.neto = ret.dohodak.subtract(ret.poruk).subtract(ret.prir);
+    
+    return ret;
+  }
+  
+  private static Data findByNeto(BigDecimal bruto, BigDecimal neto, boolean stup2, BigDecimal koef, BigDecimal prirez) {
+    for (int i = 0; i < 5; i++) {
+      Data ret = findByBruto(bruto, stup2, koef, prirez);
+      if (ret.neto.compareTo(neto) == 0) return ret;
+      bruto = bruto.subtract(ret.neto).add(neto);
+      System.out.println("adjustring bruto " + bruto);
+    }
+    return null;
+  }
+
+  private static Data findByNeto(BigDecimal neto, boolean stup2, BigDecimal koef, BigDecimal prirez) {
+    BigDecimal mio = BigDecimal.ONE.subtract((stup2 ? Params.mio1.add(Params.mio2) : Params.mio).movePointLeft(2));
+    BigDecimal odb = Params.odb.multiply(koef);
+    
+    //D = N - O
+    if (neto.compareTo(odb) <= 0) {
+        BigDecimal bruto = neto.divide(mio, 2, BigDecimal.ROUND_HALF_UP);
+        return findByNeto(bruto, neto, stup2, koef, prirez);
+    }
+    
+    BigDecimal prn = BigDecimal.ONE.add(prirez.movePointLeft(2));
+    BigDecimal pp1 = Params.por1.multiply(prn).movePointLeft(2);
+    
+    //D=(N-O*s1)/(1-S1) - O
+    BigDecimal osn = neto.subtract(odb.multiply(pp1)).
+            divide(BigDecimal.ONE.subtract(pp1), 6, BigDecimal.ROUND_HALF_UP).subtract(odb);
+    if (osn.compareTo(Params.razred1) <= 0) {
+        BigDecimal bruto = osn.add(odb).divide(mio, 2, BigDecimal.ROUND_HALF_UP);
+        return findByNeto(bruto, neto, stup2, koef, prirez);
+    }
+    
+    BigDecimal pp2 = Params.por2.multiply(prn).movePointLeft(2);
+    
+    //D = (N -(O+2200)*S2 + 2200*s1) / (1-s2) - O
+    osn = neto.subtract(odb.add(Params.razred1).multiply(pp2)).add(Params.razred1.multiply(pp1)).
+            divide(BigDecimal.ONE.subtract(pp2), 6, BigDecimal.ROUND_HALF_UP).subtract(odb);
+    if (osn.compareTo(Params.razred2) <= 0) {
+        BigDecimal bruto = osn.add(odb).divide(mio, 2, BigDecimal.ROUND_HALF_UP);
+        return findByNeto(bruto, neto, stup2, koef, prirez);
+    }
+    
+    BigDecimal pp3 = Params.por3.multiply(prn).movePointLeft(2);
+    
+    // X = (N-(O+13200)*s3 +2200*s1 + 11000*s2)/ 0.8*(1-s3)
+    BigDecimal bruto = neto.subtract(odb.add(Params.razred1).add(Params.razred2).multiply(pp3)).
+            add(Params.razred1.multiply(pp1)).add(Params.razred2.multiply(pp2)).
+            divide(BigDecimal.ONE.subtract(pp3).multiply(mio), 2, BigDecimal.ROUND_HALF_UP);
+
+    return findByNeto(bruto, neto, stup2, koef, prirez);
   }
 }
