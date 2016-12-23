@@ -54,6 +54,7 @@ MES me\u0111uskladišnica
 MEI me\u0111uskladišnica samo izlazni dio
 MEU
 PRE Predatnica
+KOD Odjava
 
 
 POV  POVRATNICA ////
@@ -68,7 +69,7 @@ public class TypeDoc {
   static final String[] araj_docs = {"PST","PRI","POR","PRK","PTE","INV",
                               "PON","POS","OTP","ROT","GOT","POD","IZD","INM",
                               "OTR","NDO","NKU","MES","MEI","MEU","PRE","REV",
-                              "PRV","POV", "ZAH", "TRE", "UZP"};
+                              "PRV","POV", "ZAH", "TRE", "UZP", "KOD"};
   static final String[] araj_docsOJ = {"PRD","RAC","TER","ODB","GRN","KAL","POS"};
 
   static public TypeDoc getTypeDoc(){
@@ -203,6 +204,7 @@ public class TypeDoc {
         "ZAH".equalsIgnoreCase(what_kind_of_document) ||
         "TRE".equalsIgnoreCase(what_kind_of_document) ||
         "UZP".equalsIgnoreCase(what_kind_of_document) ||
+        "KOD".equalsIgnoreCase(what_kind_of_document) ||
 //        what_kind_of_document.equals("REV") ||
 //        what_kind_of_document.equals("PRV") ||
         "ODB".equalsIgnoreCase(what_kind_of_document));
@@ -233,6 +235,7 @@ public class TypeDoc {
             "TRE".equalsIgnoreCase(what_kind_of_document) ||
             "PON".equalsIgnoreCase(what_kind_of_document) ||
             "UZP".equalsIgnoreCase(what_kind_of_document) ||
+            "KOD".equalsIgnoreCase(what_kind_of_document) ||
             "OTP".equalsIgnoreCase(what_kind_of_document) ||
   
             "OTR".equalsIgnoreCase(what_kind_of_document) ||
@@ -317,6 +320,8 @@ public class TypeDoc {
       forReturn = 7;
     } else if ("UZP".equalsIgnoreCase(what_kind_of_document)) {
       forReturn = 8; //4
+    } else if ("KOD".equalsIgnoreCase(what_kind_of_document)) {
+      forReturn = 9; //4
     }
     return forReturn;
   }
@@ -433,6 +438,10 @@ public class TypeDoc {
       return "Radni nalog po izdatnici";
     } else if ("DOS".equalsIgnoreCase(what_kind_of_document)) {
         return "Dostavnica";
+    } else if ("UZP".equalsIgnoreCase(what_kind_of_document)) {
+      return "Upit za ponudu";
+    } else if ("KOD".equalsIgnoreCase(what_kind_of_document)) {
+      return "Komisijska odjava";
     }
 
 
