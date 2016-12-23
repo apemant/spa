@@ -491,7 +491,7 @@ public class raOdbici {
       res.obrosn = kumulrad.getBigDecimal(netocol);
     } else if (osnovica.equals("4")) {
       if (tipodb.equals("K") && vrstaosn.equals("1")) {
-        res.obrosn = dm.getParametripl().getBigDecimal("MINPL");
+        res.obrosn = new BigDecimal("2500.00"); //dm.getParametripl().getBigDecimal("MINPL"); 
         divider = new BigDecimal("1.00");
       }
     } if (osnovica.equals("5")) {
