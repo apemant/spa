@@ -192,7 +192,7 @@ class rajpIzlazMPTemplate extends JPanel {
 		  panelZah = new panZah();
 		  panelOstatak = new panOstatak();
 		  panelDodatni = new panDodatni();
-		} else if (version == 8) {
+		} else if (version == 8 || version == 9) {
           panelOstatak = new panOstatak();
           panelDodatni = new panDodatni();
         }
@@ -245,7 +245,7 @@ class rajpIzlazMPTemplate extends JPanel {
           mainTab.add(panelZah, "Osnovni podaci");
           mainTab.add(panelOstatak, "Dodatni podaci");
           mainTab.add(panelDodatni, "Napomene i ostalo");
-		} else if (version == 8) {
+		} else if (version == 8 || version == 9) {
           add(mainTab, BorderLayout.CENTER);
           mainTab.add(panelBasic, "Osnovni podaci");
           mainTab.add(panelOstatak, "Dodatni podaci");
@@ -849,6 +849,15 @@ SwingUtilities.invokeLater(new Runnable(){
 					//          add(chbock,new XYConstraints(400, 85, 150, -1));
 					add(jpgetval, new XYConstraints(0, 110, -1, -1));
 				}
+			} else if (version == 9) {
+			  add(jlCPAR, new XYConstraints(15, 15, -1, -1));
+              add(jrfCPAR, new XYConstraints(150, 15, 100, -1));
+              add(jrfNAZPAR, new XYConstraints(254, 15, 350, -1));
+              add(jbCPAR, new XYConstraints(612, 15, 21, 21));
+              add(jbCPARCHECK, new XYConstraints(100, 15, 45, 21));
+              add(jlDATDOK, new XYConstraints(15, 40, -1, -1));
+              add(jtfDATDOK, new XYConstraints(150, 40, 100, -1));
+              add(jpgetval, new XYConstraints(0, 110, -1, -1));
 			} else if (version == 6 || (version == 2 || gotpar)) {
 				setupRadio();
 				add(jrbPartner, new XYConstraints(15, 15, -1, -1));

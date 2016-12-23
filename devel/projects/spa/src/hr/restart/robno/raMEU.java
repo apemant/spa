@@ -32,7 +32,9 @@ public class raMEU extends raMEI {
     raDM = new jpMesklaDetail2(){
       public void enable_rest(boolean istina){
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jtfKOL,istina);
-          hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,istina);
+          if (allStanje.VrstaZalihaA(getMasterSet().getString("CSKLUL")).equals("X"))
+            hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,false);
+          else hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,istina);
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC1,istina);
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC2,istina);
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraPMAR,istina);
@@ -228,7 +230,7 @@ public class raMEU extends raMEI {
 
     StanjeUlaz =  ASTUL.gettrenSTANJE();
     lc.TransferFromDB2Class(StanjeUlaz,rKM.stanjeul);
-    rKM.stanjeul.sVrSklad=ASTUL.VrstaZaliha(getMasterSet().getString("CSKLUL"));
+    rKM.stanjeul.sVrSklad=allStanje.VrstaZalihaA(getMasterSet().getString("CSKLUL"));
   }
 
   public boolean isKnjigen(){

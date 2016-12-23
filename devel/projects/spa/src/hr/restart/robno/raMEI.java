@@ -483,8 +483,8 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     rKM.stanjeul.Init();
     lc.TransferFromDB2Class(StanjeIzlaz,rKM.stanjeiz);
     lc.TransferFromDB2Class(StanjeUlaz,rKM.stanjeul);
-    rKM.stanjeiz.sVrSklad=AST.VrstaZaliha(getMasterSet().getString("CSKLIZ"));
-    rKM.stanjeul.sVrSklad=ASTUL.VrstaZaliha(getMasterSet().getString("CSKLUL"));
+    rKM.stanjeiz.sVrSklad=allStanje.VrstaZalihaA(getMasterSet().getString("CSKLIZ"));
+    rKM.stanjeul.sVrSklad=allStanje.VrstaZalihaA(getMasterSet().getString("CSKLUL"));
 
   }
 
@@ -891,7 +891,7 @@ public class raMEI extends hr.restart.util.raMasterDetail{
 
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jtfKOL,istina);
 //parametrizirati
-    if (raIzlazTemplate.allowPriceChange()) {
+    if (raIzlazTemplate.allowPriceChange() && !allStanje.VrstaZalihaA(getMasterSet().getString("CSKLIZ")).equals("X")) {
       hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,istina);
     } else {
       hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,false);

@@ -284,8 +284,10 @@ public class rajpDetailMeskla extends JPanel {
   }
 
   public void enable_rest(boolean istina){
-    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,istina && rAM.allowNeg);
-    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraZCUL,istina && rAM.allowNeg);
+    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,istina && 
+        !allStanje.VrstaZalihaA(rAM.getMasterSet().getString("CSKLIZ")).equals("X"));
+    hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraZCUL,istina && 
+        !allStanje.VrstaZalihaA(rAM.getMasterSet().getString("CSKLUL")).equals("X"));
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(this.jraZADRAZIZ,false);
     hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(this.jraZADRAZUL,false);
     hr.restart.util.raCommonClass.getraCommonClass().EnabDisabAll(this.jPanelStanje,false);

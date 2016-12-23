@@ -46,7 +46,7 @@ import com.borland.jbcl.layout.XYLayout;
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-///// D E T A I L P A N E L ////////////////
+///// D E T A I L P A N E L //////////////// 095 803 0430
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
@@ -250,6 +250,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 		}
 	};
 	JraTextField jraLOT = new JraTextField();
+	JraTextField jraROK = new JraTextField();
 	
 	JraTextField jraPAK = new JraTextField();
 	
@@ -500,6 +501,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 		//    jraIPRODSP.setEditable(false);
 		
 		jraLOT.setColumnName("LOT");
+		jraROK.setColumnName("ROKTRAJ");
 		
 		jraRNC.setColumnName("RNC");
 		jraRNC.setDataSet(fDI.getDetailSet());
@@ -828,12 +830,13 @@ public class rajpIzlazDPTemplate extends JPanel {
 	
 	public void addLOT() {
 		if (rpcart.isbPrikazKolicina()) {
-			setPreferredSize(new Dimension(660, 265));
+			setPreferredSize(new Dimension(660, 290));
 		} else {
-			setPreferredSize(new Dimension(660, 225));
+			setPreferredSize(new Dimension(660, 250));
 		}
-		xYLayoutDC.setHeight(125);
+		xYLayoutDC.setHeight(150);
 		jraLOT.setColumnName("LOT");
+		jraROK.setColumnName("ROKTRAJ");
 		jraPAK.setColumnName("KOL1");
 		jraFMC.setColumnName("FMC");
         //    jraFMC.setDataSet(fDI.getDetailSet());
@@ -851,17 +854,19 @@ public class rajpIzlazDPTemplate extends JPanel {
         });
 		jpDetailCenter.add(new JLabel("Šarža"), new XYConstraints(320, 41, -1, -1));
 		jpDetailCenter.add(jraLOT, new XYConstraints(460, 41, 150, -1));
+		jpDetailCenter.add(new JLabel("Upotrebivo do"), new XYConstraints(320, 66, -1, -1));
+        jpDetailCenter.add(jraROK, new XYConstraints(460, 66, 150, -1));
 		jpDetailCenter.add(new JLabel("Pakiranja"), new XYConstraints(18, 41, -1, -1));
 		jpDetailCenter.add(jraPAK, new XYConstraints(153, 41, 150, -1));
 		
-		jpDetailCenter.add(new JLabel("Izlazna cijena"), new XYConstraints(18, 70, -1, -1));
-		jpDetailCenter.add(jraFC, new XYConstraints(153, 70, 150, -1));
-		jpDetailCenter.add(new JLabel("Popust"), new XYConstraints(320, 70, -1, -1));
-        jpDetailCenter.add(jraUPRAB, new XYConstraints(460, 70, 150, -1));
-		jpDetailCenter.add(new JLabel("Cijena bez poreza"), new XYConstraints(18, 95, -1, -1));
-        jpDetailCenter.add(jraFVC, new XYConstraints(153, 95, 150, -1));
-		jpDetailCenter.add(new JLabel("Cijena s porezom"), new XYConstraints(320, 95, -1, -1));
-		jpDetailCenter.add(jraFMC, new XYConstraints(460, 95, 150, -1));
+		jpDetailCenter.add(new JLabel("Izlazna cijena"), new XYConstraints(18, 95, -1, -1));
+		jpDetailCenter.add(jraFC, new XYConstraints(153, 95, 150, -1));
+		jpDetailCenter.add(new JLabel("Popust"), new XYConstraints(320, 95, -1, -1));
+        jpDetailCenter.add(jraUPRAB, new XYConstraints(460, 95, 150, -1));
+		jpDetailCenter.add(new JLabel("Cijena bez poreza"), new XYConstraints(18, 120, -1, -1));
+        jpDetailCenter.add(jraFVC, new XYConstraints(153, 120, 150, -1));
+		jpDetailCenter.add(new JLabel("Cijena s porezom"), new XYConstraints(320, 120, -1, -1));
+		jpDetailCenter.add(jraFMC, new XYConstraints(460, 120, 150, -1));
 	}
 
 	void setEnabledAll(boolean trut) {
@@ -922,6 +927,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 		jraRNC.setDataSet(fDI.getDetailSet());
 		jraRINAB.setDataSet(fDI.getDetailSet());
 		jraLOT.setDataSet(fDI.getDetailSet());
+		jraROK.setDataSet(fDI.getDetailSet());
 		rpcart.setTabela(fDI.getDetailSet());
 		rpcart.setParam(hr.restart.sisfun.frmParam
 				.getParam("robno", "indiCart"));
