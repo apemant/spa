@@ -700,6 +700,12 @@ public class JOPPDhndlr {
       if (strBset.getString("JOP").equals("0051")) {
         allZero(strBset, new String[] {"OSNDOP","MIO1","MIO2","ZDR","ZASNR","ZAP","ZAPOSINV"});
       }
+      if (strBset.getString("JOP").equals("0021")) {
+        Timestamp dan = new Timestamp(strBset.getTimestamp("ODJ").getTime());
+        strBset.setTimestamp("ODJ", Util.getUtil().getFirstDayOfYear(dan));
+        strBset.setTimestamp("DOJ", Util.getUtil().getLastDayOfYear(dan));
+        strBset.setBigDecimal("BRUTOOBR", Aus.zero2);
+      }
       
       oibs.add(rs.getString("JMBG"));
       strBset.post();
@@ -750,7 +756,9 @@ public class JOPPDhndlr {
         BigDecimal por = strBset.getBigDecimal("POR");
         BigDecimal prir = strBset.getBigDecimal("PRIR");
         if (lookupData.getlookupData().raLocate(strBset, new String[] {"OIB", "JOS", "JOP"},
-            new String[] {oib, "0001", "0001"})) {
+            new String[] {oib, "0001", "0001"}) ||
+            lookupData.getlookupData().raLocate(strBset, new String[] {"OIB", "JOS", "JOP"},
+                new String[] {oib, "0001", "0021"})) {
           Aus.sub(strBset, "POR", por);
           Aus.sub(strBset, "PRIR", prir);
           Aus.add(strBset, "NETOPK", por);
@@ -972,16 +980,16 @@ System.err.println(
           "Pitanje",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
         qry = "SELECT rsperiodarh.*, radnici.corg, radnici.ime, radnici.prezime, kumulradarh.sati as satiuk, kumulradarh.naknade, Primanjaarh.cvrp, Primanjaarh.bruto as PBTO, Primanjaarh.sati as sativp FROM rsperiodarh, radnici, kumulradarh, primanjaarh where "+
             " radnici.cradnik = rsperiodarh.cradnik AND kumulradarh.cradnik = rsperiodarh.cradnik AND Primanjaarh.cradnik = rsperiodarh.cradnik AND "
-        		+ OrgStr.getCorgsKnjigCond().qualified("radnici") 
+        		+ /*OrgStr.getCorgsKnjigCond().qualified("radnici")*/ getOrgqrs() 
             +" AND rsperiodarh.godobr="+range.getGODOBRfrom()
             +" AND rsperiodarh.mjobr="+range.getMJOBRfrom()
-            +" AND rsperiodarh.rbrobr="+range.getRBROBRfrom()
+            //+" AND rsperiodarh.rbrobr="+range.getRBROBRfrom()
             +" AND kumulradarh.godobr="+range.getGODOBRfrom()
             +" AND kumulradarh.mjobr="+range.getMJOBRfrom()
-            +" AND kumulradarh.rbrobr="+range.getRBROBRfrom()
+            //+" AND kumulradarh.rbrobr="+range.getRBROBRfrom()
             +" AND Primanjaarh.godobr="+range.getGODOBRfrom()
             +" AND Primanjaarh.mjobr="+range.getMJOBRfrom()
-            +" AND Primanjaarh.rbrobr="+range.getRBROBRfrom()
+            //+" AND Primanjaarh.rbrobr="+range.getRBROBRfrom()
             ;
         raOdbici.getInstance().setObrRange(myrange = range);
       }
