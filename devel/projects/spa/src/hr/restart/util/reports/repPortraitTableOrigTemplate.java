@@ -26,7 +26,7 @@ public abstract class repPortraitTableOrigTemplate extends raReportTemplate {
   private String[] ReportTemplateProps = new String[] {"", "", "JDOrepDynamicProvider", "", "",
      "10740", "", "", "", "", ""};
   public raReportSection PageSetup;
-  private String[] PageSetupProps = new String[] {"340.2", "380.2", "538.65", "538.65", "", "", "11880",
+  private String[] PageSetupProps = new String[] {"340", "340", "340", "340", "", "", "11880",
      "16820", "", "", "0.0", "0.0", ""};
   public raReportSection Sections;
   public raReportElement Section0;
