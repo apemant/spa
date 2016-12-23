@@ -230,6 +230,10 @@ public class repIzlazni implements raReportData {
   public String getLOT() {
     return ds.getString("LOT");
   }
+  
+  public String getROKTRAJ() {
+    return Aus.formatTimestamp(ds.getTimestamp("ROKTRAJ"));
+  }
 
   public String getPARTNER(){
     if (ds.isNull("CPAR") && ds.getString("TNAZPAR").length() > 0) 
