@@ -262,7 +262,7 @@ public class raGOT extends raIzlazTemplate  {
 
   public boolean DodatnaValidacijaDetail() {
      if (val.isEmpty(DP.jtfKOL)) return false;
-     if (val.isEmpty(DP.jraFMC)) return false;
+     //if (val.isEmpty(DP.jraFMC)) return false;
      if (manjeNula()) return false;
      return isPriceToBig(true);
    }

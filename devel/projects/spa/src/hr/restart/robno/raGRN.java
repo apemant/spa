@@ -215,7 +215,7 @@ public class raGRN extends raIzlazTemplate  {
   
   public boolean DodatnaValidacijaDetail() {
     if (val.isEmpty(DP.jtfKOL)) return false;
-    if (val.isEmpty(DP.jraFMC)) return false;
+    //if (val.isEmpty(DP.jraFMC)) return false;
     if (manjeNula()) return false;
     if (raDetail.getMode()=='I'){
       if (getDetailSet().getString("STATUS").equalsIgnoreCase("P")){
