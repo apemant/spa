@@ -31,7 +31,7 @@ public abstract class repOTPvriOrigTemplate extends raReportTemplate {
   private String[] ReportTemplateProps = new String[] {"Report Template", "hr", "JDOrepOTPvri", "",
      "", "10760", "", "", "", "", "1.50"};
   public raReportSection PageSetup;
-  private String[] PageSetupProps = new String[] {"340", "567.0", "520", "538.65", "", "Customize",
+  private String[] PageSetupProps = new String[] {"340", "340", "340", "340", "", "Customize",
      "11900", "16820", "", "", "0.0", "0.0", ""};
   public raReportSection Sections;
   public raReportElement Section0;
