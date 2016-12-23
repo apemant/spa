@@ -221,10 +221,12 @@ public class raObrIzvoda {
       fIzvodi.getZiroParams();
 //jel treba konto prometa
       boolean promet = dm.getZirorn().getString("PROMET").equals("D");
+      
 //dodaj stavku prometa
       if (promet) addStavkuPrometa();
       /** @todo nadji tecaj za fizvodi.oznval i */
-      BigDecimal tecaj = Aus.zero0;//fIzvodi.getDetailSet().getBigDecimal("TECAJ");
+      
+      BigDecimal tecaj = fIzvodi.getDetailSet().getBigDecimal("TECAJ");
       if (tecaj.signum() == 0)
         tecaj = hr.restart.zapod.Tecajevi.getTecaj(fIzvodi.getMasterSet().getTimestamp("DATUM"),fIzvodi.oznval);
       if (tecaj.signum() == 0 && raSaldaKonti.isDomVal(fIzvodi.oznval))
@@ -311,6 +313,11 @@ System.out.println("Nema valute FAILED !!!");
       fIzvodi.getDetailSet().setBigDecimal("DEVID", devIP);
       fIzvodi.getDetailSet().setBigDecimal("DEVIP", devID);
       fIzvodi.getDetailSet().setString("OZNVAL", fIzvodi.oznval);
+      if (fIzvodi.devind && izID.add(izIP).signum() != 0) {
+        BigDecimal jedval = raSaldaKonti.getJedVal(fIzvodi.oznval);
+        fIzvodi.getDetailSet().setBigDecimal("TECAJ",
+            devID.add(devIP).multiply(jedval).divide(izID.add(izIP), 6, BigDecimal.ROUND_HALF_UP));
+      }          
     }
     
     // ab.f end
