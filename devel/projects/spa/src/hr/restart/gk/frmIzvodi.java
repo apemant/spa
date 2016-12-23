@@ -1186,7 +1186,13 @@ public class frmIzvodi extends raMasterDetail {
   }
   
   void calcTecaj(String dev, String kn) {
-    if (getDetailSet().getBigDecimal(dev).signum() != 0 &&
+    if (devind) {
+      if (getDetailSet().getBigDecimal("TECAJ").signum() != 0 && getDetailSet().getBigDecimal(dev).signum() != 0) {
+        BigDecimal jedval = raSaldaKonti.getJedVal(oznval);
+        getDetailSet().setBigDecimal(kn, getDetailSet().getBigDecimal(dev).
+            multiply(getDetailSet().getBigDecimal("TECAJ")).divide(jedval, 2, BigDecimal.ROUND_HALF_UP));
+      }
+    } else if (getDetailSet().getBigDecimal(dev).signum() != 0 &&
         getDetailSet().getBigDecimal(kn).signum() != 0) {
       BigDecimal jedval = raSaldaKonti.getJedVal(oznval);
       getDetailSet().setBigDecimal("TECAJ", 
