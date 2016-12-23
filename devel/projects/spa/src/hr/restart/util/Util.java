@@ -81,7 +81,7 @@ sysoutTEST ST = new sysoutTEST(false);
 
   Variant BVar3 = new Variant();
 
-  Valid vl = Valid.getValid();
+  //Valid vl = Valid.getValid();
 
   java.util.ResourceBundle res = java.util.ResourceBundle.getBundle("hr.restart.util.Res_");
 
@@ -725,13 +725,13 @@ sysoutTEST ST = new sysoutTEST(false);
 
       } else {
 
-        snumber = vl.maskStringTrailing(snumber.substring(0,snumber.indexOf("E")),'0',numE+3);
+        snumber = Valid.getValid().maskStringTrailing(snumber.substring(0,snumber.indexOf("E")),'0',numE+3);
 
       }
 
     }
 
-    String inTxtVal = vl.maskString(snumber,'0',11);
+    String inTxtVal = Valid.getValid().maskString(snumber,'0',11);
 
     String sVal;
 
@@ -881,7 +881,7 @@ System.out.println("desetice "+inTxtVal.substring(9,11));
 
                   .concat(desetice(val01.substring(0,1).concat("0")))
 
-                  .concat(tisulioni(vl.maskZeroInteger(new Integer(val01.substring(1,2)),3),resVal));
+                  .concat(tisulioni(Valid.getValid().maskZeroInteger(new Integer(val01.substring(1,2)),3),resVal));
 
         if (val01.substring(1,2).equals("0")) retVal = retVal.concat(res.getString(resVal));
 
