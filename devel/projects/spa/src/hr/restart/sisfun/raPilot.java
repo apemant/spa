@@ -20,16 +20,7 @@ package hr.restart.sisfun;
 import hr.restart.baza.KreirDrop;
 import hr.restart.baza.Tablice;
 import hr.restart.baza.dM;
-import hr.restart.swing.JraButton;
-import hr.restart.swing.JraCheckBox;
-import hr.restart.swing.JraDialog;
-import hr.restart.swing.JraKeyListener;
-import hr.restart.swing.JraScrollPane;
-import hr.restart.swing.JraTextField;
-import hr.restart.swing.raDateRange;
-import hr.restart.swing.raExtendedTable;
-import hr.restart.swing.raMultiLineMessage;
-import hr.restart.swing.raTableValueModifier;
+import hr.restart.swing.*;
 import hr.restart.util.Assert;
 import hr.restart.util.AssertionException;
 import hr.restart.util.Aus;
@@ -62,6 +53,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1498,6 +1490,17 @@ public class raPilot extends raFrame {
       if (bshInterpreter.get("force") != null) {
         ((raExtendedTable) view.jp.getMpTable()).setForcePage(true);
       }
+      
+      Object mod = bshInterpreter.get("mod");
+      if (mod != null) {
+        if (mod instanceof raTableModifier)
+          view.jp.addTableModifier((raTableModifier) mod);
+        if (mod.getClass().isArray() && Array.getLength(mod) > 0) {
+          for (int i = 0; i < Array.getLength(mod); i++)
+            if (Array.get(mod, i) instanceof raTableModifier)
+              view.jp.addTableModifier((raTableModifier) Array.get(mod, i));
+        }
+      }
       if (bshInterpreter.get("summary") != null) {
         DataSet sumds = (DataSet) bshInterpreter.get("summary");
         
@@ -2375,7 +2378,7 @@ public class raPilot extends raFrame {
   private frmTableDataView getNewView(boolean edit) {
     return new frmTableDataView(edit, true, true) {
       public void afterSaveChanges(String tname) {
-        if (tname.equalsIgnoreCase("tablice")) {
+        if (tname != null && tname.equalsIgnoreCase("tablice")) {
           tab.refresh();
 //          tab = Tablice.getDataModule().getFilteredDataSet("", true);
           ac.removeAll(AutoComplete.AFTER_FROM);
