@@ -482,6 +482,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       System.out.println(povn);
       System.out.println(osnmap.get(pdv25));
       System.out.println(izmap.get(pdv25));
+      System.out.println(ms);
       
       ld.raLocate(dm.getLogotipovi(), "CORG", OrgStr.getKNJCORG(false));
       String oibf = dm.getLogotipovi().getString("OIB");
@@ -730,6 +731,20 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
        	  if (response == JOptionPane.YES_OPTION) resetSysdat = "D";
         }
         
+        QueryDataSet prd = null;
+        if ((what_kind_of_dokument.equals("ROT") || what_kind_of_dokument.equals("RAC")) 
+            && getMasterSet().getString("BRPRD").length() > 0) {
+          Condition prdCond = repUtil.getCondFromBroj(getMasterSet().getString("BRPRD"));
+          if (prdCond != null) {
+            prd = doki.getDataModule().openTempSet(prdCond);
+            if (prd.rowCount() != 1 || JOptionPane.showConfirmDialog(raMaster.getWindow(), 
+                "Želite li napraviti automatski storno raèuna za predujam?", 
+                "Storno predujma", JOptionPane.YES_NO_CANCEL_OPTION) != JOptionPane.YES_OPTION)
+              prd = null;
+            
+          }
+        }
+        
         String cOpis = presBlag.getSeqOpis(ms);
         getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
         getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
@@ -738,12 +753,55 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         else getMasterSet().setInt("FNU", Integer.parseInt(ms.getString("CSKL")));
         getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
         if (resetSysdat.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
+
+        if (prd != null) 
+          if (!autoStornoPrn(prd)) {
+            JOptionPane.showMessageDialog(raMaster.getWindow(), 
+                "Neuspješno kreiranje storno predraèuna!", "Greška", JOptionPane.ERROR_MESSAGE);
+            return;
+          }
         getMasterSet().saveChanges();
         raMaster.getJpTableView().fireTableDataChanged();
         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument " + ms.getString("PNBZ2") + " zakljuèan!", "Fiskalizacija", JOptionPane.INFORMATION_MESSAGE);
       } else {
         JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument se ne može fiskalizirati!", "Greška", JOptionPane.ERROR_MESSAGE);
       }
+    }
+    
+    private boolean autoStornoPrn(DataSet prd) {
+      DataSet pst = stdoki.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, prd));
+      
+      QueryDataSet rzag = doki.getDataModule().getTempSet("1=0");
+      rzag.open();
+      
+      QueryDataSet rst = stdoki.getDataModule().getTempSet("1=0");
+      rst.open();
+      
+      rzag.insertRow(false);
+      dM.copyColumns(prd, rzag, new String[] {"CSKL", "VRDOK", "CPAR", "PJ", "CNACPL", "CNAC", "CNAMJ", "CFRA", "UIRAC", "RUC"});
+      dM.copyColumns(getMasterSet(), rzag, new String[] {"CUSER", "GOD", "DATDOK", "DVO", "DATDOSP", "FBR", "FOK", "FPP", "FNU"});
+      Aus.neg(rzag, "UIRAC");
+      Aus.neg(rzag, "RUC");
+      
+      util.getBrojDokumenta(rzag, false);
+      
+      String prdForm = frmParam.getParam("robno", "prdForm", "",
+          "Custom format broja dokumenta za storno predraèuna");
+      if (prdForm != null && prdForm.length() > 0)
+        rzag.setString("PNBZ2", Aus.formatBroj(rzag, prdForm));
+      else rzag.setString("PNBZ2", pnb.getPozivNaBroj(rzag));
+        
+      String[] negs = {"KOL", "UIRAB", "UIZT", "INETO", "IPRODBP", "POR1", "POR2", "POR3", "IPRODSP", "RUC"};
+      
+      for (pst.first(); pst.inBounds(); pst.next()) {
+        rst.insertRow(false);
+        dM.copyColumns(pst, rst);
+        rst.setString("GOD", rzag.getString("GOD"));
+        rst.setInt("BRDOK", rzag.getInt("BRDOK"));
+        Aus.neg(rst, negs);
+      }
+      
+      return raTransaction.saveChangesInTransaction(new QueryDataSet[] {rzag, rst, dm.getSeq()});
     }
     
     public void akcijaToggle() {
@@ -5000,10 +5058,11 @@ System.out.println("findCjenik::else :: "+sql);
 	  oldfield.open();
 	}
 	
-	raOptionDialog dlg = new raOptionDialog();
+	
 	public void showDod() {
 	  if (dodfield.getColumnCount() == 0) return;
-	  
+	
+	  raOptionDialog dlg = new raOptionDialog();
 	  JPanel all = new JPanel(new BorderLayout());
 	  all.add(dodpanel);
 	  all.add(dlg.getOkPanel(), BorderLayout.SOUTH);
