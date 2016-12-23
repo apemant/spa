@@ -877,11 +877,15 @@ public class Util {
     String str="delete from RATE where CSKL='"+dm.getPos().getString("CSKL")+"' and GOD='"+dm.getPos().getString("GOD")+"' and VRDOK='"+dm.getPos().getString("VRDOK")+"' and BRDOK="+dm.getPos().getInt("BRDOK");
     vl.runSQL(str);
   }
+  
+  public void getBrojDokumenta(com.borland.dx.dataset.DataSet ds) {
+    getBrojDokumenta(ds, true);
+  }
 /**
  * Dohvat broja dokumenta
  * @param ds
  */
-  public void getBrojDokumenta(com.borland.dx.dataset.DataSet ds) {
+  public void getBrojDokumenta(com.borland.dx.dataset.DataSet ds, boolean save) {
     String Godina;
     Integer Broj;
     Godina=vl.findYear(ds.getTimestamp("DATDOK"));
@@ -891,7 +895,7 @@ public class Util {
       else ds.setTimestamp("SYSDAT", ut.getCurrentDatabaseTime());
     }
     ds.setString("GOD",Godina);
-    Broj=vl.findSeqInteger(ds);
+    Broj=vl.findSeqInteger(ds, save);
 //    System.out.println(Broj);
     
     ds.setInt("BRDOK",Broj.intValue());
