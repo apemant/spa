@@ -135,7 +135,8 @@ public class frmSkladiste extends raMatPodaci {
     rcbVRSKL.setRaItems(new String[][] {
     {res.getString("rcbVRSKLskladiste_text"),"S"},
     {res.getString("rcbVRSKLtrgovina_text"),"T"},
-    {"Tranzit","Z"}
+    {"Tranzit","Z"},
+    {"Komisija","K"}
     });
     rcbVRZAL.setRaDataSet(getRaQueryDataSet());
     rcbVRZAL.setRaColumn("VRZAL");

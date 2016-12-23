@@ -38,7 +38,7 @@ public class menuKonsig extends JMenu {
   ResourceBundle res = ResourceBundle.getBundle("hr.restart.robno.Res");
 
   hr.restart.util.startFrame SF;
-  JMenuItem jmKON = new JMenuItem();
+  JMenuItem jmKOD = new JMenuItem();
   
   public menuKonsig(hr.restart.util.startFrame startframe) {
     SF = startframe;
@@ -53,19 +53,19 @@ public class menuKonsig extends JMenu {
     });
   }
   private void jbInit() {
-    this.setText("Konsignacija");
-    jmKON.setText("Nalog za odjavu");
-    jmKON.addActionListener(new java.awt.event.ActionListener() {
+    this.setText("Komisija");
+    jmKOD.setText("Komisijska odjava");
+    jmKOD.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-    	  jmKON_actionPerformed(e);
+    	  jmKOD_actionPerformed(e);
       }
     });
-    this.add(jmKON);
+    this.add(jmKOD);
   }
-  void jmKON_actionPerformed(ActionEvent e) {
-	hr.restart.robno.frmKonsignacijaNalog rakon = 
-		(hr.restart.robno.frmKonsignacijaNalog)raLoader.load("hr.restart.robno.frmKonsignacijaNalog");
-    presKON.getPres().showJpSelectDoc("KON", rakon, true, jmKON.getText());
+  void jmKOD_actionPerformed(ActionEvent e) {
+	hr.restart.robno.raKOD rakon = 
+		(hr.restart.robno.raKOD)raLoader.load("hr.restart.robno.raKOD");
+    presKOD.getPres().showJpSelectDoc("KOD", rakon, true, jmKOD.getText());
   }
 
 }
