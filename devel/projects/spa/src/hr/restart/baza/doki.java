@@ -58,6 +58,7 @@ public class doki extends KreirDrop implements DataModule {
   QueryDataSet zagINM = new raDataSet();
   QueryDataSet zagKON = new raDataSet();
   QueryDataSet zagZAH = new raDataSet();
+  QueryDataSet zagKOD = new raDataSet();
   
   {
   	initClones();
@@ -95,6 +96,7 @@ public class doki extends KreirDrop implements DataModule {
     createFilteredDataSet(zagDOS, "1=0");
     createFilteredDataSet(zagKON, "1=0");
     createFilteredDataSet(zagZAH, "1=0");
+    createFilteredDataSet(zagKOD, "1=0");
   }
 
 
@@ -194,6 +196,9 @@ public class doki extends KreirDrop implements DataModule {
 	    return zagKON;
   }
   public com.borland.dx.sql.dataset.QueryDataSet getZagZah() {
-     return zagKON;
+     return zagZAH;
   }
+  public com.borland.dx.sql.dataset.QueryDataSet getZagKod() {
+    return zagKOD;
+ }
 }

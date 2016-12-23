@@ -457,7 +457,7 @@ CMJESTA;int;6;;;Šifra grada;15
 CTEL;int;6;;;Telemarketer;15
 CKUPAC;int;6;;;Kupac;5
 OBRT;char;1;;N;Obrtnik R2
-OIB;char;20;;;Oib
+OIB;char;50;;;Oib
 GLN;char;20;;;Gln
 NAPS;char;2000;;;Napomene
 CPARPAR;char;20;;;Partnerova šifra
@@ -914,6 +914,7 @@ ROKTRAJ;date;;;;Rok trajanja
 RNC;numeric;15,2;;0;Prava nabavna cijena;12
 RINAB;numeric;15,2;;0;Pravi nabavni iznos;14
 RUC;numeric;15,2;;0;Pravi Ruc;14
+ODJ;char;50;;;Stavka odjave
 IDX=cskl,vrdok,god,brdok
 IDX=cart
 IDX=cradnal

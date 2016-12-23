@@ -55,6 +55,7 @@ public class stdoki extends KreirDrop implements DataModule {
   QueryDataSet stINM = new QueryDataSet();
   QueryDataSet stKON = new QueryDataSet();
   QueryDataSet stZAH = new QueryDataSet();
+  QueryDataSet stKOD = new QueryDataSet();
 
   {
   	initClones();
@@ -170,6 +171,9 @@ public class stdoki extends KreirDrop implements DataModule {
   public com.borland.dx.sql.dataset.QueryDataSet getStZah() {
     return stZAH;
   }
+  public com.borland.dx.sql.dataset.QueryDataSet getStKod() {
+    return stKOD;
+  }
 
   
   protected void modifyColumn(Column c) {
@@ -220,5 +224,6 @@ public class stdoki extends KreirDrop implements DataModule {
     createFilteredDataSet(stDOS, "1=0");
     createFilteredDataSet(stKON, "1=0");
     createFilteredDataSet(stZAH, "1=0");
+    createFilteredDataSet(stKOD, "1=0");
   }
 }
