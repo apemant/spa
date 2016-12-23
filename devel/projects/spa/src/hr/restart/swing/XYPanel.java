@@ -70,9 +70,7 @@ public class XYPanel extends JraPanel {
 	HashMap navs = new HashMap();
 	HashMap buts = new HashMap();
 	HashMap chks = new HashMap();
-	
-	public rapancart rpc;
-	
+		
 	public DataSet ds;
 	
 	public XYPanel() {
