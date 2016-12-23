@@ -30,6 +30,7 @@ import hr.restart.gk.frmKnjSKRac;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
+import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
 import hr.restart.util.raLocalTransaction;
@@ -286,11 +287,14 @@ public class R2Handler {
         }
       }
       //zadnji rbs
-      int rbs = 0;
+      /*int rbs = 0;
       for (uistavke.first(); uistavke.inBounds(); uistavke.next()) {
         if (uistavke.getInt("RBS") > rbs)
           rbs = uistavke.getInt("RBS");
-      }
+      }*/
+      QueryDataSet ds = Aus.q("SELECT MAX(rbs) as rbs FROM uistavke WHERE " + 
+          Condition.whereAllEqual(new String[] {"KNJIG", "CPAR", "VRDOK", "BROJDOK"}, sk));
+      int rbs = Valid.getValid().getSetCount(ds, 0);
       
       for (shemeR2.first(); shemeR2.inBounds(); shemeR2.next()) {
         if (shemeR2.getString("VRDOK").equals(sk.getString("VRDOK")) 
@@ -366,11 +370,15 @@ public class R2Handler {
       DataSet uistorno = UIstavke.getDataModule().getReadonlySet();
 
       //zadnji rbs
-      int rbs = 0;
+      /*int rbs = 0;
       for (uisve.first(); uisve.inBounds(); uisve.next()) {
         if (uisve.getInt("RBS") > rbs)
           rbs = uisve.getInt("RBS");
-      }
+      }*/
+      
+      QueryDataSet ds = Aus.q("SELECT MAX(rbs) as rbs FROM uistavke WHERE " + 
+          Condition.whereAllEqual(new String[] {"KNJIG", "CPAR", "VRDOK", "BROJDOK"}, sk));
+      int rbs = Valid.getValid().getSetCount(ds, 0);
       /* 
        * nadji proknjizenu stavku sa shemek.polje like 'R%' po stavci!, pa ako ima stornirati sve,
        * a poslije pri ponovnom pokrivanju opet obrise te stavke (unconditionalRemoveR2Prek) i sve 5
