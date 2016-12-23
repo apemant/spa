@@ -764,6 +764,10 @@ public class Valid {
     return findSeqInteger(cOpis,true);
   }
   
+  public Integer findSeqInteger(DataSet ds, boolean save) {
+    return findSeqInteger(hr.restart.robno.Util.getUtil().getSeqString(ds), save);
+  }
+  
   public Integer findSeqInteger(DataSet ds) {
 	return findSeqInteger(hr.restart.robno.Util.getUtil().getSeqString(ds),true);
   }
