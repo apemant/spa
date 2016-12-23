@@ -655,7 +655,12 @@ public class presBlag extends PreSelect {
     findOJ(vrdok, cskl);
     
     try {
+      
+      String ft = System.getProperty("fisk.test");
       f = new FisUtil(Aus.findFileAnywhere(myorg.getString("FPATH")).getPath(), myorg.getString("FKEY"), null);
+      if ("true".equals(ft)) {
+        f.setSrvURL(f.getTestSrvURL());
+      }
       fisks.put(cskl, f);
     } catch (Exception e) {
       // TODO Auto-generated catch block
