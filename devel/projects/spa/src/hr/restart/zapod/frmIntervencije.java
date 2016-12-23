@@ -36,6 +36,7 @@ import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.XYPanel;
 import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raTableColumnModifier;
+import hr.restart.swing.raTableValueModifier;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
@@ -243,7 +244,9 @@ public class frmIntervencije extends raMatPodaci {
     getRaQueryDataSet().getColumn("DATZ").setWidth(24);
     
     getJpTableView().addTableModifier(new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, dm.getPartneri()));
-    
+    /*getJpTableView().addTableModifier(new raTableValueModifier("VRSTA", new String[] {"B", "I", "P", "M", "U", "O"}, 
+        new String[] {"B - Programska greška", "I - Zahtjev ispravka", "P - Pomoæ / pitanja", 
+        "M - Održavanje", "U - Prilagodba", "O - Ostalo"}));*/
     addOption(rnvFilter, 6, false);
     addOption(rnvStatus, 4, false);
   }
