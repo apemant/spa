@@ -1221,7 +1221,7 @@
                <Property Name="Hide Duplicates">No</Property>
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
-               <Property Name="Left">3700</Property>
+               <Property Name="Left">4500</Property>
                <Property Name="Top">4320</Property>
                <Property Name="Width">1520</Property>
                <Property Name="Height">280</Property>
@@ -1365,11 +1365,11 @@
           <Model Name="Label236">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label236</Property>
-               <Property Name="Caption">*</Property>
+               <Property Name="Caption">* 2500,00 +</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">3500</Property>
                <Property Name="Top">4320</Property>
-               <Property Name="Width">160</Property>
+               <Property Name="Width">980</Property>
                <Property Name="Height">280</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>

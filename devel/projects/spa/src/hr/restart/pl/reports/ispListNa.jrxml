@@ -526,9 +526,9 @@
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{NeoporezivoIskoristeno}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement positionType="Float" x="185" y="216" width="76" height="14" forecolor="#000000"/>
+					<reportElement positionType="Float" x="245" y="216" width="76" height="14" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
+					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{Minimalac}]]></textFieldExpression>
@@ -574,12 +574,12 @@
 					<text><![CDATA[Porez i prirez ukupno]]></text>
 				</staticText>
 				<staticText>
-					<reportElement positionType="Float" x="175" y="216" width="8" height="15" forecolor="#000000"/>
+					<reportElement positionType="Float" x="175" y="216" width="68" height="15" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Arial" size="12" isBold="true" pdfEncoding="Cp1250"/>
+						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[*]]></text>
+					<text><![CDATA[* 2.500,00   +]]></text>
 				</staticText>
 				<staticText>
 					<reportElement positionType="Float" x="0" y="238" width="259" height="14" forecolor="#000000"/>
