@@ -55,7 +55,7 @@ public class raSearchTextFiles extends raInputDialog {
 	
 	public void show() {
 		if (super.show(null, jp, "Traži tekst")) {
-			IntParam.setTag("lastSearchDir", path.getText());
+			IntParam.setTag("lastSearchDir", (recur.isSelected() ? "+" : "") + path.getText());
 			IntParam.setTag("lastSearchMask", mask.getText());
 			results.empty();
 			raGlob glob = mask.isEmpty() ? null : new raGlob(mask.getText());
@@ -103,7 +103,7 @@ public class raSearchTextFiles extends raInputDialog {
 	
 	private void openFile(String path, String fname) {
 		try {
-			Runtime.getRuntime().exec("notepad \"" + new File(new File(path), fname).getAbsolutePath() + "\"");
+			Runtime.getRuntime().exec("gedit " + new File(new File(path), fname).getAbsolutePath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -186,6 +186,10 @@ public class raSearchTextFiles extends raInputDialog {
     	dc.setCurrentDirectory(new File(".").getAbsoluteFile());
     	path.setText(new File(".").getAbsoluteFile().getParent());
     } else {
+        if (dir.startsWith("+")) {
+          recur.setSelected();
+          dir = dir.substring(1);
+        }
     	path.setText(dir);
     	dc.setCurrentDirectory(new File(dir).getParentFile());
     }
