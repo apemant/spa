@@ -565,7 +565,11 @@ sysoutTEST ST = new sysoutTEST(false);
         kumulrad.setBigDecimal("ISKNEOP",ut.setScale(nula,2));
       }
       //hack za listic
-      kumulrad.setBigDecimal("NEOP",dm.getParametripl().getBigDecimal("MINPL").multiply(getKoefOlak(kumulrad.getString("CRADNIK"))));
+      BigDecimal koef = getKoefOlak(kumulrad.getString("CRADNIK"));
+      if (koef.compareTo(Aus.zero0) == 0) kumulrad.setBigDecimal("NEOP", Aus.zero2);
+      else kumulrad.setBigDecimal("NEOP", dm.getParametripl().getBigDecimal("MINPL").add(koef.subtract(Aus.one0).multiply(new BigDecimal("2500"))));
+      
+      //kumulrad.setBigDecimal("NEOP",dm.getParametripl().getBigDecimal("MINPL").multiply(getKoefOlak(kumulrad.getString("CRADNIK"))));
     } //paus
     addBigDec_kumulorg("NEOP",kumulrad.getBigDecimal("NEOP"));
     addBigDec_kumulorg("ISKNEOP",kumulrad.getBigDecimal("ISKNEOP"));
@@ -625,7 +629,10 @@ sysoutTEST ST = new sysoutTEST(false);
     for (int i=0; i<oldpor.length; i++) {
       oldpor2[i] = oldpor[i];
     }
-    oldpor2[5] = ut.setScale(dm.getParametripl().getBigDecimal("MINPL"),8).multiply(getKoefOlak(_cradnik));//lodbitak /**@todo: ukljuciti premije tu ?*/
+    BigDecimal koef = getKoefOlak(_cradnik);
+    if (koef.compareTo(Aus.zero0) == 0) oldpor2[5] = Aus.zero2;
+    else oldpor2[5] = dm.getParametripl().getBigDecimal("MINPL").add(koef.subtract(Aus.one0).multiply(new BigDecimal("2500")));
+//        ut.setScale(dm.getParametripl().getBigDecimal("MINPL"),8).multiply(getKoefOlak(_cradnik));//lodbitak /**@todo: ukljuciti premije tu ?*/
     oldpor2[6] = dm.getParametripl().getBigDecimal("MINPL");//lporminpl
     raCalcPorez calcporez = new raCalcPorez();
     calcporez.init(neto2, stope, _mjVls[0], oldpor2, prir, limits);
@@ -1206,6 +1213,28 @@ sysoutTEST ST = new sysoutTEST(false);
   }
   private void addNetoOdb() {
     dm.getIsplMJ().open();
+    BigDecimal totalnak = Aus.zero0;
+
+    for (primanja.first(); primanja.inBounds(); primanja.next()) {
+      DataSet _vp = posVrsteprim(primanja);
+      if (!raParam.getParam(_vp,1).equals("D") &&
+          !raParam.getParam(_vp,2).equals("D") && // naknada
+          ld.raLocate(dm.getVrsteodb(),"CPOV",_vp.getInt("CPOV")+"")) {
+        odbiciobr.insertRow(false);
+        odbiciobr.setString("CRADNIK",kumulrad.getString("CRADNIK"));
+        odbiciobr.setShort("CVRODB",dm.getVrsteodb().getShort("CVRODB"));
+        odbiciobr.setShort("RBRODB",Short.parseShort("0"));
+        odbiciobr.setString("CKEY",kumulrad.getString("CRADNIK"));
+        odbiciobr.setString("CKEY2","$SYS");
+        odbiciobr.setShort("CVRP", _vp.getShort("CVRP"));
+        odbiciobr.setShort("RBR",Short.parseShort("0"));
+        odbiciobr.setBigDecimal("OBRIZNOS",primanja.getBigDecimal("NETO"));
+        odbiciobr.setBigDecimal("OBRSTOPA",nula);
+        odbiciobr.setBigDecimal("OBROSN",nula);
+        odbiciobr.post();
+        totalnak = totalnak.subtract(primanja.getBigDecimal("NETO"));
+      }
+    }
     if (!ld.raLocate(dm.getIsplMJ(),"CISPLMJ",radnici.getShort("CISPLMJ")+"")) return;
     dm.getBankepl().open();
     if (!ld.raLocate(dm.getBankepl(),"CBANKE",dm.getIsplMJ().getInt("CBANKE")+"")) return;
@@ -1220,7 +1249,7 @@ sysoutTEST ST = new sysoutTEST(false);
     odbiciobr.setString("CKEY2","$SYS");
     odbiciobr.setShort("CVRP",Short.parseShort("0"));
     odbiciobr.setShort("RBR",Short.parseShort("0"));
-    odbiciobr.setBigDecimal("OBRIZNOS",kumulrad.getBigDecimal("NARUKE"));
+    odbiciobr.setBigDecimal("OBRIZNOS",kumulrad.getBigDecimal("NARUKE").subtract(totalnak));
     odbiciobr.setBigDecimal("OBRSTOPA",nula);
     odbiciobr.setBigDecimal("OBROSN",nula);
     odbiciobr.post();
