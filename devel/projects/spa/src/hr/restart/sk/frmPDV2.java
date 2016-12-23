@@ -555,6 +555,7 @@ public class frmPDV2 extends raUpitFat {
       uimap.put(key, old);
     }
     
+    BigDecimal porf = new BigDecimal("0.2");
     for (sk.first(); sk.inBounds(); sk.next()) {
       if (sk.getBigDecimal("SALDO").signum() == 0) continue;
             
@@ -603,6 +604,11 @@ public class frmPDV2 extends raUpitFat {
         else if (iznos == null)
           setOPZ.setString("OPIS", "Nepoznat originalni raèun i originalni iznos poreza");
         else setOPZ.setString("OPIS", "Nepoznat originalni iznos poreza");
+      }
+      if (setOPZ.getString("OPIS").length() == 0) {
+        if (setOPZ.getBigDecimal("SSALDO").multiply(porf).setScale(2, BigDecimal.ROUND_HALF_UP)
+            .compareTo(setOPZ.getBigDecimal("PDV")) < 0)
+          setOPZ.setString("OPIS", "Iznos poreza je prevelik");
       }
       if (fisks != null && sk.getString("OPIS").startsWith("Dokument ")) {
         String oldb = new VarStr(sk.getString("OPIS")).split()[1];
