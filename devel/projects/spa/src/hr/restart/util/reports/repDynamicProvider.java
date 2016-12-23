@@ -61,7 +61,6 @@ public class repDynamicProvider implements IDataProvider {
   static raElixirProperties ep = raElixirPropertiesInstance.get();
   static raElixirPropertyValues ev = raElixirPropertyValuesInstance.get();
 
-  ColumnsBean bean;
   JraTableInterface table;
   raExtendedTable xt;
   JTable jt;
@@ -193,8 +192,7 @@ public class repDynamicProvider implements IDataProvider {
   }
 
   public raReportTemplate createDynamicReport(ColumnsBean colb, String xtitle) {
-    bean = colb;
-    prepareReport(bean.getRaJdbTable(), xtitle);
+    prepareReport(colb.getRaJdbTable(), xtitle);
     return createTemplate();
   }
   
@@ -243,7 +241,7 @@ public class repDynamicProvider implements IDataProvider {
     }
   }
 
-  private raReportTemplate createTemplate() {
+  protected raReportTemplate createTemplate() {
     raReportTemplate temp;
     int width = model.getTotalColumnWidth();
     int cols = model.getColumnCount();
