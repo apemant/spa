@@ -211,7 +211,8 @@ public class raKalkulBDDoc extends raTopCalcUtil {
     try {
       isMCFix = true;
       tmpBD = stavka.fmcprp.subtract(stavka.fmc);
-      tmpBD = tmpBD.divide(stavka.fmcprp,8,BigDecimal.ROUND_HALF_UP);
+      if (stavka.fmcprp.signum() != 0)
+        tmpBD = tmpBD.divide(stavka.fmcprp,8,BigDecimal.ROUND_HALF_UP);
       stavka.uprab = tmpBD.multiply(new BigDecimal("100.00"));
       tmpBDMC = stavka.fmc;
 //      kalkFinancPart();
@@ -239,7 +240,9 @@ public class raKalkulBDDoc extends raTopCalcUtil {
 
       tmpBD = stavka.ppor1.divide(Sto,2,BigDecimal.ROUND_HALF_UP);
       tmpBD = new BigDecimal("1.00").add(tmpBD);
-      stavka.iprodbp = stavka.iprodsp.divide(tmpBD,2,BigDecimal.ROUND_HALF_UP);
+      if (tmpBD.signum() != 0)
+        stavka.iprodbp = stavka.iprodsp.divide(tmpBD,2,BigDecimal.ROUND_HALF_UP);
+      else stavka.iprodbp = Aus.zero2;
       stavka.por1 = stavka.iprodsp.subtract(stavka.iprodbp);
       stavka.por2= Aus.zero2; // ne tretiram ispravno ostale poreze
       stavka.por3= Aus.zero2; // ali ionako se ova metoda više
@@ -252,7 +255,9 @@ public class raKalkulBDDoc extends raTopCalcUtil {
 
       initTmp();
       tmpBD = stavka.ineto.divide(Sto,2,BigDecimal.ROUND_HALF_UP);
-      stavka.uprab = stavka.uirab.divide(tmpBD,2,BigDecimal.ROUND_HALF_UP);
+      if (tmpBD.signum() != 0)
+        stavka.uprab = stavka.uirab.divide(tmpBD,2,BigDecimal.ROUND_HALF_UP);
+      else stavka.uprab = Aus.zero2;
       }
     }
     else {
@@ -290,7 +295,9 @@ public class raKalkulBDDoc extends raTopCalcUtil {
     stavka.iprodbp = stavka.iprodsp.subtract(stavka.uipor); 
     if (stavka.uprab.compareTo(Nula)!=0) {
       tmpBD= Jedan.subtract(stavka.uprab.divide(Sto,4,BigDecimal.ROUND_HALF_UP));
-      stavka.ineto=stavka.iprodbp.divide(tmpBD,2,BigDecimal.ROUND_HALF_UP);
+      if (tmpBD.signum() != 0)
+        stavka.ineto=stavka.iprodbp.divide(tmpBD,2,BigDecimal.ROUND_HALF_UP);
+      else stavka.ineto = Aus.zero2;
       if (what_kind_of_document.equals("PON")) stavka.uirab = stavka.ineto.subtract(stavka.iprodbp);
       else stavka.uirab = stavka.fmcprp.subtract(stavka.fmc).multiply(stavka.kol).setScale(2, BigDecimal.ROUND_HALF_UP);
     } else {
