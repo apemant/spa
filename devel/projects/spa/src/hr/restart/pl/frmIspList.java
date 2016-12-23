@@ -1404,7 +1404,9 @@ System.out.println("KreditInfo za "+ds);
   public BigDecimal getKoefOlaksice(DataSet r) {
     if (hasPausal(r.getString("CRADNIK"))) return Aus.zero2;
     BigDecimal neoporezivo = r.getBigDecimal("NEOP");
-    return neoporezivo.divide(getMinimalac(r), 2, BigDecimal.ROUND_HALF_UP);
+    BigDecimal osn = r.getShort("GODOBR") < 2017 ? dm.getParametripl().getBigDecimal("MINPL") : new BigDecimal("2500");
+    return neoporezivo.subtract(dm.getParametripl().getBigDecimal("MINPL")).divide(osn, 2, BigDecimal.ROUND_HALF_UP);
+    //return neoporezivo.divide(getMinimalac(r), 2, BigDecimal.ROUND_HALF_UP);
   }
 
   public boolean shouldPrintLogo() {
