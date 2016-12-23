@@ -90,6 +90,9 @@ public class raOTP extends raIzlazTemplate {
 		raMaster.getRepRunner().addReport("hr.restart.robno.repOTPLOT",
             "hr.restart.robno.repIzlazni","OTPLOT",
             "Otpremnica dvije jedinice mjere i šaržom");
+		raMaster.getRepRunner().addReport("hr.restart.robno.repOTPLOT2",
+            "hr.restart.robno.repIzlazni","OTPLOT2",
+            "Otpremnica dvije jedinice mjere, šaržom i rokom trajanja");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repOTPsif",
 				"hr.restart.robno.repRacuniPnP",
 				"OTPsifKup",
@@ -116,6 +119,9 @@ public class raOTP extends raIzlazTemplate {
 		raDetail.getRepRunner().addReport("hr.restart.robno.repOTPLOT",
             "hr.restart.robno.repIzlazni","OTPLOT",
             "Otpremnica dvije jedinice mjere i šaržom");
+		raDetail.getRepRunner().addReport("hr.restart.robno.repOTPLOT2",
+            "hr.restart.robno.repIzlazni","OTPLOT2",
+            "Otpremnica dvije jedinice mjere, šaržom i rokom trajanja");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repOTPsif",
 				"hr.restart.robno.repRacuniPnP",
 				"OTPsifKup",
