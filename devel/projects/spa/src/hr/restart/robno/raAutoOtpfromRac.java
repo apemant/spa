@@ -296,15 +296,18 @@ public class raAutoOtpfromRac {
 //						1zaglavlje_rac.getString("GOD"));
 				
 				zaglavlja_otp.setString("STATIRA", "P");
-				if (!zaglavlje_rac.isAssignedNull("CPAR")) {
+				if (!zaglavlje_rac.isNull("CPAR")) {
 					zaglavlja_otp.setInt("CPAR", zaglavlje_rac.getInt("CPAR"));
 				}
-				if (!zaglavlje_rac.isAssignedNull("CKUPAC")) {
+				if (!zaglavlje_rac.isNull("CKUPAC")) {
 					zaglavlja_otp.setInt("CKUPAC", zaglavlje_rac
 							.getInt("CKUPAC"));
 				}
-                if (!(zaglavlje_rac.isAssignedNull("PJ") || zaglavlje_rac.getInt("PJ") == 0)) {
+                if (!(zaglavlje_rac.isNull("PJ") || zaglavlje_rac.getInt("PJ") == 0)) {
                   zaglavlja_otp.setInt("PJ", zaglavlje_rac.getInt("PJ"));
+                }
+                if (!zaglavlje_rac.isNull("BRNARIZ")) {
+                  zaglavlja_otp.setString("BRNARIZ", zaglavlje_rac.getString("BRNARIZ"));
                 }
 				zaglavlja_otp
 						.setString("CFRA", zaglavlje_rac.getString("CFRA"));
