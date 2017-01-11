@@ -35,6 +35,7 @@ public class raMEU extends raMEI {
           if (allStanje.VrstaZalihaA(getMasterSet().getString("CSKLUL")).equals("X"))
             hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,false);
           else hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,istina);
+          if (!raIzlazTemplate.allowPriceChange()) istina = false;
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC1,istina);
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC2,istina);
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraPMAR,istina);
