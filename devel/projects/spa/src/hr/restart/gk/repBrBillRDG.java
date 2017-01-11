@@ -1,12 +1,11 @@
 package hr.restart.gk;
 
-import java.math.BigDecimal;
-
-import sun.security.action.GetBooleanAction;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.raDataFilter;
 import hr.restart.util.reports.dlgRunReport;
+
+import java.math.BigDecimal;
 
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.StorageDataSet;
