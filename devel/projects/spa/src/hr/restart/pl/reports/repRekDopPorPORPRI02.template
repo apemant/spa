@@ -726,7 +726,7 @@
           <Model Name="Label759">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label759</Property>
-               <Property Name="Caption">35%</Property>
+               <Property Name="Caption"></Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1220</Property>
                <Property Name="Top">520</Property>
@@ -851,7 +851,7 @@
           <Model Name="Label762">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label762</Property>
-               <Property Name="Caption">15%</Property>
+               <Property Name="Caption">24%</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1220</Property>
                <Property Name="Top">0</Property>
@@ -897,7 +897,7 @@
           <Model Name="Label764">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label764</Property>
-               <Property Name="Caption">45%</Property>
+               <Property Name="Caption"></Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1220</Property>
                <Property Name="Top">780</Property>
@@ -920,7 +920,7 @@
           <Model Name="Label765">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label765</Property>
-               <Property Name="Caption">25%</Property>
+               <Property Name="Caption">36%</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">1220</Property>
                <Property Name="Top">260</Property>
