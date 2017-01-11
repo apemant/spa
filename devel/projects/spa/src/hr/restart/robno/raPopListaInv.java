@@ -290,8 +290,8 @@ public class raPopListaInv extends raUpitLite {
     String stanjeNula = "";
     if (jrbSortiranjePoNAZART.isSelected()) sortBy = "NAZART";
     else sortBy = hr.restart.sisfun.frmParam.getParam("robno","indiCart");
-    if (rcbStanje.getSelectedIndex() == 1) stanjeNula = " and stanje.kolul > 0 ";
-    else if (rcbStanje.getSelectedIndex() == 2) stanjeNula = " and stanje.kol > 0 ";
+    if (rcbStanje.getSelectedIndex() == 1) stanjeNula = " and (stanje.kolul != 0 or stanje.kol != 0) ";
+    else if (rcbStanje.getSelectedIndex() == 2) stanjeNula = " and stanje.kol != 0 ";
     //if (!jcbIspisStanjeNula.isSelected()) stanjeNula = " and kolul > 0 ";
 
     datumInv = fieldSet.getTimestamp("datum");
