@@ -19,6 +19,7 @@ package hr.restart.sisfun;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Gkstavke;
+import hr.restart.baza.KreirDrop;
 import hr.restart.baza.Repxdata;
 import hr.restart.baza.Repxhead;
 import hr.restart.baza.Skripte;
@@ -62,6 +63,7 @@ import bsh.EvalError;
 import bsh.Interpreter;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
@@ -214,11 +216,11 @@ public class frmReportxList extends raFrame {
   }
     
   void fillDataProc(File orig, Workbook wb) {
-    DataSet logo = dM.getDataModule().getLogotipovi();
-    DataSet orgs = dM.getDataModule().getOrgstruktura();
+    //DataSet logo = dM.getDataModule().getLogotipovi();
+    //DataSet orgs = dM.getDataModule().getOrgstruktura();
     DataSet kont = dM.getDataModule().getKonta();
-    String corg = jpc.getCorg();
-    while (!ld.raLocate(logo, "CORG", corg)) {
+    //String corg = jpc.getCorg();
+    /*while (!ld.raLocate(logo, "CORG", corg)) {
       if (!ld.raLocate(orgs, "CORG", corg)) 
         throw new RuntimeException("Greška u organizacijskim jedinicama!");
       
@@ -226,7 +228,7 @@ public class frmReportxList extends raFrame {
         throw new RuntimeException("Nije definiran logotip za knjigovodstvo!");
 
       corg = orgs.getString("PRIPADNOST");
-    }
+    }*/
     raProcess.checkClosing();
     
     DataSet rep = Repxdata.getDataModule().getTempSet(
@@ -265,7 +267,7 @@ public class frmReportxList extends raFrame {
           Row hr = sh.getRow((short) (rep.getInt("RED") - 1));
           Cell cell = hr.getCell((short) (rep.getInt("KOL") - 1));
           if ("S".equals(rep.getString("TIP"))) {
-            fillString(cell, logo, rep.getString("DATA"));
+            fillString(cell, rep.getString("DATA"));
             cell.getCellStyle().setDataFormat(df.getFormat("text"));
           } else if ("2".equals(rep.getString("TIP"))) {
             fillNum(cell, gk, ogk, rep.getString("DATA"));
@@ -321,7 +323,7 @@ public class frmReportxList extends raFrame {
                 }
               }
             } else {
-              fillString(cell, logo, rep.getString("DATA"));
+              fillString(cell, rep.getString("DATA"));
               cell.getCellStyle().setDataFormat(df.getFormat("text"));
             }
           } else if ("2".equals(rep.getString("TIP"))) {
@@ -420,15 +422,28 @@ public class frmReportxList extends raFrame {
     }
   }
   
-  void fillString(Cell cell, DataSet logo, String data) {
+  void fillString(Cell cell, String data) {
     VarStr repl = new VarStr(data);
     Variant v = new Variant();
     int beg, end;
     while ((beg = repl.indexOf('[')) >= 0 && (end = repl.indexOf(']')) > beg) {
       String tx = repl.mid(beg + 1, end);
-      if (tx.length() > 0 && logo.hasColumn(tx) != null) {
-        logo.getVariant(tx, v);
-        tx = v.toString();
+      if (tx.length() > 0) {
+        int p = tx.indexOf('.');
+        if (p > 0) {
+          KreirDrop kd = KreirDrop.getModuleByName(tx.substring(0, p));
+          if (kd != null) {
+            DataSet ds = kd.getQueryDataSet();
+            ds.open();
+            if (ds.hasColumn("CORG") != null && ds.hasColumn(tx.substring(p + 1)) != null) {
+              DataRow dr = ld.raLookup(ds, "CORG", jpc.getCorg());
+              if (dr != null) {
+                dr.getVariant(tx.substring(p + 1), v);
+                tx = v.toString();
+              }
+            }
+          }
+        }
       }
       repl.replace(beg, end + 1, tx);
     }
