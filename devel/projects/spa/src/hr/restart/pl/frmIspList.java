@@ -1394,6 +1394,7 @@ System.out.println("KreditInfo za "+ds);
 
   public BigDecimal getMinimalac(DataSet r) {
     BigDecimal neoporezivo = r.getBigDecimal("NEOP");
+    if (vl.findYear(r.getTimestamp("DATISP")).compareTo("2017") >= 0 && neoporezivo.signum()==0) return neoporezivo;
     return hasPausal(r.getString("CRADNIK"))?neoporezivo:dm.getParametripl().getBigDecimal("MINPL");
   }
 
@@ -1404,7 +1405,8 @@ System.out.println("KreditInfo za "+ds);
   public BigDecimal getKoefOlaksice(DataSet r) {
     if (hasPausal(r.getString("CRADNIK"))) return Aus.zero2;
     BigDecimal neoporezivo = r.getBigDecimal("NEOP");
-    BigDecimal osn = r.getShort("GODOBR") < 2017 ? dm.getParametripl().getBigDecimal("MINPL") : new BigDecimal("2500");
+    if (neoporezivo.signum() == 0) return neoporezivo;
+    BigDecimal osn = vl.findYear(r.getTimestamp("DATISP")).compareTo("2017") < 0 ? dm.getParametripl().getBigDecimal("MINPL") : new BigDecimal("2500");
     return neoporezivo.subtract(dm.getParametripl().getBigDecimal("MINPL")).divide(osn, 2, BigDecimal.ROUND_HALF_UP);
     //return neoporezivo.divide(getMinimalac(r), 2, BigDecimal.ROUND_HALF_UP);
   }
