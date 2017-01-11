@@ -641,7 +641,7 @@ public class frmCover extends raMatPodaci {
 //    pok = dm.getPokriveni()
 
     removeRnvCopyCurr();
-    this.getNavBar().removeStandardOptions(new int[] {raNavBar.ACTION_ADD, raNavBar.ACTION_PRINT,
+    this.getNavBar().removeStandardOptions(new int[] {raNavBar.ACTION_ADD,
         raNavBar.ACTION_DELETE, raNavBar.ACTION_TOGGLE_TABLE, raNavBar.ACTION_UPDATE});
 
     this.addOption(aSve = new raNavAction("Pokrij / raskrij", raImages.IMGOPEN, KeyEvent.VK_ENTER) {
