@@ -25,6 +25,7 @@ import hr.restart.swing.JraTableInterface;
 import hr.restart.swing.JraTable2;
 import hr.restart.swing.raExtendedTable;
 import hr.restart.util.columnsbean.ColumnsBean;
+import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
@@ -138,12 +139,15 @@ public class repDynamicProvider implements IDataProvider {
   }
 
   public double getDoubleAt(int row, int col) {
+    double ret = Aus.getDecNumber(getValueAt(row, col)).doubleValue();
+    if (ret != 0) return ret;
+       
     Object o = ((JraTable2) jt).getValueAt(row, col);
 //    System.out.println("double: "+row+"  "+col);
 //    hr.restart.util.Aus.dumpClassName(o);
     if (o instanceof Number)
       return ((Number) o).doubleValue();
-    else return 0;
+    return 0;
   }
   
   public double getExtNumber(int row, int sn) {
