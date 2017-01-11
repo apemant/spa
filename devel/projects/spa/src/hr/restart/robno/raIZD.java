@@ -368,7 +368,7 @@ public class raIZD extends raIzlazTemplate  {
 
     indikator = true;
     if (isStanjeExist4allDS()) return true;
-    else {
+    
       if (isStanjeExist4allDSwithMSG()) {
         raZamjenaArtikla pero =  new raZamjenaArtikla(
         		(Frame) raMaster.getFrameOwner(), realStavkeGreska,realStavke,getMasterSet().getString("CSKL"),getMasterSet().getString("GOD")){
@@ -392,8 +392,9 @@ public class raIZD extends raIzlazTemplate  {
 
         return indikator;
       }
-      else return false;
-    }
+      
+     return false;
+    
   }
 
   public String sviArtikli(){
