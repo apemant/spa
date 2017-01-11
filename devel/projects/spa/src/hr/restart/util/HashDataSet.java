@@ -32,7 +32,7 @@ public class HashDataSet {
     if (keyCol != null)
       for (ds.first(); ds.inBounds(); ds.next()) {
         ds.getVariant(keyCol, ds.getRow(), v);
-        index.put(v.toString(), new Integer(ds.getRow()));
+        index.put(v.toString(), new Long(ds.getInternalRow()));
       }
     else
       for (ds.first(); ds.inBounds(); ds.next()) {
@@ -41,7 +41,7 @@ public class HashDataSet {
           ds.getVariant(keyCols[i], ds.getRow(), v);
           s.append(v).append("-|-");
         }
-        index.put(s.chop().toString(), new Integer(ds.getRow()));
+        index.put(s.chop().toString(), new Long(ds.getInternalRow()));
       }
   }
   
@@ -119,8 +119,8 @@ public class HashDataSet {
   }
   
   public DataSet get(String key) {
-    Integer idx = (Integer) index.get(key);
-    if (idx != null) ds.goToRow(idx.intValue());
+    Long idx = (Long) index.get(key);
+    if (idx != null) ds.goToInternalRow(idx.longValue());
     return ds;
   }
   
@@ -153,9 +153,9 @@ public class HashDataSet {
   }
   
   public boolean loc(String key) {
-    Integer idx = (Integer) index.get(key);
-    if (idx != null) ds.goToRow(idx.intValue());
-    return idx != null;
+    Long idx = (Long) index.get(key);
+    if (idx == null) return false;
+    return ds.goToInternalRow(idx.longValue());
   }
   
   public boolean loc(String[] keys) {
