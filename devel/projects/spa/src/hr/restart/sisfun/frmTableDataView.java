@@ -416,6 +416,7 @@ public class frmTableDataView extends JraFrame {
       JOptionPane.showMessageDialog(this, "Promjene uspješno snimljene!", "Poruka",
                                     JOptionPane.INFORMATION_MESSAGE);
     } catch (Exception e) {
+      e.printStackTrace();
       VarStr err = new VarStr();
       err.append("Snimanje nije uspjelo! Greška:\n\n").append(e.getLocalizedMessage()).append("\n");
       if (e instanceof DataSetException) {
