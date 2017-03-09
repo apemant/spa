@@ -1048,12 +1048,14 @@ public class osTemplate extends raMasterDetail {
   }
 
   public void Funkcija_ispisa_detail() {
+    qDS.setSort(null);
     prepareStavke(rdOSUtil.getUtil().getDetailStrIspis(getMasterSet().getString("INVBROJ"), getMasterSet().getString("CORG"),getMasterSet().getString("STATUS"), getMasterSet().getString("AKTIV"), mod));
     qDS.setSort(new SortDescriptor(new String[] {"RBR"}));
     super.Funkcija_ispisa_detail();
   }
 
   public void Funkcija_ispisa_master() {
+    qDS.setSort(null);
     prepareStavke(rdOSUtil.getUtil().getMasterStrIspis(getMasterSet().getString("CORG"), getMasterSet().getString("STATUS"), mod));
     super.Funkcija_ispisa_master();
   }
