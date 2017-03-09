@@ -321,6 +321,7 @@ public class frmKnjSKRac extends frmKnjizenje {
     stavka.setTimestamp("DATDOSP",skstavke.getTimestamp("DATDOSP"));
     //ako je rbs od uistavke 1 onda ona prezentira skstavku i treba drugacije napuniti
     stavka.setString("BROJDOK",skstavke.getString("BROJDOK"));
+    stavka.setString("VRDOK",skstavke.getString("VRDOK"));
     stavka.setString("EXTBRDOK",skstavke.getString("EXTBRDOK"));
     stavka.setInt("CPAR",uistavke.getInt("CPAR"));
     VarStr opis = new VarStr();
