@@ -25,8 +25,16 @@ import com.borland.dx.dataset.DataSetException;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class ispSI_NextGeneration extends ispOS_NextGeneration {
+  
+  static ispSI_NextGeneration isig;
 
   public ispSI_NextGeneration() {
+    isig = this;
+  }
+  
+  public static ispSI_NextGeneration getSiInstance(){
+    if (isig == null) isig = new ispSI_NextGeneration();
+    return isig;
   }
 
   public void setCheckBoxes(){
@@ -53,6 +61,52 @@ public class ispSI_NextGeneration extends ispOS_NextGeneration {
 //    System.out.println("preparedQueryDataSet().rowCount() " + preparedQueryDataSet().rowCount());
     QueryDataSet temporary = preparedQueryDataSet();
     if (temporary != null && temporary.rowCount() > 0){
+      killAllReports();
+      if(!jcbOrgJed.isSelected() && !jcbOblikListe.isSelected() && !jcbInvBr.isSelected()) {
+        System.out.println("\nOS_0\n");
+        this.addReport("hr.restart.os.repIspSI","hr.restart.os.repIspSI","IspisSI_0","Ispis osnovnih sredstava");
+      }
+      else if(jcbOrgJed.isSelected() && !jcbOblikListe.isSelected() && !jcbInvBr.isSelected()) {
+        System.out.println("\nOS_1\n");
+        this.addReport("hr.restart.os.repIspSI_01","hr.restart.os.repIspSI","IspisSI_1","Ispis osnovnih sredstava IspOS01 NEW");
+//        this.addReport("hr.restart.os.repIspisOS_1","hr.restart.os.repIspOS","IspisOS_1","Ispis osnovnih sredstava repIspisOS_1 OLD");
+      }
+      else if(!jcbOrgJed.isSelected() && jcbOblikListe.isSelected() && !jcbInvBr.isSelected()) {
+        System.out.println("\nOS_2\n");
+        this.addReport("hr.restart.os.repIspSI2","hr.restart.os.repIspSI","IspisSI","Ispis osnovnih sredstava NEW");
+//        this.addReport("hr.restart.os.repIspisOS_2","hr.restart.os.repIspOS","IspisOS_2","Ispis osnovnih sredstava repIspisOS_2 OLD");
+//        this.addReport("hr.restart.os.repIspisOS_2","Ispis osnovnih sredstava", 5);
+      }
+      else if(jcbOrgJed.isSelected() && jcbOblikListe.isSelected() && !jcbInvBr.isSelected()) {
+        System.out.println("\nOS\n");
+        this.addReport("hr.restart.os.repIspSI","hr.restart.os.repIspSI","IspisSI","Ispis osnovnih sredstava NEW");
+//        this.addReport("hr.restart.os.repIspisOS","hr.restart.os.repIspOS","IspisOS","Ispis osnovnih sredstava repIspisOS OLD");
+//        this.addReport("hr.restart.os.repIspisOS","Ispis osnovnih sredstava", 5);
+      }
+      else if(!jcbOrgJed.isSelected() && !jcbOblikListe.isSelected() && jcbInvBr.isSelected()) {
+        System.out.println("\nOS_4\n");
+        this.addReport("hr.restart.os.repIspSI4","hr.restart.os.repIspSI","IspisSI_4","Ispis osnovnih sredstava NEW");
+//        this.addReport("hr.restart.os.repIspisOS_4","hr.restart.os.repIspOS","IspisOS_4","Ispis osnovnih sredstava repIspisOS_4 OLD");
+//      this.addReport("hr.restart.os.repIspisOS_4","Ispis osnovnih sredstava", 5);
+      }
+      else if(jcbOrgJed.isSelected() && !jcbOblikListe.isSelected() && jcbInvBr.isSelected()) {
+        System.out.println("\nOS_5\n");
+        this.addReport("hr.restart.os.repIspSI5","hr.restart.os.repIspSI","IspisSI_5","Ispis osnovnih sredstava NEW");
+//        this.addReport("hr.restart.os.repIspisOS_5","hr.restart.os.repIspOS","IspisOS_5","Ispis osnovnih sredstava repIspisOS_5 OLD");
+//        this.addReport("hr.restart.os.repIspisOS_5","Ispis osnovnih sredstava", 5);
+      }
+      else if(!jcbOrgJed.isSelected() && jcbOblikListe.isSelected() && jcbInvBr.isSelected()) {
+        System.out.println("\nOS_6\n");
+        this.addReport("hr.restart.os.repIspSI1","hr.restart.os.repIspSI","IspisSI_6","Ispis osnovnih sredstava NEW");
+//        this.addReport("hr.restart.os.repIspisOS_6","hr.restart.os.repIspOS","IspisOS_6","Ispis osnovnih sredstava repIspisOS_6 OLD");
+//        this.addReport("hr.restart.os.repIspisOS_6","Ispis osnovnih sredstava", 5);
+      }
+      else if(jcbOrgJed.isSelected() && jcbOblikListe.isSelected() && jcbInvBr.isSelected()) {
+        System.out.println("\nInvIspOS\n");
+        this.addReport("hr.restart.os.repIspSI1","hr.restart.os.repIspSI","InvIspSI","Ispis osnovnih sredstava NEW");
+//        this.addReport("hr.restart.os.repInvIspOS","hr.restart.os.repIspOS","InvIspOS","Ispis osnovnih sredstava repInvIspOS OLD");
+//        this.addReport("hr.restart.os.repInvIspOS","Ispis osnovnih sredstava", 5);
+      }
     } else {
       setNoDataAndReturnImmediately();
     }

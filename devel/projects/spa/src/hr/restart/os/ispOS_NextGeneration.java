@@ -200,7 +200,8 @@ public class ispOS_NextGeneration extends raUpitLite {
       killAllReports();
       if(!jcbOrgJed.isSelected() && !jcbOblikListe.isSelected() && !jcbInvBr.isSelected()) {
         System.out.println("\nOS_0\n");
-        this.addReport("hr.restart.os.repIspOS","hr.restart.os.repIspisOS_0","repIspisOS_0","Ispis osnovnih sredstava");
+        //this.addReport("hr.restart.os.repIspOS","hr.restart.os.repIspisOS_0","repIspisOS_0","Ispis osnovnih sredstava");
+        this.addReport("hr.restart.os.repIspOS","hr.restart.os.repIspisOS_0","IspOS","Ispis osnovnih sredstava");
       }
       else if(jcbOrgJed.isSelected() && !jcbOblikListe.isSelected() && !jcbInvBr.isSelected()) {
         System.out.println("\nOS_1\n");
