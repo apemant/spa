@@ -915,6 +915,8 @@ RNC;numeric;15,2;;0;Prava nabavna cijena;12
 RINAB;numeric;15,2;;0;Pravi nabavni iznos;14
 RUC;numeric;15,2;;0;Pravi Ruc;14
 ODJ;char;50;;;Stavka odjave
+CPARKOM;int;6;;;Komitent;15
+STAVKOM;char;50;;;Stavka ulaza komisije
 IDX=cskl,vrdok,god,brdok
 IDX=cart
 IDX=cradnal
@@ -1067,6 +1069,7 @@ UIPRPOR2;numeric;15,2;;0;Iznos pretporeza 2
 RANDMAN;numeric;17,6;;0;Randman
 UIPRPOR3;numeric;15,2;;0;Iznos pretporeza 3
 CGKSTAVKE;text;38;idx;;Stavka naloga
+KOMISIJA;text;1;;N;Komisija
 
 
 $Stdoku
@@ -1125,6 +1128,9 @@ DATPRO;timestamp;;;;Datum proizvodnje
 DATROK;timestamp;;;;Rok upotrebe
 LOT;char;12;;;Lot
 CREG;char;24;;;Reg. broj
+KOMISIJA;text;1;;N;Komisija
+CPARKOM;int;6;;;Komitent;15
+KOLKOM;numeric;15,3;;0;Komis. kolièina
 IDX=cart
 IDX=veza
 IDX=id_stavka
@@ -1447,6 +1453,7 @@ BROJKONTA;char;8;;;Konto
 VRDOK;char;3;;;Vrsta dokumenta
 VCINC;numeric;10,2;;0;Poveæanje;8
 VCDEC;numeric;10,2;;0;Uèešæe;8
+SNAZNACPL;char;30;;;Strani naziv
 
 $Cjenik
 LOKK;char;1;;N;Status zauzetosti;*
@@ -2270,6 +2277,7 @@ LOKK;char;1;;N;Lokk;*
 AKTIV;char;1;;D;Aktiv;*
 CFRA;char;3;pkey;;Šifra;5
 NAZFRA;char;30;;;Naziv
+SNAZFRA;char;30;;;Strani naziv
 
 $Gkkumulativi
 LOKK;char;1;;N;Status zauzetosti;*
@@ -2722,6 +2730,7 @@ LOKK;char;1;;N;Lokk;*
 AKTIV;char;1;;D;Aktiv;*
 CNAC;char;3;pkey;;Šifra;5
 NAZNAC;char;30;;;Naziv
+SNAZNAC;char;30;;;Strani naziv
 
 $NadzornaKnjiga
 LOKK;char;1;;N;Status zauzetosti;*
@@ -2773,12 +2782,14 @@ AKTIV;char;1;;D;AKTIV;*
 CNAMJ;char;3;pkey;;Šifra;5
 NAZNAMJ;char;30;;;Naziv
 POREZ;char;1;;D;Porez
+SNAZNAMJ;char;30;;;Strani naziv
 
 $napomene
 LOKK;char;1;;N;LOKK;*
 AKTIV;char;1;;D;AKTIV;*
 CNAP;char;3;pkey;;Šifra;5
 NAZNAP;char;1000;;;Naziv;30
+SNAZNAP;char;1000;;;Strani naziv;30
 
 $norme
 LOKK;char;1;;N;Lokk;*
@@ -4704,5 +4715,12 @@ OPIS;text;2000;;;Opis
 DATZ;timestamp;;;;Datum zatvaranja
 VRSTA;char;1;;;Vrsta inteverncije
 TRAJANJE;int;6;;;Trajanje
+
+$Gkrep
+CPOZ;int;6;pkey;;Šifra pozicije
+NAZIV;text;100;;;Naziv pozicije
+NIVO;int;6;;;Indent;*
+AOP;int;6;;;AOP
+DEF;text;500;;;Definicija
 
 #END CRM
