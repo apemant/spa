@@ -150,6 +150,12 @@ public abstract class Condition {
   public static Condition raw(String cond) {
     return new SimpleCondition(cond);
   }
+  
+  public static Condition whereAllEqual(String cols, ReadRow ds) {
+    if (cols.indexOf(',') >= 0) 
+      return whereAllEqual(new VarStr(cols).splitTrimmed(','), ds);
+    return whereAllEqual(new VarStr(cols).split(), ds);
+  }
 
   public static Condition whereAllEqual(String[] cols, ReadRow ds) {
     Condition con = Condition.equal(cols[0], ds);
