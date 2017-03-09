@@ -22,6 +22,7 @@ import hr.restart.baza.Verinfo;
 import hr.restart.baza.dM;
 import hr.restart.help.MsgDispatcher;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.raVersionCheck;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.IntParam;
 import hr.restart.util.Util;
@@ -500,14 +501,15 @@ System.out.println("no port starting shell");
     hr.restart.sisfun.raUser.getInstance().unlockUser();
     return succ;
   }
-  private static boolean doExpirationCheck = false;
+
   public static void expirationCheck() {
-    try {
+    raVersionCheck.entry();
+    /*try {
       Class cexpc = Class.forName("hr.restart.raExpCheck");
       Object oexpc = cexpc.newInstance();
     } catch (Exception e) {
       
-    }
+    }*/
   }
   public static void makeMiniBackup(final boolean force) {
     if (javax.swing.JOptionPane.showConfirmDialog(null, 
