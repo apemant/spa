@@ -60,10 +60,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.RowFilterListener;
 import com.borland.dx.dataset.RowFilterResponse;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 /*@todo
  * 1: ako na predselekciji ne unese vrstu naloga daje sve vrste
@@ -132,6 +134,8 @@ public class frmNalozi extends raMasterDetail {
   private boolean isHereza;
   private boolean copyGKuSKsucc = true;
   ReadRow nalogdoknjiz = null;
+  
+  DataRow delStavka = null;
 
 
   public frmNalozi() {
@@ -931,6 +935,14 @@ public class frmNalozi extends raMasterDetail {
   }
 */
   public void AfterDeleteDetail() {
+    // ako se pobriše sk stavka nakon dohvata temeljnice iz saldakonti, makni tu stavku iz popisa za oznaèavanje proknjiženosti
+    if (!deletingNalog && delStavka != null && obrada != null && obrada.fKnjizenje instanceof frmKnjSKRac) {
+      StorageDataSet savesk = ((frmKnjSKRac) obrada.fKnjizenje).savesk;
+      if (lookupData.getlookupData().raLocate(savesk, new String[] {"CPAR","VRDOK","BROJKONTA","BROJDOK"}, delStavka)) { 
+        System.out.println("FOUND del " + savesk);
+        savesk.emptyRow();
+      }
+    }
     delStavka();
     deletingStavkaWithGK = false;
   }
@@ -1001,6 +1013,7 @@ public class frmNalozi extends raMasterDetail {
     if (mode == 'B' && !deletingNalog) {//brisanje
       return hr.restart.sk.raGkSkUnosHandler.deleteWithStavkaGK(this);
     }
+    
     if (skup != null) {
       raTransaction.saveChanges(skup);
       skup = null;
@@ -1212,6 +1225,8 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
 
   void loadStavka() {
     loadStavka(getDetailSet());
+    delStavka = new DataRow(getDetailSet());
+    getDetailSet().copyTo(delStavka);
   }
   public void loadStavka(com.borland.dx.dataset.DataSet ds) {
     oldID = ds.getBigDecimal("ID").doubleValue();
