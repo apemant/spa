@@ -17,12 +17,14 @@
 ****************************************************************************/
 package hr.restart.pl;
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmTableDataView;
 import hr.restart.util.Aus;
 import hr.restart.util.ProcessInterruptException;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.sysoutTEST;
+import hr.restart.util.reports.raReportDescriptor;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.dlgGetKnjig;
 
@@ -139,8 +141,39 @@ public class frmPK extends frmDNR{
     Integer t = new Integer(mj);
     return (short)t.intValue();
   }
+  
+  public boolean ispisNow() {
+    if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(this,
+        "Prikazati rezultat za IP u tablici?", "Tablièni prikaz",
+        JOptionPane.OK_CANCEL_OPTION)) return true;
+    
+    showTable();
+    firstESC();
+    return false;
+  }
+  
+  void showTable() {
+    
+    /*String[] hcs = new VarStr("NAZIVRM REGBRMIO GODSTAZ BENSTAZ CLANOMF ORGREGMIO").split();
+    
+    for (int i = 0; i < hcs.length; i++)
+      rep01.getColumn(hcs[i]).setVisible(0);
+    
+    rep01.getColumn("BRUTO1").setCaption("HZZO");
+    rep01.getColumn("BRUTO2").setCaption("RH");
+    rep01.getColumn("BRUTO3").setCaption("CSS");*/
+    
+    frmTableDataView view = new frmTableDataView(true, false, false);
+    view.setTitle("Podaci za MPP-1");
+    view.setDataSet(repSetPK);
+    view.setSaveName("mpp1");
+    view.setCustomReport(raReportDescriptor.create("hr.restart.pl.repIP", "hr.restart.pl.repPK", "repIP2011.jrxml", "Obrazac IP 2011+", true));
+    view.show();
+    view.resizeLater(); // 4817622   091 2000 171
+  }
+  
 
-  QueryDataSet repSetPK;
+  StorageDataSet repSetPK;
 
 
   public void okPress()
@@ -196,7 +229,7 @@ public class frmPK extends frmDNR{
     }
 //System.out.println("done gRQS!");
 
-    repSetPK = new QueryDataSet();
+    repSetPK = new StorageDataSet();
     repSetPKList = null;
     repSetPK.setColumns(repSet.cloneColumns());
     repSetPK.addColumn(dM.createStringColumn("MJISPL",2));
