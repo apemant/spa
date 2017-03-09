@@ -1214,20 +1214,28 @@ sysoutTEST ST = new sysoutTEST(false);
   private void addNetoOdb() {
     dm.getIsplMJ().open();
     BigDecimal totalnak = Aus.zero0;
+    
+    if (!ld.raLocate(dm.getIsplMJ(),"CISPLMJ",radnici.getShort("CISPLMJ")+"")) return;
+    dm.getBankepl().open();
+    if (!ld.raLocate(dm.getBankepl(),"CBANKE",dm.getIsplMJ().getInt("CBANKE")+"")) return;
+    dm.getVrsteodb().open();
+    if (!ld.raLocate(dm.getVrsteodb(),"CPOV",dm.getBankepl().getInt("CPOV")+"")) return;
+    short cvrodb = dm.getVrsteodb().getShort("CVRODB");
 
+    int rbro = 0;
     for (primanja.first(); primanja.inBounds(); primanja.next()) {
       DataSet _vp = posVrsteprim(primanja);
       if (!raParam.getParam(_vp,1).equals("D") &&
           !raParam.getParam(_vp,2).equals("D") && // naknada
-          ld.raLocate(dm.getVrsteodb(),"CPOV",_vp.getInt("CPOV")+"")) {
+          _vp.getInt("CPOV")>0) {
         odbiciobr.insertRow(false);
         odbiciobr.setString("CRADNIK",kumulrad.getString("CRADNIK"));
-        odbiciobr.setShort("CVRODB",dm.getVrsteodb().getShort("CVRODB"));
-        odbiciobr.setShort("RBRODB",Short.parseShort("0"));
+        odbiciobr.setShort("CVRODB",cvrodb);
+        odbiciobr.setShort("RBRODB",(short) (++rbro));
         odbiciobr.setString("CKEY",kumulrad.getString("CRADNIK"));
         odbiciobr.setString("CKEY2","$SYS");
         odbiciobr.setShort("CVRP", _vp.getShort("CVRP"));
-        odbiciobr.setShort("RBR",Short.parseShort("0"));
+        odbiciobr.setShort("RBR",(short) rbro);
         odbiciobr.setBigDecimal("OBRIZNOS",primanja.getBigDecimal("NETO"));
         odbiciobr.setBigDecimal("OBRSTOPA",nula);
         odbiciobr.setBigDecimal("OBROSN",nula);
@@ -1235,12 +1243,7 @@ sysoutTEST ST = new sysoutTEST(false);
         totalnak = totalnak.subtract(primanja.getBigDecimal("NETO"));
       }
     }
-    if (!ld.raLocate(dm.getIsplMJ(),"CISPLMJ",radnici.getShort("CISPLMJ")+"")) return;
-    dm.getBankepl().open();
-    if (!ld.raLocate(dm.getBankepl(),"CBANKE",dm.getIsplMJ().getInt("CBANKE")+"")) return;
-    dm.getVrsteodb().open();
-    if (!ld.raLocate(dm.getVrsteodb(),"CPOV",dm.getBankepl().getInt("CPOV")+"")) return;
-    short cvrodb = dm.getVrsteodb().getShort("CVRODB");
+    // 3704 943
     odbiciobr.insertRow(false);
     odbiciobr.setString("CRADNIK",kumulrad.getString("CRADNIK"));
     odbiciobr.setShort("CVRODB",cvrodb);
@@ -1249,7 +1252,7 @@ sysoutTEST ST = new sysoutTEST(false);
     odbiciobr.setString("CKEY2","$SYS");
     odbiciobr.setShort("CVRP",Short.parseShort("0"));
     odbiciobr.setShort("RBR",Short.parseShort("0"));
-    odbiciobr.setBigDecimal("OBRIZNOS",kumulrad.getBigDecimal("NARUKE").subtract(totalnak));
+    odbiciobr.setBigDecimal("OBRIZNOS",kumulrad.getBigDecimal("NARUKE").add(totalnak));
     odbiciobr.setBigDecimal("OBRSTOPA",nula);
     odbiciobr.setBigDecimal("OBROSN",nula);
     odbiciobr.post();
