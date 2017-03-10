@@ -103,7 +103,8 @@ public class frmPTE extends frmUlazTemplate {
     if (!dlgSerBrojevi.getdlgSerBrojevi().findSB(jpDetail.rpcart, getDetailSet(), 'U', mode)) {
       return false;
     }
-    dm.getStdokuPTE().setBigDecimal("KOL", dm.getStdokuPTE().getBigDecimal("KOL").negate());
+    if (dm.getStdokuPTE().getBigDecimal("KOL").signum() > 0)
+      dm.getStdokuPTE().setBigDecimal("KOL", dm.getStdokuPTE().getBigDecimal("KOL").negate());
     jpDetail.kalkulacija(0);
     return super.ValidacijaDetail(mode);
   }
@@ -112,10 +113,9 @@ public class frmPTE extends frmUlazTemplate {
   }
   public boolean ValDPEscapeDetail(char mode) {
     if (mode=='N') {
-      if (jpDetail.rpcart.getCART().trim().equals("")) {
+      if (jpDetail.rpcart.getCART().trim().equals("")) 
         return true;
-      }
-      else {
+      
         getDetailSet().setBigDecimal("DC", main.nul);
         getDetailSet().setBigDecimal("PRAB", main.nul);
         getDetailSet().setBigDecimal("PZT", main.nul);
@@ -131,10 +131,7 @@ public class frmPTE extends frmUlazTemplate {
         jpDetail.findSTANJE(' ');
         jpDetail.rpcart.SetDefFocus();
         return false;
-      }
     }
-    else {
-      return true;
-    }
+    return true;
   }
 }
