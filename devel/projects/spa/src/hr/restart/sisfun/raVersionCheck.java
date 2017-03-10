@@ -1,5 +1,8 @@
 package hr.restart.sisfun;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -93,5 +96,13 @@ public class raVersionCheck {
       ds.saveChanges();
     }
     JOptionPane.showMessageDialog(null, "Verzija produžena do " + Aus.formatTimestamp(ds.getTimestamp("DATZ")));
+  }
+  
+  
+  public static void main(String[] args) throws IOException { 
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    System.out.print("Enter Key");
+    String s = br.readLine();
+    System.out.println("Pass: " + Aus.simpleCode(Aus.getAnyNumber(s)));
   }
 }
