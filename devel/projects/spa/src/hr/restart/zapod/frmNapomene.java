@@ -51,6 +51,9 @@ public class frmNapomene extends raMatPodaci {
   JraCheckBox jcbAKTIV = new JraCheckBox();
   hr.restart.swing.JraTextArea jtaNAZNAP = new hr.restart.swing.JraTextArea();
   JraScrollPane jScrollPane1 = new JraScrollPane();
+  
+  hr.restart.swing.JraTextArea jtaSNAZNAP = new hr.restart.swing.JraTextArea();
+  JraScrollPane jScrollPane2 = new JraScrollPane();
 
   public frmNapomene() {
     super(2);
@@ -75,20 +78,26 @@ public class frmNapomene extends raMatPodaci {
     jcbAKTIV.setText("Aktivan");
     jtfCNAP.setDataSet(getRaQueryDataSet());
     jtfCNAP.setColumnName("CNAP");
-    jlNAZNAP.setText("Naziv");
+    jlNAZNAP.setText("Tekst napomene");
     jlCNAP.setText("Oznaka");
     xYLayout1.setWidth(555);
-    xYLayout1.setHeight(142);
+    xYLayout1.setHeight(232);
     jp.setLayout(xYLayout1);
     jtaNAZNAP.setBorder(null);
     jtaNAZNAP.setColumnName("NAZNAP");
     jtaNAZNAP.setDataSet(getRaQueryDataSet());
+    jtaSNAZNAP.setBorder(null);
+    jtaSNAZNAP.setColumnName("SNAZNAP");
+    jtaSNAZNAP.setDataSet(getRaQueryDataSet());
     jp.add(jlCNAP, new XYConstraints(15, 20, -1, -1));
     jp.add(jtfCNAP, new XYConstraints(150, 20, 100, -1));
     jp.add(jlNAZNAP, new XYConstraints(15, 45, -1, -1));
     jScrollPane1.getViewport().add(jtaNAZNAP, null);
     jp.add(jScrollPane1,   new XYConstraints(150, 45, 391, 80));
     jp.add(jcbAKTIV, new XYConstraints(440, 20, 100, -1));
+    jScrollPane2.getViewport().add(jtaSNAZNAP, null);
+    jp.add(new JLabel("Strani tekst"), new XYConstraints(15, 135, -1, -1));
+    jp.add(jScrollPane2,   new XYConstraints(150, 135, 391, 80));
 
   }
   public boolean Validacija(char mode) {

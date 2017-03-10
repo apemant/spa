@@ -59,6 +59,7 @@ public class frmNacPl extends raSifraNaziv {
   JLabel jlVRDOK = new JLabel();
   JraButton jbVRDOK = new JraButton();
   JlrNavField jrfNAZDOK = new JlrNavField();
+  JraTextField jraSNAZ = new JraTextField();
 
   public frmNacPl() {
     try {
@@ -72,7 +73,7 @@ public class frmNacPl extends raSifraNaziv {
     dm = hr.restart.baza.dM.getDataModule();
     jLabel1.setText("Popust");
     xYLayout1.setWidth(555);
-    xYLayout1.setHeight(95);
+    xYLayout1.setHeight(125);
     jp.setLayout(xYLayout1);
     this.setRaDataSet(dm.getAllNacpl());
     this.setRaColumnSifra("CNACPL");
@@ -84,6 +85,8 @@ public class frmNacPl extends raSifraNaziv {
     jtfVCINC.setColumnName("VCINC");
     jtfVCDEC.setDataSet(getRaDataSet());
     jtfVCDEC.setColumnName("VCDEC");
+    jraSNAZ.setDataSet(getRaDataSet());
+    jraSNAZ.setColumnName("SNAZNACPL");
 /*
     * Standardni naputak za uporabu:
     *
@@ -124,16 +127,18 @@ public class frmNacPl extends raSifraNaziv {
     jrfNAZDOK.setSearchMode(1);
     jrfNAZDOK.setNavProperties(jrfVRDOK);
     
-    jp.add(new JLabel("Vrsta",SwingConstants.RIGHT), new XYConstraints(270, 0, 65, -1));
-    jp.add(jcbPlacFlags, new XYConstraints(340, 0, 200, -1));
-    jp.add(jrfVRDOK,   new XYConstraints(150, 30, 100, -1));
-    jp.add(jbVRDOK,     new XYConstraints(544, 30, 21, 21));
-    jp.add(jrfNAZDOK,  new XYConstraints(260, 30, 280, -1));
-    jp.add(jlVRDOK,  new XYConstraints(15, 30, -1, -1));
-    jp.add(new JLabel("Poveæanje cijene"),  new XYConstraints(15, 55, -1, -1));
-    jp.add(jtfVCINC,   new XYConstraints(150, 60, 100, -1));
-    jp.add(new JLabel("Uèešæe"),  new XYConstraints(360, 60, -1, -1));
-    jp.add(jtfVCDEC, new XYConstraints(440, 60, 100, -1));
+    jp.add(new JLabel("Strani naziv"), new XYConstraints(15, 0, -1, -1));
+    jp.add(jraSNAZ, new XYConstraints(255, 0, 285, -1));
+    jp.add(new JLabel("Vrsta",SwingConstants.RIGHT), new XYConstraints(270, 30, 65, -1));
+    jp.add(jcbPlacFlags, new XYConstraints(340, 30, 200, -1));
+    jp.add(jrfVRDOK,   new XYConstraints(150, 60, 100, -1));
+    jp.add(jbVRDOK,     new XYConstraints(544, 60, 21, 21));
+    jp.add(jrfNAZDOK,  new XYConstraints(260, 60, 280, -1));
+    jp.add(jlVRDOK,  new XYConstraints(15, 60, -1, -1));
+    jp.add(new JLabel("Poveæanje cijene"),  new XYConstraints(15, 90, -1, -1));
+    jp.add(jtfVCINC,   new XYConstraints(150, 90, 100, -1));
+    jp.add(new JLabel("Uèešæe"),  new XYConstraints(360, 90, -1, -1));
+    jp.add(jtfVCDEC, new XYConstraints(440, 90, 100, -1));
     
     /*
     jdbCheckBox1.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -154,8 +159,8 @@ public class frmNacPl extends raSifraNaziv {
     jp.add(jdbCheckBox2, new XYConstraints(340, 25, 200, -1));
     
 */
-    jp.add(jLabel1, new XYConstraints(15, 0, -1, -1));
-    jp.add(jtfPOP,   new XYConstraints(150, 0, 100, -1));
+    jp.add(jLabel1, new XYConstraints(15, 30, -1, -1));
+    jp.add(jtfPOP,   new XYConstraints(150, 30, 100, -1));
     this.jpRoot.add(jp,java.awt.BorderLayout.SOUTH);
   }
   
