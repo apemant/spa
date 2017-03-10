@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
@@ -112,8 +113,12 @@ public class upKartica extends raUpitFat {
   JPanel jPanel3 = new JPanel();
   JPanel jp = new JPanel();
   
+  JraTextField jtfLOT = new JraTextField();
+  
   /*JraCheckBox jcbNDO = new JraCheckBox();
   JraCheckBox jcbNKU = new JraCheckBox();*/
+  
+  boolean edion = false;
   
   dM dm;
   static upKartica upk;
@@ -178,7 +183,7 @@ public class upKartica extends raUpitFat {
 
     vrzal = lookupData.getlookupData().raLookup(dm.getSklad(), new String[] {"CSKL"}, new String[] {rpcskl.getCSKL()}).getString("VRZAL");
     
-    qStr = rdUtil.getUtil().getKarticaArtikla(cart, vrzal, rpcskl.getCSKL(), rut.getDoc("DOKU", "STDOKU"), rut.getDoc("DOKI", "STDOKI"), newDateZ, false, false);
+    qStr = rdUtil.getUtil().getKarticaArtikla(cart, vrzal, rpcskl.getCSKL(), rut.getDoc("DOKU", "STDOKU"), rut.getDoc("DOKI", "STDOKI"), newDateZ, tds.getString("LOT"), false, false);
 
 //    System.out.println("qdst KARTICA : " + qStr);
     
@@ -402,6 +407,7 @@ public class upKartica extends raUpitFat {
     tds.setTimestamp("pocDatum", ut.getYearBegin(god));
     tds.setTimestamp("zavDatum", 
         ut.getToday(ut.getYearBegin(god), ut.getYearEnd(god)));
+    tds.setString("LOT", "");
     jcbDonos.setSelected(false);
     /*jcbNDO.setSelected(false);
     jcbNKU.setSelected(false);*/
@@ -416,6 +422,7 @@ public class upKartica extends raUpitFat {
     if (lTrans) {
       tds.setTimestamp("zavDatum", out.to);
       tds.setTimestamp("pocDatum", out.from);
+      tds.setString("LOT", "");
       jcbDonos.setSelected(false);
       /*jcbNDO.setSelected(false);
       jcbNKU.setSelected(false);*/
@@ -437,6 +444,9 @@ public class upKartica extends raUpitFat {
     handleReports();
     dm = hr.restart.baza.dM.getDataModule();
     vl = hr.restart.util.Valid.getValid();
+    
+    edion = frmParam.getParam("robno", "ediUlaz", "N",
+        "Panel za unos EDI podataka na ulazu (D,N)").equals("D");
 
     col1 = dM.createBigDecimalColumn("SKOL", "Saldo kol", 3);
     col1.setSqlType(0);
@@ -464,7 +474,8 @@ public class upKartica extends raUpitFat {
     tds.setColumns(new Column[] {
                    dM.createTimestampColumn("pocDatum", "Po\u010Detni datum"),
                    dM.createTimestampColumn("zavDatum", "Završni datum"),
-                   dM.createStringColumn("cskl", "Skladište", 12)
+                   dM.createStringColumn("cskl", "Skladište", 12),
+                   dM.createStringColumn("lot", "Šarža", 20)
     });
 
 
@@ -478,6 +489,8 @@ public class upKartica extends raUpitFat {
     jtfZavDatum.setColumnName("zavDatum");
     jtfZavDatum.setText("");
     jtfZavDatum.setHorizontalAlignment(SwingConstants.CENTER);
+    jtfLOT.setColumnName("LOT");
+    jtfLOT.setDataSet(tds);
 
     new raDateRange(jtfPocDatum, jtfZavDatum);
 
@@ -501,6 +514,14 @@ public class upKartica extends raUpitFat {
     jPanel3.add(jtfPocDatum, new XYConstraints(150, 5, 100, -1));
     jPanel3.add(jtfZavDatum, new XYConstraints(255, 5, 100, -1));
     jPanel3.add(jcbDonos,    new XYConstraints(465, 5, 140, -1));
+    
+    if (edion) {
+      jPanel3.add(new JLabel("Šarža (Lot)"), new XYConstraints(15, 35, -1, -1));
+      jPanel3.add(jtfLOT, new XYConstraints(150, 35, 100, -1));
+      jPanel3.setPreferredSize(new Dimension(555, 75));
+      jp.setMinimumSize(new Dimension(650, 195));
+      jp.setPreferredSize(new Dimension(650, 195));
+    }
     /*jPanel3.add(jcbNKU,    new XYConstraints(405, 30, 200, -1));
     jPanel3.add(jcbNDO,    new XYConstraints(155, 30, 200, -1));*/
     jp.add(rpcart, BorderLayout.CENTER);
