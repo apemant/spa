@@ -30,6 +30,7 @@ import hr.restart.baza.Orgstruktura;
 import hr.restart.baza.Sklad;
 import hr.restart.baza.dM;
 import hr.restart.baza.zirorn;
+import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.util.Aus;
 import hr.restart.util.DataTree;
@@ -423,6 +424,22 @@ e.printStackTrace();
     for (ds.first(); ds.inBounds(); ds.next())
       corgs.add(ds.getString("CORG"));
     return corgs;
+  }
+  
+  boolean komisija = false;
+  boolean komsetup = false;
+  public boolean isKomisija() {
+    if (komsetup) return komisija;
+
+    komsetup = true;
+    komisija = frmParam.getParam("robno", "komisija" + getKNJCORG(false), "N", "Opcija za komisiju (D,N)?").equals("D");
+    
+    OrgStr.getOrgStr().addKnjigChangeListener(new raKnjigChangeListener() {
+      public void knjigChanged(String a1, String a2) {
+        komisija = frmParam.getParam("robno", "komisija" + a2, "N", "Opcija za komisiju (D,N)?").equals("D");
+      }
+    });
+    return komisija;
   }
   
   static StorageDataSet sharedKnjig;
