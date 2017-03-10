@@ -1183,22 +1183,50 @@ public BigDecimal getIPRODSP() {
 
   public String getNAZNAP() {
     colname[0] = "CNAP";
-    return ru.getSomething(colname,dm.getNapomene(),"NAZNAP").getString();
+    String naz = ru.getSomething(colname,dm.getNapomene(),"NAZNAP").getString();
+    
+    if (!hr.restart.util.reports.dlgRunReport
+        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
+      return naz;
+    
+    String snaz = ru.getSomething(colname,dm.getNapomene(),"SNAZNAP").getString();
+    return (snaz == null || snaz.length() == 0) ? naz : snaz;
   }
 
   public String getNAZNACPL() {
     colname[0] = "CNACPL";
-    return ru.getSomething(colname,dm.getNacpl(),"NAZNACPL").getString();
+    String naz = ru.getSomething(colname,dm.getNacpl(),"NAZNACPL").getString();
+    
+    if (!hr.restart.util.reports.dlgRunReport
+        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
+      return naz;
+    
+    String snaz = ru.getSomething(colname,dm.getNacpl(),"SNAZNACPL").getString();
+    return (snaz == null || snaz.length() == 0) ? naz : snaz;
   }
 
   public String getNAZNAC() {
     colname[0] = "CNAC";
-    return ru.getSomething(colname,dm.getNacotp(),"NAZNAC").getString();
+    String naz = ru.getSomething(colname,dm.getNacotp(),"NAZNAC").getString();
+    
+    if (!hr.restart.util.reports.dlgRunReport
+        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
+      return naz;
+    
+    String snaz = ru.getSomething(colname,dm.getNacotp(),"SNAZNAC").getString();
+    return (snaz == null || snaz.length() == 0) ? naz : snaz;
   }
 
   public String getNAZFRA() {
     colname[0] = "CFRA";
-    return ru.getSomething(colname,dm.getFranka(),"NAZFRA").getString();
+    String naz = ru.getSomething(colname,dm.getFranka(),"NAZFRA").getString();
+    
+    if (!hr.restart.util.reports.dlgRunReport
+        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
+      return naz;
+    
+    String snaz = ru.getSomething(colname,dm.getFranka(),"SNAZFRA").getString();
+    return (snaz == null || snaz.length() == 0) ? naz : snaz;
   }
   public String getFormatBroj(){
     if (ds.getString("FOK").equals("D"))
