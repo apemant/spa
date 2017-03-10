@@ -519,7 +519,7 @@ public class jpUlazDetail extends JPanel {
     jpDetailCenter.add(jtfDC_VAL, new XYConstraints(360, 75, 130, -1));
     jpDetailCenter.add(jtfIDOB_VAL, new XYConstraints(500, 75, 130, -1));
     
-    if (edion && frm.prSTAT == 'P') addEdi();
+    if (edion && (frm.prSTAT == 'P' || frm instanceof frmPRK)) addEdi();
     this.add(rpcart, BorderLayout.NORTH);
     
     tds.open();
@@ -807,8 +807,13 @@ public class jpUlazDetail extends JPanel {
       rcc.setLabelLaF(jtfMC, !novi);
     }
     else if (doc=='D') {
-      rcc.setLabelLaF(jtfDC_VAL, false);
-      rcc.setLabelLaF(jtfIDOB_VAL, false);
+      if (frm.getMasterSet().getBigDecimal("TECAJ").doubleValue()==0) {
+        rcc.setLabelLaF(jtfDC_VAL, false);
+        rcc.setLabelLaF(jtfIDOB_VAL, false);
+      } else {
+        rcc.setLabelLaF(jtfDC_VAL, !novi);
+        rcc.setLabelLaF(jtfIDOB_VAL, !novi);
+      }
       rcc.setLabelLaF(jtfDC, !novi);
       rcc.setLabelLaF(jtfIDOB, !novi);
       rcc.setLabelLaF(jbZT, false);
