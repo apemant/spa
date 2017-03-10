@@ -62,14 +62,14 @@ public class jcrmOpMenu extends JMenu {
         SF.showFrame("hr.restart.crm.frmKlijentStatus", jmStatusi.getText());
       }
     });
-    jmSeg.setText("Kanali komunikacije");
-    jmSeg.addActionListener(new java.awt.event.ActionListener() {
+    jmKanali.setText("Kanali komunikacije");
+    jmKanali.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         SF.showFrame("hr.restart.crm.frmKanali", jmKanali.getText());
       }
     });
-    jmKanali.setText("Segmentacija");
-    jmKanali.addActionListener(new java.awt.event.ActionListener() {
+    jmSeg.setText("Segmentacija");
+    jmSeg.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         SF.showFrame("hr.restart.crm.frmSegment", jmSeg.getText());
       }
