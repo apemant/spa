@@ -17,7 +17,16 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
+
 import hr.restart.sisfun.raDataIntegrity;
+import hr.restart.swing.JraTextField;
 import hr.restart.util.raSifraNaziv;
 /**
  * Title:        Robno poslovanje
@@ -32,6 +41,9 @@ import hr.restart.util.raSifraNaziv;
 public class frmNacOtp extends raSifraNaziv {
   hr.restart.baza.dM dm;
   hr.restart.robno.Util util = hr.restart.robno.Util.getUtil();
+  
+  JPanel jPanel1 = new JPanel();
+  JraTextField jraSNAZ = new JraTextField();
 
   public frmNacOtp() {
     try {
@@ -47,6 +59,14 @@ public class frmNacOtp extends raSifraNaziv {
     this.setRaColumnSifra("CNAC");
     this.setRaColumnNaziv("NAZNAC");
     this.setRaText("Naèin otpreme");
+    jPanel1.setLayout(new XYLayout(560, 40));
+    jraSNAZ.setDataSet(getRaDataSet());
+    jraSNAZ.setColumnName("SNAZNAC");
+    jPanel1.add(new JLabel("Strani naziv"), new XYConstraints(15, 0, -1, -1));
+    jPanel1.add(jraSNAZ, new XYConstraints(255, 0, 285, -1));
+
+    this.jpRoot.add(jPanel1, BorderLayout.SOUTH);
+    
     raDataIntegrity.installFor(this);
   }
 }
