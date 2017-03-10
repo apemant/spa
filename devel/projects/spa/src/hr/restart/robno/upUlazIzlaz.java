@@ -184,6 +184,7 @@ public class upUlazIzlaz extends raUpitFat {
         (Column) dm.getDoki().getColumn("BRDOK").clone(),
         dM.createStringColumn("FBR", "Fiskalni broj", 50),
         (Column) dm.getDoki().getColumn("CVRTR").clone(),
+        dm.getDoki().getColumn("BRNAL").cloneColumn(),
         (Column) dm.getStdoki().getColumn("INAB").clone(),
         (Column) dm.getStdoki().getColumn("IMAR").clone(),
         (Column) dm.getStdoki().getColumn("IPOR").clone(),
@@ -204,6 +205,7 @@ public class upUlazIzlaz extends raUpitFat {
         (Column) dm.getDoku().getColumn("DATDOK").clone(),
       (Column) dm.getDoku().getColumn("VRDOK").clone(),
       (Column) dm.getDoku().getColumn("BRDOK").clone(),
+      dm.getDoku().getColumn("BRNAL").cloneColumn(),
       (Column) dm.getDoku().getColumn("UIPRPOR").clone(),
       (Column) dm.getStdoku().getColumn("IDOB").clone(),
       dM.createBigDecimalColumn("IRAB","Popust"),
@@ -236,7 +238,7 @@ public class upUlazIzlaz extends raUpitFat {
     String rinab = raIzlazTemplate.isNabDirect() ? "RINAB" : "INAB";
     if (tds.getString("ULIZ").trim().equals("I")) {
       qStr="SELECT max(DOKI.CPAR) as CPAR, max(DOKI.DATDOK) as DATDOK, max(DOKI.DATDOSP) as DATDOSP, max(DOKI.VRDOK) as VRDOK, max(DOKI.CSKL) as CSKL, " +
-      		"max(DOKI.BRDOK) as BRDOK, max(DOKI.CVRTR) as CVRTR, max(doki.fbr) as fbr, max(doki.fpp) as fpp, max(doki.fnu) as fnu, max(DOKI.CUSER) as CUSER, "+
+      		"max(DOKI.BRDOK) as BRDOK, max(DOKI.CVRTR) as CVRTR, max(doki.fbr) as fbr, max(doki.fpp) as fpp, max(doki.fnu) as fnu, max(DOKI.CUSER) as CUSER, max(DOKI.BRNAL) as BRNAL, "+
       	   "sum(STDOKI.INAB) as INAB, "+findIRAZ("M")+", sum(STDOKI.UIRAB) as UIRAB, "+
            "sum(STDOKI.IPRODBP) as IPRODBP,  (sum(STDOKI.POR1)+sum(STDOKI.POR2)+sum(STDOKI.POR3)) as POREZ, "+
            "sum(STDOKI.IPRODSP) as IPRODSP, "+
@@ -253,7 +255,7 @@ public class upUlazIzlaz extends raUpitFat {
     else {
 
       qStr="SELECT max(DOKU.CPAR) as CPAR, max(DOKU.DATDOK) as DATDOK, max(DOKU.BRDOK) as BRDOK, max(DOKU.VRDOK) as VRDOK, " +
-      		"max(DOKU.CSKL) as CSKL, max(DOKU.CUSER) as CUSER, "+
+      		"max(DOKU.CSKL) as CSKL, max(DOKU.CUSER) as CUSER, max(DOKU.BRNAL) as BRNAL, "+
            "max(DOKU.UIPRPOR) as UIPRPOR, sum(STDOKU.IDOB) as IDOB, sum(STDOKU.IRAB) as IRAB, "+
            "sum(STDOKU.IZT) as IZT, sum(STDOKU.INAB) as INAB "+findIZAD("M")+"from STDOKU,DOKU "+
            "where DOKU.CSKL=STDOKU.CSKL AND DOKU.VRDOK=STDOKU.VRDOK AND DOKU.GOD=STDOKU.GOD AND DOKU.BRDOK=STDOKU.BRDOK "+
@@ -262,7 +264,7 @@ public class upUlazIzlaz extends raUpitFat {
            findCPAR("DOKU")+findVRDOK("DOKU")+findPLAC("DOKU")+findKNJIZ("DOKU")+" AND DOKU.VRDOK != 'POR' "+
            "GROUP BY STDOKU.CSKL, STDOKU.VRDOK, STDOKU.BRDOK, STDOKU.GOD "+
           // poravnanje na ulazu
-      "UNION SELECT max(DOKU.CPAR) as CPAR, max(DOKU.DATDOK) as DATDOK, max(DOKU.BRDOK) as BRDOK, 'POR' as VRDOK, max(DOKU.CSKL) as CSKL, max(DOKU.CUSER) as CUSER, "+
+      "UNION SELECT max(DOKU.CPAR) as CPAR, max(DOKU.DATDOK) as DATDOK, max(DOKU.BRDOK) as BRDOK, 'POR' as VRDOK, max(DOKU.CSKL) as CSKL, max(DOKU.CUSER) as CUSER, max(DOKU.BRNAL) as BRNAL, "+
            "sum(DOKU.UIPRPOR-DOKU.UIPRPOR) as UIPRPOR, sum(STDOKU.IDOB-STDOKU.IDOB) as IDOB, sum(STDOKU.IRAB-STDOKU.IRAB) as IRAB, "+
            "sum(STDOKU.IZT-STDOKU.IZT) as IZT, sum(STDOKU.INAB-STDOKU.INAB) as INAB, sum(STDOKU.DIOPORMAR) as IMAR, sum(STDOKU.DIOPORPOR) as IPOR, sum(STDOKU.PORAV) as IZAD from STDOKU,DOKU "+
            "where DOKU.CSKL=STDOKU.CSKL AND DOKU.VRDOK=STDOKU.VRDOK AND DOKU.GOD=STDOKU.GOD AND DOKU.BRDOK=STDOKU.BRDOK "+
@@ -271,7 +273,7 @@ public class upUlazIzlaz extends raUpitFat {
            findCPAR("DOKU")+findVRDOKPOR()+findPLAC("DOKU")+findKNJIZ("DOKU")+
            "GROUP BY STDOKU.CSKL, STDOKU.VRDOK, STDOKU.BRDOK, STDOKU.GOD "+
           // poravnanja
-      "UNION SELECT max(DOKU.CPAR) as CPAR, max(DOKU.DATDOK) as DATDOK, max(DOKU.BRDOK) as BRDOK, max(DOKU.VRDOK) as VRDOK, max(DOKU.CSKL) as CSKL, max(DOKU.CUSER) as CUSER, "+
+      "UNION SELECT max(DOKU.CPAR) as CPAR, max(DOKU.DATDOK) as DATDOK, max(DOKU.BRDOK) as BRDOK, max(DOKU.VRDOK) as VRDOK, max(DOKU.CSKL) as CSKL, max(DOKU.CUSER) as CUSER, max(DOKU.BRNAL) as BRNAL, "+
            "sum(DOKU.UIPRPOR-DOKU.UIPRPOR) as UIPRPOR, sum(STDOKU.IDOB-STDOKU.IDOB) as IDOB, sum(STDOKU.IRAB-STDOKU.IRAB) as IRAB, "+
            "sum(STDOKU.IZT-STDOKU.IZT) as IZT, sum(STDOKU.INAB-STDOKU.INAB) as INAB, sum(STDOKU.DIOPORMAR) as IMAR, sum(STDOKU.DIOPORPOR) as IPOR, sum(STDOKU.PORAV) as IZAD from STDOKU,DOKU "+
            "where DOKU.CSKL=STDOKU.CSKL AND DOKU.VRDOK=STDOKU.VRDOK AND DOKU.GOD=STDOKU.GOD AND DOKU.BRDOK=STDOKU.BRDOK "+
@@ -294,7 +296,7 @@ public class upUlazIzlaz extends raUpitFat {
       this.getJPTV().setNaslovi(null);
 
       if (tds.getString("ULIZ").trim().equals("I")) {
-        String[] cc = new String[] {"CUSER", "CSKL", "DATDOK", "BRDOK", "CVRTR", "VRDOK","IPRODSP","POREZ","IPRODBP",
+        String[] cc = new String[] {"CUSER", "CSKL", "DATDOK", "BRDOK", "CVRTR", "BRNAL", "VRDOK","IPRODSP","POREZ","IPRODBP",
           "UIRAB","ZARADA","INAB","IMAR","IPOR","IRAZ"};
         izdok.empty();
         
@@ -340,7 +342,7 @@ public class upUlazIzlaz extends raUpitFat {
               Aus.formatTimestamp(tds.getTimestamp("pocDatum")) + " do " + Aus.formatTimestamp(tds.getTimestamp("zavDatum")));
       }
       else {
-        String[] cc = new String[] {"CUSER", "CSKL", "DATDOK","BRDOK","VRDOK","UIPRPOR",
+        String[] cc = new String[] {"CUSER", "CSKL", "DATDOK","BRDOK","VRDOK","BRNAL","UIPRPOR",
           "IDOB","IRAB","IZT","INAB","IMAR","IPOR","IZAD"};
         uldok.empty();
         for (vl.RezSet.first(); vl.RezSet.inBounds(); vl.RezSet.next()) {
@@ -685,7 +687,8 @@ public class upUlazIzlaz extends raUpitFat {
   String findMesklaUlaz() {
     if (!getCpar().equals("")) return "";
     if (tds.getString("VRDOK").trim().equals("MES") || tds.getString("VRDOK").trim().equals("MEU") || tds.getString("VRDOK").trim().equals("")) {
-      return "UNION SELECT NULL as CPAR, max(MESKLA.DATDOK) as DATDOK, max(MESKLA.BRDOK) as BRDOK, max(MESKLA.VRDOK) as VRDOK, max(MESKLA.CSKLUL) as CSKL, max(MESKLA.CUSER) as CUSER,  sum(STMESKLA.INABUL-STMESKLA.INABUL) as UIPRPOR, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IDOB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IRAB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IZT, sum(STMESKLA.INABUL) as INAB, sum(STMESKLA.IMARUL) as IMAR, sum(STMESKLA.IPORUL) as IPOR, sum(STMESKLA.ZADRAZUL) as IZAD "+
+      return "UNION SELECT NULL as CPAR, max(MESKLA.DATDOK) as DATDOK, max(MESKLA.BRDOK) as BRDOK, max(MESKLA.VRDOK) as VRDOK, max(MESKLA.CSKLUL) as CSKL, max(MESKLA.CUSER) as CUSER, max(MESKLA.BRNALU) as BRNAL, " +
+      		"sum(STMESKLA.INABUL-STMESKLA.INABUL) as UIPRPOR, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IDOB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IRAB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IZT, sum(STMESKLA.INABUL) as INAB, sum(STMESKLA.IMARUL) as IMAR, sum(STMESKLA.IPORUL) as IPOR, sum(STMESKLA.ZADRAZUL) as IZAD "+
         "from STMESKLA,MESKLA "+
         "where MESKLA.CSKLUL=STMESKLA.CSKLUL AND MESKLA.CSKLIZ=STMESKLA.CSKLIZ AND MESKLA.VRDOK=STMESKLA.VRDOK AND MESKLA.GOD=STMESKLA.GOD AND MESKLA.BRDOK=STMESKLA.BRDOK "+
         "AND MESKLA.VRDOK in ('MES','MEU') "+
@@ -693,7 +696,8 @@ public class upUlazIzlaz extends raUpitFat {
         " AND MESKLA.DATDOK <= "+rut.getTimestampValue(tds.getTimestamp("zavDatum"), rut.NUM_LAST)+" "+
         "GROUP BY STMESKLA.CSKLUL, STMESKLA.CSKLIZ, STMESKLA.VRDOK, STMESKLA.BRDOK, STMESKLA.GOD " +
         // poravnanje
-        "UNION SELECT 0 as CPAR, max(MESKLA.DATDOK) as DATDOK, max(MESKLA.BRDOK) as BRDOK, 'POR' as VRDOK, max(MESKLA.CSKLUL) as CSKL, max(MESKLA.CUSER) as CUSER, sum(STMESKLA.INABUL-STMESKLA.INABUL) as UIPRPOR, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IDOB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IRAB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IZT, sum(STMESKLA.INABUL-STMESKLA.INABUL) as INAB, sum(STMESKLA.DIOPORMAR) as IMAR, sum(STMESKLA.DIOPORPOR) as IPOR, sum(STMESKLA.PORAV) as IZAD "+
+        "UNION SELECT 0 as CPAR, max(MESKLA.DATDOK) as DATDOK, max(MESKLA.BRDOK) as BRDOK, 'POR' as VRDOK, max(MESKLA.CSKLUL) as CSKL, max(MESKLA.CUSER) as CUSER, max(MESKLA.BRNALU) as BRNAL, " +
+        "sum(STMESKLA.INABUL-STMESKLA.INABUL) as UIPRPOR, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IDOB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IRAB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IZT, sum(STMESKLA.INABUL-STMESKLA.INABUL) as INAB, sum(STMESKLA.DIOPORMAR) as IMAR, sum(STMESKLA.DIOPORPOR) as IPOR, sum(STMESKLA.PORAV) as IZAD "+
         "from STMESKLA,MESKLA "+
         "where MESKLA.CSKLUL=STMESKLA.CSKLUL AND MESKLA.CSKLIZ=STMESKLA.CSKLIZ AND MESKLA.VRDOK=STMESKLA.VRDOK AND MESKLA.GOD=STMESKLA.GOD AND MESKLA.BRDOK=STMESKLA.BRDOK AND STMESKLA.PORAV!=0 "+
         "AND MESKLA.VRDOK in ('MES','MEU') "+
@@ -709,7 +713,7 @@ public class upUlazIzlaz extends raUpitFat {
     if ((tds.getString("VRDOK").trim().equals("MES")) || tds.getString("VRDOK").trim().equals("MEI") || (tds.getString("VRDOK").trim().equals(""))) {
       return "UNION SELECT CAST(NULL as INTEGER) as CPAR, max(MESKLA.DATDOK) as DATDOK, max(MESKLA.DATDOK) as DATDOSP, " +
       		"max(MESKLA.VRDOK) as VRDOK, max(MESKLA.CSKLIZ) as CSKL, max(MESKLA.BRDOK) as BRDOK, CAST(NULL as CHAR(12)) as CVRTR, " +
-      		"CAST(NULL as INTEGER) as FBR, CAST(NULL as CHAR(20)) as FPP, CAST(NULL as INTEGER) as FNU, max(MESKLA.CUSER) as CUSER,  " +
+      		"CAST(NULL as INTEGER) as FBR, CAST(NULL as CHAR(20)) as FPP, CAST(NULL as INTEGER) as FNU, max(MESKLA.CUSER) as CUSER, max(MESKLA.BRNAL) as BRNAL, " +
       		"sum(STMESKLA.INABIZ) as INAB, sum(STMESKLA.IMARIZ) as IMAR, sum(STMESKLA.IPORIZ) as IPOR, sum(STMESKLA.ZADRAZIZ) as IRAZ, " +
       		"sum(STMESKLA.INABUL-STMESKLA.INABUL) as UIRAB, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IPRODBP, " +
       		"sum(STMESKLA.INABUL-STMESKLA.INABUL) as POREZ, sum(STMESKLA.INABUL-STMESKLA.INABUL) as IPRODSP,  " +
