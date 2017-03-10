@@ -24,6 +24,8 @@ import hr.restart.zapod.OrgStr;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
@@ -1245,10 +1247,10 @@ public class rdUtil {
   }
 
   public String getKarticaArtikla(String cart, String vrzal, String cSkl, String docu, String doci, String newDateZ) {
-    return getKarticaArtikla(cart, vrzal, cSkl, docu, doci, newDateZ, false, false);
+    return getKarticaArtikla(cart, vrzal, cSkl, docu, doci, newDateZ, "", false, false);
   }
   
-  public String getKarticaArtikla(String cart, String vrzal, String cSkl, String docu, String doci, String newDateZ, boolean naru, boolean nari) {
+  public String getKarticaArtikla(String cart, String vrzal, String cSkl, String docu, String doci, String newDateZ, String lot, boolean naru, boolean nari) {
     String god = newDateZ.substring(1, 5);
     String ugod = " AND DOKU.GOD='" + god + "' ";
     String igod = " AND DOKI.GOD='" + god + "' ";
@@ -1256,22 +1258,31 @@ public class rdUtil {
     if ("N".equalsIgnoreCase(frmParam.getParam("robno", "godKartica", 
         "D", "Ogranièiti karticu artikla na jednu godinu (D,N)")))
       ugod = igod = mgod = " ";
+    
+    String ulot = "";
+    String ilot = "";
+    String mlot = "";
+    if (lot.length() > 0) {
+      ulot = " AND stdoku.lot='"+lot+"' ";
+      ilot = " AND stdoki.lot='"+lot+"' ";
+      mlot = " AND stmeskla.lot='"+lot+"' ";
+    }
 
     String qStr =
     // Ulazi
-    "SELECT 'A' as ui, 'B' as SRT, DOKU.VRDOK, DOKU.BRDOK, STDOKU.RBR, DOKU.DATDOK, STDOKU.KOL AS KOLUL, (STDOKU.KOL-STDOKU.KOL) AS KOLIZ, " + "STDOKU.ZC, STDOKU.IZAD AS KOLZAD, (STDOKU.IZAD-STDOKU.IZAD) AS KOLRAZ, doku.cskl as sklul, '            ' as skliz " + "from STDOKU,DOKU " + "where STDOKU.CART=" + cart + " AND STDOKU.CSKL='" + cSkl + "' AND " + docu + "  AND DOKU.VRDOK NOT IN ('POR','KAL') " + "AND DOKU.DATDOK <= " + newDateZ + ugod + "UNION ALL " +
+    "SELECT 'A' as ui, 'B' as SRT, DOKU.VRDOK, DOKU.BRDOK, STDOKU.RBR, DOKU.DATDOK, STDOKU.KOL AS KOLUL, (STDOKU.KOL-STDOKU.KOL) AS KOLIZ, " + "STDOKU.ZC, STDOKU.IZAD AS KOLZAD, (STDOKU.IZAD-STDOKU.IZAD) AS KOLRAZ, doku.cskl as sklul, '            ' as skliz " + "from STDOKU,DOKU " + "where STDOKU.CART=" + cart + " AND STDOKU.CSKL='" + cSkl + "' AND " + docu + "  AND DOKU.VRDOK NOT IN ('POR','KAL') " + "AND DOKU.DATDOK <= " + newDateZ + ugod + ulot + "UNION ALL " +
     // Samo poravnanja na ulazu
-        "SELECT 'A' as ui, 'B' as SRT,  DOKU.VRDOK, DOKU.BRDOK, STDOKU.RBR, DOKU.DATDOK, (STDOKU.KOL-STDOKU.KOL) AS KOLUL, (STDOKU.KOL-STDOKU.KOL) AS KOLIZ, " + this.getZCPor("STDOKU", vrzal) + " STDOKU.PORAV AS KOLZAD, (STDOKU.PORAV-STDOKU.PORAV) AS KOLRAZ, '            ' as sklul, '            ' as skliz " + "from STDOKU,DOKU " + "where STDOKU.CART=" + cart + " AND STDOKU.CSKL='" + cSkl + "' AND " + docu + "  AND DOKU.VRDOK='POR' AND STDOKU.SKOL>0 " + "AND DOKU.DATDOK <= " + newDateZ + ugod + "UNION ALL " +
+        "SELECT 'A' as ui, 'B' as SRT,  DOKU.VRDOK, DOKU.BRDOK, STDOKU.RBR, DOKU.DATDOK, (STDOKU.KOL-STDOKU.KOL) AS KOLUL, (STDOKU.KOL-STDOKU.KOL) AS KOLIZ, " + this.getZCPor("STDOKU", vrzal) + " STDOKU.PORAV AS KOLZAD, (STDOKU.PORAV-STDOKU.PORAV) AS KOLRAZ, '            ' as sklul, '            ' as skliz " + "from STDOKU,DOKU " + "where STDOKU.CART=" + cart + " AND STDOKU.CSKL='" + cSkl + "' AND " + docu + "  AND DOKU.VRDOK='POR' AND STDOKU.SKOL>0 " + "AND DOKU.DATDOK <= " + newDateZ + ugod + ulot + "UNION ALL " +
         // Izlazi
-        "SELECT 'B' as ui, 'B' as SRT, DOKI.VRDOK, DOKI.BRDOK, STDOKI.RBR, DOKI.DATDOK, (STDOKI.KOL-STDOKI.KOL) AS KOLUL, STDOKI.KOL AS KOLIZ, " + "STDOKI.ZC, (STDOKI.IRAZ-STDOKI.IRAZ) AS KOLZAD, STDOKI.IRAZ AS KOLRAZ, '            ' as sklul, doki.cskl as skliz " + "from STDOKI,DOKI " + "where STDOKI.CART=" + cart + " AND STDOKI.CSKL='" + cSkl + "' AND " + doci + igod + "AND DOKI.DATDOK <= " + newDateZ + " AND DOKI.VRDOK NOT IN " +dokiF(naru, nari)+ " UNION ALL " +
+        "SELECT 'B' as ui, 'B' as SRT, DOKI.VRDOK, DOKI.BRDOK, STDOKI.RBR, DOKI.DATDOK, (STDOKI.KOL-STDOKI.KOL) AS KOLUL, STDOKI.KOL AS KOLIZ, " + "STDOKI.ZC, (STDOKI.IRAZ-STDOKI.IRAZ) AS KOLZAD, STDOKI.IRAZ AS KOLRAZ, '            ' as sklul, doki.cskl as skliz " + "from STDOKI,DOKI " + "where STDOKI.CART=" + cart + " AND STDOKI.CSKL='" + cSkl + "' AND " + doci + igod + ilot + "AND DOKI.DATDOK <= " + newDateZ + " AND DOKI.VRDOK NOT IN " +dokiF(naru, nari)+ " UNION ALL " +
         // Poravnanje
-        "SELECT 'A' as ui, 'A' as SRT, 'POR', DOKU.BRDOK, STDOKU.RBR, DOKU.DATDOK, (STDOKU.KOL-STDOKU.KOL) AS KOLUL, (STDOKU.KOL-STDOKU.KOL) AS KOLIZ, " + this.getZCPor("STDOKU", vrzal) + " STDOKU.PORAV AS KOLZAD, (STDOKU.PORAV-STDOKU.PORAV) AS KOLRAZ, '            ' as sklul, '            ' as skliz " + "from STDOKU,DOKU " + "where STDOKU.CART=" + cart + " AND STDOKU.CSKL='" + cSkl + "' AND " + docu + " AND STDOKU.PORAV<>0 " + ugod + "AND DOKU.DATDOK <= " + newDateZ + " AND STDOKU.VRDOK NOT IN ('POR') " + "UNION ALL " +
+        "SELECT 'A' as ui, 'A' as SRT, 'POR', DOKU.BRDOK, STDOKU.RBR, DOKU.DATDOK, (STDOKU.KOL-STDOKU.KOL) AS KOLUL, (STDOKU.KOL-STDOKU.KOL) AS KOLIZ, " + this.getZCPor("STDOKU", vrzal) + " STDOKU.PORAV AS KOLZAD, (STDOKU.PORAV-STDOKU.PORAV) AS KOLRAZ, '            ' as sklul, '            ' as skliz " + "from STDOKU,DOKU " + "where STDOKU.CART=" + cart + " AND STDOKU.CSKL='" + cSkl + "' AND " + docu + " AND STDOKU.PORAV<>0 " + ugod + ulot + "AND DOKU.DATDOK <= " + newDateZ + " AND STDOKU.VRDOK NOT IN ('POR') " + "UNION ALL " +
         // Medjuskladisnice - ulaz // srt je bilo 'B'
-        "SELECT 'A' as ui, 'A' as SRT, MESKLA.VRDOK, MESKLA.BRDOK, STMESKLA.RBR, MESKLA.DATDOK, STMESKLA.KOL AS KOLUL, " + "(STMESKLA.KOL-STMESKLA.KOL) AS KOLIZ, STMESKLA.ZCUL, STMESKLA.ZADRAZUL AS KOLZAD, (STMESKLA.ZADRAZUL-STMESKLA.ZADRAZUL) AS KOLRAZ, meskla.csklul as sklul, meskla.cskliz as skliz " + "from STMESKLA,MESKLA " + "where (MESKLA.VRDOK='MEU' OR MESKLA.VRDOK='MES') AND STMESKLA.CART=" + cart + " AND STMESKLA.CSKLUL='" + cSkl + "' AND MESKLA.CSKLUL=STMESKLA.CSKLUL  " + "AND MESKLA.CSKLIZ=STMESKLA.CSKLIZ  AND MESKLA.GOD=STMESKLA.GOD AND MESKLA.BRDOK=STMESKLA.BRDOK " + " AND MESKLA.VRDOK = STMESKLA.VRDOK AND MESKLA.DATDOK <= " + newDateZ + mgod + "UNION ALL " +
+        "SELECT 'A' as ui, 'A' as SRT, MESKLA.VRDOK, MESKLA.BRDOK, STMESKLA.RBR, MESKLA.DATDOK, STMESKLA.KOL AS KOLUL, " + "(STMESKLA.KOL-STMESKLA.KOL) AS KOLIZ, STMESKLA.ZCUL, STMESKLA.ZADRAZUL AS KOLZAD, (STMESKLA.ZADRAZUL-STMESKLA.ZADRAZUL) AS KOLRAZ, meskla.csklul as sklul, meskla.cskliz as skliz " + "from STMESKLA,MESKLA " + "where (MESKLA.VRDOK='MEU' OR MESKLA.VRDOK='MES') AND STMESKLA.CART=" + cart + " AND STMESKLA.CSKLUL='" + cSkl + "' AND MESKLA.CSKLUL=STMESKLA.CSKLUL  " + "AND MESKLA.CSKLIZ=STMESKLA.CSKLIZ  AND MESKLA.GOD=STMESKLA.GOD AND MESKLA.BRDOK=STMESKLA.BRDOK " + " AND MESKLA.VRDOK = STMESKLA.VRDOK AND MESKLA.DATDOK <= " + newDateZ + mgod + mlot + "UNION ALL " +
         // Medjuskladisnice - izlaz
-        "SELECT 'B' as ui, 'B' as SRT, MESKLA.VRDOK, MESKLA.BRDOK, STMESKLA.RBR, MESKLA.DATDOK, (STMESKLA.KOL-STMESKLA.KOL) AS KOLUL, " + "STMESKLA.KOL AS KOLIZ, STMESKLA.ZC, (STMESKLA.ZADRAZIZ-STMESKLA.ZADRAZIZ) AS KOLZAD, STMESKLA.ZADRAZIZ AS KOLRAZ, meskla.csklul as sklul, meskla.cskliz as skliz " + "from STMESKLA,MESKLA " + "where (MESKLA.VRDOK='MEI' OR MESKLA.VRDOK='MES') AND STMESKLA.CART=" + cart + " AND STMESKLA.CSKLIZ='" + cSkl + "' AND MESKLA.CSKLIZ=STMESKLA.CSKLIZ " + "AND MESKLA.CSKLUL=STMESKLA.CSKLUL AND MESKLA.GOD=STMESKLA.GOD AND MESKLA.BRDOK=STMESKLA.BRDOK " + " AND MESKLA.VRDOK = STMESKLA.VRDOK AND MESKLA.DATDOK <= " + newDateZ + mgod + "UNION ALL " +
+        "SELECT 'B' as ui, 'B' as SRT, MESKLA.VRDOK, MESKLA.BRDOK, STMESKLA.RBR, MESKLA.DATDOK, (STMESKLA.KOL-STMESKLA.KOL) AS KOLUL, " + "STMESKLA.KOL AS KOLIZ, STMESKLA.ZC, (STMESKLA.ZADRAZIZ-STMESKLA.ZADRAZIZ) AS KOLZAD, STMESKLA.ZADRAZIZ AS KOLRAZ, meskla.csklul as sklul, meskla.cskliz as skliz " + "from STMESKLA,MESKLA " + "where (MESKLA.VRDOK='MEI' OR MESKLA.VRDOK='MES') AND STMESKLA.CART=" + cart + " AND STMESKLA.CSKLIZ='" + cSkl + "' AND MESKLA.CSKLIZ=STMESKLA.CSKLIZ " + "AND MESKLA.CSKLUL=STMESKLA.CSKLUL AND MESKLA.GOD=STMESKLA.GOD AND MESKLA.BRDOK=STMESKLA.BRDOK " + " AND MESKLA.VRDOK = STMESKLA.VRDOK AND MESKLA.DATDOK <= " + newDateZ + mgod + mlot + "UNION ALL " +
         // Medjuskladisnice - Poravnanje
-        "SELECT 'A' as ui, 'A' as SRT, 'POR', MESKLA.BRDOK, STMESKLA.RBR, MESKLA.DATDOK, (STMESKLA.KOL-STMESKLA.KOL) as KOLUL, (STMESKLA.KOL-STMESKLA.KOL) as KOLIZ," + this.getZCPor("STMESKLA", vrzal) + " STMESKLA.PORAV AS KOLZAD, (STMESKLA.PORAV-STMESKLA.PORAV) AS KOLRAZ, '            ' as sklul, '            ' as skliz " + "from STMESKLA,MESKLA " + "where STMESKLA.CART=" + cart + " AND STMESKLA.CSKLUL='" + cSkl + "' AND MESKLA.CSKLUL=STMESKLA.CSKLUL " + "AND MESKLA.CSKLIZ=STMESKLA.CSKLIZ  AND MESKLA.VRDOK=STMESKLA.VRDOK AND MESKLA.GOD=STMESKLA.GOD " + "AND MESKLA.BRDOK=STMESKLA.BRDOK AND STMESKLA.PORAV<>0 " + "AND MESKLA.DATDOK <= " + newDateZ + mgod + " ORDER BY 6,2,1,4,5"; // bilo
+        "SELECT 'A' as ui, 'A' as SRT, 'POR', MESKLA.BRDOK, STMESKLA.RBR, MESKLA.DATDOK, (STMESKLA.KOL-STMESKLA.KOL) as KOLUL, (STMESKLA.KOL-STMESKLA.KOL) as KOLIZ," + this.getZCPor("STMESKLA", vrzal) + " STMESKLA.PORAV AS KOLZAD, (STMESKLA.PORAV-STMESKLA.PORAV) AS KOLRAZ, '            ' as sklul, '            ' as skliz " + "from STMESKLA,MESKLA " + "where STMESKLA.CART=" + cart + " AND STMESKLA.CSKLUL='" + cSkl + "' AND MESKLA.CSKLUL=STMESKLA.CSKLUL " + "AND MESKLA.CSKLIZ=STMESKLA.CSKLIZ  AND MESKLA.VRDOK=STMESKLA.VRDOK AND MESKLA.GOD=STMESKLA.GOD " + "AND MESKLA.BRDOK=STMESKLA.BRDOK AND STMESKLA.PORAV<>0 " + "AND MESKLA.DATDOK <= " + newDateZ + mgod + mlot + " ORDER BY 6,2,1,4,5"; // bilo
     // 4,5,2,1
         System.out.println("KARTICA qStr: " + qStr);
     return qStr;
@@ -1578,7 +1589,7 @@ public class rdUtil {
     } else if (modul.equalsIgnoreCase("VELE")) {
       addVrDok = " and (doki.vrdok='ROT' or (doki.vrdok='POD' and (doki.param='' or doki.param is null or doki.param like 'P%'))) ";
     } else if (modul.equalsIgnoreCase("MALO")) {
-      addVrDok = " and (doki.vrdok='GOT' or (doki.vrdok='POD' and doki.param like 'K%')) ";
+      addVrDok = " and (doki.vrdok='GOT' or (doki.vrdok='POD' and doki.param like 'K%') or doki.vrdok='GRN')";
     } else if (modul.equalsIgnoreCase("OBRAC")) {
       addVrDok = " and (doki.vrdok in ('RAC','GRN','TER','ODB')) ";
       if (!csklart.equalsIgnoreCase("")) {
@@ -1624,9 +1635,18 @@ public class rdUtil {
     if (vrdok.equals("POS"))  return  "and doki.cskl='" + knj + "' ";
     String cskling = "";
     if (cskl.equalsIgnoreCase("")){
-      cskling = "and doki.cskl in (";
+      ArrayList cskls = new ArrayList(Arrays.asList((String[]) Aus.toArray(
+          ut.getNewQueryDataSet("select cskl from sklad where knjig = '"+knj+"'"), "CSKL")));
+      if (vrdok.equals("") || vrdok.equals("X")) cskls.add(knj);
+            
+      cskling = "and " + Condition.in("CSKL", cskls).qualified("doki");
+      
+      /*cskling = "and doki.cskl in (";
+      if (vrdok.equals("")) 
+        cskling += "'"+knj+"'";
       QueryDataSet sset = ut.getNewQueryDataSet("select cskl from sklad where knjig = '"+knj+"'");
       sset.first();
+      
       do {
         cskling += "'"+sset.getString("CSKL")+"'";
         if (sset.next()){
@@ -1635,8 +1655,8 @@ public class rdUtil {
           cskling += ") ";
           break;
         }
-      } while (true);
-      
+      } while (true);*/
+       
     } else {
       cskling = "and doki.cskl='" + cskl + "' ";
     }
@@ -1649,7 +1669,7 @@ public class rdUtil {
     if (modul.equalsIgnoreCase("VELE")) {
       addVrDok = " and (stdoki.vrdok='ROT' or (stdoki.vrdok='POD' and doki.param not like 'K%')) ";
     } else if (modul.equalsIgnoreCase("MALO")) {
-      addVrDok = " and (stdoki.vrdok='GOT' or (stdoki.vrdok='POD' and doki.param like 'K%')) ";
+      addVrDok = " and (stdoki.vrdok='GOT' or (stdoki.vrdok='POD' and doki.param like 'K%') or doki.vrdok='GRN') ";
     } else if (modul.equalsIgnoreCase("OBRAC")) {
       addVrDok = " and (stdoki.vrdok in ('RAC','GRN','TER','ODB')) ";
     }
@@ -1693,7 +1713,7 @@ public class rdUtil {
     } else if (modul.equalsIgnoreCase("VELE")) {
       addVrDok = " and (doki.vrdok='ROT' or (doki.vrdok='POD' and (doki.param='' or doki.param is null or doki.param like 'P%'))) ";
     } else if (modul.equalsIgnoreCase("MALO")) {
-      addVrDok = " and (doki.vrdok='GOT' or (doki.vrdok='POD' and doki.param like 'K%')) ";
+      addVrDok = " and (doki.vrdok='GOT' or (doki.vrdok='POD' and doki.param like 'K%') or doki.vrdok='GRN') ";
     } else if (modul.equalsIgnoreCase("OBRAC")) {
       addVrDok = " and (doki.vrdok in ('RAC','GRN','TER','ODB')) ";
       if (!csklart.equalsIgnoreCase("")) {
