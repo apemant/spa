@@ -1029,14 +1029,17 @@ public class raTableCopyPopup extends JPopupMenu {
             ds.goToInternalRow(rows[i]);
             try {
               bsh.set("ds", ds);
+              bsh.set("copyds", true);
               for (int c = 0; c < cols.length; c++)
                 setBshValue(ds, cols[c], cnames[c]);
 
               bsh.eval(perfDlg.query.getText());
               
-              for (int c = 0; c < cols.length; c++)
-                getBshValue(ds, cols[c], cnames[c]);
-                
+              Object cp = bsh.get("copyds");
+              if (cp != null && cp instanceof Boolean && ((Boolean) cp).booleanValue())
+                for (int c = 0; c < cols.length; c++)
+                  getBshValue(ds, cols[c], cnames[c]);
+
             } catch (ClassCastException e) {
               e.printStackTrace();
               JOptionPane.showMessageDialog(jt.getTopLevelAncestor(), "Greška: " + e.getMessage(), 
