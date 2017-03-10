@@ -124,6 +124,9 @@ public class rajpDetailMeskla extends JPanel {
   JraTextField jraVC = new JraTextField();
   JraTextField jraPPOP = new JraTextField();
   
+  JraTextField jraLOT = new JraTextField();
+
+  
   public rajpDetailMeskla(raMeskla rAM) {
     this.rAM = rAM;
     try {
@@ -141,6 +144,7 @@ public class rajpDetailMeskla extends JPanel {
     jraZADRAZIZ.setDataSet(rAM.getDetailSet());
     jraZCUL.setDataSet(rAM.getDetailSet());
     jraZADRAZUL.setDataSet(rAM.getDetailSet());
+    jraLOT.setDataSet(rAM.getDetailSet());
   }
 
   private void jbInit() throws Exception {
@@ -152,6 +156,9 @@ public class rajpDetailMeskla extends JPanel {
    
    boolean dodm = frmParam.getParam("robno", "mesklaHack", "N",
        "Popust i izlazna cijena na meðuskladišnicama").equals("D");
+   
+   boolean edion = frmParam.getParam("robno", "ediUlaz", "N",
+       "Panel za unos EDI podataka na ulazu (D,N)").equals("D");
 
     tdsSet = TDS.getMesklaTempSet();
     this.setLayout(borderLayout1);
@@ -173,6 +180,8 @@ public class rajpDetailMeskla extends JPanel {
     jLabel6.setText("Prije");
     jLabel7.setText("Poslije");
     jtfKOL.setColumnName("KOL");
+    
+    jraLOT.setColumnName("LOT");
     /*jtfKOL.addFocusListener(new java.awt.event.FocusAdapter() {
       public void focusLost(FocusEvent e) {
         rAM.jtfKOL_focusLost(e);
@@ -241,6 +250,10 @@ public class rajpDetailMeskla extends JPanel {
       jPanelCenter.add(jraVC, new XYConstraints(150, 85, 130, -1));
       jPanelCenter.add(jraPPOP, new XYConstraints(480, 85, 130, -1));
     }
+    if (edion) {
+      jPanelCenter.add(new JLabel("Šarža"),   new XYConstraints(320,  10,  -1, -1));
+      jPanelCenter.add(jraLOT,   new XYConstraints(480, 10, 100, -1));
+    }
     this.add(jPanelStanje, BorderLayout.SOUTH);
     jPanelStanje.add(jLabel2, new XYConstraints(60, 10, 255, -1));
     jPanelStanje.add(jLabel3, new XYConstraints(367, 10, 255, -1));
@@ -267,7 +280,7 @@ public class rajpDetailMeskla extends JPanel {
   }
 
   public void InitRaPanCartDP(){
-    // (ab.f)  promjenio dm.getStmeskla u rAM.getDetailSet() itd. 07-08-2002
+    
     rpcart.setGodina(hr.restart.util.Valid.getValid().findYear(rAM.getMasterSet().getTimestamp("DATDOK")));
     rpcart.setCskl(rAM.getDetailSet().getString("CSKLIZ"));
     rpcart.setTabela(rAM.getDetailSet());

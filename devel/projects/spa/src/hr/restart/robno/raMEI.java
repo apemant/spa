@@ -756,8 +756,11 @@ public class raMEI extends hr.restart.util.raMasterDetail{
   }
 
   public void add4MEU(){
+    
+    boolean edion = frmParam.getParam("robno", "ediUlaz", "N",
+        "Panel za unos EDI podataka na ulazu (D,N)").equals("D");
 
-    setPreferredSize(new Dimension(660,200));
+    setPreferredSize(new Dimension(660,edion ? 230 : 200));
 //    jraINETO.setNextFocusableComponent(jtfKOL);  zakomentirano zbog JDK1.4
     jlFC.setText("Nabavna cijena");
     jlPMAR.setText("Razlika u cijeni (%)");
@@ -809,18 +812,21 @@ public class raMEI extends hr.restart.util.raMasterDetail{
     add(jpDetailCenter, new XYConstraints(0, 90, 660,220));
     jpDetailCenter.add(jlKOL,    new XYConstraints(20,  15,  -1, -1));
     jpDetailCenter.add(jtfKOL,   new XYConstraints(154, 15, 100, -1));
-    jpDetailCenter.add(jlFC,     new XYConstraints(404, 15,  -1, -1));
+    jpDetailCenter.add(jlFC,     new XYConstraints(354, 15,  -1, -1));
     jpDetailCenter.add(jraFC,    new XYConstraints(509, 15, 100, -1));
     jpDetailCenter.add(jlPMAR,   new XYConstraints(20,  45,  -1, -1));
     jpDetailCenter.add(jraPMAR,  new XYConstraints(154, 45, 100, -1));
-    jpDetailCenter.add(jlFC1,    new XYConstraints(404, 45,  -1, -1));
+    jpDetailCenter.add(jlFC1,    new XYConstraints(354, 45,  -1, -1));
     jpDetailCenter.add(jraFC1,   new XYConstraints(509, 45, 100, -1));
     jpDetailCenter.add(jlFC2,    new XYConstraints(20,  75,  -1, -1));
     jpDetailCenter.add(jraFC2,   new XYConstraints(154, 75, 100, -1));
-    jpDetailCenter.add(jlIznos,  new XYConstraints(404, 75,  -1, -1));
+    jpDetailCenter.add(jlIznos,  new XYConstraints(354, 75,  -1, -1));
     jpDetailCenter.add(jraINETO, new XYConstraints(509, 75, 100, -1));
     
-    
+    if (edion) {
+      jpDetailCenter.add(new JLabel("Šarža"),   new XYConstraints(20,  105,  -1, -1));
+      jpDetailCenter.add(jraLOT,   new XYConstraints(154, 105, 100, -1));
+    }    
 
   }
 
