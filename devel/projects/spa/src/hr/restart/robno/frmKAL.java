@@ -696,6 +696,17 @@ public class frmKAL extends frmUlazTemplate implements IZavtrHandler {
               JOptionPane.ERROR_MESSAGE);
           return false;
 		}
+		vrzal = ' ';
+        if (dm.getSklad().getString("VRZAL").length() == 1)
+            vrzal = dm.getSklad().getString("VRZAL").charAt(0);
+        
+        if ("NVMFLHX".indexOf(vrzal) < 0) {
+            JOptionPane.showMessageDialog(raDetail.getWindow(),
+                "Pogrešna vrsta zalihe skladišta! ("+
+                getMasterSet().getString("CSKL")+")", "Greška",
+                JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 		return true;
 	}
 
