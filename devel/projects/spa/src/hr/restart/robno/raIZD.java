@@ -416,12 +416,13 @@ public class raIZD extends raIzlazTemplate  {
   void keyNull() {
   	
   	QueryDataSet skladiste = Sklad.getDataModule().openTempSet(Condition.equal("CSKL", getMasterSet()));
-  	if (!skladiste.getString("VRZAL").equalsIgnoreCase("N")) {
+  	String vrzal = skladiste.getString("VRZAL");
+  	/*if (!skladiste.getString("VRZAL").equalsIgnoreCase("N")) {
   		JOptionPane.showMessageDialog(raDetail.getWindow(),
           "Operacija je moguæa samo za zalihu po srednjim nabavnim cijenama!",           
               "Poruka", JOptionPane.INFORMATION_MESSAGE);
   		return;
-  	}
+  	}*/
   	
   	String[] skey = {"CSKL", "GOD"};
   	String[] idkey = {"CSKL", "VRDOK", "GOD", "BRDOK", "RBSID"};
@@ -466,10 +467,22 @@ public class raIZD extends raIzlazTemplate  {
       getDetailSet().setString("ID_STAVKA", raControlDocs.getKey(getDetailSet(), idkey, "stdoki"));
       
       rKD.stavka.kol = Aus.zero3;
-      rKD.stavka.iraz = rKD.stanje.vri;
-      rKD.stavka.inab = rKD.stanje.nabul.subtract(rKD.stanje.nabiz);
-      rKD.stavka.imar = Aus.zero2;
-      rKD.stavka.ipor = Aus.zero2;
+      if (vrzal.equals("V")) {
+        rKD.stavka.iraz = rKD.stanje.vri;
+        rKD.stavka.inab = rKD.stanje.nabul.subtract(rKD.stanje.nabiz);
+        rKD.stavka.imar = rKD.stavka.iraz.subtract(rKD.stavka.inab); 
+        rKD.stavka.ipor = Aus.zero2;
+      } else if (vrzal.equals("M")) {
+        rKD.stavka.iraz = rKD.stanje.vri;
+        rKD.stavka.inab = rKD.stanje.nabul.subtract(rKD.stanje.nabiz);
+        rKD.stavka.ipor = rKD.stanje.porul.subtract(rKD.stanje.poriz);
+        rKD.stavka.imar = rKD.stavka.iraz.subtract(rKD.stavka.inab).subtract(rKD.stavka.ipor);
+      } else {
+        rKD.stavka.iraz = rKD.stanje.vri;
+        rKD.stavka.inab = rKD.stanje.nabul.subtract(rKD.stanje.nabiz);
+        rKD.stavka.imar = Aus.zero2;
+        rKD.stavka.ipor = Aus.zero2;
+      }
       
       rKD.KalkulacijaStanje(what_kind_of_dokument);
       lc.TransferFromClass2DB(getDetailSet(),rKD.stavka);
