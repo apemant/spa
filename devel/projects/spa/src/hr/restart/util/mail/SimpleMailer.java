@@ -48,6 +48,8 @@ public class SimpleMailer {
 	private String recipients[] = null;
 	private String subject = null;
 	private String message = null;
+	private String port = null;
+	private boolean tls = false;
 	private Authenticator auth = null;
 	
 	public SimpleMailer(){		
@@ -91,12 +93,14 @@ public class SimpleMailer {
 	      try {
 			//Set the host smtp address
 			  Properties props = new Properties();
+			  if (port != null && port.length() > 0) props.put("mail.smtp.port", port);
+			  if (tls) props.put("mail.smtp.starttls.enable", "true");
 			  props.put("mail.smtp.host", getMailHost());
 			  props.put("mail.transport.protocol", "smtp");
 			  if (auth != null) props.put("mail.smtp.auth", "true");
  
 			 // create some properties and get the default Session
-			 Session session = Session.getDefaultInstance(props, auth);
+			 Session session = Session.getInstance(props, auth);
 			 session.setDebug(debug);
  
 			 // create a message
@@ -154,6 +158,22 @@ public class SimpleMailer {
 	synchronized public void setMailHost(String mailHost) {
 		this.mailHost = mailHost;
 	}
+	
+	public String getPort() {
+	  return port;
+	}
+	
+	synchronized public void setPort(String port) {
+      this.port = port;
+    }
+	
+	public boolean isTLS() {
+	  return tls;
+	}
+	
+	synchronized public void setTLS(boolean tls) {
+      this.tls = tls;
+    }
 	/**
 	 * @return Returns the from.
 	 */
