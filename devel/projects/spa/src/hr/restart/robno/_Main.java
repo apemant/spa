@@ -81,7 +81,8 @@ public class _Main extends hr.restart.util.startFrame {
   JMenuItem jmValidRobnoDoc = new JMenuItem();
   JMenuItem jmFormPS = new JMenuItem();
   JMenuItem jmFormIL = new JMenuItem();
-  JMenuItem jmPopravakZavTr = new JMenuItem();  
+  JMenuItem jmPopravakZavTr = new JMenuItem();
+  JMenuItem jmPred = new JMenuItem();
   JMenu jmPrometi = new JMenu();
   JMenu jmProdaja = new JMenu();
   JMenu jmRacuni = new JMenu();
@@ -243,6 +244,13 @@ public class _Main extends hr.restart.util.startFrame {
         jmFormIL_actionPerformed(e);
       }
     });
+    jmPred.setText("Rekalkulacija predatnica");
+    jmPred.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmPred_actionPerformed(e);
+      }
+    });
+
     jmPrometi.setText("Prometi");
     jmProdaja.setText("Prodaja");
     jmRacuni.setText("Obrada raèuna");
@@ -270,6 +278,7 @@ public class _Main extends hr.restart.util.startFrame {
     jmSys.add(jmFormIL);
     jmSys.add(jmKarticaTest);
     jmSys.add(jmProvjeraPopravakAgenata);
+    jmSys.add(jmPred);
     setToolMenu(jmSys);
     jmIzvjestaji.add(jmOstaliRep);
     jmPrometi.add(hr.restart.robno._Main.getSkladMenu(this));
@@ -330,6 +339,9 @@ public class _Main extends hr.restart.util.startFrame {
   }
   void jmFormIL_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.robno.frmInvLista", jmFormIL.getText());
+  }
+  void jmPred_actionPerformed(ActionEvent e) {
+    showFrame("hr.restart.robno.raRekalkPred", jmPred.getText());
   }
   public startFrame get_Main() {
     return this;
