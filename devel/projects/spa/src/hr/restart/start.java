@@ -22,20 +22,8 @@ import hr.restart.baza.Verinfo;
 import hr.restart.baza.dM;
 import hr.restart.help.MsgDispatcher;
 import hr.restart.sisfun.frmParam;
-import hr.restart.sisfun.raVersionCheck;
 import hr.restart.swing.raMultiLineMessage;
-import hr.restart.util.IntParam;
-import hr.restart.util.Util;
-import hr.restart.util.VarStr;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raDbaseChooser;
-import hr.restart.util.raDbaseCreator;
-import hr.restart.util.raFrame;
-import hr.restart.util.raImages;
-import hr.restart.util.raLLFrames;
-import hr.restart.util.raMiniBackup;
-import hr.restart.util.raScreenHandler;
-import hr.restart.util.startFrame;
+import hr.restart.util.*;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -503,7 +491,12 @@ System.out.println("no port starting shell");
   }
 
   public static void expirationCheck() {
-    raVersionCheck.entry();
+    
+    try {
+      hr.restart.sisfun.raVersionCheck.entry();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     /*try {
       Class cexpc = Class.forName("hr.restart.raExpCheck");
       Object oexpc = cexpc.newInstance();
@@ -588,6 +581,32 @@ System.out.println("no port starting shell");
       if (!raDbaseChooser.showInstance(true, true)) System.exit(0);
     } else if (checkArgs("-dbchoose")) {
       if (!raDbaseChooser.showInstance(false)) System.exit(0);
+    } else if (checkArgs("-breport")) {
+      try {
+        System.out.println("Starting report...");
+        new raBackupReport().perform();
+      } catch (Exception e) {
+        e.printStackTrace();
+        try {
+          Thread.sleep(3000);
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+      }
+      System.exit(0);
+    } else if (checkArgs("-dbackup")) {
+      try {
+        System.out.println("Starting backup...");
+        new raRemoteBackup().perform(true);
+      } catch (Exception e) {
+        e.printStackTrace();
+        try {
+          Thread.sleep(3000);
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+      }
+      System.exit(0);
     } else if (checkArgs("-dbinit")) {
       try {
         ConsoleCreator.initDatabase();
