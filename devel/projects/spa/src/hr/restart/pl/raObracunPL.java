@@ -18,10 +18,13 @@
 package hr.restart.pl;
 
 import hr.restart.baza.Condition;
+import hr.restart.baza.Kumulrad;
 import hr.restart.baza.Odbici;
 import hr.restart.baza.Odbiciobr;
 import hr.restart.baza.Povjerioci;
+import hr.restart.baza.Primanjaobr;
 import hr.restart.baza.Vrsteodb;
+import hr.restart.baza.Vrsteprim;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
@@ -39,6 +42,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,17 +81,21 @@ sysoutTEST ST = new sysoutTEST(false);
   //u loopPrimanja(3) formira osnovicu za kredite u odnosu na flag na vrstama primanja
   private BigDecimal osnovicaZaKredit = nula.setScale(8);
   private BigDecimal osnovicaZaHarach = nula.setScale(8);
+  private BigDecimal halfDopBruto = Aus.zero2;
   /**
    * vrijednosti ranije isplacenih placa u mjesecu isplate ovog obracuna
    * mjVals[0] = porosn; mjVals[1] = iskneop
    */
   private BigDecimal[] mjVals;//mjVals[0] = porosn; mjVals[1] = iskneop; mjVals[2] = por1; mjVals[3] = por2; mjVals[4] = por3...,por4,por5; mjVals[7] = bruto
 
+  private boolean narav = false;
+  
   //setovi
   QueryDataSet vrsteprim;
   QueryDataSet radnici;
   QueryDataSet primanja;
   QueryDataSet kumulrad;
+  QueryDataSet oldkum;
   QueryDataSet kumulorg;
   QueryDataSet odbiciobr;
   //statementi
@@ -195,12 +203,18 @@ sysoutTEST ST = new sysoutTEST(false);
     (nacobrb.equals("6") || nacobrb.equals("7"));
  */
     String nacobrb = dm.getOrgpl().getString("NACOBRB");
-    if (!(nacobrb.equals("6") || nacobrb.equals("7"))) return;
+    if (ld.raLocate(dm.getRadnicipl(), "CRADNIK", crad)) 
+      if (!dm.getRadnicipl().getString("NACOBRB").equals("0"))
+        nacobrb = dm.getRadnicipl().getString("NACOBRB");
+    
+    //if (!(nacobrb.equals("6") || nacobrb.equals("7"))) return;
     QueryDataSet _primanja = Util.getNewQueryDataSet("SELECT * FROM primanjaobr where cradnik = '"+crad+"'");
     if (_primanja.getRowCount() == 0) return;
     _primanja.first();
     do {
-      _primanja.setBigDecimal("BRUTO",_primanja.getBigDecimal("NETO"));
+      if (nacobrb.equals("6") || (ld.raLocate(dm.getVrsteprim(), "CVRP", _primanja)
+          && !dm.getVrsteprim().isNull("CVRODB")))
+        _primanja.setBigDecimal("BRUTO",_primanja.getBigDecimal("NETO"));
     } while (_primanja.next());
     raTransaction.saveChanges(_primanja);
   }
@@ -260,11 +274,27 @@ sysoutTEST ST = new sysoutTEST(false);
 //System.out.println("Rolling shljaker "+radnici.getString("CRADNIK"));
       firePropertyChange("msg", "", "Org.jed. "+radnici.getString("CORG")+" - obraèun plaæe za radnika "+cnt+" od "+radrc);
       cnt++;
-      primanja = Util.getNewQueryDataSet("SELECT * FROM primanjaobr where cradnik = '"+radnici.getString("CRADNIK")+"'");
-      odbiciobr = Util.getNewQueryDataSet("SELECT * FROM odbiciobr where cradnik = '"+radnici.getString("CRADNIK")+"'");
-      if (primanja.getRowCount() != 0) {
+      
+      // narav
+      narav = false;
+      Condition cnp = Condition.in("CVRP", Vrsteprim.getDataModule().openTempSet(Condition.notNull("CVRODB")));
+      QueryDataSet narprim = Primanjaobr.getDataModule().openTempSet(Condition.equal("CRADNIK", radnici).and(cnp));
+      // end narav
+      
+      primanja = Primanjaobr.getDataModule().openTempSet(Condition.equal("CRADNIK", radnici).and(cnp.not()));
+      odbiciobr = Odbiciobr.getDataModule().openTempSet(Condition.equal("CRADNIK", radnici));
+      
+      
+      
+      //primanja = Util.getNewQueryDataSet("SELECT * FROM primanjaobr where cradnik = '"+radnici.getString("CRADNIK")+"'");
+      //odbiciobr = Util.getNewQueryDataSet("SELECT * FROM odbiciobr where cradnik = '"+radnici.getString("CRADNIK")+"'");
+      
+      if (primanja.getRowCount() != 0 || narprim.getRowCount() != 0) {
         odbici.setRadniciPL(radnici);
-        kumulrad = Util.getNewQueryDataSet("SELECT * FROM kumulrad where cradnik = '"+radnici.getString("CRADNIK")+"'");
+        oldkum = kumulrad = Kumulrad.getDataModule().openTempSet(Condition.equal("CRADNIK", radnici));
+        //kumulrad = Util.getNewQueryDataSet("SELECT * FROM kumulrad where cradnik = '"+radnici.getString("CRADNIK")+"'");
+        halfDopBruto = Aus.zero0;
+
         if (kumulrad.getRowCount() > 0) kumulrad.empty();
         kumulrad.insertRow(true);
         kumulrad.setString("CRADNIK",radnici.getString("CRADNIK"));
@@ -284,7 +314,65 @@ sysoutTEST ST = new sysoutTEST(false);
           calcDoNetaPK();
           loopPrimanja(3); // rasporedjuje proporcionalno neto2 po zaradama
         }
-        kumulrad.setBigDecimal("NARUKE",kumulrad.getBigDecimal("NETOPK"));
+
+        //narav
+        BigDecimal naravodb = Aus.zero2;
+        
+        if (narprim.getRowCount() != 0) {
+          narav = true;
+          QueryDataSet oldprim = primanja;
+          primanja = narprim;
+          kumulrad = Kumulrad.getDataModule().openEmptySet();
+          kumulrad.insertRow(true);
+          kumulrad.setString("CRADNIK",radnici.getString("CRADNIK"));
+          kumulrad.post();
+          kumulrad.first();
+          if (obrdoprinosa) {
+            loopPrimanja(1);
+            calcNetoUBruto();
+            calcDoprinosiR(); 
+            calcDoprinosiNa();
+            loopPrimanja(2);
+          }
+          if (obrporeza) {
+            calcPorez();
+            calcDoNetaPK();
+            loopPrimanja(3);
+            //createNaravOdb();
+          }
+          
+          String[] ac = {"BRUTO", "DOPRINOSI", "NETO", "ISKNEOP", "POROSN", "POR1", "POR2", "POR3", "POR4", "POR5", 
+              "PORUK", "PRIR", "PORIPRIR", "NETO2", "NETOPK"};
+
+          for (int i = 0; i < ac.length; i++)
+            oldkum.setBigDecimal(ac[i], oldkum.getBigDecimal(ac[i]).add(kumulrad.getBigDecimal(ac[i])));
+
+          kumulrad = oldkum;
+          primanja = oldprim;
+          
+          QueryDataSet vprim = Vrsteprim.getDataModule().openTempSet(Condition.notNull("CVRODB"));
+         
+          odbiciobr.insertRow(false);
+          odbiciobr.setShort("CVRODB", vprim.getShort("CVRODB"));
+          odbiciobr.setString("CRADNIK",kumulrad.getString("CRADNIK"));
+          odbiciobr.setString("CKEY",kumulrad.getString("CRADNIK"));
+          odbiciobr.setString("CKEY2","");
+          odbiciobr.setShort("CVRP", (short) 0);
+          odbiciobr.setShort("RBR", (short) 1);
+          odbiciobr.setShort("RBRODB", (short) 0);
+          odbiciobr.setBigDecimal("OBRIZNOS", narprim.getBigDecimal("NETO"));
+          odbiciobr.post();
+          
+          //kumulrad.setBigDecimal("NETOPK", kumulrad.getBigDecimal("NETOPK").subtract(narprim.getBigDecimal("NETO")));
+          naravodb = narprim.getBigDecimal("NETO");
+          kumulrad.setBigDecimal("KREDITI",kumulrad.getBigDecimal("KREDITI").add(naravodb));
+          
+          narav = false;
+        }
+        
+        //end narav
+        
+        kumulrad.setBigDecimal("NARUKE",kumulrad.getBigDecimal("NETOPK").subtract(naravodb));
         calcHarach();
         if (obrkredita) {
           calcKrediti();
@@ -295,6 +383,7 @@ sysoutTEST ST = new sysoutTEST(false);
 //gubed
         raTransaction.saveChanges(odbiciobr);
         raTransaction.saveChanges(primanja);
+        raTransaction.saveChanges(narprim);
 //System.out.println("SAD STISNI CTRL-C !!!!!!!!!!!");
 //Thread.sleep(1500);
         raTransaction.saveChanges(kumulrad);
@@ -334,6 +423,8 @@ sysoutTEST ST = new sysoutTEST(false);
         if (raParam.getParam(_vrsteprim,1).equals("D")) { //obr doprinosa
           addBigDec_kumulrad("BRUTO",primanja.getBigDecimal("BRUTO"));
           addBigDec_kumulrad("SATI",primanja.getBigDecimal("SATI"));
+          if (_vrsteprim.getString("HOLAK").equalsIgnoreCase("D") && radnici.getString("MINIMALAC").equalsIgnoreCase("D"))
+            halfDopBruto = halfDopBruto.add(primanja.getBigDecimal("BRUTO"));
         } else {
           if (raParam.getParam(_vrsteprim,2).equals("D")) {//ide samo u neto
             addBigDec_kumulrad("NETO",primanja.getBigDecimal("BRUTO"));
@@ -346,7 +437,8 @@ sysoutTEST ST = new sysoutTEST(false);
         // dopZ/dopR = brutZ/brutR => dopZ = dopR * (brutZ/brutR)
         if (raParam.getParam(_vrsteprim,1).equals("D")) {
           BigDecimal propkoef;
-          if (radbruto.signum() == 0) {
+          if (narav) propkoef = Aus.one0;
+          else if (radbruto.signum() == 0) {
             propkoef = nula;
           } else {
             propkoef = ut.setScale(primanja.getBigDecimal("BRUTO"),8).divide(radbruto,8,BigDecimal.ROUND_HALF_UP);
@@ -365,7 +457,7 @@ sysoutTEST ST = new sysoutTEST(false);
         }
       } else if (mode == 3) {// proprocionalno netopk po zaradama
         if (raParam.getParam(_vrsteprim,2).equals("N")) {//ne obracunava se porez NETO = BRUTO - DOPRINOSI
-          if (!isNeto_Bruto()) {
+          if (!isNeto_Bruto() && !narav) {
             primanja.setBigDecimal("NETO",primanja.getBigDecimal("BRUTO").add(primanja.getBigDecimal("DOPRINOSI").negate()));
           } else {//neto = bruto(=neto2); bruto = bruto(=neto2)+doprinosi
             primanja.setBigDecimal("NETO",primanja.getBigDecimal("BRUTO"));
@@ -373,25 +465,30 @@ sysoutTEST ST = new sysoutTEST(false);
           }
           if (primanja.getBigDecimal("NETO").signum() < 0) primanja.setBigDecimal("NETO",Aus.zero2);
         } else {
-          if (!isNeto_Bruto()) {
+          if (!isNeto_Bruto() && !narav) {
             BigDecimal propkoef;
             if (radbruto.signum() == 0) {
               propkoef = nula;
             } else {
-              propkoef = ut.setScale(primanja.getBigDecimal("BRUTO"),8).divide(radbruto,8,BigDecimal.ROUND_HALF_UP);
+              propkoef = ut.setScale(primanja.getBigDecimal("BRUTO"),10).divide(radbruto,8,BigDecimal.ROUND_HALF_UP);
             }
             BigDecimal neto2 = raddopr.multiply(propkoef);//raddopr = kumulrad.NETO2
-            primanja.setBigDecimal("NETO",neto2);
+            primanja.setBigDecimal("NETO",neto2.setScale(2, BigDecimal.ROUND_HALF_UP));
           } else {//                           pr.bruto=neto2                        raddopr = kumulrad.NETO2
+            System.out.println("OVDJE! raèunam primanja");
+            System.out.println(kumulrad);
+            System.out.println(primanja);
+            System.out.println(raddopr);
             primanja.setBigDecimal("NETO",primanja.getBigDecimal("BRUTO"));
             BigDecimal propkoef;
             if (raddopr.signum() == 0) {
               propkoef = nula;
             } else {
-              propkoef = ut.setScale(primanja.getBigDecimal("BRUTO"),8).divide(raddopr,8,BigDecimal.ROUND_HALF_UP);
+              propkoef = ut.setScale(primanja.getBigDecimal("BRUTO"),10).divide(raddopr,8,BigDecimal.ROUND_HALF_UP);
             }
+            System.out.println(propkoef);
             BigDecimal bruto = radbruto.multiply(propkoef);//pr.bruto = radbruto*(pr.bruto(=neto2)/rad.neto2)
-            primanja.setBigDecimal("BRUTO",bruto);
+            primanja.setBigDecimal("BRUTO",bruto.setScale(2, BigDecimal.ROUND_HALF_UP));
           }
         }
         primanja.post();
@@ -419,6 +516,7 @@ sysoutTEST ST = new sysoutTEST(false);
     BigDecimal[] sumStopaIznos = calcOdbiciRadnik(doprinosi,"NETO",true);
     //napunim kumulrad.doprinosi
     kumulrad.setBigDecimal("DOPRINOSI",sumStopaIznos[1]); // = bruto - neto
+    
     if (kumulrad.getBigDecimal("NETO").signum() < 0)
       kumulrad.setBigDecimal("NETO", Aus.zero2); // = bruto - neto
     posKumulOrg(currCorg,radnici.getString("CVRO"));
@@ -431,10 +529,15 @@ sysoutTEST ST = new sysoutTEST(false);
 
   private void calcDoprinosiNa() throws Exception {
     QueryDataSet doprinosi = odbici.getDoprinosiNa(radnici.getString("CRADNIK"),raOdbici.DEF);
+    halfDopBruto = halfDopBruto.divide(new BigDecimal(2));
+    Aus.sub(kumulrad, "BRUTO", halfDopBruto);
+    
     BigDecimal[] sumStopaIznos = calcOdbiciRadnik(doprinosi,null,false);
     posKumulOrg(currCorg,radnici.getString("CVRO"));
     //dodajem na kumulorg
     addBigDec_kumulorg("DOPRPOD",sumStopaIznos[1]);
+    
+    Aus.add(kumulrad, "BRUTO", halfDopBruto);
   }
 
   /**
@@ -448,13 +551,14 @@ sysoutTEST ST = new sysoutTEST(false);
   private BigDecimal[] calcOdbiciRadnik(QueryDataSet qodbici, String negcol,boolean update) throws Exception {
     BigDecimal sumstopa = new BigDecimal("0.00000000");
     BigDecimal sumiznos = Aus.zero2;
+    
     mjVals = getMjVals();
     if (uselimitsDOP) {
       //prijasnja osnovica za doprinose
-      odbici.setPreSum_calcOdbitak("preosn",mjVals[7]);
+      odbici.setPreSum_calcOdbitak("preosn", mjVals[7]);
       //
     } else {
-      odbici.setPreSum_calcOdbitak("preosn",ut.setScale(nula,2));
+      odbici.setPreSum_calcOdbitak("preosn", ut.setScale(nula,2));
     }
 
     qodbici.first();
@@ -467,8 +571,8 @@ sysoutTEST ST = new sysoutTEST(false);
         odbiciobr.insertRow(false);
         setValues(qodbici,odbiciobr);
         odbiciobr.setString("CRADNIK",kumulrad.getString("CRADNIK"));
-        odbiciobr.setShort("CVRP",Short.parseShort("0"));
-        odbiciobr.setShort("RBR",Short.parseShort("0"));
+        odbiciobr.setShort("CVRP", (short) 0);
+        odbiciobr.setShort("RBR", narav ? (short) 1 : (short) 0);
         odbiciobr.setBigDecimal("OBRIZNOS",ut.setScale(clcres.obriznos,2));
         odbiciobr.setBigDecimal("OBRSTOPA",ut.setScale(clcres.obrstopa,2));
         odbiciobr.setBigDecimal("OBROSN",ut.setScale(clcres.obrosn,2));
@@ -531,19 +635,24 @@ sysoutTEST ST = new sysoutTEST(false);
   private void calcOlaksice() throws Exception {
     posKumulOrg(currCorg,radnici.getString("CVRO"));
     kumulrad.setBigDecimal("POROSN",kumulrad.getBigDecimal("NETO"));//ovo bi trebao umanjiti calcPremije()
+    System.out.println("calc olakšice: " + kumulrad);
     calcPremije();
+    System.out.println("aft premije: " + kumulrad);
     BigDecimal[] pausStopaIznos = calcPausOdbitak(); 
     if (pausStopaIznos!=null) {
       kumulrad.setBigDecimal("NEOP",pausStopaIznos[1]);
       kumulrad.setBigDecimal("ISKNEOP",pausStopaIznos[1]);
+      System.out.println("aft pausal: " + kumulrad);
     } else {
       QueryDataSet qolaksice = odbici.getOlaksice(radnici.getString("CRADNIK"),raOdbici.DEF);
+      new sysoutTEST(false).prn(qolaksice);
       BigDecimal neoporezivo;
       if (qolaksice.getRowCount() == 0) {
         neoporezivo = dm.getParametripl().getBigDecimal("MINPL");
         kumulrad.setBigDecimal("POROSN",kumulrad.getBigDecimal("POROSN").add(neoporezivo.negate()));
       } else {
         BigDecimal[] sumStopaIznos = calcOdbiciRadnik(qolaksice,"POROSN", true);
+        System.out.println("stopa iznos " + sumStopaIznos[0] + " " + sumStopaIznos[1] + " " + isOlakIncluded(qolaksice));
         if (sumStopaIznos[0].compareTo(nula) == 0 && isOlakIncluded(qolaksice)) {
           neoporezivo = sumStopaIznos[1];
         } else {
@@ -552,11 +661,12 @@ sysoutTEST ST = new sysoutTEST(false);
         }
       }
       kumulrad.setBigDecimal("NEOP",neoporezivo);
+      System.out.println("aft neoporezivo: " + kumulrad);
       //prosli mjesec:
       addBigDec_kumulrad("POROSN",mjVals[1]); //porosn = neto - neop + iskneop_prosli_obracuni
       //
       if (kumulrad.getBigDecimal("POROSN").compareTo(nula) < 0) { //ako ima vise olaksica nego placu
-        kumulrad.setBigDecimal("ISKNEOP",kumulrad.getBigDecimal("NEOP").add(mjVals[1]).add(kumulrad.getBigDecimal("POROSN"))); //=neto
+        kumulrad.setBigDecimal("ISKNEOP",kumulrad.getBigDecimal("NEOP").add(mjVals[1].negate()).add(kumulrad.getBigDecimal("POROSN"))); //=neto
         kumulrad.setBigDecimal("POROSN",nula);
       } else {
         kumulrad.setBigDecimal("ISKNEOP",kumulrad.getBigDecimal("NEOP").add(mjVals[1].negate()));
@@ -569,6 +679,7 @@ sysoutTEST ST = new sysoutTEST(false);
       if (koef.compareTo(Aus.zero0) == 0) kumulrad.setBigDecimal("NEOP", Aus.zero2);
       else kumulrad.setBigDecimal("NEOP", dm.getParametripl().getBigDecimal("MINPL").add(koef.subtract(Aus.one0).multiply(new BigDecimal("2500"))));
       
+      System.out.println("aft end: " + kumulrad);
       //kumulrad.setBigDecimal("NEOP",dm.getParametripl().getBigDecimal("MINPL").multiply(getKoefOlak(kumulrad.getString("CRADNIK"))));
     } //paus
     addBigDec_kumulorg("NEOP",kumulrad.getBigDecimal("NEOP"));
@@ -585,13 +696,15 @@ sysoutTEST ST = new sysoutTEST(false);
   // neto2 -> neto1 -> bruto
   private void calcNetoUBruto() throws Exception {
     // if nacobrb in (6,7)
-    if (!isNeto_Bruto()) return;
+    if (!isNeto_Bruto() && !narav) return;  // narav je uvijek neto->bruto
     /**
      * neto2 = kumulrad.BRUTO
      * neto1 = calcNBR();
      * bruto = neto1/(1-ukstdop/100)
      * kumulrad.bruto = bruto
      */
+    System.out.println("NETO U BRUTO:");
+    System.out.println(kumulrad);
     String _cradnik = kumulrad.getString("CRADNIK");
     BigDecimal neto2 = kumulrad.getBigDecimal("BRUTO");
     BigDecimal neto1 = getBrutoIzNeta(neto2, _cradnik);
@@ -629,11 +742,16 @@ sysoutTEST ST = new sysoutTEST(false);
     for (int i=0; i<oldpor.length; i++) {
       oldpor2[i] = oldpor[i];
     }
+    System.out.println("STOPE: " + Arrays.toString(stope));
+    
     BigDecimal koef = getKoefOlak(_cradnik);
     if (koef.compareTo(Aus.zero0) == 0) oldpor2[5] = Aus.zero2;
     else oldpor2[5] = dm.getParametripl().getBigDecimal("MINPL").add(koef.subtract(Aus.one0).multiply(new BigDecimal("2500")));
 //        ut.setScale(dm.getParametripl().getBigDecimal("MINPL"),8).multiply(getKoefOlak(_cradnik));//lodbitak /**@todo: ukljuciti premije tu ?*/
+    oldpor2[5] = oldpor2[5].subtract(_mjVls[1]);
     oldpor2[6] = dm.getParametripl().getBigDecimal("MINPL");//lporminpl
+    System.out.println("OLDPOR: " + Arrays.toString(oldpor2));
+    System.out.println("mjval0: " + _mjVls[0]);
     raCalcPorez calcporez = new raCalcPorez();
     calcporez.init(neto2, stope, _mjVls[0], oldpor2, prir, limits);
     calcporez.calcBack();
@@ -664,9 +782,14 @@ sysoutTEST ST = new sysoutTEST(false);
     do {
       ukstdop = ukstdop.add(_doprinosi.getBigDecimal("STOPA"));
       arstopedop.add(_doprinosi.getBigDecimal("STOPA").divide(sto,BigDecimal.ROUND_HALF_UP));
-      armaxosndop.add(new BigDecimal(
-          hr.restart.sisfun.frmParam.getParam("pl","maxosn"+_doprinosi.getShort("CVRODB"), "0", "Maksimalna osnovica za doprinos "+_doprinosi.getShort("CVRODB"))
-        ));
+      BigDecimal maxosndop = new BigDecimal(hr.restart.sisfun.frmParam.getParam("pl","maxosn"+_doprinosi.getShort("CVRODB"), 
+          "0", "Maksimalna osnovica za doprinos "+_doprinosi.getShort("CVRODB")));
+      if (maxosndop.signum() > 0) {
+        maxosndop = maxosndop.subtract(mjVals[7]);
+        if (maxosndop.signum() <= 0) 
+          maxosndop = Aus.one0.movePointLeft(6);
+      }
+      armaxosndop.add(maxosndop);
     } while (_doprinosi.next());
     ukstdop = ut.setScale(ukstdop,8).divide(sto,BigDecimal.ROUND_HALF_UP);
     stopedop = (BigDecimal[])arstopedop.toArray(new BigDecimal[arstopedop.size()]);
@@ -702,12 +825,12 @@ sysoutTEST ST = new sysoutTEST(false);
     } while (_prirezi.next());
     return ut.setScale(pprir,8).divide(sto,BigDecimal.ROUND_HALF_UP);
   }
-  private String lastSrchdMjVals_cradnik = null;
+  //private String lastSrchdMjVals_cradnik = null;
   private BigDecimal[] getMjVals() {
     String _crad = kumulrad.getString("CRADNIK");
-    if (lastSrchdMjVals_cradnik!=null && mjVals != null && _crad.equals(lastSrchdMjVals_cradnik)) {
-      return mjVals;
-    }
+    //if (lastSrchdMjVals_cradnik!=null && mjVals != null && _crad.equals(lastSrchdMjVals_cradnik)) {
+    //  return mjVals;
+    //}
     String in_crad = "('"+_crad+"'";
     if (_crad.contains("@")) {//hackchuga samo takva za oj4
       in_crad = in_crad + ",'"+_crad.substring(0,_crad.indexOf("@"))+"')";
@@ -733,11 +856,24 @@ sysoutTEST ST = new sysoutTEST(false);
 //                  +new java.sql.Date(Util.getUtil().getFirstDayOfMonth(datumispl).getTime()).toString()
 //                  +"' AND '"
 //                  +new java.sql.Date(Util.getUtil().getLastDayOfMonth(datumispl).getTime()).toString()+"'";
-//    System.out.println("qmjvls::: "+qmjvls);
+    System.out.println("qmjvls::: "+qmjvls);
     QueryDataSet oldmjsums = Util.getNewQueryDataSet(qmjvls);
     for (int i = 0; i < 9; i++) {
       ret[i] = ut.setScale(oldmjsums.getBigDecimal(i),2);
     }
+    if (narav) {
+      ret[0] = ret[0].add(oldkum.getBigDecimal("POROSN"));
+      ret[1] = ret[1].add(oldkum.getBigDecimal("ISKNEOP"));
+      ret[2] = ret[2].add(oldkum.getBigDecimal("POR1"));
+      ret[3] = ret[3].add(oldkum.getBigDecimal("POR2"));
+      ret[4] = ret[4].add(oldkum.getBigDecimal("POR3"));
+      ret[5] = ret[5].add(oldkum.getBigDecimal("POR4"));
+      ret[6] = ret[6].add(oldkum.getBigDecimal("POR5"));
+      ret[7] = ret[7].add(oldkum.getBigDecimal("BRUTO"));
+      ret[8] = ret[8].add(oldkum.getBigDecimal("NETO2"));
+      System.out.println("oldkum: " + oldkum);
+    }
+    System.out.println("MJVALS: " + Arrays.toString(ret));
     return ret;
   }
   /*
@@ -882,8 +1018,8 @@ sysoutTEST ST = new sysoutTEST(false);
     odbiciobr.insertRow(false);
     setValues(_qodbici,odbiciobr);
     odbiciobr.setString("CRADNIK",kumulrad.getString("CRADNIK"));
-    odbiciobr.setShort("CVRP",Short.parseShort("0"));
-    odbiciobr.setShort("RBR",Short.parseShort("0"));
+    odbiciobr.setShort("CVRP",(short) 0);
+    odbiciobr.setShort("RBR", narav ? (short) 1 : (short) 0);
     odbiciobr.setBigDecimal("OBRIZNOS",ut.setScale(_porez,2));
     odbiciobr.setBigDecimal("OBRSTOPA",ut.setScale(_qodbici.getBigDecimal("STOPA"),2));
     if (prirez) {
@@ -1402,14 +1538,14 @@ sysoutTEST ST = new sysoutTEST(false);
 
 
 //test
-public static void main(String[] args) {
+/*public static void main(String[] args) {
   System.out.println("r.. "+raPlObrRange.getInQueryIsp(2002,1,2002,12,"kumulorgarh"));
   short[] s = raPlObrRange.getMinAndMaxObrada();
   for (int i = 0; i < s.length; i++) {
     System.out.println("s["+i+"] = "+s[i]);
   }
 
-}
+}*/
 
 //  System.out.println("SELECT * FROM kumulradarh where "+raPlObrRange.getInQueryIsp(2002,7,"kumulradarh"));
 //  System.out.println("r1 = "+raPlObrRange.getInQueryIsp(2002,7));
