@@ -8,13 +8,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import com.jcraft.jsch.JSch;
 import com.oroinc.net.ftp.FTPClient;
 import com.oroinc.net.ftp.FTPReply;
 
 public class FileTransferUtil {
   Properties props;
-  boolean isFS;
+  boolean isFS, isSSH;
   private FTPClient ncftp = null;
+  
+  private com.jcraft.jsch.Session sess = null;
+  private com.jcraft.jsch.ChannelSftp sch = null;
+  
   public FileTransferUtil() {
   }
   /**
@@ -24,7 +29,8 @@ public class FileTransferUtil {
    */
   public FileTransferUtil(Properties _p) {
     props = _p;
-    isFS = _p.getProperty("type", "ftp").equalsIgnoreCase("fs"); 
+    isFS = _p.getProperty("type", "ftp").equalsIgnoreCase("fs");
+    isSSH = _p.getProperty("type", "ftp").equalsIgnoreCase("sftp");
   }
   protected FTPClient getNetComponentsFTPClient() throws Exception {
     if (ncftp != null && ncftp.isConnected()) return ncftp;
@@ -38,6 +44,24 @@ public class FileTransferUtil {
     if (!ncftp.changeWorkingDirectory(props.getProperty("serverlib")))
       throw new Exception("Invalid serverlib directory");
     return ncftp;
+  }
+  
+  protected com.jcraft.jsch.ChannelSftp getChannel() throws Exception {
+    if (sch != null && sch.isConnected()) return sch;
+    
+    com.jcraft.jsch.JSch jsch = new JSch();
+    sess = jsch.getSession(
+        props.getProperty("user"), props.getProperty("url"), 
+        Integer.parseInt(props.getProperty("port", "22")));
+    
+    sess.connect();
+    
+    com.jcraft.jsch.Channel channel = sess.openChannel("sftp");
+    channel.connect();
+
+    sch = (com.jcraft.jsch.ChannelSftp) channel;
+    sch.cd(props.getProperty("serverlib"));
+    return sch;
   }
   public boolean saveFile(File im, String name) {
     if (isFS) {
@@ -98,6 +122,8 @@ public class FileTransferUtil {
         return null;
       }
     }
+    if (isSSH) return loadFileSSH(name, stayConnected);
+    
     if (lastLoadedFile != null) lastLoadedFile.delete();
     File temp = null;
     FTPClient ftp = null;
@@ -120,6 +146,25 @@ public class FileTransferUtil {
       return null;
     } finally {
       if (!stayConnected) closeFTP();//(ftp);
+//      if (temp != null) temp.delete();
+      lastLoadedFile = temp;
+    }
+  }
+  
+  public File loadFileSSH(String name, boolean stayConnected) {
+    if (lastLoadedFile != null) lastLoadedFile.delete();
+    File temp = null;    
+    try {
+      getChannel();
+      temp = File.createTempFile(name, "", new File("."));
+      sch.get(name, temp.getName());
+
+      return temp;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    } finally {
+      if (!stayConnected && sess != null) sess.disconnect();
 //      if (temp != null) temp.delete();
       lastLoadedFile = temp;
     }
