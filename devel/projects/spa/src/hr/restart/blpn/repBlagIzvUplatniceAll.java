@@ -21,13 +21,14 @@ import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.robno.repUtil;
 import hr.restart.util.Valid;
+import hr.restart.util.reports.raReportData;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import com.borland.dx.dataset.DataSet;
 
-public class repBlagIzvUplatniceAll implements sg.com.elixir.reportwriter.datasource.IDataProvider {
+public class repBlagIzvUplatniceAll implements raReportData { //sg.com.elixir.reportwriter.datasource.IDataProvider {
 
   hr.restart.robno._Main main;
   frmBlagIzv fui = frmBlagIzv.getBlagIzv();
@@ -47,7 +48,7 @@ public class repBlagIzvUplatniceAll implements sg.com.elixir.reportwriter.dataso
     ru.setDataSet(ds);
   }
 
-  public repBlagIzvUplatniceAll(int idx) {
+  /*public repBlagIzvUplatniceAll(int idx) {
     if(idx==0){
       rb = 0;
     }
@@ -68,9 +69,20 @@ public class repBlagIzvUplatniceAll implements sg.com.elixir.reportwriter.dataso
         return (indx < ds.getRowCount());
       }
     };
-  }
+  }*/
 
+  public raReportData getRow(int i) {
+    ds.goToRow(i);
+    return this;
+  };
+  
+  public int getRowCount() {
+    return ds.rowCount();
+  };
+  
   public void close() {
+    ru.setDataSet(null);
+    ds = null;
   }
 
   public String getNASLOV() {
@@ -78,6 +90,13 @@ public class repBlagIzvUplatniceAll implements sg.com.elixir.reportwriter.dataso
       return "ISPLATNICA br. " + getRBS();
     return "UPLATNICA br. " + getRBS();
   }
+  
+  public String getUplatiteljIsplatitelj(){
+    if (getIZDATAK().compareTo(new BigDecimal(0)) > 0)
+      return "Primatelj";
+    return "Uplatitelj";
+  }
+  
   public String getLinija() {
     if (getIZDATAK().compareTo(new BigDecimal(0)) > 0)
       return "Kome";

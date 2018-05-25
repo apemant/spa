@@ -159,17 +159,19 @@ public class frmBlagIzv extends raMasterDetail {
     jpMaster = new jpUplIsplMaster(this);
     this.setJPanelMaster(jpMaster);
     raMaster.setEditEnabled(false);
-    this.raMaster.getRepRunner().addReport("hr.restart.blpn.repBlagIzv","Ispis blagajni\u010Dkog izvještaja",2);
-    this.raMaster.getRepRunner().addReport("hr.restart.blpn.repBlagIzvUplatniceAll","Ispis  svih uplatnica / isplatnica",2);
+    this.raMaster.getRepRunner().addReport("hr.restart.blpn.repBlagIzv", "hr.restart.blpn.repBlagIzv", "BlagIzv", "Ispis blagajni\u010Dkog izvještaja");
+    this.raMaster.getRepRunner().addReport("hr.restart.blpn.repBlagIzvUplatniceAll", "hr.restart.blpn.repBlagIzvUplatniceAll", "UplIsplUplatniceAll", "Ispis svih uplatnica / isplatnica");
 
     this.setDetailSet(dm.getStavkeblarh());
     this.setVisibleColsDetail(new int[] {5, 6, 7, 8});
     this.setDetailKey(new String[] {"KNJIG", "CBLAG", "OZNVAL", "GODINA", "BRIZV", "RBS"});
     jpDetail = new jpUplIsplDetail(this);
     this.setJPanelDetail(jpDetail);
+    Aus.recursiveUpdateSizes(jpDetail);
+    System.out.println("***UPDATED SIZES***");
     raDetail.setEditEnabled(false);
     this.raDetail.getRepRunner().clearAllReports();
-    this.raDetail.getRepRunner().addReport("hr.restart.blpn.repBlagIzvUplatnice","Ispis uplatnice / isplatnice",2);
+    this.raDetail.getRepRunner().addReport("hr.restart.blpn.repBlagIzvUplatnice", "hr.restart.blpn.repBlagIzvUplatnice", "UplIsplUplatnice", "Ispis uplatnice / isplatnice");
   }
 
   void dearhivir(){

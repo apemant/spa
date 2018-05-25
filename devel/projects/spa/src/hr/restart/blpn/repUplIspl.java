@@ -21,12 +21,13 @@ import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
 import hr.restart.robno.repUtil;
 import hr.restart.util.Valid;
+import hr.restart.util.reports.raReportData;
 
 import java.math.BigDecimal;
 
 import com.borland.dx.dataset.DataSet;
 
-public class repUplIspl implements sg.com.elixir.reportwriter.datasource.IDataProvider {
+public class repUplIspl implements raReportData { // sg.com.elixir.reportwriter.datasource.IDataProvider {
 
   hr.restart.robno._Main main;
   frmUplIspl fui = frmUplIspl.getUplIspl();
@@ -46,6 +47,7 @@ public class repUplIspl implements sg.com.elixir.reportwriter.datasource.IDataPr
     ru.setDataSet(ds);
   }
 
+  /*
   public repUplIspl(int idx) {
     if(idx==0){
       rb = 0;
@@ -68,8 +70,20 @@ public class repUplIspl implements sg.com.elixir.reportwriter.datasource.IDataPr
       }
     };
   }
-
+*/
+  
+  public raReportData getRow(int i) {
+      ds.goToRow(i);
+      return this;
+    }
+  
+  public int getRowCount() {
+    return ds.rowCount();
+  };
+  
   public void close() {
+    ru.setDataSet(null);
+    ds = null;
   }
 
   public String getNASLOV() {

@@ -22,8 +22,8 @@
      <Property Name="Grid X">5</Property>
      <Property Name="Grid Y">5</Property>
      <Property Name="Version">1.50</Property>
-     <Property Name="Last Modified">Thu Mar 29 18:13:44 CEST 2007</Property>
-     <HiddenProperty Name="Template Path">/media/hda3/home/andrej/eworkspace/devel/projects/spa/src/hr/restart/blpn/reports/</HiddenProperty>
+     <Property Name="Last Modified">Wed May 23 16:08:58 CEST 2018</Property>
+     <HiddenProperty Name="Template Path">/home/ante/projekti/devel/projects/spa/src/hr/restart/blpn/reports/</HiddenProperty>
      <HiddenProperty Name="Text_Count">109</HiddenProperty>
      <HiddenProperty Name="Label_Count">54</HiddenProperty>
      <HiddenProperty Name="Image_Count">0</HiddenProperty>
@@ -269,12 +269,12 @@
           <Model Name="Label27">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label27</Property>
-               <Property Name="Caption">Likvidator                                        Blagajnik                                        Uplatitelj</Property>
+               <Property Name="Caption">Likvidator                                        Blagajnik                                                    </Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">780</Property>
-               <Property Name="Top">5020</Property>
-               <Property Name="Width">9020</Property>
-               <Property Name="Height">320</Property>
+               <Property Name="Top">5000</Property>
+               <Property Name="Width">8960</Property>
+               <Property Name="Height">340</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
                <Property Name="Border Style">Transparent</Property>
@@ -287,16 +287,16 @@
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">Yes</Property>
+               <Property Name="Lock">No</Property>
           </Model>
           <Model Name="Label28">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label28</Property>
-               <Property Name="Caption">, dana</Property>
+               <Property Name="Caption">,  dana</Property>
                <Property Name="Visible">Yes</Property>
-               <Property Name="Left">5620</Property>
+               <Property Name="Left">5540</Property>
                <Property Name="Top">4280</Property>
-               <Property Name="Width">800</Property>
+               <Property Name="Width">720</Property>
                <Property Name="Height">280</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
@@ -310,7 +310,7 @@
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Left</Property>
-               <Property Name="Lock">Yes</Property>
+               <Property Name="Lock">No</Property>
           </Model>
           <Model Name="Text54">
                <Property Name="Model Name">Text</Property>
@@ -323,9 +323,9 @@
                <Property Name="Hide Duplicates">No</Property>
                <Property Name="Can Grow">Yes</Property>
                <Property Name="Can Shrink">No</Property>
-               <Property Name="Left">6420</Property>
+               <Property Name="Left">6260</Property>
                <Property Name="Top">4280</Property>
-               <Property Name="Width">2360</Property>
+               <Property Name="Width">2520</Property>
                <Property Name="Height">280</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
@@ -339,7 +339,7 @@
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Left</Property>
-               <Property Name="Lock">Yes</Property>
+               <Property Name="Lock">No</Property>
                <Property Name="Auto Wrap">Yes</Property>
           </Model>
           <Model Name="Text55">
@@ -699,8 +699,8 @@
                <Property Name="Hide Duplicates">No</Property>
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
-               <Property Name="Left">7700</Property>
-               <Property Name="Top">5020</Property>
+               <Property Name="Left">7160</Property>
+               <Property Name="Top">5000</Property>
                <Property Name="Width">1760</Property>
                <Property Name="Height">340</Property>
                <Property Name="Back Style">Normal</Property>
@@ -714,7 +714,7 @@
                <Property Name="Font Weight">Plain</Property>
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
+               <Property Name="Text Align">Left</Property>
                <Property Name="Lock">No</Property>
                <Property Name="Auto Wrap">Yes</Property>
           </Model>
@@ -1097,11 +1097,11 @@
           <Model Name="Label45">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label45</Property>
-               <Property Name="Caption">Likvidator                                        Blagajnik                                        Uplatitelj</Property>
+               <Property Name="Caption">Likvidator                                        Blagajnik                                                      </Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">780</Property>
                <Property Name="Top">5020</Property>
-               <Property Name="Width">9020</Property>
+               <Property Name="Width">9040</Property>
                <Property Name="Height">320</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
@@ -1115,7 +1115,7 @@
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Center</Property>
-               <Property Name="Lock">Yes</Property>
+               <Property Name="Lock">No</Property>
           </Model>
           <Model Name="Text100">
                <Property Name="Model Name">Text</Property>
@@ -1128,7 +1128,7 @@
                <Property Name="Hide Duplicates">No</Property>
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
-               <Property Name="Left">7700</Property>
+               <Property Name="Left">7220</Property>
                <Property Name="Top">5020</Property>
                <Property Name="Width">1760</Property>
                <Property Name="Height">340</Property>
@@ -1143,7 +1143,7 @@
                <Property Name="Font Weight">Plain</Property>
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
-               <Property Name="Text Align">Center</Property>
+               <Property Name="Text Align">Left</Property>
                <Property Name="Lock">No</Property>
                <Property Name="Auto Wrap">Yes</Property>
           </Model>
@@ -1391,7 +1391,7 @@
                <Property Name="Hide Duplicates">No</Property>
                <Property Name="Can Grow">Yes</Property>
                <Property Name="Can Shrink">No</Property>
-               <Property Name="Left">6420</Property>
+               <Property Name="Left">6260</Property>
                <Property Name="Top">4280</Property>
                <Property Name="Width">2360</Property>
                <Property Name="Height">280</Property>
@@ -1407,17 +1407,17 @@
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Left</Property>
-               <Property Name="Lock">Yes</Property>
+               <Property Name="Lock">No</Property>
                <Property Name="Auto Wrap">Yes</Property>
           </Model>
           <Model Name="Label51">
                <Property Name="Model Name">Label</Property>
                <Property Name="Name">Label51</Property>
-               <Property Name="Caption">, dana</Property>
+               <Property Name="Caption">,  dana</Property>
                <Property Name="Visible">Yes</Property>
-               <Property Name="Left">5620</Property>
+               <Property Name="Left">5540</Property>
                <Property Name="Top">4280</Property>
-               <Property Name="Width">800</Property>
+               <Property Name="Width">720</Property>
                <Property Name="Height">280</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
@@ -1431,7 +1431,7 @@
                <Property Name="Font Italic">No</Property>
                <Property Name="Font Underline">No</Property>
                <Property Name="Text Align">Left</Property>
-               <Property Name="Lock">Yes</Property>
+               <Property Name="Lock">No</Property>
           </Model>
           <Model Name="Label52">
                <Property Name="Model Name">Label</Property>

@@ -285,11 +285,11 @@ public class frmUplIspl extends raMasterDetail {
     this.raDetail.getRepRunner().clearAllReports();
     if (this.raDetail.getSelectionTracker().countSelected() <= 1){
 //      this.raDetail.getRepRunner().addReport("hr.restart.blpn.repUplIsplUplatnice", "Ispis uplatnice / isplatnice", 2);
-      this.raDetail.getRepRunner().addReport("hr.restart.blpn.repUplIspl","hr.restart.blpn.repUplIsplUplatnice","UplIsplUplatnice","Ispis uplatnice / isplatnice"); //repSkupnaIsplatnica
+      this.raDetail.getRepRunner().addReport("hr.restart.blpn.repUplIspl","hr.restart.blpn.repUplIsplUplatnice","UplIsplUplatnice", "Ispis uplatnice / isplatnice"); //repSkupnaIsplatnica
       Aus.refilter(repQDS, ss.getRepQDSJednaUplatnica(this.getMasterSet(), this.getDetailSet(), "stavblag"));
     } else {
       System.out.println("ima selekshna");
-      this.raDetail.getRepRunner().addReport("hr.restart.blpn.repSkupnaIspl","hr.restart.blpn.repUplIsplUplatnice","SkupnaIsplatnica","Ispis skupne isplatnice"); //repSkupnaIsplatnica
+      this.raDetail.getRepRunner().addReport("hr.restart.blpn.repSkupnaIspl","hr.restart.blpn.repUplIsplUplatnice","SkupnaIsplatnica", "Ispis skupne isplatnice"); //repSkupnaIsplatnica
       String [] rbrs = new String[this.raDetail.getSelectionTracker().countSelected()];
       this.raDetail.getJpTableView().enableEvents(false);
       int position = this.getDetailSet().getRow();
@@ -636,8 +636,8 @@ public class frmUplIspl extends raMasterDetail {
     jpMaster = new jpUplIsplMaster(this);
     this.setJPanelMaster(jpMaster);
     this.raMaster.addOption(rnvKnjizenjeGumbic, 5);
-    this.raMaster.getRepRunner().addReport("hr.restart.blpn.repUplIspl", "Ispis blagajni\u010Dkog izvještaja", 2);
-    this.raMaster.getRepRunner().addReport("hr.restart.blpn.repUplIsplUplatniceAll", "Ispis  svih uplatnica / isplatnica", 2);
+    this.raMaster.getRepRunner().addReport("hr.restart.blpn.repUplIspl", "hr.restart.blpn.repUplIspl", "UplIspl", "Ispis blagajni\u010Dkog izvještaja");
+    this.raMaster.getRepRunner().addReport("hr.restart.blpn.repUplIsplUplatniceAll", "hr.restart.blpn.repUplIsplUplatniceAll", "UplIsplUplatniceAll", "Ispis svih uplatnica / isplatnica");
 
     this.setDetailSet(dm.getStavblag());
     this.setVisibleColsDetail(new int[]{5, 21, 6, 7, 8});
