@@ -33,7 +33,9 @@ import hr.restart.util.raJPTableView;
 import hr.restart.robno.repMemo;
 import hr.restart.robno.raDateUtil;
 
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -69,6 +71,7 @@ public class repDynamicProvider implements IDataProvider {
   String title;
   String subtitle;
   Variant v;
+  HashSet boldables;
   
   JTable summ;
 
@@ -131,11 +134,16 @@ public class repDynamicProvider implements IDataProvider {
       	}
       }
       return full.toString();
-    } else return "";
+    } 
+    return "";
   }
 
   public String getValueAt(int row, int col) {
     return ((JLabel) getRenderComp(row, col)).getText();
+  }
+  
+  public boolean isBolded(int row, int col) {
+    return getRenderComp(row, col).getFont().isBold();
   }
 
   public double getDoubleAt(int row, int col) {
@@ -192,6 +200,10 @@ public class repDynamicProvider implements IDataProvider {
     sums = ((dataSetTableModel) table.getModel()).getTableSumRow() != null &&
            ((dataSetTableModel) table.getModel()).getTableSumRow().isSumingEnabled();
     v = new Variant();
+    if (xt != null) {
+      String[] bolds = xt.getBoldableColumns();
+      boldables = bolds == null ? null : new HashSet(Arrays.asList(bolds));
+    }
     createTitles(xtitle);
   }
 
@@ -206,6 +218,10 @@ public class repDynamicProvider implements IDataProvider {
 
   public void activate() {
     inst = this;
+  }
+  
+  public HashSet getBoldables() {
+    return boldables;
   }
 
   boolean test() {
@@ -477,12 +493,24 @@ public class repDynamicProvider implements IDataProvider {
 
   private int createHD(double ratio, raReportSection sect, raReportElement def) {
     long x = defineElem(0, ratio, 0, def);
+    possiblyAddBold(0, ratio, 0, sect, def);
     for (int i = 1; i < model.getColumnCount(); i++) {
+      possiblyAddBold(x, ratio, i, sect, def);
       raReportElement e = sect.addModel(ep.TEXT, (String[]) def.getDefaults().clone());
       e.restoreDefaults();
       x = defineElem(x, ratio, i, e);
     }
     return (int) x;
+  }
+  
+  private void possiblyAddBold(long x, double ratio, int num, raReportSection sect, raReportElement def) {
+    if (sect.isDetail() && boldables != null && boldables.contains(
+        ((dataSetTableModel) jt.getModel()).getRealColumnName(jt.convertColumnIndexToModel(num)))) {
+      raReportElement e = sect.addModel(ep.TEXT, (String[]) def.getDefaults().clone());
+      e.restoreDefaults();
+      defineElem(x, ratio, num, e);
+      e.setFontBold(true);
+    }
   }
   
   private void addLine(raReportSection sect, raReportElement def, int w) {
