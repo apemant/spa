@@ -169,6 +169,7 @@ public class raROT extends raIzlazTemplate  {
     setPreSel((jpPreselectDoc) presROT.getPres());
     addButtons(true,true);
     raMaster.addOption(rnvFisk, 5, false);
+    raMaster.addOption(rnvSend, 6, false);
     master_titel = "Ra\u010Duni - otpremnice";
     detail_titel_mno = "Stavke ra\u010Duna - otpremnice";
     detail_titel_jed = "Stavka ra\u010Duna - otpremnice";
@@ -546,8 +547,10 @@ System.err.println("getMasterSet().getInt(FBR) = "+getMasterSet().getInt("FBR"))
 					dM.copyColumns(getDetailSet(), AST.gettrenSTANJE(), 
 							new String[] {"CSKL", "GOD", "CART"});
   				nulaStanje(AST.gettrenSTANJE());
+  				lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje);
   				raTransaction.saveChanges(AST.gettrenSTANJE());
-  		}
+  		} else 
+  		  lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje);
   	}
 	}
   
