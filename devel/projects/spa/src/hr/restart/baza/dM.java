@@ -486,6 +486,16 @@ public class dM implements DataModule {
 //      cartSize = Integer.parseInt(hr.restart.sisfun.frmParam.getParam("robno", "cartSize", "20"));
 //    } catch (Exception e) {}
 //  }
+  
+  public Database getShadowDatabase() {
+    Database shadow = new Database();
+    shadow.setConnection(new ConnectionDescriptor(conURL,conUSER,conPASS,false,
+        conTIP, Dialect.getConnectionProperties()));
+    
+    shadow.setTransactionIsolation(java.sql.Connection.TRANSACTION_REPEATABLE_READ);
+    shadow.openConnection();
+    return shadow;
+  }
 
   private void setDatabaseDialect() {
     Dialect definedDialect = null;
@@ -924,9 +934,9 @@ public class dM implements DataModule {
     return Partneri.getDataModule().getDob();
   }
 
-  public QueryDataSet getPartneriOboje() {
+  /*public QueryDataSet getPartneriOboje() {
     return Partneri.getDataModule().getOboje();
-  }
+  }*/
 
   public QueryDataSet getAllPartneri() {
     return Partneri.getDataModule().getQueryDataSet();
@@ -1084,9 +1094,9 @@ public class dM implements DataModule {
     return norme.getDataModule().getQueryDataSet();
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getSortedNorme() {
+/*  public com.borland.dx.sql.dataset.QueryDataSet getSortedNorme() {
     return norme.getDataModule().getSorted();
-  }
+  }*/
 
   public com.borland.dx.sql.dataset.QueryDataSet getShzavtr() {
     return Shzavtr.getDataModule().getQueryDataSet();
