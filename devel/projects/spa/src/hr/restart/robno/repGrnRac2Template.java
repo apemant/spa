@@ -17,7 +17,6 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import hr.restart.util.reports.raGRNSectionHeader0;
 import hr.restart.util.reports.raGRSectionFooter2Lines;
 import hr.restart.util.reports.raGRSectionHeaderWin;
 import hr.restart.util.reports.raIzlazDetail2;
