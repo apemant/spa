@@ -106,9 +106,9 @@ public class raIzlazSectionHeaderLines extends raReportSection {
       this.setProperty(raElixirProperties.GROW,raElixirPropertyValues.YES);
       this.setProperty(raElixirProperties.SHRINK,raElixirPropertyValues.YES);
     }
-    if (repIzlazni.isReportForeign())
-      LabelSifra.setCaption(hr.restart.robno.Aut.getAut().getIzlazCARTdep("Code", "Code", "Barcode"));
-    else  LabelSifra.setCaption(hr.restart.robno.Aut.getAut().getIzlazCARTdep("Šifra", "Oznaka", "Barcode"));
+    if (!repIzlazni.isReportForeign())
+      //LabelSifra.setCaption(hr.restart.robno.Aut.getAut().getIzlazCARTdep("Item #", "Item #", "Barcode"));
+      LabelSifra.setCaption(hr.restart.robno.Aut.getAut().getIzlazCARTdep("Šifra", "Oznaka", "Barcode"));
     if (owner instanceof hr.restart.robno.repRacuniEANTemplate)
       LabelSifra.setCaption("EAN Code");
     resizeElement(this.LabelSifra, hr.restart.robno.Aut.getAut().getIzlazCARTwidth(), this.LabelNaziv);
