@@ -32,6 +32,7 @@ public class Calc {
   private ReadWriteRow values;
   private HashMap vars;
   private HashMap mods;
+  private boolean varonly = false;
 
   class Operator {
     private String op;
@@ -206,6 +207,11 @@ public class Calc {
   public Calc() {
     this(null, null);
   }
+  
+  public Calc(boolean onlyvar) {
+    this(null, null);
+    this.varonly = onlyvar; 
+  }
     
   public Calc(String expr) {
     this(null, expr);
@@ -323,9 +329,10 @@ public class Calc {
       else if (ch == '.')
         if (!dot) dot = true;
         else throw new IllegalArgumentException("Invalid number, double dot: " + expression);
-      else if (ch >= '0' && ch <= '9') num = true;
-      else if (!num && !dot && (ch == '_' || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')))
-        return getVar(getVar(p - 1)).negate();
+      else if (ch >= '0' && ch <= '9' && !varonly) num = true;
+      else if (!num && !dot && (ch == '_' || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || 
+          (ch >= '0' && ch <= '9' && varonly))) 
+        return sign ? getVar(getVar(p - 1)).negate() : getVar(getVar(p - 1));
       else {
         --p;
         break;
@@ -340,7 +347,7 @@ public class Calc {
       char ch = expression.charAt(p++);
       if (ch == ' ' || ch == '\n' || ch == '\t' || ch == '\r') continue;
       if (ch == '(') return getSubCalc(p);
-      if (ch >= '0' && ch <= '9') return getNumber(p - 1, false, false, true);
+      if (ch >= '0' && ch <= '9') return getNumber(--p, false, false, !varonly);
       if (ch == '-') return getNumber(p - 1, true, false, false);
       if (ch == '.') return getNumber(p - 1, false, true, false);      
       if (ch == '_' || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))
