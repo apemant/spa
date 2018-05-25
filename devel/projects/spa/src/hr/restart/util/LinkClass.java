@@ -79,13 +79,13 @@ public class LinkClass {
     for (int i=0;i< columns.length;i++){
       if (isFind(columns[i].getColumnName().toLowerCase(),obj)) {
         if (tip=='D') {
-          if (columns[i].getSqlType()!=java.sql.Types.CHAR) {
+          if (columns[i].getSqlType()!=java.sql.Types.CHAR && columns[i].getSqlType()!=java.sql.Types.VARCHAR) {
 //          if (columns[i].getSqlType()==java.sql.Types.NUMERIC) {
           setBDField(columns[i].getColumnName().toLowerCase(),
                      columns[i].getDataSet().getBigDecimal(columns[i].getColumnName()),
                      obj);
            }
-           else if (columns[i].getSqlType()==java.sql.Types.CHAR) {
+           else if (columns[i].getSqlType()==java.sql.Types.CHAR || columns[i].getSqlType()==java.sql.Types.VARCHAR) {
            setBDField(columns[i].getColumnName().toLowerCase(),
                      columns[i].getDataSet().getString(columns[i].getColumnName()),
                      obj);
