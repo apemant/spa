@@ -20,6 +20,7 @@ package hr.restart.util.versions;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.IntParam;
 import hr.restart.util.OKpanel;
 import hr.restart.util.Util;
@@ -156,6 +157,7 @@ public class jpPatchMaker extends JPanel implements okFrame, loadFrame {
     jpDetail.add(jbMake, new XYConstraints(15, 170, 515, -1));
     jpDetail.add(jlOutput, new XYConstraints(15, 215, 515, -1));
     BindComponents(pmset);
+    Aus.recursiveUpdateSizes(jpDetail);
     this.add(jpDetail, BorderLayout.CENTER);
   }
   

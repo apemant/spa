@@ -21,6 +21,7 @@ package hr.restart.zapod;
 
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraDialog;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.OKpanel;
 import hr.restart.util.lookupData;
@@ -157,7 +158,7 @@ public class dlgGetKnjig extends JraDialog {
 
     });
 
-
+    Aus.recursiveUpdateSizes(panel);
 
   }
 

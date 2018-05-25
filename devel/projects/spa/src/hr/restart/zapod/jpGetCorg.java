@@ -37,7 +37,7 @@ public class jpGetCorg extends JPanel {
 
   XYLayout xYLay = new XYLayout();
 
-  raXYLayout xYLayNaz = new raXYLayout(true);
+  XYLayout xYLayNaz = new XYLayout();
 
   JPanel jpNaz = new JPanel();
 

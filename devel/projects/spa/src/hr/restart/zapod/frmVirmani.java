@@ -60,6 +60,8 @@ import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
 
 public class frmVirmani extends raMatPodaci {
+  public static final String BAD_IBAN = "KRIVI IBAN!!!";
+  
   raCommonClass rcc = raCommonClass.getraCommonClass();
   QueryDataSet filteredQds= hr.restart.baza.Virmani.getDataModule().getTempSet("1=0");
   dM dm = dM.getDataModule();
@@ -368,6 +370,8 @@ public class raTableIBANModifier extends raTableColumnModifier {
         knjigovodstvo = OrgStr.getOrgStr().getKNJCORG();
       }
     });
+    
+    installSelectionTracker("RBR");
   }
 
 //*** metode za automatsko setiranje PK, dodavanje virmana i snimanje virmana
@@ -966,7 +970,7 @@ public class raTableIBANModifier extends raTableColumnModifier {
     }
 
     private void jbInit() throws Exception {
-      this.setSize(new Dimension(280,130));
+      //this.setSize(new Dimension(280,130));
       int x= (this.getToolkit().getDefaultToolkit().getScreenSize().width)-350;
       int y= (this.getToolkit().getDefaultToolkit().getScreenSize().height)-130;
       this.setLocation((int)x/2,(int)y/2);
@@ -974,8 +978,8 @@ public class raTableIBANModifier extends raTableColumnModifier {
       jp.setLayout(xYLayout1);
       jlDatum.setText("Datum pla\u0107anja");
       jlRbr.setText("Broj grupe");
-      xYLayout1.setWidth(180);
-      xYLayout1.setHeight(45);
+      xYLayout1.setWidth(265);
+      xYLayout1.setHeight(75);
       tds.setColumns(new Column[] {dM.createTimestampColumn("datum"), dM.createIntColumn("rbr")});
       godina.setDataSet(tds);
       godina.setColumnName("datum");
@@ -988,6 +992,7 @@ public class raTableIBANModifier extends raTableColumnModifier {
       jp.add(godina,     new XYConstraints(150, 15, 100, 20));
       jp.add(rbr,     new XYConstraints(150, 40, 100/*50*/, 20));
       this.setJPan(jp);
+      this.pack();
 //      hr.restart.zapod.OrgStr.getOrgStr().addKnjigChangeListener(
 //          new hr.restart.zapod.raKnjigChangeListener() {
 //        public void knjigChanged(String oldKnjig,String newKnjig) {
@@ -1090,7 +1095,8 @@ public class raTableIBANModifier extends raTableColumnModifier {
     }
     if (calcIBAN.equals(cleanIBAN.toString())) {
       return nice?makeNiceIBAN(calcIBAN):calcIBAN;
-    } else return "KRIVI IBAN!!!";
+    } 
+    return BAD_IBAN;
   }
   public static String getIBAN_HR(String brr, boolean nice) {
     if (brr == null) return "";

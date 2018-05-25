@@ -1817,7 +1817,7 @@ System.out.println("jlrCPAR_after_lookUp()");
 			jpgetval.setTecajVisible(true);
 			setLayout(xYLayoutDC2);
 			setBorder(BorderFactory.createEtchedBorder());
-			setPreferredSize(new Dimension(660, 295));
+			//setPreferredSize(new Dimension(660, 295));
 			jpDetailCenter.setLayout(xYLayoutDC);
 			xYLayoutDC.setHeight(160);
 			xYLayoutDC.setWidth(660);

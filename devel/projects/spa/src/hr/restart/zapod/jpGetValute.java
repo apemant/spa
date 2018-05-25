@@ -36,6 +36,7 @@ import javax.swing.SwingConstants;
 
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
+import com.borland.jbcl.layout.constraintsGetter;
 
 /**
  * Title: jpGetValute
@@ -175,6 +176,9 @@ public class jpGetValute extends JPanel {
     this.add(jcbValuta, jcbValutaXYC);
     this.add(jlNAZVAL,  new XYConstraints(250, 2, -1, -1));
     this.add(jbGetVal, new XYConstraints(479, 20, 21, 21));//425
+    
+    System.out.println("cons init " + jcbValutaXYC);
+    System.out.println("cons get " + constraintsGetter.get(xYLayout1, jcbValuta));
 
     jcbValuta.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -424,11 +428,13 @@ public class jpGetValute extends JPanel {
     if (always == tecajAlways) return;
     tecajAlways = always;
     if (always) {
+      XYConstraints cons = constraintsGetter.getXYConstraints(xYLayout1, jcbValuta);
       this.remove(jcbValuta);
-      this.add(jlValuta,jcbValutaXYC);
+      this.add(jlValuta, cons);
     } else {
+      XYConstraints cons = constraintsGetter.getXYConstraints(xYLayout1, jlValuta);
       this.remove(jlValuta);
-      this.add(jcbValuta,jcbValutaXYC);
+      this.add(jcbValuta, cons);
     }
   }
 
