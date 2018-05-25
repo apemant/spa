@@ -727,6 +727,7 @@ public class frmNalozi extends raMasterDetail {
         return false;
       }
       if (raKonta.isSaldak(getDetailSet().getString("BROJKONTA"))) {
+        getDetailSet().setString("BROJKONTA", getDetailSet().getString("BROJKONTA").trim());
         if (getDetailSet().getBigDecimal("ID").signum() != 0 &&
             getDetailSet().getBigDecimal("IP").signum() != 0) {
           jpDetail.jtID.requestFocus();
