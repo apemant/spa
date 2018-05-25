@@ -26,7 +26,7 @@ public class raStatusColorModifier extends raTableModifier {
       if (tab.getDataSet().getRowCount() > 0 && 
           tab.getDataSet().hasColumn(colName) != null) {
         tab.getDataSet().getVariant(colName, this.getRow(), shared);
-        return !shared.getString().equals(normValue);
+        return !shared.toString().equals(normValue);
       }
     }
     return false;
