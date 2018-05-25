@@ -138,6 +138,7 @@ public class raKnjizenje {
     stavke_addSK.addColumn(dM.createTimestampColumn("DATPRI"));
     stavke_addSK.addColumn(dM.createStringColumn("GLAVNA", 1));
     stavke_addSK.addColumn(dM.getDataModule().getSkstavke().getColumn("CGKSTAVKE").cloneColumn());
+    stavke_addSK.addColumn(dM.createStringColumn("SORTBR", 50));
     stavke_addSK.open();
     uistavke.setColumns(hr.restart.baza.dM.getDataModule().getUIstavke()
         .cloneColumns());
@@ -585,6 +586,8 @@ public class raKnjizenje {
     fnalozi.prepareForSaveStavka(getStavka());
     getStavka().post();
     fnalozi.updStavka(getStavka(), false);
+    if (getStavkaSK().isNull("SORTBR"))
+      getStavkaSK().setString("SORTBR", getStavkaSK().getString("BROJDOK"));
     getStavkaSK().post();
   }
 
@@ -816,7 +819,7 @@ public class raKnjizenje {
   private void addToSK() {
     skstavke.empty();
     uistavke.empty();
-    getStavkaSK().setSort(new SortDescriptor(new String[] {"BROJDOK", "VRDOK", "CPAR"}));
+    getStavkaSK().setSort(new SortDescriptor(new String[] {"SORTBR", "VRDOK", "CPAR"}));
     String last = "";
     boolean glavna = false, err = false;
     boolean godob = frmNalozi.getFrmNalozi().getMasterSet().getString("CVRNAL").equals("00");
