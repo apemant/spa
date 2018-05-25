@@ -31,16 +31,7 @@ import hr.restart.swing.raCurrencyTableModifier;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raTableColumnModifier;
 import hr.restart.swing.raTableModifier;
-import hr.restart.util.Aus;
-import hr.restart.util.Valid;
-import hr.restart.util.VarStr;
-import hr.restart.util.lookupData;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raImages;
-import hr.restart.util.raMasterDetail;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raNavBar;
-import hr.restart.util.raTransaction;
+import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
 
 import java.awt.Dialog;
@@ -155,8 +146,7 @@ public class frmPregledArhive extends raMasterDetail {
 //    prepareColumns();
     setTitle();
     jpMaster.setVrsk(kupci ? "IRN" : "URN");
-    jpMaster.jlaDatknj.setVisible(!kupci);
-    jpMaster.jraDatknj.setVisible(!kupci);
+    
     
     if (kupci) {
       jpMaster.jlrCknjige.setRaDataSet(dm.getKnjigeI());
@@ -192,6 +182,11 @@ public class frmPregledArhive extends raMasterDetail {
 
   public void masterSet_navigated(NavigationEvent e) {
     jpMaster.jraIznos.setColumnName(MDP());
+    if (getMasterSet().rowCount() > 0) {
+      boolean datpri = raVrdokMatcher.isRacunTip(getMasterSet());
+      jpMaster.jlaDatknj.setVisible(datpri);
+      jpMaster.jraDatknj.setVisible(datpri);
+    }
 //    checkDe();
   }
 
@@ -209,6 +204,8 @@ public class frmPregledArhive extends raMasterDetail {
     rcc.setLabelLaF(jpMaster.jraBrojdok, true);
     rcc.setLabelLaF(jpMaster.jraExtbrojdok, true);
     rcc.setLabelLaF(jpMaster.jraDatdok, true);
+    if (jpMaster.jraDatknj.isVisible())
+      rcc.setLabelLaF(jpMaster.jraDatknj, true);
     //if (!getMasterSet().isNull("DATDOSP"))
     if (!raVrdokMatcher.isUplata(getMasterSet()))
       rcc.setLabelLaF(jpMaster.jraDatdosp, true);
@@ -219,8 +216,10 @@ public class frmPregledArhive extends raMasterDetail {
     oldDatdosp = ut.getFirstSecondOfDay(getMasterSet().getTimestamp("DATDOSP"));
   }
 
+  Timestamp oldpri;
   public void SetFokusMaster(char mode) {
     if (mode == 'I') jpMaster.jraOpis.requestFocus();
+    oldpri = new Timestamp(getMasterSet().getTimestamp("DATPRI").getTime());
   }
   
   private Condition getGkstavkeCond(String cgkstavke) {
@@ -249,6 +248,10 @@ public class frmPregledArhive extends raMasterDetail {
         !Aus.checkDatAndDosp(jpMaster.jraDatdok, jpMaster.jraDatdosp)) return false;
     if (!jpMaster.jraDatdosp.isEnabled() &&
         !Aus.checkSanityRange(jpMaster.jraDatdok)) return false;
+    
+    if (jpMaster.jraDatknj.isEnabled() && 
+        !Util.getUtil().sameDay(getMasterSet().getTimestamp("DATPRI"), oldpri) &&
+        !raSaldaKonti.checkTaxAllowance(jpMaster.jraDatknj, "primitka")) return false;
     
     getMasterSet().setString("BROJDOK", getMasterSet().getString("BROJDOK").trim());
     
