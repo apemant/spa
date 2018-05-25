@@ -62,7 +62,7 @@ public class sjQuerys {
     String str="update os_promjene set isppotrazuje=isppotrazuje-(select os_obrada2.amortizacija from "+
                "os_obrada2, os_sredstvo where os_obrada2.invbroj=os_sredstvo.invbroj and "+
                "os_obrada2.corg=os_sredstvo.corg and os_promjene.invbroj=os_sredstvo.invbroj and "+
-               "os_promjene.corg=os_sredstvo.corg and datlikvidacije is null) where cpromjene='"+cvrp+"'"+
+               "os_promjene.corg=os_sredstvo.corg and os_sredstvo.datlikvidacije is null) where os_promjene.cpromjene='"+cvrp+"' and "+
                "os_promjene.aktiv='D'  and datpromjene>'"+hr.restart.util.Util.getUtil().getFirstDayOfYear(dat)+
                "' and datpromjene<'"+hr.restart.util.Util.getUtil().getLastDayOfYear(dat)+"'";
     System.out.println("SQL: "+str);

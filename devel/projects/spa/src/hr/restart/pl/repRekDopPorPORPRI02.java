@@ -115,11 +115,11 @@ public class repRekDopPorPORPRI02 implements sg.com.elixir.reportwriter.datasour
   }
   
   public BigDecimal getUKUPNOPRIREZ(){
-    return ds.getBigDecimal("UKUPNO");
+    return ds.getBigDecimal("UKUPNO").subtract(ds.getBigDecimal("PORUK"));
   }
   
   public BigDecimal getUKUPNOPOREZPRIREZ(){
-    return ds.getBigDecimal("UKUPNO").add(ds.getBigDecimal("PORUK"));
+    return ds.getBigDecimal("UKUPNO");
   }
 
 

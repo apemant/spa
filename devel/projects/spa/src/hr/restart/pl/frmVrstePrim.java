@@ -17,7 +17,6 @@
 ****************************************************************************/
 package hr.restart.pl;
 
-import hr.restart.baza.Condition;
 import hr.restart.baza.Vrsteprim;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.raDataIntegrity;
@@ -31,8 +30,6 @@ import hr.restart.util.raNavAction;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import com.borland.dx.dataset.DataSet;
-import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 
@@ -114,7 +111,7 @@ public class frmVrstePrim extends raMatPodaci {
       jpDetail.jlrCsif1.forceFocLost();
       jpDetail.jlrCsif.forceFocLost();
       jpDetail.jraCvrp.requestFocus();
-      jpDetail.jlrCvrparh.forceFocLost();
+      jpDetail.jlrCvrodb.forceFocLost();
       jpDetail.jlrStavka.forceFocLost();
       selectParam(0);
     } else if (mode == 'I') {
