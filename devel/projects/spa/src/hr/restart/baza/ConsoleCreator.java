@@ -127,24 +127,19 @@ public class ConsoleCreator {
 	  if (val != null) return val;
 	  return props.getProperty(param);
 	}
-
-	private static void dumpDatabase(String id, String url, String tip, String user, String pass) {
-      if (url == null || tip == null || user == null || pass == null || !test(url, tip, user, pass)) {
-        System.out.println("Invalid connection params:");
-        System.out.println("url = " + url);
-        System.out.println("tip = " + tip + "   user = " + user + "   pass = " + pass);
-        return;
-      }
-      dM.setMinimalParams(url, tip, user, pass);
-      dM dm = dM.getDataModule();
-
-      String cbdir = IntParam.getTag("console.backup.dir");
+	
+	public static File dumpCurrentDatabase(String id) {
+	  String cbdir = IntParam.getTag("console.backup.dir");
       File bdir = cbdir != null && cbdir.length() > 0 ? new File(cbdir) :
                     new File(System.getProperty("user.dir")+File.separator+"backups");
-      String sufix = ".zip";
+      String sufix = ".zako";
+      String bfname = "raBackup-"+id+"-"+new java.sql.Timestamp(System.currentTimeMillis()).toString().substring(0,10);
+      
+      /*String sufix = ".zip";
       String time = new java.sql.Timestamp(System.currentTimeMillis()).toString();
       String bfname = new VarStr("raBackup-" + time.substring(0,10) + "_" + time.substring(11) + "_" + id).
-                          replace(':', '-').replace('.', '-').toString();
+                          replace(':', '-').replace('.', '-').toString();*/
+      
       int a = 1;
       File bfile = null;
       String orgsufix = sufix;
@@ -195,6 +190,19 @@ public class ConsoleCreator {
       for (int i = 0; i < dats.length; i++)
         dats[i].delete();
       dest.delete();
+      return bfile;
+	}
+
+	private static void dumpDatabase(String id, String url, String tip, String user, String pass) {
+      if (url == null || tip == null || user == null || pass == null || !test(url, tip, user, pass)) {
+        System.out.println("Invalid connection params:");
+        System.out.println("url = " + url);
+        System.out.println("tip = " + tip + "   user = " + user + "   pass = " + pass);
+        return;
+      }
+      dM.setMinimalParams(url, tip, user, pass);
+
+      dumpCurrentDatabase(id);
     }
 	
 	static void installDumpNotifier() {
@@ -1041,6 +1049,7 @@ public class ConsoleCreator {
             "hr.restart.baza.Kanali","hr.restart.baza.KlijentStat",
             "hr.restart.baza.Segmentacija", "hr.restart.baza.Kampanje",
             "hr.restart.baza.RobSheme", "hr.restart.baza.StRobSheme", "hr.restart.baza.Skripte",
-            "hr.restart.baza.Intervencije"
+            "hr.restart.baza.Intervencije", "hr.restart.baza.VezaKom", "hr.restart.baza.Gkrep",
+            "hr.restart.baza.Gkrepkonta"
       };
 }
