@@ -133,6 +133,9 @@ public class raReportSection extends raReportElement {
     elements.clear();
   }
 
+  public boolean isDetail() {
+    return model.getPropertyValue(ep.MODEL_NAME).equals(ep.DETAIL);
+  }
   /**
    * Odre\u0111uje vidljivost cijelog sectiona (svih elemenata unutar njega).<p>
    * @param tp true za proziran (nevidljiv) section, false za vidljiv.
