@@ -1,5 +1,7 @@
 package hr.restart.util;
 
+import hr.restart.baza.dM;
+
 import java.util.HashMap;
 
 import com.borland.dx.dataset.DataSet;
@@ -14,6 +16,8 @@ public class HashDataSet {
   HashMap index = new HashMap();
   VarStr s = new VarStr();
   Variant v = new Variant();
+  
+  int serial = -1;
 
   public HashDataSet(DataSet ds, String keyCol) {
     this.ds = ds;
@@ -29,20 +33,24 @@ public class HashDataSet {
 
   void init() {
     ds.open();
+    if (ds.getTableName() != null) 
+      serial = dM.getSynchronizer().getSerialNumber(ds.getTableName());
     if (keyCol != null)
-      for (ds.first(); ds.inBounds(); ds.next()) {
-        ds.getVariant(keyCol, ds.getRow(), v);
-        index.put(v.toString(), new Long(ds.getInternalRow()));
-      }
+      for (ds.first(); ds.inBounds(); ds.next()) 
+        index.put(key(ds, ds.getRow(), keyCol), new Long(ds.getInternalRow()));
     else
-      for (ds.first(); ds.inBounds(); ds.next()) {
-        s.clear();
-        for (int i = 0; i < keyCols.length; i++) {
-          ds.getVariant(keyCols[i], ds.getRow(), v);
-          s.append(v).append("-|-");
-        }
-        index.put(s.chop().toString(), new Long(ds.getInternalRow()));
+      for (ds.first(); ds.inBounds(); ds.next())
+        index.put(key(ds, ds.getRow(), keyCols), new Long(ds.getInternalRow()));
+  }
+  
+  public void sync() {
+    if (ds.getTableName() != null) {
+      int now = dM.getSynchronizer().getSerialNumber(ds.getTableName());
+      if (now != serial) {
+        index.clear();
+        init();
       }
+    }
   }
   
   public String key(ReadRow src) {
@@ -61,7 +69,7 @@ public class HashDataSet {
       src.getVariant(skeyCols[i], v);
       s.append(v).append("-|-");
     }
-    return s.chop().toString();
+    return s.chop(3).toString();
   }
   
   public String key(DataSet src, int row, String skeyCol) {
@@ -75,7 +83,7 @@ public class HashDataSet {
       src.getVariant(skeyCols[i], row, v);
       s.append(v).append("-|-");
     }
-    return s.chop().toString();
+    return s.chop(3).toString();
   }
   
   public boolean has(Object key) {
@@ -125,7 +133,7 @@ public class HashDataSet {
   }
   
   public DataSet get(String[] keys) {
-    return get(VarStr.join(keys, '|').toString());
+    return get(VarStr.join(keys, "-|-").toString());
   }
   
   public DataSet get(ReadRow src) {
@@ -159,7 +167,7 @@ public class HashDataSet {
   }
   
   public boolean loc(String[] keys) {
-    return loc(VarStr.join(keys, '|').toString());
+    return loc(VarStr.join(keys, "-|-").toString());
   }
   
   public boolean loc(ReadRow src) {
@@ -180,5 +188,9 @@ public class HashDataSet {
   
   public boolean loc(DataSet src, int row, String[] skeyCols) {
     return loc(key(src, row, skeyCols));
+  }
+  
+  public void dump() {
+    System.out.println(index);
   }
 }
