@@ -209,7 +209,7 @@ public class jpCpar extends JPanel {
   
   public void setPartnerOboje() {
     if (lab != null) {
-      cpar.setRaDataSet(dM.getDataModule().getPartneriOboje());
+      cpar.setRaDataSet(dM.getDataModule().getPartneri());
       lab.setText("Partner");
       iskup = isdob = false;
     }
@@ -325,8 +325,8 @@ public class jpCpar extends JPanel {
   }
   
   protected void obSelected() {
-    cpar.setRaDataSet(dM.getDataModule().getPartneriOboje());
-    nazpar.setRaDataSet(dM.getDataModule().getPartneriOboje());
+    cpar.setRaDataSet(dM.getDataModule().getPartneri());
+    nazpar.setRaDataSet(dM.getDataModule().getPartneri());
     cpar.forceFocLost();
     iskup = true;
     isdob = true;
