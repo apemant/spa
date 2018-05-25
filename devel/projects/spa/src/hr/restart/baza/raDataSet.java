@@ -17,9 +17,12 @@
 ****************************************************************************/
 package hr.restart.baza;
 
+import java.lang.reflect.Field;
+
 import hr.restart.util.Aus;
 import hr.restart.util.StackFrame;
 
+import com.borland.dx.sql.dataset.Database;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 /**
@@ -84,6 +87,10 @@ public class raDataSet extends QueryDataSet {
   // flag za sprecavanje beskonacne rekurzije, vjerojatno nepotrebno, ali ne skodi. :)
   boolean inOpenMethod = false;
   
+  //boolean shouldLock = false;
+  
+  Thread lockThread = null;
+  
   /**
    * Iskljucuje odn. iskljucuje sinkronizaciju. Pozeljno iskljuciti prije
    * DataBase.saveChanges() metode, jer ista poziva open() a onda nastane
@@ -94,11 +101,53 @@ public class raDataSet extends QueryDataSet {
     dsync = !enab;
   }
   
+  public void preload() {
+    Database shadow = null;
+    try {
+      lockThread = Thread.currentThread();
+      shadow = dM.getDataModule().getShadowDatabase();
+      //shouldLock = true;
+      System.out.println("Preloading " + getOriginalQueryString());
+      synchronized (this) {
+        try {
+          Field db = getQuery().getClass().getDeclaredField("g");
+          db.setAccessible(true);
+          db.set(getQuery(), shadow);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        
+        open();
+
+        try {
+          Field db = getQuery().getClass().getDeclaredField("g");
+          db.setAccessible(true);
+          db.set(getQuery(), dM.getDataModule().getDatabase1());
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        
+        System.out.println("... done loading " + getOriginalQueryString());
+      }
+    } finally {
+      //shouldLock = false;
+      lockThread = null;
+      if (shadow != null) shadow.closeConnection();
+    }
+  }
+  
   /*
    * Oveeridano za provjeru azurnosti dataseta.
    */
   public boolean open() {
     if (inOpenMethod || dM.isMinimal()) return super.open();
+    if (lockThread != null && !Thread.currentThread().equals(lockThread)) {
+      System.out.println("waiting for preload... " + getOriginalQueryString());
+      synchronized (this) {
+        // no-op
+      }
+      System.out.println("... continuing after " + getOriginalQueryString());
+    }
     try {
       inOpenMethod = true;
     
@@ -114,6 +163,9 @@ public class raDataSet extends QueryDataSet {
         if (end - start > 500) {
           System.out.println("Opened "+getTableName()+
               " (" + getQuery().getQueryString() + ") in "+ (end - start) + "ms");
+          /*if (getTableName().equalsIgnoreCase("norme")) {
+            new Throwable().printStackTrace();
+          }*/
         }
         if (!dsync) dM.getSynchronizer().markAsFresh(this);
         return ret;
@@ -134,6 +186,13 @@ public class raDataSet extends QueryDataSet {
   
   public void refresh() {
     Refresher.postpone();
+    if (lockThread != null && !Thread.currentThread().equals(lockThread)) {
+      System.out.println("waiting for preload... " + getOriginalQueryString());
+      synchronized (this) {
+        // no-op
+      }
+      System.out.println("... continuing after " + getOriginalQueryString());
+    }
     enableSync(false);
     try {
       long start = System.currentTimeMillis();
