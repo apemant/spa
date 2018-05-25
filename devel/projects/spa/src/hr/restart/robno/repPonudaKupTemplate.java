@@ -73,7 +73,7 @@ public class repPonudaKupTemplate extends repIzlazOrigTemplate {
       ridmc.TextIZNOSSTAVKESP.defaultAlterer().setControlSource("PonIznos");
       return ridmc;
     }
-    else return new raIzlazDetail(this);
+    return new raIzlazDetail(this);
   }
 
   public raReportSection createSectionFooter1() {
@@ -86,7 +86,7 @@ public class repPonudaKupTemplate extends repIzlazOrigTemplate {
       ("=(- (dsum \"PonIznos\") (+ (dsum \"IPRODBP\") (+ (+ (dsum \"POR1\") (dsum \"POR2\")) (dsum \"POR3\"))))");
       return rgsfml;
     }
-    else return new raIzlazSectionFooterLines(this);
+    return new raIzlazSectionFooterLines(this);
   }
 
   public repPonudaKupTemplate() {
