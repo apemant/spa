@@ -30,7 +30,7 @@ public class Partneri extends KreirDrop implements DataModule {
   QueryDataSet partneriaktiv = new raDataSet();
   QueryDataSet partnerikup = new raDataSet();
   QueryDataSet partneridob = new raDataSet();
-  QueryDataSet partnerioboje = new raDataSet();
+  //QueryDataSet partnerioboje = new raDataSet();
   HashDataSet aktivhash;
   int dsSerial = -1;
 
@@ -38,7 +38,7 @@ public class Partneri extends KreirDrop implements DataModule {
     createFilteredDataSet(partneriaktiv, "aktiv = 'D'");
     createFilteredDataSet(partnerikup, "aktiv = 'D' AND (uloga = 'K' OR uloga = 'O')");
     createFilteredDataSet(partneridob, "aktiv = 'D' AND (uloga = 'D' OR uloga = 'O')");
-    createFilteredDataSet(partnerioboje, "aktiv = 'D' AND uloga = 'O'");
+    //createFilteredDataSet(partnerioboje, "aktiv = 'D' AND uloga = 'O'");
   }
 
 
@@ -59,9 +59,9 @@ public class Partneri extends KreirDrop implements DataModule {
     return partneridob;
   }
 
-  public com.borland.dx.sql.dataset.QueryDataSet getOboje() {
+  /*public com.borland.dx.sql.dataset.QueryDataSet getOboje() {
     return partnerioboje;
-  }
+  }*/
   
   private static void checkHash() {
     if (inst.aktivhash == null) {
