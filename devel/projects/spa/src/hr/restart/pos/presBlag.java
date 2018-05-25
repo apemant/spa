@@ -157,10 +157,7 @@ public class presBlag extends PreSelect {
       firstTime = false;
       resetDefaults();
     }
-    if (!getPRODMJ().trim().equals("")) {
-      jrfCPRODMJ.getDataSet().setString("CPRODMJ", getPRODMJ());
-      jrfCPRODMJ.forceFocLost();
-    }
+    
     /*
      * QueryDataSet qds = hr.restart.robno.Util.getMPSklDataset(); qds.open();
      * if (qds.rowCount()==0) { JOptionPane.showConfirmDialog(null,"Nema
@@ -177,12 +174,20 @@ public class presBlag extends PreSelect {
       rcc.setLabelLaF(jrfNAZSKL, false);
       rcc.setLabelLaF(jbCSKL, false);
     }
+    if (!getPRODMJ().trim().equals("")) {
+      jrfCPRODMJ.getDataSet().setString("CPRODMJ", getPRODMJ());
+      jrfCPRODMJ.forceFocLost();
+    }
     if (jrfCSKL.getText().length() == 0 || isSkladOriented()) {
       jrfCSKL.requestFocusLater();
     } else if (stolovi && jrfCPRODMJ.getText().length() > 0) {
       jraStol.requestFocusLater();
-    } else {
+    } else if (jrfCPRODMJ.getText().length() == 0) {
       jrfCPRODMJ.requestFocusLater();
+    } else if (jpswd.getPassword() == null || jpswd.getPassword().length == 0){
+      jpswd.requestFocus();
+    } else {
+      jraDatumfrom.requestFocusLater();
     }
     if (stolovi) jraVRDOK.getDataSet().setString("VRDOK", getVRDOK());
   }
@@ -232,7 +237,7 @@ public class presBlag extends PreSelect {
       this.cancelSelect();
       return false;
     }
-    return Aus.checkDateRange(jraDatumfrom, jraDatumto);
+    return Aus.checkDateRange(jraDatumfrom, jraDatumto, true);
   }
 
   void jbInit() throws Exception {
@@ -382,6 +387,7 @@ public class presBlag extends PreSelect {
     if (!isUserOriented()) {
       jp.add(jLabel3, new XYConstraints(15, 70, -1, -1));
       jp.add(jpswd, new XYConstraints(150, 70, 100, -1));
+      jpswd.setPreferredSize(new java.awt.Dimension(Aus.big(100), Aus.big(21)));
     }
   }
 
