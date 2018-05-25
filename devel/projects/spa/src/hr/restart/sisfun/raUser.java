@@ -58,7 +58,7 @@ public class raUser {
   private String m_user = "";
   private String m_grus = "";
   private String m_ime_usera = "";
-  private boolean superuser = false, ogranicen = false;
+  private boolean superuser = false, ogranicen = false, groupUpdate = false;
   private static String softLockEnabledInProperties = IntParam.getTag("softlock");
   protected static raUser usr;
   
@@ -78,6 +78,7 @@ public class raUser {
 //      (Column) dm.getUseri().getColumn("LOKK").clone()
     });
 
+    
 
 //    appr.setColumns(prava.cloneColumns());
   }
@@ -123,6 +124,14 @@ public class raUser {
    */
   public String getUser() {
     return m_user;
+  }
+  
+  public boolean canUpdate(String user) {
+    if (isSuper() || getUser().equals(user)) return true;
+    if (groupUpdate && ld.raLocate(dm.getUseri(), "CUSER", user) && 
+        m_grus.equals(dm.getUseri().getString("CGRUPEUSERA"))) return true;
+    
+    return false;
   }
 
   /**
@@ -195,6 +204,9 @@ public class raUser {
     preparePrava();
     //MsgDispatcher.install(true);
     fireUserChanged(oldUser, user);
+    
+    groupUpdate = frmParam.getParam("sisfun", "groupUpdate", "N", 
+        "Omoguæiti promjenu dokumenata korisnicima iste grupe (D,N)?").equalsIgnoreCase("D");
   }
   
   private java.beans.PropertyChangeSupport getChangeSupport() {
