@@ -1327,10 +1327,12 @@ sysoutTEST sT = new sysoutTEST(false);
       if (!checkAccess()) return false;
 
       if (!isUserCheck()) return true;
+      
+      if (ralock.canUpdate(getMasterSet().getString("CUSER"))) return true;
 
-      if (ralock.isSuper()) return true; // superuser mo?e ?to ho\u0107e
+/*      if (ralock.isSuper()) return true; // superuser mo?e ?to ho\u0107e
 
-      if (ralock.getUser().equals(getMasterSet().getString("CUSER"))) return true;
+      if (ralock.getUser().equals(getMasterSet().getString("CUSER"))) return true;*/
 
       return false;
 
@@ -1858,9 +1860,10 @@ sysoutTEST sT = new sysoutTEST(false);
 
         try{
 
-          if (masterSet.getColumn(MasterKey[i]).getSqlType()==java.sql.Types.CHAR  &&
-
-                  row.getColumn(DetailKey[i]).getSqlType()==java.sql.Types.CHAR) {
+          if ((masterSet.getColumn(MasterKey[i]).getSqlType()==java.sql.Types.CHAR  &&
+                  row.getColumn(DetailKey[i]).getSqlType()==java.sql.Types.CHAR) ||
+               (masterSet.getColumn(MasterKey[i]).getSqlType()==java.sql.Types.VARCHAR  &&
+                  row.getColumn(DetailKey[i]).getSqlType()==java.sql.Types.VARCHAR)) {
 
             if (getFilter()) {
 
@@ -2730,7 +2733,8 @@ sysoutTEST sT = new sysoutTEST(false);
 
         for (int i=0; i<MasterKey.length; i++){
 
-          if (detailSet.getColumn(DetailKey[i]).getSqlType()==java.sql.Types.CHAR){
+          if (detailSet.getColumn(DetailKey[i]).getSqlType()==java.sql.Types.CHAR || 
+              detailSet.getColumn(DetailKey[i]).getSqlType()==java.sql.Types.VARCHAR){
 
             getRaQueryDataSet().setString(DetailKey[i],masterSet.getString(MasterKey[i]));
 
