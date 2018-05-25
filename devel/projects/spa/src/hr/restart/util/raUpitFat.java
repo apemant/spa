@@ -33,6 +33,7 @@ public abstract class raUpitFat extends raUpit{
 
   public raUpitFat() {
     keySupport.setNavContainer(getJPTV().getNavBar().getNavContainer());
+    this.getJPTV().getColumnsBean().setUpitFat(this);
 //    this.getJPTV().getColumnsBean().setSaveName(getClass().getName());
   }
 

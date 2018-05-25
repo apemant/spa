@@ -48,9 +48,9 @@ public abstract class raScreenHandler {
   private static int getHeight(raUserDialog userD) {
     if (hr.restart.start.isMainFrame()) {
       return userD.getHeight();
-    } else {
-      return getMain().getHeight();
-    }
+    } 
+    
+    return getMain().getHeight();
   }
 
   private static Dimension calcSize(raUserDialog userD,boolean showing) {

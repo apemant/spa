@@ -210,7 +210,7 @@ System.out.println("getSelectedTabComponent.title = "+selectedTask.title);
     setSize(whsize,whsize);
     */
     //setSize(getSize().width+20,getSize().height+20);
-    setSize(new Dimension(700,450));
+    setSize(new Dimension(Aus.big(700),Aus.big(450)));
   }
 
   void applyMessage() {

@@ -137,9 +137,10 @@ public abstract class OKpanel extends javax.swing.JPanel {
   }
   
   void jbInit() throws Exception {
-//System.err.println("OKpanel.TOUCHHEIGHT = "+OKpanel.TOUCHHEIGHT);
-    jPanel7.setMinimumSize(new Dimension(70, 27+TOUCHHEIGHT));
-    jPanel7.setPreferredSize(new Dimension(200 + startFrame.getFontDelta()*4, 10+TOUCHHEIGHT));
+    
+     //System.err.println("OKpanel.TOUCHHEIGHT = "+OKpanel.TOUCHHEIGHT);
+    jPanel7.setMinimumSize(new Dimension(Aus.big(70), 27+TOUCHHEIGHT));
+    jPanel7.setPreferredSize(new Dimension(Aus.big(200) + startFrame.getFontDelta()*4, 10+TOUCHHEIGHT));
     jPanel7.setLayout(gridLayout2);
     jPrekid.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -147,9 +148,9 @@ public abstract class OKpanel extends javax.swing.JPanel {
       }
     });
     jPrekid.setText("Prekid");
-    jPrekid.setMaximumSize(new Dimension(100, 27+TOUCHHEIGHT));
-    jPrekid.setMinimumSize(new Dimension(90, 27+TOUCHHEIGHT));
-    jPrekid.setPreferredSize(new Dimension(90, 27+TOUCHHEIGHT));
+    jPrekid.setMaximumSize(new Dimension(Aus.big(100), Aus.big(27)+TOUCHHEIGHT));
+    jPrekid.setMinimumSize(new Dimension(Aus.big(90), Aus.big(27)+TOUCHHEIGHT));
+    jPrekid.setPreferredSize(new Dimension(Aus.big(90), Aus.big(27)+TOUCHHEIGHT));
     jPrekid.setIcon(raImages.getImageIcon(raImages.IMGCANCEL));
     jBOK.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -161,9 +162,9 @@ public abstract class OKpanel extends javax.swing.JPanel {
     
 //    jBOK.setSelected(true);
     jBOK.setText("OK");
-    jBOK.setMaximumSize(new Dimension(100, 27+TOUCHHEIGHT));
-    jBOK.setMinimumSize(new Dimension(90, 27+TOUCHHEIGHT));
-    jBOK.setPreferredSize(new Dimension(90, 27+TOUCHHEIGHT));
+    jBOK.setMaximumSize(new Dimension(Aus.big(100), Aus.big(27)+TOUCHHEIGHT));
+    jBOK.setMinimumSize(new Dimension(Aus.big(90), Aus.big(27)+TOUCHHEIGHT));
+    jBOK.setPreferredSize(new Dimension(Aus.big(90), Aus.big(27)+TOUCHHEIGHT));
     jBOK.setIcon(raImages.getImageIcon(raImages.IMGOK));
 
     // ab.f pogledaj objasnjenje u JraButton-u
@@ -171,9 +172,9 @@ public abstract class OKpanel extends javax.swing.JPanel {
     jPrekid.setAutomaticFocusLost(false);
 
     this.setLayout(borderLayout1);
-    this.setPreferredSize(new Dimension(200 + startFrame.getFontDelta()*4, 25+TOUCHHEIGHT));
+    this.setPreferredSize(new Dimension(Aus.big(200) + startFrame.getFontDelta()*4, Aus.big(25)+TOUCHHEIGHT));
     this.add(jPanel7, BorderLayout.EAST);
-    if (TOUCHHEIGHT >0) add(Box.createVerticalStrut(27 + TOUCHHEIGHT));
+    if (TOUCHHEIGHT >0) add(Box.createVerticalStrut(Aus.big(27) + TOUCHHEIGHT));
     jPanel7.add(jBOK, null);
     jPanel7.add(jPrekid, null);
     
@@ -206,9 +207,9 @@ public abstract class OKpanel extends javax.swing.JPanel {
   public void addResetButton(final ResetEnabled screen) {
     jReset.setToolTipText("Pretpostavljene vrijednosti");
     jReset.setIcon(raImages.getImageIcon(raImages.IMGREFRESH));
-    jReset.setMaximumSize(new Dimension(27+TOUCHHEIGHT, 27+TOUCHHEIGHT));
-    jReset.setMinimumSize(new Dimension(27+TOUCHHEIGHT, 27+TOUCHHEIGHT));
-    jReset.setPreferredSize(new Dimension(27+TOUCHHEIGHT, 27+TOUCHHEIGHT));
+    jReset.setMaximumSize(new Dimension(Aus.big(27)+TOUCHHEIGHT, Aus.big(27)+TOUCHHEIGHT));
+    jReset.setMinimumSize(new Dimension(Aus.big(27)+TOUCHHEIGHT, Aus.big(27)+TOUCHHEIGHT));
+    jReset.setPreferredSize(new Dimension(Aus.big(27)+TOUCHHEIGHT, Aus.big(27)+TOUCHHEIGHT));
     JPanel left = new JPanel();
     left.setLayout(new BoxLayout(left, BoxLayout.X_AXIS));
     remove(jPanel7);

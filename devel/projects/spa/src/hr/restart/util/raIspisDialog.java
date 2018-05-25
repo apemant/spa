@@ -136,6 +136,11 @@ public abstract class raIspisDialog extends JraDialog {
   void this_componentShown(ComponentEvent e) {
     componentShow();
   }
+  
+  public void pack() {
+    Aus.recursiveUpdateSizes(jPan);
+    super.pack();
+  }
   public hr.restart.util.reports.raRunReport getRepRunner() {
     if (RepRun == null) RepRun = hr.restart.util.reports.raRunReport.getRaRunReport();
     return RepRun;

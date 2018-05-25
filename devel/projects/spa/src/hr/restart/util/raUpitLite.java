@@ -474,7 +474,17 @@ public abstract class raUpitLite extends raFrame implements ResetEnabled {
       }
     });
   }
+  
+  public void pack() {
+    Aus.recursiveUpdateSizes(jPan);
+    super.pack();
+  }
 
+  public void show() {
+    Aus.recursiveUpdateSizes(jPan);
+    super.show();
+  }
+  
   public boolean isInterrupted() {
     return interrupted;
   }
@@ -849,7 +859,7 @@ public abstract class raUpitLite extends raFrame implements ResetEnabled {
       sortButton = new JraButton();
       sortButton.setText("Slijed");
       sortButton.setIcon(raImages.getImageIcon(raImages.IMGALIGNCENTER));
-      sortButton.setPreferredSize(new Dimension(100,25));
+      sortButton.setPreferredSize(new Dimension(Aus.big(100), Aus.big(27)));
 
       pd.add(sortButton);
       pd.add(Box.createHorizontalStrut(10));

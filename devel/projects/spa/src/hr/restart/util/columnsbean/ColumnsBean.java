@@ -39,6 +39,7 @@ import hr.restart.util.VarStr;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raRowSume;
+import hr.restart.util.raUpitFat;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -117,7 +118,7 @@ public class ColumnsBean extends JPanel {
 
   com.borland.dx.dataset.DataSet raDataSet;
 
-  private String PROPERTIESFILE = "columns.properties";
+  public static final String PROPERTIESFILE = "columns.properties";
 
   private int[] aditionalCols = new int[] {-1}; //defaultna vrijednost
 //  String sacols = "";
@@ -355,21 +356,21 @@ public class ColumnsBean extends JPanel {
 
 //            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(1, 0, 3, 0), 125, 5));
 
-    this.add(jComboB,new XYConstraints(0,2,150,22));/*, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
+    this.add(jComboB,new XYConstraints(0,2,Aus.big(150), Aus.big(22)));/*, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
 
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(1, 0, 3, 0), 0, 0));
 
 */
 
-    this.add(rnvVisible, new XYConstraints(151,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
+    this.add(rnvVisible, new XYConstraints(Aus.big(150) + 1,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
 
-    this.add(rnvTotal, new XYConstraints(151+raNavAction.ACTSIZE,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
+    this.add(rnvTotal, new XYConstraints(Aus.big(150) + 1 +raNavAction.ACTSIZE,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
 
-    this.add(rnvFind, new XYConstraints(151+raNavAction.ACTSIZE*2,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
+    this.add(rnvFind, new XYConstraints(Aus.big(150) + 1 +raNavAction.ACTSIZE*2,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
     
-    this.add(rnvDeselect, new XYConstraints(151+raNavAction.ACTSIZE*3,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
+    this.add(rnvDeselect, new XYConstraints(Aus.big(150) + 1 +raNavAction.ACTSIZE*3,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
 
-    this.add(rnvRefresh, new XYConstraints(151+raNavAction.ACTSIZE*4,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
+    this.add(rnvRefresh, new XYConstraints(Aus.big(150) + 1 +raNavAction.ACTSIZE*4,0,raNavAction.ACTSIZE,raNavAction.ACTSIZE));
 
 //    this.add(jCheckBVisible, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 
@@ -987,11 +988,13 @@ public class ColumnsBean extends JPanel {
       }
       System.out.println("set widths "+cw);
       System.out.println("height "+tabheight);
+      System.out.println("locataion " + locationOnScreen);
       raJdbTable.setPreferredScrollableViewportSize(new Dimension(total, tabheight));
       if (locationOnScreen != null) {
         Container w = getTopLevelAncestor();
         if (w instanceof Window && !w.isShowing())
           w.setLocation(locationOnScreen.x, locationOnScreen.y);
+        else resetFat();
       }
     }
 
@@ -1089,6 +1092,20 @@ public class ColumnsBean extends JPanel {
 
 //
 
+  }
+  
+  raUpitFat fat = null;
+  
+  public void setUpitFat(raUpitFat ufat) {
+    fat = ufat;
+  }
+  
+  void resetFat() {
+    System.out.println("resetting: " + fat);
+    if (fat != null && fat.getJPTV().getMpTable().getAutoResizeMode() != JTable.AUTO_RESIZE_OFF) {
+      fat.pack();
+      fat.setLocation(locationOnScreen.x, locationOnScreen.y);
+    }
   }
 
   void checkCb(JraCheckBox cb) {

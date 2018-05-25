@@ -814,6 +814,8 @@ sysoutTEST ST = new sysoutTEST(false);
   }
 
   public void pack(){
+    
+    Aus.recursiveUpdateSizes(getRaDetailPanel());
 
     if (hr.restart.start.isRESIZABLELAYOUT())
       hr.restart.swing.layout.raLayUtil.parseXYLayout(raDetailPanel);
@@ -1032,7 +1034,7 @@ sysoutTEST ST = new sysoutTEST(false);
    */
 
   public void setRaDetailPanel(javax.swing.JPanel newRaDetailPanel) {
-
+    
     raDetailPanel = newRaDetailPanel;
     addScrolledAndCentered(raDetailPanel, jScrollPaneDetail , !hr.restart.start.isRESIZABLELAYOUT());
 /*
@@ -1384,6 +1386,9 @@ sysoutTEST ST = new sysoutTEST(false);
     }
 
     initBefShow();
+    System.out.println("UPDATE sizes: " + this);
+    System.out.println(this.getRaMasterDetail());
+    Aus.recursiveUpdateSizes(getRaDetailPanel());
     if (canAccessTable('P')) {
       super.show();
     }

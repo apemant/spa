@@ -40,7 +40,7 @@ public abstract class raNavAction extends JLabel implements Action {
 //sysoutTEST ST = new sysoutTEST(false);
   private Color orgBC;
   private Color hiBC;
-  public static final int ACTSIZE = 27;
+  public static final int ACTSIZE = Aus.big(27);
   private String raIconDesc;
   private String identifier;
   private int keyNum;

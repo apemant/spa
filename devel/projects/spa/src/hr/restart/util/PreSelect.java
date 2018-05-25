@@ -226,7 +226,7 @@ sysoutTEST ST= new sysoutTEST(false);
 
   private void jInit() {
     preSelDialog.getContentPane().setLayout(borderLayout1);
-    okpanel.setPreferredSize(new Dimension(138, 25));
+    //okpanel.setPreferredSize(new Dimension(138, 25));
     preSelDialog.addComponentListener(new java.awt.event.ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
         this_componentShown(e);
@@ -245,6 +245,9 @@ sysoutTEST ST= new sysoutTEST(false);
         cancelSelect();
       }
     });
+    if (selPanel != null) {
+      Aus.recursiveUpdateSizes(selPanel);
+    }
   }
 
   private Object getSwingOwner() {

@@ -78,7 +78,7 @@ import com.borland.dx.dataset.Variant;
         }
       }
     });
-    setPreferredSize(new java.awt.Dimension(100,21));
+    setPreferredSize(new java.awt.Dimension(Aus.big(100), Aus.big(21)));
 /*    this.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 System.out.println("actionPerformed");
