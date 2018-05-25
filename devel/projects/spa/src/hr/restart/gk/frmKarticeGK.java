@@ -34,7 +34,6 @@ import hr.restart.util.raComboBox;
 import hr.restart.util.raImages;
 import hr.restart.util.raMasterDetail;
 import hr.restart.util.raUpit;
-import hr.restart.util.raUpitFat;
 import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.Tecajevi;
 
@@ -131,7 +130,7 @@ public class frmKarticeGK extends raUpit {
   public frmKarticeGK(String dva) {
     try {
       jbInit();
-      setHeightInstance();
+      //setHeightInstance();
       fkgk = this;
     } catch (Exception e) {
       e.printStackTrace();
@@ -826,8 +825,8 @@ System.out.println(queryString);
 //    jcbSaldo.addKeyListener(new hr.restart.swing.JraKeyListener());
 
 //    buttonGroup1.setHorizontalTextPosition(SwingConstants.TRAILING);
-    layDetail.setWidth(582);
-    layDetail.setHeight(300);
+    layDetail.setWidth(580);
+    layDetail.setHeight(160);
 //    buttonGroup1.add(jrbDatDokum, "Datumu dokumenta");
 //    buttonGroup1.add(jrbDatKnjiz, "Datumu knjiženja");
 
@@ -850,7 +849,7 @@ System.out.println(queryString);
 //    System.out.println("search mode " + kontoPanel.jlrKontoBroj.getSearchMode());
 //    System.out.println("search mode " + kontoPanel.jlrKontoNaziv.getSearchMode());
 
-    jpDetail.setPreferredSize(new Dimension(580, 160));
+    //jpDetail.setPreferredSize(new Dimension(580, 160));
     jpDetail.add(jlPeriod, new XYConstraints(15, 70, -1, -1));
 
 

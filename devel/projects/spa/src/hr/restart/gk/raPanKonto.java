@@ -158,10 +158,10 @@ public class raPanKonto extends JPanel {
 
     this.setLayout(xYLayout1);
 
-    xYLayout1.setWidth(609);
+    xYLayout1.setWidth(555);
     xYLayout1.setHeight(48);
-    this.setMinimumSize(new Dimension(50, 50));
-    this.setPreferredSize(new Dimension(570, 50));
+//    this.setMinimumSize(new Dimension(50, 50));
+//    this.setPreferredSize(new Dimension(570, 50));
     this.add(jlrNazorg,  new XYConstraints(240, 25, 285, -1));
     this.add(jlrKontoNaziv,  new XYConstraints(240, 0, 285, -1));
     this.add(jbSelBrKon,  new XYConstraints(530, 0, 21, 21));
@@ -218,10 +218,10 @@ public class raPanKonto extends JPanel {
 
     this.setLayout(xYLayout1);
 
-    xYLayout1.setWidth(609);
-    xYLayout1.setHeight(48);
-    this.setMinimumSize(new Dimension(50, 25));
-    this.setPreferredSize(new Dimension(570, 25));
+    xYLayout1.setWidth(555);
+    xYLayout1.setHeight(25);
+    //this.setMinimumSize(new Dimension(50, 25));
+    //this.setPreferredSize(new Dimension(570, 25));
     this.add(jlrNazorg,  new XYConstraints(240, 0, 285, -1));
     this.add(jbSelCorg,  new XYConstraints(530, 0, 21, 21));
     this.add(jlCorg, new XYConstraints(0, 0, -1, -1));

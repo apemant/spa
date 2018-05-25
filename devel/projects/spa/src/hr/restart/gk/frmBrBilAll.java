@@ -70,6 +70,7 @@ import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
+import com.borland.jbcl.layout.constraintsGetter;
 
 /**
  * BB complete new
@@ -96,6 +97,7 @@ public class frmBrBilAll extends raUpitFat {
   
   XYLayout layDetail = new XYLayout();
   XYLayout layPeriod = new XYLayout();
+  XYLayout layPeriod2 = new XYLayout();
 
   private String knjigDifolt;
   private String modeCache = "";
@@ -578,7 +580,7 @@ public class frmBrBilAll extends raUpitFat {
       ds.getColumn("GODMJ").setVisible(0);
     if (ds.hasColumn("CVRNAL") != null) 
       ds.getColumn("CVRNAL").setVisible(0);
-        frmTableDataView view = new frmTableDataView();
+        frmTableDataView view = new frmTableDataView(true, false, false);
         view.setDataSet(ds);
         view.setTitle("Bruto bilanca  za period od "+
             Aus.formatTimestamp(stds.getTimestamp("POCDAT")) + " do " +
@@ -1725,14 +1727,16 @@ public class frmBrBilAll extends raUpitFat {
     System.out.println("mode changed"); //XDEBUG delete when no more needed
     if (/*e.getID() == e.ACTION_PERFORMED && */!modeCache.equals(stds.getString("MODE"))){
       modeCache = stds.getString("MODE");
+      XYConstraints cons = constraintsGetter.get(layDetail, jpPeriodBB);
+      if (cons == null) cons = constraintsGetter.get(layDetail, jpPeriodBP);
       if (stds.getString("MODE").equalsIgnoreCase("BB")) {
         jpDetail.remove(jpPeriodBP);
         jpDetail.remove(jpPeriodBB);
-        jpDetail.add(jpPeriodBB, new XYConstraints(150, 70, 300, 25));
+        jpDetail.add(jpPeriodBB, cons);
       } else {
         jpDetail.remove(jpPeriodBP);
         jpDetail.remove(jpPeriodBB);
-        jpDetail.add(jpPeriodBP, new XYConstraints(150, 70, 300, 25));
+        jpDetail.add(jpPeriodBP, cons);
       }
       jpDetail.updateUI();
     }
@@ -1916,15 +1920,17 @@ public class frmBrBilAll extends raUpitFat {
     
     this.setJPan(jpDetail);
     
-    layDetail.setWidth(578);
-    layDetail.setHeight(458);
+    layDetail.setWidth(580);
+    layDetail.setHeight(210);
     
     layPeriod.setWidth(300);
     layPeriod.setHeight(25);
+    layPeriod2.setWidth(300);
+    layPeriod2.setHeight(25);
     
     jpDetail.setLayout(layDetail);
     jpPeriodBB.setLayout(layPeriod);
-    jpPeriodBP.setLayout(layPeriod);
+    jpPeriodBP.setLayout(layPeriod2);
 
     jpPeriodBB.add(jtMjesecPoc, new XYConstraints(0, 0, 35, -1)); /// 150
     jpPeriodBB.add(jtMjesecZav, new XYConstraints(65, 0, 35, -1)); /// 215
@@ -1933,12 +1939,14 @@ public class frmBrBilAll extends raUpitFat {
 
     jpPeriodBP.add(jtfPocDatum, new XYConstraints(0, 0, 100, -1)); /// 150
     jpPeriodBP.add(jtfZavDatum, new XYConstraints(105, 0, 100, -1)); /// 255
+    
+    Aus.recursiveUpdateSizes(jpPeriodBP);
 
-    jpDetail.setMinimumSize(new Dimension(600, 458));
-    jpDetail.setPreferredSize(new Dimension(580, 200));
+    //jpDetail.setMinimumSize(new Dimension(600, 458));
+    //jpDetail.setPreferredSize(new Dimension(580, 200));
     
     kontoPanel.setNoLookup(true);
-    kontoPanel.setPreferredSize(new Dimension(580, 50));
+    //kontoPanel.setPreferredSize(new Dimension(580, 50));
     jpDetail.add(kontoPanel, new XYConstraints(15, 20, -1, -1));
 
     incKum = frmParam.getFrmParam().getParam("gk","kumulBB","N","Prikaz bruto bilance i preko kumulativa D/N").equals("D");
@@ -1947,7 +1955,7 @@ public class frmBrBilAll extends raUpitFat {
     else
       jpDetail.add(new JLabel("Period"), new XYConstraints(15, 70, 130, -1));
     
-    jpDetail.add(jpPeriodBB, new XYConstraints(150, 70, 300, 25));
+    jpDetail.add(jpPeriodBB, new XYConstraints(150, 70, -1, -1));
 
     jpDetail.add(new JLabel("Dokumenti / Org. st."),   new XYConstraints(15, 95, -1, -1));
     jpDetail.add(rcbPrivremenost, new XYConstraints(150,95,100,-1));

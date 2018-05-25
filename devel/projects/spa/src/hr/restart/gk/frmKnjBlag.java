@@ -86,7 +86,7 @@ public class frmKnjBlag extends frmKnjizenje {
   	srcTem = raKnjizenje.BL;
     jpDetail.setLayout(lay);
 //    lay.setWidth(591);
-    lay.setHeight(50);
+    lay.setHeight(55);
 
     jlCblag.setText("Blagajna");
     jlaCblag.setHorizontalAlignment(SwingConstants.CENTER);

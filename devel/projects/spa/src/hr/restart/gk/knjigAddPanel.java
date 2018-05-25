@@ -198,7 +198,7 @@ public class knjigAddPanel extends JPanel {
     jlrNAZORG.setNavProperties(jlrCORG);
     jbGetCorg.setText("...");
     jlrCORG.setNavButton(jbGetCorg);
-    xYLayout1.setHeight(100);
+    xYLayout1.setHeight(130);
     add(new JLabel("Dokumenti "), new XYConstraints(15, 0, 100, -1));
     add(rcbULIZ, new XYConstraints(150, 0, 100, -1));
     add(jlrDok, new XYConstraints(255, 0, 50, -1));

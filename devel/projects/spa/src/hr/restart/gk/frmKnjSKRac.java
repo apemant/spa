@@ -53,6 +53,8 @@ import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 public class frmKnjSKRac extends frmKnjizenje {
   QueryDataSet skstavke;
@@ -446,9 +448,9 @@ public class frmKnjSKRac extends frmKnjizenje {
     jcbVrDok.setRaDataSet(dataSet);
     jcbVrDok.setRaColumn("VRDOK");
     jcbVrDok.setRaItems(getCbVrdokItems());
-    jpAdditional.setLayout(new raXYLayout());
-    jpAdditional.add(jlVrDok,new raXYConstraints(15,0,-1,-1));
-    jpAdditional.add(jcbVrDok,new raXYConstraints(150,0,370,-1));
+    jpAdditional.setLayout(new XYLayout(525, 35));
+    jpAdditional.add(jlVrDok,new XYConstraints(15,0,-1,-1));
+    jpAdditional.add(jcbVrDok,new XYConstraints(150,0,370,-1));
     this.jp.add(jpAdditional,BorderLayout.CENTER);
   }
 

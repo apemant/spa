@@ -20,8 +20,6 @@ package hr.restart.gk;
 import java.math.BigDecimal;
 import java.sql.Date;
 
-import javax.swing.JOptionPane;
-
 import com.borland.dx.dataset.Column;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
@@ -68,6 +66,7 @@ public class frmKarticeGKVal extends frmKarticeGK {
     colOznVal.setDataType(com.borland.dx.dataset.Variant.STRING);
     qdsVal.setColumns(new Column[] {colOznVal});
     qdsVal.open();
+    layDetail.setHeight(210);
     jpVal.setBorderVisible(false);
     jpVal.setRaDataSet(qdsVal);
     jpVal.initJP('N');

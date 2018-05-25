@@ -71,7 +71,7 @@ public class frmKnjPlace extends frmKnjizenje {
     jtfRBR.setColumnName("RBROBR");
     jtfRBR.setDataSet(viewSet);
 
-    XYLayout lay = new XYLayout();
+    XYLayout lay = new XYLayout(300, 30);
     period.setLayout(lay);
     period.add(jl1,   new XYConstraints(15, 0, -1, -1));
     period.add(jtfGOD,   new XYConstraints(150, 0, 55, -1));

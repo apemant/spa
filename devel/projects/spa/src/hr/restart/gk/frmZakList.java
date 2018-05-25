@@ -351,8 +351,9 @@ System.out.println(findK);
 
     jLabel1.setText("Period do (mm - gggg)");
     jLabel2.setText("-");
+    xYLayout1.setWidth(580);
     xYLayout1.setHeight(70);
-    mainPanel.setPreferredSize(new Dimension(580, 70));
+    //mainPanel.setPreferredSize(new Dimension(580, 70));
     mainPanel.add(kontoPanel, new XYConstraints(15, 15, -1, -1));
     mainPanel.add(jtMjesecZav, new XYConstraints(150, 40, 35, -1));
     mainPanel.add(jLabel1, new XYConstraints(15, 40, -1, -1));

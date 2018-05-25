@@ -93,7 +93,10 @@ public class raUserDialog extends JraFrame {
 //    super.pack();
   }
   public void calcSizeAndPosition(boolean left) {
-    int maxDlgW = 250;
+    int max = Aus.getAnyNumber(IntParam.getTag("helppanelwidth"));
+    if (max < 250) IntParam.setTag("helppanelwidth", "250");
+    int maxDlgW = max < 250 ? 250 : max;
+    
     int scrW = Toolkit.getDefaultToolkit().getScreenSize().width;
     int scrH = Toolkit.getDefaultToolkit().getScreenSize().height;
     int dlgW = scrW/4>maxDlgW?maxDlgW:scrW/4;

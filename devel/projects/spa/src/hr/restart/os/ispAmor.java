@@ -162,8 +162,8 @@ public class ispAmor extends raIspisDialog{
         jcbInvBr_actionPerformed(e);
       }
     });
-    jp.setMinimumSize(new Dimension(478, 430));
-    jp.setPreferredSize(new Dimension(478, 430));
+    //jp.setMinimumSize(new Dimension(478, 430));
+    //jp.setPreferredSize(new Dimension(478, 430));
     jp.setToolTipText("");
     jcbOrgJed.setText("Ispis po org. jedinici");
     jcbOrgJed.addActionListener(new java.awt.event.ActionListener() {

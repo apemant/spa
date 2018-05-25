@@ -85,6 +85,8 @@ public class frmObrPor extends frmObradaPL {
       }
       
     });
+    xYLayout1.setWidth(617);
+    xYLayout1.setHeight(165);
     jp.add(jcbDopr,new XYConstraints(300, 50, 140, -1));
     jp.add(jcbPrir,new XYConstraints(445, 50, 140, -1));
     jp.add(jcbPor,new XYConstraints(300, 75, 140, -1));
@@ -99,10 +101,10 @@ public class frmObrPor extends frmObradaPL {
     jcb.addKeyListener(new hr.restart.swing.JraKeyListener());
 //    jcb.setBackground(java.awt.Color.pink);
   }
-  public void pack() {
+  /*public void pack() {
     super.pack();
     setSize(new Dimension(617,215));
-  }
+  }*/
   public boolean Validacija() {
     if (!super.Validacija()) return false;
     obracun.initObracun(tds.getShort("GODINA"),tds.getShort("MJESEC"),tds.getShort("RBR"),tds.getString("CORG"),tds.getTimestamp("DATUM"));
@@ -285,6 +287,7 @@ public class frmObrPor extends frmObradaPL {
       //frmCRP.this.getContentPane().add(content,BorderLayout.CENTER);
       frmCRP.this.getContentPane().add(okp,BorderLayout.SOUTH);
       //privremeno
+      Aus.recursiveUpdateSizes(content);
     }
     private void initDS() {
       crp = new CalcRazPor();

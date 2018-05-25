@@ -430,7 +430,7 @@ public class frmStanjeKonto extends raUpit {
 
     jlCrtica.setText("-");
     jlOrgStrukt.setText("Dokumenti / Lista");
-    jpDetail.setPreferredSize(new Dimension(580, 135));
+    //jpDetail.setPreferredSize(new Dimension(580, 135));
 
     jpDetail.add(kontoPanel, new XYConstraints(15, 20, -1, -1));
     jpDetail.add(jlStd, new XYConstraints(15, 70, -1, -1));
@@ -630,7 +630,7 @@ public class frmStanjeKonto extends raUpit {
         JOptionPane.showConfirmDialog(null, "Nema po?etnog stanja!", "Upozorenje", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
       }
       return;
-    } else {
+    }
       int ps = 0;
       String nas = "";
 
@@ -664,7 +664,7 @@ public class frmStanjeKonto extends raUpit {
       fkgk.setLocation(this.getWindow().getX()-25, this.getWindow().getY()-25);
       fkgk.show();
       return;
-    }
+
   }
 
   private int TableVievCount(){

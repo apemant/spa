@@ -1033,7 +1033,7 @@ public class frmIzvodi extends raMasterDetail {
   private void setDevIznosVisible() {
     boolean devivisible = !devizni && devind;
     jpDetail.jpDevI.setVisible(devivisible);
-    jpDetail.lay.setHeight(devind ? 310 : 280);
+    jpDetail.lay.setHeight(devind ? Aus.big(310) : Aus.big(280));
   }
   
   /*private void setDevButtonVisible() {

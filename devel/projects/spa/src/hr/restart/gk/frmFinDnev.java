@@ -123,8 +123,8 @@ public class frmFinDnev extends raUpitLite { //raIspisDialog {
   private void jbInit() throws Exception {
     dm = hr.restart.baza.dM.getDataModule();
     this.setJPan(jp);
-    jPanel3.setMaximumSize(new Dimension(385, 60));
-    jPanel3.setPreferredSize(new Dimension(385, 60));
+    //jPanel3.setMaximumSize(new Dimension(385, 60));
+    //jPanel3.setPreferredSize(new Dimension(385, 60));
     jPanel3.setLayout(xYLayout1);
     jLabel1.setText("Datum (od-do)");
     
@@ -133,7 +133,7 @@ public class frmFinDnev extends raUpitLite { //raIspisDialog {
     JraButton checkUI = new JraButton();
     checkUI.setText("Prikaži");
     checkUI.setIcon(raImages.getImageIcon(raImages.IMGALLBACK));
-    checkUI.setPreferredSize(new Dimension(100,25));
+    checkUI.setPreferredSize(new Dimension(Aus.big(100), Aus.big(27)));
     pd.add(checkUI);
     okp.add(pd, BorderLayout.CENTER);
     okp.revalidate();
@@ -173,8 +173,8 @@ public class frmFinDnev extends raUpitLite { //raIspisDialog {
 
     xYLayout1.setWidth(385);
     xYLayout1.setHeight(85);
-    jp.setMaximumSize(new Dimension(385, 85));
-    jp.setPreferredSize(new Dimension(385, 85));
+    //jp.setMaximumSize(new Dimension(385, 85));
+    //jp.setPreferredSize(new Dimension(385, 85));
     
     jPanel3.add(jLabel1,  new XYConstraints(20, 20, 0, 0));
     

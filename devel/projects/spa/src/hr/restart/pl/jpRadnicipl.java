@@ -175,6 +175,8 @@ public class jpRadnicipl extends JPanel {
     public void after_lookUp() {
     }
   };
+  
+  JraCheckBox jcbMinimalac = new JraCheckBox();
 //******************************************************
 //******** PANEL 1 **********************************
   JLabel jlBrobveze = new JLabel();
@@ -481,27 +483,36 @@ public class jpRadnicipl extends JPanel {
 
     jraKoefzar.setColumnName("KOEFZAR");
     jraKoefzar.setDataSet(fRadnicipl.getRaQueryDataSet());
+    
+    jcbMinimalac.setColumnName("MINIMALAC");
+    jcbMinimalac.setDataSet(fRadnicipl.getRaQueryDataSet());
+    jcbMinimalac.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbMinimalac.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbMinimalac.setSelectedDataValue("D");
+    jcbMinimalac.setText("Olakšica na doprinose za minimalnu plaæu");
+    jcbMinimalac.setUnselectedDataValue("N");
+    
 
-    jpDetail1.setMinimumSize(new Dimension(605, 315));
-    jpDetail1.setPreferredSize(new Dimension(605, 315));
+    //jpDetail1.setMinimumSize(new Dimension(605, 315));
+    //jpDetail1.setPreferredSize(new Dimension(605, 315));
     xYLayout3.setWidth(605);
-    xYLayout3.setHeight(315);
+    xYLayout3.setHeight(435);
     xYLayout4.setWidth(595);
-    xYLayout4.setHeight(800);
+    xYLayout4.setHeight(450);
     jPanel1.setBorder(titledBorder3);
     jPanel1.setLayout(xYLayout1);
     jPanel2.setBorder(titledBorder4);
     jPanel2.setLayout(xYLayout2);
     jPanel3.setBorder(titledBorder5);
     jPanel3.setLayout(xYLayout5);
-    jpDetail2.setMinimumSize(new Dimension(595, 450));
-    jpDetail2.setPreferredSize(new Dimension(595, 415));
+    //jpDetail2.setMinimumSize(new Dimension(595, 450));
+    //jpDetail2.setPreferredSize(new Dimension(595, 415));
     /*jraGodstaz.addFocusListener(new java.awt.event.FocusAdapter() {
       public void focusLost(FocusEvent e) {
         jraGodstaz_focusLost(e);
       }
     });*/
-    jTabbedPane1.setPreferredSize(new Dimension(640, 500));
+    //jTabbedPane1.setPreferredSize(new Dimension(640, 500));
     jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         jTabbedPane1_stateChanged(e);
@@ -580,6 +591,7 @@ public class jpRadnicipl extends JPanel {
     jpDetail1.add(jraOluk,  new XYConstraints(455, 380, 100, -1));
     jpDetail1.add(jlOluk,  new XYConstraints(290, 380, -1, -1));
     jpDetail1.add(jlOlos,   new XYConstraints(15, 380, -1, -1));
+    jpDetail1.add(jcbMinimalac,  new XYConstraints(150, 410, 405, -1));
     jpDetail1.add(jraKoefzar,  new XYConstraints(455, 355, 100, -1));
     jpDetail1.add(jlCradnik,    new XYConstraints(150, 27, -1, -1));
     jpDetail1.add(jlrRadNaziv,   new XYConstraints(385, 50, 170, -1));
@@ -747,6 +759,7 @@ public class jpRadnicipl extends JPanel {
   JraScrollPane getCustomScroll() {
     JraScrollPane jsp = new JraScrollPane(getCustomPanel());
     jsp.setBorder(null);
+    jsp.setPreferredSize(new Dimension(605, 450));
     return jsp;
   }
   jpCustomAttribDoh jpCAD;

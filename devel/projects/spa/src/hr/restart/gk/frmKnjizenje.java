@@ -23,19 +23,7 @@ import hr.restart.baza.Reportext;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraTextField;
-import hr.restart.util.Aus;
-import hr.restart.util.FileHandler;
-import hr.restart.util.OKpanel;
-import hr.restart.util.ResetEnabled;
-import hr.restart.util.Util;
-import hr.restart.util.Valid;
-import hr.restart.util.lookupData;
-import hr.restart.util.raComboBox;
-import hr.restart.util.raImages;
-import hr.restart.util.raLLFrames;
-import hr.restart.util.raLocalTransaction;
-import hr.restart.util.raStatusBar;
-import hr.restart.util.sysoutTEST;
+import hr.restart.util.*;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -48,7 +36,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import bsh.Interpreter;
 
@@ -403,6 +390,11 @@ public class frmKnjizenje extends JraDialog implements ResetEnabled {
     if (knjizenje == null) knjizenje = new raKnjizenje(dataSet);
     knjizenje.fake = fake;
     return knjizenje;
+  }
+  
+  public void pack() {
+    Aus.recursiveUpdateSizes(jp);
+    super.pack();
   }
 
   /**
