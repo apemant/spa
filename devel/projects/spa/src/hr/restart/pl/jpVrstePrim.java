@@ -73,7 +73,7 @@ public class jpVrstePrim extends JPanel {
 
   JLabel jlCvrp = new JLabel();
 
-  JLabel jlCvrparh = new JLabel();
+  //JLabel jlCvrparh = new JLabel();
 
   JLabel jlStavka = new JLabel();
 
@@ -87,7 +87,9 @@ public class jpVrstePrim extends JPanel {
 
   JraButton jbSelCsif1 = new JraButton();
 
-  JraButton jbSelCvrpArh = new JraButton();
+  //JraButton jbSelCvrpArh = new JraButton();
+  
+  JraButton jbSelCvrodb = new JraButton();
 
   JraButton jbSelStavka = new JraButton();
 
@@ -106,6 +108,8 @@ public class jpVrstePrim extends JPanel {
   JraCheckBox jcbRnalog = new JraCheckBox();
   
   JraCheckBox jcbNeod = new JraCheckBox();
+  
+  JraCheckBox jcbHolak = new JraCheckBox();
 
   JraTextField jraCvrp = new JraTextField();
 
@@ -183,6 +187,7 @@ public class jpVrstePrim extends JPanel {
 
   };
 
+  /*
   JlrNavField jlrCvrpArhNaz = new JlrNavField() {
 
     public void after_lookUp() {
@@ -192,6 +197,22 @@ public class jpVrstePrim extends JPanel {
   };
 
   JlrNavField jlrCvrparh = new JlrNavField(){
+
+    public void after_lookUp() {
+
+    }
+
+  };*/
+  
+  JlrNavField jlrCvrodb = new JlrNavField() {
+
+    public void after_lookUp() {
+
+    }
+
+  };
+
+  JlrNavField jlrNazvrodb = new JlrNavField(){
 
     public void after_lookUp() {
 
@@ -286,7 +307,7 @@ public class jpVrstePrim extends JPanel {
 
     lay.setWidth(605);
 
-    lay.setHeight(385);
+    lay.setHeight(415);
 
     jlrNaziv.setNextFocusableComponent(jcbRnalog);
 
@@ -308,7 +329,7 @@ public class jpVrstePrim extends JPanel {
 
     jlCvrp.setText("Vrsta primanja");
 
-    jlCvrparh.setText("Dohvat iz arhive");
+    //jlCvrparh.setText("Dohvat iz arhive");
 
     jlStavka.setText("Shema knjiženja");
 
@@ -362,6 +383,14 @@ public class jpVrstePrim extends JPanel {
     jcbNeod.setSelectedDataValue("D");
     jcbNeod.setText("Neodraðeni sati");
     jcbNeod.setUnselectedDataValue("N");
+    
+    jcbHolak.setColumnName("HOLAK");
+    jcbHolak.setDataSet(fVrstePrim.getRaQueryDataSet());
+    jcbHolak.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbHolak.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbHolak.setSelectedDataValue("D");
+    jcbHolak.setText("Olakšica na doprinose za radnike na minimalnoj plaæi");
+    jcbHolak.setUnselectedDataValue("N");
 
 
     jcbAktiv.setColumnName("AKTIV");
@@ -488,7 +517,7 @@ public class jpVrstePrim extends JPanel {
 
 
 
-    jlrCvrparh.setColumnName("CVRPARH");
+    /*jlrCvrparh.setColumnName("CVRPARH");
 
     jlrCvrparh.setNavColumnName("CVRP");
 
@@ -512,8 +541,20 @@ public class jpVrstePrim extends JPanel {
 
     jlrCvrpArhNaz.setNavProperties(jlrCvrparh);
 
-    jlrCvrpArhNaz.setSearchMode(1);
+    jlrCvrpArhNaz.setSearchMode(1);*/
+    
+    jlrCvrodb.setColumnName("CVRODB");
+    jlrCvrodb.setDataSet(fVrstePrim.getRaQueryDataSet());
+    jlrCvrodb.setColNames(new String[] {"OPISVRODB"});
+    jlrCvrodb.setTextFields(new JTextComponent[] {jlrNazvrodb});
+    jlrCvrodb.setVisCols(new int[] {0,1});
+    jlrCvrodb.setSearchMode(0);
+    jlrCvrodb.setRaDataSet(dm.getVrsteodb());
+    jlrCvrodb.setNavButton(jbSelCvrodb);
 
+    jlrNazvrodb.setColumnName("OPISVRODB");
+    jlrNazvrodb.setNavProperties(jlrCvrodb);
+    jlrNazvrodb.setSearchMode(1);
 
 
     jlrStavka.setColumnName("STAVKA");
@@ -580,7 +621,7 @@ public class jpVrstePrim extends JPanel {
 
 
 
-    jbSelCvrpArh.setText("...");
+//    jbSelCvrpArh.setText("...");
 
     jbSelStavka.setText("...");
 
@@ -632,7 +673,7 @@ public class jpVrstePrim extends JPanel {
 
     jpDetail.add(jlCvrp,    new XYConstraints(15, 40, -1, -1));
 
-    jpDetail.add(jlCvrparh,    new XYConstraints(15, 190, -1, -1));
+    jpDetail.add(new JLabel("Vrsta odbitka"),    new XYConstraints(15, 190, -1, -1));
 
     jpDetail.add(jlaCvrp,       new XYConstraints(151, 23, 98, -1));
 
@@ -652,7 +693,7 @@ public class jpVrstePrim extends JPanel {
 
     jpDetail.add(jraCvrp,   new XYConstraints(150, 40, 100, -1));
 
-    jpDetail.add(jlrCvrparh,    new XYConstraints(150, 190, 100, -1));
+    jpDetail.add(jlrCvrodb,    new XYConstraints(150, 190, 100, -1));
 
     jpDetail.add(jraNaziv,   new XYConstraints(255, 40, 300, -1));
 
@@ -672,9 +713,9 @@ public class jpVrstePrim extends JPanel {
 
     jpDetail.add(jbSelStavka,    new XYConstraints(560, 215, 21, 21));
 
-    jpDetail.add(jlrCvrpArhNaz,      new XYConstraints(255, 190, 300, -1));
+    jpDetail.add(jlrNazvrodb,      new XYConstraints(255, 190, 300, -1));
 
-    jpDetail.add(jbSelCvrpArh,    new XYConstraints(560, 190, 21, 21));
+    jpDetail.add(jbSelCvrodb,    new XYConstraints(560, 190, 21, 21));
 
     jpDetail.add(jcbAktiv,           new XYConstraints(492, 17, -1, -1));
 
@@ -699,6 +740,8 @@ public class jpVrstePrim extends JPanel {
     jpDetail.add(jPanel2,            new XYConstraints(150, 290, 406, 87));
 
     jpDetail.add(jlParam,  new XYConstraints(15, 290, -1, -1));
+    
+    jpDetail.add(jcbHolak,    new XYConstraints(150, 385, 405, -1));
 
     this.add(jpDetail, BorderLayout.CENTER);
 
