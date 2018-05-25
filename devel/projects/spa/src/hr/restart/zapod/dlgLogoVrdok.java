@@ -191,7 +191,7 @@ public class dlgLogoVrdok {
 
   private void init() throws Exception {
     data = Vrdokum.getDataModule().getFilteredDataSet("vrdok IN ("+
-        "SELECT vrdok FROM reportdef WHERE izlazni='D')");
+        "SELECT vrdok FROM reportdef WHERE izlazni='D' or izlazni='F')");
     data.getColumn("VRDOK").setWidth(6);
     data.getColumn("NAZDOK").setCaption("Vrsta dokumenta");
     data.getColumn("ISPLOGO").setCaption("Ispis");
