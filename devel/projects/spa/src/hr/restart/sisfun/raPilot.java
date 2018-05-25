@@ -1006,7 +1006,7 @@ public class raPilot extends raFrame {
       try {
         t = (KreirDrop) Class.forName(className).newInstance();
       } catch (Exception e) {
-        // silent
+        //e.printStackTrace();
       }
     return t;
   }
@@ -1284,6 +1284,8 @@ public class raPilot extends raFrame {
     String[] colsListed = findColsListed(sql);
     String[] tnames = findTables(sql, false);
     if (tnames == null) return;
+    /*for (int i = 0; i < tnames.length; i++)
+      System.out.println("|" + tnames[i] + "|");*/
     KreirDrop[] tables = new KreirDrop[tnames.length];
     for (int i = 0; i < tnames.length; i++) {
       tables[i] = getModule(tnames[i]);
@@ -1452,7 +1454,8 @@ public class raPilot extends raFrame {
     }
     process.setMessage("Punjenje tabliènog prikaza...", false, 50);
     
-    detach((ds instanceof QueryDataSet) && !offline);
+    //detach((ds instanceof StorageDataSet) && !offline);
+    detach(!offline);
 
     ((raExtendedTable) view.jp.getMpTable()).setForcePage(false);
     view.jp.clearSummary();
@@ -3017,6 +3020,7 @@ class ArgumentDialog {
     }
     xy.setWidth(maxw);
     xy.setHeight(y + 15);
+    Aus.recursiveUpdateSizes(pan);
   }
   
   void checkDynamicBind(String key) {
