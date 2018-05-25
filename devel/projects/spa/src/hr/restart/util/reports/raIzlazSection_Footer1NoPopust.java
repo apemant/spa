@@ -139,19 +139,22 @@ public class raIzlazSection_Footer1NoPopust extends raReportSection {
      "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
   public raReportElement Text109;
   private String[] Text109Props = new String[] {
-     "=(- (dsum \"IPRODBP\") [XRPOsnPred])", "", "", 
+     //"=(- (dsum \"IPRODBP\") [XRPOsnPred])", "", "", 
+     "XRPOsnRaz", "", "",
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "7220",
      "1660", "1200", "240", "", "",
      "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
   public raReportElement Text110;
   private String[] Text110Props = new String[] {
-     "=(- (dsum \"UKPOR3\") [XRPPorPred])", "", "", 
+     //"=(- (dsum \"UKPOR3\") [XRPPorPred])", "", "",
+     "XRPPorRaz", "", "", 
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "8420",
      "1660", "1200", "240", "", "",
      "", "", "", "", "Lucida Bright", "8", "", "", "", "Right", ""};
   public raReportElement Text111;
   private String[] Text111Props = new String[] {
-     "=(- (dsum \"IPRODSP\") [XRPUkPred])", "", "",
+     //"=(- (dsum \"IPRODSP\") [XRPUkPred])", "", "",
+     "XRPUkRaz", "", "",
      "Number|false|1|309|2|2|true|3|false", "", "", "", "", "9620", "1660", "1200", "240", "", "",
      "", "", "", "", "Lucida Bright", "9", "Bold", "", "", "Right", ""};
 
