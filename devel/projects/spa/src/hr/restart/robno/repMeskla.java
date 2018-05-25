@@ -19,6 +19,7 @@ package hr.restart.robno;
 
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
 
 import java.math.BigDecimal;
@@ -192,6 +193,14 @@ public class repMeskla implements raReportData {
 
   public double getZADRAZUL(){
     return ds.getBigDecimal("ZADRAZUL").doubleValue();
+  }
+  
+  public String getAGENT(){
+    if(lookupData.getlookupData().raLocate(dm.getAgenti(), "CAGENT", ds.getInt("CAGENT")+"")){
+      return dm.getAgenti().getString("NAZAGENT");
+    } else{
+      return "";
+    }
   }
 
   public String getFirstLine(){
