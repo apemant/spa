@@ -306,6 +306,10 @@ public class raReportElement {
   public void setHeight(long height) {
     setProperty(ep.HEIGHT, "" + ((height + 10) / 20 * 20));
   }
+  
+  public void alterHeight(long width) {
+    setProperty(ep.HEIGHT, "" + (getHeight() + ((int) width / 20) * 20));
+  }
 
   /**
    * Postavlja visinu elementa u centimetrima.<p>
