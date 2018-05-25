@@ -549,7 +549,7 @@ public class frmIspList extends frmIzvjestajiPL {
   String nazivPrim, sati, koef, neto, bruto, nazivDop, osnovicaDop, stopa, iznos, nazivDopNa, osnovicaDopNa, stopaNa, iznosNa;
   String nazivNak, satiNaknada, iznosNak, nazivKred, iznosKred;
   String cradmj, nazradmj, stopepor;
-  String brojtek, nazbanke, brojzas, nazbankzas, tipIsplate, nazvro, copcine, oib, adresa, fondsati, iban, ibann;
+  String brojtek, nazbanke, brojzas, brojzasn, nazbankzas, tipIsplate, nazvro, copcine, oib, adresa, fondsati, iban, ibann;
   short cisplmj;
   int cbanke;
   boolean invert;
@@ -567,6 +567,8 @@ public class frmIspList extends frmIzvjestajiPL {
     
     brojzas = frmVirmaniPl.getIBAN_HR(raMnemonics.replaceMnemonics(
         worker.povDS.getString("ZIRO"), worker.getID(),raMnemonics.DEFAULTMNMODE), false);
+    brojzasn = frmVirmaniPl.getIBAN_HR(raMnemonics.replaceMnemonics(
+        worker.povDS.getString("ZIRO"), worker.getID(),raMnemonics.DEFAULTMNMODE), true);
     nazbankzas = dm.getPovjerioci().getString("NAZPOV");
   }
   
@@ -668,6 +670,27 @@ public class frmIspList extends frmIzvjestajiPL {
     _nazivN.setLength(Math.max(0, _nazivN.length() - 1));
     _satiN.setLength(Math.max(0, _satiN.length() - 1));
     _iznosN.setLength(Math.max(0, _iznosN.length() - 1));
+    
+    // moved here
+    ld.raLocate(radpl, "CRADNIK", crad);
+    cradmj = radpl.getString("CRADMJ");
+    brojtek = radpl.getString("BROJTEK");
+    cisplmj = radpl.getShort("CISPLMJ");
+    adresa = radpl.getString("ADRESA");
+    copcine = radpl.getString("COPCINE");
+    oib = radpl.getString("OIB");
+    ld.raLocate(radmj, "CRADMJ", cradmj);
+    nazradmj = radmj.getString("NAZIVRM");
+    ld.raLocate(dm.getIsplMJ(), "CISPLMJ" ,String.valueOf(cisplmj));
+    tipIsplate = dm.getIsplMJ().getString("TIPISPLMJ");
+    ld.raLocate(dm.getBankepl(), "CBANKE" ,String.valueOf(dm.getIsplMJ().getInt("CBANKE")));
+    nazbanke = dm.getBankepl().getString("NAZBANKE");
+    String pref = dm.getBankepl().getString("PREFIKS");
+    ld.raLocate(dm.getPovjerioci(), "CPOV", String.valueOf(dm.getBankepl().getInt("CPOV")));
+    //String ziro = new VarStr(dm.getPovjerioci().getString("ZIRO")).replace("$tek", radpl.getString("BROJTEK")).toString();
+    iban = frmVirmaniPl.getIBAN_HR(pref + "-" + radpl.getString("BROJTEK"), false);
+    ibann = frmVirmaniPl.getIBAN_HR(pref + "-" + radpl.getString("BROJTEK"), true);
+    
 //krediti
     zastIznos = null;
     brojzas = nazbankzas = null;
@@ -744,24 +767,7 @@ public class frmIspList extends frmIzvjestajiPL {
     nazivKred = _nazivK.toString();
     iznosKred = _iznosK.toString();
 
-    ld.raLocate(radpl, "CRADNIK", crad);
-    cradmj = radpl.getString("CRADMJ");
-    brojtek = radpl.getString("BROJTEK");
-    cisplmj = radpl.getShort("CISPLMJ");
-    adresa = radpl.getString("ADRESA");
-    copcine = radpl.getString("COPCINE");
-    oib = radpl.getString("OIB");
-    ld.raLocate(radmj, "CRADMJ", cradmj);
-    nazradmj = radmj.getString("NAZIVRM");
-    ld.raLocate(dm.getIsplMJ(), "CISPLMJ" ,String.valueOf(cisplmj));
-    tipIsplate = dm.getIsplMJ().getString("TIPISPLMJ");
-    ld.raLocate(dm.getBankepl(), "CBANKE" ,String.valueOf(dm.getIsplMJ().getInt("CBANKE")));
-    nazbanke = dm.getBankepl().getString("NAZBANKE");
-    String pref = dm.getBankepl().getString("PREFIKS");
-    ld.raLocate(dm.getPovjerioci(), "CPOV", String.valueOf(dm.getBankepl().getInt("CPOV")));
-    //String ziro = new VarStr(dm.getPovjerioci().getString("ZIRO")).replace("$tek", radpl.getString("BROJTEK")).toString();
-    iban = frmVirmaniPl.getIBAN_HR(pref + "-" + radpl.getString("BROJTEK"), false);
-    ibann = frmVirmaniPl.getIBAN_HR(pref + "-" + radpl.getString("BROJTEK"), true);
+    // moved from here
     
     dM.getDataModule().getVrodn().open();
     ld.raLocate(dM.getDataModule().getVrodn(), "CVRO", radpl.getString("CVRO"));
@@ -781,7 +787,36 @@ public class frmIspList extends frmIzvjestajiPL {
     StringBuffer _iznos = new StringBuffer();
     BigDecimal _totalStopa = new BigDecimal(0.0);
     BigDecimal _totalIznos = new BigDecimal(0.0);
+    
+    StorageDataSet sumds = Aus.createSet("Odbiciobr.CVRODB Vrsteodb.OPISVRODB OBROSN.2 OBRSTOPA.2 OBRIZNOS.2");
+    String[] cc = {"CVRODB", "OBRSTOPA"};
+    
     for (ds.first(); ds.inBounds(); ds.next()) {
+      if (isArh && (rbrObr != ds.getShort("RBROBR")
+            || mjObr != ds.getShort("MJOBR")
+            || godObr != ds.getShort("GODOBR"))) continue;
+      
+      if (!ld.raLocate(sumds, "CVRODB", ds)) {
+        sumds.insertRow(false);
+        dM.copyColumns(ds, sumds, cc);
+        ld.raLocate(getVrodb(), "CVRODB", ds);
+        sumds.setString("OPISVRODB", getVrodb().getString("OPISVRODB"));
+      }
+      Aus.add(sumds, "OBROSN", ds);
+      Aus.add(sumds, "OBRIZNOS", ds);
+    }
+    
+    for (sumds.first(); sumds.inBounds(); sumds.next()) {
+      _nazivD.append(sumds.getString("OPISVRODB")).append("\n");
+      _osnovD.append(format(sumds, "OBROSN")).append("\n");
+      _stopa.append(format(sumds, "OBRSTOPA")).append("\n");
+      _iznos.append(format(sumds, "OBRIZNOS")).append("\n");
+      _totalStopa = _totalStopa.add(sumds.getBigDecimal("OBRSTOPA"));
+      _totalIznos = _totalIznos.add(sumds.getBigDecimal("OBRIZNOS"));
+    }
+      
+    
+    /*for (ds.first(); ds.inBounds(); ds.next()) {
       if (isArh) {
         if (rbrObr == ds.getShort("RBROBR")
             && mjObr == ds.getShort("MJOBR")
@@ -803,7 +838,7 @@ public class frmIspList extends frmIzvjestajiPL {
         _totalStopa = _totalStopa.add(ds.getBigDecimal("OBRSTOPA"));
         _totalIznos = _totalIznos.add(ds.getBigDecimal("OBRIZNOS"));
       }
-    }
+    }*/
     _nazivD.setLength(Math.max(0, _nazivD.length() - 1));
     _osnovD.setLength(Math.max(0, _osnovD.length() - 1));
     _stopa.setLength(Math.max(0, _stopa.length() - 1));
@@ -980,6 +1015,11 @@ System.out.println("KreditInfo za "+ds);
     return iban;
   }
   
+  public String getIBANN() {
+    if (invert) return brojzasn;
+    return ibann;
+  }
+  
   public String getBANKA() {
     if (invert) return nazbankzas;
     return nazbanke;
@@ -1016,7 +1056,7 @@ System.out.println("KreditInfo za "+ds);
 //    System.out.println("tipIsplate : " + tipIsplate);
     String isplataString = "";
     if (tipIsplate.equals("T")){
-      isplataString = "Isplata - ".concat(ibann).concat(", ").concat(nazbanke);
+      isplataString = "Isplata - ".concat(getIBANN()).concat(", ").concat(getBANKA());
       //isplataString = "Isplata - ".concat(brojtek).concat(", ").concat(nazbanke);
     } else if (tipIsplate.equals("G")) {
       isplataString = "Isplata u gotovini";
