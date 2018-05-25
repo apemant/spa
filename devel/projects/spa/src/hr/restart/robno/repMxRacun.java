@@ -121,8 +121,13 @@ public class repMxRacun extends mxReport {
     detailDS.addColumn(new Column("POREZ","Porez",Variant.STRING));
 //    String kupac =getKupac();
 //    String skladiste = getSkladiste();
+    
+    
 
-    String [] detail =new String[]{"<#RBR|3|right#>"+". "+"<#SIFRA|20|left#>"+" "+"<#NAZIV|36|left#>"+" "+
+    String [] detail =new String[]{"<#RBR|3|right#><#.|2|left#>"+
+        Aut.getAut().getCARTdependable("<#SIFRA|8|left#> <#NAZIV|48|flow#> ",
+            "<#SIFRA|18|left#> <#NAZIV|38|flow#> ",
+            "<#SIFRA|18|left#> <#NAZIV|38|flow#> ") +
       "<#KOL|12|right#>"+" "+"<#JM|6|right#>"+" "+"<#POPUST|11|right#>"+" "+"<#POREZ|10|right#>"+" "+"<#CIJENA|13|right#>"+
       " "+"<#IZNOS|16|right#>"};
     this.setDetail(detail);
@@ -208,7 +213,11 @@ public class repMxRacun extends mxReport {
     this.setHeader(new String[]{"                                                                                                                                                         "+"<$DoubleWidthON$>"+r1+/*"R-1"+*/"<$DoubleWidthOFF$>"+"<$newline$>"+
                    "<$Reset$><$CondensedON$>"+getKupac()+getRacun()+getSkladiste()+
                    "----------------------------------------------------------------------------------------------------------------------------------------"+"<$newline$>"+
-                   "R.B."+" Šifra               "+" Naziv artikla/usluge                "+"     Kolièina"+"     JM"+"  Popust (%)"+"  Porez (%)"+"        Cijena"+"            Iznos"+"<$newline$>"+
+                   "R.B."+
+                   Aut.getAut().getCARTdependable(" Šifra   "+" Naziv artikla/usluge                            ",
+                       " Šifra             "+" Naziv artikla/usluge                  ",
+                       " Šifra             "+" Naziv artikla/usluge                  ")
+                   +"     Kolièina"+"     JM"+"  Popust (%)"+"  Porez (%)"+"        Cijena"+"            Iznos"+"<$newline$>"+
         "----------------------------------------------------------------------------------------------------------------------------------------"});
     this.setPgHeader("<$Reset$>"+Util.getUtil().getDefaultMxHeader()+
                      "");
