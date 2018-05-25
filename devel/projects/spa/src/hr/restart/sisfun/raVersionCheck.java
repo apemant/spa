@@ -14,8 +14,12 @@ import com.borland.dx.dataset.DataSet;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Intervencije;
+import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
+import hr.restart.swing.raInputDialog;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
+import hr.restart.util.Valid;
 
 
 public class raVersionCheck {
@@ -73,29 +77,55 @@ public class raVersionCheck {
     int curr = (int) ((System.currentTimeMillis() % 100000) * 157 % 9000) + 1000;
     
     String s = JOptionPane.showInputDialog(null, "Unesite passcode (" + curr + ")", "Provjera verzije", JOptionPane.INFORMATION_MESSAGE);
-    if (s == null || !s.equals(Aus.simpleCode(curr)+"")) return;
+    if (s == null || !s.equals(Aus.simpleCode(curr)+"")) return; 
     
     DataSet ds = Intervencije.getDataModule().openTempSet(Condition.equal("UID", 0));
     if (ds.rowCount() == 0) {
       ds.insertRow(false);
       ds.setInt("UID", 0);
     }
-    ds.setTimestamp("DATUM", Aus.getNow());
-    String dn = JOptionPane.showInputDialog(null, "Broj dana do isteka (do sada " + ds.getInt("TRAJANJE") + ")?", 
-        "Istek verzije", JOptionPane.INFORMATION_MESSAGE);
-    if (dn == null) return;
     
-    if (dn.equals("0")) {
+    
+    ds.setTimestamp("DATUM", Aus.getNow());
+    ds.setTimestamp("DATZ", Util.getUtil().addDays(ds.getTimestamp("DATUM"), ds.getInt("TRAJANJE")));
+    XYPanel pan = new XYPanel(ds) {
+      protected void changed(JraTextField tf) {
+        if (tf.getColumnName().equals("TRAJANJE")) {
+          this.ds.setTimestamp("DATZ", Util.getUtil().addDays(this.ds.getTimestamp("DATUM"), this.ds.getInt("TRAJANJE")));
+        } else if (tf.getColumnName().equals("DATUM")) {
+          this.ds.setTimestamp("DATZ", Util.getUtil().addDays(this.ds.getTimestamp("DATUM"), this.ds.getInt("TRAJANJE")));
+        } else if (tf.getColumnName().equals("DATZ")) {
+          this.ds.setInt("TRAJANJE", Util.getUtil().getHourDifference(this.ds.getTimestamp("DATUM"), this.ds.getTimestamp("DATZ")) / 24);
+        }
+      }
+    };
+    pan.label("Broj dana").text("TRAJANJE", 100).skip(20).label("(0 za iskljuèiti)").nl();
+    pan.label("Poèetni datum").text("DATUM").skip(80).label("Istek").skip(50).text("DATZ").nl().expand();
+    
+    raInputDialog dlg = new raInputDialog();
+    if (!dlg.show(null, pan, "Parametri provjere")) return;
+    
+    int dn = ds.getInt("TRAJANJE");
+    
+    /*String dn = JOptionPane.showInputDialog(null, "Broj dana do isteka (do sada " + ds.getInt("TRAJANJE") + ")?", 
+        "Istek verzije", JOptionPane.INFORMATION_MESSAGE);
+    if (dn == null) return;*/
+    
+    if (dn == 0) {
       ds.deleteAllRows();
       ds.saveChanges();
+      Valid.getValid().runSQL("DELETE FROM parametri WHERE app='sisfun' AND param='expcheck'");
+      JOptionPane.showMessageDialog(null, "Provjera verzije iskljuèena.");
     } else {
-      if (dn.length() > 0 && Aus.getNumber(dn) > 0)
-        ds.setInt("TRAJANJE", Aus.getNumber(dn));
+      /*if (dn.length() > 0 && Aus.getNumber(dn) > 0)
+        ds.setInt("TRAJANJE", Aus.getNumber(dn));*/
       
-      ds.setTimestamp("DATZ", Util.getUtil().addDays(ds.getTimestamp("DATUM"), ds.getInt("TRAJANJE")));
+      frmParam.getParam("sisfun", "expcheck", "N", "check");
+      
+      //ds.setTimestamp("DATZ", Util.getUtil().addDays(ds.getTimestamp("DATUM"), ds.getInt("TRAJANJE")));
       ds.saveChanges();
+      JOptionPane.showMessageDialog(null, "Verzija produžena do " + Aus.formatTimestamp(ds.getTimestamp("DATZ")));
     }
-    JOptionPane.showMessageDialog(null, "Verzija produžena do " + Aus.formatTimestamp(ds.getTimestamp("DATZ")));
   }
   
   
