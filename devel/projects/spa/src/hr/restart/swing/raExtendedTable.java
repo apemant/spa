@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -86,7 +87,7 @@ public class raExtendedTable extends JraTable2 {
   String clickCol;
   ArrayList group, sort;
   String lastAddedSort;
-  boolean forcePage, drawLines;
+  boolean forcePage, drawLines, disableSort;
   
   ExtNumber hook;
   
@@ -107,6 +108,10 @@ public class raExtendedTable extends JraTable2 {
   
   public raJPTableView getOwner() {
     return owner;
+  }
+  
+  public void disableSort(boolean disable) {
+    disableSort = disable;
   }
 
   String oldcolname = "";
@@ -207,7 +212,7 @@ public class raExtendedTable extends JraTable2 {
   }
 
   private void showPopup(MouseEvent e) {
-    if (getDataSet() == null) return;
+    if (disableSort || getDataSet() == null) return;
     int idx = getTableHeader().columnAtPoint(e.getPoint());
     clickCol = getRealColumnName(idx);
     ColumnInfo ci = ColumnInfo.get(clickCol);
@@ -231,7 +236,7 @@ public class raExtendedTable extends JraTable2 {
   }
 
   private void leftClick(MouseEvent e) {
-    if (getDataSet() == null) return;
+    if (disableSort || getDataSet() == null) return;
     // Hrvatski Locale
     /*if (getDataSet() instanceof StorageDataSet) {
       StorageDataSet sds = (StorageDataSet) getDataSet();
@@ -309,6 +314,17 @@ public class raExtendedTable extends JraTable2 {
     if (stm != null && stm.isNatural()) stm.clearSelection();
     if (owner != null) owner.getColumnsBean().checkSelection();
     getDataSet().setSort(sd);
+  }
+  
+  public String[] getBoldableColumns() {
+    HashSet cols = new HashSet();
+    raTableModifier[] mods = getTableModifiers();
+    for (int i = 0; i < mods.length; i++)
+      if (mods[i] instanceof raTableBoldModifier)
+        cols.add(((raTableBoldModifier) mods[i]).getBoldColumn());
+    
+    if (cols.size() == 0) return null;
+    return (String[]) cols.toArray(new String[cols.size()]);
   }
   
   public void addToGroup(String name, String descs, String get) {
@@ -577,6 +593,11 @@ public class raExtendedTable extends JraTable2 {
     csInt.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
     csInt.setDataFormat(df.getFormat("#"));
     
+    HSSFCellStyle csBool = wb.createCellStyle();
+    csInt.setFont(font);
+    csInt.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+    csInt.setDataFormat(df.getFormat("General"));
+    
     HSSFCellStyle csText = wb.createCellStyle();
     csText.setFont(font);
     csText.setAlignment(HSSFCellStyle.ALIGN_LEFT);
@@ -611,6 +632,7 @@ public class raExtendedTable extends JraTable2 {
     
     if (dp.getSubtitle().length() > 0) {
       row = sheet.createRow(++cRow);
+      row.setHeightInPoints(row.getHeightInPoints() * 1.5f);
       cell = row.createCell(0);
       cell.setCellStyle(csSubtitle);
       if (cols > 1) sheet.addMergedRegion(new CellRangeAddress(cRow, cRow, 0, cols - 1));
@@ -659,6 +681,9 @@ public class raExtendedTable extends JraTable2 {
         } else if (o instanceof Date) {
           cell.setCellStyle(csDate);
           cell.setCellValue((Date) o);
+        } else if (o instanceof Boolean) {
+          cell.setCellStyle(csBool);
+          cell.setCellValue(((Boolean) o).booleanValue());
         } else {
           cell.setCellStyle(csText);
           cell.setCellValue(dp.getValueAt(r, c));
