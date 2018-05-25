@@ -69,7 +69,7 @@ public class TypeDoc {
   static final String[] araj_docs = {"PST","PRI","POR","PRK","PTE","INV",
                               "PON","POS","OTP","ROT","GOT","POD","IZD","INM",
                               "OTR","NDO","NKU","MES","MEI","MEU","PRE","REV",
-                              "PRV","POV", "ZAH", "TRE", "UZP", "KOD"};
+                              "PRV","POV", "ZAH", "TRE", "UZP", "KOD", "KIZ", "UKO"};
   static final String[] araj_docsOJ = {"PRD","RAC","TER","ODB","GRN","KAL","POS"};
 
   static public TypeDoc getTypeDoc(){
@@ -119,7 +119,8 @@ public class TypeDoc {
         "INV".equalsIgnoreCase(what_kind_of_document) ||
         "POR".equalsIgnoreCase(what_kind_of_document) ||
         "PTE".equalsIgnoreCase(what_kind_of_document) ||		
-        "INM".equalsIgnoreCase(what_kind_of_document)
+        "INM".equalsIgnoreCase(what_kind_of_document) ||        
+        "KIZ".equalsIgnoreCase(what_kind_of_document)
         ) return true;
     return false;
   }
