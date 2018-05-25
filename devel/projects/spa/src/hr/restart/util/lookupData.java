@@ -665,7 +665,7 @@ OPTIMIZACIJE       TT.ReStart("setStorageDataSet...");
        // handleFilters(raSetView, lookupFilterListener);
       }
       handleFilters(raSetView, (colFilters == null || multi != null || isStringEmpty(colFilters))
-          ? null : lookupFilterListener);
+          ? ((multi == null && additionalFilter != null) ? aditionalFilterListener : null) : lookupFilterListener);
 //      setFilter(raSetView);
   //TT.ReStart("Refilter...");
 //      raSetView.refilter();
