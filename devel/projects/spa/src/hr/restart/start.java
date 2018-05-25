@@ -20,6 +20,7 @@ import hr.restart.baza.BazaOper;
 import hr.restart.baza.ConsoleCreator;
 import hr.restart.baza.Verinfo;
 import hr.restart.baza.dM;
+import hr.restart.baza.raDataSet;
 import hr.restart.help.MsgDispatcher;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.raMultiLineMessage;
@@ -72,6 +73,8 @@ public class start {
     raSplashAWT.splashMSG("Priprema ekrana ...");
     createMainFrame(1);
     raSplashAWT.splashMSG("Autorizacija ...");
+    if (!dM.isMinimal() && IntParam.getTag("preload").equals("true"))
+      preloadTables();
     if (!checkLogin(true)) System.exit(0);    
     raSplashAWT.splashMSG("Priprema toolbara ...");
     raTB = raToolBar.getRaToolBar();
@@ -131,6 +134,27 @@ public class start {
       } else return true;
 //    }
   }
+  
+  void preloadTables() {
+    System.out.println("Starting preload...");
+    Thread preload = new Thread(new Runnable() {
+      public void run() {
+        dM dm = dM.getDataModule();
+        String[] preloads = new VarStr(IntParam.getTag("preload.modules")).splitTrimmed(",");
+        for (int i = 0; i < preloads.length; i++) {
+          QueryDataSet ds = dm.getDataByName(preloads[i]);
+          if (ds == null) System.out.println("No module by name '" + preloads[i] + "'");
+          else if (ds instanceof raDataSet) ((raDataSet) ds).preload();
+          else System.out.println("Can't preload '" + preloads[i] + "'");
+        }
+        System.out.println("Finished preload.");
+      }
+    });
+    preload.setPriority(Thread.MIN_PRIORITY);
+    preload.start();
+    
+  }
+  
   public static void stripPermittedApps() {
     ArrayList items2remove = new ArrayList();
     hr.restart.help.raAbstractShortcutContainer appsh =
@@ -167,12 +191,14 @@ public class start {
       mainFr = mainFrame.getMainFrame();
       hr.restart.util.startFrame.getStartFrame().makeDefMenu(mainFr.defaultMenuBar,false);
       javax.swing.SwingUtilities.updateComponentTreeUI(mainFr);
+      mainFr.pack();
 //      mainFr.menuTree.setEnabled(false);
     }
     if (step==2) {
 //      mainFr.menuTree.setEnabled(true);
 //      mainFr.menuTree.expandAll();
 //      mainFr.showFull();
+      mainFr.pack();
     }
   }
 
