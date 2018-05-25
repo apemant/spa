@@ -21,6 +21,7 @@ import hr.restart.swing.JraScrollPane;
 import hr.restart.util.FileHandler;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -50,6 +51,7 @@ public class mxViewer extends JPanel {
   private void jbInit() throws Exception {
     this.setLayout(new BorderLayout());
     jScroll.getViewport().add(jEView);
+    jEView.setFont(Font.decode("Monospaced").deriveFont(jEView.getFont().getSize2D()));
     this.add(jScroll, BorderLayout.CENTER);
   }
 
