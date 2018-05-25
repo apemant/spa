@@ -1656,7 +1656,7 @@ System.out.println(StavkeSet.getInt("CARt"));
 	        new String[] {"UPRAB", "UIRAB", "UPZT", "UIZT", "FC",
 	            "INETO", "FVC", "IPRODBP", "POR1", "POR2", "POR3",
 	            "PPOR1", "PPOR2", "PPOR3", "UIPOR", "UPPOR", "FMC",
-	            "IPRODSP", "FMCPRP"});
+	            "IPRODSP", "FMCPRP", "PRAB1", "PRAB2"});
 	}
 
 	public void resetFinancPart() {
