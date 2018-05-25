@@ -54,6 +54,7 @@ import org.apache.log4j.Logger;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
@@ -146,6 +147,7 @@ public class CalcRazPor {
       String otherinqrange = raPlObrRange.getInQueryIsp(_godina,1,_godina,12,"",cradnik.substring(cradnik.indexOf("@") + 1));
       totalcond = "(" + totalcond + ") or (" + othercradnik+" and "+otherinqrange + ")";
     }
+    System.out.println("totalcond = " + totalcond);
     QueryDataSet raddata = Kumulradarh.getDataModule().getTempSet(totalcond);
     if (log.isDebugEnabled()) {
       log.debug(raddata.getQuery().getQueryString());
@@ -153,8 +155,10 @@ public class CalcRazPor {
     raddata.open();
     raOdbici.getInstance().setObrRange(new MyObrRange(inqrange));
     StorageDataSet orgdata = new StorageDataSet();
+    boolean stupidar = true;
+    
     QueryDataSet orgdataqry = Util.getNewQueryDataSet(
-        "SELECT godobr, mjobr, rbrobr, datumispl, MINPL FROM kumulorgarh WHERE "
+        "SELECT godobr, mjobr, rbrobr, datumispl, MINPL, corg FROM kumulorgarh WHERE "
         +Condition.equal("CORG",corg)+" AND "+inqrange
         );
       orgdata.setColumns(orgdataqry.cloneColumns());
@@ -165,9 +169,13 @@ public class CalcRazPor {
         if (!oldmonth.equals(currmonth)) {
           orgdata.insertRow(false);
           orgdataqry.copyTo(orgdata);
+          if (orgdata.getShort("MJOBR") != orgdata.getShort("RBROBR")) stupidar = false;
           orgdata.post();
         }
       }
+      
+    System.out.println("STUPIDAR MODE! " + stupidar);
+    String rbrq = stupidar ? "rbrobr=mjobr" : "rbrobr=1";
     StorageDataSet kumrad = Kumulrad.getDataModule().getTempSet(condcradnik);
     kumrad.open();
     //get values
@@ -181,7 +189,7 @@ public class CalcRazPor {
     orgosn.setColumns(new Column[] {dM.createShortColumn("GODOBR"), dM.createShortColumn("MJOBR"),
         dM.createBigDecimalColumn("OSNPOR1"),dM.createBigDecimalColumn("OSNPOR2"),dM.createBigDecimalColumn("OSNPOR3"),dM.createBigDecimalColumn("OSNPOR4"),dM.createBigDecimalColumn("OSNPOR5")});
     Util.fillReadonlyData(orgosn,"SELECT godobr, mjobr, max(osnpor1) as osnpor1, max(osnpor2) as osnpor2, max(osnpor3) as osnpor3, max(osnpor4) as osnpor4, max(osnpor5)  as osnpor5 " +
-    		"from kumulorgarh where "+Condition.equal("CORG",corg)+" AND "+inqrange+" group by godobr, mjobr");
+    		"from kumulorgarh where "+Condition.equal("CORG",corg)+" AND "+inqrange+" and " + rbrq + " group by godobr, mjobr");
     BigDecimal[] osn; 
     BigDecimal[] stpo;
     switch (_godina) {
@@ -472,18 +480,24 @@ System.out.println(_q);
     lastarh.open();
     QueryDataSet lastodbici = Util.getNewQueryDataSet(_q = "SELECT odbiciarh.obrstopa FROM odbiciarh,kumulorgarh WHERE " +
         "odbiciarh.godobr = kumulorgarh.godobr AND odbiciarh.mjobr = kumulorgarh.mjobr AND odbiciarh.rbrobr = kumulorgarh.rbrobr AND " +
-        Condition.equal("DATUMISPL", lastarh).and(Condition.equal("KNJIG", dlgGetKnjig.getKNJCORG())) + " AND "+olakqry);
+        Condition.equal("DATUMISPL", lastarh).and(Condition.equal("CORG", orgdata)).qualified("kumulorgarh") + " AND "+olakqry);
 System.out.println(_q);
     lastodbici.open();
     BigDecimal lastkoef = getSum(lastodbici, "OBRSTOPA");
     BigDecimal lastminpl = currminpl;
+    BigDecimal osnovica = new BigDecimal(2500);
 //    		"KNJIG = '"+dlgGetKnjig.getKNJCORG()+"' and DATUMISPL < ";
     BigDecimal godtotalneop = Aus.zero2;
+    //orgdata.setSort(new SortDescriptor(new String[] {"RBROBR"}));
     for (int mji = 1; mji < 13; mji++) {
       //ima li orgdata u mji
       boolean orgdataLocated = false;
+      boolean stupidars = true;
+      for (orgdata.first(); orgdata.inBounds(); orgdata.next()) 
+        if (orgdata.getShort("MJOBR") != orgdata.getShort("RBROBR")) stupidars = false;
+      
       for (orgdata.first(); orgdata.inBounds(); orgdata.next()) {
-        if (Integer.parseInt(Util.getUtil().getMonth(orgdata.getTimestamp("DATUMISPL")))==mji) {
+        if (Integer.parseInt(Util.getUtil().getMonth(orgdata.getTimestamp("DATUMISPL")))==mji && (orgdata.getShort("RBROBR")==1 || stupidars)) {
           orgdataLocated = true;
           break;
         }
@@ -504,14 +518,15 @@ System.out.println(orgdata);
         //lastminpl = orgdata.getBigDecimal("MINPL");
         QueryDataSet odbicimj = Util.getNewQueryDataSet(_q = "SELECT odbiciarh.obrstopa FROM odbiciarh WHERE " +
             Condition.whereAllEqual(new String[] {"GODOBR","MJOBR","RBROBR"}, orgdata)
-             + " AND "+olakqry);
+             + " AND "+olakqry + " AND RBR=0");
 System.out.println(_q);
         lastkoef = getSum(odbicimj, "OBRSTOPA"); 
       } else {
         //ako nema uzmi MINPL iz fondsati i lastkoef
       }
-System.out.println("Za "+mji+":: godtotalneop = godtotalneop + "+lastminpl+" + "+lastminpl+"*"+lastkoef+" = "+godtotalneop+" + "+lastminpl.add(lastminpl.multiply(lastkoef)));
-      godtotalneop = godtotalneop.add(lastminpl).add(lastminpl.multiply(lastkoef));
+      // 2500 umjesto lastminpl
+System.out.println("Za "+mji+":: godtotalneop = godtotalneop + "+lastminpl+" + "+osnovica+"*"+lastkoef+" = "+godtotalneop+" + "+lastminpl.add(lastminpl.multiply(lastkoef)));
+      godtotalneop = godtotalneop.add(lastminpl).add(osnovica.multiply(lastkoef));
 System.out.println("Za "+mji+":: godtotalneop = "+godtotalneop);     
     }
     return godtotalneop;
