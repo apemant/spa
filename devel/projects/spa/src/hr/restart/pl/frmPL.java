@@ -18,6 +18,7 @@
 package hr.restart.pl;
 
 import hr.restart.util.startFrame;
+import hr.restart.zapod.raSepaLoader;
 
 import java.awt.event.ActionEvent;
 
@@ -104,6 +105,7 @@ public class frmPL extends startFrame {
   private JMenuItem jmiMjIzv = new JMenuItem();
   private JMenuItem jmiMjIzvArh = new JMenuItem();
   private JMenuItem jmiVirmaniArh = new JMenuItem();
+  private JMenuItem jmiImportVir = new JMenuItem();
 //  JMenuItem jmiNeobKredA  = new JMenuItem();
   private JMenuItem jmiKalkulator = new JMenuItem();
   private JMenuItem jmiEvidencija = new JMenuItem();
@@ -512,6 +514,12 @@ public class frmPL extends startFrame {
         jmiVirmaniArh_actionPerformed(e);
       }
     });
+    jmiImportVir.setText("Import virmana iz SEPA pain.001");
+    jmiImportVir.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiImportVir_actionPerformed(e);
+      }
+    });
     jmiKalkulator.setText("Kalkulator bruto <-> neto");
     jmiKalkulator.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -611,6 +619,8 @@ public class frmPL extends startFrame {
     jmObrasciArh.add(jmiPK);
     jmObrasciArh.add(jmiVirmaniArh);
     jmObrasciArh.add(jmiBankSpecA);
+    jmObrasciArh.addSeparator();
+    jmObrasciArh.add(jmiImportVir);
     setRaJMenuBar(jMenuBar);
     jmSys.add(jmAddDefault);
     jmAddDefault.add(jmiAddDefIzvjestaji);
@@ -873,6 +883,9 @@ public class frmPL extends startFrame {
 
   void jmiVirmaniArh_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.pl.frmVirmaniPlArh",jmiVirmaniArh.getText());
+  }
+  void jmiImportVir_actionPerformed(ActionEvent e) {
+    raSepaLoader.load();
   }
   void jmiKalkulator_actionPerformed(ActionEvent e) {
     frmCalcPorez fcp = new frmCalcPorez(new raCalcPorezDataGetterBazara());
