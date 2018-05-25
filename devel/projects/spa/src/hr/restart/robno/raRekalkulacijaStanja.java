@@ -904,6 +904,7 @@ public class raRekalkulacijaStanja extends raUpitLite {
 
 		// postavi cijene i usput ažuriraj polje TKAL na stanju.
 		if (who.equalsIgnoreCase("M")) {
+		    stanje.setBigDecimal("NC", lastStmeu.getBigDecimal("NC"));
 			stanje.setBigDecimal("VC", lastStmeu.getBigDecimal("VC"));
 			stanje.setBigDecimal("MC", lastStmeu.getBigDecimal("MC"));
 			stanje.setString("TKAL", rCD.getKey(lastStmeu, new String[] {
@@ -911,6 +912,7 @@ public class raRekalkulacijaStanja extends raUpitLite {
 					"stmeskla"));
 			stanje.setTimestamp("DATZK", lastStmeu.getTimestamp("DATDOK"));
 		} else if (who.equalsIgnoreCase("P")) {
+		    stanje.setBigDecimal("NC", lastStdoku.getBigDecimal("NC"));
 			stanje.setBigDecimal("VC", lastStdoku.getBigDecimal("VC"));
 			stanje.setBigDecimal("MC", lastStdoku.getBigDecimal("MC"));
 			stanje.setString("TKAL", rCD.getKey(lastStdoku, new String[] { "cskl",
@@ -1003,7 +1005,7 @@ public class raRekalkulacijaStanja extends raUpitLite {
 		if (vrzal.equalsIgnoreCase("N") || vrzal.equalsIgnoreCase("X")) {
 			if (stanje.getBigDecimal("KOL").abs().doubleValue() < 0.999 || 
 			    stanje.getBigDecimal("KOL").signum() != stanje.getBigDecimal("VRI").signum()) {
-			  if (isNewArt) {
+			  /*if (isNewArt) {
 				if (stanje.getBigDecimal("KOLUL").compareTo(Nula) == 0) {				
 				  stanje.setBigDecimal("ZC", Nula);
 				} else  {
@@ -1011,7 +1013,7 @@ public class raRekalkulacijaStanja extends raUpitLite {
 							stanje.getBigDecimal("KOLUL"), 2,
 							BigDecimal.ROUND_HALF_UP));
 				}
-			  } else stanje.setBigDecimal("ZC", stanje.getBigDecimal("NC"));
+			  } else*/ stanje.setBigDecimal("ZC", stanje.getBigDecimal("NC"));
 			} else {
 				stanje.setBigDecimal("ZC", stanje.getBigDecimal("VRI").divide(
 						stanje.getBigDecimal("KOL"), 2,
@@ -1042,14 +1044,14 @@ public class raRekalkulacijaStanja extends raUpitLite {
       System.out.println(stanje.getBigDecimal("NABIZ"));
       System.out.println(stanje);
 */      
-		} else if (stanje.getBigDecimal("KOLUL").abs().doubleValue() > 0.999 
+		} /*else if (stanje.getBigDecimal("KOLUL").abs().doubleValue() > 0.999 
 		    && (isNewArt || !vrzal.equalsIgnoreCase("N") ||
 		        stanje.getBigDecimal("NC").signum() == 0)) {
 			bd = stanje.getBigDecimal("NABUL");
 			bd = bd.divide(stanje.getBigDecimal("KOLUL"), 2,
 					BigDecimal.ROUND_HALF_UP);
 			stanje.setBigDecimal("NC", bd);
-		}
+		}*/
 	}
 
 	public void kalkulateSum(DataSet stanje) {
