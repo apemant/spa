@@ -147,6 +147,7 @@ public class raOdbici {
     String q = "SELECT * FROM "+tableName
              +" WHERE "+getOdbiciWhereQuery(nivoodb,tipodb,vrstaosn,osnovica,ckey,ckey2,tableName)
              +getCradObrQuery(cradnik,mode);
+    System.out.println(q);
     QueryDataSet reqOdbici = Util.getNewQueryDataSet(q);
     return reqOdbici;
   }
