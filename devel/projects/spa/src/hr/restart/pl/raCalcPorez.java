@@ -42,7 +42,7 @@ public class raCalcPorez {
   private BigDecimal izlaz;
   //temp
   private BigDecimal nula = Aus.zero2;
-  private BigDecimal jedan = new BigDecimal("1.00");
+  private BigDecimal jedan = new BigDecimal(1).setScale(10);
   public raCalcPorez() {
   }
   
@@ -140,6 +140,7 @@ public class raCalcPorez {
     //izlaz = porosn
     //oldosn = stari neto-i
     if (!validate()) return;
+    System.out.println("CALCBACK!!");
  //varijable 
     BigDecimal lodbitak = getOldpor()[5]; //lodbitak u oldpor[5] jer nemre bit vise od 5 poreza (
     BigDecimal neto2 = getUlaz(); //ulaz je netopk
@@ -154,6 +155,17 @@ public class raCalcPorez {
     BigDecimal lporminpl_2 = getLimits()[0]; //dm.getParametripl().getBigDecimal("OSNPOR1");
     BigDecimal lporminpl_5 = getLimits()[1]; //dm.getParametripl().getBigDecimal("OSNPOR2");
     BigDecimal lporminpl_45 = getLimits()[2]; //dm.getParametripl().getBigDecimal("OSNPOR3");
+    if (oldosn.signum() > 0) {
+      lporminpl_2 = lporminpl_2.subtract(oldosn);
+      if (lporminpl_2.signum() < 0) {
+        lporminpl_5 = lporminpl_5.add(lporminpl_2);
+        lporminpl_2 = Aus.zero0;
+        if (lporminpl_5.signum() < 0) {
+          lporminpl_45 = lporminpl_45.add(lporminpl_5);
+          lporminpl_5 = Aus.zero0;
+        }
+      }
+    }
     
 // pejstano iz raObracunPL
     BigDecimal losn15 = nula.setScale(8);
@@ -163,10 +175,16 @@ public class raCalcPorez {
     BigDecimal losnovica = nula;
     
     //BigDecimal jedan = Aus.one0.setScale(8);
-    BigDecimal neto2_lodbitak = neto2.add(lodbitak.negate()).setScale(8);
+    BigDecimal neto2_lodbitak = neto2.add(lodbitak.negate()).setScale(10);
     BigDecimal revl15_prirez = jedan.add(
     l15.multiply(jedan.add(lpostprirez)).negate()
     );
+    
+    System.out.println("TARGET: " + neto2);
+    System.out.println("lodbitak: " + lodbitak);
+    System.out.println("prag1: " + lporminpl_2);
+    System.out.println("prag2: " + lporminpl_5);
+    
     if (neto2_lodbitak.divide(revl15_prirez,BigDecimal.ROUND_HALF_UP).compareTo(lporminpl_2) <= 0) {
       log.debug("if 1");
       if (neto2_lodbitak.divide(revl15_prirez,BigDecimal.ROUND_HALF_UP).compareTo(nula) <= 0) {
@@ -176,6 +194,8 @@ public class raCalcPorez {
         log.debug("if 1.2");
         losn15 = neto2_lodbitak.divide(revl15_prirez,BigDecimal.ROUND_HALF_UP);
       }
+      System.out.println("losn15 " + losn15);
+      
     } else {
       log.debug("el 1");
       if (neto2_lodbitak.add(
@@ -250,15 +270,58 @@ public class raCalcPorez {
 		  log.debug("45 = "+losn45);
 		}
     BigDecimal _osnpor = losn15.add(losn25).add(losn35).add(losn45).setScale(2,BigDecimal.ROUND_HALF_UP);
+    System.out.println("osnpor " + _osnpor);
     if (_osnpor.compareTo(nula) == 0) {
       izlaz = neto2;
     } else {
       izlaz = _osnpor.add(lodbitak);
+      // provjeri lipe:
+      int retry = 0;
+      BigDecimal backu = Aus.zero0;
+      BigDecimal lipa = Aus.one0.movePointLeft(2);
+      while (retry++ < 5 && (backu = getNeto(izlaz, lodbitak, lporminpl_2, lporminpl_5, lporminpl_45)).compareTo(neto2) != 0) {
+        if (backu.compareTo(neto2) > 0) izlaz = izlaz.subtract(lipa);
+        else izlaz = izlaz.add(lipa);
+        System.out.println("adjust lipa: " + izlaz + " " + lodbitak + " " + lporminpl_2 + " " + lporminpl_5);
+      }
     }
+    System.out.println("izlaz " + izlaz);
+    
     if (log.isDebugEnabled()) {
       log.debug("izlaz = "+izlaz);
     }
   }
+  
+  private BigDecimal getNeto(BigDecimal doh, BigDecimal lodbitak, BigDecimal prag1, BigDecimal prag2, BigDecimal prag3) {
+    BigDecimal osn = doh.subtract(lodbitak);
+    if (osn.signum() <= 0) return doh;
+    
+    BigDecimal por = Aus.zero2;
+    if (prag1.signum() > 0) {
+      BigDecimal osn1 = osn;
+      if (prag1.compareTo(osn) < 0) osn1 = prag1;
+      por = por.add(osn1.multiply(getStope()[0]).setScale(2, BigDecimal.ROUND_HALF_UP));
+      osn = osn.subtract(osn1);
+    }
+    if (prag2.signum() > 0 && osn.signum() > 0) {
+      BigDecimal osn2 = osn;
+      if (prag2.compareTo(osn) < 0) osn2 = prag2;
+      por = por.add(osn2.multiply(getStope()[1]).setScale(2, BigDecimal.ROUND_HALF_UP));
+      osn = osn.subtract(osn2);
+    }
+    if (prag3.signum() > 0 && osn.signum() > 0) {
+      BigDecimal osn3 = osn;
+      if (prag3.compareTo(osn) < 0) osn3 = prag3;
+      por = por.add(osn3.multiply(getStope()[2]).setScale(2, BigDecimal.ROUND_HALF_UP));
+      osn = osn.subtract(osn3);
+    }
+    if (osn.signum() > 0) {
+      por = por.add(osn.multiply(getStope()[3]).setScale(2, BigDecimal.ROUND_HALF_UP));
+    }
+    BigDecimal prir = por.multiply(getStprir()).setScale(2, BigDecimal.ROUND_HALF_UP);
+    return doh.subtract(por).subtract(prir);
+  }
+  
   public boolean validate() {
     return (getOldosn()!=null && getOldpor()!=null && getStope()!=null && getUlaz()!=null && getLimits()!=null && getStprir() != null);
   }
@@ -377,7 +440,7 @@ public class raCalcPorez {
     BigDecimal sumstopa = Aus.zero2;
     for (int i=0; i<stope.length; i++) sumstopa = sumstopa.add(stope[i]);
     //calc bto
-    BigDecimal btomax = neto1.divide(new BigDecimal("1.00").add(sumstopa.negate()), BigDecimal.ROUND_HALF_UP);
+    BigDecimal btomax = neto1.divide(new BigDecimal("1.00").add(sumstopa.negate()), 10, BigDecimal.ROUND_HALF_UP);
     BigDecimal bto = neto1;
     boolean used_maxosn = false;
     for (int i=0; i<stope.length; i++) {
@@ -401,7 +464,7 @@ public class raCalcPorez {
         //bto = bto.add(neto1.multiply(stope[i]).negate())
         //      .divide(new BigDecimal("1.00").add(stope[i].negate()),BigDecimal.ROUND_HALF_UP);
         if (used_maxosn) {
-          bto = bto.divide(new BigDecimal("1.00").add(stope[i].negate()),BigDecimal.ROUND_HALF_UP);
+          bto = bto.divide(new BigDecimal("1.00").add(stope[i].negate()), 10, BigDecimal.ROUND_HALF_UP);
         }
         //System.out.println("else bto = "+bto);
       }
@@ -410,7 +473,28 @@ public class raCalcPorez {
       bto = btomax;
       //System.out.println("nije koristena maximalna osnovica, bto = "+bto);
     }
-    return bto.setScale(2,BigDecimal.ROUND_HALF_UP);
+    bto = bto.setScale(2, BigDecimal.ROUND_HALF_UP);
+    
+    int retry = 0;
+    BigDecimal doh = Aus.zero0;
+    BigDecimal lipa = Aus.one0.movePointLeft(2);
+    while (retry++ < 5 && (doh = getDohodak(bto, stope, maxosn)).compareTo(neto1) != 0) {
+      if (doh.compareTo(neto1) > 0) bto = bto.subtract(lipa);
+      else bto = bto.add(lipa);
+      System.out.println("retry doprinos " + bto);
+    }
+
+    return bto;
+  }
+  
+  static BigDecimal getDohodak(BigDecimal bruto, BigDecimal[] stope, BigDecimal[] maxosn) {
+    BigDecimal doh = bruto;
+    for (int i=0; i<stope.length; i++) {
+      BigDecimal osn = bruto;
+      if (maxosn[i].compareTo(Aus.zero2) > 0 && bruto.compareTo(maxosn[i]) > 0) osn = maxosn[i];
+      doh = doh.subtract(osn.multiply(stope[i]).setScale(2, BigDecimal.ROUND_HALF_UP));
+    }
+    return doh;
   }
   
   public static void main(String[] args) {
