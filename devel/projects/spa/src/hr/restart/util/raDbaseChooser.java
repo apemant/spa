@@ -713,7 +713,7 @@ public class raDbaseChooser extends JDialog {
     hideLater();
   }
 
-  static class BaseDef {
+  public static class BaseDef {
     String name, url, tip, user, pass, params, dbdialect;
     
     public BaseDef(String n, String u, String t, String s, String p, String a, String d) {
