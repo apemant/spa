@@ -59,6 +59,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -70,11 +71,15 @@ import javax.swing.filechooser.FileFilter;
 
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignElement;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignParameter;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JRJdk13Compiler;
@@ -153,6 +158,16 @@ public class dlgRunReport {
       exitReport();
     }
   };
+  
+  
+  raNavAction rnvSend = new raNavAction("Pošalji",raImages.IMGEXPORT,KeyEvent.VK_F10,true) {
+    public void actionPerformed(ActionEvent e) {
+      sendReport();
+    }
+  };
+  
+  public boolean cancelled, erroneous;
+  
   protected dlgRunReport() {
 //    super((Frame)null, "Ispis", true);
     try {
@@ -215,11 +230,15 @@ public class dlgRunReport {
 
     prw = new prViewDialog(dlg); //(this)
     pre = new prExportDialog(dlg); //(this)
+    cancelled = erroneous = false;
+    checkButtons();
+    
     raKeyActionSupport kysp = new raKeyActionSupport(dlg);
     kysp.setNavContainer(rjpnc);
     FileHandler.loadProperties("report.properties", defaultIndexes);
 
     addComboIfNeed();
+    
     checkLogoCheck();
     dlg.getContentPane().add(jp);
     packDialog();
@@ -270,8 +289,7 @@ public class dlgRunReport {
       else if (runner.isDirectView())
         dlgRR.previewReport();
       else dlgRR.printReport();
-    }
-    catch(Exception ex) {
+    } catch(Exception ex) {
       ex.printStackTrace();
 
     }
@@ -395,6 +413,23 @@ public class dlgRunReport {
     }
   }
   
+  void checkButtons() {
+    System.out.println("checking buttons " + runner.getExportFile() + " " + rjpnc.isAncestorOf(rnvSend));
+    if (runner.getExportFile() == null && rjpnc.isAncestorOf(rnvSend)) {
+      rjpnc.removeAll();
+      rjpnc.addOption(rnvPrint);
+      rjpnc.addOption(rnvPreview);
+      rjpnc.addOption(rnvExport);
+      rjpnc.addOption(rnvMail);
+      rjpnc.addOption(rnvExit);
+    }
+    if (runner.getExportFile() != null && !rjpnc.isAncestorOf(rnvSend)) {
+      rjpnc.removeAll();
+      rjpnc.addOption(rnvSend);
+      rjpnc.addOption(rnvExit);
+    }
+  }
+  
   void checkLogoCheck() {
     boolean need = false;
     for (int i = 0; i < runner.getReportsCount(); i++)
@@ -421,10 +456,10 @@ public class dlgRunReport {
     if (frameSize.width > screenSize.width) {
       frameSize.width = screenSize.width;
     }
-    int mins = jp.isAncestorOf(lpan) ? 400 : 350;
+    int mins = jp.isAncestorOf(lpan) ? Aus.big(400) : Aus.big(350);
     if (frameSize.width < mins) frameSize.setSize(mins,frameSize.height);
     dlg.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
-    dlg.setSize(frameSize.width+100,frameSize.height);
+    dlg.setSize(frameSize.width+Aus.big(100),frameSize.height);
   }
 
   private String convert2path(String str,String ext) {
@@ -670,7 +705,7 @@ public class dlgRunReport {
   }
 
   private void runElixir(final int mode) {
-    final int idx = getCurrentComboValue();
+    int idx = getCurrentComboValue();
     raReportDescriptor rd = getDescriptor(idx);
     try {
 //      IDataProvider elixProvider = (IDataProvider) rd.getProvider();
@@ -830,6 +865,40 @@ public class dlgRunReport {
       }
     }
   }
+  
+  public void sendReport() {
+    rememberLast();
+    int idx = getCurrentComboValue();
+    raReportDescriptor rd = getDescriptor(idx);
+    
+    try {
+
+      if (!DataSourceManager.current().userDSNNameExist(raReportDescriptor.DYNAMIC_NAME)) {
+          System.out.println("nema dynamic providera, dodajem:");
+          rt.setReportDataSourceManagerInfo(getSystemResourceAsStream(
+              convert2path(raReportDescriptor.DYNAMIC_DSM, ".sav")));
+          raElixirDatasource.buildDynamic();
+        }
+        if (!rd.isJasper()) raElixirDatasource.build(rd);
+        setReportTemplate(rd); //tu je iznad metoda
+        if (!rd.isJasper()) {
+          rt.getReportTemplate().setPropertyValue(raElixirProperties.RECORD_SOURCE, rd.getProviderName());
+          adjustGrayShades(rt.getReportTemplate());
+        }
+        
+        JasperPrint jpr = getJasperPrint(dlg);
+        if (jpr == null)
+          throw new RuntimeException("Error creating jasper");
+        
+        JasperExportManager.exportReportToPdfFile(jpr, runner.getExportFile().getAbsolutePath());
+    } catch (Exception e) {
+      e.printStackTrace();
+      erroneous = true;
+    } finally {
+      disposeDialogs();
+    }
+  }
+  
   public void printReport() {
     try {
       rememberLast();
@@ -877,6 +946,7 @@ public class dlgRunReport {
 //    if (runner != null) runner.rt = null;
     rt = null;
     disposeDialogs();
+    cancelled = true;
   }
 //  public void hide() {
 //    prw.dispose();
@@ -1540,6 +1610,7 @@ public class dlgRunReport {
             data.setUsedGetter("PREFIX");
             rd.adjustJasperDesign(jdes);
             fixMargins(rd.getName(), jdes);
+            checkDynamicBold(rd.getName(), jdes, data);
             JRXmlWriter.writeReport(jdes, "design.jrxml", "UTF-8");
             raProcess.setMessage("Prevoðenje izraza...", false);
             JRProperties.setProperty(JRProperties.COMPILER_KEEP_JAVA_FILE, false);
@@ -1565,6 +1636,43 @@ public class dlgRunReport {
     });
     if (!raProcess.isCompleted()) return null; 
     return (JasperPrint) raProcess.getReturnValue();
+  }
+  
+  void checkDynamicBold(String name, JasperDesign jdes, JasperElixirData data) {
+    if (!name.equals(raReportDescriptor.DYNAMIC_CLASS)) return;
+    HashSet bolds = repDynamicProvider.getInstance().getBoldables();
+    if (bolds == null || bolds.size() == 0) return;
+    
+    HashSet all = new HashSet();
+    HashSet dup = new HashSet();
+    JRDesignBand det = (JRDesignBand) jdes.getDetail();
+    for (int i = 0; i < det.getElements().length; i++) {
+      JRDesignElement el = (JRDesignElement) det.getElements()[i];
+      if (el instanceof JRDesignTextField) {
+        JRDesignExpression ex = (JRDesignExpression) ((JRTextField) el).getExpression();
+        if (!all.add(ex.getText())) dup.add(ex.getText());
+      }
+    }
+    System.out.println("Duplicates " + dup);
+    for (int i = 0; i < det.getElements().length; i++) {
+      JRDesignElement el = (JRDesignElement) det.getElements()[i];
+      if (el instanceof JRDesignTextField) {
+        JRDesignTextField tf = (JRDesignTextField) el;
+        JRDesignExpression ex = (JRDesignExpression) tf.getExpression();
+        if (dup.contains(ex.getText())) {
+          VarStr v = new VarStr(ex.getText()).replace("DataValue", "Bold");
+          JRDesignExpression cond = new JRDesignExpression();
+          cond.setValueClassName("java.lang.Boolean");
+          if (tf.isBold()) cond.setText(v.toString());
+          else cond.setText("java.lang.Boolean.valueOf(!" + v + ".booleanValue())");
+          tf.setPrintWhenExpression(cond);
+          for (int c = 0; c < 16; c++) 
+            if (ex.getText().equals("$F{DataValue" + c + "}"))
+              data.setUsedGetter("Bold" + c);
+        }
+      }
+    }
+    
   }
   
   void fixMargins(String name, JasperDesign jdes) {
