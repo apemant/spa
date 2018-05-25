@@ -40,7 +40,8 @@ public class frmGK extends startFrame {
   JMenu jmGodObrade = new JMenu();
   JMenu jmKontrole = new JMenu();
   JMenuItem jmiVrNaloga = new JMenuItem();
-  JMenuItem jmiRepGK = new JMenuItem();
+  //JMenuItem jmiRepGK = new JMenuItem();
+  JMenuItem jmiGkrep = new JMenuItem();
   JMenuItem jmiNalozi = new JMenuItem();
   JMenuItem jmiStanjeKonto = new JMenuItem();
   JMenuItem jmiBrutoBilanca = new JMenuItem();
@@ -52,7 +53,8 @@ public class frmGK extends startFrame {
   JMenuItem jmiBrBilancaPerVal = new JMenuItem();
   JMenuItem jmiGenericGK = new JMenuItem();
   JMenuItem jmiExcelGK = new JMenuItem();
-  JMenuItem jmiRepGKUpit = new JMenuItem();
+  JMenuItem jmiBilGK = new JMenuItem();
+  //JMenuItem jmiRepGKUpit = new JMenuItem();
   JMenuItem jmiIspKartica = new JMenuItem();
   JMenuItem jmiZakKlasa = new JMenuItem();
   JMenuItem jmiGodObr = new JMenuItem();
@@ -91,10 +93,16 @@ public class frmGK extends startFrame {
     jmUpiti.setText("Upiti");
     jmIzvj.setText("Izvje\u0161taji");
     jmGodObrade.setText("Godi\u0161nja obrada");
-    jmiRepGK.setText("Definicije izvještaja");
+    /*jmiRepGK.setText("Definicije izvještaja");
     jmiRepGK.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiRepGK_actionPerformed(e);
+      }
+    });*/
+    jmiGkrep.setText("Definicije izvještaja");
+    jmiGkrep.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiGkrep_actionPerformed(e);
       }
     });
     jmiVrNaloga.setText("Vrste naloga-temeljnica");
@@ -157,12 +165,12 @@ public class frmGK extends startFrame {
         jmiBrBilancaPerVal_actionPerformed(e);
       }
     });
-    jmiRepGKUpit.setText("Definirani izvjestaji");
+    /*jmiRepGKUpit.setText("Definirani izvjestaji");
     jmiRepGKUpit.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmiRepGKUpit_actionPerformed(e);
       }
-    });    
+    });*/    
     jmiGenericGK.setText("Ostali izvjestaji");
     jmiGenericGK.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -175,6 +183,12 @@ public class frmGK extends startFrame {
         jmiExcelGK_actionPerformed(e);
       }
     });
+    jmiBilGK.setText("Definirani izvjestaji");
+    jmiBilGK.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmiBilGK_actionPerformed(e);
+      }
+    });    
     jmiIspKartica.setText("Ispis svih kartica");
     jmiIspKartica.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -366,7 +380,8 @@ public class frmGK extends startFrame {
     jmOsnovni.add(jmiVrNaloga);
     jmOsnovni.add(jmShemeK);
     jmOsnovni.addSeparator();
-    jmOsnovni.add(jmiRepGK);
+    //jmOsnovni.add(jmiRepGK);
+    jmOsnovni.add(jmiGkrep);
     jmKnjizenja.add(jmiNalozi);
     jmKnjizenja.add(jmiIzvodi);
     jmKnjizenja.add(jmiSKRac);
@@ -390,7 +405,8 @@ public class frmGK extends startFrame {
     jmIzvj.add(jmiFinDnev);
 //    jmIzvj.add(jmiBrBilancaPerVal);
     jmIzvj.addSeparator();
-    jmIzvj.add(jmiRepGKUpit);
+    //jmIzvj.add(jmiRepGKUpit);
+    jmIzvj.add(jmiBilGK);
     jmIzvj.add(jmiGenericGK);
     jmIzvj.add(jmiExcelGK);
     jmGodObrade.add(jmiIspKartica);
@@ -430,8 +446,11 @@ public class frmGK extends startFrame {
     fPN.showPreselect(fN,"Nalozi - predselekcija");
 //    PreSelect.showPreselect("hr.restart.gk.preSelNalozi","hr.restart.gk.frmNalozi","Nalozi - predselekcija");
   }
-  void jmiRepGK_actionPerformed(ActionEvent e) {
+  /*void jmiRepGK_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.gk.frmRepgk",jmiRepGK.getText());
+  }*/
+  void jmiGkrep_actionPerformed(ActionEvent e) {
+    showFrame("hr.restart.gk.frmGkrepDef",jmiGkrep.getText());
   }
   void jmiVrNaloga_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.gk.frmVrNaloga","Vrste naloga");
@@ -478,8 +497,12 @@ public class frmGK extends startFrame {
     showFrame("hr.restart.gk.frmExcelGK",jmiExcelGK.getText());
   }
   
-  void jmiRepGKUpit_actionPerformed(ActionEvent e) {
+  /*void jmiRepGKUpit_actionPerformed(ActionEvent e) {
     showFrame("hr.restart.gk.frmRepgkUpit",jmiRepGKUpit.getText());
+  }*/
+  
+  void jmiBilGK_actionPerformed(ActionEvent e) {
+    showFrame("hr.restart.gk.frmBilUpit",jmiBilGK.getText());
   }
 
   void jmiIzvodi_actionPerformed(ActionEvent e) {
