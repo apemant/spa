@@ -16,17 +16,16 @@
 **
 ****************************************************************************/
 package hr.restart.swing;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-
-import hr.restart.baza.dM;
 import hr.restart.baza.raDataSet;
-import hr.restart.robno.Util;
 import hr.restart.util.Aus;
 import hr.restart.util.HashDataSet;
-import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
@@ -42,13 +41,17 @@ public class raTableColumnModifier extends raTableModifier {
   private String dsColName="";
   private String[] dsColsReplace;
   private String[] dsColsKey;
-  private String[] dsColsKeyS;
+  //private String[] dsColsKeyS;
   private HashDataSet dsToSearch;
-  private int dsSerial = -1;
+  //private int dsSerial = -1;
+  private int maxlen = -1;
   
   protected Variant shared = new Variant();
   protected VarStr replacement = new VarStr();
   public String veznik = " - ", ostaliVeznici = " - "; 
+  
+  private static HashMap datasets = new HashMap();
+  
 /**
  * Najkopleksniji konstruktor gdje je
  * @param columnToModify ime kolone u datasetu umjesto kojeg prikazujemo druge vrijednosti
@@ -66,19 +69,19 @@ public class raTableColumnModifier extends raTableModifier {
     dsColName = columnToModify;
     dsColsReplace = columnsReplace;
     if (setToSearch != null) {
-      setToSearch = getScopedSet(setToSearch, keyColumnsSearch, columnsReplace);
+      dsToSearch = getScopedSet(setToSearch, keyColumnsSearch, columnsReplace);
       //if (setToSearch instanceof raDataSet) ((raDataSet) setToSearch).enableSync(false);
-      dsToSearch = keyColumns.length == 1 ? new HashDataSet(setToSearch, keyColumnsSearch[0]) : new HashDataSet(setToSearch, keyColumnsSearch);
-      dsSerial = dM.getSynchronizer().getSerialNumber(dsToSearch.get().getTableName());
+      //dsToSearch = keyColumns.length == 1 ? new HashDataSet(setToSearch, keyColumnsSearch[0]) : new HashDataSet(setToSearch, keyColumnsSearch);
+      //dsSerial = dM.getSynchronizer().getSerialNumber(dsToSearch.get().getTableName());
       //if (setToSearch instanceof raDataSet) ((raDataSet) setToSearch).enableSync(true);
     }
     
     dsColsKey = keyColumns;
-    dsColsKeyS = keyColumnsSearch;
+    //dsColsKeyS = keyColumnsSearch;
   }
   
-  private DataSet getScopedSet(DataSet orig, String[] keys, String[] replaces) {
-    if (orig instanceof QueryDataSet && ((QueryDataSet) orig).getOriginalQueryString() != null) {
+  private HashDataSet getScopedSet(DataSet orig, String[] keys, String[] replaces) {
+    if (orig instanceof QueryDataSet && ((QueryDataSet) orig).getOriginalQueryString() != null && orig.getTableName() != null) {
       String oq = ((QueryDataSet) orig).getOriginalQueryString();
       int wp = oq.toLowerCase().indexOf(" from ");
       if (wp > 0) {
@@ -86,17 +89,36 @@ public class raTableColumnModifier extends raTableModifier {
         HashSet others = new HashSet(Arrays.asList(replaces));
         others.removeAll(cols);
         cols.addAll(others);
+        ArrayList dkey = new ArrayList(cols);
+        Collections.sort(dkey);
+        dkey.add(0, orig.getTableName());
+        System.out.println("MOD KEY: " + dkey);
+        if (datasets.containsKey(dkey))
+          return (HashDataSet) datasets.get(dkey);
 
+        System.out.println("...NEW!");
         String nq = "SELECT " + VarStr.join(cols, ", ") + oq.substring(wp);
         if (orig instanceof raDataSet) orig = new raDataSet();
         else orig = new QueryDataSet();
         Aus.setFilter((QueryDataSet) orig, nq);
         System.out.println(nq);
-        orig.open();
+        
+        HashDataSet hashed = keys.length == 1 ? new HashDataSet(orig, keys[0]) : new HashDataSet(orig, keys);
+        datasets.put(dkey, hashed);
+        return hashed;
       }
     }
     
-    return orig;
+    if (orig.getTableName() != null) {
+      if (datasets.containsKey(orig.getTableName()))
+        return (HashDataSet) datasets.get(orig.getTableName());
+      
+      HashDataSet hashed = keys.length == 1 ? new HashDataSet(orig, keys[0]) : new HashDataSet(orig, keys);
+      datasets.put(orig.getTableName(), hashed);
+      return hashed;
+    }
+    
+    return keys.length == 1 ? new HashDataSet(orig, keys[0]) : new HashDataSet(orig, keys);
   }
   
 /**
@@ -124,6 +146,16 @@ public class raTableColumnModifier extends raTableModifier {
                       DataSet setToSearch) {
     this(columnToModify,columnsReplace,new String[] {columnToModify},new String[] {columnToModify},setToSearch);
   }
+  
+  public raTableColumnModifier(
+      String columnToModify,
+      String[] columnsReplace,
+      String keyColSearch,
+      DataSet setToSearch, int _maxlen) {
+    this(columnToModify,columnsReplace,new String[] {columnToModify},new String[] {keyColSearch},setToSearch);
+    this.maxlen = _maxlen;
+  }
+  
   public boolean doModify() {
     if (getTable() instanceof JraTable2) {
       jtab = (JraTable2)getTable();
@@ -181,12 +213,13 @@ public class raTableColumnModifier extends raTableModifier {
     String lastVeznik = veznik;
 
     DataSet ds = dsCol.getDataSet();
-    if (dsToSearch.get().getTableName() != null) {
+    dsToSearch.sync();
+    /*if (dsToSearch.get().getTableName() != null) {
       int now = dM.getSynchronizer().getSerialNumber(dsToSearch.get().getTableName());
       if (now != dsSerial)
         dsToSearch = dsColsKeyS.length == 1 ? new HashDataSet(dsToSearch.get(), dsColsKeyS[0]) : new HashDataSet(dsToSearch.get(), dsColsKeyS);
       dsSerial = now;
-    }
+    }*/
 //    Variant[] vars = prepareVariants();
     String key = dsColsKey.length == 1 ? dsToSearch.key(ds, getRow(), dsColsKey[0]) : dsToSearch.key(ds, getRow(), dsColsKey);
     if (!dsToSearch.has(key)) return;
@@ -240,6 +273,7 @@ public class raTableColumnModifier extends raTableModifier {
     return dsColName;
   }
   public int getMaxModifiedTextLength() {
+    if (maxlen > 0) return maxlen;
     int ret = 0;
     for (int i = 0; i < dsColsReplace.length; i++) {
       Column col = (dsToSearch!=null)?dsToSearch.get().hasColumn(dsColsReplace[i]):null;
