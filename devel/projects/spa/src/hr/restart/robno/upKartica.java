@@ -216,6 +216,7 @@ public class upKartica extends raUpitFat {
       (Column) colUlSk.clone(),
       (Column) colIzSk.clone()
     });
+    if (edion) card.addColumn(dM.getDataModule().getStdoku().getColumn("LOT").cloneColumn());
 
     card.getColumn("VRDOK").setWidth(8);
     card.getColumn("DATDOK").setWidth(16);
@@ -464,8 +465,10 @@ public class upKartica extends raUpitFat {
     colRaz.setSqlType(0);
 
     this.setJPan(jp);
-    jPanel3.setPreferredSize(new Dimension(555, 45));
+    //jPanel3.setPreferredSize(new Dimension(555, 45));
     jPanel3.setLayout(xYLayout2);
+    xYLayout2.setWidth(620);
+    xYLayout2.setHeight(35);
     jLabel1.setText("Datum (od-do)");
     rpcart.setMode("DOH");
     rpcart.setBorder(null);
@@ -507,8 +510,8 @@ public class upKartica extends raUpitFat {
     jcbNKU.setText("Narudžbe kupca");*/
 
     jp.setLayout(borderLayout1);
-    jp.setMinimumSize(new Dimension(650, 165));
-    jp.setPreferredSize(new Dimension(650, 165));
+    //jp.setMinimumSize(new Dimension(650, 165));
+    //jp.setPreferredSize(new Dimension(650, 165));
     jp.add(jPanel3, BorderLayout.SOUTH);
     jPanel3.add(jLabel1,     new XYConstraints(15, 5, -1, -1));
     jPanel3.add(jtfPocDatum, new XYConstraints(150, 5, 100, -1));
@@ -518,9 +521,10 @@ public class upKartica extends raUpitFat {
     if (edion) {
       jPanel3.add(new JLabel("Šarža (Lot)"), new XYConstraints(15, 35, -1, -1));
       jPanel3.add(jtfLOT, new XYConstraints(150, 35, 100, -1));
-      jPanel3.setPreferredSize(new Dimension(555, 75));
-      jp.setMinimumSize(new Dimension(650, 195));
-      jp.setPreferredSize(new Dimension(650, 195));
+      xYLayout2.setHeight(65);
+      //jPanel3.setPreferredSize(new Dimension(555, 75));
+      //jp.setMinimumSize(new Dimension(650, 195));
+      //jp.setPreferredSize(new Dimension(650, 195));
     }
     /*jPanel3.add(jcbNKU,    new XYConstraints(405, 30, 200, -1));
     jPanel3.add(jcbNDO,    new XYConstraints(155, 30, 200, -1));*/

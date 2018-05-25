@@ -419,20 +419,20 @@ public class upKPR extends raUpit {
     this.addReport("hr.restart.robno.repKPR","hr.restart.robno.repKPR", "KPR", "Knjiga popisa robe");
     rpcskl.jrfCSKL.setRaDataSet(hr.restart.robno.Util.getUtil().getMPSklDataset());
     setJPan(jp);
-    jPanel3.setMinimumSize(new Dimension(604, 40));
-    jPanel3.setPreferredSize(new Dimension(655, 58));
+    /*jPanel3.setMinimumSize(new Dimension(604, 40));
+    jPanel3.setPreferredSize(new Dimension(655, 58));*/
     jPanel3.setLayout(xYLayout1);
     jLabel1.setText("Datum (od-do)");
     jlRbr.setText("Po\u010Detni redni broj");
     vl = Valid.getValid();
     jp.setLayout(borderLayout1);
-    jp.setMinimumSize(new Dimension(555, 88));
+    /*jp.setMinimumSize(new Dimension(555, 88));
     jp.setPreferredSize(new Dimension(650, 105));
     rpcskl.setMinimumSize(new Dimension(10, 20));
-    rpcskl.setPreferredSize(new Dimension(10, 20));
+    rpcskl.setPreferredSize(new Dimension(10, 20));*/
     xYLayout1.setWidth(655);
     xYLayout1.setHeight(110);
-    jp.add(rpcskl, BorderLayout.CENTER);
+    jp.add(rpcskl, BorderLayout.NORTH);
     rpcskl.setRaMode('S');
     tds.setColumns(new Column[]{dM.createTimestampColumn("pocDatum"), dM.createTimestampColumn("zavDatum"),
         dM.createShortColumn("docRBR")});
@@ -453,7 +453,7 @@ public class upKPR extends raUpit {
     jPanel3.add(jtfZavDatum, new XYConstraints(255, 4, 100, -1));
     jPanel3.add(jtfRbr, new XYConstraints(150, 30, 50, -1));
     jPanel3.add(jlRbr, new XYConstraints(15, 30, -1, -1));
-    jp.add(jPanel3, BorderLayout.SOUTH);
+    jp.add(jPanel3, BorderLayout.CENTER);
     
   }
 
@@ -665,7 +665,7 @@ public class upKPR extends raUpit {
     tds.setTimestamp("pocDatum", hr.restart.robno.Util.getUtil().findFirstDayOfYear(Integer.parseInt(vl.findYear())));
     tds.setTimestamp("zavDatum", Valid.getValid().findDate(false, 0));
     tds.setShort("docRBR", (short) 1);
-    jp.setPreferredSize(jp.getPreferredSize());
+    //jp.setPreferredSize(jp.getPreferredSize());
     this.getJPTV().setDataSet(null);
   }
 

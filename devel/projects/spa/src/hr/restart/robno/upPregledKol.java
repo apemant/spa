@@ -231,7 +231,7 @@ public class upPregledKol extends raUpitFat {
 
    // handlanje pritiska na tipku ESC
   public void firstESC() {
-    if(this.getJPTV().getDataSet() != null || isInterrupted()) {
+    if(this.getJPTV().getDataSet() != null || isInterrupted() || rpcskl.getCSKL().length() > 0) {
       this.getJPTV().clearDataSet();
       removeNav();
       //rcc.EnabDisabAll(jPanel3, true);
@@ -249,7 +249,7 @@ public class upPregledKol extends raUpitFat {
   public boolean runFirstESC() {
 //    return this.getJPTV().getDataSet() != null; // !rpcskl.getCSKL().equals("");
     if (this.getJPTV().getDataSet() != null) return true;
-    if (!rpcskl.getCSKL().equals("")) return true;
+    if (rpcskl.getCSKL().length() > 0) return true;
     return false;
   }
   
@@ -269,13 +269,13 @@ public class upPregledKol extends raUpitFat {
     rpcskl.setRaMode('S');
     setJPan(mainPanel);
     mainPanel.setLayout(borderLayout1);
-    mainPanel.setMinimumSize(new Dimension(555, 43));
-    mainPanel.setPreferredSize(new Dimension(650, 90));
+    //mainPanel.setMinimumSize(new Dimension(555, 43));
+    //mainPanel.setPreferredSize(new Dimension(650, 90));
 
     jlKolZal.setText("Koli\u010Dina zalihe");
     jlVrsZal.setText("Vrsta koli\u010Dine");
     xYLayout1.setWidth(650);
-    xYLayout1.setHeight(30);
+    xYLayout1.setHeight(35);
     mainPanel.add(rpcskl, BorderLayout.NORTH);
     mainPanel.add(comboPanel, BorderLayout.CENTER);
     comboPanel.add(jlKolZal,      new XYConstraints(15, 7, -1, -1));
@@ -283,8 +283,8 @@ public class upPregledKol extends raUpitFat {
     comboPanel.add(jcbStanje,       new XYConstraints(150, 7, 170, -1));
     comboPanel.add(jlVrsZal,       new XYConstraints(334, 7, -1, -1));
 
-    comboPanel.setMinimumSize(new Dimension(555, 30));
-    comboPanel.setPreferredSize(new Dimension(650, 30));
+    //comboPanel.setMinimumSize(new Dimension(555, 30));
+    //comboPanel.setPreferredSize(new Dimension(650, 30));
     
     Column colST = dm.createStringColumn("ST",2);
     Column colAR = dm.createStringColumn("AR",2);
@@ -339,7 +339,9 @@ public class upPregledKol extends raUpitFat {
     fieldSet.setString("STANJE","stanje.kol");
     fieldSet.setString("ARTIKLI","artikli.sigkol");
     rcc.EnabDisabAll(comboPanel, true);
-    this.jcbStanje.requestFocus();
+    rcc.EnabDisabAll(rpcskl, true);
+    //rpcskl.setCSKL("");
+    this.jcbStanje.requestFocusLater();
   }
 
   //***************************************************************************

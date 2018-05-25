@@ -296,7 +296,7 @@ public class UpPregledZaduzenjeKPR extends hr.restart.util.raUpitLite {
 		});
 
 		xYLayout1.setHeight(140);
-		xYLayout1.setWidth(570);
+		xYLayout1.setWidth(580);
 		jPanel1.setLayout(xYLayout1);
 		jPanel1.setBorder(BorderFactory.createEtchedBorder());
 

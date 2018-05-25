@@ -173,7 +173,7 @@ public class upKPRFake extends raUpit {
 				.findYear())));
 		tds.setTimestamp("zavDatum", Valid.getValid().findDate(false, 0));
 		tds.setInt("pocRbr", 1);
-		jp.setPreferredSize(jp.getPreferredSize());
+		//jp.setPreferredSize(jp.getPreferredSize());
 		this.jtfPocDatum.requestFocus();
 		this.getJPTV().setDataSet(null);
 	}
@@ -342,17 +342,17 @@ System.out.println(sqlupit);
 				jrboj_actionPerformed();
 			}
 		});
-		jPanel3.setMinimumSize(new Dimension(604, 160));
-		jPanel3.setPreferredSize(new Dimension(655, 160));
+		//jPanel3.setMinimumSize(new Dimension(604, 160));
+		//jPanel3.setPreferredSize(new Dimension(655, 160));
 		jPanel3.setLayout(xYLayout1);
 		jLabel1.setText("Datum (od-do)");
 		jlRbr.setText("Po\u010Detni redni broj");
 		vl = Valid.getValid();
 		jp.setLayout(borderLayout1);
-		jp.setMinimumSize(new Dimension(555, 160));
-		jp.setPreferredSize(new Dimension(650, 160));
+		//jp.setMinimumSize(new Dimension(555, 160));
+		//jp.setPreferredSize(new Dimension(650, 160));
 		xYLayout1.setWidth(655);
-		xYLayout1.setHeight(160);
+		xYLayout1.setHeight(165);
 		tds.setColumns(new Column[] {
 				dM.createTimestampColumn("pocDatum", "Poèetni datum"),
 				dM.createTimestampColumn("zavDatum", "Završni dautm"),

@@ -131,7 +131,7 @@ public class upKPR_NextGeneration extends raUpit {
     tds.setTimestamp("pocDatum", rut.findFirstDayOfYear(Integer.parseInt(vl.findYear())));
     tds.setTimestamp("zavDatum", Valid.getValid().findDate(false, 0));
     tds.setInt("pocRbr",1);
-    jp.setPreferredSize(jp.getPreferredSize());
+    //jp.setPreferredSize(jp.getPreferredSize());
     this.getJPTV().setDataSet(null);
   }
 
@@ -281,19 +281,19 @@ public class upKPR_NextGeneration extends raUpit {
     this.addReport("hr.restart.robno.repKPR_NextGeneration","hr.restart.robno.repKPR_NextGeneration", "KPR", "Knjiga popisa robe");
     rpcskl.jrfCSKL.setRaDataSet(rut.getMPSklDataset());
     setJPan(jp);
-    jPanel3.setMinimumSize(new Dimension(604, 40));
-    jPanel3.setPreferredSize(new Dimension(655, 58));
+    //jPanel3.setMinimumSize(new Dimension(604, 40));
+    //jPanel3.setPreferredSize(new Dimension(655, 58));
     jPanel3.setLayout(xYLayout1);
     jLabel1.setText("Datum (od-do)");
     jlRbr.setText("Po\u010Detni redni broj");
     vl = Valid.getValid();
     jp.setLayout(borderLayout1);
-    jp.setMinimumSize(new Dimension(555, 88));
-    jp.setPreferredSize(new Dimension(650, 105));
-    rpcskl.setMinimumSize(new Dimension(10, 20));
-    rpcskl.setPreferredSize(new Dimension(10, 20));
+    //jp.setMinimumSize(new Dimension(555, 88));
+    //jp.setPreferredSize(new Dimension(650, 105));
+    //rpcskl.setMinimumSize(new Dimension(10, 20));
+    //rpcskl.setPreferredSize(new Dimension(10, 20));
     xYLayout1.setWidth(655);
-    xYLayout1.setHeight(110);
+    xYLayout1.setHeight(65);
     jp.add(rpcskl, BorderLayout.CENTER);
     rpcskl.setRaMode('S');
     tds.setColumns(new Column[]{dM.createTimestampColumn("pocDatum","Poèetni datum"),
