@@ -17,15 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import hr.restart.baza.Condition;
-import hr.restart.baza.RN;
-import hr.restart.baza.RN_subjekt;
-import hr.restart.baza.VTText;
-import hr.restart.baza.dM;
-import hr.restart.baza.doki;
-import hr.restart.baza.dokidod;
-import hr.restart.baza.stdoki;
-import hr.restart.baza.vtrabat;
+import hr.restart.baza.*;
 import hr.restart.pos.presBlag;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raSaldaKonti;
@@ -74,8 +66,9 @@ public class repIzlazni implements raReportData {
   
   private String specGroup;
   private String specText, matText, radText;
-  private String specForm, fiskForm;
+  private String specForm, fiskForm, fiskRed, fiskRedF;
   private String inoNap, euNap;
+  private String altKol;
   
   protected BigDecimal dineto, diprodbp, diprodsp, dipor;
     
@@ -90,6 +83,8 @@ public class repIzlazni implements raReportData {
   protected BigDecimal predosn, predukup;
   protected String predlabel;
   
+  private DataSet fiskDs;
+  
   
   public repIzlazni() {
     this(true);
@@ -99,6 +94,13 @@ public class repIzlazni implements raReportData {
   protected repIzlazni(boolean init) {
     fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
         "Format fiskalnog broja izlaznog dokumenta na ispisu");
+    fiskRed = frmParam.getParam("robno", "fiskRed", "Datum i vrijeme izrade: [DATE]  u [TIME]" +
+        "       Operater: [USER]        Interni broj: [NUM]", "Format FISK reda ([DATE], [TIME], [USER], [NUM])");
+    fiskRedF = frmParam.getParam("robno", "fiskRedF", "Date and time of creation: [DATE]  at [TIME]" +
+        "       Operator ID: [USER]        Internal number: [NUM]", "Format stranog FISK reda ([DATE], [TIME], [USER], [NUM])");
+    
+    fiskDs = Aus.createSet("DATE:64 TIME:32 USER:64 NUM: 64");
+
     if (init) {
       setCurrentDataset();
       ds.open();
@@ -155,6 +157,16 @@ public class repIzlazni implements raReportData {
         predosn = Aus.sum("IPRODBP", stprd);
         predukup = Aus.sum("IPRODSP", stprd);
         predlabel = "Raè. za predujam " + prd.getString("PNBZ2");
+      }
+      DataSet old = doki.getDataModule().openTempSet(Condition.equal("BRPRD", ds));
+      if (old.rowCount() > 1) {
+        for (old.first(); old.inBounds(); old.next()) {
+          if (old.getTimestamp("DATDOK").before(ds.getTimestamp("DATDOK")) && dM.compareColumns(old, ds, Util.mkey) != null) {
+            DataSet stold = stdoki.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, old));
+            predosn = predosn.subtract(Aus.sum("IPRODBP", stold).min(predosn));
+            predukup = predukup.subtract(Aus.sum("IPRODSP", stold).min(predukup));
+          }
+        }
       }
     }
   }
@@ -415,6 +427,43 @@ public class repIzlazni implements raReportData {
     }    
     return cache.returnValue(mj);
   }
+  
+  public String getMJZ() {
+    String cached = cache.getValue("MJ", ds.getInt("CPAR") + "-" + ds.getInt("PJ"));    
+    if (cached != null) return cached;
+    colname[0] = "CPAR";
+    String mj = "";
+    int pbr = 0;
+    int cm = 0;
+    if (ds.getInt("PJ") > 0 && (ispisPJ.equalsIgnoreCase("D") || ispisPJ.equalsIgnoreCase("O"))){
+      lookupData.getlookupData().raLocate(dm.getPjpar(),
+          new String[] {"CPAR","PJ"},
+          new String[] {ds.getInt("CPAR")+"",ds.getInt("PJ")+""});
+      pbr = dm.getPjpar().getInt("PBRPJ");
+      if (dm.getPjpar().getInt("PBRPJ") >0)  mj = dm.getPjpar().getInt("PBRPJ") + " " + dm.getPjpar().getString("MJPJ");
+      else mj = dm.getPjpar().getString("MJPJ");
+    } else {
+      if (!lookupData.getlookupData().raLocate(dm.getPartneri(),"CPAR",ds.getInt("CPAR")+"")) return "";
+      pbr = dm.getPartneri().getInt("PBR");
+      cm = dm.getPartneri().getInt("CMJESTA");
+      if (dm.getPartneri().getInt("PBR") >0)  mj = dm.getPartneri().getInt("PBR") + " " + dm.getPartneri().getString("MJ");
+      else mj = dm.getPartneri().getString("MJ");
+    }    
+    return cache.returnValue(getCityCountry(mj, pbr, cm));
+  }
+  
+  private String getCityCountry(String name, int zip, int key) {
+    String czem = ""; 
+    if (key > 0 && lookupData.getlookupData().raLocate(dm.getMjesta(), "CMJESTA", key + "")) {
+      czem = dm.getMjesta().getString("CZEM");
+    } else if (zip > 0 && lookupData.getlookupData().raLocate(dm.getMjesta(), "PBR", zip + "")) {
+      czem = dm.getMjesta().getString("CZEM");
+    }
+    if (czem.length() > 0 && lookupData.getlookupData().raLocate(dm.getZpZemlje(), "CZEM", czem)) {
+      return name + "\n" + dm.getZpZemlje().getString("NAZIVZEM");
+    }
+    return name;
+  }
 
   public String getMJPJ(){
     String cached = cache.getValue("MJPJ", Integer.toString(ds.getInt("CPAR")));
@@ -487,17 +536,45 @@ public class repIzlazni implements raReportData {
     if (cached != null) return cached;
     String result = "";
     
+    colname[0] = "CPAR";
+    String di = ru.getSomething(colname,dm.getPartneri(),"DI").toString();
+    boolean ino = di == null || !di.equalsIgnoreCase("D");
+    
     if (!oib.equalsIgnoreCase("MB")) {
       colname[0] = "CPAR";
       String br = ru.getSomething(colname,dm.getPartneri(),"OIB").toString();
       if (br.length() == 0) result = "";
-      else result = (isReportForeign() ? "" : "OIB ") + br;
+      else result = (ino ? "" : "OIB ") + br;
     } 
     if (oib.equalsIgnoreCase("MB") || result.length() == 0) {
       colname[0] = "CPAR";
+      
       String mb = ru.getSomething(colname,dm.getPartneri(),"MB").toString();
       if (mb.length() == 0) result = "";
-      else result = (isReportForeign() ? "" : "MB ") + mb; 
+      else result = (ino ? "" : "MB ") + mb; 
+    }
+    return cache.returnValue(result);
+  }
+  
+  public String getMBM() {
+    String cached = cache.getValue("MBM", Integer.toString(ds.getInt("CPAR")));
+    if (cached != null) return cached;
+    String result = "";
+    
+    colname[0] = "CPAR";
+    
+    if (!oib.equalsIgnoreCase("MB")) {
+      colname[0] = "CPAR";
+      String br = ru.getSomething(colname,dm.getPartneri(),"OIB").toString();
+      if (br.length() == 0) result = "";
+      else result =  br;
+    } 
+    if (oib.equalsIgnoreCase("MB") || result.length() == 0) {
+      colname[0] = "CPAR";
+      
+      String mb = ru.getSomething(colname,dm.getPartneri(),"MB").toString();
+      if (mb.length() == 0) result = "";
+      else result = mb; 
     }
     return cache.returnValue(result);
   }
@@ -543,7 +620,7 @@ public class repIzlazni implements raReportData {
   }
 
   public String SgetSYSDAT() {
-    return rdu.dataFormatter(getSYSDAT());
+    return rdu.dataFormatter(getSYSDAT(), isReportForeign());
   }
   
   public String SgetSYSTIME() {
@@ -551,14 +628,14 @@ public class repIzlazni implements raReportData {
   }
 
   public String getDatumIsp(){
-    return rdu.dataFormatter(vl.getToday());
+    return rdu.dataFormatter(vl.getToday(), isReportForeign());
   }
 
   public Timestamp getDATDOK() {
     return ds.getTimestamp("DATDOK");
   }
   public String SgetDATDOK() {
-    return rdu.dataFormatter(getDATDOK());
+    return rdu.dataFormatter(getDATDOK(), isReportForeign());
   }
   
   public String SgetDATTIME() {
@@ -605,7 +682,7 @@ public class repIzlazni implements raReportData {
     return ds.getTimestamp("DATUG");
   }
   public String SgetDATUG() {
-    return rdu.dataFormatter(getDATUG());
+    return rdu.dataFormatter(getDATUG(), isReportForeign());
   }
 
   public Timestamp getDVO() {
@@ -613,7 +690,7 @@ public class repIzlazni implements raReportData {
   }
 
   public String SgetDVO() {
-    return rdu.dataFormatter(getDVO());
+    return rdu.dataFormatter(getDVO(), isReportForeign());
   }
 
   public short getDDOSP() {
@@ -632,7 +709,7 @@ public class repIzlazni implements raReportData {
   }
 
   public String SgetDATDOSP() {
-    return rdu.dataFormatter(getDATDOSP());
+    return rdu.dataFormatter(getDATDOSP(), isReportForeign());
   }
 
   public String getBRDOKIZ() {
@@ -644,7 +721,7 @@ public class repIzlazni implements raReportData {
   }
 
   public String SgetDATDOKIZ() {
-    return rdu.dataFormatter(getDATDOKIZ());
+    return rdu.dataFormatter(getDATDOKIZ(), isReportForeign());
   }
 
   public String getBRPRD() {
@@ -656,7 +733,7 @@ public class repIzlazni implements raReportData {
   }
 
   public String SgetDATPRD() {
-    return rdu.dataFormatter(getDATPRD());
+    return rdu.dataFormatter(getDATPRD(), isReportForeign());
   }
 
   public String getBRNARIZ() {
@@ -668,11 +745,15 @@ public class repIzlazni implements raReportData {
   }
 
   public String SgetDATNARIZ() {
-    return rdu.dataFormatter(getDATNARIZ());
+    return rdu.dataFormatter(getDATNARIZ(), isReportForeign());
   }
 
   public String getOZNVAL() {
     return ds.getString("OZNVAL");
+  }
+  
+  public String getCURRENCY() {
+    return getOZNVAL().length() > 0 ? getOZNVAL() : getDOMNAZ();
   }
 
   public BigDecimal getTECAJ() {
@@ -693,7 +774,7 @@ public class repIzlazni implements raReportData {
   }
 
   public String SgetDATKNJ() {
-    return rdu.dataFormatter(getDATKNJ());
+    return rdu.dataFormatter(getDATKNJ(), isReportForeign());
   }
 
   public String getCRADNAL() {
@@ -867,14 +948,14 @@ public class repIzlazni implements raReportData {
   }
   
   public String getNAZART() {
-    if (!hr.restart.util.reports.dlgRunReport
-        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
+    if (!isReportForeign())
       return ds.getString("NAZART");
     
     if (!lD.raLocate(dm.getArtikli(), "CART1", getCART1())) 
       return ds.getString("NAZART");
     
-    if (dm.getArtikli().getString("NAZLANG").length() == 0)
+    if (!dm.getArtikli().getString("NAZART").equals(ds.getString("NAZART")) ||
+      dm.getArtikli().getString("NAZLANG").length() == 0)
       return ds.getString("NAZART");
     
     return dm.getArtikli().getString("NAZLANG");
@@ -894,12 +975,36 @@ public class repIzlazni implements raReportData {
 
     return null;
   }
+  
+  private BigDecimal fact() {
+    if (isKol1() || isKol2() && Artikli.loc(ds.getInt("CART")))
+      return Artikli.get().getBigDecimal(isKol1() ? "BRJED" : "BRJEDKOL");
+    
+    return Aus.one0;
+  }
 
+  private boolean isKol1() {
+    return ds.getBigDecimal("KOL1").signum() != 0 && (altKol.equals("1") || altKol.equals("D")) 
+        && TypeDoc.getTypeDoc().isDocFinanc(ds.getString("VRDOK"))
+        && TypeDoc.getTypeDoc().isDocStdoki(ds.getString("VRDOK")); 
+  }
+  
+  private boolean isKol2() {
+    return ds.getBigDecimal("KOL2").signum() != 0 && (altKol.equals("2") || altKol.equals("D"))
+        && TypeDoc.getTypeDoc().isDocFinanc(ds.getString("VRDOK"))
+        && TypeDoc.getTypeDoc().isDocStdoki(ds.getString("VRDOK"));
+  }
+  
   public String getJM() {
+    if (isKol1() || isKol2() && Artikli.loc(ds.getInt("CART")))
+      return Artikli.get().getString(isKol1() ? "JMPAK" : "JMKOL");
     return ds.getString("JM");
   }
 
   public BigDecimal getKOL() {
+    if (isKol1()) return ds.getBigDecimal("KOL1");
+    if (isKol2()) return ds.getBigDecimal("KOL2");
+    
     return ds.getBigDecimal("KOL");
   }
 
@@ -909,6 +1014,14 @@ public class repIzlazni implements raReportData {
 
   public BigDecimal getUPRAB1() {
     return ds.getBigDecimal("UPRAB1");
+  }
+  
+  public BigDecimal getPRAB1() {
+    return ds.getBigDecimal("PRAB1");
+  }
+  
+  public BigDecimal getPRAB2() {
+    return ds.getBigDecimal("PRAB2");
   }
 
   public double getUIRAB() {
@@ -929,7 +1042,7 @@ public class repIzlazni implements raReportData {
   }
 
   public BigDecimal getFC() {
-    return ds.getBigDecimal("FC");
+    return ds.getBigDecimal("FC").multiply(fact());
   }
 
   public double getINETO() {
@@ -937,7 +1050,7 @@ public class repIzlazni implements raReportData {
   }
   
   public double getFCV() {
-    return orig == null ? getFC().doubleValue() : orig.getBigDecimal("FC").doubleValue();
+    return orig == null ? getFC().doubleValue() : orig.getBigDecimal("FC").doubleValue() * fact().doubleValue();
   }
   
   public double getINETOV() {
@@ -1004,7 +1117,7 @@ public class repIzlazni implements raReportData {
   }
 
   public BigDecimal getFVC() {
-    return ds.getBigDecimal("FVC");
+    return ds.getBigDecimal("FVC").multiply(fact());
   }
 /*
 public BigDecimal getIPRODBP() {
@@ -1071,15 +1184,37 @@ public BigDecimal getPOR3() {
   }
   
   public BigDecimal getXRPOsnPred() {
+    if (predukup == null) return null;
+    if (ds.getBigDecimal("UIU").signum() > 0 && ds.getBigDecimal("UIU").compareTo(predukup) < 0) 
+      return ds.getBigDecimal("UIU").multiply(diprodbp).divide(diprodsp, 2, BigDecimal.ROUND_HALF_UP);
+    
+    if (diprodbp.compareTo(predosn) < 0) return diprodbp;
     return predosn;
   }
   
   public BigDecimal getXRPPorPred() {
-    return predukup == null ? null : predukup.subtract(predosn);
+    return predukup == null ? null : getXRPUkPred().subtract(getXRPOsnPred());
   }
 
   public BigDecimal getXRPUkPred() {
+    if (predukup == null) return null;
+    if (ds.getBigDecimal("UIU").signum() > 0 && ds.getBigDecimal("UIU").compareTo(predukup) < 0) 
+      return ds.getBigDecimal("UIU");
+    
+    if (diprodsp.compareTo(predukup) < 0) return diprodsp;
     return predukup;
+  }
+  
+  public BigDecimal getXRPOsnRaz() {
+    return predukup == null ? diprodbp : diprodbp.subtract(getXRPOsnPred());
+  }
+  
+  public BigDecimal getXRPPorRaz() {
+    return predukup == null ? dipor : dipor.subtract(getXRPPorPred());
+  }
+  
+  public BigDecimal getXRPUkRaz() {
+    return predukup == null ? diprodsp : diprodsp.subtract(getXRPUkPred());
   }
   
   public String getXRPRazLabel() {
@@ -1099,7 +1234,7 @@ public BigDecimal getPOR3() {
   }
 
   public BigDecimal getFMC() {
-    return ds.getBigDecimal("FMC");
+    return ds.getBigDecimal("FMC").multiply(fact());
   }
 /*
   public BigDecimal getFMCPRP() {
@@ -1185,9 +1320,7 @@ public BigDecimal getIPRODSP() {
     colname[0] = "CNAP";
     String naz = ru.getSomething(colname,dm.getNapomene(),"NAZNAP").getString();
     
-    if (!hr.restart.util.reports.dlgRunReport
-        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
-      return naz;
+    if (!isReportForeign()) return naz;
     
     String snaz = ru.getSomething(colname,dm.getNapomene(),"SNAZNAP").getString();
     return (snaz == null || snaz.length() == 0) ? naz : snaz;
@@ -1197,9 +1330,7 @@ public BigDecimal getIPRODSP() {
     colname[0] = "CNACPL";
     String naz = ru.getSomething(colname,dm.getNacpl(),"NAZNACPL").getString();
     
-    if (!hr.restart.util.reports.dlgRunReport
-        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
-      return naz;
+    if (!isReportForeign()) return naz;
     
     String snaz = ru.getSomething(colname,dm.getNacpl(),"SNAZNACPL").getString();
     return (snaz == null || snaz.length() == 0) ? naz : snaz;
@@ -1209,9 +1340,7 @@ public BigDecimal getIPRODSP() {
     colname[0] = "CNAC";
     String naz = ru.getSomething(colname,dm.getNacotp(),"NAZNAC").getString();
     
-    if (!hr.restart.util.reports.dlgRunReport
-        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
-      return naz;
+    if (!isReportForeign()) return naz;
     
     String snaz = ru.getSomething(colname,dm.getNacotp(),"SNAZNAC").getString();
     return (snaz == null || snaz.length() == 0) ? naz : snaz;
@@ -1221,9 +1350,7 @@ public BigDecimal getIPRODSP() {
     colname[0] = "CFRA";
     String naz = ru.getSomething(colname,dm.getFranka(),"NAZFRA").getString();
     
-    if (!hr.restart.util.reports.dlgRunReport
-        .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
-      return naz;
+    if (!isReportForeign()) return naz;
     
     String snaz = ru.getSomething(colname,dm.getFranka(),"SNAZFRA").getString();
     return (snaz == null || snaz.length() == 0) ? naz : snaz;
@@ -1241,14 +1368,22 @@ public BigDecimal getIPRODSP() {
     
     String user = getCCUSER();
     if (user == null || user.length() == 0) user = getUSER();
-       
+    
+    fiskDs.setString("DATE", SgetSYSDAT());
+    fiskDs.setString("TIME", SgetSYSTIME());
+    fiskDs.setString("USER", user);
+    fiskDs.setString("NUM", getOldFormatBroj());
+    
+    String first = Aus.formatBroj(fiskDs, isReportForeign() ? fiskRedF : fiskRed);
+    
+    /*
     String first = "Datum i vrijeme izrade: " + SgetSYSDAT() + "  u " + SgetSYSTIME() +
         "       Operater: " + user + "        Interni broj: " + getOldFormatBroj();
     
     if (hr.restart.util.reports.dlgRunReport
         .getCurrentDlgRunReport().getCurrentDescriptor().isForeignIzlaz())
       first = "Date and time of creation: " + SgetSYSDAT() + "  at " + SgetSYSTIME() +
-      "       Operator ID: " + user + "        Internal number: " + getOldFormatBroj();
+      "       Operator ID: " + user + "        Internal number: " + getOldFormatBroj();*/
         
     System.out.println(first);
     if ("GOT|GRN|PRD".indexOf(getVRDOK()) < 0 ) return first;
@@ -1279,6 +1414,7 @@ public BigDecimal getIPRODSP() {
   
   public String getZKI() {
     try {
+      if (!presBlag.isFiskal(ds)) return "";
       return presBlag.getFis(ds).generateZKI(raIzlazTemplate.getRacType(ds));
     } catch (Exception e) {
       return "";
@@ -1291,7 +1427,8 @@ public BigDecimal getIPRODSP() {
   }
 
   public String getPerInvNo() {
-    return ru.getFormatPerformaInvoice();
+    return getFormatBroj();
+    //return ru.getFormatPerformaInvoice();
   }
 
   public String getPorezPos() {
@@ -1346,6 +1483,14 @@ public BigDecimal getIPRODSP() {
  return ru.getSomething2(colname,colname,dm.getArtikli(),dm.getPorezi(),"por2").getBigDecimal();
  */
     return ds.getBigDecimal("PPOR2");
+  }
+  
+  public BigDecimal getKomNeto() {
+    return ds.getBigDecimal("KOL").multiply(ds.getBigDecimal("FC")).setScale(2, BigDecimal.ROUND_HALF_UP);
+  }
+  
+  public BigDecimal getKomBP() {
+    return ds.getBigDecimal("KOL").multiply(ds.getBigDecimal("FVC")).setScale(2, BigDecimal.ROUND_HALF_UP);
   }
 
   public BigDecimal getPor1p2p3Naz(){
@@ -1973,7 +2118,7 @@ public BigDecimal getIPRODSP() {
         String jednaRata = sgQuerys.getSgQuerys().format(rate, "IRATA");
         irata.append(jednaRata).append("\n");
         if (!dm.getNacpl().getString("FL_GOT").equals("D"))
-          datnp.append(rdu.dataFormatter(rate.getTimestamp("DATUM"))).append("\n");
+          datnp.append(rdu.dataFormatter(rate.getTimestamp("DATUM"), isReportForeign())).append("\n");
         else
           datnp.append("\n");
 
@@ -2043,7 +2188,7 @@ public BigDecimal getIPRODSP() {
         } else if (zns.getString("ZNACTIP").equalsIgnoreCase("I")) {
           v.append(zns.getString("VRIZNAC"));
         } else if (zns.getString("ZNACTIP").equalsIgnoreCase("D")) {
-          v.append(rdu.dataFormatter(Timestamp.valueOf(zns.getString("VRIZNAC"))));
+          v.append(rdu.dataFormatter(Timestamp.valueOf(zns.getString("VRIZNAC")), isReportForeign()));
         } else if (zns.getString("ZNACTIP").equalsIgnoreCase("2")) {
           v.append(sgQuerys.getSgQuerys().format(zns, "VRIZNAC", 2));
         } else if (zns.getString("ZNACTIP").equalsIgnoreCase("3")) {
@@ -2122,7 +2267,7 @@ public BigDecimal getIPRODSP() {
   }
   
   public String getDatZap(){
-    return rdu.dataFormatter(ds.getTimestamp("DATNARIZ"));
+    return rdu.dataFormatter(ds.getTimestamp("DATNARIZ"), isReportForeign());
   }
   
   private void checkSpecGroup() {
@@ -2361,6 +2506,8 @@ public BigDecimal getIPRODSP() {
         "Šifra napomene za raèune za inozemne partnere (PARTNAP)");
     euNap = frmParam.getParam("robno", "euNap", "",
         "Šifra napomene za raèune za partnere iz EU (PARTNAP)");
+    
+    altKol = frmParam.getParam("robno", "altKol", "N", "Preraèunati kolièine/cijene na izlazima (N,D,1,2)");
     
     if (inoNap.length() > 0 && lD.raLocate(dm.getNapomene(), "CNAP", inoNap))
       inoNap = dm.getNapomene().getString("NAZNAP");
