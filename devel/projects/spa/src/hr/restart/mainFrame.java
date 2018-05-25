@@ -95,6 +95,7 @@ public class mainFrame extends JraFrame {
     //slike
     setIconImage(raImages.getImageIcon(raImages.IMGRAICON).getImage());
     setBackgroundImage();
+    pack();
     //
   }
   public void show() {
