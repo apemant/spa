@@ -27,6 +27,7 @@ import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.dlgRunReport;
 import hr.restart.util.reports.raReportData;
+import hr.restart.zapod.frmVirmani;
 
 import java.math.BigDecimal;
 
@@ -260,7 +261,8 @@ public class repIOS implements raReportData { //sg.com.elixir.reportwriter.datas
   
   public String getZiroLine(){
 //  System.out.println("ziro racun!!"); //XDEBUG delete when no more needed
-    return "ŽIRO RAÈUN:  " + re.getLogoZiro(); 
+    return "IBAN:  " + frmVirmani.getIBAN_HR(re.getLogoZiro(), true);
+    //return "ŽIRO RAÈUN:  " + re.getLogoZiro(); 
   }
   
   public String getTelLine(){
@@ -291,7 +293,7 @@ public class repIOS implements raReportData { //sg.com.elixir.reportwriter.datas
   
   public String getPokazniSaldo(){
     BigDecimal sal =  getPOKAZNISALDO();
-    String side = Aus.leg(getPOKAZNISALDO2().signum(), "u VAŠU korist", "", "u NAŠU korist");
+    String side = Aus.leg(sal.signum(), "u VAŠU korist", "", "u NAŠU korist");
     //String side = sal.signum() < 0 ? "u VAŠU korist" : "u NAŠU korist";
     return "\nPokazuje dug od    " + sgQuerys.getSgQuerys().format(sal.abs(), 2) + 
            " Kn    "+side; 
@@ -299,7 +301,7 @@ public class repIOS implements raReportData { //sg.com.elixir.reportwriter.datas
   
   public String getSuglasniSaldo(){
     BigDecimal sal =  getPOKAZNISALDO();
-    String side = Aus.leg(getPOKAZNISALDO2().signum(),
+    String side = Aus.leg(sal.signum(),
         "u korist " + rik.getNazivPartnera(ds.getInt("CPAR")), "",
         "u korist " + re.getFirstLine());
     //String side = sal.signum() < 0 ? rik.getNazivPartnera(ds.getInt("CPAR")) : re.getFirstLine();
