@@ -1120,7 +1120,7 @@ P R I M K A</Property>
                <Property Name="Visible">Yes</Property>
                <Property Name="Left">420</Property>
                <Property Name="Top">100</Property>
-               <Property Name="Width">1720</Property>
+               <Property Name="Width">2020</Property>
                <Property Name="Height">240.0111</Property>
                <Property Name="Back Style">Normal</Property>
                <Property Name="Back Color">Gray</Property>
@@ -1141,9 +1141,9 @@ P R I M K A</Property>
                <Property Name="Name">Label115</Property>
                <Property Name="Caption">Naziv artikla</Property>
                <Property Name="Visible">Yes</Property>
-               <Property Name="Left">2160</Property>
+               <Property Name="Left">2460</Property>
                <Property Name="Top">100</Property>
-               <Property Name="Width">5580</Property>
+               <Property Name="Width">5280</Property>
                <Property Name="Height">240.0111</Property>
                <Property Name="Back Style">Normal</Property>
                <Property Name="Back Color">Gray</Property>
@@ -1362,7 +1362,7 @@ P R I M K A</Property>
                <Property Name="Can Shrink">No</Property>
                <Property Name="Left">440</Property>
                <Property Name="Top">0</Property>
-               <Property Name="Width">1700</Property>
+               <Property Name="Width">2000</Property>
                <Property Name="Height">220</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
@@ -1450,9 +1450,9 @@ P R I M K A</Property>
                <Property Name="Hide Duplicates">No</Property>
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
-               <Property Name="Left">2180</Property>
+               <Property Name="Left">2480</Property>
                <Property Name="Top">0</Property>
-               <Property Name="Width">5540</Property>
+               <Property Name="Width">5240</Property>
                <Property Name="Height">220</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
