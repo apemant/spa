@@ -43,19 +43,26 @@ public class Imports {
     // static class
   }
   
+  private static hr.restart.util.Util ut = hr.restart.util.Util.getUtil();
+  
   private static String corgHUO;
   private static String corgHRZ;
+  private static String corgANT;
   private static String cartHUO;
   private static String cartHRZ;
+  private static String cartANT;
   
   public static void hjk() {
     raPilot.stopDelayWindow();
     
     corgHUO = frmParam.getParam("rac", "huoCorg", "", "OJ za import raèuna HUO");
     corgHRZ = frmParam.getParam("rac", "hrzCorg", "", "OJ za import raèuna HRZ");
+    corgANT = frmParam.getParam("rac", "antCorg", "", "OJ za import raèuna anticipacije");
     cartHUO = frmParam.getParam("rac", "huoArt", "", "Artikl za import raèuna HUO");
     cartHRZ = frmParam.getParam("rac", "hrzArt", "", "Artikl za import raèuna HUO");
-    if (corgHUO.length() == 0 || corgHRZ.length() == 0 || cartHUO.length() == 0 || cartHRZ.length() == 0) {
+    cartANT = frmParam.getParam("rac", "antArt", "", "Artikl za import raèuna anticipacije");
+    if (corgHUO.length() == 0 || corgHRZ.length() == 0 || corgANT.length() == 0 ||  
+        cartHUO.length() == 0 || cartHRZ.length() == 0 || cartANT.length() == 0) {
       JOptionPane.showMessageDialog(null, "Nisu postavljeni parametri importa!", "Greška", JOptionPane.WARNING_MESSAGE);
       return;
     }
@@ -107,11 +114,12 @@ public class Imports {
         QueryDataSet st = stdoki.getDataModule().openEmptySet();
         QueryDataSet huo = SEQ.getDataModule().openEmptySet();
         QueryDataSet hrz = SEQ.getDataModule().openEmptySet();
+        QueryDataSet ant = SEQ.getDataModule().openEmptySet();
         for (Iterator i = rac.iterator(); i.hasNext(); ) 
-          load((Element) i.next(), zag, st, huo, hrz);
+          load((Element) i.next(), zag, st, huo, hrz, ant);
           
         raProcess.setMessage("Spremanje raèuna...", false);
-        if (!raTransaction.saveChangesInTransaction(new QueryDataSet[] {zag, st, huo, hrz}))
+        if (!raTransaction.saveChangesInTransaction(new QueryDataSet[] {zag, st, huo, hrz, ant}))
           raProcess.fail();
       }
     });
@@ -123,14 +131,20 @@ public class Imports {
     }
   }
   
-  private static void load(Element rac, QueryDataSet zag, QueryDataSet st, QueryDataSet huo, QueryDataSet hrz) {
+  static void load(Element rac, QueryDataSet zag, QueryDataSet st, QueryDataSet huo, QueryDataSet hrz, QueryDataSet ant) {
     raProcess.checkClosing();
     Timestamp dat = Timestamp.valueOf(rac.getChildTextTrim("DatumRacuna").replace('T', ' '));
     String god = Valid.getValid().findYear(dat);
     String cart = "";
     
+    Timestamp now = new Timestamp(System.currentTimeMillis());
+    Timestamp morn = ut.getFirstSecondOfDay(now);
+    long diff = now.getTime() - morn.getTime();
+    
+    Timestamp sys = new Timestamp(ut.getFirstSecondOfDay(dat).getTime() + diff);
+    
     zag.insertRow(false);
-    zag.setTimestamp("SYSDAT", dat);
+    zag.setTimestamp("SYSDAT", sys);
     zag.setTimestamp("DATDOK", dat);
     zag.setTimestamp("DVO", dat);
     zag.setShort("DDOSP", (short) 14);
@@ -171,6 +185,22 @@ public class Imports {
       zag.setString("CORG", corgHRZ);
       hrz.setInt("BROJ", hrz.getInt("BROJ") + 1);
       zag.setInt("BRDOK", hrz.getInt("BROJ"));
+    } else if (typ.equals("Anticip")) {
+      if (ant.rowCount() == 0) {
+        String opis = corgANT + "RAC" + god;
+        SEQ.getDataModule().setFilter(ant, Condition.equal("OPIS", opis));
+        ant.open();
+        if (ant.rowCount() == 0) {
+          ant.insertRow(false);
+          ant.setString("OPIS", opis);
+          ant.setInt("BROJ", 0);
+        }
+      }
+      cart = cartANT;
+      zag.setString("CSKL", corgANT);
+      zag.setString("CORG", corgANT);
+      ant.setInt("BROJ", ant.getInt("BROJ") + 1);
+      zag.setInt("BRDOK", ant.getInt("BROJ"));
     } else {
       System.out.println("Invalid type: " + typ);
       return;
