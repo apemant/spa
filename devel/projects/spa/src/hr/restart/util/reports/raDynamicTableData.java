@@ -72,6 +72,15 @@ public class raDynamicTableData {
       return "";
     }
   }
+  
+  public Boolean isBold(int col) {
+    if (col >= dp.jt.getColumnCount()) return Boolean.FALSE;
+    try {
+      return dp.isBolded(currentRow, col) ? Boolean.TRUE : Boolean.FALSE;
+    } catch (Exception e) {
+      return Boolean.FALSE;
+    }
+  }
 
   public double getDataNum(int col) {
     if (col >= dp.jt.getColumnCount()) return 0;
