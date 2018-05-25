@@ -415,7 +415,7 @@ public class JOPPDhndlr {
   HashSet oibs = null;
   boolean samojedna = false;
   HashMap multipliers = new HashMap();
-  private QueryDataSet rs;
+  private StorageDataSet rs;
   String currOIB = null;
   /**
    * The ... gulp!
@@ -439,6 +439,9 @@ public class JOPPDhndlr {
     String rpor = raOdbici.getInstance().getVrsteOdbKeysQuery(p[0],p[1],p[2],p[3],false)[0];
     String rprir = raOdbici.getInstance().getVrsteOdbKeysQuery(r[0],r[1],r[2],r[3],false)[0];
     
+    String vpor = raOdbici.getInstance().getVrsteOdbKeysQuery("OPVR","S","2","4", false)[0];
+    String vprir = raOdbici.getInstance().getVrsteOdbKeysQuery("OP","S","2","5", false)[0];
+    
   if (currOIB == null) {
     //strA
     getStrAset();
@@ -452,6 +455,11 @@ public class JOPPDhndlr {
     strBset.empty();
     rs = getRSperiod();
     QueryDataSet razl = null;
+    
+    QueryDataSet porezi = myrange == null ? 
+        Aus.q("SELECT cradnik,cvrodb,sum(obriznos) as obriznos from odbiciobr where cvrodb in (" + vpor + "," + vprir + ") and rbr=1 group by cradnik,cvrodb") :
+          Aus.q("SELECT cradnik,cvrodb,sum(obriznos) as obriznos from odbiciarh where cvrodb in (" + vpor + "," + vprir + 
+              ") and rbr=1 and " + myrange.getQuery() + " group by cradnik,cvrodb");
     
     if (rpor != null && rprir != null) {
       if (myrange == null)
@@ -470,8 +478,75 @@ public class JOPPDhndlr {
     //needmatch = oos.size() > 1;
     
     int rbr = 0;
+    HashMap nari = new HashMap();
+    for (rs.first(); rs.inBounds(); rs.next()) 
+      if (isNarav(rs.getShort("CVRP")+""))
+        nari.put(rs.getString("JMBG"), rs.getBigDecimal("PBTO"));
+    
+    HashSet maxo = new HashSet();
+    HashMap nodb = new HashMap();
+    HashMap ndop = new HashMap();
+    HashMap npor = new HashMap();
+    HashMap nprir = new HashMap();
+    
+    //1st pass: zbroji pbto i sati vp za redove koji æe ionako bit zbrojeni:
+    StorageDataSet nrs = new StorageDataSet();
+    nrs.setColumns(rs.cloneColumns());
+    nrs.addColumn(dM.createIntColumn("NSATI"));
+    nrs.open();
+    HashMap oldrow = new HashMap();
+    
     for (rs.first(); rs.inBounds(); rs.next()) {
       boolean naknada = isNaknada(rs.getShort("CVRP")+"");
+      if (getSifraFor("JOS", rs).trim().equals("0001") && naknada) continue;//prijevoz !?!?!
+      
+      HashSet oosr = (HashSet) oos.get(rs.getString("CRADNIK"));
+      needmatch = oosr.size() > 1;
+      if (needmatch && !isOOmatch(rs)) continue;
+      
+      String _jmbg = rs.getString("JMBG");
+      String _jos = getSifraFor("JOS", rs); 
+      String _jop = getSifraFor("JOP", rs);
+      String _job = getSifraFor("JOB", rs);
+      String _joz = getSifraFor("JOZ", rs);
+      String _jom = getSifraFor("JOM", rs);
+      String _jrv = getSifraFor("JRV", rs);
+      String _jni = getSifraFor("JNI", rs);
+      String _jnp = getSifraFor("JNP", rs);
+      String _datum;
+      if (_jni.equals("5")) {
+        _datum = getDatum(rs, "FIRST")+"";
+      } else {
+        _datum = getDatum(rs, "ODDANA")+"";
+      }
+      
+      String key = _jmbg + ":" + _jos + ":" +_jop + ":" + _job + ":" + _joz + ":" + _jom + ":" + _jrv + ":" +_jnp + ":" + _datum;
+      System.out.println(key);
+      
+      if (oldrow.containsKey(key)) {
+        System.out.println("key exists!");
+        nrs.goToRow(((Integer) oldrow.get(key)).intValue());
+        Aus.add(nrs, "PBTO", rs);
+        Aus.add(nrs, "SATIVP", rs);
+      } else {
+        nrs.insertRow(false);
+        rs.copyTo(nrs);
+        nrs.setInt("NSATI", 0);
+        nrs.post();
+        oldrow.put(key, new Integer(nrs.getRow()));
+      } 
+      if (lookupData.getlookupData().raLocate(dM.getDataModule().getVrsteprim(), "CVRP", rs.getShort("CVRP")+"") &&
+          dM.getDataModule().getVrsteprim().getString("NEOD").equalsIgnoreCase("D"))
+        nrs.setInt("NSATI", (nrs.getInt("NSATI")+rs.getBigDecimal("SATIVP").intValue()));
+    }
+    
+    System.out.println("old rows " + rs.rowCount());
+    System.out.println("new rows " + nrs.rowCount());
+    rs = nrs;
+    
+    for (rs.first(); rs.inBounds(); rs.next()) {
+      boolean naknada = isNaknada(rs.getShort("CVRP")+"");
+      boolean isnarav = isNarav(rs.getShort("CVRP")+"");
       if (getSifraFor("JOS", rs).trim().equals("0001") && naknada) continue;//prijevoz !?!?!
       BigDecimal zasnr = Aus.zero2;
       BigDecimal zapinv = Aus.zero2;
@@ -483,8 +558,16 @@ public class JOPPDhndlr {
       if (needmatch && !isOOmatch(rs)) continue;
       //rs.BRUTOMJ = pravibruto
       //rs.BRUTO = osnovica dop. (max)
-      if (rs.getBigDecimal("BRUTOMJ").signum()!=0) omjer = rs.getBigDecimal("PBTO").divide(rs.getBigDecimal("BRUTOMJ"),8,BigDecimal.ROUND_HALF_UP);
+      if (rs.getBigDecimal("BRUTOMJ").signum()!=0) omjer = rs.getBigDecimal("PBTO").divide(rs.getBigDecimal("BRUTOMJ"),10,BigDecimal.ROUND_HALF_UP);
       else if (rs.getBigDecimal("PBTO").signum()==0) omjer = Aus.one0;
+      
+      BigDecimal om2 = omjer;
+      BigDecimal narir = (BigDecimal) nari.get(rs.getString("JMBG"));
+      if (narir != null && narir.compareTo(rs.getBigDecimal("BRUTOMJ")) < 0)
+        om2 = rs.getBigDecimal("PBTO").divide(rs.getBigDecimal("BRUTOMJ").subtract(narir),8,BigDecimal.ROUND_HALF_UP);
+      if (isnarav) om2 = Aus.zero2;
+      
+      System.out.println("omjer: " + omjer + "  " + om2);
       
 /*****D*E*B*U*G***B*R*I*Š*I*******/
 //System.out.println(strBset);
@@ -513,6 +596,7 @@ public class JOPPDhndlr {
       
       if (lookupData.getlookupData().raLocate(strBset, new String[] {"OIB","JOS","JOP","JOB","JOZ","JOM","JRV",/*"JNI",*/"JNP","ODJ"}, 
           new String[] {_jmbg, _jos, _jop, _job, _joz, _jom, _jrv,/*_jni,*/_jnp, _datum})) {
+        System.out.println("isti red!");
         if (rs.getBigDecimal("PBTO").add(strBset.getBigDecimal("BRUTO")).subtract(rs.getBigDecimal("BRUTOMJ")).abs().compareTo(new BigDecimal("0.1"))<=0) {
           //sve je zbrajano u jedan red - treba uzeti gotove sume a ne omjer
           samojedna = true;
@@ -522,10 +606,15 @@ public class JOPPDhndlr {
         addStrBSet("BRUTO", rs.getBigDecimal("PBTO"));
         strBset.setInt("SATI", (strBset.getInt("SATI")+rs.getBigDecimal("SATIVP").intValue()));
         
+        /*
         if (lookupData.getlookupData().raLocate(dM.getDataModule().getVrsteprim(), "CVRP", rs.getShort("CVRP")+"") &&
             dM.getDataModule().getVrsteprim().getString("NEOD").equalsIgnoreCase("D"))
-          strBset.setInt("NSATI", (strBset.getInt("NSATI")+rs.getBigDecimal("SATIVP").intValue()));
+          strBset.setInt("NSATI", (strBset.getInt("NSATI")+rs.getBigDecimal("SATIVP").intValue()));*/
         
+        strBset.setInt("NSATI", (strBset.getInt("NSATI")+rs.getInt("NSATI")));
+        
+        if (isMaxOsnDopReached(strBset.getBigDecimal("BRUTO")))
+          maxo.add(rs.getString("JMBG"));
         
         if (samojedna) {
           strBset.setBigDecimal("OSNDOP", rs.getBigDecimal("BRUTO"));
@@ -537,8 +626,8 @@ public class JOPPDhndlr {
         if (strBset.getBigDecimal("OSNDOP").compareTo(getMinOsnDop("1")) < 0)
           strBset.setBigDecimal("OSNDOP", getMinOsnDop("1"));
         
-        addStrBSet("MIO1", rs.getBigDecimal("MIO1").multiply(omjer));
-        addStrBSet("MIO2", rs.getBigDecimal("MIO2").multiply(omjer));
+        addStrBSet("MIO1", rs.getBigDecimal("MIO1").multiply(omjer).setScale(2, BigDecimal.ROUND_HALF_UP));
+        addStrBSet("MIO2", rs.getBigDecimal("MIO2").multiply(omjer).setScale(2, BigDecimal.ROUND_HALF_UP));
         //temp hack
         if (rs.getBigDecimal("ZO").signum() != 0) {
           zasnr = rs.getBigDecimal(samojedna?"BRUTOMJ":"PBTO").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
@@ -553,12 +642,12 @@ public class JOPPDhndlr {
           strBset.setBigDecimal("ZASNR", zasnr);
           strBset.setBigDecimal("ZAPOSINV", zapinv);
         } else {
-          addStrBSet("ZDR", rs.getBigDecimal("ZO").multiply(omjer).subtract(zasnr));
+          addStrBSet("ZDR", rs.getBigDecimal("ZO").multiply(omjer).setScale(2,BigDecimal.ROUND_HALF_UP).subtract(zasnr));
 //          addStrBSet("ZAP", rs.getBigDecimal("ZAPOS").multiply(omjer).subtract(zapinv));
           addStrBSet("ZASNR", zasnr);
           addStrBSet("ZAPOSINV", zapinv);
         }
-        addStrBSet("ZAP", rs.getBigDecimal("ZAPOS").multiply(omjer));
+        addStrBSet("ZAP", rs.getBigDecimal("ZAPOS").multiply(omjer).setScale(2,BigDecimal.ROUND_HALF_UP));
         if (strBset.getBigDecimal("BRUTO").signum() > 0) {
           strBset.setBigDecimal("IZDATAKMIO", strBset.getBigDecimal("MIO1").add(strBset.getBigDecimal("MIO2")));
           strBset.setBigDecimal("DOHODAK",
@@ -566,12 +655,13 @@ public class JOPPDhndlr {
               .subtract(strBset.getBigDecimal("IZDATAKMIO"))
 //            .subtract(strBset.getBigDecimal("IZDATAK"))
               );
-          addStrBSet("ISKNEOP",rs.getBigDecimal("OSODB").multiply(omjer));
+          addStrBSet("ISKNEOP",rs.getBigDecimal("OSODB").multiply(om2).setScale(2,BigDecimal.ROUND_HALF_UP));
         }
 
         strBset.setBigDecimal("POROSN",strBset.getBigDecimal("DOHODAK").subtract(strBset.getBigDecimal("ISKNEOP")));
-        addStrBSet("POR", rs.getBigDecimal("POREZ").multiply(omjer));
-        addStrBSet("PRIR", rs.getBigDecimal("PRIREZ").multiply(omjer));
+        if (!isnarav) checkNodb(nodb);
+        addStrBSet("POR", rs.getBigDecimal("POREZ").multiply(om2).setScale(2,BigDecimal.ROUND_HALF_UP));
+        addStrBSet("PRIR", rs.getBigDecimal("PRIREZ").multiply(om2).setScale(2,BigDecimal.ROUND_HALF_UP));
         if (_jop.equals("0000") && !_jnp.equals("0")) {
           strBset.setString("JNP", _jnp);
           addStrBSet("NEOP", rs.getBigDecimal("PBTO"));
@@ -590,6 +680,7 @@ public class JOPPDhndlr {
             );
         if (naknada) strBset.setBigDecimal("NETOPK",strBset.getBigDecimal("NEOP"));
       } else {
+        System.out.println("dodajem red!");
         strBset.insertRow(false);
         strBset.setInt("RBR", ++rbr);
         strBset.setString("COPCINE", getOpcinaStanovanja(rs.getString("CRADNIK")));
@@ -609,35 +700,39 @@ public class JOPPDhndlr {
         strBset.setString("JOM", _jom);
         strBset.setString("JRV", _jrv);
         strBset.setInt("SATI", rs.getBigDecimal("SATIVP").intValue());
-        if (lookupData.getlookupData().raLocate(dM.getDataModule().getVrsteprim(), "CVRP", rs.getShort("CVRP")+"") &&
+        
+        strBset.setInt("NSATI", rs.getInt("NSATI"));
+        /*if (lookupData.getlookupData().raLocate(dM.getDataModule().getVrsteprim(), "CVRP", rs.getShort("CVRP")+"") &&
             dM.getDataModule().getVrsteprim().getString("NEOD").equalsIgnoreCase("D"))
           strBset.setInt("NSATI", rs.getBigDecimal("SATIVP").intValue());
-        else strBset.setInt("NSATI", 0);
+        else strBset.setInt("NSATI", 0);*/
         
         strBset.setTimestamp("ODJ", getDatum(rs, "ODDANA"));
         strBset.setTimestamp("DOJ", getDatum(rs, "DODANA"));
         strBset.setBigDecimal("BRUTO", rs.getBigDecimal("PBTO"));
-        if (isMaxOsnDopReached(rs.getBigDecimal("BRUTO"))) {
+        if (isMaxOsnDopReached(rs.getBigDecimal("PBTO"))) {
           strBset.setBigDecimal("OSNDOP", rs.getBigDecimal("BRUTO"));
+          maxo.add(rs.getString("JMBG"));
         } else {
           strBset.setBigDecimal("OSNDOP", rs.getBigDecimal("PBTO"));
         }
         if (strBset.getBigDecimal("OSNDOP").compareTo(getMinOsnDop("1")) < 0)
           strBset.setBigDecimal("OSNDOP", getMinOsnDop("1"));
-        strBset.setBigDecimal("MIO1", rs.getBigDecimal("MIO1").multiply(omjer));
-        strBset.setBigDecimal("MIO2", rs.getBigDecimal("MIO2").multiply(omjer));
+        strBset.setBigDecimal("MIO1", rs.getBigDecimal("MIO1").multiply(omjer).setScale(2, BigDecimal.ROUND_HALF_UP));
+        strBset.setBigDecimal("MIO2", rs.getBigDecimal("MIO2").multiply(omjer).setScale(2, BigDecimal.ROUND_HALF_UP));
         //temp hack
         if (rs.getBigDecimal("ZO").signum() != 0) {
-          zasnr = strBset.getBigDecimal("OSNDOP").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
+          zasnr = rs.getBigDecimal("PBTO").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
 //          zasnr = rs.getBigDecimal(samojedna?"BRUTO":"PBTO").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
           zapinv = iszapinv ?
-              strBset.getBigDecimal("OSNDOP").multiply(new BigDecimal("0.001")).setScale(2,BigDecimal.ROUND_HALF_UP)
+              rs.getBigDecimal("PBTO").multiply(new BigDecimal("0.001")).setScale(2,BigDecimal.ROUND_HALF_UP)
               :Aus.zero2;
 
+          System.out.println("ZASNR! " +strBset.getBigDecimal("OSNDOP") + omjer + " " + zasnr);
         }
-        strBset.setBigDecimal("ZDR", rs.getBigDecimal("ZO").multiply(omjer).subtract(zasnr));
+        strBset.setBigDecimal("ZDR", rs.getBigDecimal("ZO").multiply(omjer).setScale(2,BigDecimal.ROUND_HALF_UP).subtract(zasnr));
         strBset.setBigDecimal("ZASNR", zasnr);
-        strBset.setBigDecimal("ZAP", rs.getBigDecimal("ZAPOS").multiply(omjer));
+        strBset.setBigDecimal("ZAP", rs.getBigDecimal("ZAPOS").multiply(omjer).setScale(2,BigDecimal.ROUND_HALF_UP));
         strBset.setBigDecimal("ZAPOSINV",zapinv);
         if (strBset.getBigDecimal("BRUTO").signum() > 0) {
           strBset.setBigDecimal("IZDATAKMIO", strBset.getBigDecimal("MIO1").add(strBset.getBigDecimal("MIO2")));
@@ -646,17 +741,19 @@ public class JOPPDhndlr {
             .subtract(strBset.getBigDecimal("IZDATAKMIO"))
 //            .subtract(strBset.getBigDecimal("IZDATAK"))
             );
-          strBset.setBigDecimal("ISKNEOP",rs.getBigDecimal("OSODB").multiply(omjer));
+          strBset.setBigDecimal("ISKNEOP",rs.getBigDecimal("OSODB").multiply(om2).setScale(2,BigDecimal.ROUND_HALF_UP));
         }
         strBset.setBigDecimal("POROSN",strBset.getBigDecimal("DOHODAK").subtract(strBset.getBigDecimal("ISKNEOP")));
-        strBset.setBigDecimal("POR", rs.getBigDecimal("POREZ").multiply(omjer));
-        strBset.setBigDecimal("PRIR", rs.getBigDecimal("PRIREZ").multiply(omjer));
+        if (!isnarav) checkNodb(nodb);
+        
+        strBset.setBigDecimal("POR", rs.getBigDecimal("POREZ").multiply(om2).setScale(2,BigDecimal.ROUND_HALF_UP));
+        strBset.setBigDecimal("PRIR", rs.getBigDecimal("PRIREZ").multiply(om2).setScale(2,BigDecimal.ROUND_HALF_UP));
         if (_jop.equals("0000") && !_jnp.equals("0")) {
           strBset.setString("JNP", _jnp);
           strBset.setBigDecimal("NEOP", rs.getBigDecimal("PBTO")); //naknada posebno
         } else if (rs.getBigDecimal("NAKNADE").signum() > 0 && !_jnp.equals("0") && !oibs.contains(rs.getString("JMBG"))) {
           strBset.setString("JNP", _jnp);
-          strBset.setBigDecimal("NEOP", rs.getBigDecimal("NAKNADE").multiply(omjer)); //kumulrad
+          strBset.setBigDecimal("NEOP", rs.getBigDecimal("NAKNADE").multiply(omjer).setScale(2,BigDecimal.ROUND_HALF_UP)); //kumulrad
         } else {
           strBset.setString("JNP", "0");
           strBset.setBigDecimal("NEOP", Aus.zero2);
@@ -669,6 +766,8 @@ public class JOPPDhndlr {
             );
         if (naknada) strBset.setBigDecimal("NETOPK",strBset.getBigDecimal("NEOP"));
         strBset.setBigDecimal("BRUTOOBR", rs.getBigDecimal("BRUTOMJ"));
+        if (narir != null)
+          strBset.setBigDecimal("BRUTOOBR", rs.getBigDecimal("BRUTOMJ").subtract(narir));
         if (strBset.getString("JNI").equals("5")) {
           strBset.setTimestamp("ODJ", Util.getUtil().getFirstDayOfYear(fPDV2.getDatumOd()));
           strBset.setTimestamp("DOJ", Util.getUtil().getLastDayOfYear(fPDV2.getDatumOd()));
@@ -707,10 +806,29 @@ public class JOPPDhndlr {
         strBset.setBigDecimal("BRUTOOBR", Aus.zero2);
       }
       
+      String cradnik = rs.getString("CRADNIK");
+      if (strBset.getString("JNI").equals("5")) {
+        if (lookupData.getlookupData().raLocate(porezi, new String[] {"CRADNIK", "CVRODB"}, new String[] {cradnik, vpor})) {
+          npor.put(rs.getString("JMBG"), porezi.getBigDecimal("OBRIZNOS").subtract(strBset.getBigDecimal("POR")));
+          strBset.setBigDecimal("POR", porezi.getBigDecimal("OBRIZNOS"));
+        }
+        
+        if (lookupData.getlookupData().raLocate(porezi, new String[] {"CRADNIK", "CVRODB"}, new String[] {cradnik, vprir})) {
+          nprir.put(rs.getString("JMBG"), porezi.getBigDecimal("OBRIZNOS").subtract(strBset.getBigDecimal("PRIR")));
+          strBset.setBigDecimal("PRIR", porezi.getBigDecimal("OBRIZNOS"));
+        }
+        DataRow dops = new DataRow(strBset);
+        strBset.copyTo(dops);
+        dops.setBigDecimal("ISKNEOP", rs.getBigDecimal("OSODB"));
+        ndop.put(rs.getString("JMBG"), dops);
+        strBset.setBigDecimal("NETOPK", strBset.getBigDecimal("DOHODAK")
+            .subtract(strBset.getBigDecimal("POR").add(strBset.getBigDecimal("PRIR"))));
+      }
+      
       oibs.add(rs.getString("JMBG"));
       strBset.post();
+      System.out.println(strBset.rowCount() + " redova");
       
-      String cradnik = rs.getString("CRADNIK");
       if (!godcrad.contains(rs.getString("JMBG")) && 
           razl != null && lookupData.getlookupData().raLocate(razl, "CRADNIK", cradnik)) {
         BigDecimal por = Aus.zero0;
@@ -735,6 +853,8 @@ public class JOPPDhndlr {
           
           strBset.setString("JOS", "0001");
           strBset.setString("JOP", "0406");
+          strBset.setString("JOM", "0");
+          strBset.setString("JRV", "0");
           strBset.setInt("SATI",0);
           strBset.setInt("NSATI", 0);
           strBset.setTimestamp("ODJ", Util.getUtil().getFirstDayOfYear(dan));
@@ -745,6 +865,53 @@ public class JOPPDhndlr {
           strBset.setBigDecimal("PRIR", prir);
           strBset.setBigDecimal("NETOPK", por.add(prir).negate());
           strBset.post();
+        }
+      }
+    }
+    
+    for (strBset.first(); strBset.inBounds(); strBset.next())
+      if (strBset.getString("JNI").equals("5")) {
+        BigDecimal odb = (BigDecimal) nodb.get(strBset.getString("OIB"));
+        if (odb != null) {
+          strBset.setBigDecimal("ISKNEOP", odb);
+          strBset.setBigDecimal("POROSN", strBset.getBigDecimal("DOHODAK").subtract(odb));
+        }
+        if (maxo.contains(strBset.getString("OIB"))) {
+          strBset.setString("JOP", "0022");
+          strBset.setBigDecimal("MIO1", Aus.zero2);
+          strBset.setBigDecimal("MIO2", Aus.zero2);
+          strBset.setBigDecimal("IZDATAKMIO", Aus.zero2);
+          strBset.setBigDecimal("DOHODAK", strBset.getBigDecimal("BRUTO"));
+          strBset.setBigDecimal("POROSN",strBset.getBigDecimal("DOHODAK").subtract(strBset.getBigDecimal("ISKNEOP")));
+          strBset.setBigDecimal("NETOPK", strBset.getBigDecimal("DOHODAK")
+              .subtract(strBset.getBigDecimal("POR").add(strBset.getBigDecimal("PRIR")))
+              .add(strBset.getBigDecimal("NEOP")));
+        }
+      }
+    
+    for (Iterator i = npor.keySet().iterator(); i.hasNext(); ) {
+      String oib = (String) i.next();
+      if (lookupData.getlookupData().raLocate(strBset, new String[] {"OIB", "JOS", "JOP"},
+          new String[] {oib, "0001", "0001"}) ||
+          (lookupData.getlookupData().raLocate(strBset, new String[] {"OIB", "JOS", "JOP"},
+              new String[] {oib, "0001", "0002"}))) {
+        Aus.sub(strBset, "POR", (BigDecimal) npor.get(oib));
+        Aus.add(strBset, "NETOPK", (BigDecimal) npor.get(oib));
+        if (nprir.containsKey(oib)) {
+          Aus.sub(strBset, "PRIR", (BigDecimal) nprir.get(oib));
+          Aus.add(strBset, "NETOPK", (BigDecimal) nprir.get(oib));
+        }
+        if (maxo.contains(strBset.getString("OIB"))) {
+          DataRow dop = (DataRow) ndop.get(strBset.getString("OIB"));
+          String[] cc = {"MIO1", "MIO2", "IZDATAKMIO"};
+          for (int c = 0; c < cc.length; c++)
+            Aus.add(strBset, cc[c], dop);
+          strBset.setBigDecimal("DOHODAK", strBset.getBigDecimal("BRUTO")
+              .subtract(strBset.getBigDecimal("IZDATAKMIO")));
+          strBset.setBigDecimal("POROSN",strBset.getBigDecimal("DOHODAK").subtract(strBset.getBigDecimal("ISKNEOP")));
+          strBset.setBigDecimal("NETOPK", strBset.getBigDecimal("DOHODAK")
+              .subtract(strBset.getBigDecimal("POR").add(strBset.getBigDecimal("PRIR")))
+              .add(strBset.getBigDecimal("NEOP")));
         }
       }
     }
@@ -785,6 +952,15 @@ public class JOPPDhndlr {
     raCommonClass.getraCommonClass().setLabelLaF(fPDV2.jraPoctDat, true);
   }
   
+  private void checkNodb(HashMap nodb) {
+    if (strBset.getBigDecimal("POROSN").signum() < 0) {
+      BigDecimal old = (BigDecimal) nodb.get(strBset.getString("OIB"));
+      if (old == null) old = Aus.zero2;
+      nodb.put(strBset.getString("OIB"), old.subtract(strBset.getBigDecimal("POROSN")));
+      strBset.setBigDecimal("POROSN", Aus.zero2);
+      strBset.setBigDecimal("ISKNEOP", strBset.getBigDecimal("DOHODAK"));
+    }
+  }
 
   private boolean isMaxOsnDopReached(BigDecimal bto) {
     try {
@@ -828,8 +1004,16 @@ public class JOPPDhndlr {
     }
     return false;
   }
+  
+  private boolean isNarav(String cvrp) {
+    Vrsteprim.getDataModule().getQueryDataSet().open();
+    if (lookupData.getlookupData().raLocate(Vrsteprim.getDataModule().getQueryDataSet(), "CVRP", cvrp)) {
+      return !Vrsteprim.getDataModule().getQueryDataSet().isNull("CVRODB");
+    }
+    return false;
+  }
 
-  private Timestamp getDatum(QueryDataSet rs, String col) {
+  private Timestamp getDatum(StorageDataSet rs, String col) {
     Calendar c = Calendar.getInstance();
     int y, m, d;
     if (rs.hasColumn("GODOBR") != null) {
@@ -968,7 +1152,7 @@ System.err.println(
       long diff = Long.MAX_VALUE;
       if (orgarh.getRowCount() > 1) {
         for (orgarh.first(); orgarh.inBounds(); orgarh.next()) {
-          long d = Math.abs(orgarh.getTimestamp("DATUMISPL").getTime() - fPDV2.getDatumDo().getTime());
+          long d = Math.abs(orgarh.getTimestamp("DATUMISPL").getTime() - fPDV2.getDatumOd().getTime());
           if (d<diff) {
             range = new raPlObrRange(orgarh.getShort("GODOBR"),orgarh.getShort("MJOBR"), orgarh.getShort("RBROBR"));
             diff = d;
@@ -983,13 +1167,13 @@ System.err.println(
         		+ /*OrgStr.getCorgsKnjigCond().qualified("radnici")*/ getOrgqrs() 
             +" AND rsperiodarh.godobr="+range.getGODOBRfrom()
             +" AND rsperiodarh.mjobr="+range.getMJOBRfrom()
-            //+" AND rsperiodarh.rbrobr="+range.getRBROBRfrom()
+            +" AND rsperiodarh.rbrobr="+range.getRBROBRfrom()
             +" AND kumulradarh.godobr="+range.getGODOBRfrom()
             +" AND kumulradarh.mjobr="+range.getMJOBRfrom()
-            //+" AND kumulradarh.rbrobr="+range.getRBROBRfrom()
+            +" AND kumulradarh.rbrobr="+range.getRBROBRfrom()
             +" AND Primanjaarh.godobr="+range.getGODOBRfrom()
             +" AND Primanjaarh.mjobr="+range.getMJOBRfrom()
-            //+" AND Primanjaarh.rbrobr="+range.getRBROBRfrom()
+            +" AND Primanjaarh.rbrobr="+range.getRBROBRfrom()
             ;
         raOdbici.getInstance().setObrRange(myrange = range);
       }
