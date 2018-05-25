@@ -18,6 +18,7 @@
 package hr.restart.sisfun;
 
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.raComboBox;
 import hr.restart.util.raCommonClass;
 
@@ -152,6 +153,7 @@ public class jpPilotArg extends JPanel {
     jpDetail.add(jraDef, new XYConstraints(150, 95, 205, -1));
     /**@todo: Odkomentirati sljedeæu liniju :) */
     this.add(jpDetail, BorderLayout.CENTER);
+    Aus.recursiveUpdateSizes(jpDetail);
   }
 
   private void checkTip() {

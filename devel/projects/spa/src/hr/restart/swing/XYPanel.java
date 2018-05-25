@@ -30,8 +30,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import sun.awt.X11.XPanelPeer;
-
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.Variant;
@@ -80,6 +78,12 @@ public class XYPanel extends JraPanel {
 	public XYPanel(DataSet ds) {
 		this();
 		this.ds = ds;
+	}
+	
+	public XYPanel configHeight(int sheight, int yadd) {
+	  this.sheight = sheight;
+	  this.yadd = yadd;
+	  return this;
 	}
 	
 	public XYPanel configWid(int shortwid, int intwid, int normwid, int stextwid, int textwid, int longwid) {
@@ -238,7 +242,7 @@ public class XYPanel extends JraPanel {
 		texts.put(colName, tf);
 		tf.setDataSet(ds);
 		tf.setColumnName(colName);
-		add(tf, new XYConstraints(x, y, wid, -1));
+		add(tf, new XYConstraints(x, y, wid, sheight));
 		x += wid + xspac;
 		lastx = x - xspac;
 		check(0, sheight);
@@ -261,7 +265,7 @@ public class XYPanel extends JraPanel {
 		texts.put(colName, tf);
 		tf.setDataSet(ds);
 		tf.setColumnName(colName);
-		add(tf, new XYConstraints(x, y, tw, -1));
+		add(tf, new XYConstraints(x, y, tw, sheight));
 		x += tw + xspac;
 		lastx = x - xspac;
 		check(0, sheight);
@@ -311,7 +315,7 @@ public class XYPanel extends JraPanel {
 		jlr.setNavButton(new JraButton());
 		buts.put(colName, jlr.getNavButton());
 
-		add(jlr, new XYConstraints(x, y, wid, -1));
+		add(jlr, new XYConstraints(x, y, wid, sheight));
 		x += wid + xspac;
 		
 		for (int i = 1; i < colNames.length; i++) {
@@ -322,7 +326,7 @@ public class XYPanel extends JraPanel {
 			jlr.addNav(naz, colNames[i]);
 			navs.put(colNames[i], naz);
 			
-			add(naz, new XYConstraints(x, y, nwid, -1));
+			add(naz, new XYConstraints(x, y, nwid, sheight));
 			x += nwid + xspac;
 		}
 		lastx = x - xspac;
@@ -405,6 +409,7 @@ public class XYPanel extends JraPanel {
 		cb.setHorizontalAlignment(SwingConstants.LEADING);
 		cb.setHorizontalTextPosition(SwingConstants.TRAILING);
 		add(cb, new XYConstraints(x, y, -1, -1));
+		check(0, sheight);
 		return cb;
 	}
 	

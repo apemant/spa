@@ -19,6 +19,7 @@ package hr.restart.sk;
 
 import hr.restart.baza.dM;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 
 import java.math.BigDecimal;
 
@@ -72,11 +73,11 @@ public class jpMatchTotals extends JPanel {
     if (!force && (raSaldaKonti.isSimple() || val == null || 
         val.equalsIgnoreCase(hr.restart.zapod.Tecajevi.getDomOZNVAL()))) { 
       jlUk.setText("Ukupno");
-      lay.setHeight(50);
+      lay.setHeight(Aus.big(50));
     } else { 
       jlUk.setText("Ukupno/"+val);
       jlUkPv.setText("Ukupno/"+hr.restart.zapod.Tecajevi.getDomOZNVAL());
-      lay.setHeight(80);
+      lay.setHeight(Aus.big(80));
     }
   }
   
@@ -182,5 +183,6 @@ public class jpMatchTotals extends JPanel {
     add(jraPokPv, new XYConstraints(255, 50, 100, -1));
     add(jraOstPv, new XYConstraints(360, 50, 100, -1));
     setBorder(BorderFactory.createRaisedBevelBorder());
+    Aus.recursiveUpdateSizes(this);
   }
 }

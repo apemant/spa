@@ -18,6 +18,7 @@
 package hr.restart.sisfun;
 
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.raCommonClass;
 
 import java.awt.BorderLayout;
@@ -80,5 +81,6 @@ public class jpPilotParam extends JPanel {
 
     /**@todo: Odkomentirati sljedeæu liniju :) */
     this.add(jpDetail, BorderLayout.CENTER);
+    Aus.recursiveUpdateSizes(jpDetail);
   }
 }

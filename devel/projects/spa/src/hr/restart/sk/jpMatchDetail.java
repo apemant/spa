@@ -19,12 +19,12 @@ package hr.restart.sk;
 
 import hr.restart.baza.dM;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.raCommonClass;
 import hr.restart.zapod.OrgStr;
-import hr.restart.zapod.raKnjigChangeListener;
 
 import java.awt.BorderLayout;
 
@@ -175,6 +175,8 @@ public class jpMatchDetail extends JPanel {
     jpDetail.add(jraValuta, new XYConstraints(255, 110, 110, -1));
     jpDetail.add(jraOpis, new XYConstraints(140, 60, 485, -1));
     jpDetail.add(jraVrdok, new XYConstraints(140, 35, 110, -1));
+    
+    Aus.recursiveUpdateSizes(jpDetail);
 
     /**@todo: Odkomentirati sljedeæu liniju :) */
     this.add(jpDetail, BorderLayout.CENTER);

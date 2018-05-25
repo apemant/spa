@@ -319,6 +319,7 @@ public class JraMultyKolChooser {
 		main.getContentPane().setLayout(new BorderLayout());
 		main.getContentPane().add(localpanel, BorderLayout.CENTER);
 		main.getContentPane().add(okp, BorderLayout.SOUTH);
+		Aus.recursiveUpdateSizes(localpanel);
 		main.pack();
 		if (location == null)
 			location = new Point(

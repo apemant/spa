@@ -42,7 +42,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -59,13 +58,13 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import sg.com.elixir.reportwriter.xml.IModel;
 
 import com.borland.dx.dataset.Column;
-import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.MetaDataUpdate;
 import com.borland.dx.dataset.ReadRow;
@@ -76,6 +75,9 @@ import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
+import com.borland.jbcl.layout.constraintsGetter;
 
 
 /**
@@ -117,6 +119,10 @@ public class Aus {
   
   private static ArrayList trace;
   
+  private static String bigs = null;
+  private static boolean big = false;
+  private static int bigf = 10;
+    
   private Aus() {
   }
   
@@ -125,6 +131,78 @@ public class Aus {
   			RenderingHints.KEY_TEXT_ANTIALIASING, 
   			RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
   	return (Graphics2D) g;
+  }
+  
+  public static void recursiveUpdateSizes(JPanel pan) {
+    if (!isBig() || pan instanceof OKpanel) return;
+    boolean xy = pan.getLayout() instanceof XYLayout;
+    if (xy && !updateLayout(pan)) return;
+    for (int i = 0; i < pan.getComponentCount(); i++) {
+      if (pan.getComponent(i) instanceof JPanel)
+        recursiveUpdateSizes((JPanel) pan.getComponent(i));
+      if (pan.getComponent(i) instanceof JTabbedPane)
+        checkTabs((JTabbedPane) pan.getComponent(i));
+          
+      if (xy) updateSizes(pan, pan.getComponent(i));
+    }
+  }
+  
+  private static void checkTabs(JTabbedPane tabs) {
+    for (int i = 0; i < tabs.getComponentCount(); i++) {
+      if (tabs.getComponent(i) instanceof JPanel)
+        recursiveUpdateSizes((JPanel) tabs.getComponent(i));
+      if (tabs.getComponent(i) instanceof JTabbedPane)
+        checkTabs((JTabbedPane) tabs.getComponent(i));
+    }
+  }
+  
+  private static boolean updateLayout(JPanel pan) {
+    XYLayout xy = (XYLayout) pan.getLayout();
+    if (constraintsGetter.isMarked(xy)) return false;
+    xy.setWidth(big(xy.getWidth()));
+    xy.setHeight(big(xy.getHeight()));
+    constraintsGetter.mark(xy);
+    return true;
+  }
+  
+  private static void updateSizes(JPanel pan, Component comp) {
+    XYLayout xy = (XYLayout) pan.getLayout();
+    XYConstraints cons = constraintsGetter.get(xy, comp);
+    if (cons != null) {
+      cons.setY(big(cons.getY()));
+      if (cons.getHeight() > 0) cons.setHeight(big(cons.getHeight()));
+      if (cons.getWidth() > 0 && cons.getX() + cons.getWidth() > xy.getWidth() / 2) {
+//        cons.setX(big(cons.getX() + cons.getWidth()) - big(cons.getWidth()));
+//        cons.setWidth(big(cons.getWidth()));
+        cons.setWidth(big(cons.getX() + cons.getWidth()) - big(cons.getX()));
+        cons.setX(big(cons.getX()));
+      } else {
+        cons.setX(big(cons.getX()));
+        if (cons.getWidth() > 0) cons.setWidth(big(cons.getWidth()));
+      }
+      constraintsGetter.set(xy, comp, cons);
+    }
+  }
+  
+  public static boolean isBig() {
+    if (bigs == null) {
+      bigs = IntParam.getTag("screen.big");
+      if (bigs == null || bigs.length() == 0) IntParam.setTag("screen.big", bigs = "false");
+      big = "true".equals(bigs);
+      System.out.println("big check");
+      if (big) {
+        String f = IntParam.getTag("screen.big.size");
+        if (f == null || f.length() == 0) IntParam.setTag("screen.big.size", "10");
+        else bigf = Aus.getNumber(f);
+        if (bigf < 8) bigf = 8;
+        if (bigf > 20) bigf = 20;
+      }
+    }
+    return big;
+  }
+  
+  public static int big(int orig) {
+    return isBig() ? orig * bigf / 8 : orig;
   }
   
   public static void clearTrace() {
@@ -297,6 +375,11 @@ public class Aus {
   
   public static void percentage(ReadWriteRow ds, String dest, BigDecimal num, String percent) {
     ds.setBigDecimal(dest, ds.getBigDecimal(percent).movePointLeft(2).multiply(num).
+        setScale(ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
+  }
+  
+  public static void percentage(ReadWriteRow ds, String dest, String osn, BigDecimal percent) {
+    ds.setBigDecimal(dest, percent.movePointLeft(2).multiply(ds.getBigDecimal(osn)).
         setScale(ds.getColumn(dest).getScale(), BigDecimal.ROUND_HALF_UP));
   }
   
@@ -1412,6 +1495,7 @@ public class Aus {
   }
   
   public static QueryDataSet q(String query) {
+    System.out.println("query: " + query);
     return Util.getNewQueryDataSet(query, true);
   }
   
@@ -1634,6 +1718,7 @@ public class Aus {
   public static Timestamp getNow() {
     Timestamp now = new Timestamp(System.currentTimeMillis());
     String server = IntParam.getTag("time.server");
+    if (server == null || server.length() == 0) server = "time.apple.com";
     if (server == null || server.length() == 0) return now;
     
     try {
@@ -1740,11 +1825,11 @@ public class Aus {
         */
         
       } catch (Exception e) {
-        //
+        e.printStackTrace();
       }
       client.close();
     } catch (Exception e) {
-      //
+      e.printStackTrace();
     }
     System.out.println("server time " + now);
     return now;

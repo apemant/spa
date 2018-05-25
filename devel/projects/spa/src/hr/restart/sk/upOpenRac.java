@@ -88,7 +88,7 @@ public class upOpenRac extends raUpitLite {
   public JPanel pan = new JPanel() {
     public void paintComponent(Graphics g) {
       super.paintComponent(g);
-      raMatPodaci.drawEtchedLine(pan, g, 15, 130 + dkAdd, 545, 130 + dkAdd);
+      raMatPodaci.drawEtchedLine(pan, g, Aus.big(15), Aus.big(130 + dkAdd), Aus.big(545), Aus.big(130 + dkAdd));
     }
   };
   XYLayout lay = new XYLayout();

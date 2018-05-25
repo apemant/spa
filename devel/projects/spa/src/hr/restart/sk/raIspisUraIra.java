@@ -255,6 +255,7 @@ public class raIspisUraIra extends raFrame {
   }
 
   public void show() {
+    Aus.recursiveUpdateSizes(jpDetail);
     SetFokus();
     super.show();
   }
@@ -910,7 +911,9 @@ public class raIspisUraIra extends raFrame {
     JraButton checkUI = new JraButton();
     checkUI.setText("Prikaži");
     checkUI.setIcon(raImages.getImageIcon(raImages.IMGALLBACK));
-    checkUI.setPreferredSize(new Dimension(100,25));
+    checkUI.setMinimumSize(new Dimension(Aus.big(80), Aus.big(27)));
+    checkUI.setPreferredSize(new Dimension(Aus.big(80), Aus.big(27)));
+    //checkUI.setPreferredSize(new Dimension(100,25));
     pd.add(checkUI);
     okp.add(pd, BorderLayout.CENTER);
     okp.revalidate();
@@ -999,6 +1002,7 @@ public class raIspisUraIra extends raFrame {
 
     this.getContentPane().add(jpDetail, BorderLayout.CENTER);
     this.getContentPane().add(okp, BorderLayout.SOUTH);
+    Aus.recursiveUpdateSizes(jpDetail);
     okp.registerOKPanelKeys(this);
   }
 

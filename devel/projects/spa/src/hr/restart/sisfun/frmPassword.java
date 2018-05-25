@@ -194,6 +194,8 @@ public class frmPassword extends JraDialog {
         if (!e.isTemporary()) jtCUSER_check();
       }
     });
+    jtCUSER.setPreferredSize(new java.awt.Dimension(Aus.big(100), Aus.big(21)));
+    jpswd.setPreferredSize(new java.awt.Dimension(Aus.big(100), Aus.big(21)));
     /*jtCUSER.addKeyListener(new hr.restart.swing.JraKeyListener());
     jpswd.addKeyListener(new hr.restart.swing.JraKeyListener());*/
     xYLay.setWidth(366);
@@ -256,6 +258,11 @@ public class frmPassword extends JraDialog {
     loginTry = 0;
     hide();
   }
+  
+  public void pack() {
+      Aus.recursiveUpdateSizes(jp);
+      super.pack();
+    }
 
   private void ok_act() {
     if (!validacija()) return;

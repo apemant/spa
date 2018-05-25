@@ -115,7 +115,7 @@ public class JraTextField extends JTextField  implements ColumnAware, Serializab
       });
       /*addKeyListener(new JraTextField_KeyListener());
       addKeyListener(new hr.restart.swing.JraKeyListener());*/
-      setPreferredSize(new java.awt.Dimension(100,21));
+      setPreferredSize(new java.awt.Dimension(Aus.big(100), Aus.big(21)));
       raDisabledPopup.installFor(this);
       this.setEnablePopupMenu(false);
       //if (!IntParam.getTag("swing.touch").equalsIgnoreCase("false"))

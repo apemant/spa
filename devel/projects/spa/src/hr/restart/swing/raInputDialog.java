@@ -1,5 +1,7 @@
 package hr.restart.swing;
 
+import hr.restart.util.Aus;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 
@@ -24,6 +26,7 @@ public class raInputDialog extends raOptionDialog {
     init = true;
     JPanel main = new JPanel(new BorderLayout());
     main.add(content);
+    Aus.recursiveUpdateSizes(content);
     main.add(okp, BorderLayout.SOUTH);
     return super.show(parent, main, title);
   }
