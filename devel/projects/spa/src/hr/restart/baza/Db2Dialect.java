@@ -36,6 +36,7 @@ public class Db2Dialect extends Dialect {
     setDDLMap(new String[][] {
       { "CREATE", "create table %NAME (%BODY)" },
       { "CHAR", "varchar(%SIZE)" },
+      { "VARCHAR", "varchar(%SIZE)" },
       { "EXTCHAR", "" },
       { "INTEGER", "integer" },
       { "SHORT", "smallint" },

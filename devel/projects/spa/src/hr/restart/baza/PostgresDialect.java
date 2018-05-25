@@ -26,6 +26,7 @@ public class PostgresDialect extends Dialect {
     setDDLMap(new String[][] {
       { "CREATE", "create table %NAME (%BODY)" },
       { "CHAR", "char(%SIZE)" },
+      { "VARCHAR", "varchar(%SIZE)" },
       { "EXTCHAR", "" },
       { "INTEGER", "int" },
       { "SHORT", "smallint" },

@@ -35,6 +35,7 @@ public class InterbaseDialect extends Dialect {
     setDDLMap(new String[][] {
       { "CREATE", "create table %NAME (%BODY)" },
       { "CHAR", "char(%SIZE)" },
+      { "VARCHAR", "varchar(%SIZE)" },
       { "EXTCHAR", "character set win1250" },
       { "INTEGER", "numeric(%SIZE,0)" },
       { "SHORT", "numeric(%SIZE,0)" },

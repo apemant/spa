@@ -45,6 +45,7 @@ public class HsqlDialect extends Dialect {
     setDDLMap(new String[][] {
         { "CREATE", "create"+c+"table %NAME (%BODY)" },
         { "CHAR", "char(%SIZE)" },
+        { "VARCHAR", "varchar(%SIZE)" },
         { "EXTCHAR", "" },
         { "INTEGER", "integer" },
         { "SHORT", "smallint" },

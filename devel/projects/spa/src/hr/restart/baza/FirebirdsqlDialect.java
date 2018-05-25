@@ -17,7 +17,10 @@
 ****************************************************************************/
 package hr.restart.baza;
 
+import java.sql.Types;
 import java.util.Properties;
+
+import com.borland.dx.dataset.Variant;
 
 public class FirebirdsqlDialect extends Dialect {
   private static Dialect inst = new FirebirdsqlDialect();
@@ -26,6 +29,7 @@ public class FirebirdsqlDialect extends Dialect {
     setDDLMap(new String[][] {
       { "CREATE", "create table %NAME (%BODY)" },
       { "CHAR", "char(%SIZE)" },
+      { "VARCHAR", "char(%SIZE)" },
       { "EXTCHAR", "character set win1250" },
       { "INTEGER", "numeric(%SIZE,0)" },
       { "SHORT", "numeric(%SIZE,0)" },
@@ -58,6 +62,11 @@ public class FirebirdsqlDialect extends Dialect {
 
   public String getDateDay(String col) {
     return "EXTRACT(DAY FROM "+col+")";
+  }
+  
+  protected int getSqlDataType(int dataType, int prec) {
+    if (dataType == Variant.STRING) return Types.CHAR;
+    return super.getSqlDataType(dataType, prec);
   }
 
   protected Properties getDialectConnectionProperties() {
