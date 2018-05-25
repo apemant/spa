@@ -86,6 +86,9 @@ public class Util {
   public static String[] mkey = {"CSKL", "VRDOK", "GOD", "BRDOK"};
   public static String[] dkey = {"CSKL", "VRDOK", "GOD", "BRDOK", "RBR"};
   public static String[] dikey = {"CSKL", "VRDOK", "GOD", "BRDOK", "RBSID"};
+  public static String[] mesmkey = {"CSKLIZ", "CSKLUL", "VRDOK", "GOD", "BRDOK"};
+  public static String[] mesdkey = {"CSKLIZ", "CSKLUL", "VRDOK", "GOD", "BRDOK", "RBR"};
+  public static String[] akey = {"CART", "CART1", "BC", "NAZART", "JM"};
   
   private Util() {
     initDocClasses();
