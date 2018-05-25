@@ -106,19 +106,19 @@ public abstract class repOTPvriOrigTemplate extends raReportTemplate {
   private String[] SectionFooter0Props = new String[] {"BRDOK", "After", "", "", "Yes", "", "Yes",
      "1180"};
   public raReportElement Line3;
-  private String[] Line3Props = new String[] {"", "", "", "20", "10800", "0", "", "", ""};
+  private String[] Line3Props = new String[] {"", "", "", "60", "10800", "0", "", "", ""};
   public raReportElement Label1;
-  private String[] Label1Props = new String[] {"", "", "", "80", "10820", "220", "Normal",
+  private String[] Label1Props = new String[] {"", "", "", "120", "10820", "260", "Normal",
      "Gray", "", "", "", "", "Lucida Bright", "", "Bold", "", "", ""};
   public raReportElement Text2;
   private String[] Text2Props = new String[] {"=(dsum \"IRAZ\")", "", "",
-     "Number|false|1|309|2|2|true|3|true", "", "", "", "", "9360", "100", "1460", "220", "",
+     "Number|false|1|309|2|2|true|3|true", "", "", "", "", "9360", "120", "1460", "220", "",
      "Gray", "", "", "", "", "Lucida Bright", "8", "Bold", "", "", "Right", ""};
   public raReportElement LabelU_K_U_P_N_O;
-  private String[] LabelU_K_U_P_N_OProps = new String[] {"U K U P N O", "", "", "100", "1460",
-     "220", "", "", "", "", "", "", "Lucida Bright", "", "Bold", "", "", ""};
+  private String[] LabelU_K_U_P_N_OProps = new String[] {"U K U P N O", "", "", "120", "1460",
+     "240", "", "", "", "", "", "", "Lucida Bright", "9", "Bold", "", "", ""};
   public raReportElement Line4;
-  private String[] Line4Props = new String[] {"", "", "", "340", "10800", "0", "", "", ""};
+  private String[] Line4Props = new String[] {"", "", "", "420", "10800", "0", "", "", ""};
   public raReportSection PageFooter;
   public raReportSection ReportFooter;
   private String[] ReportFooterProps = new String[] {"", "", "", "No", "Yes", "", "", "0"};
