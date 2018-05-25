@@ -21,6 +21,7 @@ import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raMasterDetail;
@@ -40,6 +41,7 @@ import javax.swing.text.JTextComponent;
 
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
+import com.borland.jbcl.layout.constraintsGetter;
 
 
 public class jpUplIsplDetail extends JPanel {
@@ -51,6 +53,9 @@ public class jpUplIsplDetail extends JPanel {
 //  frmUplIspl fuj;
 
   JPanel jpDetail = new JPanel();
+  
+  JPanel domDetail = new JPanel();
+  JPanel inoDetail = new JPanel();
 
   XYLayout lay = new XYLayout();
   JLabel jlCradnik = new JLabel();
@@ -330,19 +335,26 @@ public class jpUplIsplDetail extends JPanel {
     jlrOpisStavke.setSearchMode(1);
 
 
+    XYConstraints xyjlrStavka = constraintsGetter.get(lay, jlrStavka);
+    XYConstraints xyjbSelStavka = constraintsGetter.get(lay, jbSelStavka);
+    XYConstraints xyjlrOpisStavke = constraintsGetter.get(lay, jlrOpisStavke);
     jpDetail.remove(jlrStavka);
     jpDetail.remove(jbSelStavka);
     jpDetail.remove(jlrOpisStavke);
 
-
+/*
     jpDetail.add(jlrStavka, new XYConstraints(150, 120, 100, -1));
     jpDetail.add(jbSelStavka,   new XYConstraints(605, 120, 21, 21));
-    jpDetail.add(jlrOpisStavke,  new XYConstraints(255, 120, 345, -1));
+    jpDetail.add(jlrOpisStavke,  new XYConstraints(255, 120, 345, -1));*/
+    jpDetail.add(jlrStavka, xyjlrStavka);
+    jpDetail.add(jbSelStavka, xyjbSelStavka);
+    jpDetail.add(jlrOpisStavke, xyjlrOpisStavke);
   }
 
 
   public void initDomesticVal() {
     jpDetail.removeAll();
+    jpDetail.setLayout(lay = new XYLayout(640, 350));
     jlIzdatak.setText("Izdatak");
     jlPrimitak.setText("Primitak");
 
@@ -370,10 +382,12 @@ public class jpUplIsplDetail extends JPanel {
     jpDetail.add(jraTko,   new XYConstraints(150, 145, 450, -1));
     setURAButton();
     setUplIsplAdvancedDetail();
+    Aus.recursiveUpdateSizes(jpDetail);
   }
 
   public void initInoVal(String masterDetail) {
     jpDetail.removeAll();
+    jpDetail.setLayout(lay = new XYLayout(640, 350));
     if (mainClass instanceof frmUplIspl){
       jlIzdatak.setText("Izdatak u " + ((frmUplIspl)mainClass).getMasterSet().getString("OZNVAL"));
       jlPrimitak.setText("Primitak u " + ((frmUplIspl)mainClass).getMasterSet().getString("OZNVAL"));
@@ -412,6 +426,7 @@ public class jpUplIsplDetail extends JPanel {
     jpDetail.add(jraTko,   new XYConstraints(150, 145, 450, -1));
     setURAButton();
     setUplIsplAdvancedDetail();
+    Aus.recursiveUpdateSizes(jpDetail);
   }
 
   void jraPrimitak_focusLost(FocusEvent e) {
