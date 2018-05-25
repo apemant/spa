@@ -30,7 +30,15 @@ import hr.restart.swing.XYPanel;
 import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raOptionDialog;
 import hr.restart.swing.raSelectTableModifier;
-import hr.restart.util.*;
+import hr.restart.util.Aus;
+import hr.restart.util.FileHandler;
+import hr.restart.util.IntParam;
+import hr.restart.util.JlrNavField;
+import hr.restart.util.Valid;
+import hr.restart.util.raImages;
+import hr.restart.util.raMatPodaci;
+import hr.restart.util.raNavAction;
+import hr.restart.util.raTransaction;
 import hr.restart.util.reports.JasperHook;
 import hr.restart.zapod.jpGetValute;
 
@@ -50,10 +58,8 @@ import javax.swing.text.JTextComponent;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRGroup;
-import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
-import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
@@ -77,7 +83,7 @@ final public class raRAC extends raIzlazTemplate {
         }
     };
     
-    raNavAction rnvLot = new raNavAction("Promjena šarže", raImages.IMGALIGNJUSTIFY, KeyEvent.VK_F11) {
+    raNavAction rnvLot = new raNavAction("Promjena šarže", raImages.IMGALIGNJUSTIFY, KeyEvent.VK_F8) {
       public void actionPerformed(ActionEvent e) {
         chgLot();
       }
@@ -284,6 +290,15 @@ final public class raRAC extends raIzlazTemplate {
             raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHDupli","Ispis DUPLIKATA FISKALNOG ra\u010Duna");
             raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRekRN","REKLAMIRANJE FISKALNOG ra\u010Duna");
           } else raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+        }
+        
+        if (frmParam.getParam("robno", "altrac", "N", "Dodati alternativne ispise raèuna (D,N)").equalsIgnoreCase("D")) {
+          raMaster.getRepRunner().addReport("hr.restart.robno.repRacHr", 
+              "hr.restart.robno.repIzlazni", "RacHr", "Raèun na hrvatskom u Eurima");
+          raMaster.getRepRunner().addReport("hr.restart.robno.repRacEn", 
+              "hr.restart.robno.repIzlazni", "RacEn", "Raèun na engleskom u Eurima");
+          raMaster.getRepRunner().addReport("hr.restart.robno.repRacSlo", 
+              "hr.restart.robno.repIzlazni", "RacSlo", "Raèun na slovenskom u Eurima");
         }
         
         raMaster.getRepRunner().addJasperHook("hr.restart.robno.repInvoice", jhook);
@@ -495,6 +510,15 @@ final public class raRAC extends raIzlazTemplate {
         raDetail.getRepRunner().addReport("hr.restart.robno.repInvoice",
                 "hr.restart.robno.repIzlazni","ProformaInvoice","Invoice");
         
+        if (frmParam.getParam("robno", "altrac", "N", "Dodati alternativne ispise raèuna (D,N)").equalsIgnoreCase("D")) {
+          raDetail.getRepRunner().addReport("hr.restart.robno.repRacHr", 
+              "hr.restart.robno.repIzlazni", "RacHr", "Raèun na hrvatskom u Eurima");
+          raDetail.getRepRunner().addReport("hr.restart.robno.repRacEn", 
+              "hr.restart.robno.repIzlazni", "RacEn", "Raèun na engleskom u Eurima");
+          raDetail.getRepRunner().addReport("hr.restart.robno.repRacSlo", 
+              "hr.restart.robno.repIzlazni", "RacSlo", "Raèun na slovenskom u Eurima");
+        }
+        
         raDetail.getRepRunner().addJasperHook("hr.restart.robno.repInvoice", jhook);
         raDetail.getRepRunner().addJasperHook("hr.restart.robno.repRacGroup", jhook);
 
@@ -524,6 +548,7 @@ final public class raRAC extends raIzlazTemplate {
         DP.resizeDP();
         raMaster.addOption(rnvNacinPlac, 6);
         raMaster.addOption(rnvFisk, 6, false);
+        raMaster.addOption(rnvSend, 7, false);
         
         if (frmParam.getParam("robno", "racTrans", "N", 
           "Dodati opciju prijevoza na RAC (D,N)").equals("D")) {
@@ -780,6 +805,7 @@ final public class raRAC extends raIzlazTemplate {
       pan.add(jbGd, new XYConstraints(545, 145, 21, 21));
       pan.add(jraKmd, new XYConstraints(575, 145, 70, -1));
       
+      Aus.recursiveUpdateSizes(pan);
       all.add(pan);
       all.add(trans.getOkPanel(), BorderLayout.SOUTH);
     }
