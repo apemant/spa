@@ -30,6 +30,7 @@ import hr.restart.util.menus.MenuFactory;
 import hr.restart.util.versions.raVersionInfo;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -49,13 +50,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.plaf.TabbedPaneUI;
+import javax.swing.plaf.basic.BasicPanelUI;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 import com.borland.dx.dataset.DataSet;
+import com.sun.java.swing.plaf.windows.DesktopProperty;
+import com.sun.java.swing.plaf.windows.WindowsTabbedPaneUI;
 
 /**
  * Title:        Utilitys
@@ -202,8 +210,15 @@ public class startFrame extends JraFrame implements Cloneable {
       frameSize.setSize(screenSize.getSize().width-raToolBarRelativeWidth(),screenSize.height-50);
     }
     else {
-      int h = getJMenuBar().getSize().height+getStatusBar().getSize().height+getInsets().top;//+getInsets().bottom;
+      int h = getJMenuBar().getSize().height+getStatusBar().getSize().height+getInsets().top+getInsets().bottom;
+      
+      String mh = IntParam.getTag("mainframeheight");
+      if (mh != null && mh.length() > 0)
+        h = getJMenuBar().getSize().height+getStatusBar().getSize().height+getInsets().top + Aus.getAnyNumber(mh);
+      
+      
       frameSize.setSize(screenSize.width-raToolBarRelativeWidth(),h);//h = frameSize.height
+      
     }
     try {
       this.setSize(frameSize);
@@ -1195,6 +1210,12 @@ System.out.println("Nije modal dialog...Vracam false");
 		if (IntParam.getTag("twitchHack").equals("true")) 
 		  JraFrame.twitchHack = true;
 	
+	String col = hr.restart.start.getFlaggedArg("bg:");
+	if (col != null && col.length() > 0) {
+	  String[] ch = new VarStr(col).splitTrimmed(',');
+	  if (ch.length == 3) 
+	    changeBackground(new Color(Aus.getNumber(ch[0]), Aus.getNumber(ch[1]), Aus.getNumber(ch[2])));
+	}
 		
 /*    try {
       SkinDialog.getSkinDialog().makeLookAndFeel(hr.restart.util.IntParam.VratiSadrzajTaga("lookandfeel"));
@@ -1213,6 +1234,35 @@ System.out.println("Nije modal dialog...Vracam false");
       }
     }*/
   }
+
+  public static void changeBackground(Color col) {
+    Set entries = UIManager.getLookAndFeelDefaults().entrySet();
+    Map counter = new HashMap();
+    int max = 0;
+    Color freq = null;
+    for (Iterator i = entries.iterator(); i.hasNext(); ) {
+       Map.Entry entry = (Map.Entry) i.next();
+       if (entry.getValue() instanceof Color && entry.getKey().toString().endsWith("background")) {
+         Integer old = (Integer) counter.getOrDefault(entry.getValue(), Integer.valueOf(0));
+         counter.put(entry.getValue(), Integer.valueOf(1 + old.intValue()));
+         if (old.intValue() >= max) {
+           max = old.intValue() + 1;
+           freq = (Color) entry.getValue();
+         }
+      }
+    }
+    if (freq != null) {
+      System.out.println("changing all " + freq + "  to " + col);
+      for (Iterator i = entries.iterator(); i.hasNext(); ) {
+        Map.Entry entry = (Map.Entry) i.next();
+        if (freq.equals(UIManager.getColor(entry.getKey()))) {
+          System.out.println(entry.getKey());
+          UIManager.put(entry.getKey(), col);
+        }
+      }
+    }
+  }
+  
   
   public static String getFontFamily() {
   	String fam = IntParam.getTag("font.family");
@@ -1235,8 +1285,16 @@ System.out.println("Nije modal dialog...Vracam false");
     return Aus.getNumber(delta);
   }
   
+  public static int getTableRowDelta() {
+    String delta = IntParam.getTag("table.row.delta");
+    if (delta == null || delta.trim().length() == 0)
+        IntParam.setTag("table.row.delta", delta = "0");
+    
+    return Aus.getNumber(delta);
+  }
+  
   public static void switchFonts(int delta, String family) {
-  	if (delta < -2 || delta > 5) delta = 0;
+  	if (delta < -2 || delta > 8) delta = 0;
   	if (delta == 0 && family == null) return;
   	
   	Properties raProps = FileHandler.getProperties(IntParam.PROPSFILENAME, false);
