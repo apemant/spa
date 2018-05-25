@@ -370,7 +370,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
     this.getTableHeader().setDefaultRenderer(new HeaderTableCellRenderer());
 
-    this.setRowHeight(ADDITIONAL_ROWHEIGHT + startFrame.getFontDelta());
+    this.setRowHeight(Aus.big(ADDITIONAL_ROWHEIGHT) + startFrame.getFontDelta() + startFrame.getTableRowDelta());
     
     
     raHideDataModifier.inst.isAny();
@@ -528,7 +528,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
     }
 
     if (dsSortType.equals("sql") && (ds instanceof QueryDataSet) &&
-        colSrt.getSqlType() == java.sql.Types.CHAR &&
+        (colSrt.getSqlType() == java.sql.Types.CHAR || colSrt.getSqlType() == java.sql.Types.VARCHAR) &&
         ((QueryDataSet) ds).getQuery() != null) {
 
       QueryDataSet qds = (QueryDataSet) ds;
@@ -737,7 +737,7 @@ public class JraTable2 extends JTable implements JraTableInterface {
         Field f = Color.class.getField(col.toLowerCase());
         alterCol = (Color) f.get(null);
       } catch (Exception e) {
-        e.printStackTrace();
+        //e.printStackTrace();
       }
      
     //System.out.println(alterCol + " " + tone);
@@ -1196,6 +1196,9 @@ public class JraTable2 extends JTable implements JraTableInterface {
   }
 
   private int getVisibleTableRows() {
+    Component parent = getParent();
+    while (parent != null && !(parent instanceof JViewport)) parent = parent.getParent();
+    if (parent != null) return parent.getSize().height/getRowHeight();
     return getParent().getSize().height/getRowHeight();
   }
 
