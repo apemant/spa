@@ -258,9 +258,11 @@ System.out.println("getQDSDop("+flag+") :: " + qstr);
                   getTableName() + ".obriznos as obriznos "+
                   "FROM " + getTableName() + ",radnicipl,radnici where ("+
                   opl.getOdbiciWhereQuery(opl.PRIREZ_param,getTableName())+
+                  " OR " + opl.getOdbiciWhereQuery(opl.RAZPRIREZA_param,getTableName())+
                   ") AND radnicipl.cradnik = " + getTableName() + ".cradnik"+
                   " AND radnici.cradnik = " + getTableName() + ".cradnik"+
                   " AND "+getWhereQuery("radnici");
+    System.out.println(qstr);
 
     QueryDataSet temporary = ut.getNewQueryDataSet(qstr);
     QueryDataSet temporary2 = new QueryDataSet();
@@ -459,7 +461,7 @@ System.out.println("getQDSDop("+flag+") :: " + qstr);
 
     } while(qds.next());
 
-    qds1A.first();
+    repQDSporpri.first();
 
     repQDSporpri1.insertRow(false);
     repQDSporpri1.setString("COPCINE", qds1.getString("COPCINE"));
@@ -469,15 +471,16 @@ System.out.println("getQDSDop("+flag+") :: " + qstr);
     repQDSporpri1.setBigDecimal("POR4", qds1.getBigDecimal("POR4"));
     repQDSporpri1.setBigDecimal("POR5", qds1.getBigDecimal("POR5"));
     repQDSporpri1.setBigDecimal("PORUK", qds1.getBigDecimal("PORUK"));
+    repQDSporpri1.setBigDecimal("UKUPNO", qds1.getBigDecimal("PORUK"));
     do {
-    if(lookupData.getlookupData().raLocate(qdsA, new String[] {"COPCINE"}, new String[] {qds.getString("COPCINE")})){
+    //if(lookupData.getlookupData().raLocate(qdsA, new String[] {"COPCINE"}, new String[] {qds.getString("COPCINE")})){
       //repQDSporpri1.setBigDecimal("UKUPNO", qds1.getBigDecimal("PORUK").add(qds1A.getBigDecimal("OBRIZNOS")));
-      repQDSporpri1.setBigDecimal("UKUPNO", repQDSporpri1.getBigDecimal("UKUPNO").add(qds1A.getBigDecimal("OBRIZNOS")));
-    } else {
+      repQDSporpri1.setBigDecimal("UKUPNO", repQDSporpri1.getBigDecimal("UKUPNO").add(repQDSporpri.getBigDecimal("OBRIZNOS")));
+    //} else {
 //      repQDSporpri1.setBigDecimal("UKUPNO", qds1.getBigDecimal("UKUPNO").add(qds1A.getBigDecimal("OBRIZNOS")));
-        repQDSporpri1.setBigDecimal("UKUPNO", qds1.getBigDecimal("PORUK"));
-    }                         /** @todo sredit ovo da radi */
-    } while (qds1A.next());
+    //    repQDSporpri1.setBigDecimal("UKUPNO", qds1.getBigDecimal("PORUK"));
+    //}                         /** @todo sredit ovo da radi */
+    } while (repQDSporpri.next());
     setObrStrings();
   }
 
