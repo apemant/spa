@@ -27,7 +27,7 @@ public class raKCISectionFooter extends raReportSection {
      "Gray", "", "", "", "", "Lucida Bright", "", "Bold", "", "", ""};
   public raReportElement LabelU_K_U_P_N_O;
   private String[] LabelU_K_U_P_N_OProps = new String[] {"U K U P N O", "", "", "180", "1460",
-     "220", "", "", "", "", "", "", "Lucida Bright", "", "Bold", "", "", ""};
+     "220", "Normal", "", "", "", "", "", "Lucida Bright", "", "Bold", "", "", ""};
   public raReportElement Text1;
   private String[] Text1Props = new String[] {"=(dsum \"IRAZ\")", "", "",
      "Number|false|1|309|2|2|true|3|true", "", "", "", "", "9360", "180", "1460", "220", "Normal",
