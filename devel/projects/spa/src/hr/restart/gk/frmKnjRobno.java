@@ -714,6 +714,9 @@ System.out.println("**** DEVIZNI ANLAGE");
                   tmpskstavke.setTimestamp("DATPRI", new Timestamp(cal
                           .getTime().getTime()));
                 }
+                if (data.hasColumn("DATPRI") != null) {
+                  tmpskstavke.setTimestamp("DATPRI", data.getTimestamp("DATPRI"));
+                }
             }
             
             if (!knjiga.equalsIgnoreCase("")) {
@@ -931,6 +934,11 @@ System.out.println("**** DEVIZNI ANLAGE");
                 }
                 sds.setInt("CPAR", tmpskstavke.getInt("CPAR"));
                 sds.setString("BROJDOK", tmpskstavke.getString("BROJDOK"));
+                int dash = tmpskstavke.getString("BROJDOK").indexOf('-');
+                if (dash > 0 && Aus.isDigit(tmpskstavke.getString("BROJDOK").substring(0, dash)))
+                  sds.setString("SORTBR", Aus.string(10 - dash, '0') + tmpskstavke.getString("BROJDOK"));
+                System.out.println(sds.getString("SORTBR"));
+                
                 sds.setString("EXTBRDOK", tmpskstavke.getString("EXTBRDOK"));
                 sds
                         .setTimestamp("DATDOSP", tmpskstavke
