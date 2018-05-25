@@ -798,7 +798,7 @@ public class ElixirToJasperConverter {
         for (int i = 0; i < args.size(); i++)
           buf.append(getArg(i).convert()).append('+');
         return buf.chop().toString();
-      } else if (command.equals("+") || command.equals("-") || 
+      } else if (command.equals("+") || command.equals("-") ||
           command.equals(">") || command.equals("<") || command.equals("=")) {
         enforceArgs(2);
         Expression ex1 = getArg(0);
