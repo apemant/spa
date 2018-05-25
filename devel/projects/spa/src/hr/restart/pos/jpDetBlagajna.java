@@ -65,6 +65,8 @@ public class jpDetBlagajna extends JPanel {
   XYLayout xYLayout3 = new XYLayout();
   JPanel jPanel3 = new JPanel();
   JLabel jLabel3 = new JLabel();
+  JLabel jlKupac = new JLabel();
+  JLabel jlPlac = new JLabel();
   XYLayout xYLayout4 = new XYLayout();
   JLabel jLabel4 = new JLabel();
   JraTextField jtfKOL = new JraTextField() {
@@ -240,7 +242,7 @@ public class jpDetBlagajna extends JPanel {
     jLabel2.setText("jLabel2");
     jLabel2.setColumnName("FBR");
     xYLayout1.setWidth(750);
-    xYLayout1.setHeight(193);
+    xYLayout1.setHeight(220);
     jPanel2.setLayout(xYLayout3);
     jPanel2.setBorder(BorderFactory.createRaisedBevelBorder());
     jPanel3.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -308,9 +310,13 @@ public class jpDetBlagajna extends JPanel {
     JLabel labPOP = new JLabel("Pop.");
     labPOP.setHorizontalAlignment(SwingConstants.CENTER);
     
+    jlPlac.setHorizontalAlignment(SwingConstants.TRAILING);
+    
     /*jtfPOP.addKeyListener(new jpDetBlagajna_jtfPOP_keyAdapter(this));*/
     this.add(jPanel2,                         new XYConstraints(540, 80, 200, 105));
     this.add(jPanel3,             new XYConstraints(5, 80, 535, 105));
+    this.add(jlKupac, new XYConstraints(5, 190, -1, -1));
+    this.add(jlPlac, new XYConstraints(400, 190, 340, -1));
     jPanel3.add(jLabel3,     new XYConstraints(10, 22, -1, -1));
     jPanel3.add(jLabel4,   new XYConstraints(10, 67, -1, -1));
     if ("CART".equalsIgnoreCase(tCartSifparam)) {
