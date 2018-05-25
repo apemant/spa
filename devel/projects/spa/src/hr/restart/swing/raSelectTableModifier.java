@@ -253,7 +253,7 @@ public class raSelectTableModifier extends raTableModifier {
   public Condition getSelectionCondition() {
     if (key == null) {
       if (sel.isEmpty()) return null;
-      if (sel.size() > 500) return Condition.none;
+      //if (sel.size() > 500) return Condition.none;
       return Condition.in(colName, sel.toArray());
     }
     if (sel.isEmpty()) return null;
