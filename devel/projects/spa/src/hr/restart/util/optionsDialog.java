@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.util;
 
+import hr.restart.sisfun.raUser;
+import hr.restart.sisfun.raVersionCheck;
 import hr.restart.util.mail.ui.MailOptions;
 import hr.restart.util.menus.MenuUpdaterUI;
 
@@ -139,6 +141,14 @@ public class optionsDialog extends raTabDialog {
     
     this.addFrameTab(new MenuUpdaterUI());
     this.addFrameTab(new hr.restart.util.versions.jpPatchMaker());
+    if (raUser.getInstance().isSuper()) {
+      this.addAction(new ActionTask("Zakljuèavanje", raImages.getImageIcon(raImages.IMGTCLOSED),null) {
+        public void doAction() {
+          raVersionCheck.install();
+        }
+      });
+    }
+    
     this.setApplyMessageText("Da bi promjena parametara bila potpuna potrebno je restartati aplikaciju.");
     this.taskInit();
     loadAtEnd(raSkinDialog.class);
