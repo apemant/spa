@@ -57,6 +57,7 @@ import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
+import com.borland.jbcl.layout.constraintsGetter;
 
 public class frmPDV2 extends raUpitFat {
   
@@ -110,9 +111,10 @@ public class frmPDV2 extends raUpitFat {
 
         public void itemStateChanged(ItemEvent e) {
           clearJop();
+          XYConstraints old = constraintsGetter.get(xYlay, jraKrajDat);
           if (jraObrazac.getSelectedIndex() == 4) {
             datePanel.remove(jraKrajDat);
-            datePanel.add(JOPPD.getBtns(), new XYConstraints(445, 15, 100, 21));
+            datePanel.add(JOPPD.getBtns(), old);
             jlPer.setText("Datum isplate");
             QueryDataSet orgpl = Orgpl.getDataModule().getTempSet(Condition.equal("CORG", OrgStr.getKNJCORG()));
             orgpl.open();
@@ -127,7 +129,7 @@ public class frmPDV2 extends raUpitFat {
             });
           } else if (jraObrazac.getSelectedIndex() == 5) {
             datePanel.remove(jraKrajDat);
-            datePanel.add(JOPPDPN.getBtns(), new XYConstraints(445, 15, 100, 21));
+            datePanel.add(JOPPDPN.getBtns(), old);
             jlPer.setText("Datum isplate");
             stds.setTimestamp("DATUMOD", vl.getToday());
             SwingUtilities.invokeLater(new Runnable() {
@@ -154,7 +156,7 @@ public class frmPDV2 extends raUpitFat {
             stds.setTimestamp("DATUMDO", ut.getLastDayOfMonth(ut.addMonths(vl.getToday(), -1)));
           }
           datePanel.validate();
-          System.err.println("jraObrazac.itemStateChanged");
+          //System.err.println("jraObrazac.itemStateChanged");
         }
       });
       getJPTV().getNavBar().addOption(new raNavAction("Dodaj", raImages.IMGADD, KeyEvent.VK_F2) {
@@ -207,6 +209,11 @@ public class frmPDV2 extends raUpitFat {
           fixPorez();
         }
       }));
+      jp.add(new JButton(new AbstractAction("Popravi lipe na prevelikom PDV-u") {
+        public void actionPerformed(ActionEvent e) {
+          fixPorez2();
+        }
+      }));
       dlgAl.setContentPane(jp);
       dlgAl.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
       startFrame.getStartFrame().centerFrame(dlgAl, 0, "Alati");
@@ -216,6 +223,7 @@ public class frmPDV2 extends raUpitFat {
   void fixPorez() {
     try {
       Timestamp cutoff = Aus.createTimestamp(2012, 3, 1);
+      BigDecimal marg = new BigDecimal("0.02");
       BigDecimal pdv25 = new BigDecimal(25).movePointLeft(2);
       BigDecimal pdv23 = new BigDecimal(23).movePointLeft(2);
       pdv25 = Aus.one0.subtract(Aus.one0.divide(Aus.one0.add(pdv25), 20, BigDecimal.ROUND_HALF_UP));
@@ -226,7 +234,25 @@ public class frmPDV2 extends raUpitFat {
         if (setOPZ.getString("PS").equals("D") && setOPZ.getBigDecimal("PDV").signum() == 0)
           if (setOPZ.getTimestamp("DATDOK").before(cutoff))
             setOPZ.setBigDecimal("PDV", setOPZ.getBigDecimal("SSALDO").multiply(pdv23).setScale(2, BigDecimal.ROUND_HALF_UP));
-          else setOPZ.setBigDecimal("PDV", setOPZ.getBigDecimal("SSALDO").multiply(pdv25).setScale(2, BigDecimal.ROUND_HALF_UP)); 
+          else setOPZ.setBigDecimal("PDV", setOPZ.getBigDecimal("SSALDO").multiply(pdv25).setScale(2, BigDecimal.ROUND_HALF_UP));
+    } finally {
+      getJPTV().enableEvents(true);
+    }
+    getJPTV().fireTableDataChanged();
+  }
+  
+  void fixPorez2() {
+    try {
+      BigDecimal marg = new BigDecimal("0.02");
+      BigDecimal pdv25 = new BigDecimal(25).movePointLeft(2);
+      pdv25 = Aus.one0.subtract(Aus.one0.divide(Aus.one0.add(pdv25), 20, BigDecimal.ROUND_HALF_UP));
+      
+      getJPTV().enableEvents(false);
+      for (setOPZ.first(); setOPZ.inBounds(); setOPZ.next()) 
+        if (setOPZ.getBigDecimal("PDV").subtract(marg).compareTo(
+            setOPZ.getBigDecimal("SSALDO").multiply(pdv25).setScale(2, BigDecimal.ROUND_HALF_UP)) > 0) {
+          setOPZ.setBigDecimal("PDV", setOPZ.getBigDecimal("SSALDO").multiply(pdv25).setScale(2, BigDecimal.ROUND_HALF_UP));
+        }
     } finally {
       getJPTV().enableEvents(true);
     }
@@ -416,9 +442,12 @@ public class frmPDV2 extends raUpitFat {
     JOPPD.currOIB = null;
     JOPPDPN.currOIB = null;
     jlPer.setText("Razdoblje");
+    XYConstraints old = constraintsGetter.get(xYlay, JOPPD.getBtns());
+    if (old == null) old = constraintsGetter.get(xYlay, JOPPDPN.getBtns());
+    if (old == null) old = constraintsGetter.get(xYlay, jraKrajDat);
     datePanel.remove(JOPPD.getBtns());
     datePanel.remove(JOPPDPN.getBtns());
-    datePanel.add(jraKrajDat, new XYConstraints(445, 15, 100, -1));
+    datePanel.add(jraKrajDat, old);
     stds.setTimestamp("DATUMOD", ut.getFirstDayOfMonth(ut.addMonths(vl.getToday(), -1)));
     stds.setTimestamp("DATUMDO", ut.getLastDayOfMonth(ut.addMonths(vl.getToday(), -1)));
   }
@@ -608,7 +637,8 @@ public class frmPDV2 extends raUpitFat {
       if (setOPZ.getString("OPIS").length() == 0) {
         if (setOPZ.getBigDecimal("SSALDO").multiply(porf).setScale(2, BigDecimal.ROUND_HALF_UP)
             .compareTo(setOPZ.getBigDecimal("PDV")) < 0)
-          setOPZ.setString("OPIS", "Iznos poreza je prevelik");
+          setOPZ.setString("OPIS", "Iznos poreza je prevelik " + Aus.formatBigDecimal(
+              setOPZ.getBigDecimal("PDV").subtract(setOPZ.getBigDecimal("SSALDO").multiply(porf).setScale(2, BigDecimal.ROUND_HALF_UP))));
       }
       if (fisks != null && sk.getString("OPIS").startsWith("Dokument ")) {
         String oldb = new VarStr(sk.getString("OPIS")).split()[1];
