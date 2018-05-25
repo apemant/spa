@@ -723,20 +723,20 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 							Valid.getValid().getToday()) + "'";
 		}
 
-		String collation = "";
+/*		String collation = "";
 
 		try {
 			collation = hr.restart.sisfun.frmParam.getParam("sisfun",
 					"CollateSeq");
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		sqlpitanje = sqlpitanje
 				+ " and "
 				+ Condition.between("doki."+vdat, tds.getTimestamp("pocDatum"),
-						tds.getTimestamp("zavDatum"))
-				+ " order by partneri.nazpar " + collation;
+						tds.getTimestamp("zavDatum"));
+				//+ " order by partneri.nazpar ";
 
 		boolean isCPAR4ALL = jrfCPAR.getText().length() == 0;
 
@@ -775,6 +775,7 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		if (tmpqds == null || tmpqds.rowCount() < 1){
 			setNoDataAndReturnImmediately();
         }
+		tmpqds.setSort(new SortDescriptor(new String[] {"NAZPAR"}));
 		
 		int agent = jpZGA.isAgent() && !jpZGA.agent.isEmpty() ? Aus.getNumber(jpZGA.agent.getText()) : -1;
 
@@ -922,16 +923,17 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 				+ Condition.between(vdat, tds.getTimestamp("pocDatum"), tds
 						.getTimestamp("zavDatum"));
 
+		/*
 		String collation = "";
 		try {
 			collation = hr.restart.sisfun.frmParam.getParam("sisfun",
 					"CollateSeq");
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 
-		sqlpitanje += " group by cskl, vrdok, brdok, god order by nazpar "
-				+ collation;
+		sqlpitanje += " group by cskl, vrdok, brdok, god "; //order by nazpar ";
+				//+ collation;
 
 		qdsPojedUlaz.emptyAllRows();
 		if (isCPAR4ALL) {
@@ -981,6 +983,8 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 
 		//debug
 		//    s.prn(tmpqds);
+		
+		tmpqds.setSort(new SortDescriptor(new String[] {"NAZPAR"}));
 		
 		
 		int agent = jpZGA.isAgent() && !jpZGA.agent.isEmpty() ? Aus.getNumber(jpZGA.agent.getText()) : -1;
@@ -1378,8 +1382,9 @@ public class raRobnoMiniSaldak extends hr.restart.util.raUpitFat {
 		miniPanel.setLayout(new BorderLayout());
 		miniPanel.add(up, BorderLayout.NORTH);
 		miniPanel.add(new JraScrollPane(jup, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
-		jup.setPreferredScrollableViewportSize(new Dimension(260, 200));
+		jup.setPreferredScrollableViewportSize(new Dimension(Aus.big(260), Aus.big(200)));
 
+		 Aus.recursiveUpdateSizes(miniPanel);
 	}
 
 	//  public void jptv_doubleClickA() {
