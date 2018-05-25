@@ -17,15 +17,7 @@
 ****************************************************************************/
 package hr.restart.sisfun;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -206,6 +198,10 @@ public class TextFile {
     return this;
   }
 
+  public Writer getWriter() {
+    return writer;
+  }
+  
   public void close() {
     try {
       if (reader != null) reader.close();
