@@ -60,6 +60,8 @@ public class frmValute extends raMatPodaci {
   JraCheckBox jcbREFVAL = new JraCheckBox();
   JLabel jlNIZAJEDINICA = new JLabel();
   JraTextField jtNIZAJEDINICA = new JraTextField();
+  JraTextField jraChar = new JraTextField();
+  JraTextField jraIsoCode = new JraTextField();
 
   public frmValute() {
     try {
@@ -89,7 +91,7 @@ public class frmValute extends raMatPodaci {
     jtNAZIV.setColumnName("NAZVAL");
     jtNAZIV.setDataSet(getRaQueryDataSet());
     xYLayout1.setWidth(465);
-    xYLayout1.setHeight(159);
+    xYLayout1.setHeight(185);
     jlJEDINICA.setText("Jedinica");
     jtJEDINICA.setColumnName("JEDVAL");
     jtJEDINICA.setDataSet(getRaQueryDataSet());
@@ -120,6 +122,11 @@ public class frmValute extends raMatPodaci {
     jtNIZAJEDINICA.setToolTipText("");
     jtNIZAJEDINICA.setColumnName("NIZJED");
     jtNIZAJEDINICA.setDataSet(getRaQueryDataSet());
+    jraChar.setColumnName("CHV");
+    jraChar.setDataSet(getRaQueryDataSet());
+    jraIsoCode.setColumnName("ISOCODE");
+    jraIsoCode.setDataSet(getRaQueryDataSet());
+    
     jp.add(jlCVALUTE, new XYConstraints(15, 20, -1, -1));
     jp.add(jtCVALUTE, new XYConstraints(150, 20, 45, -1));
     jp.add(jlOZNAKA, new XYConstraints(15, 45, -1, -1));
@@ -133,6 +140,10 @@ public class frmValute extends raMatPodaci {
     jp.add(jcbREFVAL, new XYConstraints(200, 45, 250, 21));
     jp.add(jlNIZAJEDINICA, new XYConstraints(15, 120, -1, -1));
     jp.add(jtNIZAJEDINICA, new XYConstraints(150, 120, 300, -1));
+    jp.add(new JLabel("ISO kod"), new XYConstraints(15, 145, -1, -1));
+    jp.add(jraIsoCode, new XYConstraints(150, 145, 45, -1));
+    jp.add(new JLabel("Znak"), new XYConstraints(300, 145, -1, -1));
+    jp.add(jraChar, new XYConstraints(375, 145, 75, -1));
   }
   public static frmValute getFrmValute() {
     if (fvalute==null) fvalute= new frmValute();
