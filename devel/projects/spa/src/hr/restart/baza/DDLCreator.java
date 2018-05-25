@@ -157,7 +157,7 @@ public class DDLCreator {
   }
   
   public String stringComm(int _size, String _default, boolean _not_null) {
-    VarStr field = new VarStr(Dialect.getDDL("CHAR"))
+    VarStr field = new VarStr(Dialect.getDDL(_size >= 40 ? "VARCHAR" : "CHAR"))
         .append(" ").append(Dialect.getDDL("EXTCHAR"));
     field.replace("%SIZE", Integer.toString(_size));
     if (_default!=null && _default.length() > 0) {

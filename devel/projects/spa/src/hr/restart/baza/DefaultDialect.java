@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.baza;
 
+import java.sql.Types;
 import java.util.Properties;
 
 import com.borland.dx.dataset.Variant;
@@ -38,6 +39,7 @@ public class DefaultDialect extends Dialect {
     setDDLMap(new String[][] {
       { "CREATE", "create table %NAME (%BODY)" },
       { "CHAR", "char(%SIZE)" },
+      { "VARCHAR", "varchar(%SIZE)" },
       { "EXTCHAR", "" },
       { "INTEGER", "integer" },
       { "SHORT", "smallint" },
@@ -78,22 +80,22 @@ public class DefaultDialect extends Dialect {
     return prop;
   }
   
-  protected int getSqlDataType(int dataType) {
+  protected int getSqlDataType(int dataType, int prec) {
     switch (dataType) {
       case Variant.STRING:
-        return 1;
+        return prec >= 40 ? Types.VARCHAR : Types.CHAR;
       case Variant.BIGDECIMAL:
-        return 2;
+        return Types.NUMERIC;
       case Variant.INT:
-        return 4;
+        return Types.INTEGER;
       case Variant.SHORT:
-        return 5;
+        return Types.SMALLINT;
       case Variant.TIMESTAMP:
-        return 93;
+        return Types.TIMESTAMP;
       case Variant.DOUBLE:
-        return 8;
+        return Types.DOUBLE;
       case Variant.INPUTSTREAM:
-        return -4;      
+        return Types.LONGVARBINARY;      
     }
     throw new RuntimeException("Pogresan tip kolone");
   }
