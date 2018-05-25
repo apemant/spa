@@ -120,16 +120,17 @@ public class dlgSplitAmount extends JraDialog {
     init();
   }
 
-  private void setFields() {
+  public void setFields(int dec) {
+    fields.close();
     fields.setColumns(new Column[] {
-      dM.createBigDecimalColumn("FIRST"),
-      dM.createBigDecimalColumn("SECOND"),
+      dM.createBigDecimalColumn("FIRST", dec),
+      dM.createBigDecimalColumn("SECOND", dec),
     });
     fields.open();
   }
 
   private void jbInit() throws Exception {
-    setFields();
+    setFields(2);
     jp.setLayout(lay);
     lay.setWidth(300);
     lay.setHeight(80);
