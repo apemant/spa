@@ -229,8 +229,8 @@ public abstract class KreirDrop {
 
   	if (track != null) track.rowTransfered(file.getName(), track.LOAD_STARTED, 0, null);
 	
+  	String line = null;
   	try {
-      String line;
       int rows = 0;
       Variant v = new Variant();
        
@@ -253,6 +253,9 @@ public abstract class KreirDrop {
         if (track != null) track.rowTransfered(file.getName(), track.ROW_LOADED, rows, null);
       }
       if (track != null) track.rowTransfered(file.getName(), track.LOAD_FINISHED, rows, null);
+  	} catch (RuntimeException e) {
+  	  System.out.println(line);
+  	  throw e;
     } finally {
       dat.close();
     }
@@ -266,7 +269,7 @@ public abstract class KreirDrop {
   public int getRowCount() {
     return getRowCount("");
   }
-
+  
   /**
    * Vraca broj redova tablice koji ispunjavaju uvjet where.<p>
    * @param where uvjet (nrp. "CPAR=6").
@@ -279,6 +282,14 @@ public abstract class KreirDrop {
     if (where != null && where.length() > 0)
       q.append(" WHERE ").append(where);
     q.replaceFirst("*"," COUNT(*) ");
+    return Valid.getValid().getSetCount(Util.getNewQueryDataSet(q.toString()), 0);
+  }
+  
+  public int getMax(String col) {
+    VarStr q = new VarStr(getQueryDataSet().getOriginalQueryString());
+    int wh = q.indexOfIgnoreCase(" where");
+    if (wh >= 0) q.truncate(wh);
+    q.replaceFirst("*"," MAX(" + col +") ");
     return Valid.getValid().getSetCount(Util.getNewQueryDataSet(q.toString()), 0);
   }
 
@@ -744,6 +755,15 @@ public abstract class KreirDrop {
         existingFields.add(i, ((Column) missingKeyCols.get(i)).getColumnName().toUpperCase());
         System.err.println("nema kolone kljuèa: "+existingFields.get(i));
       }
+      
+      int aincr = -1;
+      if (missingKeyCols.size() == 1) {
+        Column mc = (Column) missingKeyCols.get(0);
+        if (mc.getDataType() == Variant.INT ||
+            mc.getDataType() == Variant.SHORT ||
+            mc.getDataType() == Variant.LONG) 
+          aincr = getMax(mc.getColumnName()) + 1;
+      }
 
       raPreparedStatement ps = raPreparedStatement.createIndependentInsert(Naziv,
           (String[]) existingFields.toArray(new String[existingFields.size()]));
@@ -800,8 +820,20 @@ public abstract class KreirDrop {
                   ps.setString(c.getColumnName(), "!", false);
                   break;
                 case Variant.INT:
+                  if (aincr >= 0) {
+                    ps.setInt(c.getColumnName(), aincr++, false);
+                    break;
+                  }
                 case Variant.SHORT:
+                  if (aincr >= 0) {
+                    ps.setShort(c.getColumnName(), (short) aincr++, false);
+                    break;
+                  }
                 case Variant.LONG:
+                  if (aincr >= 0) {
+                    ps.setLong(ps.getParameterIndex(c.getColumnName(), false), aincr++);
+                    break;
+                  }
                 case Variant.DOUBLE:
                 case Variant.FLOAT:
                 case Variant.BIGDECIMAL:
@@ -1185,7 +1217,7 @@ public abstract class KreirDrop {
 
   public void setall(){
     // nothing
-  	new Throwable(getClass().getName()).printStackTrace();
+  	//new Throwable(getClass().getName()).printStackTrace();
   }
 
 //  public void Kreiranje(BazaOper baza) {
@@ -1474,7 +1506,7 @@ public abstract class KreirDrop {
     int prec = Aus.getNumber(parts[2]);
     
     Column c = dM.createColumn(parts[0].toUpperCase(), parts[5], parts[4].trim(), 
-        dtype, Dialect.getSqlType(dtype), prec, scale);
+        dtype, Dialect.getSqlType(dtype, prec), prec, scale);
     
     
     if (!dM.isMinimal()) modifyColumn(c);
