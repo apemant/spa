@@ -26,9 +26,11 @@ package hr.restart.util.reports;
  * @version 1.0
  */
 import hr.restart.sisfun.frmParam;
+import hr.restart.util.ProcessInterruptException;
 
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -58,6 +60,7 @@ public class raRunReport {
   private String ownerName, immedName;
   private Dimension immedSize;
   private boolean ownerlock, immedView;
+  private File toExport;
   private TemplateModifier temod;
 //  private static raRunReport rr;
   protected raRunReport() {
@@ -437,6 +440,7 @@ public class raRunReport {
 
   public void go() {
     try {
+      toExport = null;
       getReportRuntime();
 //      dlgRunReport drr = new dlgRunReport(rt,dataSources,reportTemplates,dataSourceNames,reportProviders,reportTitles);
 //      drr.dispose();
@@ -452,6 +456,21 @@ public class raRunReport {
   }
 //geteri
 
+  public void exportPdf(File export) {
+    toExport = export;
+    getReportRuntime();
+    dlgRunReport.showDlgRunReport(this);
+    System.gc();
+    toExport = null;
+    if (dlgRunReport.getCurrentDlgRunReport().cancelled)
+      throw new ProcessInterruptException();
+    if (dlgRunReport.getCurrentDlgRunReport().erroneous)
+      throw new RuntimeException();
+  }
+  
+  public File getExportFile() {
+    return toExport;
+  }
 
 
   int getDefListIdx() {
