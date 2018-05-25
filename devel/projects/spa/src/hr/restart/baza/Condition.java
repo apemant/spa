@@ -183,24 +183,30 @@ public abstract class Condition {
   }
 
   public static Condition in(String colname, DataSet ds, String dsColname) {
-    int i = 0;
     Object arr;
+    Variant v = new Variant();
     ds.open();
     switch (ds.getColumn(dsColname).getDataType()) {
       case Variant.STRING:
         arr = new String[ds.rowCount()];
-        for (ds.first(); ds.inBounds(); ds.next(), i++)
-          Array.set(arr, i, ds.getString(dsColname));
+        for (int i = 0; i < ds.rowCount(); i++) {
+          ds.getVariant(dsColname, i, v);
+          Array.set(arr, i, v.getString());
+        }
         return Condition.in(colname, arr);
       case Variant.INT:
         arr = new int[ds.rowCount()];
-        for (ds.first(); ds.inBounds(); ds.next(), i++)
-          Array.setInt(arr, i, ds.getInt(dsColname));
+        for (int i = 0; i < ds.rowCount(); i++) {
+          ds.getVariant(dsColname, i, v);
+          Array.setInt(arr, i, v.getInt());
+        }
         return Condition.in(colname, arr);
       case Variant.SHORT:
         arr = new short[ds.rowCount()];
-        for (ds.first(); ds.inBounds(); ds.next(), i++)
-          Array.setShort(arr, i, ds.getShort(dsColname));
+        for (int i = 0; i < ds.rowCount(); i++) {
+          ds.getVariant(dsColname, i, v);
+          Array.setShort(arr, i, v.getShort());
+        }
         return Condition.in(colname, arr);
     }
     throw new UnsupportedOperationException("Condition.in() ne podrzava "+
