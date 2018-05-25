@@ -17,26 +17,24 @@
 ****************************************************************************/
 package hr.restart.pos;
 
-import hr.apis_it.fin._2012.types.f73.PdvType;
 import hr.apis_it.fin._2012.types.f73.PorezType;
 import hr.apis_it.fin._2012.types.f73.RacunType;
 import hr.apis_it.fin._2012.types.f73.RacunZahtjev;
 import hr.restart.baza.*;
-import hr.restart.robno.*;
+import hr.restart.robno.Aut;
+import hr.restart.robno.Rbr;
 import hr.restart.robno.Util;
+import hr.restart.robno.allStanje;
+import hr.restart.robno.dlgKupac;
+import hr.restart.robno.frmPlacanje;
+import hr.restart.robno.raControlDocs;
+import hr.restart.robno.raVart;
+import hr.restart.robno.repFISBIH;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raUser;
 import hr.restart.sk.dlgSplitAmount;
-import hr.restart.swing.JraTable2;
-import hr.restart.swing.JraTextField;
-import hr.restart.swing.raColors;
-import hr.restart.swing.raExtendedTable;
-import hr.restart.swing.raOptionDialog;
-import hr.restart.swing.raSelectTableModifier;
-import hr.restart.swing.raStatusColorModifier;
-import hr.restart.swing.raTableModifier;
-import hr.restart.swing.raTextMask;
+import hr.restart.swing.*;
 import hr.restart.util.*;
 import hr.restart.zapod.OrgStr;
 
@@ -163,6 +161,18 @@ public class frmMasterBlagajna extends raMasterDetail {
       closeRac();
     }
   };
+  
+  raNavAction navStorno = new raNavAction("Storniraj raèun", raImages.IMGEXIT, KeyEvent.VK_F8) {
+    public void actionPerformed(ActionEvent e) {
+      createStorno();
+    }
+  };
+  
+  raNavAction navPon = new raNavAction("Prebaci iz ponude", raImages.IMGIMPORT, KeyEvent.VK_F7) {
+    public void actionPerformed(ActionEvent e) {
+      createFromPon();
+    }
+  };
 
   raNavAction navPonisti = new raNavAction("Arhiviraj raèun", raImages.IMGSENDMAIL, KeyEvent.VK_F7) {
     public void actionPerformed(ActionEvent e) {
@@ -181,6 +191,8 @@ public class frmMasterBlagajna extends raMasterDetail {
   
   raStatusColorModifier msc = new raStatusColorModifier("AKTIV", "D",
       raColors.green, Color.green.darker().darker());
+  
+  raTwoTableChooser rTTC = new raTwoTableChooser(raMaster);
   
   public static raTableModifier fsc = new raTableModifier() {
     Variant shared = new Variant();
@@ -222,6 +234,9 @@ public class frmMasterBlagajna extends raMasterDetail {
   
   
   public static final String[] key = {"cskl","vrdok","god","brdok","cprodmj"};
+  
+  String[] keyb = {"cskl","vrdok","god","cprodmj"};
+
 
   static frmMasterBlagajna frm;
   
@@ -492,6 +507,210 @@ public class frmMasterBlagajna extends raMasterDetail {
       newRacun=false;
       this.jBStavke_actionPerformed(null);
     }
+    updatePlacLabel();
+    updateKupacLabel();
+  }
+  
+  void updatePlacLabel() {
+    if (raDetail.isShowing())
+      jpBl.jlPlac.setText(frmPlacanje.getRateString(this));
+  }
+  
+  void updateKupacLabel() {
+    if (!raDetail.isShowing()) return;
+    if (!getMasterSet().isNull("CKUPAC") && ld.raLocate(dm.getKupci(), "CKUPAC", getMasterSet())) {
+      jpBl.jlKupac.setText("Kupac: " + dm.getKupci().getInt("CKUPAC") + " - " + 
+          dm.getKupci().getString("IME") + " " + dm.getKupci().getString("PREZIME"));
+    } else jpBl.jlKupac.setText("");
+  }
+  
+  private boolean checkDatum() {
+    Timestamp upto = getPreSelect().getSelRow().getTimestamp("DATDOK-to");
+    if (ut.getFirstSecondOfDay(vl.getToday()).after(upto)) {
+      if (!vl.findYear(upto).equals(god)) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(),
+            "Pogrešna godina na predselekciji !", "Greška",
+            javax.swing.JOptionPane.ERROR_MESSAGE);
+        return false;
+      }
+      int response = JOptionPane.showConfirmDialog(raMaster.getWindow(),
+          "Napraviti raèun s datumom " + Aus.formatTimestamp(upto) + " ?",
+          "Datum izvan perioda", JOptionPane.OK_CANCEL_OPTION);
+      if (response != JOptionPane.OK_OPTION) return false;
+    }
+    return true;
+  }
+  
+  public void createFromPon() {
+    if (!checkDatum()) return;
+    
+    String[] ccols = {"CSKL", "GOD", "VRDOK", "PARAM", "STATIRA"};
+    String[] cvals = {cskl, god, "PON", "K", "N"};
+    Condition minc = Condition.whereAllEqual(ccols, cvals);
+    QueryDataSet pons = doki.getDataModule().openTempSet(minc);
+    
+    StorageDataSet selp = doki.getDataModule().getScopedSet("CSKL VRDOK BRDOK DATDOK CKUPAC UIRAC");
+    
+    pons.setTableName("PONKUP");
+    selp.setTableName("PONKUP");
+    rTTC.setLeftDataSet(pons);
+    rTTC.setRightDataSet(selp);
+    rTTC.initialize();
+    
+    raInputDialog sel = new raInputDialog() {
+      protected void beforeShow() {
+        rTTC.setKeyParent(win);
+        rTTC.initLeftKeys();
+      }
+    };
+    
+    if (sel.show(raMaster, rTTC, "Odabir ponuda") && selp.getRowCount() > 0) {
+      Condition brdoks = Condition.in("BRDOK", selp);
+      pons = doki.getDataModule().openTempSet(minc.and(brdoks));
+      QueryDataSet stavs = stdoki.getDataModule().openTempSet(Condition.whereAllEqual(keyb, pons).and(brdoks));
+       
+      HashSet carts = new HashSet();
+      for (stavs.first(); stavs.inBounds(); stavs.next())
+        carts.add(Integer.valueOf(stavs.getInt("CART")));
+      
+      stavs.setSort(new SortDescriptor(new String[] {"BRDOK", "RBR"}));
+      
+      String vrc = frmParam.getParam("robno","dohMcPOS","AR",
+          "Dohvat cijene na POS-u (AR,ST,CJ)").trim();
+      
+      DataSet csta = !vrc.equals("ST") ? null :
+        Stanje.getDataModule().openTempSet(Condition.equal("CSKL", cskl).and(Condition.equal("GOD", god)).
+            and(Condition.in("CART", carts)));
+      
+      DataSet cj = null;
+      
+      getMasterSet().insertRow(false);
+      getMasterSet().setString("CSKL", cskl);
+      getMasterSet().setString("GOD", god);
+      getMasterSet().setString("VRDOK", "GRC");
+      getMasterSet().setString("CPRODMJ", rm);
+      getMasterSet().setString("CBLAGAJNIK", cblag);
+      getMasterSet().setTimestamp("DATDOK", vl.getToday());
+      Timestamp upto = getPreSelect().getSelRow().getTimestamp("DATDOK-to");
+      if (ut.getFirstSecondOfDay(vl.getToday()).after(upto))
+        getMasterSet().setTimestamp("DATDOK", upto);
+      
+      getMasterSet().setTimestamp("SYSDAT",vl.findDate(true,0));
+      Integer Broj = vl.findSeqInteger("BL-"+cskl+"GRC"+god+"-"+rm, false);
+      getMasterSet().setInt("BRDOK",Broj.intValue());
+      
+      super.refilterDetailSet();
+      
+      for (stavs.first(); stavs.inBounds(); stavs.next()) {
+        getMasterSet().insertRow(false);
+        getDetailSet().setString("CSKL", getMasterSet().getString("CSKL"));
+        getDetailSet().setString("GOD", getMasterSet().getString("GOD"));
+        getDetailSet().setString("VRDOK", getMasterSet().getString("VRDOK"));
+        getDetailSet().setInt("BRDOK", getMasterSet().getInt("BRDOK"));
+        getDetailSet().setString("CPRODMJ", getMasterSet().getString("CPRODMJ"));
+        
+        Aut.getAut().copyArtFields(getDetailSet(), stavs);
+        Aus.set(getDetailSet(), "KOL", stavs);
+        
+        if (vrc.equals("CJ") && (cj = allStanje.getallStanje().getCijenik("GRC", cskl, cpar, stavs.getInt("CART"))) != null
+            && cj.rowCount() > 0) {
+          Aus.set(getDetailSet(), "MC", cj);
+        } else if (vrc.equals("ST") && ld.raLocate(csta, "CART", stavs)) {
+          Aus.set(getDetailSet(), "MC", csta);
+        } else {
+          Artikli.loc(stavs);
+          Aus.set(getDetailSet(), "MC", Artikli.get());
+        }
+        calcIZNOS(2);
+      }
+    }
+
+  }
+  
+  public void createStorno() {
+    if (getMasterSet().rowCount() == 0) return;
+    
+    if (!checkDatum()) return;
+    
+    raProcess.runChild(new Runnable() {
+      public void run() {
+        try {
+          if (!createStorno_impl()) raProcess.fail();
+        } catch (Exception e) {
+          e.printStackTrace();
+          raProcess.fail();
+        }
+      }
+    });
+    if (raProcess.isFailed()) {
+      JOptionPane.showMessageDialog(raMaster.getWindow(), "Greška kod storniranja raèuna!", "Greška", JOptionPane.ERROR_MESSAGE);
+    } else if (raProcess.isCompleted()) {
+      getMasterSet().last();
+    }
+  }
+  
+  boolean createStorno_impl() throws Exception {
+    if (getMasterSet().rowCount() == 0) return false;
+    
+    QueryDataSet ms = getMasterSet();
+    QueryDataSet oldms = Pos.getDataModule().openTempSet(Condition.whereAllEqual(key, ms));
+    
+    ms.insertRow(false);
+    
+    String[] ccm = {"CSKL", "VRDOK", "CPRODMJ", "CNACPL", "UPPOPUST2", "CKUPAC"};
+    String[] nccm = {"UKUPNO", "IZNOS", "NETO", "UIPOPUST1", "UIPOPUST2", "UIRAC"};
+    
+    String[] ccd = {"RBR", "CART", "CART1", "BC", "NAZART", "JM", "MC", "PPOPUST1", "PPOPUST2", "PPOR1", "PPOR2", "PPOR3"};
+    String[] nccd = {"KOL", "IPOPUST1", "IPOPUST2", "POR1", "POR2", "POR3", "UKUPNO", "IZNOS", "NETO"};
+    
+    String[] rcd = {"RBR", "CNACPL", "CBANKA", "BANKA"};
+    
+    dM.copyColumns(oldms, ms, ccm);
+    for (int i = 0; i < nccm.length; i++)
+      Aus.set(ms, nccm[i], oldms.getBigDecimal(nccm[i]).negate());
+    ms.setString("CBLAGAJNIK", cblag);
+    ms.setString("CUSER", raUser.getInstance().getUser());   
+    
+    ms.setTimestamp("DATDOK", vl.getToday());
+    Timestamp upto = getPreSelect().getSelRow().getTimestamp("DATDOK-to");
+    if (ut.getFirstSecondOfDay(vl.getToday()).after(upto))
+      ms.setTimestamp("DATDOK", upto);
+    
+    ms.setString("GOD", vl.findYear(ms.getTimestamp("DATDOK")));
+    
+    if (presBlag.stolovi) {
+      ms.setString("STOL", oldms.getString("STOL"));
+    }
+    ms.setTimestamp("SYSDAT",vl.findDate(true,0));
+    ms.post();
+        
+    QueryDataSet oldds = Stpos.getDataModule().openTempSet(Condition.whereAllEqual(key, oldms));   
+    QueryDataSet ds = Stpos.getDataModule().openEmptySet();
+    
+    QueryDataSet oldrt = Rate.getDataModule().openTempSet(Condition.whereAllEqual(key, oldms));
+    QueryDataSet rt = Rate.getDataModule().openEmptySet();
+    
+    Integer Broj = vl.findSeqInteger("BL-"+cskl+"GRC"+god+"-"+rm, false);
+    ms.setInt("BRDOK",Broj.intValue());
+    
+    for (oldds.first(); oldds.inBounds(); oldds.next()) {
+      ds.insertRow(false);
+      dM.copyColumns(ms, ds, key);
+      dM.copyColumns(oldds, ds, ccd);
+      for (int i = 0; i < nccd.length; i++)
+        Aus.set(ds, nccd[i], oldds.getBigDecimal(nccd[i]).negate());
+      ds.post();
+    }
+    
+    for (oldrt.first(); oldrt.inBounds(); oldrt.next()) {
+      rt.insertRow(false);
+      dM.copyColumns(ms, rt, key);
+      dM.copyColumns(oldrt, rt, rcd);
+      Aus.set(rt, "IRATA", oldrt.getBigDecimal("IRATA").negate());
+      rt.post();
+    }
+    
+    return raTransaction.saveChangesInTransaction(new QueryDataSet[] {ms, ds, rt, dm.getSeq()});
   }
   
   
@@ -505,6 +724,8 @@ public class frmMasterBlagajna extends raMasterDetail {
     } else newRacun = false;
     System.out.println("stavke performed");
     super.jBStavke_actionPerformed(e);
+    updateKupacLabel();
+    updatePlacLabel();
   }
 
   /*public void AfterDeleteMaster() {
@@ -605,6 +826,8 @@ public class frmMasterBlagajna extends raMasterDetail {
       setNaslovDetail("Stavke raèuna " +
           getMasterSet().getInt("BRDOK"));
     }
+    updatePlacLabel();
+    updateKupacLabel();
   }
   public void beforeShowDetail() {
   	System.out.println("Detail: "+getDetailSet().isOpen());
@@ -687,6 +910,25 @@ public class frmMasterBlagajna extends raMasterDetail {
     		}
     	}
     }*/
+    BigDecimal minruc = Aus.getDecNumber(frmParam.getParam("robno", "minRuC", "0", "Minimalni RuC na izlaznim dokumentima"));
+    System.out.println("minruc " + minruc);
+    if (minruc.signum() > 0 && getDetailSet().getBigDecimal("KOL").signum() > 0) {
+      BigDecimal izn = getDetailSet().getBigDecimal("IZNOS").subtract(getDetailSet().getBigDecimal("POR1"))
+          .subtract(getDetailSet().getBigDecimal("POR2")).subtract(getDetailSet().getBigDecimal("POR3"));
+      DataSet sta = Stanje.getDataModule().openTempSet(Condition.whereAllEqual(
+          new String[] {"CSKL", "GOD", "CART"}, getDetailSet()));
+      System.out.println("itn " + izn + "  rows "+ sta.getRowCount());
+      if (sta.rowCount() > 0) {
+        BigDecimal inab = sta.getBigDecimal("NC").multiply(getDetailSet().getBigDecimal("KOL"));
+        System.out.println("inab " + inab);
+        if (izn.divide(inab, 2, BigDecimal.ROUND_HALF_UP).subtract(Aus.one0).movePointRight(2).compareTo(minruc) < 0) {
+          jpBl.jtfPOPUST.requestFocus();
+          if (JOptionPane.showConfirmDialog(raDetail.getWindow(), "RuC na ovoj stavci je manji od minimalne (" +
+              Aus.formatBigDecimal(minruc) + "%)! Nastaviti ipak?", "Upozorenje", JOptionPane.OK_CANCEL_OPTION,
+              JOptionPane.WARNING_MESSAGE) != JOptionPane.OK_OPTION) return false;
+        }
+      }
+    }
     if (mode=='N') {
       stavka++;
       getDetailSet().setShort("RBR", stavka);
@@ -854,7 +1096,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     raMaster.setAutoFirstOnShow(false);
     raDetail.setSize(hr.restart.start.getSCREENSIZE());
     raDetail.addOption(navKUPAC,4,false);
-    raDetail.addOption(navBEFEXIT,5,false);
+    raDetail.addOption(navBEFEXIT,5);
     raDetail.addOption(navPOPUST,6);
     raDetail.addOption(navEXIT,7);
     if (hr.restart.sisfun.frmParam.getParam(
@@ -874,7 +1116,7 @@ public class frmMasterBlagajna extends raMasterDetail {
 //    jpBl.setDataSet(getMasterSet(), getDetailSet());
     raDetail.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F7) {
       public void keyAction() {
-        if (allowEdit || raUser.getInstance().isSuper() || presBlag.isSuper) pressF7('U');
+        if (allowEdit/* || raUser.getInstance().isSuper() || presBlag.isSuper*/) pressF7('U');
       }
     });
     raDetail.addKeyAction(new hr.restart.util.raKeyAction(java.awt.event.KeyEvent.VK_F11) {
@@ -946,7 +1188,7 @@ public class frmMasterBlagajna extends raMasterDetail {
       upper.add(Box.createHorizontalStrut(20));
       upper.add(jraStol);
       upper.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-      jraStol.setPreferredSize(new Dimension(100, 21));
+      jraStol.setPreferredSize(new Dimension(Aus.big(100), Aus.big(21)));
       jraStol.setEnterDisabled(false);
       new raTextMask(jraStol, 10);
       
@@ -960,6 +1202,7 @@ public class frmMasterBlagajna extends raMasterDetail {
           raMaster.addOption(navPonisti, 5);
         }
       }
+      raMaster.addOption(navStorno, 5);
       this.raMaster.addOption(new raNavAction("Pregled materijala", raImages.IMGMOVIE, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
         public void actionPerformed(java.awt.event.ActionEvent ev) {
           showRequirementsMaster();
@@ -987,6 +1230,7 @@ public class frmMasterBlagajna extends raMasterDetail {
             showTotalArt();
           }
         },6,false);
+        raMaster.addOption(navStorno, 7);
       } else {
         if (false && raUser.getInstance().isSuper()) {
           raMaster.addOption(navPonisti, 4);
@@ -996,10 +1240,13 @@ public class frmMasterBlagajna extends raMasterDetail {
             showRequirementsMaster();
           }
         },4,false);
+        //raMaster.addOption(navPon, 5);
+        raMaster.addOption(navStorno, 6);
       }
     }
     
     /*if (presBlag.isFiskal()) */ raMaster.getJpTableView().addTableModifier(fsc);
+    raMaster.getJpTableView().addTableModifier(new raTableColumnModifier("CKUPAC", new String[] {"CKUPAC", "IME", "PREZIME"}, dm.getKupci()));
     
     raDetail.getNavBar().removeStandardOption(raNavBar.ACTION_TOGGLE_TABLE);
     raDetail.removeRnvCopyCurr();
@@ -1056,6 +1303,7 @@ public class frmMasterBlagajna extends raMasterDetail {
       
       raMaster.getJpTableView().installSummary(totalTab, 10, true);
     }
+    //Aus.recursiveUpdateSizes(jpBl);
   }
   /**
    * Disejbliranje pojedinih panela na ekranu zavisno od moda rada
@@ -1194,9 +1442,10 @@ public class frmMasterBlagajna extends raMasterDetail {
 
 
   public void calcIZNOS(int mod) {
-    DataSet art = dm.getArtikli();
-	  lookupData.getlookupData().raLocate(dm.getPorezi(), "CPOR", cporez);
-	  lookupData.getlookupData().raLocate(art, "CART", getDetailSet().getInt("CART")+"");
+    Artikli.loc(getDetailSet());
+    ReadRow art = Artikli.get();
+	  lookupData.getlookupData().raLocate(dm.getPorezi(), "CPOR", art);
+	  //lookupData.getlookupData().raLocate(art, "CART", getDetailSet().getInt("CART")+"");
 
     getDetailSet().setBigDecimal("UKUPNO", util.multiValue(getDetailSet().getBigDecimal("MC"), getDetailSet().getBigDecimal("KOL")));
     getDetailSet().setBigDecimal("IPOPUST1", util.multiValue(getDetailSet().getBigDecimal("UKUPNO"), getDetailSet().getBigDecimal("PPOPUST1").divide(util.sto,BigDecimal.ROUND_HALF_UP)));
@@ -1272,6 +1521,7 @@ public class frmMasterBlagajna extends raMasterDetail {
   	  updatePlac();
   	  raMaster.getJpTableView().fireTableDataChanged();
   	}
+  	updatePlacLabel();
   }
   void pressF11(char mode) {
 
@@ -1289,6 +1539,11 @@ public class frmMasterBlagajna extends raMasterDetail {
     dlgkup.setVisible(true);
     System.out.println("********* after dlgKupac");
     checkUnos(mode);
+    if (!newRacun) {
+      getMasterSet().saveChanges();
+      raMaster.getJpTableView().fireTableDataChanged();
+    }
+    updateKupacLabel();
     //jpDetBlagajna.grabFocusPOS();
   }
   
@@ -2335,7 +2590,8 @@ public class frmMasterBlagajna extends raMasterDetail {
     
     raProcess.runChild(raMaster.getWindow(), new Runnable() {
       public void run() {
-          int row = getMasterSet().getRow();
+          
+        /*int row = getMasterSet().getRow();
           raMaster.getJpTableView().enableEvents(false);
 
           for (getMasterSet().first(); getMasterSet().inBounds(); getMasterSet().next()) {
@@ -2347,28 +2603,35 @@ public class frmMasterBlagajna extends raMasterDetail {
               ds.close();
           }
           getMasterSet().goToRow(row);
-          raMaster.getJpTableView().enableEvents(true);
+          raMaster.getJpTableView().enableEvents(true);*/
+        Stopwatch sw = Stopwatch.start("begin"); 
         
-        String[] cols = {"GOD", "CART"};
+        DataSet ds = Stpos.getDataModule().getTempSet(
+            raMaster.getSelectionTracker().countSelected() == 0 ? Condition.whereAllEqual(key, getMasterSet()) 
+            : Condition.whereAllEqual(keyb, getMasterSet()).and(raMaster.getSelectCondition()));
+        raProcess.openScratchDataSet(ds);
+        sw.report("opened data");
+        
+        fillRequirements(reqs, ds);
+        ds.close();
+        sw.report("expanded data");
+        
         String god = vl.getKnjigYear("robno");
         System.out.println(god);
+        DataSet sta = Stanje.getDataModule().openTempSet(Condition.equal("GOD", god).and(Condition.in("CART", reqs)));
+        sw.report("opened stanje");
+        HashDataSet hask = new HashDataSet(sta, new String[] {"CSKL", "CART"});
+        HashDataSet hart = new HashDataSet(sta, "CART");
+        sw.report("hashed stanje");
+        
         for (reqs.first(); reqs.inBounds(); reqs.next()) {
           raProcess.checkClosing();
-          int cart = reqs.getInt("CART");
-          DataSet st = Stanje.getDataModule().getTempSet(Condition.whereAllEqual(cols, 
-              new Object[] {god, new Integer(cart)}));
-          st.open();
-          if (st.rowCount() > 0) {
-            if (!ld.raLocate(st, "CSKL", reqs.getString("CSKL"))) st.first();
-            reqs.setBigDecimal("NC", st.getBigDecimal("NC"));
-          } else {
-            DataSet art = Artikli.getDataModule().getTempSet(Condition.equal("CART", cart));
-            art.open();
-            reqs.setBigDecimal("NC", art.getBigDecimal("NC"));
-          }
-          reqs.setBigDecimal("INAB", util.multiValue(reqs.getBigDecimal("KOL"), 
-              reqs.getBigDecimal("NC")));
+          if (hask.loc(reqs)) Aus.set(reqs, "NC", hask.get());
+          else if (hart.loc(reqs)) Aus.set(reqs, "NC", hart.get());
+          else if (Artikli.loc(reqs)) Aus.set(reqs, "NC", Artikli.get());
+          Aus.mul(reqs, "INAB", "NC", "KOL");
         }
+        sw.report("over");
       }
     });
     
@@ -2378,7 +2641,7 @@ public class frmMasterBlagajna extends raMasterDetail {
     viewReq.setSums(new String[] {"INAB"});
     viewReq.setSaveName("Pregled-arh");
     viewReq.jp.getMpTable().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-    viewReq.setTitle("Prikaz potrošnje materijala  za odabrano razdoblje");
+    viewReq.setTitle("Prikaz potrošnje materijala  za odabrane dokumente");
     viewReq.setVisibleCols(new int[] {0, Aut.getAut().getCARTdependable(1, 2, 3), 4, 5, 6, 7, 8});
     viewReq.show();
   }
