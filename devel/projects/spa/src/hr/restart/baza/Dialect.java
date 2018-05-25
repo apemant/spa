@@ -54,8 +54,8 @@ public abstract class Dialect {
     return currentDialect.getDialectConnectionProperties();
   }
   
-  public static int getSqlType(int dataType) {
-    return currentDialect.getSqlDataType(dataType);
+  public static int getSqlType(int dataType, int prec) {
+    return currentDialect.getSqlDataType(dataType, prec);
   }
 
   public static void setCurrentDialect(Dialect d) {
@@ -83,8 +83,8 @@ public abstract class Dialect {
     throw new IllegalArgumentException("Unknown DDL key '"+key+"'");
   }
   
-  protected int getSqlDataType(int dataType) {
-    return DefaultDialect.getInstance().getSqlDataType(dataType);
+  protected int getSqlDataType(int dataType, int prec) {
+    return DefaultDialect.getInstance().getSqlDataType(dataType, prec);
   }
 
   protected abstract String getDateYear(String col);
