@@ -18,6 +18,9 @@
 package hr.restart.util.reports;
 
 import java.io.File;
+import java.util.HashMap;
+
+import org.apache.poi.hssf.record.RecordInputStream.LeftoverDataException;
 
 import bsh.Interpreter;
 import hr.restart.Matrix;
@@ -108,6 +111,8 @@ public class mxReport {
   private int repLine = 0;
   private int repPage = 0;
   private java.util.Vector vecTags = new java.util.Vector();
+  private HashMap leftover = new HashMap();
+  private boolean carry = false;
 
   public void setTitle(String newTitle) {
     title = newTitle;
@@ -264,7 +269,12 @@ public class mxReport {
     for (int i=0;i<header.length;i++) {
       writeFooter(i);
       oldHeader[i] = writeBreak(oldHeader[i],header[i]);
-      if (i < detail.length) writeBreak("",detail[i]);
+      if (i < detail.length) {
+        writeBreak("",detail[i]);
+        carry = true;
+        while (leftover.size() > 0) writeBreak("",detail[i]);
+        carry = false;
+      }
     }
   }
 /**
@@ -450,6 +460,7 @@ public class mxReport {
 //    System.err.println("TagName - "+tagName);
     int tagLen = -1;
     int tagAligment = -1;
+    boolean flow = false;
 // parametri iz taga
     if (tagName.indexOf("|") > -1) {
       String resto = tagName.substring(tagName.indexOf("|")+1);
@@ -462,12 +473,17 @@ public class mxReport {
       //aligment
       resto = resto.substring(resto.indexOf("|")+1);
       tagAligment = getAligmentFromString(resto);
+      flow = resto.equalsIgnoreCase("flow"); 
       tagName = tagName.substring(0,tagName.indexOf("|"));
     }
 //    System.out.println("TagName 2 - "+tagName);
     String tagValue=null;
 //value iz dataseta
-    if (isDataFromDataSet(tagName)) {
+    if (carry) {
+      tagValue = (String) leftover.get(tagName);
+      leftover.remove(tagName);
+      if (tagValue == null) tagValue = "";
+    } else if (isDataFromDataSet(tagName)) {
       com.borland.dx.dataset.Variant Vv = new com.borland.dx.dataset.Variant();
       if (tagAligment == -1) {
         tagAligment = com.borland.dbswing.DBUtilities.convertJBCLToSwingAlignment(dataSet.getColumn(tagName).getAlignment(),true);
@@ -484,6 +500,16 @@ public class mxReport {
       tagValue = tagName; //return null; toUpperCase
     }
     if (tagName.equals("")) return null;
+    
+    if (flow && tagLen > 0 && tagValue.length() > tagLen) {
+      if (leftover == null) leftover = new HashMap();
+      
+      int split = tagValue.lastIndexOf(' ', tagLen);
+      if (split < 0) split = tagLen;
+      String rest = tagValue.substring(split);
+      tagValue = tagValue.substring(0, split);
+      leftover.put(tagName, rest);
+    } 
 //    System.out.println("TagValue "+tagValue);
 //    System.out.println("Vraccam  "+ getLineTag(tagName,tagValue,startTag,endTag,blimiter,tagLen,tagAligment));
     return getLineTag(tagName,tagValue,startTag,endTag,blimiter,tagLen,tagAligment);
@@ -532,6 +558,7 @@ public class mxReport {
     if (str.equalsIgnoreCase("center")) return javax.swing.SwingConstants.CENTER;
     if (str.equalsIgnoreCase("right")) return javax.swing.SwingConstants.RIGHT;
     if (str.equalsIgnoreCase("left")) return javax.swing.SwingConstants.LEFT;
+    if (str.equalsIgnoreCase("flow")) return javax.swing.SwingConstants.LEFT;
     return -1;
   }
   /**
@@ -584,6 +611,7 @@ public class mxReport {
    * - za ostale slucajeve (dataObject koji nije instance IDataProvider) overridati i napisati svoj kod
    */
   public void makeReport() {
+    carry = false;
     if (getDataSet() != null) {
       getDataSet().open();
       getDataSet().first();
