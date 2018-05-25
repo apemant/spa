@@ -108,7 +108,7 @@ public class menuIzvRac extends JMenu {
 	      	jmPregledKPRGRN_actionPerformed(e);
 	      }
 	    });
-	    jmPregledZaduzenjeKPR.setText("Pregled dokumenta zaduzenja za KPR iz GRN i GOT -a");
+	    jmPregledZaduzenjeKPR.setText("Pregled dokumenta zaduženja za KPR iz GRN i GOT -a");
 	    jmPregledZaduzenjeKPR.addActionListener(new java.awt.event.ActionListener() {
 	      public void actionPerformed(ActionEvent e) {
 	      	jmPregledZaduzenjeKPR_actionPerformed(e);
