@@ -332,6 +332,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
   }
 
   boolean fromBeg = false;
+  boolean allRac = false;
   private void process() {
     raDelayWindow proc = raDelayWindow.show(this.getWindow(), 100).setInterruptable(true);
     outside = false;
@@ -339,6 +340,8 @@ public class raObrKamata extends raFrame implements ResetEnabled {
     try {
       fromBeg = frmParam.getParam("sk", "placFromBeg", "P", "Kamate na plaæene raèune " +
             "raèunaju se od dospjeæa ili od poèetka perioda (D,P)?").equalsIgnoreCase("D");
+      allRac = frmParam.getParam("sk", "allRacKam", "N", "Uzeti sve raèune nastale prije " +
+      		"krajnjeg datuma obraèuna kamata (D,N)?").equalsIgnoreCase("D");
       findKamate();     // Popuni tablicu kamata
       proc.close();
     } catch (AssertionNotTrueException e) {
@@ -614,6 +617,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
     if (outside) return outsideRac;
 
     Condition minimumCond = Aus.getKnjigCond().and(jpp.getCondition()); 
+    if (!allRac) minimumCond = minimumCond.and(Condition.from("DATDOSP", datumOd));
       
 /*      "knjig = '"+hr.restart.zapod.OrgStr.getKNJCORG(false)+
                          (cpar > 0 ? "' AND cpar="+cpar : "'");*/
@@ -627,7 +631,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
              " AND " + /*vrdok="+ (kupac ? "'IRN'" : "'URN'")+*/ (kupac ?
                  "(VRDOK='IRN' OR (VRDOK='OKK' AND ID > 0))" :
                    "(VRDOK='URN' OR (VRDOK='OKD' AND IP > 0))"
-                 ) + " AND skstavke.datdosp < '"+
+                 ) + " AND datdosp < '"+
              ut.getFirstSecondOfDay(datumDo)+"' AND "+OrgStr.getCorgsCond(corg)+
             " ORDER BY cpar,datdosp", true);
   }
@@ -966,6 +970,11 @@ public class raObrKamata extends raFrame implements ResetEnabled {
 //    jlrCpar.setText("");
     jlrCpar.forceFocLost();
   }*/
+  
+  public void pack() {
+    Aus.recursiveUpdateSizes(jpDetail);
+    super.pack();
+  }
   
   protected void afterKonto(boolean succ) {
     DataRow konto = !succ ? null : jpk.getKontoRow();
