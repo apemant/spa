@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 import hr.restart.baza.Artikli;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.raTransaction;
 
 import javax.swing.JOptionPane;
@@ -35,7 +36,7 @@ public class raMEU extends raMEI {
           if (allStanje.VrstaZalihaA(getMasterSet().getString("CSKLUL")).equals("X"))
             hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,false);
           else hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC,istina);
-          if (!raIzlazTemplate.allowPriceChange()) istina = false;
+          if (!allowPriceChange()) istina = false;
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC1,istina);
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraFC2,istina);
           hr.restart.util.raCommonClass.getraCommonClass().setLabelLaF(jraPMAR,istina);
@@ -80,6 +81,11 @@ public class raMEU extends raMEI {
 				.equalsIgnoreCase("D"));
 
   }
+  
+  public boolean allowPriceChange() {
+    return frmParam.getParam("robno", "priceChMEU", "D", "Dozvoliti izmjenu cijena na MEU (D/N)").equalsIgnoreCase("D");
+  }
+  
   public void Funkcija_ispisa_Over(boolean what){
     reportsQuerysCollector.getRQCModule().ReSql(PrepSql(what),"MEU");
   }
