@@ -97,9 +97,10 @@ public class RaLogicStanjeSkladiste {
     HashDataSet arts =  data.rowCount() < 20 ? null : new HashDataSet(dm.getArtikli(), "CART");
     //Artikli.getDataModule().fixSort();
     do {
-    	if (arts != null) arts.loc(data);
-    	else ld.raLocate(dm.getArtikli(), "CART", data);
-      if (raVart.isUsluga(dm.getArtikli()) || (!all && !raVart.isStanje(dm.getArtikli()))) continue;
+      boolean found = false;
+    	if (arts != null) found = arts.loc(data);
+    	else found = ld.raLocate(dm.getArtikli(), "CART", data);
+      if (!found || raVart.isUsluga(dm.getArtikli()) || (!all && !raVart.isStanje(dm.getArtikli()))) continue;
       
       mainDataSet.insertRow(false);
       mainDataSet.setString("CSKL", data.getString("CSKL"));
