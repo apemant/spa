@@ -44,6 +44,7 @@ import com.borland.dx.dataset.TableDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
 import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 public class frmIzvNacPl extends raUpitLite {
   hr.restart.util.raCommonClass rcc = hr.restart.util.raCommonClass.getraCommonClass();
@@ -84,7 +85,7 @@ public class frmIzvNacPl extends raUpitLite {
   private raComboBox rcbVrsta = new raComboBox();
 //  JLabel jlIspis = new JLabel("Ispis");
 //  JLabel jlSljed = new JLabel("Sljed");
-  private raXYLayout xYLayout1 = new raXYLayout();
+  private XYLayout xYLayout1 = new XYLayout();
 //  private XYLayout xYLayout2 = new XYLayout();
   private JraTextField jraDatumOd = new JraTextField();
   private JraTextField jraDatumDo = new JraTextField();
