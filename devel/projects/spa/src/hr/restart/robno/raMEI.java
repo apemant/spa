@@ -89,6 +89,14 @@ public class raMEI extends hr.restart.util.raMasterDetail{
 
     raMaster.getJpTableView().addTableModifier( TCM);
     raMaster.getJpTableView().addTableModifier( TCM1);
+    
+    raMaster.getJpTableView().addTableModifier(
+        new hr.restart.swing.raTableColumnModifier("CAGENT", new String[] {
+          "CAGENT", "NAZAGENT" }, new String[] { "CAGENT" }, dm.getAgenti()) {
+      public int getMaxModifiedTextLength() {
+        return 24;
+      }
+    });
     Setup();
   }
 
