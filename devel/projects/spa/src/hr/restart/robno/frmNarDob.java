@@ -90,6 +90,7 @@ public class frmNarDob extends raMasterDetail {
 
   static frmNarDob frm;
 
+  private raPrenosVT rPVT = null;
 
   public frmNarDob() {
     super(1,3);
@@ -100,6 +101,13 @@ public class frmNarDob extends raMasterDetail {
     catch(Exception e) {
       e.printStackTrace();
     }
+  }
+  
+    public raPrenosVT getrPVT() {
+      if (rPVT == null) {
+          rPVT = new raPrenosVT();
+      }
+      return rPVT;
   }
 
   public static frmNarDob getInstance() {
@@ -131,6 +139,7 @@ public class frmNarDob extends raMasterDetail {
   
   public void beforeShowDetail() {
     // TODO Auto-generated method stub
+    jpDetail.initRpcart();
     jpDetail.rpc.setExtraSklad(null);
     if (getDetailSet().rowCount() > 0)
       jpDetail.rpc.setExtraSklad(getDetailSet().getString("CSKLART"));
@@ -142,6 +151,8 @@ public class frmNarDob extends raMasterDetail {
     if (mode == 'N') {
       jpMaster.tabs.setSelectedIndex(0);
       getPreSelect().copySelValues();
+      getMasterSet().setString("CUSER",
+          hr.restart.sisfun.raUser.getInstance().getUser());
       jpMaster.jp1.jlrCpar.forceFocLost();
       jpMaster.jp1.jlrCorg.forceFocLost();
       getMasterSet().setTimestamp("DATDOK", ut.getToday(datfrom, datto));
@@ -157,6 +168,7 @@ public class frmNarDob extends raMasterDetail {
     zahStavkaNew = zahStavkaOld = null;
     oldKol = mode == 'N' ? Aus.zero3 :
       this.getDetailSet().getBigDecimal("KOL");
+    jpDetail.initRpcart();
   }
   
   public void rowChangedDetail(int oldrow, int newrow, boolean toggle, boolean extend) {      
@@ -237,6 +249,8 @@ public class frmNarDob extends raMasterDetail {
   public boolean doWithSaveMaster(char mode) {
     if (mode == 'B') {
       hr.restart.robno.Util.getUtil().delSeq(delstr, true);
+      if (getrPVT().DeleteVTText(key4delZag))
+        raMaster.markChange("vttext");
     }
     if (mode != 'B') {
       if (vttextzag != null && isVTtextzag) {
@@ -259,9 +273,11 @@ public class frmNarDob extends raMasterDetail {
 
 
   String delstr;
+  protected String key4delZag;
   public boolean DeleteCheckMaster() {
     DataSet ds = getMasterSet();
     delstr = rut.getSeqString(ds);
+    key4delZag = rCD.getKey(getMasterSet());
     if (getDetailSet().rowCount()>0) {
       JOptionPane.showConfirmDialog(null,"Nisu pobrisane stavke dokumenta !","Gre\u0161ka",JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE);
       return false;
@@ -273,7 +289,8 @@ public class frmNarDob extends raMasterDetail {
   	if (mode=='N') vttext = null;
     jpDetail.initJP(mode);
     
-    
+    if (mode == 'B')
+      jpDetail.initRpcart();
   }
 
   void findNSTAVKA() {
@@ -648,7 +665,7 @@ System.out.println("key4del "+ key4del);
     getDetailSet().setBigDecimal("INAB", rut.multiValue(getDetailSet().getBigDecimal("NC"),
         getDetailSet().getBigDecimal("KOL")));
     
-    if (getDetailSet().getBigDecimal("KOL1").signum() == 0 && 
+    /*if (getDetailSet().getBigDecimal("KOL1").signum() == 0 && 
         ld.raLocate(dm.getArtikli(), "CART", Integer.toString(getDetailSet().getInt("CART")))) {
       
       if (dm.getArtikli().getBigDecimal("BRJED").signum() != 0) {
@@ -657,7 +674,7 @@ System.out.println("key4del "+ key4del);
       } else {
         getDetailSet().setBigDecimal("KOL1", Aus.zero3);
       }
-    }
+    }*/
 
     afterAll();
   }
@@ -702,7 +719,6 @@ System.out.println("key4del "+ key4del);
 	  return rut.multiValue(osnovica, rut.negateValue(rut.one, rut.divideValue(posto, rut.sto)));
   }
   private void jbInit() throws Exception {
-    this.setUserCheck(true);
     this.setMasterSet(dm.getZagNdo());
     this.setNaslovMaster("Narudžbe dobavljaèu");
     this.setVisibleColsMaster(new int[] {4, 5, 6});
@@ -711,6 +727,11 @@ System.out.println("key4del "+ key4del);
     this.setJPanelMaster(jpMaster);
     this.raMaster.getJpTableView().addTableModifier(
         new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, dm.getPartneri()));
+    
+    setUserCheck(hr.restart.sisfun.frmParam
+        .getParam("robno", "userCheck", "D",
+                "Da li se provjerava korisnik kod izmjene dokumenta (D/N)")
+        .equalsIgnoreCase("D"));
 
     dm.getStNdo().open();
     dm.getStNdo().getColumn("FVC").setCaption("Fakturna cijena bez poreza");
@@ -724,8 +745,10 @@ System.out.println("key4del "+ key4del);
     this.setDetailKey(Util.dkey);
     jpDetail = new jpNarDobDetail(this);
     this.setJPanelDetail(jpDetail);
-    jpDetail.initRpcart();
+    //jpDetail.initRpcart();
     jpDetail.rpc.enableNameChange(true);
+    jpDetail.rpc.setDefParam();
+    jpDetail.rpc.InitRaPanCart();
     raMaster.installSelectionTracker("BRDOK");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarDob", "hr.restart.robno.repNarDobSource", "NarDob", "Narudžbe dobavljaèu");
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repNarPop", "hr.restart.robno.repNarDobSource", "NarPop", "Narudžbe dobavljaèu s popustom");
