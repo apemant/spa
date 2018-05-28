@@ -46,6 +46,8 @@ import com.borland.dx.dataset.StorageDataSet;
 public class dlgKupac extends JraDialog {
   hr.restart.baza.dM dm = hr.restart.baza.dM.getDataModule();
   //hr.restart.robno.raPanKupac rkp = new raPanKupac();
+  boolean dbl;
+  boolean okpress;
   jpVlasnik jpvlas;
   StorageDataSet resolvSet;
   OKpanel okp = new OKpanel() {
@@ -82,11 +84,24 @@ public class dlgKupac extends JraDialog {
       e.printStackTrace();
     }
   }
+  
+  public dlgKupac(Frame owner, StorageDataSet _resolvSet, boolean dbl) {
+    super(owner,true);
+    resolvSet = _resolvSet;
+    this.dbl = dbl;
+    try {
+      jbInit();
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
   public dlgKupac() {
     this((Frame)null, hr.restart.baza.dM.getDataModule().getPos());
   }
   private void jbInit() throws Exception {
-    jpvlas = new jpVlasnik(resolvSet,-5,new Insets(5,0,5,0));
+    jpvlas = new jpVlasnik(resolvSet,-5,new Insets(5,0,5,0), dbl);
     this.addComponentListener(new java.awt.event.ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
         this_componentShown(e);
@@ -108,7 +123,7 @@ public class dlgKupac extends JraDialog {
   void pressOK() {
     if (!jpvlas.updateRecords())
       resolvSet.setUnassignedNull("CKUPAC");
-    
+    okpress = true;
     this.hide();
   }
   void pressCancel() {
@@ -119,10 +134,14 @@ public class dlgKupac extends JraDialog {
       this.hide();
     }
   }
+  
+  public boolean isOK() {
+    return okpress;
+  }
 
   void this_componentShown(ComponentEvent e) {
     jpvlas.setFromSet(resolvSet);
-
+    okpress = false;
     jpvlas.jraIme.requestFocusLater();
     //System.out.println("width mora biti 700 a sad je "+jpvlas.getWidth()+"X"+jpvlas.getHeight());
   }
