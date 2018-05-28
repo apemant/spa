@@ -255,6 +255,7 @@ public class raAutomatRac extends raFrame {
             
             
             jbInit();
+            Aus.recursiveUpdateSizes(panel1);
             pack();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1222,7 +1223,7 @@ public class raAutomatRac extends raFrame {
                 continue;
             addDoki(ugovorizag);
             int rbr = 1;
-            ugovoristav.setSort(new SortDescriptor(new String[]{"CART1"})); 
+            ugovoristav.setSort(new SortDescriptor(new String[]{"RBR"})); 
             for (ugovoristav.first(); ugovoristav.inBounds(); ugovoristav.next()) {
                 addStdoki(ugovorizag, ugovoristav, rbr);
                 rbr++;
