@@ -198,7 +198,7 @@ public class frmNorme extends raMasterFakeDetailArtikl {
     this.setVisibleColsMaster(new int[] {Aut.getAut().getCARTdependable(1,2,3),4});
     this.setMasterKey(key);
 
-    this.setDetailSet(dm.getNorme());
+    this.setDetailSet(detailReportSet);
     this.setNaslovDetail("Stavke normativa");
     this.setVisibleColsDetail(new int[] {Aut.getAut().getCARTdependable(1,2,3),4,5,6});
     this.setDetailKey(key);
@@ -251,7 +251,7 @@ public class frmNorme extends raMasterFakeDetailArtikl {
   protected void initRpcart() {
     //rpc.setGodina(hr.restart.util.Valid.getValid().findYear(dm.getDoku().getTimestamp("DATDOK")));
     //rpc.setCskl(dm.getStdoku().getString("CSKL"));
-    rpc.setTabela(dm.getNorme());
+    rpc.setTabela(detailReportSet);
     rpc.setMyAfterLookupOnNavigate(false);
     rpc.setBorder(null);
     super.initRpcart();
@@ -276,7 +276,7 @@ public class frmNorme extends raMasterFakeDetailArtikl {
   	}
   }
   
-  private QueryDataSet detailReportSet = dm.getNorme();
+  private QueryDataSet detailReportSet = norme.getDataModule().getFilteredDataSet(Condition.nil);
   private HashMap nazivljeNormativa = new HashMap();
   
   private void makeDetailReportSet(){
