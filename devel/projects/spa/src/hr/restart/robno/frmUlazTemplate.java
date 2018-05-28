@@ -28,19 +28,27 @@ import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraButton;
+import hr.restart.swing.JraTextField;
+import hr.restart.swing.raInputDialog;
 import hr.restart.util.*;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 /**
  * <p>
@@ -158,6 +166,12 @@ public class frmUlazTemplate extends raMasterDetail {
         keyActionShowKartica();
       }
     };
+    
+    raNavAction rnvLot = new raNavAction("Promjena šarže", raImages.IMGALIGNJUSTIFY, KeyEvent.VK_F8) {
+      public void actionPerformed(ActionEvent e) {
+        chgLot();
+      }
+    };
 
 	public frmUlazTemplate() {
 		try {
@@ -210,7 +224,85 @@ public class frmUlazTemplate extends raMasterDetail {
 		
 		raDetail.calc.module("sta", stanjeSet);
 		
+		
+		if (frmParam.getParam("robno", "ediUlaz", "N",
+	        "Panel za unos EDI podataka na ulazu (D,N)").equals("D") && 
+	        (prSTAT == 'P' || this instanceof frmPRK || prSTAT == 'S' || this instanceof frmPST)) 
+		  raDetail.addOption(rnvLot, 4, false);
+		
 	}
+	
+	StorageDataSet edids;
+	JPanel edi;
+	
+	
+	void setupEdi() {
+	  if (edi != null) return;
+	  
+	  edids = Stdoku.getDataModule().getScopedSet("LOT CREG DATPRO DATROK");
+	  edids.insertRow(false);
+	  
+	  JLabel jlDatPro = new JLabel();
+	  JLabel jlRok = new JLabel();
+	  JLabel jlLot = new JLabel();
+	  JLabel jlReg = new JLabel();
+	    
+	  JraTextField jraDatPro = new JraTextField();
+	  JraTextField jraRok = new JraTextField();
+	  JraTextField jraLot = new JraTextField();
+	  JraTextField jraReg = new JraTextField();
+	      
+	  edi = new JPanel();
+	  XYLayout lay = new XYLayout(645, 70);
+      edi.setLayout(lay);
+      jlLot.setText("Šarža");
+      jlLot.setHorizontalAlignment(JLabel.CENTER);
+      jlReg.setText("Reg. oznaka");
+      jlReg.setHorizontalAlignment(JLabel.CENTER);
+      jlDatPro.setText("Datum proizvodnje");
+      jlDatPro.setHorizontalAlignment(JLabel.CENTER);
+      jlRok.setText("Rok uporabe");
+      jlRok.setHorizontalAlignment(JLabel.CENTER);
+      jraLot.setColumnName("LOT");
+      jraLot.setDataSet(edids);
+      jraReg.setColumnName("CREG");
+      jraReg.setDataSet(edids);
+      jraDatPro.setColumnName("DATPRO");
+      jraDatPro.setDataSet(edids);
+      jraRok.setColumnName("DATROK");
+      jraRok.setDataSet(edids);
+      
+      edi.add(jlLot, new XYConstraints(80, 10, 130, -1));
+      edi.add(jlReg, new XYConstraints(220, 10, 130, -1));
+      edi.add(jlDatPro, new XYConstraints(360, 10, 130, -1));
+      edi.add(jlRok, new XYConstraints(500, 10, 130, -1));
+      edi.add(jraLot, new XYConstraints(80, 30, 130, -1));
+      edi.add(jraReg, new XYConstraints(220, 30, 130, -1));
+      edi.add(jraDatPro, new XYConstraints(360, 30, 130, -1));
+      edi.add(jraRok, new XYConstraints(500, 30, 130, -1));
+	}
+	
+	
+	void chgLot() {
+      if (getDetailSet().rowCount() == 0) return;
+      
+      setupEdi();
+            
+      raInputDialog dlglot = new raInputDialog() {
+          protected void init() {
+              setParams("Promjena šarže", edi, null); 
+          }
+          protected void beforeShow() {
+            dM.copyDestColumns(getDetailSet(), edids);
+          }
+      };
+
+      if (dlglot.show(raDetail.getWindow())) {
+          dM.copyColumns(edids, getDetailSet());
+          getDetailSet().saveChanges();
+          raDetail.getJpTableView().fireTableDataChanged();
+      }
+    }
 	
 	public void setJPanelDetail(JPanel newJPanelDetail) {
 	  super.setJPanelDetail(newJPanelDetail);
@@ -368,9 +460,18 @@ public class frmUlazTemplate extends raMasterDetail {
 		    stanjeSet.getBigDecimal("KOL").compareTo(dk.negate()) < 0) {
           JOptionPane.showConfirmDialog(raDetail.getWindow(),
                 "Nedovoljna kolièina na zalihi za smanjivanje ovom stavkom!",
-                "Gre\u0161ka", JOptionPane.ERROR_MESSAGE);
+                "Greška", JOptionPane.ERROR_MESSAGE);
           return false;
         }
+		
+		if (OrgStr.getOrgStr().isKomisija() && getDetailSet().getString("KOMISIJA").equalsIgnoreCase("D")) {
+		  if (mode == 'I' && getDetailSet().getBigDecimal("KOLKOM").add(dk).signum() < 0) {
+		    JOptionPane.showConfirmDialog(raDetail.getWindow(),
+                "Kolièina na komisiji je veæ razdužena za smanjivanje ovom stavkom!",
+                "Greška", JOptionPane.ERROR_MESSAGE);
+		    return false;
+		  }
+		}
 
 		if (mode == 'N') {
 			if (!isFind || stanjeSet.getRowCount() == 0)
@@ -501,6 +602,14 @@ public class frmUlazTemplate extends raMasterDetail {
 					"Brisanje nije moguæe. Kolièina na stanju je manja od kolièine na ovoj stavci!",
 					"Gre\u0161ka", JOptionPane.ERROR_MESSAGE);
 			return false;
+		}
+		if (OrgStr.getOrgStr().isKomisija() && getDetailSet().getString("KOMISIJA").equalsIgnoreCase("D")) {
+		  if (getDetailSet().getBigDecimal("KOLKOM").compareTo(getDetailSet().getBigDecimal("KOL")) != 0) {
+		    JOptionPane.showConfirmDialog(raDetail.getWindow(),
+                "Brisanje nije moguæe. Kolièina na komisiji po ovoj stavci je veæ (dijeloom) razdužena!",
+                "Gre\u0161ka", JOptionPane.ERROR_MESSAGE);
+            return false;
+		  }
 		}
 		if (!isUpdateOrDeletePossible()) {
 			JOptionPane.showConfirmDialog(raDetail.getWindow(),
@@ -909,6 +1018,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	      if (updateNC) Aus.set(dm.getArtikli(), "NC", stanjeSet);
 	      if (updateNC) Aus.set(dm.getArtikli(), "DC", getDetailSet());
 	      hr.restart.util.raTransaction.saveChanges(dm.getArtikli());
+	      raDetail.markChange(dm.getArtikli());
 	    }
 	  } finally {
 	    updateMC = updateNC = false;
@@ -1015,7 +1125,20 @@ System.out.println("oldBRRAC "+oldBRRAC);
 		}
 		if (mode != 'B') updateNCart();
 		hr.restart.util.raTransaction.saveChanges(getMasterSet());
-    checkings = 0;
+		
+	    if (OrgStr.getOrgStr().isKomisija()) {
+	      getDetailSet().setString("KOMISIJA", getMasterSet().getString("KOMISIJA"));
+	      if (getMasterSet().getString("KOMISIJA").equals("D")) {
+	        getDetailSet().setInt("CPARKOM", getMasterSet().getInt("CPAR"));
+	        if (mode == 'N') Aus.set(getDetailSet(), "KOLKOM", "KOL");
+	        else Aus.addSub(getDetailSet(), "KOLKOM", getDetailSet(), "KOL", oldKOL);
+	      } else {
+	        getDetailSet().setAssignedNull("CPARKOM");
+	        getDetailSet().setBigDecimal("KOLKOM", Aus.zero3);
+	      }
+	    }
+	    
+	    checkings = 0;
 		return true;
 	}
 	
