@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.swing.AWTKeyboard;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraDialog;
 import hr.restart.swing.JraTextField;
@@ -34,6 +35,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 
@@ -158,6 +160,7 @@ public class raDDodRab extends JraDialog {
 //      fDI.jpRabat_afterJob();
   }
   public void  ESC_izlaz(){
+    System.out.println("Esc pressed");
 
     if (!jlrCRAB1.getText().equals("")) emptyRab4Add();
     else  pressCancel();
@@ -184,6 +187,17 @@ public class raDDodRab extends JraDialog {
   JLabel jLabel1 = new JLabel();
   javax.swing.JCheckBox jcrabnarab = new javax.swing.JCheckBox("Popust na popust",true);
   JLabel jlUkupno = new JLabel();
+  
+  KeyListener mykeys = new java.awt.event.KeyAdapter() {
+    public void keyPressed(java.awt.event.KeyEvent e){
+      if (e.getKeyCode()==java.awt.event.KeyEvent.VK_F10){
+        pressOK();
+      }
+      else if (e.getKeyCode()==java.awt.event.KeyEvent.VK_ESCAPE){
+        ESC_izlaz();
+      }
+    }
+  };
 
   public raDDodRab(Frame frame, raMasterDetail fDI, String title, boolean modal) {
     super(frame, title, modal);
@@ -212,20 +226,13 @@ public class raDDodRab extends JraDialog {
     rjp.getColumnsBean().setSaveName(getClass().getName());
     //rjp.getColumnsBean().initialize();
 
-    this.addKeyListener(new java.awt.event.KeyAdapter(){
-        public void keyPressed(java.awt.event.KeyEvent e){
-          if (e.getKeyCode()==java.awt.event.KeyEvent.VK_F10){
-            pressOK();
-          }
-          else if (e.getKeyCode()==java.awt.event.KeyEvent.VK_ESCAPE){
-            ESC_izlaz();
-          }
-        }
-    });
+    //this.addKeyListener();
     panel1.setLayout(borderLayout1);
     panelDP.setLayout(xYLayout1);
-    panelDP.setMinimumSize(new Dimension(555, 80));
-    panelDP.setPreferredSize(new Dimension(555, 80));
+    xYLayout1.setWidth(555);
+    xYLayout1.setHeight(80);
+    //panelDP.setMinimumSize(new Dimension(555, 80));
+    //panelDP.setPreferredSize(new Dimension(555, 80));
 
     jlrCRAB1.setVisCols(new int[]{0,1});
     jlrCRAB1.setTextFields(new  JraTextField[] {jlrNAZRAB1, jlrPRAB1, jlrIRAB1});
@@ -257,6 +264,12 @@ public class raDDodRab extends JraDialog {
     	public void componentShown(ComponentEvent e){
     		postinit();
     		jlrCRAB1.requestFocus();
+    		raDDodRab.this.addKeyListener(mykeys);   	    
+    	    AWTKeyboard.registerKeyListener(raDDodRab.this, mykeys);
+    	}
+    	public void componentHidden(ComponentEvent e) {
+    	  raDDodRab.this.removeKeyListener(mykeys);         
+          AWTKeyboard.unregisterKeyListener(raDDodRab.this, mykeys);
     	}
     });
     
@@ -278,6 +291,7 @@ public class raDDodRab extends JraDialog {
     panelDP.add(jlUkupno, new XYConstraints(420, 48, 150, -1));
     //panel1.add(okp,BorderLayout.SOUTH);
 
+    Aus.recursiveUpdateSizes(panelDP);
 //    jlrPRAB1.setEnabled(false);
   }
   public void jbInit4overload(){
