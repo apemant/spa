@@ -416,6 +416,7 @@ public abstract class raPanStats extends raUpitFat {
 								        dm.createStringColumn("PJ",5), 
 								        dm.createStringColumn("POCEMU",10), 
 								        dm.createIntColumn("CAGENT")});
+    fieldSet.open();
 
     jlCorg.setText("Org. jedinica");
     jlrCorg.setColumnName("CORG");
