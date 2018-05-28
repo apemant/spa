@@ -23,6 +23,8 @@ import hr.restart.baza.Sklad;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.kup_art;
 import hr.restart.baza.raDataSet;
+import hr.restart.sisfun.frmParam;
+import hr.restart.util.Aus;
 import hr.restart.util.LinkClass;
 import hr.restart.util.SanityException;
 import hr.restart.zapod.OrgStr;
@@ -39,6 +41,7 @@ public class allStanje {
   private static allStanje als;
   private QueryDataSet trenSTANJE = new QueryDataSet();
   private QueryDataSet tmpCijenik = new raDataSet();
+  private QueryDataSet defCjenik = new raDataSet();
   //private QueryDataSet tmpCijenikAll = new QueryDataSet();
   //private QueryDataSet tmpKupArt = new QueryDataSet();
   private QueryDataSet tmpKupArtAll = new QueryDataSet();
@@ -46,6 +49,9 @@ public class allStanje {
   java.math.BigDecimal Nula = new java.math.BigDecimal(0);
   hr.restart.util.sysoutTEST ST = new hr.restart.util.sysoutTEST(false);
   private hr.restart.util.lookupData ld = hr.restart.util.lookupData.getlookupData();
+  
+  int forced = 0;
+  
   /// optimizacija
   String OLDGodina="";
   String OLDCskl = "";
@@ -55,6 +61,15 @@ public class allStanje {
   public allStanje() {
     trenSTANJE = this.gettrenSTANJE();
     trenSTANJE.setResolver(dm.getQresolver());
+    
+    String forcedCpar = frmParam.getParam("robno", "cjenikCpar", "", "Šifra virtualnog partnera za defaultni cjenik");
+    if (forcedCpar == null || forcedCpar.trim().length() == 0 || Aus.getNumber(forcedCpar) == 0) {
+      forced = 0;
+    } else if (forced != Aus.getNumber(forcedCpar)) {
+      forced = Aus.getNumber(forcedCpar);
+      Cjenik.getDataModule().setFilter(defCjenik, Condition.equal("CPAR", forced));
+      defCjenik.open();
+    }
   }
 
   public static allStanje getallStanje(){
@@ -62,6 +77,10 @@ public class allStanje {
       als = new allStanje();
     }
     return als;
+  }
+  
+  public boolean isForced() {
+    return forced > 0;
   }
 
   public QueryDataSet gettrenSTANJE() {
@@ -129,6 +148,7 @@ trenSTANJE = hr.restart.util.Util.getNewQueryDataSet(queryString,true);
       Cjenik.getDataModule().setFilter(tmpCijenik, Condition.equal("CPAR", cjcpar));
     }
     tmpCijenik.open();
+    
   }
 
   /*public QueryDataSet getCijenik4All(String skladiste,int partner,boolean find){
@@ -155,14 +175,29 @@ trenSTANJE = hr.restart.util.Util.getNewQueryDataSet(queryString,true);
       if (ld.raLocate(tmpCijenik, new String[] {"CORG", "CART"},
           new String[] {OrgStr.getKNJCORG(false), Integer.toString(cart)}))
         return tmpCijenik;
+      // provjeri default cjenik ako je definiran
+      if (forced > 0 && ld.raLocate(defCjenik, new String[] {"CORG", "CART"},
+          new String[] {OrgStr.getKNJCORG(false), Integer.toString(cart)}))
+        return defCjenik;
       return null;
     }
     
+    // provjeri cjenik za partnera
+    QueryDataSet ret = getCjenikCart(tmpCijenik, vrdok, csklcorg, cart);
+    if (ret != null) return ret;
+    
+    // provjeri default cjenik ako je definiran
+    if (forced > 0) return getCjenikCart(defCjenik, vrdok, csklcorg, cart);
+    
+    return null;
+  }
+  
+  private QueryDataSet getCjenikCart(QueryDataSet cjenik, String vrdok, String csklcorg, int cart) {
     // ako je dokument skladišni, csklcorg je šifra skladišta
     if (TypeDoc.getTypeDoc().isCsklSklad(vrdok)) {
-      if (ld.raLocate(tmpCijenik, new String[] {"CSKL", "CART"}, 
+      if (ld.raLocate(cjenik, new String[] {"CSKL", "CART"}, 
           new String[] {csklcorg, Integer.toString(cart)}))
-        return tmpCijenik;
+        return cjenik;
       
       // ako nema cjenika za to skladište, uzmi org.jed tog skladišta i nastavi dalje
       if (!ld.raLocate(dm.getSklad(), "CSKL", csklcorg)) return null;
@@ -171,9 +206,9 @@ trenSTANJE = hr.restart.util.Util.getNewQueryDataSet(queryString,true);
     
     // u suprotnom, csklcorg je org.jed, traži cjenik prema gore do knjigovodstva
     while (csklcorg != null && csklcorg.length() > 0) {
-      if (ld.raLocate(tmpCijenik, new String[] {"CORG", "CART"}, 
+      if (ld.raLocate(cjenik, new String[] {"CORG", "CART"}, 
           new String[] {csklcorg, Integer.toString(cart)}))
-        return tmpCijenik;
+        return cjenik;
       
       if (ld.raLocate(dm.getOrgstruktura(), "CORG", csklcorg) &&
           !dm.getOrgstruktura().getString("PRIPADNOST").equals(csklcorg))
