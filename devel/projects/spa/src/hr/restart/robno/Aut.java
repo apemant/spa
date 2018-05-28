@@ -17,7 +17,9 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.dM;
+import hr.restart.baza.norme;
 import hr.restart.baza.raDataSet;
 import hr.restart.sisfun.Asql;
 import hr.restart.sisfun.frmParam;
@@ -43,6 +45,8 @@ import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.ReadRow;
+import com.borland.dx.dataset.ReadWriteRow;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
@@ -71,7 +75,7 @@ public class Aut {
   private QueryDataSet qdsNorme;
   private QueryDataSet qdsUsluge;
   private QueryDataSet qdsArtExpander;
-  private StorageDataSet expandRow;
+  //private StorageDataSet expandRow;
 
   private Aut() {
   }
@@ -101,9 +105,9 @@ public class Aut {
       dM.createStringColumn("BRANCH", "Grana normativa", 120)
     });
     qdsArtExpander.open();
-    expandRow = new StorageDataSet();
+    /*expandRow = new StorageDataSet();
     expandRow.setColumns(dm.getSortedNorme().cloneColumns());
-    expandRow.open();
+    expandRow.open();*/
   }
 
   /**
@@ -407,8 +411,77 @@ public class Aut {
    * @param total true za rekurzivnu ekspnaziju.
    * @return QueryDataSet sa krajnjim rezultatom ekspanzije.
    */
-
+  
   public QueryDataSet expandArts(DataSet ds, boolean total) {
+    qdsArtExpander.empty();
+    stack.clear();
+    ds.open();
+//    System.out.println("expandArts "+kol);
+    for (ds.first(); ds.inBounds(); ds.next())
+      if (norme.check(ds.getInt("CART")))
+        expandNorm(ds.getInt("CART"), ds.getBigDecimal("KOL"), total);
+      else insertOne(ds, ds.getBigDecimal("KOL"));
+    qdsArtExpander.post();
+    qdsArtExpander.first();
+    return qdsArtExpander;
+  }
+  
+  public QueryDataSet expandArt(int cart, BigDecimal kol, boolean total) {
+    qdsArtExpander.empty();
+    stack.clear();
+    normVal[0] = String.valueOf(cart);
+    if (norme.check(cart)) expandNorm(cart, kol, total);
+    qdsArtExpander.post();
+    qdsArtExpander.first();
+    return qdsArtExpander;
+  }
+
+  public QueryDataSet expandArt(DataSet ds, boolean total) {
+    qdsArtExpander.empty();
+    stack.clear();
+    if (norme.check(ds.getInt("CART")))
+      expandNorm(ds.getInt("CART"), ds.getBigDecimal("KOL"), total);
+    else insertOne(ds, ds.getBigDecimal("KOL"));
+    qdsArtExpander.post();
+    qdsArtExpander.first();
+    return qdsArtExpander;
+  }
+
+  private void expandNorm(int cart, BigDecimal kol, boolean total) {
+    Integer ic = new Integer(cart);
+    if (total && stack.contains(ic)) {
+        System.err.println("Beskonaèna petlja!!!");
+        return;
+    }
+    stack.add(ic);
+    for (int i = 0; i < norme.count(cart); i++) {
+      BigDecimal k = norme.kol(cart, i).multiply(kol).setScale(3, BigDecimal.ROUND_HALF_UP);
+      if (!total) insertOne(norme.art(cart, i), k);
+      else {
+        int c = norme.cart(cart, i);
+        if (norme.check(c)) expandNorm(c, k, true);
+        else insertOne(norme.art(cart, i), k);
+      }
+    }
+    stack.removeLast();
+  }
+
+  private void insertOne(ReadRow ds, BigDecimal kol) {
+    if (ds == null) {
+      System.err.println("NULL art?!");
+      return;
+    }
+    qdsArtExpander.insertRow(false);
+    copyArtFields(qdsArtExpander, ds);
+    stack.add(new Integer(qdsArtExpander.getInt("CART")));
+    qdsArtExpander.setString("BRANCH", VarStr.join(stack, ':').toString());
+    stack.removeLast();
+    qdsArtExpander.setBigDecimal("KOL", kol);
+  }
+  
+  
+  /*
+  public QueryDataSet _expandArts(DataSet ds, boolean total) {
     BigDecimal kol = new BigDecimal(1);
     qdsArtExpander.empty();
     stack.clear();
@@ -416,11 +489,11 @@ public class Aut {
     ds.open();
 //    System.out.println("expandArts "+kol);
     for (ds.first(); ds.inBounds(); ds.next())
-      expandOne(ds, kol, total);
+      _expandOne(ds, kol, total);
     qdsArtExpander.post();
     qdsArtExpander.first();
     return qdsArtExpander;
-  }
+  }*/
 
   /**
    * Metoda sli\u010Dna metodi expandArts, vrši ekspanziju samo jednog artikla.<p>
@@ -430,38 +503,38 @@ public class Aut {
    * @return QueryDataSet sa krajnjim rezultatom ekspanzije.
    */
 
-  public QueryDataSet expandArt(int cart, BigDecimal kol, boolean total) {
+  /*public QueryDataSet _expandArt(int cart, BigDecimal kol, boolean total) {
     qdsArtExpander.empty();
     stack.clear();
     dm.getSortedNorme().open();
     normVal[0] = String.valueOf(cart);
     if (lookupData.getlookupData().raLocate(dm.getSortedNorme(), normName, normVal))
-      expandNorm(cart, kol, total);
+      _expandNorm(cart, kol, total);
     qdsArtExpander.post();
     qdsArtExpander.first();
     return qdsArtExpander;
   }
 
-  public QueryDataSet expandArt(DataSet ds, boolean total) {
+  public QueryDataSet _expandArt(DataSet ds, boolean total) {
     qdsArtExpander.empty();
     stack.clear();
     dm.getSortedNorme().open();
-    expandOne(ds, new BigDecimal(1), total);
+    _expandOne(ds, new BigDecimal(1), total);
     qdsArtExpander.post();
     qdsArtExpander.first();
     return qdsArtExpander;
   }
 
-  private void expandOne(DataSet ds, BigDecimal kol, boolean total) {
+  private void _expandOne(DataSet ds, BigDecimal kol, boolean total) {
     int cart = ds.getInt("CART");
     normVal[0] = String.valueOf(cart);
     if (!lookupData.getlookupData().raLocate(dm.getSortedNorme(), normName, normVal))
-      insertOne(ds, kol);
+      _insertOne(ds, kol);
     else
-      expandNorm(cart, ds.getBigDecimal("KOL").multiply(kol), total);
+      _expandNorm(cart, ds.getBigDecimal("KOL").multiply(kol), total);
   }
 
-  private void expandNorm(int cart, BigDecimal kol, boolean total) {
+  private void _expandNorm(int cart, BigDecimal kol, boolean total) {
   	Integer ic = new Integer(cart);
   	if (total && stack.contains(ic)) {
   		System.err.println("Beskonaèna petlja!!!");
@@ -469,24 +542,24 @@ public class Aut {
   	}
   	stack.add(ic);
     for (DataSet sn = dm.getSortedNorme(); sn.inBounds() && sn.getInt("CARTNOR") == cart; sn.next())
-      if (!total) insertOne(sn, kol);
+      if (!total) _insertOne(sn, kol);
       else {
         int current = sn.getRow();
         dM.copyColumns(sn, expandRow);
-        expandOne(expandRow, kol, true);
+        _expandOne(expandRow, kol, true);
         sn.goToRow(current);
       }
     stack.removeLast();
   }
 
-  private void insertOne(DataSet ds, BigDecimal kol) {
+  private void _insertOne(DataSet ds, BigDecimal kol) {
     qdsArtExpander.insertRow(false);
     copyArtFields(qdsArtExpander, ds);
     stack.add(new Integer(qdsArtExpander.getInt("CART")));
     qdsArtExpander.setString("BRANCH", VarStr.join(stack, ':').toString());
     stack.removeLast();
     qdsArtExpander.setBigDecimal("KOL", ds.getBigDecimal("KOL").multiply(kol).setScale(3, BigDecimal.ROUND_HALF_UP));
-  }
+  }*/
 
   private String[] searchNames = new String[] {"CRADNAL", "CART"};
   private String[] searchValues = new String[] {"", ""};
@@ -560,7 +633,7 @@ public class Aut {
    * @param source Izvorni DataSet.
    */
 
-  public void copyArtFields(DataSet dest, DataSet source) {
+  public void copyArtFields(ReadWriteRow dest, ReadRow source) {
     dest.setInt("CART", source.getInt("CART"));
     dest.setString("CART1", source.getString("CART1"));
     dest.setString("BC", source.getString("BC"));
