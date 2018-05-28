@@ -18,10 +18,13 @@
 package hr.restart.robno;
 
 import hr.restart.baza.Akcije;
+import hr.restart.baza.Artikli;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.Asql;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
@@ -38,6 +41,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
+import com.borland.dx.dataset.NavigationEvent;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
 import com.borland.jbcl.layout.XYConstraints;
@@ -155,6 +160,11 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
       VCUpdated();
     }
   };
+  JraTextField jraVCPAK = new JraTextField() {
+    public void valueChanged() {
+      VCPAKUpdated();
+    }
+  };
   JraTextField jraMC = new JraTextField() {
     public void valueChanged() {
       MCUpdated();
@@ -163,6 +173,7 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
   JLabel jlVCKALDOM = new JLabel();
   JLabel jlVCKALVAL = new JLabel();
   JLabel jlVC = new JLabel();
+  JLabel jlVCPAK = new JLabel();
   JLabel jlMC = new JLabel();
   JLabel jlPosto = new JLabel();
   BigDecimal porezMul;
@@ -188,6 +199,9 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
   QueryDataSet allArt;
   QueryDataSet repQDS = new QueryDataSet();
   
+  StorageDataSet adds;
+  
+  int scale;
  
 
   public frmCjenik() {
@@ -229,6 +243,7 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     rcc.setLabelLaF(val.jtTECAJ, false);
     rcc.setLabelLaF(jraPromjena, true);
     rcc.setLabelLaF(jraVC, true);
+    if (jraVCPAK.isVisible()) rcc.setLabelLaF(jraVCPAK, true);
     rcc.setLabelLaF(jraMC, true);
     rcc.setLabelLaF(jlrAk, true);
     rcc.setLabelLaF(jlrNazak, true);
@@ -304,6 +319,9 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
       if (this.getDetailSet().getBigDecimal("VC").signum() == 0) porezMul = new BigDecimal(1.);
       else porezMul = this.getDetailSet().getBigDecimal("MC")
                 .divide(this.getDetailSet().getBigDecimal("VC"), 2, BigDecimal.ROUND_HALF_UP);
+      grabArtikl();
+      rcc.EnabDisabAll(jpDetail, false);
+      enabAll();
     }
   }
 
@@ -387,6 +405,8 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
         }
       });
       
+      grabArtikl();
+      
       System.out.println("super.rpcOut() - "+ super.rpcOut());
       return super.rpcOut();
     }
@@ -413,9 +433,30 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     else porezMul = this.getDetailSet().getBigDecimal("MC")
                 .divide(this.getDetailSet().getBigDecimal("VC"), 2, BigDecimal.ROUND_HALF_UP);
     
+    grabArtikl();
+    
     val.jtOZNVAL.requestFocus();
     
     return true;
+  }
+  
+  void grabArtikl() {
+    if (Artikli.loc(getDetailSet().getInt("CART")) &&
+        Artikli.get().getBigDecimal("BRJED").signum() > 0) {
+      Aus.set(adds, "BRJED", Artikli.get());
+      Aus.set(adds, "VC", getDetailSet());
+      Aus.mul(adds, "VC", "BRJED");
+      jlVCPAK.setVisible(true);
+      jraVCPAK.setVisible(true);
+    } else {
+      jlVCPAK.setVisible(false);
+      jraVCPAK.setVisible(false);
+    }
+  }
+  
+  public void detailSet_navigated(NavigationEvent e) {
+    super.detailSet_navigated(e);
+    grabArtikl();
   }
  
 
@@ -486,16 +527,21 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
   private void updateOnUpis(){
    try {
     if (whatNow.equalsIgnoreCase("CORG")){
-       porezMul = this.getDetailSet().getBigDecimal("VCKALDOM").add(this.getDetailSet().getBigDecimal("VCKALDOM").multiply(new BigDecimal("0.23"))).divide(this.getDetailSet().getBigDecimal("VCKALDOM"), 2, BigDecimal.ROUND_HALF_UP);
+      porezMul = Aus.one0;
+       if (Artikli.loc(getDetailSet()))
+         if (ld.raLocate(dm.getPorezi(), "CPOR", Artikli.get()))
+           porezMul = dm.getPorezi().getBigDecimal("UKUPOR").movePointLeft(2).add(Aus.one0);
+
+//       porezMul = this.getDetailSet().getBigDecimal("VCKALDOM").add(this.getDetailSet().getBigDecimal("VCKALDOM").multiply(new BigDecimal("0.23"))).divide(this.getDetailSet().getBigDecimal("VCKALDOM"), 2, BigDecimal.ROUND_HALF_UP);
        vcDom = this.getDetailSet().getBigDecimal("VCKALDOM");
-       mcDom = this.getDetailSet().getBigDecimal("VCKALDOM").add(this.getDetailSet().getBigDecimal("VCKALDOM").multiply(new BigDecimal("0.23")));
+       mcDom = this.getDetailSet().getBigDecimal("VCKALDOM").multiply(porezMul);
        if (!val.jtOZNVAL.getText().equals("")){
         valutaChange();
         return;
        }
        this.getDetailSet().setBigDecimal("VCKALVAL",this.getDetailSet().getBigDecimal("VCKALDOM"));
        this.getDetailSet().setBigDecimal("VC",this.getDetailSet().getBigDecimal("VCKALDOM"));
-       this.getDetailSet().setBigDecimal("MC",this.getDetailSet().getBigDecimal("VCKALDOM").add(this.getDetailSet().getBigDecimal("VCKALDOM").multiply(new BigDecimal("0.23"))));
+       this.getDetailSet().setBigDecimal("MC",this.getDetailSet().getBigDecimal("VCKALDOM").multiply(porezMul));
        /*if (porezMul == null) porezMul = new BigDecimal("0.23");
        promjenaUpdated();*/
      }
@@ -505,13 +551,23 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     e.printStackTrace();
   }
   }
+  
+  private void updateVCPAK() {
+    if (adds.getBigDecimal("BRJED").signum() > 0) {
+      Aus.set(adds, "VC", getDetailSet());
+      Aus.mul(adds, "VC", "BRJED");
+    }
+  }
 
   private void promjenaUpdated() {
     try {
       double diff = this.getDetailSet().getBigDecimal("POSTO").doubleValue();
       double oldvc = this.getDetailSet().getBigDecimal("VCKALVAL").doubleValue();
-      this.getDetailSet().setBigDecimal("VC", new BigDecimal(oldvc * (diff + 100) / 100).setScale(2, BigDecimal.ROUND_HALF_UP));
-      this.getDetailSet().setBigDecimal("MC", this.getDetailSet().getBigDecimal("VC").multiply(porezMul).setScale(2, BigDecimal.ROUND_HALF_UP));
+      this.getDetailSet().setBigDecimal("VC", new BigDecimal(oldvc * (diff + 100) / 100).setScale(scale, BigDecimal.ROUND_HALF_UP));
+      this.getDetailSet().setBigDecimal("MC", this.getDetailSet().getBigDecimal("VC").multiply(porezMul).setScale(scale, BigDecimal.ROUND_HALF_UP));
+      
+      updateVCPAK();
+      
     } catch (Exception e) {
     }
   }
@@ -522,18 +578,29 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
                     this.getDetailSet().getBigDecimal("VCKALVAL").doubleValue() * 100 - 100;
 
       this.getDetailSet().setBigDecimal("POSTO", new BigDecimal(diff).setScale(2, BigDecimal.ROUND_HALF_UP));
-      this.getDetailSet().setBigDecimal("MC", this.getDetailSet().getBigDecimal("VC").multiply(porezMul).setScale(2, BigDecimal.ROUND_HALF_UP));
+      this.getDetailSet().setBigDecimal("MC", this.getDetailSet().getBigDecimal("VC").multiply(porezMul).setScale(scale, BigDecimal.ROUND_HALF_UP));
+      
+      updateVCPAK();
     } catch (Exception e) {
+    }
+  }
+  
+  private void VCPAKUpdated() {
+    if (adds.getBigDecimal("BRJED").signum() > 0) {
+      getDetailSet().setBigDecimal("VC", adds.getBigDecimal("VC").divide(adds.getBigDecimal("BRJED"), scale, BigDecimal.ROUND_HALF_UP));
+      VCUpdated();
     }
   }
 
   private void MCUpdated() {
     try {
-      this.getDetailSet().setBigDecimal("VC", this.getDetailSet().getBigDecimal("MC").divide(porezMul, 2, BigDecimal.ROUND_HALF_UP));
+      this.getDetailSet().setBigDecimal("VC", this.getDetailSet().getBigDecimal("MC").divide(porezMul, scale, BigDecimal.ROUND_HALF_UP));
       double diff = this.getDetailSet().getBigDecimal("VC").doubleValue() /
                     this.getDetailSet().getBigDecimal("VCKALVAL").doubleValue() * 100 - 100;
 
       this.getDetailSet().setBigDecimal("POSTO", new BigDecimal(diff).setScale(2, BigDecimal.ROUND_HALF_UP));
+      
+      updateVCPAK();
     } catch (Exception e) {
     }
   }
@@ -607,9 +674,9 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
           if (allArt.getBigDecimal("VC").signum() == 0) mcmul = new BigDecimal(1.);
             else mcmul = allArt.getBigDecimal("MC").divide(allArt.getBigDecimal("VC"), 4, BigDecimal.ROUND_HALF_UP);
           this.getDetailSet().setBigDecimal("VCKALDOM",allArt.getBigDecimal("VC"));
-          this.getDetailSet().setBigDecimal("VC",allArt.getBigDecimal("VC").multiply(vcmul).setScale(2, BigDecimal.ROUND_HALF_UP));
+          this.getDetailSet().setBigDecimal("VC",allArt.getBigDecimal("VC").multiply(vcmul).setScale(scale, BigDecimal.ROUND_HALF_UP));
           this.getDetailSet().setBigDecimal("POSTO", pa.getPromjena());//FIXME usage of this
-          this.getDetailSet().setBigDecimal("MC",this.getDetailSet().getBigDecimal("VC").multiply(mcmul).setScale(2, BigDecimal.ROUND_HALF_UP));
+          this.getDetailSet().setBigDecimal("MC",this.getDetailSet().getBigDecimal("VC").multiply(mcmul).setScale(scale, BigDecimal.ROUND_HALF_UP));
 
           // ubaci promjene u tablicu stdoku
           this.getDetailSet().saveChanges();
@@ -652,8 +719,13 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
      * */
 
 //    hr.restart.sisfun.raDelayWindow load = hr.restart.sisfun.raDelayWindow.show(this.raMaster.getContentPane());
+    
+    scale = Aus.getNumber(frmParam.getParam("robno", "cijenaDec", 
+        "2", "Broj decimala za cijenu na izlazu (2-4)").trim());
 
     Asql.createMasterCjenik(mast,whatNow,DUMMY);
+    
+    adds = Aus.createSet("VC."+scale+" BRJED.3");
     
 //    sysoutTEST st = new sysoutTEST(false);
 //    st.prn(mast);
@@ -718,7 +790,7 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     jlrAk.setNavButton(jbAk);
 
     jlrNazak.setColumnName("NAZAK");
-    jlrNazak.setNavProperties(jlrSkl);
+    jlrNazak.setNavProperties(jlrAk);
     //jlrNazak.setDataSet(this.getMasterSet());
     jlrNazak.setSearchMode(1);
     
@@ -746,6 +818,7 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     jlVCKALDOM.setText("Kalk. cijena bez poreza");
     jlVCKALVAL.setText("Val. cijena bez poreza");
     jlVC.setText("Cijena bez poreza");
+    jlVCPAK.setText("Cijena pakiranja");
     jlMC.setText("Cijena s porezom");
     jlPosto.setHorizontalAlignment(SwingConstants.LEADING);
     jlPosto.setText("%");
@@ -761,6 +834,10 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     jraVCKALVAL.setHorizontalAlignment(SwingConstants.LEADING);
     jraVCKALVAL.setColumnName("VCKALVAL");
     jraVCKALVAL.setDataSet(this.getDetailSet());
+    
+    jraVCPAK.setHorizontalAlignment(SwingConstants.LEADING);
+    jraVCPAK.setColumnName("VC");
+    jraVCPAK.setDataSet(adds);
     
     val.setRaDataSet(this.getDetailSet());
     val.setTecajVisible(true);
@@ -854,6 +931,9 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
     jpCjenik.add(jraPromjena, new XYConstraints(505, 95, 100, -1));
     jpCjenik.add(jlPosto, new XYConstraints(610, 95, -1, -1));
     
+    jpCjenik.add(jlVCPAK, new XYConstraints(390, 120, -1, -1));
+    jpCjenik.add(jraVCPAK, new XYConstraints(505, 120, 100, -1));
+    
     jpCjenik.add(jlrAk, new XYConstraints(150, 170, 100, -1));
     jpCjenik.add(jlrNazak, new XYConstraints(255, 170, 280, -1));
     jpCjenik.add(jbAk, new XYConstraints(540, 170, 21, 21));
@@ -923,9 +1003,9 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
         divizor = new BigDecimal("1.00");
       }
       try {
-      this.getDetailSet().setBigDecimal("VCKALVAL", this.getDetailSet().getBigDecimal("VCKALDOM").divide(divizor,2,BigDecimal.ROUND_HALF_UP));
-      this.getDetailSet().setBigDecimal("VC", vcDom.divide(divizor,2,BigDecimal.ROUND_HALF_UP));
-      this.getDetailSet().setBigDecimal("MC", mcDom.divide(divizor,2,BigDecimal.ROUND_HALF_UP));
+      this.getDetailSet().setBigDecimal("VCKALVAL", this.getDetailSet().getBigDecimal("VCKALDOM").divide(divizor,scale,BigDecimal.ROUND_HALF_UP));
+      this.getDetailSet().setBigDecimal("VC", vcDom.divide(divizor,scale,BigDecimal.ROUND_HALF_UP));
+      this.getDetailSet().setBigDecimal("MC", mcDom.divide(divizor,scale,BigDecimal.ROUND_HALF_UP));
       } catch (ArithmeticException ae){
         System.err.println("java.lang.ArithmeticException: BigInteger/BigDecimal divide by zero");
         System.err.println("NEMA TEÈAJA!!!");
