@@ -37,8 +37,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import sun.misc.Perf.GetPerfAction;
-
 import com.borland.dx.dataset.DataRow;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -214,34 +212,34 @@ abstract public class jpPreselectDoc extends PreSelect {
     jpSelDoc.add(jtfVRDOK, new XYConstraints(150, 20, 50, -1));
     jpSelDoc.add(jlCSKL, new XYConstraints(15, 45, -1, -1));
     jpSelDoc.add(jrfCSKL, new XYConstraints(150, 45, 100, -1));
-    jpSelDoc.add(jrfNAZSKL, new XYConstraints(260, 45, 275, -1));
-    jpSelDoc.add(jbCSKL, new XYConstraints(539, 45, 21, 21));
+    jpSelDoc.add(jrfNAZSKL, new XYConstraints(255, 45, 275, -1));
+    jpSelDoc.add(jbCSKL, new XYConstraints(534, 45, 21, 21));
     jpSelDoc.add(jlBRDOK, new XYConstraints(15, 95, -1, -1));
     jpSelDoc.add(jtfBRDOK, new XYConstraints(150, 95, 100, -1));
     jpSelDoc.add(jlDatum, new XYConstraints(15, 120, -1, -1));
     jpSelDoc.add(jtfDATUMOD, new XYConstraints(150, 120, 100, -1));
-    jpSelDoc.add(jtfDATUMDO, new XYConstraints(260, 120, 100, -1));
+    jpSelDoc.add(jtfDATUMDO, new XYConstraints(255, 120, 100, -1));
     if (par!='F') {
       jpSelDoc.add(jlCPAR, new XYConstraints(15, 70, -1, -1));
       jpSelDoc.add(jrfCPAR, new XYConstraints(150, 70, 100, -1));
-      jpSelDoc.add(jrfNAZPAR, new XYConstraints(260, 70, 275, -1));
-      jpSelDoc.add(jbCPAR, new XYConstraints(539, 70, 21, 21));
+      jpSelDoc.add(jrfNAZPAR, new XYConstraints(255, 70, 275, -1));
+      jpSelDoc.add(jbCPAR, new XYConstraints(534, 70, 21, 21));
       jpSelDoc.add(jlBRDOK, new XYConstraints(15, 95, -1, -1));
       jpSelDoc.add(jtfBRDOK, new XYConstraints(150, 95, 100, -1));
       jpSelDoc.add(jlDatum, new XYConstraints(15, 120, -1, -1));
       jpSelDoc.add(jtfDATUMOD, new XYConstraints(150, 120, 100, -1));
-      jpSelDoc.add(jtfDATUMDO, new XYConstraints(260, 120, 100, -1));
+      jpSelDoc.add(jtfDATUMDO, new XYConstraints(255, 120, 100, -1));
       xYLayout1.setHeight(161);
-      xYLayout1.setWidth(575);
+      xYLayout1.setWidth(570);
     }
     else {
       jpSelDoc.add(jlBRDOK, new XYConstraints(15, 70, -1, -1));
       jpSelDoc.add(jtfBRDOK, new XYConstraints(150, 70, 100, -1));
       jpSelDoc.add(jlDatum, new XYConstraints(15, 95, -1, -1));
       jpSelDoc.add(jtfDATUMOD, new XYConstraints(150, 95, 100, -1));
-      jpSelDoc.add(jtfDATUMDO, new XYConstraints(260, 95, 100, -1));
+      jpSelDoc.add(jtfDATUMDO, new XYConstraints(255, 95, 100, -1));
       xYLayout1.setHeight(136);
-      xYLayout1.setWidth(575);
+      xYLayout1.setWidth(570);
     }
   }
   public void showJpSelectDoc(String raDocumentC, raMasterDetail owner, boolean showPres) {
