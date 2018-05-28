@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.EracunUtils;
+
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 
@@ -51,6 +53,9 @@ public class menuUpit extends JMenu {
   public JMenuItem jmTotaliKartica = new JMenuItem();
   public JMenuItem jmViewCalc = new JMenuItem();
   public JMenuItem jmRuc = new JMenuItem();
+  
+  public JMenuItem jmErac = new JMenuItem();
+  
 //  JMenu jmOP = new JMenu();
 
   public menuUpit(hr.restart.util.startFrame startframe) {
@@ -162,6 +167,14 @@ public class menuUpit extends JMenu {
         jmRuc_actionPerformed(e);
       }
     });
+    
+    jmErac.setText("Pregled e-Raèuna");
+    jmErac.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmErac_actionPerformed(e);
+      }
+    });
+    
     this.add(jmStanje);
 //    this.add(jmStanjeOld);
     this.add(jmKartica);
@@ -178,6 +191,8 @@ public class menuUpit extends JMenu {
     this.add(jmCjenik);
     this.add(jmCjenikCORG);
     this.add(jmRab);
+    this.addSeparator();
+    this.add(jmErac);
   }
   public void jmStanje_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.UpStanjeRobno", jmStanje.getText()); //was upStanjeNaSkladistu
@@ -231,5 +246,9 @@ public class menuUpit extends JMenu {
   }
   public void jmViewCalc_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.prewievCalc", jmViewCalc.getText());
+  }
+  
+  public void jmErac_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.robno.frmEracun", jmErac.getText());
   }
 }
