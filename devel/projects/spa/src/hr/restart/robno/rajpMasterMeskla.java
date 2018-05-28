@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.JlrNavField;
 import hr.restart.zapod.jpGetValute;
@@ -68,6 +69,11 @@ public class rajpMasterMeskla extends JPanel {
   
   JlrNavField jtfCPAR = new JlrNavField();
   JlrNavField jtfNAZPAR = new JlrNavField();
+  JraButton jbGetPartner = new JraButton();
+  
+  JlrNavField jtfCAGENT = new JlrNavField();
+  JlrNavField jtfNAZAGENT = new JlrNavField();
+  JraButton jbGetAgent = new JraButton();
 
   private JraTextField jtfOPIS = new JraTextField();
   JraTextField jtfDATDOK = new JraTextField();
@@ -95,6 +101,8 @@ public class rajpMasterMeskla extends JPanel {
     rajpBrDok.addBorder();
     this.setLayout(borderLayout1);
     jPanelCentral.setLayout(xYLayout2);
+    xYLayout2.setWidth(647);
+    xYLayout2.setHeight(240);
     jLabel2.setText("Datum dokumenta");
     jtfDATDOK.setHorizontalAlignment(SwingConstants.CENTER);
     jtfDATDOK.setColumnName("DATDOK");
@@ -131,10 +139,21 @@ public class rajpMasterMeskla extends JPanel {
     jtfNAZPAR.setColumnName("NAZPAR");
     jtfNAZPAR.setSearchMode(1);
     jtfNAZPAR.setNavProperties(jtfCPAR);
+    jtfCPAR.setNavButton(jbGetPartner);
+    
+    jtfCAGENT.setColumnName("CAGENT");
+    jtfCAGENT.setVisCols(new int[]{0,1});
+    jtfCAGENT.setColNames(new String[] {"NAZAGENT"});
+    jtfCAGENT.setRaDataSet(dm.getAgenti());
+    jtfCAGENT.setTextFields(new javax.swing.text.JTextComponent[] {jtfNAZAGENT});
+    jtfNAZAGENT.setColumnName("NAZAGENT");
+    jtfNAZAGENT.setSearchMode(1);
+    jtfNAZAGENT.setNavProperties(jtfCAGENT);
+    jtfCAGENT.setNavButton(jbGetAgent);
     
     //////////////////////////
 
-    this.setPreferredSize(new Dimension(647,250));
+    this.setPreferredSize(new Dimension(647,290));
     jpgetval.setTecajVisible(true);
 
 //    jpgetval.setDoGetTecaj(true);
@@ -157,7 +176,12 @@ public class rajpMasterMeskla extends JPanel {
     jPanelCentral.add(jLabel6,new XYConstraints(15, 135, -1, -1));
     jPanelCentral.add(jtfCPAR,new XYConstraints(150, 135, 100, -1));
     jPanelCentral.add(jtfNAZPAR,new XYConstraints(260, 135, 345, -1));
-    jPanelCentral.add(jpgetval, new XYConstraints(0, 160, 0, 0));
+    jPanelCentral.add(jbGetPartner,new XYConstraints(610, 135, 21, 21));
+    jPanelCentral.add(new JLabel("Agent"), new XYConstraints(15, 160, -1, -1));
+    jPanelCentral.add(jtfCAGENT,new XYConstraints(150, 160, 100, -1));
+    jPanelCentral.add(jtfNAZAGENT,new XYConstraints(260, 160, 345, -1));
+    jPanelCentral.add(jbGetAgent,new XYConstraints(610, 160, 21, 21));
+    jPanelCentral.add(jpgetval, new XYConstraints(0, 185, 0, 0));
   }
 
 /*  public void MYafterGet_Val(){
@@ -175,5 +199,6 @@ public class rajpMasterMeskla extends JPanel {
     jpgetval.setRaDataSet(ds);
     jtfOPIS.setDataSet(ds);
     jtfCPAR.setDataSet(ds);
+    jtfCAGENT.setDataSet(ds);
   }
 }
