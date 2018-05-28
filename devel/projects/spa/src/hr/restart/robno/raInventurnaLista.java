@@ -23,7 +23,7 @@ import com.borland.jbcl.layout.XYConstraints;
 
 public class raInventurnaLista extends raPopListaInv {
 
-  static private QueryDataSet repSet = new QueryDataSet();
+  //static private QueryDataSet repSet = new QueryDataSet();
   static public String sortBy;
 
   public raInventurnaLista() {
