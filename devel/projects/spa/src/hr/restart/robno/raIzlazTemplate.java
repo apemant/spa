@@ -22,6 +22,8 @@ import hr.apis_it.fin._2012.types.f73.RacunType;
 import hr.apis_it.fin._2012.types.f73.RacunZahtjev;
 import hr.restart.baza.*;
 import hr.restart.pos.presBlag;
+import hr.restart.sisfun.EracException;
+import hr.restart.sisfun.EracunUtils;
 import hr.restart.sisfun.TextFile;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
@@ -43,6 +45,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
@@ -71,7 +74,6 @@ import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
-import com.sun.org.apache.xml.internal.serialize.Printer;
 
 
 abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
@@ -173,6 +175,8 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
 	boolean isUsluga4Delete = false;
 
 	boolean bPonudaZaKupca = false;
+	
+	boolean bDvaRabat = false;
 
 	boolean isVTtext = false;
 
@@ -384,6 +388,13 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         raImages.IMGSENDMAIL, java.awt.event.KeyEvent.VK_F7, java.awt.event.KeyEvent.SHIFT_MASK) {
       public void actionPerformed(ActionEvent e) {
         keyFisk();
+      }
+    };
+    
+    raNavAction rnvSend = new raNavAction("Slanje eRaèuna",
+        raImages.IMGEXPORT, java.awt.event.KeyEvent.VK_F11) {
+      public void actionPerformed(ActionEvent e) {
+        keyEracun();
       }
     };
     
@@ -660,6 +671,47 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       
     }
     
+    public void keyEracun() {
+      DataSet ms = getMasterSet();
+      if (ms.rowCount() == 0) return;
+      
+      if (isPoslan()) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument je veæ ranije poslan!", "eRaèun", JOptionPane.INFORMATION_MESSAGE);
+        return;
+      }
+      
+      final File out = new File(ms.getString("PNBZ2") + ".pdf"); 
+      
+      try {
+        String rac = EracunUtils.getInstance().createRacun(ms, out, new Runnable() {
+          public void run() {
+            raMaster.getJpTableView().removeSelection();
+            reportsQuerysCollector.getRQCModule().ReSql(PrepSql(true, true),
+                what_kind_of_dokument);
+            reportsQuerysCollector.getRQCModule().caller = raIzlazTemplate.this;
+            // reportsQuerysCollector.getRQCModule().ReSql(PrepSql(true),what_kind_of_dokument);
+            // ST.prn(reportsQuerysCollector.getRQCModule().getQueryDataSet());
+            if (!isMasterInitIspis) {
+                isMasterInitIspis = true;
+                MyaddIspisMaster();
+            }
+            if (!bprepRunReport)
+                prepRunReport();
+            raMaster.getRepRunner().exportPdf(out);
+          }
+        });
+        int eid = EracunUtils.getInstance().sendRacun(rac);
+        ms.setInt("EID", eid);
+        ms.saveChanges();
+        raMaster.getJpTableView().fireTableDataChanged();
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Dokument poslan!", "eRaèun", JOptionPane.INFORMATION_MESSAGE);
+      } catch (ProcessInterruptException e) {
+        //
+      } catch (EracException e) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), e.getMessage(), "eRaèun", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+    
     
     public void keyFisk() {
       DataSet ms = getMasterSet();
@@ -782,6 +834,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
       dM.copyColumns(getMasterSet(), rzag, new String[] {"CUSER", "GOD", "DATDOK", "DVO", "DATDOSP", "FBR", "FOK", "FPP", "FNU"});
       Aus.neg(rzag, "UIRAC");
       Aus.neg(rzag, "RUC");
+      rzag.post();
       
       util.getBrojDokumenta(rzag, false);
       
@@ -2055,6 +2108,7 @@ ST.prn(radninal);
 				lc.TransferFromDB2Class(getDetailSet(), rKD.stavkaold);
 				lc.TransferFromDB2Class(AST.gettrenSTANJE(), rKD.stanje);
 				rKD.KalkulacijaStanje(what_kind_of_dokument);
+				lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje);
 			}
 		} else {
 			javax.swing.JOptionPane.showMessageDialog(raDetail.getWindow(), rCD.errorMessage(),
@@ -2373,16 +2427,17 @@ ST.prn(radninal);
 			raDetail.markChange(dm.getVTText());
 		}*/
 
+		brisiVezu();
 		if (TD.isDocDiraZalihu(what_kind_of_dokument)) {
 			if (!isUsluga4Delete) {
-				lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje);
+				//lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje); ab.f prebaèeno
 				rCD.brisanjeIzlaz(AST.gettrenSTANJE());
 				raTransaction.saveChanges(AST.gettrenSTANJE());
 			}
 			isUsluga4Delete = false; // uvijek vrati na robu
 		}
 		//brisiRezervaciju();
-		brisiVezu();
+		
 		if (haveSB) {
 			prepDelete();
 			dlgSerBrojevi.getdlgSerBrojevi().setTransactionActive(true);
@@ -2502,7 +2557,7 @@ ST.prn(radninal);
 		}
 
 		if (mode == 'B') {
-			doWithSaveDetailBrisi();
+			retValue = doWithSaveDetailBrisi();
 		} else {
 			dlgSerBrojevi.getdlgSerBrojevi().setTransactionActive(true);
 			dlgSerBrojevi.getdlgSerBrojevi().TransactionSave();
@@ -2531,7 +2586,7 @@ ST.prn(radninal);
 				nStavka = (short) (nStavka + 1);
 				try {
 					if (!isUslugaOrTranzit()) {
-						lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje);
+						//lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje); ab.f
 						rCD.unosIzlaz(getDetailSet(), AST.gettrenSTANJE()); // ???????
 						raTransaction.saveChanges(getDetailSet());
 						raTransaction.saveChanges(AST.gettrenSTANJE());
@@ -2610,7 +2665,7 @@ ST.prn(radninal);
 			if (!isUslugaOrTranzit()
 					&& TypeDoc.getTypeDoc().isDocDiraZalihu(
 							what_kind_of_dokument)) {
-				lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje);
+				//lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje); ab.f
 				raTransaction.saveChanges(AST.gettrenSTANJE());
 			}
 		} catch (Exception e) {
@@ -2693,7 +2748,21 @@ ST.prn(radninal);
 		}
       DP.rpcart.setExtraSklad(getDetailSet().getString("CSKLART"));
 
-		return DodatnaValidacijaDetail();
+      if (!DodatnaValidacijaDetail()) return false;
+		
+		if ("PON|RAC|ROT|GRN|GOT".indexOf(what_kind_of_dokument) >= 0) {
+	        BigDecimal nc = getDetailSet().getBigDecimal("ROT|GOT".indexOf(what_kind_of_dokument) >= 0 ? "NC" : "RNC");
+	        BigDecimal fc = getDetailSet().getBigDecimal("FVC");
+	        BigDecimal minruc = Aus.getDecNumber(frmParam.getParam("robno", "minRuC", "0", "Minimalni RuC na izlaznim dokumentima"));
+	        if (nc.signum() > 0 && fc.signum() > 0 && minruc.signum() > 0 &&
+	            fc.divide(nc, 2, BigDecimal.ROUND_HALF_UP).subtract(Aus.one0).movePointRight(2).compareTo(minruc) < 0) {
+	          DP.jraFC.requestFocus();
+	          if (JOptionPane.showConfirmDialog(raDetail.getWindow(), "RuC na ovoj stavci je manji od minimalne (" +
+	              Aus.formatBigDecimal(minruc) + "%)! Nastaviti ipak?", "Upozorenje", JOptionPane.OK_CANCEL_OPTION,
+	              JOptionPane.WARNING_MESSAGE) != JOptionPane.OK_OPTION) return false;
+	        }
+	      }
+	  return true;
 	}
 	
 	private boolean checkJitNalog(boolean isStanje) {
@@ -3177,7 +3246,7 @@ ST.prn(radninal);
 		if (!(checkAccess())) {
           enabdisabNavAction(raDetail, new String[] { "Ispis" }, false);
 
-          if (isNabDirect() && allowNabedit)
+          if (isNabDirect() && !bPonudaZaKupca && allowNabedit)
             raDetail.setEnabledNavAction(raDetail.getNavBar().
                     getStandardOption(raNavBar.ACTION_UPDATE),true);
 
@@ -3188,13 +3257,11 @@ ST.prn(radninal);
 		}
 
 		if (isUserCheck()) {
-			if (!hr.restart.sisfun.raUser.getInstance().isSuper()) {
-				if (!hr.restart.sisfun.raUser.getInstance().getUser().equals(
+				if (!hr.restart.sisfun.raUser.getInstance().canUpdate(
 						getMasterSet().getString("CUSER"))) {
 					enabdisabNavAction(raDetail, new String[] { "Ispis" },
 							false);
 				}
-			}
 		}
 	}
 
@@ -3249,6 +3316,12 @@ ST.prn(radninal);
                   "Korisnik ne može promijeniti dokument jer je zakljuèan / fiskaliziran !",
                   false);
 
+          return false;
+        }
+		if (isPoslan()) {
+          setUserCheckMsg(
+                  "Korisnik ne može promijeniti dokument jer je poslan kao eRaèun !",
+                  false);
           return false;
         }
 
@@ -4344,11 +4417,16 @@ System.out.println("findCjenik::else :: "+sql);
 			  if (doc.equals("PON") && "OJ".equals(
 			      getMasterSet().getString("PARAM")))
 			    doc = "RAC";
+			  if (doc.equals("PRD") && "K".equals(getMasterSet().getString("PARAM")))
+			    doc = "GOT";
 			  tmpCijenik = AST.getCijenik(doc, 
 	                getMasterSet().getString("CSKL"), cpar,
 	                getDetailSet().getInt("CART"));
 			}
 			
+			if (AST.isForced() && tmpCijenik == null) {
+			  JOptionPane.showMessageDialog(raDetail, "Za taj artikl ne postoji definiran cjenik!", "Upozorenje", JOptionPane.WARNING_MESSAGE);
+			}
 //			findCjenik();
 			//if (isCijenikExist) {
 			if (tmpCijenik != null) {
@@ -4378,6 +4456,11 @@ System.out.println("findCjenik::else :: "+sql);
 				lc.setBDField("FVC", bdvc, rKD.stavka);
 				lc.setBDField("FMC", bdmc, rKD.stavka);
 				lc.setBDField("FMCPRP", bdmc, rKD.stavka);
+				
+				if (AST.isForced()) {
+				  lc.setBDField("FC", bdvc.divide(Aus.one0.add(tmpCijenik.getBigDecimal("POSTO").movePointLeft(2)), 4, BigDecimal.ROUND_HALF_UP) , rKD.stavka);
+				  lc.setBDField("UPRAB", tmpCijenik.getBigDecimal("POSTO").negate(), rKD.stavka);
+				}
 
 				// lc.setBDField("FC", tmpCijenik.getBigDecimal("VC"),
 				// rKD.stavka);
@@ -4547,6 +4630,7 @@ System.out.println("findCjenik::else :: "+sql);
 				lc.setBDField("FMCPRP", getDetailSet().getBigDecimal("FVC"),
 						rKD.stavka);
 			}
+			Aus.set(getDetailSet(), "RNC", AST.gettrenSTANJE(), "NC");
 			rKD.stavkaold.Init();
 			DP.setEnabledAll(true);
 		} else {
@@ -4636,8 +4720,7 @@ System.out.println("findCjenik::else :: "+sql);
 				getMasterSet().getString("CSKL"), isMaloprodajnaKalkulacija);
 		rKD.KalkulacijaStanje(what_kind_of_dokument);
 		lc.TransferFromClass2DB(getDetailSet(), rKD.stavka);
-		if (how.equals("KOL") && nabDirect)
-			Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
+		if (how.equals("KOL")) Aus.mul(getDetailSet(), "RINAB", "RNC", "KOL");
 		if (what_kind_of_dokument.equals("OTP")) {
 	       if (how.equals("FC") || how.equals("FMC") || how.equals("FVC") || how.equals("UPRAB")) {
 	         //lD.raLocate(dm.getArtikli(), "CART", getDetailSet());
@@ -4655,11 +4738,20 @@ System.out.println("findCjenik::else :: "+sql);
 	           oldmc = oldvc.multiply(pm).setScale(2, BigDecimal.ROUND_HALF_UP);
 	         else if (rm.signum() != 0)
                oldfc = oldvc.divide(rm, 2, BigDecimal.ROUND_HALF_UP);
+	         getDetailSet().setBigDecimal("PPOR1",
+                 dm.getPorezi().getBigDecimal("POR1"));
+             getDetailSet().setBigDecimal("PPOR2",
+                 dm.getPorezi().getBigDecimal("POR2"));
+             getDetailSet().setBigDecimal("PPOR3",
+                 dm.getPorezi().getBigDecimal("POR3"));
+             getDetailSet().setBigDecimal("UPPOR",
+                 dm.getPorezi().getBigDecimal("UKUPOR"));
 	       }
 	       getDetailSet().setBigDecimal("FC", oldfc);
 	       getDetailSet().setBigDecimal("UPRAB", oldrab);
 	       getDetailSet().setBigDecimal("FVC", oldvc);
 	       getDetailSet().setBigDecimal("FMC", oldmc);
+	       
 	    }
 		findRuC();
 		if (dah.isShowing()) dah.recalcMar();
@@ -4849,6 +4941,7 @@ System.out.println("findCjenik::else :: "+sql);
 						return false;
 					}
 				}
+				if (!checkKomisija()) return false;
 			}
 		}
 		if (!(TD.isDocSklad(what_kind_of_dokument) || "DOS"
@@ -4856,8 +4949,10 @@ System.out.println("findCjenik::else :: "+sql);
 			Kalkulacija("_NULARAZDUZ");
 		}
 		
-		if (!isUslugaOrTranzit())
+		if (!isUslugaOrTranzit()) {
 		  rKD.KalkulacijaStanje(what_kind_of_dokument);
+		  lc.TransferFromClass2DB(AST.gettrenSTANJE(), rKD.stanje);
+		}
 
 		return true;
 	}
@@ -4865,6 +4960,49 @@ System.out.println("findCjenik::else :: "+sql);
 	public void prepDelete() {
 		rKD.stavka.Init();
 		rKD.KalkulacijaStanje(what_kind_of_dokument);
+	}
+	
+	public boolean checkKomisija() {
+	  if (!OrgStr.getOrgStr().isKomisija()) return true;
+	  
+	  BigDecimal needk = getDetailSet().getBigDecimal("KOL");
+      if (needk.signum() < 0) return true;
+      if (raDetail.getMode() == 'I' && needk.compareTo(rKD.stavkaold.kol) < 0) return true;
+      //if (needk.signum() < 0) return true;
+	  
+	  DataSet ds = Stdoku.getDataModule().getTempSet("KOMISIJA ID_STAVKA CPARKOM KOLKOM", Condition.whereAllEqual("CSKL GOD", getDetailSet()));
+	  if (ds.rowCount() == 0) {
+	    JOptionPane.showMessageDialog(raDetail.getWindow(),
+            "Nema ulaznih stavaka za razduženje komisije !",
+            "Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
+	    return false;
+	  }
+	  
+	  BigDecimal ownTotal = Aus.zero2;
+	  BigDecimal komTotal = Aus.zero2;
+	  BigDecimal ownMax = Aus.zero2;
+	  BigDecimal komMax = Aus.zero2;
+	  
+	  for (ds.first(); ds.inBounds(); ds.next()) {
+	    BigDecimal kolkom = ds.getBigDecimal("KOLKOM");
+	    if (raDetail.getMode() == 'I' && ds.getString("ID_STAVKA").equals(ds.getBigDecimal("STAVKOM")))
+	      kolkom = kolkom.add(rKD.stavkaold.kol);
+	    if (ds.isNull("CPARKOM") || ds.getInt("CPARKOM") == 0) {
+	      ownTotal = ownTotal.add(kolkom);
+	      if (kolkom.compareTo(ownMax) > 0) ownMax = kolkom;
+	    } else {
+	      komTotal = komTotal.add(kolkom);
+	      if (kolkom.compareTo(komMax) > 0) komMax = kolkom;
+	    }
+	  }
+	  
+	  if (ownTotal.add(komTotal).compareTo(needk) < 0) {
+	    JOptionPane.showMessageDialog(raDetail.getWindow(),
+            "Nema dovoljno ulaznih stavaka za razduženje !",
+            "Greška", javax.swing.JOptionPane.ERROR_MESSAGE);
+        return false;
+	  }
+	  return true;	  
 	}
 
 	/**
@@ -5333,8 +5471,12 @@ System.out.println("findCjenik::else :: "+sql);
 	 * @return
 	 */
 	public boolean isPrenesen() {
-		return getMasterSet().getString("STATUS").equalsIgnoreCase("P");
+		return getMasterSet().getString("STATUS").equalsIgnoreCase("P") || isPoslan();
 	}
+	
+	public boolean isPoslan() {
+      return getMasterSet().hasColumn("EID") != null && !getMasterSet().isNull("EID");
+    }
 
 	public boolean isKPR() {
 		return getMasterSet().getString("STAT_KPR").equalsIgnoreCase("D");
