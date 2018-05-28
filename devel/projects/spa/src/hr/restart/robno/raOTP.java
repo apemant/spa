@@ -84,6 +84,9 @@ public class raOTP extends raIzlazTemplate {
 		raMaster.getRepRunner().addReport("hr.restart.robno.repOTPfin",
             "hr.restart.robno.repOTPvri", "OTPfin",
             "Otpremnica s financijskim vrijednostima");
+		raMaster.getRepRunner().addReport("hr.restart.robno.repOTPLOTfin",
+            "hr.restart.robno.repOTPvri", "OTPLOTfin",
+            "Otpremnica s financijskim vrijednostima i šaržom");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repOTPSKL",
             "hr.restart.robno.repIzlazni","OTP2",
             "Otpremnica dvije jedinice mjere");
@@ -97,6 +100,9 @@ public class raOTP extends raIzlazTemplate {
 				"hr.restart.robno.repRacuniPnP",
 				"OTPsifKup",
 				"Otpremnica sa šifrom kupca");
+		raMaster.getRepRunner().addReport("hr.restart.robno.repKomIzd",
+            "hr.restart.robno.repIzlazni","KomIzd",
+            "Komisijska izdatnica");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repMxOTP",
 				"Matri\u010Dni ispis otpremnice");
 	}
@@ -113,6 +119,9 @@ public class raOTP extends raIzlazTemplate {
 		raDetail.getRepRunner().addReport("hr.restart.robno.repOTPfin",
             "hr.restart.robno.repOTPvri", "OTPfin",
             "Otpremnica s financijskim vrijednostima");
+		raDetail.getRepRunner().addReport("hr.restart.robno.repOTPLOTfin",
+            "hr.restart.robno.repOTPvri", "OTPLOTfin",
+            "Otpremnica s financijskim vrijednostima i šaržom");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repOTPSKL",
                 "hr.restart.robno.repIzlazni","OTP2",
                 "Otpremnica dvije jedinice mjere");
@@ -126,6 +135,9 @@ public class raOTP extends raIzlazTemplate {
 				"hr.restart.robno.repRacuniPnP",
 				"OTPsifKup",
 				"Otpremnica sa šifrom kupca");
+		raDetail.getRepRunner().addReport("hr.restart.robno.repKomIzd",
+            "hr.restart.robno.repIzlazni","KomIzd",
+            "Komisijska izdatnica");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repMxOTP",
 				"Matri\u010Dni ispis otpremnice");
 	}
@@ -157,6 +169,14 @@ public class raOTP extends raIzlazTemplate {
 		zamraciDetail(dm.getStOtp());
 		setMasterSet(dm.getZagOtp());
 		setDetailSet(dm.getStOtp());
+		
+		raMaster.getJpTableView().addTableModifier(
+		    new hr.restart.swing.raTableColumnModifier("CAGENT", new String[] {
+              "CAGENT", "NAZAGENT" }, new String[] { "CAGENT" }, dm.getAgenti()) {
+          public int getMaxModifiedTextLength() {
+            return 24;
+          }
+        });
 		
 		raDetail.addOption(rnvKartica,4, false);
 		
