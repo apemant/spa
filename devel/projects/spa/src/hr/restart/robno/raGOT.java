@@ -18,8 +18,11 @@
 package hr.restart.robno;
 
 import hr.restart.baza.dM;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
+import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
 import hr.restart.swing.raInputDialog;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raImages;
@@ -27,6 +30,7 @@ import hr.restart.util.raNavAction;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -40,7 +44,12 @@ import com.borland.jbcl.layout.XYLayout;
 
 public class raGOT extends raIzlazTemplate  {
   
-  
+
+  raNavAction rnvLot = new raNavAction("Promjena šarže", raImages.IMGALIGNJUSTIFY, KeyEvent.VK_F8) {
+    public void actionPerformed(ActionEvent e) {
+      chgLot();
+    }
+  };
 
   public void initialiser(){
     what_kind_of_dokument = "GOT";
@@ -48,6 +57,7 @@ public class raGOT extends raIzlazTemplate  {
 //    this.raDetail.getNavBar().getColBean().setSaveName("hr.restart.robno.raGOT_d");
 
 //    (+4)
+    bDvaRabat = frmParam.getParam("robno", "dvaRabata", "N", "Unos 2 rabata na maloprodajnim dokumentima (D,N)?").equals("D");
   }
   public void ConfigViewOnTable(){
 //    this.setVisibleColsMaster(new int[] {4,5,6});
@@ -59,6 +69,7 @@ public class raGOT extends raIzlazTemplate  {
 
   public void MyaddIspisMaster(){
     raMaster.getRepRunner().addReport("hr.restart.robno.repGotRac","hr.restart.robno.repIzlazni","GotRac","Gotovinski raèun 1 red");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repGotRac2p","hr.restart.robno.repIzlazni","GotRac2p","Gotovinski raèun 1 red s 2 popusta");
     raMaster.getRepRunner().addReport("hr.restart.robno.repGotRac2","hr.restart.robno.repIzlazni","GotRac2","Gotovinski raèuni 2 red");
     raMaster.getRepRunner().addReport("hr.restart.robno.repGotRacBP","hr.restart.robno.repIzlazni","GotRacBP","Gotovinski raèun s cijenom bez poreza");
     
@@ -79,6 +90,7 @@ public class raGOT extends raIzlazTemplate  {
 
   public void MyaddIspisDetail(){
     raDetail.getRepRunner().addReport("hr.restart.robno.repGotRac","hr.restart.robno.repIzlazni","GotRac","Gotovinski raèun 1 red");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repGotRac2p","hr.restart.robno.repIzlazni","GotRac2p","Gotovinski raèun 1 red s 2 popusta");
     raDetail.getRepRunner().addReport("hr.restart.robno.repGotRac2","hr.restart.robno.repIzlazni","GotRac2","Gotovinski raèuni 2 red");
     raDetail.getRepRunner().addReport("hr.restart.robno.repGotRacBP","hr.restart.robno.repIzlazni","GotRacBP","Gotovinski raèun s cijenom bez poreza");
     
@@ -161,11 +173,43 @@ public class raGOT extends raIzlazTemplate  {
     stozbrojiti_detail(new String[] {"IPRODSP"});
     raDetail.addOption(rnvNacinPlac,4);
     raDetail.addOption(rnvKartica, 5, false);
+    if (raIzlazTemplate.isShowLot()) {
+      raDetail.addOption(rnvLot, 5, false);
+    }
     raMaster.addOption(rnvFisk, 5, false);
     defNacpl = hr.restart.sisfun.frmParam.getParam("robno","gotNacPl");
     
     if (hideKup) raMaster.addOption(rnvKupHack, 6, false);
+    
   }
+  
+  public void beforeShowMaster() {
+    super.beforeShowMaster();
+    defNacpl = hr.restart.sisfun.frmParam.getParam("robno","gotNacPl");
+  }
+  
+  void chgLot() {
+    if (getDetailSet().rowCount() == 0) return;
+    
+    raInputDialog dlglot = new raInputDialog() {
+        protected void init() {
+            XYPanel panlot = new XYPanel().label("Šarža / lot").text("LOT", 120).expand();
+            setParams("Promjena šarže", panlot, panlot.getText("LOT")); 
+        }
+        protected void beforeShow() {
+          ((JraTextField) getValue()).setText(getDetailSet().getString("LOT"));
+        }
+    };
+
+    if (dlglot.show(raDetail.getWindow())) {
+        String cgnew = ((JraTextField) dlglot.getValue()).getText();
+        
+        getDetailSet().setString("LOT",  cgnew);
+        getDetailSet().saveChanges();
+        raDetail.getJpTableView().fireTableDataChanged();
+    }
+  }
+
 
   public boolean LocalValidacijaMaster(){
     return isDatumToday();
