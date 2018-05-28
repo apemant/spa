@@ -21,6 +21,7 @@ import hr.restart.baza.Artikli;
 import hr.restart.baza.dM;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
+import hr.restart.util.raAdditionalLookupFilter;
 import hr.restart.util.raCommonClass;
 
 import java.awt.BorderLayout;
@@ -30,6 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
@@ -49,12 +51,12 @@ public class jpRnus extends JPanel {
   JraTextField jraKC = new JraTextField();
 
   protected rapancart rpc = new rapancart() {
-  	QueryDataSet arts;
+    /*QueryDataSet arts;
     public QueryDataSet getRaDataSet(){
     	if (arts == null) arts = Artikli.getDataModule().getFilteredDataSet(
           raVart.getStanjeCond());
       return arts;
-    }
+    }*/
     public void metToDo_after_lookUp() {
       if (!rpcLostFocus && frn.getMode() == 'N') {
         rpcLostFocus = true;
@@ -116,6 +118,11 @@ public class jpRnus extends JPanel {
   }
 
   public void initRpcart() {
+    rpc.jrfCART.setAdditionalLookupFilter(new raAdditionalLookupFilter() {
+      public boolean isRow(ReadRow row) {
+        return raVart.isStanje(row);
+      }
+    });
     rpc.setTabela(frn.getRaQueryDataSet());
     rpc.setBorder(BorderFactory.createEtchedBorder());
     rpc.setMode("DOH");
