@@ -19,26 +19,26 @@ package hr.restart.robno;
 
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
+import hr.restart.baza.Meskla;
 import hr.restart.baza.Stanje;
+import hr.restart.baza.Stmeskla;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
-import hr.restart.util.Aus;
-import hr.restart.util.lookupData;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raImages;
-import hr.restart.util.raLocalTransaction;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raProcess;
-import hr.restart.util.raTransaction;
+import hr.restart.swing.XYPanel;
+import hr.restart.swing.raInputDialog;
+import hr.restart.util.*;
 
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
 public class raMeskla extends hr.restart.util.raMasterDetail {
@@ -83,6 +83,13 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
   	public void actionPerformed(ActionEvent e) {
       transferCompleteSklad();
   	}
+  };
+  
+  raNavAction rnvTransAll = new raNavAction("Proslijedi meðuskladišnicu",
+      raImages.IMGSENDMAIL, java.awt.event.KeyEvent.VK_F8) {
+    public void actionPerformed(ActionEvent e) {
+      transferAllStavke();
+    }
   };
 
   
@@ -129,8 +136,7 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
     raMaster.getJpTableView().addTableModifier( TCM1);
 
     setUserCheck(true);
-    String[] key={"CSKLIZ","CSKLUL","VRDOK","GOD","BRDOK"};
-    String[] dkey={"CSKLIZ","CSKLUL","VRDOK","GOD","BRDOK","RBR"};
+    
     raDM = new rajpDetailMeskla(this);
     this.setJPanelMaster(this.raMM);
     this.setJPanelDetail(this.raDM);
@@ -139,8 +145,8 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
     setMasterSet(dm.getMesklaMES());
     setDetailSet(dm.getStmesklaMES());
     raMM.BindComp(getMasterSet());
-    this.setMasterKey(key);
-    this.setDetailKey(dkey);
+    this.setMasterKey(Util.mesmkey);
+    this.setDetailKey(Util.mesdkey);
     this.setVisibleColsMaster(new int[] {5,6,0,1});
     this.setVisibleColsDetail(new int[] {5,Aut.getAut().getCARTdependable(6,7,8),9,10,11});
     this.raMaster.getRepRunner().addReport("hr.restart.robno.repMeskla","hr.restart.robno.repMeskla","Meskla","Me\u0111uskladišnice-koli\u010Dinske");
@@ -155,10 +161,18 @@ public class raMeskla extends hr.restart.util.raMasterDetail {
     this.raDetail.getRepRunner().addReport("hr.restart.robno.repMesklaNiv","hr.restart.robno.repMesNivel","Nivel","Poravnanje - nivelacija");
     EntryModeinDM();
     raMaster.removeRnvCopyCurr();
+    raMaster.addOption(rnvTransAll, 5, false);
     raDetail.removeRnvCopyCurr();
     raDetail.addOption(rnvNacinPlac, 4);
     if (raUser.getInstance().isSuper())
     	raDetail.addOption(rnvTrans, 5, false);
+    raMaster.getJpTableView().addTableModifier(
+        new hr.restart.swing.raTableColumnModifier("CAGENT", new String[] {
+          "CAGENT", "NAZAGENT" }, new String[] { "CAGENT" }, dm.getAgenti()) {
+      public int getMaxModifiedTextLength() {
+        return 24;
+      }
+    });
     System.out.println("test meskla kraj");
     rCD.setisNeeded(hr.restart.sisfun.frmParam.getParam("robno",
 				"kontKalk", "D",
@@ -649,6 +663,44 @@ System.out.println("kraj findStanjaiCijene()");
 
   }
   
+  StorageDataSet dat;
+  public void transferAllStavke() {
+    if (getMasterSet().isEmpty()) return;
+    
+    if (dat == null) dat = Aus.createSet("CSKLUL:12 CSKLIZ:12 MES:1 @DATDOK");
+    
+    raInputDialog dlg = new raInputDialog() {
+      XYPanel pan;
+      protected void init() {
+          pan = new XYPanel(dat).label("Izlazno skladište").nav("CSKLIZ:CSKL", dm.getSklad(), "NAZSKL").nl();
+          pan.label("Ulazno skladište").nav("CSKLUL:CSKL", dm.getSklad(), "NAZSKL").nl();
+          pan.label("Datum").text("DATDOK").skip(200).check("Puna meðuskladišnica", "MES").nl().expand();
+          setParams("Proslijedi stavke", pan, pan);
+      }
+      protected void beforeShow() {
+        dat.setString("CSKLIZ", getMasterSet().getString("CSKLUL"));
+        pan.getNav("CSKLUL").requestFocusLater();
+      }
+      protected boolean checkOk() {
+          return !Valid.getValid().isEmpty(pan.getNav("CSKLUL")) && 
+              !Valid.getValid().isEmpty(pan.getNav("CSKLIZ")) && 
+              !Valid.getValid().isEmpty(pan.getText("DATDOK"));
+      }
+    };
+    if (dlg.show(raMaster.getWindow())) {
+      raProcess.runChild(raDetail, new Runnable() {
+        public void run() {
+           transferAllStavke_proc();
+        }
+      });
+      if (raProcess.isCompleted()) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), "Meðuskladišnica uspješno napravljena.", "Prijenos", JOptionPane.INFORMATION_MESSAGE);
+      } else if (!raProcess.isInterrupted()) {
+        JOptionPane.showMessageDialog(raMaster.getWindow(), raProcess.getLastException().getMessage(), "Prijenos", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+  }
+  
   public void transferCompleteSklad() {
   	raProcess.runChild(raDetail, new Runnable() {
   		public void run() {
@@ -662,16 +714,48 @@ System.out.println("kraj findStanjaiCijene()");
   	});
   }
   
+  void transferAllStavke_proc() {
+    System.out.println("Prebacio " + dat);
+    raProcess.setMessage("Priprema podataka za meðuskladišnicu ... ", true);
+    
+    DataSet st = Stmeskla.getDataModule().getTempSet("RBR CART KOL LOT", Condition.whereAllEqual(Util.mesmkey, getMasterSet()));
+    raProcess.openScratchDataSet(st);
+    if (st.isEmpty()) throw new RuntimeException("Meðuskladišnica nema stavaka!");
+    
+    String izv = allStanje.VrstaZalihaA(dat.getString("CSKLIZ"));
+    String ulv = allStanje.VrstaZalihaA(dat.getString("CSKLUL"));
+    
+    boolean mes = dat.getString("MES").equalsIgnoreCase("D");
+    
+    st.setSort(new SortDescriptor(new String[] {"RBR"}));
+    
+    QueryDataSet master = Meskla.getDataModule().openEmptySet();
+    master.insertRow(false);
+    master.setString("CSKLUL", dat.getString("CSKLUL"));
+    master.setString("CSKLIZ", dat.getString("CSKLIZ"));
+    master.setTimestamp("DATDOK", dat.getTimestamp("DATDOK"));
+    master.setString("VRDOK", mes ? "MES" : "MEI");
+    Util.getUtil().getBrojDokumenta(master, false);
+    master.setString("CUSER", raUser.getInstance().getUser());
+    if (!raTransaction.saveChangesInTransaction(new QueryDataSet[] {master, dm.getSeq()}))
+      throw new RuntimeException("Greška kod snimanja zaglavlja meðuskladišnice!");
+    
+    QueryDataSet detail = Stmeskla.getDataModule().openEmptySet();
+    short mrbr = 0;
+    
+    for (st.first(); st.inBounds(); st.next()) {
+      raProcess.checkClosing();
+      
+      addArt(master, detail, izv, ulv, ++mrbr, st);      
+    }
+  }
+  
   void transferCompleteSklad_proc() {
   	raProcess.setMessage("Priprema podataka za meðuskladišnicu ... ", true);
-  	
+  	    
   	String izv = allStanje.VrstaZalihaA(getMasterSet().getString("CSKLIZ"));
   	String ulv = allStanje.VrstaZalihaA(getMasterSet().getString("CSKLUL"));
-  	String[] mkey = {"CSKLIZ", "CSKLUL", "VRDOK", "GOD", "BRDOK"};
-  	String[] akey = {"CART", "CART1", "BC", "NAZART", "JM"};
   	short mrbr = 0;
-  	
-  	lookupData ld = lookupData.getlookupData();
   	
   	raProcess.setMessage("Dohvat stanja sa skladišta ... ", false);
   	QueryDataSet izlazAll = Stanje.getDataModule().getTempSet("CART",
@@ -689,65 +773,87 @@ System.out.println("kraj findStanjaiCijene()");
       if (row++ % mess == 0)
       	raProcess.setMessage("Obrada artikla " + row + "/" + total + " ... ", false);
       
-      if (!ld.raLocate(dm.getArtikli(), "CART", Integer.toString(izlazAll.getInt("CART")))) continue;
-      if (!ld.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"))) continue;
-            
-      QueryDataSet izlaz = Stanje.getDataModule().getTempSet(
-    			Condition.equal("CSKL", getMasterSet().getString("CSKLIZ")).
-    			and(Condition.equal("GOD", getMasterSet())).and(
-    					Condition.equal("CART", izlazAll)));
-      izlaz.open();
-      
-      if (izlaz.rowCount() == 0 || izlaz.getBigDecimal("KOL").signum() <= 0) continue;
-      
-      QueryDataSet ulaz = Stanje.getDataModule().getTempSet(
-    			Condition.equal("CSKL", getMasterSet().getString("CSKLUL")).
-    			and(Condition.equal("GOD", getMasterSet())).and(
-    					Condition.equal("CART", izlazAll)));
-      ulaz.open();
-      
-      getDetailSet().insertRow(false);
-      dM.copyColumns(getMasterSet(), getDetailSet(), mkey);
-      dM.copyColumns(dm.getArtikli(), getDetailSet(), akey);
-      getDetailSet().setShort("RBR", ++mrbr);
-      
-      PrepMeskla4Add();
-      rKM.stanjeiz.Init();
-      rKM.stanjeul.Init();
-      lc.TransferFromDB2Class(izlaz,rKM.stanjeiz);
-      lc.TransferFromDB2Class(ulaz,rKM.stanjeul);
-      rKM.stanjeiz.sVrSklad=izv;
-      rKM.stanjeul.sVrSklad=ulv;
-      
-      rKM.stavka.reverzpostopor = dm.getPorezi().getBigDecimal("UKUNPOR");
-      rKM.stavka.postopor = dm.getPorezi().getBigDecimal("UKUPOR");
-
-      rKM.setupOldPrice();
-      rKM.setupPrice();
-      
-      rKM.stavka.kol = izlaz.getBigDecimal("KOL");
-
-      rKM.Kalkulacija();
-      lc.TransferFromClass2DB(getDetailSet(), rKM.stavka);
-      
-      rKM.kalkStanja();
-      
-      lc.TransferFromClass2DB(izlaz, rKM.stanjeiz);
-      rCD.unosIzlaz(getDetailSet(), izlaz); //???????
-
-      if (ulaz.getRowCount() == 0) {
-      	ulaz.insertRow(true);
-      	ulaz.setString("CSKL", getMasterSet().getString("CSKLUL"));
-      	ulaz.setString("GOD", getMasterSet().getString("GOD"));
-      	ulaz.setInt("CART", izlazAll.getInt("CART"));
-      }
-      lc.TransferFromClass2DB(ulaz, rKM.stanjeul);
-      rCD.unosKalkulacije(getDetailSet(), ulaz); 
-       
-      ulaz.setTimestamp("DATZK", getMasterSet().getTimestamp("DATDOK"));
-      raTransaction.saveChangesInTransaction(new QueryDataSet[] {ulaz, izlaz, getDetailSet()});
+      addArt(getMasterSet(), getDetailSet(), izv, ulv, ++mrbr, izlazAll);
   	}
 
+  }
+  
+  private void addArt(QueryDataSet master, QueryDataSet detail, String izv, String ulv, short mrbr, ReadRow art) {
+    lookupData ld = lookupData.getlookupData();
+    
+    int cart = art.getInt("CART");
+    BigDecimal kol = art.hasColumn("KOL") != null ? art.getBigDecimal("KOL") : null;
+    if (Artikli.loc(cart))
+      rKM.setupArt(Artikli.get().getBigDecimal("NC"), Artikli.get().getBigDecimal("VC"), Artikli.get().getBigDecimal("MC"));
+    else return;
+    
+    //if (!ld.raLocate(dm.getArtikli(), "CART", Integer.toString(cart))) return;
+    //if (!ld.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"))) return;
+    if (!ld.raLocate(dm.getPorezi(), "CPOR", Artikli.get().getString("CPOR"))) return;
+    
+    QueryDataSet izlaz = Stanje.getDataModule().openTempSet(
+              Condition.equal("CSKL", master.getString("CSKLIZ")).
+              and(Condition.equal("GOD", master)).and(
+                      Condition.equal("CART", cart)));
+    
+    if (izlaz.rowCount() == 0 || kol == null && izlaz.getBigDecimal("KOL").signum() <= 0) return;
+    if (kol == null) kol = izlaz.getBigDecimal("KOL");
+    
+    boolean mei = master.getString("VRDOK").equals("MEI");
+    
+    QueryDataSet ulaz = mei ? null : Stanje.getDataModule().openTempSet(
+              Condition.equal("CSKL", master.getString("CSKLUL")).
+              and(Condition.equal("GOD", master)).and(
+                      Condition.equal("CART", cart)));
+    
+    detail.insertRow(false);
+    dM.copyColumns(master, detail, Util.mesmkey);
+    dM.copyColumns(Artikli.get(), detail, Util.akey);
+    detail.setShort("RBR", mrbr);
+    detail.setInt("rbsid", mrbr);
+    
+    PrepMeskla4Add();
+    rKM.stanjeiz.Init();
+    rKM.stanjeul.Init();
+    lc.TransferFromDB2Class(izlaz,rKM.stanjeiz);
+    if (!mei) lc.TransferFromDB2Class(ulaz,rKM.stanjeul);
+    rKM.stanjeiz.sVrSklad=izv;
+    rKM.stanjeul.sVrSklad=ulv;
+    
+    rKM.stavka.reverzpostopor = dm.getPorezi().getBigDecimal("UKUNPOR");
+    rKM.stavka.postopor = dm.getPorezi().getBigDecimal("UKUPOR");
+
+    rKM.setupOldPrice();
+    rKM.setupPrice();
+    
+    rKM.stavka.kol = kol;
+
+    rKM.Kalkulacija();
+    if (mei) rKM.ponistavanjeUlaza();
+    lc.TransferFromClass2DB(detail, rKM.stavka);
+    
+    rKM.kalkStanja();
+    
+    lc.TransferFromClass2DB(izlaz, rKM.stanjeiz);
+    rCD.unosIzlaz(detail, izlaz); //???????
+
+    if (!mei && ulaz.getRowCount() == 0) {
+      ulaz.insertRow(true);
+      ulaz.setString("CSKL", master.getString("CSKLUL"));
+      ulaz.setString("GOD", master.getString("GOD"));
+      ulaz.setInt("CART", cart);
+    }
+    if (!mei) {
+      lc.TransferFromClass2DB(ulaz, rKM.stanjeul);
+      rCD.unosKalkulacije(detail, ulaz);
+      ulaz.setTimestamp("DATZK", master.getTimestamp("DATDOK"));
+    }
+    if (art.hasColumn("LOT") != null) detail.setString("LOT", art.getString("LOT"));
+    detail.post();
+    System.out.println(detail);
+    
+    if (mei) raTransaction.saveChangesInTransaction(new QueryDataSet[] {izlaz, detail});
+    else raTransaction.saveChangesInTransaction(new QueryDataSet[] {ulaz, izlaz, detail});
   }
 
   public boolean PrepMeskla4Del() {
