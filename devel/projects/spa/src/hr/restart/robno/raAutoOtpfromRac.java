@@ -153,6 +153,8 @@ public class raAutoOtpfromRac {
               "stdoki"));
       stavke_otp.setString("VEZA", stav.getString("ID_STAVKA"));
       stavke_otp.setString("REZKOL", stav.getString("REZKOL"));
+      stavke_otp.setString("LOT", stav.getString("LOT"));
+      stavke_otp.setTimestamp("ROKTRAJ", stav.getTimestamp("ROKTRAJ"));
       
       if (Artikli.loc(stav)) rKD.setupArt(Artikli.get());
     
@@ -165,8 +167,8 @@ public class raAutoOtpfromRac {
       rKD.setVrzal(zaglavlja_otp.getString("CSKL"));
       lc.TransferFromDB2Class(stavke_otp, rKD.stavka);
       lc.TransferFromDB2Class(stanje, rKD.stanje);
-      rKD.SetupPriceForSkladSide();
       rKD.setWhat_kind_of_document("OTP");
+      rKD.SetupPriceForSkladSide();
       rKD.kalkSkladPart();
       /*BigDecimal bd = rKD.stanje.kolrez;
       rKD.stanje.kolrez = Aus.zero2;*/
