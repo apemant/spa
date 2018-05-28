@@ -19,8 +19,10 @@ package hr.restart.robno;
 
 import hr.restart.sisfun.raDataIntegrity;
 import hr.restart.swing.JrCheckBox;
+import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.JlrNavField;
 import hr.restart.util.raMatPodaci;
 
 import java.awt.event.ActionEvent;
@@ -90,6 +92,11 @@ public class frmPorezi extends raMatPodaci {
   JrCheckBox jcbPnp3 = new JrCheckBox();
   JLabel jlSifra = new JLabel();
   JLabel jlNaziv = new JLabel();
+  
+  JLabel jlNapo = new JLabel("Napomena za neop.");
+  JlrNavField jlrCNAP = new JlrNavField();
+  JlrNavField jlrNAZNAP = new JlrNavField();
+  JraButton jbNapo = new JraButton();
 
   public frmPorezi() {
     try {
@@ -158,7 +165,7 @@ public class frmPorezi extends raMatPodaci {
     jcbAKTIV.setHorizontalTextPosition(SwingConstants.LEFT);
     jcbAKTIV.setHorizontalAlignment(SwingConstants.RIGHT);
     xYLayout1.setWidth(645);
-    xYLayout1.setHeight(219);
+    xYLayout1.setHeight(250);
     jlPorNaPor.setHorizontalAlignment(SwingConstants.CENTER);
     jlPorNaPor.setText("PnP");
     jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
@@ -201,6 +208,20 @@ public class frmPorezi extends raMatPodaci {
     });
     jlSifra.setText("Šifra");
     jlNaziv.setText("Naziv");
+    
+    jlrCNAP.setColumnName("CNAP");
+    jlrCNAP.setColNames(new String[] {"NAZNAP"});
+    jlrCNAP.setTextFields(new javax.swing.text.JTextComponent[] {jlrNAZNAP});
+    jlrCNAP.setVisCols(new int[] {0,1});
+    jlrCNAP.setSearchMode(0);
+    jlrCNAP.setRaDataSet(dm.getNapomene());
+    jlrCNAP.setDataSet(getRaQueryDataSet());
+    jlrCNAP.setNavButton(jbNapo);
+    
+    jlrNAZNAP.setColumnName("NAZNAP");
+    jlrNAZNAP.setSearchMode(1);
+    jlrNAZNAP.setNavProperties(jlrCNAP);
+    
     jp.add(jlCPOR, new XYConstraints(15, 38, -1, -1));
     jp.add(jtfNAZPOR,    new XYConstraints(260, 38, 370, -1));
     jp.add(jtfCPOR, new XYConstraints(150, 38, 100, -1));
@@ -229,6 +250,11 @@ public class frmPorezi extends raMatPodaci {
     jp.add(jlPOR2, new XYConstraints(15, 128, -1, -1));
     jp.add(jtfUNPOR2, new XYConstraints(260, 128, 100, -1));
     jp.add(jlPOR3, new XYConstraints(15, 153, -1, -1));
+    jp.add(jlNapo, new XYConstraints(15, 80, -1, -1));
+    jp.add(jlrCNAP, new XYConstraints(150, 210, 100, -1));
+    jp.add(jlrNAZNAP, new XYConstraints(255, 210, 250, -1));
+    jp.add(jbNapo, new XYConstraints(510, 210, 21, 21));
+    
     raDataIntegrity.installFor(this);
   }
   public boolean Validacija(char mode) {
