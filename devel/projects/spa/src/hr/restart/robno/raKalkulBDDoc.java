@@ -99,6 +99,13 @@ public class raKalkulBDDoc extends raTopCalcUtil {
       kalkFinancPart();
     }
     else if (maloprodajna){
+      if (name_field.equals("UPRAB")) {
+        stavka.prab1 = stavka.uprab;
+        stavka.prab2 = Aus.zero0;
+      } else if (name_field.equals("PRAB1") || name_field.equals("PRAB2")) {
+        stavka.uprab = Aus.one0.subtract(Aus.one0.subtract(stavka.prab1.movePointLeft(2)).
+                        multiply(Aus.one0.subtract(stavka.prab2.movePointLeft(2)))).movePointRight(2);
+      }
       MaloprodajnaKalkulacija();
     }
   }
@@ -170,6 +177,7 @@ public class raKalkulBDDoc extends raTopCalcUtil {
     anc = art.getBigDecimal("NC");
     avc = art.getBigDecimal("VC");
     amc = art.getBigDecimal("MC");
+    if (!raVart.isStanje(art)) anc = avc = amc = Aus.zero0;
   }
 
   public void SetupPriceForSkladSide(){
@@ -214,6 +222,8 @@ public class raKalkulBDDoc extends raTopCalcUtil {
       if (stavka.fmcprp.signum() != 0)
         tmpBD = tmpBD.divide(stavka.fmcprp,8,BigDecimal.ROUND_HALF_UP);
       stavka.uprab = tmpBD.multiply(new BigDecimal("100.00"));
+      stavka.prab1 = stavka.uprab;
+      stavka.prab2 = Aus.zero0;
       tmpBDMC = stavka.fmc;
 //      kalkFinancPart();
       kalkFinancMalIznos();
@@ -261,7 +271,7 @@ public class raKalkulBDDoc extends raTopCalcUtil {
       }
     }
     else {
-      stavka.resetFinanc();
+      stavka.resetFinanc(false);
     }
   }
 
@@ -364,7 +374,7 @@ public class raKalkulBDDoc extends raTopCalcUtil {
         }
       }
     } else {
-      stavka.resetFinanc();
+      stavka.resetFinanc(false);
     }
 
   }

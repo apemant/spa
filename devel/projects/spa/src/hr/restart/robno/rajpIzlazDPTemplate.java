@@ -30,6 +30,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 
 import javax.swing.BorderFactory;
@@ -69,7 +71,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 			 * "+jrtbRezervacija.getInsets().bottom);
 			 */
 
-			g.drawString(isSelected() ? "D" : "N", 6, 15);
+			g.drawString(isSelected() ? "D" : "N", Aus.big(6), Aus.big(15));
 
 			//						jrtbRezervacija.getInsets().right,
 			//						jrtbRezervacija.getInsets().top);
@@ -231,6 +233,18 @@ public class rajpIzlazDPTemplate extends JPanel {
         fDI.Kalkulacija(jraUPRAB, "UPRAB");
       }
     };
+    
+    JraTextField jraPRAB1 = new JraTextField() {
+      public void valueChanged() {
+        fDI.Kalkulacija(jraPRAB1, "PRAB1");
+      }
+    };
+    
+    JraTextField jraPRAB2 = new JraTextField() {
+      public void valueChanged() {
+        fDI.Kalkulacija(jraPRAB2, "PRAB2");
+      }
+    };
 
 	JraTextField jraIPROBDP = new JraTextField() {
 		public boolean isFocusTraversable() {
@@ -351,13 +365,13 @@ public class rajpIzlazDPTemplate extends JPanel {
 		 */
 		//		jrtbRezervacija.setSelected();
 		//		jrtbRezervacija.setText(isUserSelected()?"D":"N");
-	  boolean nd = raIzlazTemplate.isNabDirect();
+	  boolean nd = raIzlazTemplate.isNabDirect() && !fDI.bPonudaZaKupca;
 		JLabel rezervacija = new JLabel("Rezervacija");
 		rezervacija.setBorder(BorderFactory.createEtchedBorder());
 		rezervacija.setHorizontalAlignment(SwingConstants.CENTER);
 		rcc.setLabelLaF(rezervacija, false);
-		jpDetailCenter.add(rezervacija, new XYConstraints(510, nd ? 75: 40, 112, -1));
-		jpDetailCenter.add(jrtbRezervacija, new XYConstraints(627, nd ? 75 : 40, 21, 21));
+		jpDetailCenter.add(rezervacija, new XYConstraints(510, nd ? 75: 45, 112, 21));
+		jpDetailCenter.add(jrtbRezervacija, new XYConstraints(627, nd ? 75 : 45, 21, 21));
 	}
 
 	public void setRezervacija() {
@@ -574,16 +588,52 @@ public class rajpIzlazDPTemplate extends JPanel {
 				fDI.MfocusGained(e);
 			}
 		});
+		
+		jraPRAB1.setColumnName("PRAB1");
+		jraPRAB1.setDataSet(fDI.getDetailSet());
+		jraPRAB1.addFocusListener(new java.awt.event.FocusAdapter() {
+            /*public void focusLost(FocusEvent e) {
+                if (jraUPRAB.isValueChanged()) {
+                    fDI.Kalkulacija(e, "UPRAB");
+                }
+                //        if (!TypeDoc.getTypeDoc().isGOTGRN(what_kind_of_dokument)){
+                //          jtfKOL.requestFocus();
+                //        }
+            }*/
+            public void focusGained(FocusEvent e) {
+                fDI.MfocusGained(e);
+            }
+        });
+		
+		jraPRAB2.setColumnName("PRAB2");
+        jraPRAB2.setDataSet(fDI.getDetailSet());
+        jraPRAB2.addFocusListener(new java.awt.event.FocusAdapter() {
+            /*public void focusLost(FocusEvent e) {
+                if (jraUPRAB.isValueChanged()) {
+                    fDI.Kalkulacija(e, "UPRAB");
+                }
+                //        if (!TypeDoc.getTypeDoc().isGOTGRN(what_kind_of_dokument)){
+                //          jtfKOL.requestFocus();
+                //        }
+            }*/
+            public void focusGained(FocusEvent e) {
+                fDI.MfocusGained(e);
+            }
+        });
 
 		jpDetailCenter.setLayout(xYLayoutDC);
 		xYLayoutDC.setHeight(50);
 		if (fDI.what_kind_of_dokument.equalsIgnoreCase("PON"))
-		  xYLayoutDC.setHeight(raIzlazTemplate.isNabDirect() ? 105 : 70);
+		  xYLayoutDC.setHeight(raIzlazTemplate.isNabDirect() && !fDI.bPonudaZaKupca ? 105 : 75);
 		if ((fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") ||
 				fDI.what_kind_of_dokument.equalsIgnoreCase("ODB")) && raIzlazTemplate.isNabDirect())
 			xYLayoutDC.setHeight(80);
 		
-		if (fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") && raIzlazTemplate.isShowLot())
+		if ((fDI.what_kind_of_dokument.equalsIgnoreCase("GRN") ||
+	        fDI.what_kind_of_dokument.equalsIgnoreCase("GOT") ||
+	        fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") || 
+		    fDI.what_kind_of_dokument.equalsIgnoreCase("ROT") ||
+		    fDI.what_kind_of_dokument.equalsIgnoreCase("POD")) && raIzlazTemplate.isShowLot())
 		  xYLayoutDC.setHeight(xYLayoutDC.getHeight() + 30);
 		
 		xYLayoutDC.setWidth(660);
@@ -696,7 +746,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 		//    jpDetailCenter.add(jraUPRAB, new XYConstraints(312, 15, 40, -1));
 		//    jpDetailCenter.add(jbRabat, new XYConstraints(357, 15, 21, 21));
 		jpDetailCenter.add(jraUPRAB, new XYConstraints(235, 17, 75, -1));
-		jpDetailCenter.add(jbRabat, new XYConstraints(635, 17, 21, 21));
+		jpDetailCenter.add(jbRabat, new XYConstraints(625, 17, 21, 21));
 		jpDetailCenter.add(jlRABATI, new XYConstraints(315, 0, 110, -1));
 		jpDetailCenter.add(jraIPROBDP, new XYConstraints(315, 17, 110, -1));
 		jpDetailCenter.add(jLabel1, new XYConstraints(430, 0, 75, -1));
@@ -707,13 +757,15 @@ public class rajpIzlazDPTemplate extends JPanel {
         
     if ((fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") ||
         fDI.what_kind_of_dokument.equalsIgnoreCase("PON") ||
-    	fDI.what_kind_of_dokument.equalsIgnoreCase("ODB")) && raIzlazTemplate.isNabDirect()) {
+    	fDI.what_kind_of_dokument.equalsIgnoreCase("ODB")) && raIzlazTemplate.isNabDirect() && !fDI.bPonudaZaKupca) {
     	jpDetailCenter.add(jlNABTR, new XYConstraints(15, 50, 360, -1));
     	jpDetailCenter.add(jraRNC, new XYConstraints(395, 50, 110, -1));
     	jpDetailCenter.add(jraRINAB, new XYConstraints(510, 50, 110, -1));
     }	
-    if (fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") && raIzlazTemplate.isShowLot()) {
-      int y = raIzlazTemplate.isNabDirect() ? 80 : 50;
+    if ((fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") || 
+        fDI.what_kind_of_dokument.equalsIgnoreCase("ROT") ||
+        fDI.what_kind_of_dokument.equalsIgnoreCase("POD")) && raIzlazTemplate.isShowLot()) {
+      int y = raIzlazTemplate.isNabDirect() && fDI.what_kind_of_dokument.equalsIgnoreCase("RAC") ? 80 : 50;
       jraLOT.setDataSet(fDI.getDetailSet());
       jpDetailCenter.add(new JLabel("Šarža"), new XYConstraints(395, y, -1, -1));
       jpDetailCenter.add(jraLOT, new XYConstraints(510, y, 110, -1));
@@ -743,18 +795,41 @@ public class rajpIzlazDPTemplate extends JPanel {
 				fDI.MfocusGained(e);
 			}
 		});
-
-		jpDetailCenter.add(jlKOL, new XYConstraints(15, 0, 100, -1));
-		jpDetailCenter.add(jtfKOL, new XYConstraints(15, 17, 100, -1));
-		jpDetailCenter.add(jlFC, new XYConstraints(120, 0, 130, -1));
-		jpDetailCenter.add(jraFMCPRP, new XYConstraints(120, 17, 130, -1));
-		jpDetailCenter.add(jlPostotak, new XYConstraints(255, 0, 65, -1));
-		jpDetailCenter.add(jraUPRAB, new XYConstraints(255, 17, 65, -1));
-		jpDetailCenter.add(jlFC1, new XYConstraints(325, 0, 130, -1));
-		jpDetailCenter.add(jraFMC, new XYConstraints(325, 17, 130, -1));
-		jpDetailCenter.add(jlZAKOL, new XYConstraints(478, 0, 130, -1));
-		jpDetailCenter.add(jraIPRODSP, new XYConstraints(478, 17, 130, -1));
-        jpDetailCenter.add(focusField, new XYConstraints(560, 501, 1, -1));
+		int x = 478;
+		if (fDI.bDvaRabat) {
+		    jlPostotak.setText("Popusti");
+		    jlPostotak.setHorizontalAlignment(SwingConstants.CENTER);
+  		    jpDetailCenter.add(jlKOL, new XYConstraints(15, 0, 90, -1));
+            jpDetailCenter.add(jtfKOL, new XYConstraints(15, 17, 90, -1));
+            jpDetailCenter.add(jlFC, new XYConstraints(110, 0, 120, -1));
+            jpDetailCenter.add(jraFMCPRP, new XYConstraints(110, 17, 120, -1));
+            jpDetailCenter.add(jlPostotak, new XYConstraints(235, 0, 115, -1));
+            jpDetailCenter.add(jraPRAB1, new XYConstraints(235, 17, 60, -1));
+            jpDetailCenter.add(jraPRAB2, new XYConstraints(300, 17, 60, -1));
+            jpDetailCenter.add(jlFC1, new XYConstraints(365, 0, 130, -1));
+            jpDetailCenter.add(jraFMC, new XYConstraints(365, 17, 130, -1));
+            jpDetailCenter.add(jlZAKOL, new XYConstraints(505, 0, 130, -1));
+            jpDetailCenter.add(jraIPRODSP, new XYConstraints(x = 505, 17, 130, -1));
+            jpDetailCenter.add(focusField, new XYConstraints(560, 501, 1, -1));
+		} else {
+    		jpDetailCenter.add(jlKOL, new XYConstraints(15, 0, 100, -1));
+    		jpDetailCenter.add(jtfKOL, new XYConstraints(15, 17, 100, -1));
+    		jpDetailCenter.add(jlFC, new XYConstraints(120, 0, 130, -1));
+    		jpDetailCenter.add(jraFMCPRP, new XYConstraints(120, 17, 130, -1));
+    		jpDetailCenter.add(jlPostotak, new XYConstraints(255, 0, 65, -1));
+    		jpDetailCenter.add(jraUPRAB, new XYConstraints(255, 17, 65, -1));
+    		jpDetailCenter.add(jlFC1, new XYConstraints(325, 0, 130, -1));
+    		jpDetailCenter.add(jraFMC, new XYConstraints(325, 17, 130, -1));
+    		jpDetailCenter.add(jlZAKOL, new XYConstraints(478, 0, 130, -1));
+    		jpDetailCenter.add(jraIPRODSP, new XYConstraints(478, 17, 130, -1));
+            jpDetailCenter.add(focusField, new XYConstraints(560, 501, 1, -1));
+		}
+		if (raIzlazTemplate.isShowLot()) {
+	      int y = 50;
+	      jraLOT.setDataSet(fDI.getDetailSet());
+	      jpDetailCenter.add(new JLabel("Šarža"), new XYConstraints(395, y, -1, -1));
+	      jpDetailCenter.add(jraLOT, new XYConstraints(x, y, 130, -1));
+	    }
 	}
 
 	public void resizeDP() {
@@ -886,7 +961,7 @@ public class rajpIzlazDPTemplate extends JPanel {
 		
 		rcc.setLabelLaF(jraPORER, false);
 		rcc.setLabelLaF(jraIPROBDP, false);
-		if (raIzlazTemplate.isNabDirect() && fDI.allowNabedit) {
+		if (raIzlazTemplate.isNabDirect() && fDI.allowNabedit && !fDI.bPonudaZaKupca) {
 		  if (!fDI.checkAccess()) {
 		    rcc.setLabelLaF(jtfKOL, false);
 	        rcc.setLabelLaF(jraFC, false);
@@ -905,6 +980,15 @@ public class rajpIzlazDPTemplate extends JPanel {
 				rcc.setLabelLaF(jraFMCPRP, false);
 			}
 		}
+		
+		System.out.println("enaball " + trut+ " " + fDI.getDetailSet().getString("VRDOK") + " " + rpcart.isExtraSklad());
+		
+		if (trut && fDI.getDetailSet().getString("VRDOK").equalsIgnoreCase("RAC") && rpcart.isExtraSklad()) {
+		  
+		  rcc.setLabelLaF(rpcart.jlrSklad,true);
+		    rcc.setLabelLaF(rpcart.jlrNazSklad,true);
+		    rcc.setLabelLaF(rpcart.jbSklad,true);
+		}
 	}
 
 	public void BindComp() {
@@ -920,6 +1004,8 @@ public class rajpIzlazDPTemplate extends JPanel {
 		jraFC.setDataSet(fDI.getDetailSet());
 		jraFVC.setDataSet(fDI.getDetailSet());
 		jraUPRAB.setDataSet(fDI.getDetailSet());
+		jraPRAB1.setDataSet(fDI.getDetailSet());
+		jraPRAB2.setDataSet(fDI.getDetailSet());
 		jraIPROBDP.setDataSet(fDI.getDetailSet());
 		jraZC.setDataSet(fDI.getDetailSet());
 		jraIRAZ.setDataSet(fDI.getDetailSet());
