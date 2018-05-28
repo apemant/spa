@@ -17,7 +17,19 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
+
+import com.borland.dx.dataset.DataRow;
+
 import hr.restart.sisfun.frmParam;
+import hr.restart.sk.dlgSplitAmount;
+import hr.restart.util.Aus;
+import hr.restart.util.raImages;
+import hr.restart.util.raNavAction;
 
 
 /**
@@ -32,6 +44,12 @@ import hr.restart.sisfun.frmParam;
 public class frmPST extends frmUlazTemplate {
   hr.restart.robno.jpUlazMasterSimple jpMaster = new hr.restart.robno.jpUlazMasterSimple();
   hr.restart.robno.jpUlazDetail jpDetail = new hr.restart.robno.jpUlazDetail(this);
+  
+  raNavAction rnvSplit = new raNavAction("Razdvajanje stavke", raImages.IMGPAUSE, KeyEvent.VK_F7) {
+    public void actionPerformed(ActionEvent e) {
+      splitStavka();
+    }
+  };
 
   {
     dm.getDokuPST().open();
@@ -56,6 +74,9 @@ public class frmPST extends frmUlazTemplate {
     raMaster.getRepRunner().addReport("hr.restart.robno.repPocetnoStanje","Poèetno stanje - kolièine",2);
     raMaster.getRepRunner().addReport("hr.restart.robno.repPocetnoStanjeExtendedVersion","Poèetno stanje - vrijednosti",2);
     raMaster.getRepRunner().addReport("hr.restart.robno.repPocetnoStanjeMegablastVersion","Poèetno stanje - kalkulacije",2);
+    
+    raDetail.addOption(rnvSplit, 4, false);
+    
   }
   
   public void beforeShowMaster() {
@@ -86,6 +107,46 @@ public class frmPST extends frmUlazTemplate {
   }
   public boolean ValidacijaMaster(char mode) {
     return (super.ValidacijaMaster(mode));
+  }
+  void splitStavka() {
+    if (getDetailSet().rowCount() == 0) return;
+    
+    dlgSplitAmount dlg = null;
+    if (this.getWindow() instanceof Frame)
+      dlg= new dlgSplitAmount((Frame) this.getWindow());
+    if (this.getWindow() instanceof Dialog)
+      dlg = new dlgSplitAmount((Dialog) this.getWindow());
+    dlg.setFields(3);
+    BigDecimal result = dlg.performSplit("Kolièina", getDetailSet().getBigDecimal("KOL"));
+    if (result != null) {
+      int rowSel = getDetailSet().getRow();
+      DataRow copy = new DataRow(getDetailSet());
+      getDetailSet().copyTo(copy);
+      getDetailSet().setBigDecimal("KOL", getDetailSet().getBigDecimal("KOL").subtract(result));
+      String[] vals = {"INAB", "IMAR", "IBP", "IPOR", "ISP", "IZAD"};
+      for (int i = 0; i < vals.length; i++) {
+        getDetailSet().setBigDecimal(vals[i], getDetailSet().getBigDecimal(vals[i])
+            .multiply(getDetailSet().getBigDecimal("KOL")).divide(copy.getBigDecimal("KOL"), 2, BigDecimal.ROUND_HALF_UP));
+        copy.setBigDecimal(vals[i], copy.getBigDecimal(vals[i]).subtract(getDetailSet().getBigDecimal(vals[i])));
+      }
+      getDetailSet().last();
+      getDetailSet().insertRow(false);
+      copy.copyTo(getDetailSet());
+      getDetailSet().setBigDecimal("KOL", result);
+      findNSTAVKA();
+      getDetailSet().setShort("RBR", nStavka);
+      getDetailSet().setInt("RBSID", rbr.getRbsID(getDetailSet()));
+      getDetailSet().setString(
+              "ID_STAVKA",
+              raControlDocs.getKey(getDetailSet(), new String[] { "cskl",
+                      "vrdok", "god", "brdok", "rbsid" }, "stdoku"));
+      try {
+        getDetailSet().saveChanges();
+      } catch (Exception e) {
+        getDetailSet().refresh();
+        getDetailSet().goToClosestRow(rowSel);
+      }      
+    }    
   }
   public boolean ValidacijaDetail(char mode) {
     if (jpDetail.jtfKOL.getText().trim().length() == 0 && vl.isEmpty(jpDetail.jtfKOL))
