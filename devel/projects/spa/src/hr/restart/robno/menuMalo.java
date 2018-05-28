@@ -114,6 +114,8 @@ public class menuMalo extends JMenu {
     presPONkup.getPres().showJpSelectDoc("PON", rapon, true, jmPON.getText());
   }
   void jmPRD_actionPerformed(ActionEvent e) {
+    fiskRed();
+    
     hr.restart.robno.raPRDkup raprd = (hr.restart.robno.raPRDkup)raLoader.load("hr.restart.robno.raPRDkup");
     hr.restart.robno.presPRDkup.getPres().showJpSelectDoc("PRD", raprd, true, jmPRD.getText());
   }
