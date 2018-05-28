@@ -47,7 +47,7 @@ import com.borland.jbcl.layout.XYLayout;
 public class jpNarDobDetail extends JPanel {
   raCommonClass rcc = raCommonClass.getraCommonClass();
   dM dm = dM.getDataModule();
-  String oldValue;
+  String oldValue="";
 
   frmNarDob fNarDob;
   JPanel jpDetail = new JPanel();
@@ -249,6 +249,7 @@ public class jpNarDobDetail extends JPanel {
     jraPop.setDataSet(ds);
     jraVc.setDataSet(ds);
     jraIvc.setDataSet(ds);
+    rpc.setTabela(frmNarDob.getInstance().getDetailSet());    
   }
   XYLayout xYLayout2 = new XYLayout();
 
@@ -349,6 +350,7 @@ public class jpNarDobDetail extends JPanel {
     addTextFocus();
 
     jpDetail.setBorder(BorderFactory.createEtchedBorder());
+    rpc.addSkladField(hr.restart.robno.Util.getSkladFromCorg());
     BindComponents(fNarDob.getDetailSet());
     /**@todo: Odkomentirati sljedeæu liniju :) */
 
@@ -426,14 +428,11 @@ public class jpNarDobDetail extends JPanel {
     rpc.setGodina(hr.restart.util.Valid.getValid().findYear(
 	    frmNarDob.getInstance().getMasterSet().getTimestamp("DATDOK")));
 	rpc.setCskl(frmNarDob.getInstance().getDetailSet().getString("CSKL"));
-	
-    rpc.setTabela(frmNarDob.getInstance().getDetailSet());
+
     rpc.setMode("N");
     rpc.setBorder(null);
     rpc.dodText();
-    rpc.setDefParam();
-    rpc.InitRaPanCart();
-    rpc.addSkladField(hr.restart.robno.Util.getSkladFromCorg());
+    
   }
   public void enabdisabValute(boolean how){
   	rcc.EnabDisabAll(jraNcDOB, how);
