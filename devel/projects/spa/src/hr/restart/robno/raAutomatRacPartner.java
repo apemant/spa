@@ -23,6 +23,7 @@ import hr.restart.baza.doki;
 import hr.restart.baza.stdoki;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
@@ -249,6 +250,7 @@ public class raAutomatRacPartner extends raFrame {
       rr.clearAllReports();
       rr.addReport("hr.restart.robno.repRacUsluga","hr.restart.robno.repUslIzlazni","RacUsluga","Ispis ra\u010Duna");
       jbInit();
+      Aus.recursiveUpdateSizes(panel1);
       pack();
     }
     catch(Exception ex) {
