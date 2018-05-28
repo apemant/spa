@@ -47,6 +47,10 @@ public class raPON extends raIzlazTemplate {
             "hr.restart.robno.repGroupIzlazni", "PonudaGroup", "Ponuda po grupama artikala");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaGroupPop",
             "hr.restart.robno.repGroupIzlazni", "PonudaGroupPop", "Ponuda po grupama artikala i iznosom popusta");
+		raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaUkupno",
+            "hr.restart.robno.repIzlazni", "PonudaUkupno", "Ponuda 1 red s ukupnim iznosom");
+		raMaster.getRepRunner().addReport("hr.restart.robno.repOffer",
+            "hr.restart.robno.repIzlazni","ProformaInvoice3","Offer");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repMxPON",
 				"Matri\u010Dni ispis ponude");
 		raMaster.getRepRunner().addReport("hr.restart.robno.repMxPONPop",
@@ -75,6 +79,10 @@ public class raPON extends raIzlazTemplate {
             "hr.restart.robno.repGroupIzlazni", "PonudaGroup", "Ponuda po grupama artikala");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaGroupPop",
             "hr.restart.robno.repGroupIzlazni", "PonudaGroupPop", "Ponuda po grupama artikala i iznosom popusta");
+		raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaUkupno",
+            "hr.restart.robno.repIzlazni", "PonudaUkupno", "Ponuda 1 red s ukupnim iznosom");
+		raDetail.getRepRunner().addReport("hr.restart.robno.repOffer",
+            "hr.restart.robno.repIzlazni","ProformaInvoice3","Offer");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repMxPON",
 				"Matri\u010Dni ispis ponude");
 		raDetail.getRepRunner().addReport("hr.restart.robno.repMxPONPop",
