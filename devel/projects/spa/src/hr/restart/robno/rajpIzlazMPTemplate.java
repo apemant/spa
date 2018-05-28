@@ -772,7 +772,7 @@ SwingUtilities.invokeLater(new Runnable(){
 
 				add(jlCPAR, new XYConstraints(15, 15, -1, -1));
 				add(jrfCPAR, new XYConstraints(150, 15, 100, -1));
-				add(jrfNAZPAR, new XYConstraints(254, 15, 350, -1));
+				add(jrfNAZPAR, new XYConstraints(255, 15, 350, -1));
 				add(jbCPAR, new XYConstraints(612, 15, 21, 21));
 				add(jbCPARCHECK, new XYConstraints(100, 15, 45, 21));
 				add(jlDATDOK, new XYConstraints(15, 40, -1, -1));
@@ -834,7 +834,7 @@ SwingUtilities.invokeLater(new Runnable(){
 				} else {
 					add(jlCPAR, new XYConstraints(15, 15, -1, -1));
 					add(jrfCPAR, new XYConstraints(150, 15, 100, -1));
-					add(jrfNAZPAR, new XYConstraints(254, 15, 350, -1));
+					add(jrfNAZPAR, new XYConstraints(255, 15, 350, -1));
 					add(jbCPAR, new XYConstraints(612, 15, 21, 21));
 					add(jbCPARCHECK, new XYConstraints(100, 15, 45, 21));
 					add(jlDATDOK, new XYConstraints(15, 40, -1, -1));
@@ -852,7 +852,7 @@ SwingUtilities.invokeLater(new Runnable(){
 			} else if (version == 9) {
 			  add(jlCPAR, new XYConstraints(15, 15, -1, -1));
               add(jrfCPAR, new XYConstraints(150, 15, 100, -1));
-              add(jrfNAZPAR, new XYConstraints(254, 15, 350, -1));
+              add(jrfNAZPAR, new XYConstraints(255, 15, 350, -1));
               add(jbCPAR, new XYConstraints(612, 15, 21, 21));
               add(jbCPARCHECK, new XYConstraints(100, 15, 45, 21));
               add(jlDATDOK, new XYConstraints(15, 40, -1, -1));
@@ -863,7 +863,7 @@ SwingUtilities.invokeLater(new Runnable(){
 				add(jrbPartner, new XYConstraints(15, 15, -1, -1));
 				add(jlCPAR, new XYConstraints(15, 40, -1, -1));
 				add(jrfCPAR, new XYConstraints(150, 40, 100, -1));
-				add(jrfNAZPAR, new XYConstraints(254, 40, 360, -1));
+				add(jrfNAZPAR, new XYConstraints(255, 40, 360, -1));
 				add(jbCPAR, new XYConstraints(620, 40, 21, 21));
 				add(jbCPARCHECK, new XYConstraints(100, 40, 45, 21));
 				add(jrbKupac, new XYConstraints(15, 65, -1, -1));
@@ -1083,46 +1083,46 @@ SwingUtilities.invokeLater(new Runnable(){
 			if (version == 0 || version == 5 || (version == 2 && gotpar)) {
 				add(jlPJ, new XYConstraints(15, 15, -1, -1));
 				add(jrfPJ, new XYConstraints(150, 15, 100, -1));
-				add(jrfNAZPJ, new XYConstraints(254, 15, 351, -1));
+				add(jrfNAZPJ, new XYConstraints(255, 15, 350, -1));
 				add(jbPJ, new XYConstraints(612, 15, 21, 21));
 				add(jtfPJOPIS, new XYConstraints(150, 40, 455, -1));
 				add(jlFRANK, new XYConstraints(15, 65, -1, -1));
 				add(jlrFRANKA, new XYConstraints(150, 65, 30, -1));
 				add(jlrNAZFRA, new XYConstraints(185, 65, 130, -1));
 				add(jbCFRA, new XYConstraints(321, 65, 21, 21));
-				add(jlNACOTP, new XYConstraints(370, 65, -1, -1));
-				add(jlrCNAC, new XYConstraints(442, 65, 30, -1));
-				add(jlrNAZNAC, new XYConstraints(476, 65, 130, -1));
+				add(jlNACOTP, new XYConstraints(366, 65, -1, -1));
+				add(jlrCNAC, new XYConstraints(440, 65, 30, -1));
+				add(jlrNAZNAC, new XYConstraints(475, 65, 130, -1));
 				add(jbCNAC, new XYConstraints(612, 65, 21, 21));
 				add(jlrNAZNACPL, new XYConstraints(185, 95, 130, -1));
 				add(jlNACPL, new XYConstraints(15, 95, -1, -1));
 				add(jlrCNACPL, new XYConstraints(150, 95, 30, -1));
 				add(jbCNACPL, new XYConstraints(321, 95, 21, 21));
-				add(jlNAMJ, new XYConstraints(370, 95, -1, -1));
-				add(jlrCNAMJ, new XYConstraints(442, 95, 30, -1));
-				add(jlrNAZNAMJ, new XYConstraints(476, 95, 130, -1));
+				add(jlNAMJ, new XYConstraints(366, 95, -1, -1));
+				add(jlrCNAMJ, new XYConstraints(440, 95, 30, -1));
+				add(jlrNAZNAMJ, new XYConstraints(475, 95, 130, -1));
 				add(jbCNAMJ, new XYConstraints(612, 95, 21, 21));
 			} else if (version == 2 && !gotpar) {
 				add(jlFRANK, new XYConstraints(15, 15, -1, -1));
 				add(jlrFRANKA, new XYConstraints(150, 15, 30, -1));
 				add(jlrNAZFRA, new XYConstraints(185, 15, 130, -1));
 				add(jbCFRA, new XYConstraints(321, 15, 21, 21));
-				add(jlNACOTP, new XYConstraints(353, 15, -1, -1));
-				add(jlrCNAC, new XYConstraints(442, 15, 30, -1));
-				add(jlrNAZNAC, new XYConstraints(476, 15, 130, -1));
+				add(jlNACOTP, new XYConstraints(366, 15, -1, -1));
+				add(jlrCNAC, new XYConstraints(440, 15, 30, -1));
+				add(jlrNAZNAC, new XYConstraints(475, 15, 130, -1));
 				add(jbCNAC, new XYConstraints(612, 15, 21, 21));
 				add(jlrNAZNACPL, new XYConstraints(185, 40, 130, -1));
 				add(jlNACPL, new XYConstraints(15, 40, -1, -1));
 				add(jlrCNACPL, new XYConstraints(150, 40, 30, -1));
 				add(jbCNACPL, new XYConstraints(321, 40, 21, 21));
-				add(jlNAMJ, new XYConstraints(353, 40, -1, -1));
-				add(jlrCNAMJ, new XYConstraints(442, 40, 30, -1));
-				add(jlrNAZNAMJ, new XYConstraints(476, 40, 130, -1));
+				add(jlNAMJ, new XYConstraints(366, 40, -1, -1));
+				add(jlrCNAMJ, new XYConstraints(440, 40, 30, -1));
+				add(jlrNAZNAMJ, new XYConstraints(475, 40, 130, -1));
 				add(jbCNAMJ, new XYConstraints(612, 40, 21, 21));
 			} else if (version == 3 || version == 6) {
 				add(jlPJ, new XYConstraints(15, 15, -1, -1));
 				add(jrfPJ, new XYConstraints(150, 15, 100, -1));
-				add(jrfNAZPJ, new XYConstraints(254, 15, 351, -1));
+				add(jrfNAZPJ, new XYConstraints(255, 15, 350, -1));
 				add(jbPJ, new XYConstraints(612, 15, 21, 21));
 				add(jtfPJOPIS, new XYConstraints(150, 40, 455, -1));
 			}
@@ -1590,23 +1590,23 @@ SwingUtilities.invokeLater(new Runnable(){
 			add(jlIZDOK, new XYConstraints(15, 15, -1, -1));
 			add(jraBRDOKIZ, new XYConstraints(130, 15, 110, -1));
 			add(jbDod, new XYConstraints(245, 15, 42, 21));
-			add(jlIZDOK1, new XYConstraints(365, 15, -1, -1));
+			add(jlIZDOK1, new XYConstraints(350, 15, -1, -1));
 			add(jraDATDOKIZ, new XYConstraints(522, 15, 110, -1));
 
 			add(jlBRNAR, new XYConstraints(15, 40, -1, -1));
 			add(jraBRNARIZ, new XYConstraints(130, 40, 110, -1));
-			add(jlIZDOK2, new XYConstraints(365, 40, -1, -1));
+			add(jlIZDOK2, new XYConstraints(350, 40, -1, -1));
 			add(jraDATNARIZ, new XYConstraints(522, 40, 110, -1));
 
 			add(jlBRUGO, new XYConstraints(15, 65, -1, -1));
 			add(jraCUG, new XYConstraints(130, 65, 110, -1));
-			add(jlIZDOK3, new XYConstraints(365, 65, -1, -1));
+			add(jlIZDOK3, new XYConstraints(350, 65, -1, -1));
 			add(jraDATUG, new XYConstraints(522, 65, 110, -1));
 
 			add(jlBRPRED, new XYConstraints(15, 90, -1, -1));
 			add(jraBRPRD, new XYConstraints(130, 90, 110, -1));
 			add(jbPRD, new XYConstraints(245, 90, 42, 21));
-			add(jlIZDOK4, new XYConstraints(365, 90, -1, -1));
+			add(jlIZDOK4, new XYConstraints(350, 90, -1, -1));
 			add(jraDATPRD, new XYConstraints(522, 90, 110, -1));
 			
       add(jlFBR, new XYConstraints(15, 115, -1, -1));
