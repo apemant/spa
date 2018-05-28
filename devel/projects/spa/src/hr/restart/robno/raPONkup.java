@@ -16,6 +16,7 @@
 **
 ****************************************************************************/
 package hr.restart.robno;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.JlrNavField;
 
 public class raPONkup extends raIzlazTemplate  {
@@ -23,10 +24,12 @@ public class raPONkup extends raIzlazTemplate  {
     public void initialiser(){
       what_kind_of_dokument = "PON";
       bPonudaZaKupca= true;
+      bDvaRabat = frmParam.getParam("robno", "dvaRabata", "N", "Unos 2 rabata na maloprodajnim dokumentima (D,N)?").equals("D");
     }
 
     public void MyaddIspisMaster(){
       raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaKup","hr.restart.robno.repIzlazni","PonudaKup","Ponuda 1 red");
+      raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaKup2p","hr.restart.robno.repIzlazni","PonudaKup2p","Ponuda 1 red s 2 popusta");
       raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaVKup","hr.restart.robno.repIzlazni","PonudaKup","Ponuda 1 red u valuti");
       raMaster.getRepRunner().addReport("hr.restart.robno.repPonuda2Kup","hr.restart.robno.repIzlazni","Ponuda2Kup","Ponuda 2 red");
       raMaster.getRepRunner().addReport("hr.restart.robno.repPonuda2VKup","hr.restart.robno.repIzlazni","Ponuda2Kup","Ponuda 2 red u valuti");
@@ -34,11 +37,14 @@ public class raPONkup extends raIzlazTemplate  {
           "hr.restart.robno.repIzlazni", "PonudaNoi", "Ponuda bez iznosa i suma");
       raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaNop",
           "hr.restart.robno.repIzlazni", "PonudaNop", "Ponuda bez cijena stavki");
+      raMaster.getRepRunner().addReport("hr.restart.robno.repPonudaUkupnoKup",
+          "hr.restart.robno.repIzlazni", "PonudaUkupnoKup", "Ponuda 1 red s ukupnim iznosom");
       raMaster.getRepRunner().addReport("hr.restart.robno.repMxPONKup","Matri\u010Dni ispis ponude");
       raMaster.getRepRunner().addReport("hr.restart.robno.repMxPONKupPop","Matri\u010Dni ispis ponude s više popusta");
     }
     public void MyaddIspisDetail(){
       raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaKup","hr.restart.robno.repIzlazni","PonudaKup","Ponuda 1 red");
+      raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaKup2p","hr.restart.robno.repIzlazni","PonudaKup2p","Ponuda 1 red s 2 popusta");
       raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaVKup","hr.restart.robno.repIzlazni","PonudaKup","Ponuda 1 red u valuti");
       raDetail.getRepRunner().addReport("hr.restart.robno.repPonuda2Kup","hr.restart.robno.repIzlazni","Ponuda2Kup","Ponuda 2 red");
       raDetail.getRepRunner().addReport("hr.restart.robno.repPonuda2VKup","hr.restart.robno.repIzlazni","Ponuda2Kup","Ponuda 2 red u valuti");
@@ -46,6 +52,8 @@ public class raPONkup extends raIzlazTemplate  {
           "hr.restart.robno.repIzlazni", "PonudaNoi", "Ponuda bez iznosa i suma");
       raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaNop",
           "hr.restart.robno.repIzlazni", "PonudaNop", "Ponuda bez cijena stavki");
+      raDetail.getRepRunner().addReport("hr.restart.robno.repPonudaUkupnoKup",
+          "hr.restart.robno.repIzlazni", "PonudaUkupnoKup", "Ponuda 1 red s ukupnim iznosom");
       raDetail.getRepRunner().addReport("hr.restart.robno.repMxPONKup","Matri\u010Dni ispis ponude");
       raDetail.getRepRunner().addReport("hr.restart.robno.repMxPONKupPop","Matri\u010Dni ispis ponude s više popusta");
     }
