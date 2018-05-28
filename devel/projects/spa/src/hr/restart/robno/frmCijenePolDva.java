@@ -87,6 +87,7 @@ public class frmCijenePolDva extends raUpitLite {
 
   private XYLayout xyl1 = new XYLayout();
   private XYLayout xyl2 = new XYLayout();
+  private XYLayout xyl3 = new XYLayout();
   private BorderLayout bl1 = new BorderLayout();
   private BorderLayout bl2 = new BorderLayout();
 
@@ -413,14 +414,17 @@ public class frmCijenePolDva extends raUpitLite {
 
     jp.setLayout(xyl1);
     dokumentiPanel.setLayout(xyl2);
-    soloArtiklPanel.setLayout(xyl2);
+    soloArtiklPanel.setLayout(xyl3);
 //    multiArtikliPanel.setLayout(bl2);
 
     xyl1.setWidth(650);
     xyl1.setHeight(65);
     xyl2.setWidth(650);
     xyl2.setHeight(300);
+    xyl3.setWidth(650);
+    xyl3.setHeight(300);
 
+    
     rpcart.setMode(new String("DOH"));
     rpcart.setBorder(null);
 
