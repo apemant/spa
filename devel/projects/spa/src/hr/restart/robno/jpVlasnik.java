@@ -247,7 +247,7 @@ public class jpVlasnik extends JPanel {
   private void prepareNavField(JraTextField field, JlrNavField jlrCkupac) {
     if (!(field instanceof JlrNavField)) return;
     JlrNavField jlrfield = (JlrNavField)field;
-    jlrfield.setSearchMode(1);
+    jlrfield.setSearchMode(field == jraOib ? 3 : 1);
     jlrfield.setSearchMode(jlrfield.NULL, jlrfield.getSearchModeF9());
     jlrfield.setNavProperties(jlrCkupac);
     jlrfield.setFocusLostOnShow(false);
