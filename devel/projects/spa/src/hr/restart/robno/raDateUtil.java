@@ -17,6 +17,8 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.sisfun.frmParam;
+
 import java.util.Calendar;
 /**
  * Title:
@@ -32,9 +34,12 @@ public class raDateUtil {
   private Calendar DateCal1 = Calendar.getInstance();
   private Calendar DateCal2 = Calendar.getInstance();
   private java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy.");
+  private java.text.SimpleDateFormat sdff = new java.text.SimpleDateFormat("dd.MM.yyyy.");
   private java.util.Date TmpDate;
 
   public raDateUtil() {
+    sdf = new java.text.SimpleDateFormat(frmParam.getParam("sisfun", "dateFormat", "dd.MM.yyyy.", "Format datuma"));
+    sdff = new java.text.SimpleDateFormat(frmParam.getParam("sisfun", "dateFormatF", "dd.MM.yyyy.", "Format stranog datuma"));
   }
 
   private static raDateUtil rdu;
@@ -162,6 +167,22 @@ public class raDateUtil {
     return (date == null || date.indexOf("1970")>=0 ? "" : date);
 
   }
+  
+  public String dataFormatterF(java.sql.Timestamp Datum1){
+    if (Datum1 == null) return "";
+    Calendar c = Calendar.getInstance();
+    c.setTime(Datum1);
+    if (c.get(c.YEAR) < 1971) return "";
+
+    String date = (Datum1 == null ? null : sdff.format(Datum1));
+    return (date == null || date.indexOf("1970")>=0 ? "" : date);
+
+  }
+  
+  public String dataFormatter(java.sql.Timestamp Datum1, boolean foreign){
+    return foreign ? dataFormatterF(Datum1) : dataFormatter(Datum1);
+  }
+  
   public String PrepDate(java.sql.Timestamp dat, boolean end){
     DateCal1.setTime(dat);
     DateCal1.set(DateCal1.AM_PM,DateCal1.AM);
