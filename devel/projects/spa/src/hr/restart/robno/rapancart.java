@@ -318,7 +318,7 @@ public class rapancart extends JPanel {
          jbDODTXT_actionPerformed(e);
        }
      });
-     artPanel.add(jbDODTXT, new XYConstraints(609, 50, 21, 21));
+     artPanel.add(jbDODTXT, new XYConstraints(Aus.big(609), Aus.big(50), Aus.big(21), Aus.big(21)));
    }
      dodtxt = true;
   }

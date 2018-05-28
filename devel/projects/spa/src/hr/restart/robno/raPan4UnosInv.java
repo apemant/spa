@@ -131,10 +131,10 @@ public class raPan4UnosInv extends JPanel {
     jtfINVKOL.setDataSet(dm.getInventura());
     jtfINVKOL.setColumnName("KOLINV");
     jlKolicina.setText("Koli\u010Dina");
-    this.setMinimumSize(new Dimension(660, 112));
-    this.setPreferredSize(new Dimension(660, 113));
+    //this.setMinimumSize(new Dimension(660, 112));
+    //this.setPreferredSize(new Dimension(660, 113));
     jpSel.setBorder(border1);
-    jpSel.setPreferredSize(new Dimension(537, 74));
+    //jpSel.setPreferredSize(new Dimension(537, 74));
     jLabel2.setText("Šifra");
     jLabel3.setText("Naziv");
 

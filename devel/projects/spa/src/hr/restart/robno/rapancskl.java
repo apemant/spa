@@ -55,7 +55,7 @@ public class rapancskl extends JPanel {
   private char raMode;
   JPanel jpCPAR = new JPanel();
   BorderLayout borderLayout1 = new BorderLayout();
-  XYLayout xYLayout1 = new XYLayout();
+  XYLayout xYLayout1 = new XYLayout(645, 30);
   JlrNavField jrfCPAR = new JlrNavField() {
     public void after_lookUp() {
     	if (!isLastLookSuccessfull()) return;
@@ -77,7 +77,7 @@ public class rapancskl extends JPanel {
   JraButton jbCPAR = new JraButton();
   JLabel jlCPAR = new JLabel();
   JPanel jpCSKL = new JPanel();
-  XYLayout xYLayout2 = new XYLayout();
+  XYLayout xYLayout2 = new XYLayout(645, 50);
   JlrNavField jrfNAZSKL = new JlrNavField() {
     public void after_lookUp() {
     	if (!isLastLookSuccessfull()) return;
@@ -286,12 +286,14 @@ public class rapancskl extends JPanel {
   public void setRaMode(char newRaMode) {
     raMode = newRaMode;
     if (raMode=='S') {
+      this.remove(jpCPAR);
       jrfCPAR.setVisible(false);
       jrfNAZPAR.setVisible(false);
       jlCPAR.setVisible(false);
       jbCPAR.setVisible(false);
     }
     else if (raMode=='P') {
+      this.remove(jpCSKL);
       jrfCSKL.setVisible(false);
       jrfNAZSKL.setVisible(false);
       jlCSKL.setVisible(false);

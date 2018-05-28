@@ -131,7 +131,7 @@ public class raOtpisIzvjestaj extends raUpitFat {
       }
     });
     
-    jp.setPreferredSize(new Dimension(640, 85));
+    //jp.setPreferredSize(new Dimension(640, 85));
     xyl.setHeight(85);
     xyl.setWidth(640);
     jp.setLayout(xyl);

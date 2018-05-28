@@ -21,6 +21,7 @@ import hr.restart.swing.JraButton;
 import hr.restart.swing.JraComboBox;
 import hr.restart.swing.JraFrame;
 import hr.restart.swing.JraTextField;
+import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
 
 import java.awt.BorderLayout;
@@ -304,11 +305,11 @@ public class raPrintAllDocs extends JraFrame{
         this_componentShown(e);
       }
     });
-    this.addKeyListener(new java.awt.event.KeyAdapter() {
+    /*this.addKeyListener(new java.awt.event.KeyAdapter() {
       public void keyPressed(KeyEvent e) {
         this_keyPressed(e);
       }
-    });
+    });*/
     this.getContentPane().add(jPanel1,BorderLayout.CENTER);
     this.getContentPane().add(okp, BorderLayout.SOUTH);
     jLabel1.setText("Vrsta dokumenta");
@@ -331,6 +332,7 @@ public class raPrintAllDocs extends JraFrame{
     jPanel1.add(nazskl,           new XYConstraints(255, 35, 285, -1));
     jPanel1.add(jbSelCorg,        new XYConstraints(545, 35, 21, 21));
 
+    okp.registerOKPanelKeys(this);
   }
 
   public String getQDString(){
@@ -470,7 +472,17 @@ public class raPrintAllDocs extends JraFrame{
   public String getDoBroja(){
     return brojDo.getText().trim();
   }
+  
+  public void pack() {
+    Aus.recursiveUpdateSizes(jPanel1);
+    super.pack();
+  }
 
+  public void show() {
+    Aus.recursiveUpdateSizes(jPanel1);
+    super.show();
+  }
+  
   void this_keyPressed(KeyEvent e) {
     if (e.getKeyCode()==e.VK_F10) {
       okPress();
