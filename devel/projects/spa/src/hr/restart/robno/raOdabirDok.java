@@ -220,6 +220,9 @@ public class raOdabirDok extends JraDialog {
     } else if (vrsta_dok.equals("DOS")) {
         zaodabrati = new String[] {"Narudžba"};
         odabrano = "NKU";
+    } else if (vrsta_dok.equals("MEI")) {
+      zaodabrati = new String[] {"Meðuskladišnica ulaz"};
+      odabrano = "MEU";
     } else {
        zaodabrati=new String[] {"ne postoji odabir"};
     }
