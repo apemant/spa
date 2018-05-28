@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.Stdoku;
@@ -444,6 +445,12 @@ public class frmNivelacija extends raMasterDetail {
         changeMath();
       }
     }, 6, false);
+    
+    raDetail.addOption(new raNavAction("Cijene s artikala", raImages.IMGPREFERENCES, KeyEvent.VK_F7, KeyEvent.SHIFT_MASK) {
+      public void actionPerformed(ActionEvent e) {
+        updateArts();
+      }
+    }, 7, false);
 
 //    raDetail.addKeyAction(new raKeyAction(java.awt.event.KeyEvent.VK_F7) {
 //      public void keyAction() {
@@ -538,6 +545,27 @@ public class frmNivelacija extends raMasterDetail {
   	
   }
   
+  private void updateArts() {
+    ld.raLocate(dm.getSklad(), "CSKL", getMasterSet().getString("CSKL"));
+    if (!dm.getSklad().getString("VRZAL").equals("M")) {
+        JOptionPane.showMessageDialog(raDetail.getWindow(), "Pogrešna vrsta zalihe skladišta!", "Skladište", 
+                JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    int opt = JOptionPane.showConfirmDialog(raDetail.getWindow(),
+        "Prenijeti maloprodajne cijene s artikala (oprez)?", "Cijene s artikala",
+        JOptionPane.OK_CANCEL_OPTION);
+    if (opt != JOptionPane.OK_OPTION) return;
+    
+    raProcess.runChild(raDetail.getWindow(), new Runnable() {
+      public void run() {
+        raProcess.setMessage("Dohvat artikala ...", false);
+        fixArts();
+      }
+    });
+  }
+  
   private void changePorez() {
   	ld.raLocate(dm.getSklad(), "CSKL", getMasterSet().getString("CSKL"));
   	if (!dm.getSklad().getString("VRZAL").equals("M")) {
@@ -562,7 +590,68 @@ public class frmNivelacija extends raMasterDetail {
         fixPorezAll(mpcfix);
       }
     });
+  }
+  
+  void fixArts() {
+    QueryDataSet stanje = Stanje.getDataModule().openTempSet(
+        Condition.whereAllEqual(new String[] {"CSKL", "GOD"}, getMasterSet()));
 
+    if (stanje.rowCount() == 0) return;
+    
+    DataSet arts = dm.getArtikli();
+    arts.open();
+    
+    int crbr = 0;
+    String cart;
+    raDetail.getJpTableView().enableEvents(false);
+
+    // lociraj skladište i zgrabaj vrstu zalihe
+    ld.raLocate(dm.getSklad(), "CSKL", this.getMasterSet().getString("CSKL"));
+    vrzal = dm.getSklad().getString("VRZAL");
+    oldpormar = oldporpor = oldporav = ma.nul;
+    raProcess.setMessage("Kalkulacija cijena ...", false);
+    // listaj jedan po jedan artikl iz dataseta allArt i provjeri je li cijena na artiklima drugaèija
+    for (stanje.first(); stanje.inBounds(); stanje.next()) {
+      
+      cart = String.valueOf(allArt.getInt("CART"));
+      if (ld.raLocate(arts, "CART", stanje) && 
+          arts.getBigDecimal("MC").compareTo(stanje.getBigDecimal("MC")) != 0 &&
+          arts.getBigDecimal("MC").signum() > 0 &&
+          stanje.getBigDecimal("MC").signum() > 0 && !artNotUnique(cart)) {
+          
+        rCD.unosKalkulacije(getDetailSet(),dm.getStanje());
+            
+        this.getDetailSet().insertRow(false);
+
+        // popuni odgovaraju\u0107a polja u tablici stdoku
+        fillHeader(crbr == 0);
+        if (crbr == 0) crbr = getDetailSet().getShort("RBR");
+        else {
+          getDetailSet().setShort("RBR", (short) ++crbr);
+          getDetailSet().setInt("RBSID", crbr);
+        }
+        Aut.getAut().copyArtFields(this.getDetailSet(), allArt);
+        ld.raLocate(dm.getPorezi(), "CPOR", dm.getArtikli().getString("CPOR"));
+        this.getDetailSet().setBigDecimal("SVC",stanje.getBigDecimal("VC"));
+        this.getDetailSet().setBigDecimal("SMC",stanje.getBigDecimal("MC"));
+        this.getDetailSet().setBigDecimal("VC",arts.getBigDecimal("VC"));
+        this.getDetailSet().setBigDecimal("MC",arts.getBigDecimal("MC"));
+
+        calcPoravnanje(false);
+
+        rut.updateStanje(ma.nul, ma.nul, ma.nul, ma.nul, ma.nul,
+            oldpormar, oldporpor, oldporav,
+            'N', true, 'N', dm.getStanje(), this.getDetailSet());
+        
+        this.getDetailSet().post();
+      }
+    }
+
+    raProcess.setMessage("Spremanje promjene ...", false);
+    raTransaction.saveChangesInTransaction(
+        new QueryDataSet[] {getDetailSet(), dm.getStanje()});
+    raDetail.getJpTableView().enableEvents(true);
+    raDetail.jeprazno();
   }
   
   void fixDiff() {
