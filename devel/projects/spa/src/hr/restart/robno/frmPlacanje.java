@@ -466,6 +466,31 @@ public class frmPlacanje extends raMatPodaci {
     }
   }
   
+  public static String getRateString(raMasterDetail rmd) {
+    QueryDataSet master = rmd.getMasterSet();
+    boolean autonac = frmParam.getParam("robno", "autoGodPlac", "D", 
+        "Automatsko dodavanje jedne default rate na gotovinskim raèunima").equalsIgnoreCase("D");
+    DataSet rate = Rate.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey, master));
+    if (rate.rowCount() == 0 && autonac &&
+      lookupData.getlookupData().raLocate(dM.getDataModule().getNacpl(), "CNACPL", frmParam.getParam("robno","gotNacPl"))) {
+      return dM.getDataModule().getNacpl().getString("NAZNACPL");
+    }
+    if (rate.rowCount() > 1) return "Više rata";
+    if (rate.rowCount() == 1 && 
+        lookupData.getlookupData().raLocate(dM.getDataModule().getNacpl(), "CNACPL", rate)) {
+      System.out.println("RATA: " + rate);
+      if (rate.isNull("CBANKA")) return dM.getDataModule().getNacpl().getString("NAZNACPL");
+      if (dM.getDataModule().getNacpl().getString("FL_KARTICA").equals("D") &&
+          lookupData.getlookupData().raLocate(dM.getDataModule().getKartice(), "CBANKA", rate))
+        return dM.getDataModule().getNacpl().getString("NAZNACPL") + " - " + dM.getDataModule().getKartice().getString("NAZIV");
+      if (dM.getDataModule().getNacpl().getString("FL_CEK").equals("D") &&
+          lookupData.getlookupData().raLocate(dM.getDataModule().getBanke(), "CBANKA", rate))
+        return dM.getDataModule().getNacpl().getString("NAZNACPL") + " - " + dM.getDataModule().getBanke().getString("NAZIV");
+      return dM.getDataModule().getNacpl().getString("NAZNACPL");
+    }
+    return "";
+  }
+  
   public static boolean checkRate(raMasterDetail rmd) {
     QueryDataSet master = rmd.getMasterSet();
     boolean autonac = frmParam.getParam("robno", "autoGodPlac", "D", 
