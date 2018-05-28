@@ -18,6 +18,7 @@
 package hr.restart.robno;
 import java.awt.event.ActionEvent;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
@@ -37,14 +38,17 @@ public class raPRDkup extends raIzlazTemplate {
   public void initialiser(){
     what_kind_of_dokument = "PRD";
     bPonudaZaKupca= true;
+    bDvaRabat = frmParam.getParam("robno", "dvaRabata", "N", "Unos 2 rabata na maloprodajnim dokumentima (D,N)?").equals("D");
   }
   public void MyaddIspisMaster(){
     raMaster.getRepRunner().addReport("hr.restart.robno.repPredracuniKup","hr.restart.robno.repIzlazni","PredracuniKup","Raèun za predujam 1 red");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repPredracuniKup2p","hr.restart.robno.repIzlazni","PredracuniKup2p","Raèun za predujam 1 red s 2 popusta");
     raMaster.getRepRunner().addReport("hr.restart.robno.repPredracuni2Kup","hr.restart.robno.repIzlazni","Predracuni2Kup","Ra\u010Dun za predujam 2 red");
   }
 
   public void MyaddIspisDetail(){
     raDetail.getRepRunner().addReport("hr.restart.robno.repPredracuniKup","hr.restart.robno.repIzlazni","PredracuniKup","Raèun za predujam 1 red");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repPredracuniKup2p","hr.restart.robno.repIzlazni","PredracuniKup2p","Raèun za predujam 1 red s 2 popusta");    
     raDetail.getRepRunner().addReport("hr.restart.robno.repPredracuni2Kup","hr.restart.robno.repIzlazni","Predracuni2Kup","Raèun za predujam 2 red");
   }
 
