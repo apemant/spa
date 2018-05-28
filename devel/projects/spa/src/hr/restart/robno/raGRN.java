@@ -19,20 +19,31 @@ package hr.restart.robno;
 
 import hr.restart.baza.Partneri;
 import hr.restart.sisfun.frmParam;
+import hr.restart.swing.JraTextField;
+import hr.restart.swing.XYPanel;
+import hr.restart.swing.raInputDialog;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JOptionPane;
 
 import com.borland.dx.dataset.DataSet;
 
 public class raGRN extends raIzlazTemplate  {
+  
+  raNavAction rnvLot = new raNavAction("Promjena šarže", raImages.IMGALIGNJUSTIFY, KeyEvent.VK_F8) {
+    public void actionPerformed(ActionEvent e) {
+      chgLot();
+    }
+  };
 
   public void initialiser(){
     what_kind_of_dokument = "GRN";  // treba biti grn
+    bDvaRabat = frmParam.getParam("robno", "dvaRabata", "N", "Unos 2 rabata na maloprodajnim dokumentima (D,N)?").equals("D");
   }
   raNavAction rnvNacinPlac = new raNavAction("Na\u010Din pla\u0107anja",raImages.IMGEXPORT,java.awt.event.KeyEvent.VK_F7) {
       public void actionPerformed(ActionEvent e) {
@@ -58,6 +69,27 @@ public class raGRN extends raIzlazTemplate  {
     rAOFRM.ispisiizradaOTP(false, false);
   }
 
+  void chgLot() {
+    if (getDetailSet().rowCount() == 0) return;
+    
+    raInputDialog dlglot = new raInputDialog() {
+        protected void init() {
+            XYPanel panlot = new XYPanel().label("Šarža / lot").text("LOT", 120).expand();
+            setParams("Promjena šarže", panlot, panlot.getText("LOT")); 
+        }
+        protected void beforeShow() {
+          ((JraTextField) getValue()).setText(getDetailSet().getString("LOT"));
+        }
+    };
+
+    if (dlglot.show(raDetail.getWindow())) {
+        String cgnew = ((JraTextField) dlglot.getValue()).getText();
+        
+        getDetailSet().setString("LOT",  cgnew);
+        getDetailSet().saveChanges();
+        raDetail.getJpTableView().fireTableDataChanged();
+    }
+  }
 
   public void ExitPointDetail(){
     //frmPlacanje.checkRate(this);
@@ -85,19 +117,31 @@ public class raGRN extends raIzlazTemplate  {
     DP.resizeDP();
     MP.panelBasicExt.jlrCNACPL.setRaDataSet(dm.getNacplG());
     raDetail.addOption(rnvNacinPlac,4);
+    if (raIzlazTemplate.isShowLot()) {
+      raDetail.addOption(rnvLot, 5, false);
+    }
     raMaster.addOption(rnvIzradaOtp,6,false);
     setVisibleColsMaster(new int[] {4,5,9});
+    defNacpl = hr.restart.sisfun.frmParam.getParam("robno","gotNacPl");
+  }
+  
+  public void beforeShowMaster() {
+    super.beforeShowMaster();
     defNacpl = hr.restart.sisfun.frmParam.getParam("robno","gotNacPl");
   }
 
   public void MyaddIspisMaster(){
     raMaster.getRepRunner().clearAllCustomReports();
     raMaster.getRepRunner().addReport("hr.restart.robno.repGrnRac","hr.restart.robno.repIzlazni","GrnRac","Raèun 1 red");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repGrnRac2p","hr.restart.robno.repIzlazni","GrnRac2p","Raèun 1 red s 2 popusta");
     raMaster.getRepRunner().addReport("hr.restart.robno.repGrnRac2","hr.restart.robno.repIzlazni","GrnRac2","Raèun 2 red");
     raMaster.getRepRunner().addReport("hr.restart.robno.repRacRnalKupac","hr.restart.robno.repIzlazni","RacRnalKupac",ReportValuteTester.titleRACFROMRNAL);
+    raMaster.getRepRunner().addReport("hr.restart.robno.repGrnRacPnPL",
+        "hr.restart.robno.repRacuniPnP",
+        "GrnRacSifKupPakLot","Raèun sa šifrom kupca i šaržom");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxRacun","Matrièni ispis raèuna");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxRacunPop","Matrièni ispis raèuna s više popusta");
-    raMaster.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna POS printer");
     
     if (repFISBIH.isFISBIH()) {
       if (getMasterSet().getInt("FBR")>0) {
@@ -114,11 +158,15 @@ public class raGRN extends raIzlazTemplate  {
   public void MyaddIspisDetail(){
     raDetail.getRepRunner().clearAllCustomReports();
     raDetail.getRepRunner().addReport("hr.restart.robno.repGrnRac","hr.restart.robno.repIzlazni","GrnRac","Ra\u010Dun 1 red");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repGrnRac2p","hr.restart.robno.repIzlazni","GrnRac2p","Raèun 1 red s 2 popusta");
     raDetail.getRepRunner().addReport("hr.restart.robno.repGrnRac2","hr.restart.robno.repIzlazni","GrnRac2","Ra\u010Dun 2 red");
     raDetail.getRepRunner().addReport("hr.restart.robno.repRacRnalKupac","hr.restart.robno.repIzlazni","RacRnalKupac",ReportValuteTester.titleRACFROMRNAL);
+    raDetail.getRepRunner().addReport("hr.restart.robno.repGrnRacPnPL",
+        "hr.restart.robno.repRacuniPnP",
+        "GrnRacSifKupPakLot","Raèun sa šifrom kupca i šaržom");
     raDetail.getRepRunner().addReport("hr.restart.robno.repMxRacun","Matrièni ispis raèuna");
     raDetail.getRepRunner().addReport("hr.restart.robno.repMxRacunPop","Matrièni ispis raèuna s više popusta");
-    raDetail.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna POS printer");
 //    if (repFISBIH.isFISBIH()) raDetail.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
   }
 
