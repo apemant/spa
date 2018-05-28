@@ -24,6 +24,7 @@ import hr.restart.baza.Sklad;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.dM;
 import hr.restart.baza.doki;
+import hr.restart.baza.norme;
 import hr.restart.baza.stdoki;
 import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
@@ -572,9 +573,12 @@ public abstract class raDocTwoTableChooser extends raTwoTableFrame {
                 "vrdok", "god", "brdok", "rbsid" }, "stdoki"));
     detail.post();
     if (arh) return;
-    if (raVart.isStanje(qds.getInt("CART")) && (!raVart.isNorma(qds.getInt("CART")) 
+    /*if (raVart.isStanje(qds.getInt("CART")) && (!raVart.isNorma(qds.getInt("CART")) 
          || !lookupData.getlookupData().raLocate(dm.getSortedNorme(), 
-             "CARTNOR", Integer.toString(qds.getInt("CART"))))) {
+             "CARTNOR", Integer.toString(qds.getInt("CART"))))) {*/
+    
+    if (raVart.isStanje(qds.getInt("CART")) && (!raVart.isNorma(qds.getInt("CART")) 
+        || !norme.check(qds.getInt("CART")))) {
         //System.out.println("Vrsta: "+qds.getString("VRART"));
     	if (lookupData.getlookupData().raLocate(stanje, "CART",
     	    Integer.toString(qds.getInt("CART")))) {
