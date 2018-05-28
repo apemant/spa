@@ -1184,8 +1184,11 @@ public boolean  doWithSave(char mode) {
 
     String[] key = new String[] {"CART"};
     if (mode=='N') {
+      System.out.println("Validacija |" + getRaQueryDataSet().getString("VRART") + "|");
+      System.out.println("index " + rcbVRART.getSelectedIndex());
       if (getRaQueryDataSet().getString("VRART").trim().length()==0)
         rcbVRART.this_itemStateChanged();
+      System.out.println("Validacija |" + getRaQueryDataSet().getString("VRART") + "|");
       if (jtfCART1.getFieldMask() instanceof raTextMask) {
         raTextMask m = (raTextMask) jtfCART1.getFieldMask();
         if (m.isMasked())
@@ -1222,7 +1225,11 @@ public boolean  doWithSave(char mode) {
       tds.insertRow(true);
     }
     if (mode=='N') {
+      System.out.println("SetFokus |" + getRaQueryDataSet().getString("VRART") + "|");
+      System.out.println("index " + rcbVRART.getSelectedIndex());
+      //if (rcbVRART.getSelectedIndex() < 0) rcbVRART.setSelectedIndex(0);
       rcbVRART.this_itemStateChanged();
+      System.out.println("SetFokus |" + getRaQueryDataSet().getString("VRART") + "|");
       getRaQueryDataSet().setInt("CART", rdUtil.getUtil().getMaxArtikl());
       pi.init(Aus.q(Artikli.getDataModule(), "CART1"), "CART1");
       if(!hr.restart.sisfun.frmParam.getParam("robno","indiCart").equals("CART"))
