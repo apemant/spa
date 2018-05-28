@@ -23,6 +23,7 @@ import hr.restart.swing.JraCheckBox;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
 import hr.restart.util.JlrNavField;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.Tecajevi;
 import hr.restart.zapod.jpGetValute;
 
@@ -161,12 +162,14 @@ public class jpUlazMaster extends JPanel {
   JraTextField jtfDATDOSP = new JraTextField();
   JLabel jlPrpor = new JLabel("Pretporez");
   JLabel jlPrp1 = new JLabel("Stopa 25%");
-  JLabel jlPrp2 = new JLabel("Stopa 10%");
+  JLabel jlPrp2 = new JLabel("Stopa 13%");
   JLabel jlPrp3 = new JLabel("Stopa 5%");
   JraTextField jtfUIPRPOR = new JraTextField();
   JraTextField jtfUIPRPOR2 = new JraTextField();
   JraTextField jtfUIPRPOR3 = new JraTextField();
   rajpBrDok jpBRDOK = new rajpBrDok();
+  
+  JraCheckBox jcbKom = new JraCheckBox();
 //  ButtonGroup buttonGroup1 = new ButtonGroup();
 //  private JraButton jbULDOK = new JraButton();
   private int ver= 0;
@@ -191,8 +194,8 @@ public class jpUlazMaster extends JPanel {
     }
   }
   void jbInit() throws Exception {
-    jpMasterCenter.setPreferredSize(new Dimension(650, 275));
-    jpMasterCenter.setMinimumSize(new Dimension(650, 275));
+    //jpMasterCenter.setPreferredSize(new Dimension(650, 280));
+    //jpMasterCenter.setMinimumSize(new Dimension(650, 280));
     jpMasterCenter.setBorder(BorderFactory.createEtchedBorder());
     jpMasterCenter.setLayout(xYLayout3);
     /*jtfUINAB.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -200,6 +203,7 @@ public class jpUlazMaster extends JPanel {
         jtfUINAB_focusLost(e);
       }
     });*/
+    
     jtfUINAB.setColumnName("UINAB");
     
     jtfDEVIZN.setColumnName("DEVIZN");
@@ -234,8 +238,8 @@ public class jpUlazMaster extends JPanel {
     jrfDOSP.setVisible(false);
     jrfDOSP.setEnabled(false);
     jpZT.setBorder(BorderFactory.createEtchedBorder());
-    jpZT.setMinimumSize(new Dimension(555, 124));
-    jpZT.setPreferredSize(new Dimension(555, 124));
+    //jpZT.setMinimumSize(new Dimension(555, 124));
+    //jpZT.setPreferredSize(new Dimension(555, 124));
     jpZT.setLayout(xYLayout9);
 //    jrfCSHZT.setColumnName("CSHZT");
 //    jrfCSHZT.setColNames(new String[] {"NSHZT"});
@@ -263,7 +267,7 @@ public class jpUlazMaster extends JPanel {
 //      }
 //    });
     xYLayout3.setWidth(645);
-    xYLayout3.setHeight(245);
+    xYLayout3.setHeight(280);
     jtfDATDOK.setHorizontalAlignment(SwingConstants.CENTER);
     jtfDATDOK.setColumnName("DATDOK");
     /*jtfDATDOK.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -324,6 +328,7 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
     jLabel1.setText("Šifra");
 //    jrbShemaZT.setText(res.getString("jrbShemaZT_text"));
     jcbZT.setText("Zavisni troškovi preko ulaznih ra\u010Duna");
+    jcbZT.setHorizontalAlignment(SwingConstants.TRAILING);
     jcbZT.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         if (frm.enableZT)
@@ -354,7 +359,7 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
 //		  jbULDOK_actionPerformed(e);
 //		}
 //	 });
-    jpMasterCenter.add(jpGetVal, new XYConstraints(0, 215, -1, -1));
+    jpMasterCenter.add(jpGetVal, new XYConstraints(0, 220, -1, -1));
     jpMasterCenter.add(jlCPAR, new XYConstraints(15, 35, -1, -1));
     jpMasterCenter.add(jrfCPAR, new XYConstraints(150, 35, 100, -1));
     jpMasterCenter.add(jrfDOSP, new XYConstraints(606, 35, 0, -1));
@@ -387,13 +392,23 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
     jpMasterCenter.add(new JLabel("Opis"), new XYConstraints(15, 170, -1, -1));
     jpMasterCenter.add(jtfOPIS, new XYConstraints(150, 170, 455, -1));
     
+    if (OrgStr.getOrgStr().isKomisija()) {
+      jcbKom.setColumnName("KOMISIJA");
+      jcbKom.setText("Roba na komisiji");
+      jcbKom.setHorizontalAlignment(SwingConstants.RIGHT);
+      jcbKom.setHorizontalTextPosition(SwingConstants.LEFT);
+      jcbKom.setSelectedDataValue("D");
+      jcbKom.setUnselectedDataValue("N");
+      jpMasterCenter.add(jcbKom, new XYConstraints(350, 195, 255, -1));
+    }
+    
     jpZT.add(jlUINAB, new XYConstraints(27, 30, -1, -1));
 //    jpZT.add(jrbLinearniZT, new XYConstraints(10, 5, -1, -1));
     jpZT.add(jtfUINAB, new XYConstraints(135, 30, 100, -1));
     jpZT.add(jlUIZT, new XYConstraints(280, 30, -1, -1));
     jpZT.add(jtfUIZT, new XYConstraints(385, 30, 100, -1));
-    jpZT.add(jcbZT, new XYConstraints(10, 110, -1, -1));
-    jpZT.add(jbZT, new XYConstraints(jcbZT.getPreferredSize().width+25, 110, 21, 21));
+    jpZT.add(jcbZT, new XYConstraints(10, 110, 280, -1));
+    jpZT.add(jbZT, new XYConstraints(295, 110, 21, 21));
     
     jpZT.add(jtfUIPRPOR, new XYConstraints(505, 160, 100, -1));
     jpZT.add(jtfUIPRPOR2, new XYConstraints(400, 160, 100, -1));
@@ -625,6 +640,8 @@ System.out.println("frm.getMasterSet() "+frm.getMasterSet());
     jtfDATDOK.setDataSet(qds);
     jtfOPIS.setDataSet(qds);
     jtfDVO.setDataSet(qds);
+    
+    jcbKom.setDataSet(qds);
 //    if (ver==0) {
 //      jtfBRDOKUL.setDataSet(qds);
 //    }
