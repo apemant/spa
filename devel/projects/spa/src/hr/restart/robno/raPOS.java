@@ -17,12 +17,6 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-
 import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Rate;
@@ -42,8 +36,13 @@ import hr.restart.swing.raExtendedTable;
 import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.swing.raTableModifier;
-import hr.restart.swing.raTextMask;
 import hr.restart.util.*;
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -54,7 +53,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.Column;
-import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
@@ -321,6 +319,7 @@ public class raPOS extends raIzlazTemplate  {
       pan.add(jlrCskl, new XYConstraints(150, 40, 100, -1));
       pan.add(jlrNazskl, new XYConstraints(255, 40, 250, -1));
       pan.add(jbSelCskl, new XYConstraints(510, 40, 21, 21));
+      tds.setString("CSKL", raUser.getInstance().getDefSklad());
     }   
     
     raInputDialog od = new raInputDialog();
@@ -775,6 +774,18 @@ public class raPOS extends raIzlazTemplate  {
         lc.TransferFromClass2DB(sta,rKD.stanje);
       }
     }
+    
+    if (raIzlazTemplate.isNabDirect() && rzag.getRowCount() == 1) {
+      for (rst.first(); rst.inBounds(); rst.next()) {
+        if (ld.raLocate(ist, new String[] {"CSKL", "CART"}, new String[] {rst.getString("CSKLART"), rst.getInt("CART") + ""})) {
+          Aus.set(rst, "RNC", ist, "NC");
+          Aus.mul(rst, "RINAB", "RNC", "KOL");
+          Aus.sub(rst, "RUC", "IPRODBP", "RINAB");
+          Aus.add(rzag, "RUC", rst);
+        }
+      }
+    }
+    
     raTransaction.saveChanges(rzag);
     raTransaction.saveChanges(rst);
     raTransaction.saveChanges(izag);
