@@ -21,6 +21,7 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.Vrdokum;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.Asql;
+import hr.restart.sisfun.frmParam;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraTextField;
 import hr.restart.util.Aus;
@@ -151,12 +152,15 @@ public class frmOtpisRobe extends raMasterDetail {
     if (raIzlazTemplate.allowPriceChange()) rcc.setLabelLaF(jraCijena, true);
   }
 
+  boolean isMinusAllowed = false;
   DataSet sdokiz;
   public void beforeShowMaster() {
 //    getMasterSet().refresh();
 //    refilterDetailSet();
 //    this.getMasterSet().open();
 //    this.getDetailSet().open();
+    isMinusAllowed = frmParam.getParam("robno", "allowMinus", "N",
+        "Dopustiti odlazak u minus na izlazima (D,N)?").equals("D");
     initRpcart();
     sdokiz = Vrdokum.getDataModule().getTempSet(
         Condition.in("APP", new String[] {"robno", "mp"}).
@@ -300,7 +304,7 @@ public class frmOtpisRobe extends raMasterDetail {
 
   public boolean testStanje() {
     if (mjstanje== null) return false;
-    if (mjstanje.getBigDecimal("KOL").doubleValue()<0) {
+    if (!isMinusAllowed && mjstanje.getBigDecimal("KOL").doubleValue()<0) {
       mjstanje = null;
       JOptionPane.showMessageDialog(this.jpDetail,"Nedovoljna koli\u010Dina na stanju!","Greška",
         JOptionPane.ERROR_MESSAGE);
@@ -309,7 +313,7 @@ public class frmOtpisRobe extends raMasterDetail {
       eraseFields();
       return false;
     }
-    else return true;
+    return true;
   }
 
   public void AfterSaveDetail(char mode) {
@@ -384,14 +388,15 @@ System.out.println("Ulazim u DeleteCheckDetail");
       System.out.println(getDetailSet());
       Condition artstav = Condition.whereAllEqual(
           new String[] {"CSKL", "GOD", "CART"}, getDetailSet());
+      Condition datc = Condition.till("DATDOK", getMasterSet()).qualified("doki");
       
       DataSet ukupnoizaslo = 
-              Aus.q("SELECT sum(KOL)as SUMICA from stdoki where "+
-                  artstav.and(Condition.in("VRDOK", sdokiz)));
+              Aus.q("SELECT sum(KOL)as SUMICA from doki,stdoki where "+rut.getDoc("doki", "stdoki") + " and " +
+                  artstav.and(Condition.in("VRDOK", sdokiz)).qualified("stdoki").and(datc));
       
       DataSet ukupnodosadotpis = 
-         Aus.q("SELECT sum(KOL)as SUMICA from stdoki where "+
-             artstav.and(Condition.equal("VRDOK", "OTR")));
+         Aus.q("SELECT sum(KOL)as SUMICA from doki,stdoki where "+rut.getDoc("doki", "stdoki") + " and " +
+             artstav.and(Condition.equal("VRDOK", "OTR")).qualified("stdoki").and(datc));
       
       int dec = 3;
       if (ld.raLocate(dm.getArtikli(), "CART", 
