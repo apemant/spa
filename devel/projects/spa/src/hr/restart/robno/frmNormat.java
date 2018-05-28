@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.baza.norme;
@@ -120,7 +121,7 @@ public class frmNormat extends raFrame {
     return fn.show(cartnor);
   }
 
-  private void addSubtree(int cart, DefaultMutableTreeNode parent) {
+  /*private void addSubtree(int cart, DefaultMutableTreeNode parent) {
     DataSet sn = dm.getSortedNorme();
     if (ld.raLocate(sn, "CARTNOR", String.valueOf(cart)))
       for (; sn.inBounds() && sn.getInt("CARTNOR") == cart; sn.next()) {
@@ -130,6 +131,16 @@ public class frmNormat extends raFrame {
         int currentRow = sn.getRow();
         addSubtree(sn.getInt("CART"), leaf);
         sn.goToRow(currentRow);
+      }
+  }*/
+  
+  private void addSubtree(int cart, DefaultMutableTreeNode parent) {
+    if (norme.check(cart)) 
+      for (int i = 0; i < norme.count(cart); i++) {
+        DefaultMutableTreeNode leaf = new DefaultMutableTreeNode(
+          new Node(norme.cart(cart, i), norme.art(cart, i).getString("NAZART")));
+        parent.add(leaf);
+        addSubtree(norme.cart(cart, i), leaf);
       }
   }
 
@@ -143,7 +154,7 @@ public class frmNormat extends raFrame {
   private boolean show(int cartnor) {
     if (!raVart.isNorma(cartnor)) return false;
     //if (!Aut.getAut().artTipa(cartnor, "P")) return false;
-    this.setTitle("Sastav normativa "+cartnor+" - "+dm.getArtikli().getString("NAZART"));
+    this.setTitle("Sastav normativa "+cartnor+" - "+(Artikli.loc(cartnor) ? Artikli.get().getString("NAZART") : ""));
     norme.getDataModule().setFilter(normarts, Condition.equal("cartnor", cartnor));
     enableCART();
     normarts.open();
@@ -201,8 +212,7 @@ public class frmNormat extends raFrame {
 
   private void expand() {
     if (normarts.isEmpty()) return;
-    if (!ld.raLocate(dm.getSortedNorme(), "CARTNOR",
-                       String.valueOf(normarts.getInt("CART")))) {
+    if (!norme.check(normarts.getInt("CART"))) {
       checkActions();
       JOptionPane.showMessageDialog(this.getWindow(), "Artikl nije normiran!", "Greška",
                                     JOptionPane.ERROR_MESSAGE);
@@ -214,8 +224,7 @@ public class frmNormat extends raFrame {
 
   private void doubleClick() {
     if (normarts.isEmpty()) return;
-    if (!ld.raLocate(dm.getSortedNorme(), "CARTNOR",
-      String.valueOf(normarts.getInt("CART")))) return;
+    if (!norme.check(normarts.getInt("CART"))) return;
     stack.addLast(new Integer(cartnor));
     setNormativ(normarts.getInt("CART"), 0);
   }
@@ -228,8 +237,7 @@ public class frmNormat extends raFrame {
   private void checkActions() {
     if (normarts.isEmpty())
       details.setEnabled(false);
-    else if (!ld.raLocate(dm.getSortedNorme(), "CARTNOR",
-        String.valueOf(normarts.getInt("CART"))))
+    else if (!norme.check(normarts.getInt("CART")))
       details.setEnabled(false);
     else details.setEnabled(true);
     if (!stack.isEmpty())
@@ -319,7 +327,7 @@ public class frmNormat extends raFrame {
   }
 
   private void jbInit() throws Exception {
-    norme.getDataModule().setFilter(normarts, "");
+    norme.getDataModule().setFilter(normarts, Condition.nil);
     this.getContentPane().add(jp, BorderLayout.CENTER);
     jp.setDataSet(normarts);
     java.lang.reflect.Field f = raJPTableView.class.getDeclaredField("jPanelTable");
