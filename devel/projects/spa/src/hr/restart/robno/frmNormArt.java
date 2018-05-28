@@ -142,7 +142,7 @@ public class frmNormArt extends raMatPodaci {
     return true;
 	}
 	
-	public static boolean isCircular(int cart, int destCart) {
+	/*public static boolean isCircular(int cart, int destCart) {
 		if (lookupData.getlookupData().raLocate(dM.getDataModule().getSortedNorme(), "CARTNOR", Integer.toString(cart))) 
 			for (DataSet sn = dM.getDataModule().getSortedNorme(); sn.inBounds() && sn.getInt("CARTNOR") == cart; sn.next()) 
 				if (sn.getInt("CART") == destCart) return true;
@@ -152,5 +152,15 @@ public class frmNormArt extends raMatPodaci {
 	        sn.goToRow(current);
 				}
 		return false;
-	}
+	}*/
+	
+	public static boolean isCircular(int cart, int destCart) {
+      if (norme.check(cart))
+        for (int i = 0; i < norme.count(cart); i++)
+          if (norme.cart(cart, i) != destCart) {
+            if (isCircular(norme.cart(cart, i), destCart)) return true;
+          } else return true;
+          
+      return false;
+  }
 }
