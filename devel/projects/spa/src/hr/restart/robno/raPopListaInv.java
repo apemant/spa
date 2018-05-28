@@ -57,7 +57,7 @@ public class raPopListaInv extends raUpitLite {
   sgQuerys ss = sgQuerys.getSgQuerys();
 
   QueryDataSet fieldSet = new QueryDataSet();
-  static private QueryDataSet repSet = new QueryDataSet();
+  QueryDataSet repSet = new QueryDataSet();
 
   static public String sortBy;
 
