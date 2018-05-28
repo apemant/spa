@@ -519,7 +519,7 @@ public class jpUlazDetail extends JPanel {
     jpDetailCenter.add(jtfDC_VAL, new XYConstraints(360, 75, 130, -1));
     jpDetailCenter.add(jtfIDOB_VAL, new XYConstraints(500, 75, 130, -1));
     
-    if (edion && (frm.prSTAT == 'P' || frm instanceof frmPRK)) addEdi();
+    if (edion && (frm.prSTAT == 'P' || frm instanceof frmPRK || frm.prSTAT == 'S' || frm instanceof frmPST)) addEdi();
     this.add(rpcart, BorderLayout.NORTH);
     
     tds.open();
@@ -997,18 +997,18 @@ public class jpUlazDetail extends JPanel {
       	calc.run("IDOB_VAL = 0");
         return;
       }
-      calc.run("DC_VAL = IDOB_VAL / KOL;  IDOB = IDOB_VAL * tecaj / jedval;  DC = IDOB / KOL");
+      calc.run("DC_VAL = IDOB_VAL / KOL;  IDOB = id4 = IDOB_VAL * tecaj / jedval;  DC = id4 / KOL");
       calcFromIDOB();
     } else if (mode==2) {   // Dobavljaceva cijena u valuti
-    	calc.run("IDOB_VAL = DC_VAL * KOL;  IDOB = IDOB_VAL * tecaj / jedval;  DC = IDOB / KOL");
+    	calc.run("IDOB_VAL = DC_VAL * KOL;  IDOB = id4 = IDOB_VAL * tecaj / jedval;  DC = id4 / KOL");
       calcFromIDOB();
     } else if (mode==3) {   // Dobavljacev iznos
     	calc.run("IDOB_VAL = IDOB * jedval / tecaj");
-    	calc.run("DC_VAL = IDOB_VAL / KOL;  DC = IDOB / KOL");
+    	calc.run("DC_VAL = IDOB_VAL / KOL;  DC = 1.00 * IDOB / KOL");
       calcFromIDOB();
     } else if (mode==4) {   // Dobavljaceva cijena
     	calc.run("IDOB = DC * KOL;  IDOB_VAL = IDOB * jedval / tecaj");
-    	calc.run("DC_VAL = IDOB_VAL / KOL;  DC = IDOB / KOL");
+    	calc.run("DC_VAL = IDOB_VAL / KOL");
       calcFromIDOB();
     } else if (mode==5) {   // Rabat u postotku
       calcFromIDOB();
