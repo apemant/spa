@@ -51,6 +51,8 @@ public class raFakeBDStdoki {
   public BigDecimal ppor3;
   public BigDecimal uipor;
   public BigDecimal uppor;
+  public BigDecimal prab1;
+  public BigDecimal prab2;
 
   ///// tmpPolja racuni-otpremnice
 
@@ -76,7 +78,7 @@ public class raFakeBDStdoki {
     rezkol = "neinicijaliziran";
     resetKol();
     resetSklad();
-    resetFinanc();
+    resetFinanc(true);
     resetDodPrikaz();
   }
 
@@ -104,7 +106,7 @@ public class raFakeBDStdoki {
   /**
    * resetira na nulu financijski dio izlaznog dokumenta
    */
-  public void resetFinanc(){
+  public void resetFinanc(boolean ppor){
 
     uprab      = BigDecimal.valueOf(0,2);
     uirab      = BigDecimal.valueOf(0,2);
@@ -120,11 +122,15 @@ public class raFakeBDStdoki {
     fmc        = BigDecimal.valueOf(0,2);
     fmcprp     = BigDecimal.valueOf(0,2);
     iprodsp    = BigDecimal.valueOf(0,2);
-    ppor1      = BigDecimal.valueOf(0,2);
-    ppor2      = BigDecimal.valueOf(0,2);
-    ppor3      = BigDecimal.valueOf(0,2);
-    uppor      = BigDecimal.valueOf(0,2);
+    if (ppor) {
+      ppor1      = BigDecimal.valueOf(0,2);
+      ppor2      = BigDecimal.valueOf(0,2);
+      ppor3      = BigDecimal.valueOf(0,2);
+      uppor      = BigDecimal.valueOf(0,2);
+    }
     uipor      = BigDecimal.valueOf(0,2);
+    prab1      = BigDecimal.valueOf(0,2);
+    prab2      = BigDecimal.valueOf(0,2);
 
   }
   /**
