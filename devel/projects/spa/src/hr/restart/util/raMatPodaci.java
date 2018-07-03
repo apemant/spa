@@ -19,6 +19,7 @@ package hr.restart.util;
 
 
 
+import hr.restart.start;
 import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.baza.raDataSet;
@@ -816,6 +817,10 @@ sysoutTEST ST = new sysoutTEST(false);
   public void pack(){
     
     Aus.recursiveUpdateSizes(getRaDetailPanel());
+    
+    if (start.preloading && getRaQueryDataSet() != null) {
+      getRaQueryDataSet().open();
+    }
 
     if (hr.restart.start.isRESIZABLELAYOUT())
       hr.restart.swing.layout.raLayUtil.parseXYLayout(raDetailPanel);
@@ -2883,7 +2888,7 @@ ST.prnc(raQueryDataSet);
 
         String cn = raQueryDataSet.getColumn(i).getColumnName();
 
-        if (!Util.getUtil().containsArr(kys,cn) && !curr.isAssignedNull(cn)) {
+        if (!Util.getUtil().containsArr(kys,cn) && !curr.isNull(cn)) {
 
 //System.out.println(cn+" ass = "+currentSet.isAssignedNull(cn)+" - unass = "+currentSet.isUnassignedNull(cn));
 
