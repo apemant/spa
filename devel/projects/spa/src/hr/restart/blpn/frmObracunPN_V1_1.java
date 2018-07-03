@@ -251,7 +251,7 @@ public class frmObracunPN_V1_1 extends raMasterDetail {
 
   public void beforeShowDetail(){
     this.setNaslovDetail("Stavke obra\u010Duna putnog naloga broj ".concat(this.getMasterSet().getString("CPN")));
-    if (getMasterSet().isAssignedNull("DATOBR") || getMasterSet().isUnassignedNull("DATOBR")) {
+    if (getMasterSet().isNull("DATOBR")) {
       this.getMasterSet().setTimestamp("DATOBR", getPreSelect().getSelRow().getTimestamp("DATUMODL-to"));
     }
     changeUkupnoSet();
