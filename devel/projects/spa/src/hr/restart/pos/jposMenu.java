@@ -19,20 +19,37 @@ package hr.restart.pos;
 
 import hr.restart.baza.Condition;
 import hr.restart.baza.Pos;
+import hr.restart.baza.Stpos;
+import hr.restart.baza.dM;
+import hr.restart.baza.doki;
+import hr.restart.baza.stdoki;
+import hr.restart.robno.Util;
+import hr.restart.robno.raControlDocs;
 import hr.restart.robno.raPOS;
+import hr.restart.robno.raPozivNaBroj;
 import hr.restart.robno.repFISBIH;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.raUser;
+import hr.restart.util.Aus;
 import hr.restart.util.PreSelect;
+import hr.restart.util.Valid;
+import hr.restart.util.lookupData;
 import hr.restart.util.raLoader;
 import hr.restart.util.raProcess;
+import hr.restart.util.raTransaction;
+import hr.restart.util.startFrame;
+import hr.restart.zapod.OrgStr;
 
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.sql.dataset.QueryDataSet;
 
 /**
  * <p>Title: Robno poslovanje</p>
@@ -58,6 +75,7 @@ public class jposMenu extends JMenu {
   public JMenuItem jmPregledArtikliRacuni = new JMenuItem();
   public JMenuItem jmZbroj = new JMenuItem();
   public JMenuItem jmZakljucak = new JMenuItem();
+  public JMenuItem jmRacIspis = new JMenuItem();
   public JMenuItem jmKPR = new JMenuItem();
   public JMenuItem jmPregledKPR = new JMenuItem();
   public JMenuItem jmFISBIH = new JMenuItem();
@@ -169,6 +187,12 @@ public class jposMenu extends JMenu {
         jmZakljucak_actionPerformed(e);
       }
     });
+    jmRacIspis.setText("Raèun za ispis");
+    jmRacIspis.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmRacIspis_actionPerformed(e);
+      }
+    });
     jmKPR.setText("Formiranje KPR");
     jmKPR.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -196,6 +220,7 @@ public class jposMenu extends JMenu {
     } else {
       jmZakljucak.setText("Zakljuèak blagajne");
       this.add(jmZakljucak);
+      this.add(jmRacIspis);
     }
     if (repFISBIH.isFISBIH()) {
       addSeparator();
@@ -278,5 +303,112 @@ public class jposMenu extends JMenu {
   }
   public void jmZakljucak_actionPerformed(ActionEvent e) {
     raPOS.zakljucak();
+  }
+  
+  public void jmRacIspis_actionPerformed(ActionEvent e) {
+    racunIzPOS();
+  }
+  
+  public static void racunIzPOS() {    
+    QueryDataSet pos = Pos.getDataModule().openTempSet(
+        Condition.equal("CSKL", raUser.getInstance().getDefSklad()).and(
+            Condition.equal("GOD", Valid.getValid().findYear(Valid.getValid().getToday()))));
+
+    pos.setSort(new SortDescriptor(new String[] {"DATDOK"}));
+    pos.last();
+    
+    if ("D".equalsIgnoreCase(frmParam.getParam("pos", "vrijemeRac", "N",
+        "Prikazati vrijeme na racunima POS (D,N)"))) { 
+      pos.getColumn("DATDOK").setDisplayMask("dd-MM-yyyy  'u' HH:mm:ss");
+      pos.getColumn("DATDOK").setWidth(24);
+    }
+    
+    lookupData.getlookupData().saveName = "dohvat-spapos-getgrn";
+    lookupData.getlookupData().frameTitle = "Odabir raèuna";
+    lookupData.getlookupData().setLookMode(lookupData.INDIRECT);
+    try {
+      String[] result = lookupData.getlookupData().lookUp(
+          startFrame.getStartFrame(), pos,
+            new String[] {"BRDOK", "STOL"}, 
+            new String[] {"", ""}, new int[] {0,1,2,3,4,5});
+      if (result == null) return;
+      if (!lookupData.getlookupData().raLocate(pos, 
+          new String[] {"BRDOK", "STOL"}, result)) return;
+    } finally {
+      lookupData.getlookupData().saveName = null;
+      lookupData.getlookupData().modifiers = null;
+      lookupData.getlookupData().lbutt = null;
+      lookupData.getlookupData().frameTitle = "Dohvat";
+    }
+    
+    createRAC(pos);
+  }
+  
+  public static void createRAC(DataSet zag) {
+    if (zag == null || zag.rowCount() == 0) return;
+    
+    String[] key = {"cskl","vrdok","god","brdok","cprodmj"};
+    DataSet st = Stpos.getDataModule().openTempSet(Condition.whereAllEqual(key, zag));
+    if (st == null || st.rowCount() == 0) return;
+        
+    QueryDataSet rzag = doki.getDataModule().openEmptySet();
+    QueryDataSet rst = stdoki.getDataModule().openEmptySet();
+    
+    rzag.insertRow(false);
+    String[] zcols = {"SYSDAT", "DATDOK", "UIRAC", "CNACPL", "CUSER", "FBR", "JIR", "FOK", "FPP", "FNU"};
+    dM.copyColumns(zag, rzag, zcols);
+    
+    String[] scols = {"RBR", "CART", "CART1", "BC", "NAZART", "JM", "KOL", "POR1", "POR2", "POR3", "PPOR1", "PPOR2", "PPOR3"};
+    
+    lookupData ld = lookupData.getlookupData();
+    if (ld.raLocate(dM.getDataModule().getSklad(), "CSKL", zag))
+      rzag.setString("CSKL", dM.getDataModule().getSklad().getString("CORG"));
+    else rzag.setString("CSKL", OrgStr.getKNJCORG(false));
+    
+    if (ld.raLocate(dM.getDataModule().getPartneri(), "CKUPAC", zag)) 
+      rzag.setInt("CPAR", dM.getDataModule().getPartneri().getInt("CPAR"));
+    
+    rzag.setString("VRDOK", "RAC");
+    
+    rzag.setString("ZIRO", raPozivNaBroj.getraPozivNaBrojClass().getZiroRN(rzag));
+    
+    Util.getUtil().getBrojDokumenta(rzag, false);
+    rzag.post();
+    
+    for (st.first(); st.inBounds(); st.next()) {
+      rst.insertRow(false);
+      dM.copyColumns(rzag, rst, Util.mkey);
+      dM.copyColumns(st, rst, scols);
+      
+      Aus.set(rst, "IPRODSP", st, "NETO");
+      Aus.set(rst, "IPRODBP", "IPRODSP");
+      Aus.sub(rst, "IPRODBP", "POR1");
+      Aus.sub(rst, "IPRODBP", "POR2");
+      Aus.sub(rst, "IPRODBP", "POR3");
+      Aus.set(rst, "INETO", "IPRODBP");
+      Aus.base(rst, "INETO", "INETO", st.getBigDecimal("PPOPUST2").negate());
+      Aus.base(rst, "INETO", "INETO", st.getBigDecimal("PPOPUST1").negate());
+      
+      Aus.div(rst, "FMC", "IPRODSP", "KOL");
+      Aus.div(rst, "FVC", "IPRODBP", "KOL");
+      Aus.div(rst, "FC", "INETO", "KOL");
+      
+      rst.setInt("RBSID", rst.getShort("RBR"));
+      rst.setString("CSKLART", zag.getString("CSKL"));
+      rst.setString("ID_STAVKA",
+          raControlDocs.getKey(rst, new String[] { "cskl",
+                  "vrdok", "god", "brdok", "rbsid" }, "stdoki"));
+      rst.post();
+    }
+    
+    String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
+        "Format fiskalnog broja izlaznog dokumenta na ispisu");
+    rzag.setString("PNBZ2", Aus.formatBroj(rzag, fiskForm));
+    
+    if (raTransaction.saveChangesInTransaction(new QueryDataSet[] {rzag, rst, dM.getDataModule().getSeq()})) {
+      Util.getUtil().showDocs(rzag.getString("CSKL"), "RAC", rzag.getTimestamp("DATDOK"), rzag.getTimestamp("DATDOK"));
+    } else {
+      JOptionPane.showMessageDialog(startFrame.getStartFrame(), "Neuspješno kreiranje raèuna!", "Greška", JOptionPane.ERROR_MESSAGE);
+    }
   }
 }
