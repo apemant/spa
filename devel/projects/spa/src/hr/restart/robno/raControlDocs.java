@@ -620,7 +620,7 @@ System.out.println("I ovdje je neispravan kljuc "+key);
         Integer csize = (Integer) colSizes.get(qcol);
         if (csize == null) {  // nema
           java.sql.ResultSet comkys = hr.restart.baza.dM.getDatabaseConnection()
-                    .getMetaData().getColumns(null,null,tableName, keys[i]);          
+                    .getMetaData().getColumns(null,null,tableName, keys[i].toLowerCase());          
           if (comkys.next())  
             if (comkys.getShort("DATA_TYPE")==java.sql.Types.CHAR ||
                 comkys.getShort("DATA_TYPE")==java.sql.Types.LONGVARCHAR ||
