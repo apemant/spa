@@ -285,8 +285,6 @@ public class SecondChooser extends JraDialog {
     }
 
 	public void addZaglavlje() {
-		System.out.println("rIT.getMasterSet() "
-				+ rIT.getMasterSet().getString("CUSER"));
 		if (ZaglavljeSet.getString("VRDOK").equals("RNL")) {
           boolean kupac = ZaglavljeSetTmp.getString("KUPPAR").equalsIgnoreCase("K");
 			if (TD.isGOTGRN(rIT.getMasterSet().getString("VRDOK"))) {
@@ -327,9 +325,10 @@ public class SecondChooser extends JraDialog {
 			rIT.getMasterSet().setString("CRADNAL", ZaglavljeSetTmp.getString("CRADNAL"));
 		} else {
 			//System.out.println("JEDAN");
-			if (rIT.getMasterSet().isAssignedNull("CPAR")
+		  System.out.println(ZaglavljeSet);
+			if (rIT.getMasterSet().isNull("CPAR")
 					|| rIT.getMasterSet().getInt("CPAR") == 0) {
-				if (ZaglavljeSet.isAssignedNull("CPAR")
+				if (ZaglavljeSet.isNull("CPAR")
 						|| ZaglavljeSet.getInt("CPAR") == 0) {
 					rIT.getMasterSet().setAssignedNull("CPAR");
 				} else {
@@ -339,9 +338,9 @@ public class SecondChooser extends JraDialog {
                     fixDosp();                      
 				}
 			}
-			if (rIT.getMasterSet().isAssignedNull("CKUPAC")
+			if (rIT.getMasterSet().isNull("CKUPAC")
 					|| rIT.getMasterSet().getInt("CKUPAC") == 0) {
-				if (ZaglavljeSet.isAssignedNull("CKUPAC")
+				if (ZaglavljeSet.isNull("CKUPAC")
 						|| -ZaglavljeSet.getInt("CKUPAC") == 0) {
 					rIT.getMasterSet().setAssignedNull("CKUPAC");
 				} else {
@@ -350,10 +349,10 @@ public class SecondChooser extends JraDialog {
 				}
 			}
 		}
-		if (!(ZaglavljeSet.isAssignedNull("CKO") || ZaglavljeSet.getInt("CKO") == 0)) {
+		if (!(ZaglavljeSet.isNull("CKO") || ZaglavljeSet.getInt("CKO") == 0)) {
 			rIT.getMasterSet().setInt("CKO", ZaglavljeSet.getInt("CKO"));
 		}
-		if (!(ZaglavljeSet.isAssignedNull("PJ") || ZaglavljeSet.getInt("PJ") == 0)) {
+		if (!(ZaglavljeSet.isNull("PJ") || ZaglavljeSet.getInt("PJ") == 0)) {
 			rIT.getMasterSet().setInt("PJ", ZaglavljeSet.getInt("PJ"));
 		}
 		
@@ -423,7 +422,7 @@ public class SecondChooser extends JraDialog {
 						.equalsIgnoreCase("ROT"))) {
 			rIT.getMasterSet().setString("PNBZ2",
 					ZaglavljeSet.getString("PNBZ2"));
-			if (!(ZaglavljeSet.isAssignedNull("CAGENT") || ZaglavljeSet
+			if (!(ZaglavljeSet.isNull("CAGENT") || ZaglavljeSet
 					.getInt("CAGENT") == 0)) {
 				rIT.getMasterSet().setInt("CAGENT",
 						ZaglavljeSet.getInt("CAGENT"));
@@ -486,7 +485,6 @@ public class SecondChooser extends JraDialog {
 	         ex.printStackTrace();
 	       }
 	     }
-           
 	}
 
 	public boolean checkZaglavlje() {
@@ -557,13 +555,13 @@ public class SecondChooser extends JraDialog {
 		 * rIT.getMasterSet().isAssignedNull("CPAR"));
 		 */
 
-		if ((ZaglavljeSetTmp.isAssignedNull("CPAR") || ZaglavljeSetTmp
+		if ((ZaglavljeSetTmp.isNull("CPAR") || ZaglavljeSetTmp
 				.getInt("CPAR") == 0)
-				&& (ZaglavljeSetTmp.isAssignedNull("CKUPAC") || ZaglavljeSetTmp
+				&& (ZaglavljeSetTmp.isNull("CKUPAC") || ZaglavljeSetTmp
 						.getInt("CKUPAC") == 0)) {
-			if ((rIT.getMasterSet().isAssignedNull("CPAR") || rIT
+			if ((rIT.getMasterSet().isNull("CPAR") || rIT
 					.getMasterSet().getInt("CPAR") == 0)
-					&& (rIT.getMasterSet().isAssignedNull("CKUPAC") || rIT
+					&& (rIT.getMasterSet().isNull("CKUPAC") || rIT
 							.getMasterSet().getInt("CKUPAC") == 0)) {
 				if (!(rIT.getMasterSet().getString("VRDOK").equalsIgnoreCase(
 						"GRN") || rIT.getMasterSet().getString("VRDOK")
@@ -1948,13 +1946,13 @@ System.out.println(StavkeSet.getInt("CARt"));
 
 		HashMap hm = new HashMap();
 		for (int i = 0; i < source.getColumns().length; i++) {
-			hm.put(source.getColumn(i).getColumnName(), source.getColumn(i)
+			hm.put(source.getColumn(i).getColumnName().toUpperCase(), source.getColumn(i)
 					.getColumnName());
 		}
 
 		ArrayList al = new ArrayList();
 		for (int i = 0; i < dest.getColumns().length; i++) {
-			if (hm.containsKey(dest.getColumn(i).getColumnName())) {
+			if (hm.containsKey(dest.getColumn(i).getColumnName().toUpperCase())) {
 				al.add(dest.getColumn(i).getColumnName());
 			}
 		}
