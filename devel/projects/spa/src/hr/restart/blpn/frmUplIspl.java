@@ -26,15 +26,7 @@ import hr.restart.gk.frmKnjSKRac;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sk.frmIzborStavki;
 import hr.restart.sk.frmSalKon;
-import hr.restart.util.Aus;
-import hr.restart.util.JlrNavField;
-import hr.restart.util.Util;
-import hr.restart.util.Valid;
-import hr.restart.util.raCommonClass;
-import hr.restart.util.raImages;
-import hr.restart.util.raMasterDetail;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raTransaction;
+import hr.restart.util.*;
 import hr.restart.zapod.dlgGetKnjig;
 
 import java.awt.event.ActionEvent;
@@ -597,12 +589,12 @@ public class frmUplIspl extends raMasterDetail {
   }
 
   public QueryDataSet getrepQDS() {
-    repQDS.setSort(new SortDescriptor(new String[]{ss.getOrderBlagIzvField()}));
+    repQDS.setSort(new SortDescriptor(new VarStr(ss.getOrderBlagIzvField()).split(',')));
     return repQDS;
   }
 
   public QueryDataSet getrepQDS2() {
-    repQDS2.setSort(new SortDescriptor(new String[]{ss.getOrderBlagIzvField()}));
+    repQDS2.setSort(new SortDescriptor(new VarStr(ss.getOrderBlagIzvField()).split(',')));
     return repQDS2;
   }
 

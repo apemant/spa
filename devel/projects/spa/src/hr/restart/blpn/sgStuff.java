@@ -775,8 +775,10 @@ public class sgStuff {
   }
 
   private String getOrderBlagIzv(String tab) {
-    String ostr = " ORDER BY "+tab+"."+getOrderBlagIzvField();
-    return ostr;
+    String cols = getOrderBlagIzvField();    
+    if (cols.indexOf(',') > 0) cols =  new VarStr(cols).replace(",", ","+tab+".").toString();
+    return " ORDER BY "+tab+"."+cols;
+    
   }
   public String getOrderBlagIzvField() {
     return frmParam.getParam("blpn", "orderblizv", isSepNumUI()?"DATUM":"RBS", "Po kojem polju sortirati stavke blag.izv RBS|DATUM|...");

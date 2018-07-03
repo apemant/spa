@@ -21,6 +21,7 @@ import hr.restart.baza.dM;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
 import hr.restart.util.Valid;
+import hr.restart.util.VarStr;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raImages;
 import hr.restart.util.raMasterDetail;
@@ -132,12 +133,12 @@ public class frmBlagIzv extends raMasterDetail {
   }
 
   public QueryDataSet getrepQDS() {
-    repQDS.setSort(new SortDescriptor(new String[]{ss.getOrderBlagIzvField()}));
+    repQDS.setSort(new SortDescriptor(new VarStr(ss.getOrderBlagIzvField()).split(',')));
     return repQDS;
   }
 
   public QueryDataSet getrepQDS2() {
-    repQDS2.setSort(new SortDescriptor(new String[]{ss.getOrderBlagIzvField()}));
+    repQDS2.setSort(new SortDescriptor(new VarStr(ss.getOrderBlagIzvField()).split(',')));
     return repQDS2;
   }
 
