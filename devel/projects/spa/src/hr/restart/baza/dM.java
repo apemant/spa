@@ -832,6 +832,16 @@ public class dM implements DataModule {
   public static void copyDestColumns(ReadRow source, ReadWriteRow dest) {
     copyColumns(source, dest, dest.getColumnNames(dest.getColumnCount()));
   }
+  
+  public static void copyCommonColumns(ReadRow source, ReadWriteRow dest) {
+    Column[] cs = source.getColumns();
+    List cc = new ArrayList();
+    for (int i = 0; i < cs.length; i++)
+      if (dest.hasColumn(cs[i].getColumnName()) != null)
+        cc.add(cs[i].getColumnName());
+    
+    copyColumns(source, dest, (String[]) cc.toArray(new String[cc.size()]));
+  }
 
   public static Column createStringColumn(String name, int precision) {
     return createColumn(name, name, "", Variant.STRING, 1, precision, -1);
@@ -920,6 +930,14 @@ public class dM implements DataModule {
 
   public QueryDataSet getAllGrupart() {
     return Grupart.getDataModule().getQueryDataSet();
+  }
+  
+  public QueryDataSet getKategorije() {
+    return Kategorije.getDataModule().getAktiv();
+  }
+
+  public QueryDataSet getAllKategorije() {
+    return Kategorije.getDataModule().getQueryDataSet();
   }
 
   public QueryDataSet getPartneri() {
