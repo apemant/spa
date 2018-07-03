@@ -813,8 +813,13 @@ public class JraTable2 extends JTable implements JraTableInterface {
 
     if (getDataSet()==null) return;
 
-    for (int i = 0; i < getColumnCount(); i++)
-      updateTableColumn(i);
+    int errCol = 0;
+    try {
+      for (int i = 0; i < getColumnCount(); i++)
+        updateTableColumn(errCol = i);
+    } catch (Exception e) {
+      System.out.println("Error in column " + errCol);
+    }
     
   };
 
