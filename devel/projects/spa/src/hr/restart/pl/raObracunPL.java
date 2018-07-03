@@ -25,6 +25,7 @@ import hr.restart.baza.Povjerioci;
 import hr.restart.baza.Primanjaobr;
 import hr.restart.baza.Vrsteodb;
 import hr.restart.baza.Vrsteprim;
+import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
@@ -423,7 +424,8 @@ sysoutTEST ST = new sysoutTEST(false);
         if (raParam.getParam(_vrsteprim,1).equals("D")) { //obr doprinosa
           addBigDec_kumulrad("BRUTO",primanja.getBigDecimal("BRUTO"));
           addBigDec_kumulrad("SATI",primanja.getBigDecimal("SATI"));
-          if (_vrsteprim.getString("HOLAK").equalsIgnoreCase("D") && radnici.getString("MINIMALAC").equalsIgnoreCase("D"))
+          if (_vrsteprim.hasColumn("HOLAK") != null && radnici.hasColumn("MINIMALAC") != null &&
+              _vrsteprim.getString("HOLAK").equalsIgnoreCase("D") && radnici.getString("MINIMALAC").equalsIgnoreCase("D"))
             halfDopBruto = halfDopBruto.add(primanja.getBigDecimal("BRUTO"));
         } else {
           if (raParam.getParam(_vrsteprim,2).equals("D")) {//ide samo u neto
@@ -595,6 +597,8 @@ sysoutTEST ST = new sysoutTEST(false);
     return new BigDecimal[] {sumstopa,sumiznos};
   }
   private void setValues(ReadRow src, ReadWriteRow dest) {
+    dM.copyCommonColumns(src, dest);
+    /*
     String[] dcolNames = dest.getColumnNames(dest.getColumnCount());
     String[] scolNames = src.getColumnNames(src.getColumnCount());
     Variant v = new Variant();
@@ -603,7 +607,7 @@ sysoutTEST ST = new sysoutTEST(false);
         src.getVariant(scolNames[i],v);
         dest.setVariant(scolNames[i],v);
       }
-    }
+    }*/
   }
   private boolean isOlakIncluded(QueryDataSet qol) {
     for (int i = 0; i < cvrodbKoefOlak.length; i++) {
@@ -1266,8 +1270,8 @@ sysoutTEST ST = new sysoutTEST(false);
   private BigDecimal getSumPrimNeto(String _cradnik, short[] raIzvjFlag) {
     String raIzvjQuery = raIzvjestaji.getPrimanjaWhQueryIzv(raIzvjFlag);
     if (raIzvjQuery.equals("")) return nula;
-    String q = "SELECT cradnik, cvrp, rbr, neto from primanjaobr where primanjaobr.cradnik = "+_cradnik
-               +" AND primanjaobr."+raIzvjQuery;
+    String q = "SELECT cradnik, cvrp, rbr, neto from primanjaobr where primanjaobr.cradnik = '"+_cradnik
+               +"' AND primanjaobr."+raIzvjQuery;
     QueryDataSet _qds = Util.getNewQueryDataSet(q);
     if (_qds.getRowCount() == 0) return nula;
     BigDecimal sumNet = nula.setScale(2,BigDecimal.ROUND_HALF_UP);
