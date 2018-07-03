@@ -448,6 +448,7 @@ public class frmCjenik extends raMasterFakeDetailArtikl {
       Aus.mul(adds, "VC", "BRJED");
       jlVCPAK.setVisible(true);
       jraVCPAK.setVisible(true);
+      rcc.setLabelLaF(jraVCPAK, true);
     } else {
       jlVCPAK.setVisible(false);
       jraVCPAK.setVisible(false);
