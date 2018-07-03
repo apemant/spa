@@ -488,7 +488,7 @@ final public class raRAC extends raIzlazTemplate {
             "hr.restart.robno.repIzlazni", "Rac2",
             ReportValuteTester.titleRAC2RV);
         raDetail.getRepRunner().addReport("hr.restart.robno.repRacRnal",
-                "hr.restart.robno.repIzlazni", "RacRnal", // TODO napraviti RacRnal
+                "hr.restart.robno.repIzlazni", "RacRnal", 
                 ReportValuteTester.titleRACFROMRNAL);
         raDetail.getRepRunner().addReport("hr.restart.robno.repPonuda",
                 "hr.restart.robno.repIzlazni", "Ponuda", "Ponuda iz raèuna");
