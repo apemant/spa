@@ -18,6 +18,7 @@
 // sds
 package hr.restart.robno;
 
+import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 import hr.restart.util.raProcess;
 
@@ -39,7 +40,7 @@ public class raAutoOtpfromRacMask  {
         "select Count(*) as sve from stdoki where " +
         "cskl='" + cskl + "' and vrdok='" + vrdok +
         "' and god='" + god + "' and brdok=" + brdok, true);
-    if (qds.getInt("sve") == 0) {
+    if (Valid.getValid().getSetCount(qds, 0) == 0) {
     	if (!auto || stop)
     		javax.swing.JOptionPane.showMessageDialog
           (null,"Ne postoje stavke za izradu otpremnica !","Obavijest",
@@ -53,7 +54,7 @@ public class raAutoOtpfromRacMask  {
         "' and god='"+god+"' and brdok="+brdok+
         " and ((status='N' and vrdok!='ROT') or " +
         "      (status='X' and vrdok='ROT'))",true);
-    if (qds.getInt("sve")!=0){
+    if (Valid.getValid().getSetCount(qds, 0)!=0){
       if (auto || javax.swing.JOptionPane.showConfirmDialog(null,
           "Želite li napraviti otpremnice za ovaj raèun ?","Poruka",
           javax.swing.JOptionPane.OK_CANCEL_OPTION,
@@ -68,7 +69,7 @@ public class raAutoOtpfromRacMask  {
             "cskl='"+cskl+"' and vrdok='"+vrdok+
             "' and god='"+god+"' and brdok="+brdok+
             " and status!='N'",true);
-        if (qds.getInt("sve")!=0){
+        if (Valid.getValid().getSetCount(qds, 0)!=0){
 System.out.println("sve==0");
           if (!auto) ispisOTP();
         } else {

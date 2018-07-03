@@ -26,6 +26,7 @@ package hr.restart.robno;
 import hr.restart.baza.dM;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
+import hr.restart.util.Valid;
 import hr.restart.util.raCommonClass;
 import hr.restart.util.raProcess;
 import hr.restart.util.raUpitLite;
@@ -275,9 +276,8 @@ public class RepareZavTr extends raUpitLite {
 		greska.open();
 		QueryDataSet qds = Util.getNewQueryDataSet(
 				"SELECT * FROM VTprijenos WHERE keydest like '%OTP%'", true);
-		int count = Util.getNewQueryDataSet(
-				"SELECT count(*) as brojac FROM VTprijenos WHERE keydest like '%OTP%'", true).getInt(
-				"BROJAC");
+		int count = Valid.getValid().getSetCount(Util.getNewQueryDataSet(
+				"SELECT count(*) as brojac FROM VTprijenos WHERE keydest like '%OTP%'", true), 0);
 
         int brojac = 0;					
 		
@@ -313,7 +313,7 @@ public class RepareZavTr extends raUpitLite {
 				}
 				continue;
 			}
-	        if (!racun.isAssignedNull("CPAR")){
+	        if (!racun.isNull("CPAR")){
 				if (racun.getInt("CPAR")!=otpremnica.getInt("CPAR")){
 					greska.insertRow(false);
 					greska.setString("OPIS", "Partner na otpremnici ("
@@ -327,7 +327,7 @@ public class RepareZavTr extends raUpitLite {
 				}
 	        }
 
-	        if (!racun.isAssignedNull("CKUPAC")){
+	        if (!racun.isNull("CKUPAC")){
 				if (racun.getInt("CKUPAC")!=otpremnica.getInt("CKUPAC")){
 					greska.insertRow(false);
 					greska.setString("OPIS", "Kupac na otpremnici ("
@@ -386,9 +386,8 @@ public class RepareZavTr extends raUpitLite {
 		QueryDataSet veznastavka = null; 
 		QueryDataSet vtprijenos = null;
 		String sveza = "";
-		int count = Util.getNewQueryDataSet(
-				"SELECT count(*) as brojac FROM STDOKI WHERE VRDOK IN ('OTP')", true).getInt(
-				"BROJAC");
+		int count = Valid.getValid().getSetCount(Util.getNewQueryDataSet(
+				"SELECT count(*) as brojac FROM STDOKI WHERE VRDOK IN ('OTP')", true), 0);
 
         int brojac = 0;		
 		for (qds.first(); qds.inBounds(); qds.next()) {
@@ -579,14 +578,12 @@ public class RepareZavTr extends raUpitLite {
 		int count = 0;
 		if (ulaz) {
 			qds = Util.getNewQueryDataSet("SELECT * FROM STDOKU", true);
-			count = Util.getNewQueryDataSet(
-					"SELECT count(*) as brojac FROM STDOKU", true).getInt(
-					"BROJAC");
+			count = Valid.getValid().getSetCount(Util.getNewQueryDataSet(
+					"SELECT count(*) as brojac FROM STDOKU", true), 0);
 		} else {
 			qds = Util.getNewQueryDataSet("SELECT * FROM STDOKI", true);
-			count = Util.getNewQueryDataSet(
-					"SELECT count(*) as brojac FROM STDOKI", true).getInt(
-					"BROJAC");
+			count = Valid.getValid().getSetCount(Util.getNewQueryDataSet(
+					"SELECT count(*) as brojac FROM STDOKI", true), 0);
 
 		}
 		String kljuch = "";

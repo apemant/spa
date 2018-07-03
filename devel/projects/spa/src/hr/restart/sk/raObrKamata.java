@@ -587,7 +587,7 @@ public class raObrKamata extends raFrame implements ResetEnabled {
             "' AND skstavke.datdok <= '"+datumDo+
             "' AND saldo > 0 GROUP BY cpar", true);
         if (nepokriveneUplate.rowCount() == 1 && !placeni &&
-            nepokriveneUplate.getInt("NUM") > 0)
+            Valid.getValid().getSetCount(nepokriveneUplate, 1) > 0)
           return null;
       }
       return ut.getNewQueryDataSet(

@@ -764,7 +764,7 @@ public class raIspisUraIra extends raFrame {
         "WHERE "+cond+" AND "+range+pdvk+" GROUP BY knjig";
       vl.execSQL(lessMightySQL);
       vl.RezSet.open();
-      skiprbr = rbr = vl.RezSet.getInt("NUMRAC");
+      skiprbr = rbr =  Valid.getValid().getSetCount(vl.RezSet , 0);
     }
     String range = vl.getBetweenQuerySintax(dm.getSkstavke().getColumn("DATPRI"),
         firstm.toString(), lastm.toString(), true);

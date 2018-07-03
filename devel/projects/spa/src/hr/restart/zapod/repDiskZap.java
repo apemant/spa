@@ -304,7 +304,7 @@ public class repDiskZap extends repDisk {
     String qStr = "select count(*) as brn from virmani where brracnt='"+zr+"' and ckey ='"+ckey+"'";
     QueryDataSet ds = Util.getNewQueryDataSet(qStr);
     ds.open();
-    return formatString(ds.getInt("brn")+"",5);
+    return formatString(Valid.getValid().getSetCount(ds, 0)+"",5);
   }
 
   private String formatString(String str, int len)
