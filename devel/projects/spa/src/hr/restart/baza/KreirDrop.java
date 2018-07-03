@@ -1359,6 +1359,10 @@ public abstract class KreirDrop {
     throw new RuntimeException("Greska u liniji "+defOffset+" ("+Naziv+"): "+text);
   }
   
+  protected String getAdditionalColumnsTable() {
+    return null;
+  }
+  
   protected boolean getDefinition() {
     String cname = getClass().getName();
     cname = cname.substring(cname.lastIndexOf('.') + 1);
@@ -1378,47 +1382,23 @@ public abstract class KreirDrop {
     while ((line = dm.getDefLine(defOffset++)) != null)
       if (line.length() > 0 && !line.startsWith("#")) {
         buf.clear().append(line);
-        if (buf.countOccurences(';') > 0) {
-          String[] parts = buf.split(';');
-          Column c = parseColumnDef(parts);          
-          cols.add(c);
-          addDDLCommand(c);
-          if (!cnames.add(c.getColumnName().toLowerCase()))
-            terror("dvostruka kolona "+c.getColumnName());
-          
-          String pidx = parts[3].trim().toLowerCase();
-          if (pidx.equals("yes") || pidx.equals("idx"))
-            idx.add(c.getColumnName().toLowerCase());
-          else if (pidx.equals("uidx"))
-            uidx.add(c.getColumnName().toLowerCase());
-          else if (!pidx.equals("pkey") && !pidx.equals("key") && pidx.length() > 0)
-            terror("pogresno definiran index za kolonu "+c.getColumnName());
-          
-          if (c.isRowId()) pkeylist.add(c.getColumnName().toLowerCase());
-        } else {
-          line = line.toLowerCase();
-          if (!line.startsWith("idx") && !line.startsWith("uidx"))
-            terror("nije ni index ni definicija kolone");
-          
-          if (buf.countOccurences('=') != 1)
-            terror("pogresan format za index (treba biti (U)IDX = kolona)");
-          
-          cname = buf.removeWhitespace().split('=')[1].toLowerCase();
-          if (cname.indexOf(',') > 0) {
-            String[] cns = new VarStr(cname).splitTrimmed(',');
-            for (int i = 0; i < cns.length; i++)
-              if (!cnames.contains(cns[i]))
-                terror("nepostojeca kolona za index");
-          } else if (!cnames.contains(cname))
-            terror("nepostojeca kolona za index");
-          
-          if (line.startsWith("idx")) idx.add(cname);
-          else uidx.add(cname);
-        }
+        parseLine(buf, cnames, cols, idx, uidx, pkeylist);
       }
     
+    String addName = getAdditionalColumnsTable();
+    if (addName != null) {
+      int addOffset = dm.getTableOffset(addName);
+      if (addOffset >= 0) {
+        while ((line = dm.getDefLine(addOffset++)) != null)
+          if (line.length() > 0 && !line.startsWith("#")) {
+            buf.clear().append(line);
+            parseLine(buf, cnames, cols, idx, uidx, pkeylist);
+          }
+      }
+    }
+    
     if (pkeylist.size() == 0)
-      if (!line.startsWith("idx") && !line.startsWith("uidx"))
+      //if (!line.startsWith("idx") && !line.startsWith("uidx"))
         terror("nijedna kolona nije primarni kljuc");
     
     ddl.addPrimaryKey(VarStr.join(pkeylist, ',').toString());
@@ -1434,6 +1414,47 @@ public abstract class KreirDrop {
         "SELECT * FROM " + Naziv, null, true, Load.ALL));
     setColumns((Column[]) cols.toArray(new Column[cols.size()]));
     return true;
+  }
+  
+  private void parseLine(VarStr buf, Set cnames, List cols, List idx, List uidx, List pkeylist) {
+    if (buf.countOccurences(';') > 0) {
+      String[] parts = buf.split(';');
+      Column c = parseColumnDef(parts);          
+      cols.add(c);
+      addDDLCommand(c);
+      if (!cnames.add(c.getColumnName().toLowerCase()))
+        terror("dvostruka kolona "+c.getColumnName());
+      
+      String pidx = parts[3].trim().toLowerCase();
+      if (pidx.equals("yes") || pidx.equals("idx"))
+        idx.add(c.getColumnName().toLowerCase());
+      else if (pidx.equals("uidx"))
+        uidx.add(c.getColumnName().toLowerCase());
+      else if (!pidx.equals("pkey") && !pidx.equals("key") && pidx.length() > 0)
+        terror("pogresno definiran index za kolonu "+c.getColumnName());
+      
+      if (c.isRowId()) pkeylist.add(c.getColumnName().toLowerCase());
+    } else {
+      String line = buf.toString().toLowerCase();
+      line = line.toLowerCase();
+      if (!line.startsWith("idx") && !line.startsWith("uidx"))
+        terror("nije ni index ni definicija kolone");
+      
+      if (buf.countOccurences('=') != 1)
+        terror("pogresan format za index (treba biti (U)IDX = kolona)");
+      
+      String cname = buf.removeWhitespace().split('=')[1].toLowerCase();
+      if (cname.indexOf(',') > 0) {
+        String[] cns = new VarStr(cname).splitTrimmed(',');
+        for (int i = 0; i < cns.length; i++)
+          if (!cnames.contains(cns[i]))
+            terror("nepostojeca kolona za index");
+      } else if (!cnames.contains(cname))
+        terror("nepostojeca kolona za index");
+      
+      if (line.startsWith("idx")) idx.add(cname);
+      else uidx.add(cname);
+    }
   }
   
   private void addDDLCommand(Column c) {
