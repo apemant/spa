@@ -55,6 +55,7 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -66,6 +67,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
@@ -126,6 +128,8 @@ public class frmUgovori extends raMasterDetail {
 	UgovoriDetailPanel udp;
 
 	short delRbr = -1;
+	
+	boolean allowDrag = false;
 	
 	raNavAction rnvRbr = new raNavAction("Resortiranje rbr", raImages.IMGPREFERENCES,
 			java.awt.event.KeyEvent.VK_F12) {
@@ -430,6 +434,31 @@ System.out.println("Konaèmi "+vs);
 		majnetrans(qds);
 
 	}
+	
+	public void rowChangedDetail(int oldrow, int newrow, boolean toggle, boolean extend) {   
+      if (!allowDrag || oldrow == newrow || !extend || raDetail.getMode() != 'B') return;
+      SortDescriptor sort = getDetailSet().getSort();
+      if (sort == null || sort.getKeys() == null) return;
+      if (!(sort.getKeys().length == 1 && sort.getKeys()[0].equalsIgnoreCase("RBR"))) return;
+      raDetail.getJpTableView().enableEvents(false);
+      try {
+        long ti = getDetailSet().getInternalRow();
+        short tr = getDetailSet().getShort("RBR");
+        getDetailSet().goToRow(oldrow);
+        short lr = getDetailSet().getShort("RBR");
+        long li = getDetailSet().getInternalRow();
+        getDetailSet().setShort("RBR", (short) -1023);
+        getDetailSet().saveChanges();
+        getDetailSet().goToInternalRow(ti);
+        getDetailSet().setShort("RBR", lr);
+        getDetailSet().saveChanges();
+        getDetailSet().goToInternalRow(li);
+        getDetailSet().setShort("RBR", tr);
+        getDetailSet().saveChanges();
+      } finally {
+        raDetail.getJpTableView().enableEvents(true);
+      }
+    }
 
 	public boolean majnetrans(final QueryDataSet qds) {
 		raLocalTransaction saveTransaction = new raLocalTransaction() {
@@ -1096,6 +1125,11 @@ System.out.println("Oðe bi trebao biti");
 
 	public void beforeShow() {
 		inSetFocus = true;
+	}
+	
+	public void beforeShowMaster() {
+	  allowDrag = hr.restart.sisfun.frmParam.getParam("robno", "allowDrag", "D", 
+          "Omoguæiti promjenu poretka stavaka mišem (D,N)").equalsIgnoreCase("D");
 	}
 
 	public void rabatmaintance() {
