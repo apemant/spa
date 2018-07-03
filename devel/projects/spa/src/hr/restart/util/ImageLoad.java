@@ -3,7 +3,10 @@ package hr.restart.util;
 import hr.restart.baza.Imageinfo;
 import hr.restart.db.raVariant;
 import hr.restart.sisfun.frmParam;
+import hr.restart.swing.AWTKeyboard;
+import hr.restart.swing.JraButton;
 import hr.restart.swing.JraDialog;
+import hr.restart.swing.KeyAction;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -13,22 +16,31 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.image.ImageProducer;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import com.borland.dx.sql.dataset.QueryDataSet;
+import com.borland.jbcl.layout.XYConstraints;
+import com.borland.jbcl.layout.XYLayout;
 
 
 
@@ -46,9 +58,115 @@ public class ImageLoad implements ActionListener{
     File selectedFile=null;
     private String table;
     private String key;
-
+    private boolean multi;
+    
+    JraButton add = new JraButton();
+    JraButton del = new JraButton();
+    JraButton prev = new JraButton();
+    JraButton next = new JraButton();
+    JLabel info = new JLabel();
+    
+    JPanel content;
+    
+    public void Img(Frame owner, String _table, String _key, String title, boolean multi) {
+      this.multi = true;
+      setTable(_table);
+      setKey(_key);
+      f = new JraDialog(owner, true);
+      f.setTitle((title == null) ? "Odabir slike" : title);
+      
+      content = new JPanel(new BorderLayout());
+      JPanel comms = new JPanel(new XYLayout(400, 35));
+      comms.add(add, new XYConstraints(15, 5, 100, 27));
+      comms.add(del, new XYConstraints(120, 5, 100, 27));
+      comms.add(prev, new XYConstraints(250, 5, 40, 27));
+      comms.add(info, new XYConstraints(295, 5, 50, 27));
+      comms.add(next, new XYConstraints(350, 5, 40, 27));
+      
+      Aus.recursiveUpdateSizes(comms);
+      
+      add.setText("Dodaj sliku");
+      del.setText("Ukloni");
+      prev.setText("<");
+      next.setText(">");
+      info.setHorizontalAlignment(SwingConstants.CENTER);
+      info.setVerticalAlignment(SwingConstants.CENTER);
+      
+      add.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            JFileChooser fileChooser = new JFileChooser(lastChoosenDir);
+            int returnValue = fileChooser.showOpenDialog(null);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+              selectedFile = fileChooser.getSelectedFile();
+              lastChoosenDir = selectedFile.getParentFile();
+              System.out.println(selectedFile.getName());
+              save();
+              images.add(loadImage(set));
+              active = images.size();
+              updateView();
+            }
+          }
+        });
+      prev.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (active > 1) {
+            active--;
+            updateView();
+          }
+        }
+      });
+      next.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (active < images.size()) {
+            active++;
+            updateView();
+          }
+        }
+      });
+      del.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (images.size() == 0) return;
+          if (JOptionPane.showConfirmDialog(f, "Želite li obrisati sliku?", "Brisanje", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+          
+          delete();
+          updateView();
+        }
+      });
+      
+      
+      lblSlika.setHorizontalAlignment(SwingConstants.CENTER);
+      lblSlika.setVerticalTextPosition(SwingConstants.BOTTOM);
+      lblSlika.setVerticalAlignment(SwingConstants.CENTER);
+      content.add(new JScrollPane(lblSlika));
+      //content.add(lblSlika);
+      content.add(comms, BorderLayout.NORTH); 
+      content.setPreferredSize(new Dimension(600, 600));
+      content.addComponentListener(new ComponentListener() {
+        public void componentShown(ComponentEvent e) {
+        }
+        public void componentResized(ComponentEvent e) {
+          updateView();
+        }
+        public void componentMoved(ComponentEvent e) {
+        }
+        public void componentHidden(ComponentEvent e) {
+        }
+      });
+      f.getContentPane().add(content);
+      startFrame.getStartFrame().centerFrame(f, 0 , f.getTitle());
+      loadMulti();
+      AWTKeyboard.registerKeyStroke(f, AWTKeyboard.ESC, new KeyAction() {
+        public boolean actionPerformed() {
+          f.setVisible(false);
+          return true;
+        }
+      });
+      f.setVisible(true);
+    }
+    
 	public void Img(Frame owner, String _table,String _key, String title) {
-		setTable(_table);
+	  multi = false;
+	  setTable(_table);
 		setKey(_key);
 		f = new JraDialog(owner,true);
 		f.setTitle((title == null)?"Odabir slike":title);
@@ -136,11 +254,61 @@ public class ImageLoad implements ActionListener{
   }
 
   public static File getImgDir() {
-		File imgdir = new File(System.getProperty("user.dir")+File.separator+"images");
-		if (imgdir.exists() && !imgdir.isDirectory()) imgdir.delete();
-		if (!imgdir.exists()) imgdir.mkdirs();
-		return imgdir;
+      String subdir = frmParam.getParam("sisfun", "imgsubdir", "images", "Ime mape za slike");
+      String dir = frmParam.getParam("sisfun", "imgdir", "", "Putanja do mape sa slikama", true);
+      File imgdir = new File(System.getProperty("user.dir"), subdir);
+      if (dir != null && dir.length() > 0) imgdir = new File(dir, subdir);
+      
+      if (imgdir.exists() && !imgdir.isDirectory()) imgdir.delete();
+      if (!imgdir.exists()) imgdir.mkdirs();
+      return imgdir;
 	}
+  
+  public void deleteAll(String _table, String _key) {
+    setTable(_table);
+    setKey(_key);
+    set = Imageinfo.getDataModule().openTempSet("tablica = '"+getTable()+"' AND ckey = '"+getKey()+"'");
+    active = 1;
+    int total = set.rowCount();
+    for (int i = 0; i < total; i++) delete();
+  }
+  
+  void delete() {
+    set.goToRow(active - 1);
+    String[] parsed = parseUrl(set.getString("IMGURL"));
+    String protocol = parsed[0];
+    String file = parsed[1];
+    if (protocol.equals("file")) {
+      File img = new File(getImgDir(), file);
+      if (img.exists() && img.canWrite())
+        img.delete();
+    } else if (protocol.equals("ftp")) {
+      raImageUtil u = new raImageUtil();
+      u.deleteImage(file);
+    } else if (protocol.equals("cloud")) {
+      AmazonHandler ah = new AmazonHandler("amazonImages");
+      ah.deleteFile(file);
+    }
+    set.deleteRow();
+    set.saveChanges();
+    if (images.size() > 0) {
+      images.remove(active - 1);
+      if (active > images.size()) active = images.size();
+    }
+  }
+  
+  public void saveAll(File[] imgs, String _table, String _key) {
+    setTable(_table);
+    setKey(_key);
+    set = Imageinfo.getDataModule().openTempSet("tablica = '"+getTable()+"' AND ckey = '"+getKey()+"'");
+    multi = true;
+    
+    for (int i = 0; i < imgs.length; i++) {
+      selectedFile = imgs[i];
+      save();
+    }
+  }
+  
 	private void save() {
 		if (selectedFile == null) {//sto znaci da nije odabrao sliku
 		  System.out.println("slika nije odabrana");
@@ -151,13 +319,16 @@ public class ImageLoad implements ActionListener{
 //		QueryDataSet set1 = Imageinfo.getDataModule().getFilteredDataSet(Condition.equal("tablica", table).and(Condition.equal("CKEY", key)));
 //		QueryDataSet set2 = Imageinfo.getDataModule().getFilteredDataSet(Condition.whereAllEqual(new String[] {"tablica","ckey"}, new String[] {table, key}));
 		set.open();
-		if (set.getRowCount() == 0) {
+		if (set.getRowCount() == 0 || multi) {
+		  set.last();
 			set.insertRow(false);
+			set.setInt("img_id", getLastImgID());
 			set.setString("TABLICA", getTable());
 			set.setString("CKEY", getKey());
+			set.saveChanges();
 		}
-		String protocol = frmParam.getParam("sisfun", "imgloadproto","file","Kako snima slike pridruzene preko ImageLoada (file-lokalno, ftp-na server");
-		String nejm = getTable()+"-"+getKey();
+		String protocol = frmParam.getParam("sisfun", "imgloadproto","file","Kako snima slike pridruzene preko ImageLoada (file-lokalno, ftp-na server, db-u bazu, cloud");
+		String nejm = getTable()+"-"+getKey()+"-"+set.getInt("IMG_ID");
 		String url = protocol+":"+nejm;
 		if (protocol.equals("file")) {
 			//treba ga kopirati u work.dir 
@@ -184,12 +355,15 @@ public class ImageLoad implements ActionListener{
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+		} else if (protocol.equals("cloud")) {
+		  AmazonHandler ah = new AmazonHandler("amazonImages");
+		  ah.putFile(selectedFile, nejm);
 		}
 		//.....
 		set.setString("imgurl", url);
-		set.setInt("img_id", getLastImgID());
+		//set.setInt("img_id", getLastImgID());
 		set.saveChanges();
-		okp.jPrekid_actionPerformed();
+		if (!multi) okp.jPrekid_actionPerformed();
 	}
 	private int getLastImgID() {
 		QueryDataSet maxset = Util.getNewQueryDataSet("SELECT max(img_id) as mxid from imageinfo");
@@ -219,6 +393,46 @@ public class ImageLoad implements ActionListener{
 		}
 		
 	}
+	
+	int active = 1;
+	List images = new ArrayList();
+	private void loadMulti() {
+	  set = Imageinfo.getDataModule().openTempSet("tablica = '"+getTable()+"' AND ckey = '"+getKey()+"'");
+	  images.clear();
+	  
+	  for (set.first(); set.inBounds(); set.next()) {
+	    images.add(loadImage(set));
+	  }
+	  active = 1;
+	  updateView();
+	}
+	
+	void updateView() {
+	  if (images.size() == 0) {
+	    info.setText("0 / 0");
+	    lblSlika.setText("(nije odabrano)");
+	    lblSlika.setIcon(null);
+	    prev.setEnabled(false);
+	    next.setEnabled(false);
+	    del.setEnabled(false);
+	  } else {
+	    info.setText(active + " / " + images.size());
+	    lblSlika.setText(null);
+	    ImageIcon ic = (ImageIcon) images.get(active - 1);
+/*	    if (ic.getIconHeight() > content.getHeight() || ic.getIconWidth() > content.getWidth()) {
+	      double hratio = (double) ic.getIconWidth() / content.getWidth();
+	      double vratio = (double) ic.getIconHeight() / content.getHeight();
+	      int w = hratio > vratio ? content.getWidth() : ic.getIconWidth() * content.getHeight() / ic.getIconHeight();
+	      int h = hratio > vratio ? ic.getIconHeight() * content.getWidth() / ic.getIconWidth() : content.getHeight();
+	      lblSlika.setIcon(new ImageIcon(ic.getImage().getScaledInstance(w, h, java.awt.Image.SCALE_SMOOTH)));
+	    } else */
+	    lblSlika.setIcon(ic);
+        prev.setEnabled(active > 1);
+        next.setEnabled(active < images.size());
+        del.setEnabled(true);
+	  }
+	}
+	
 	
 	public void actionPerformed(ActionEvent e) 
 	{
@@ -280,6 +494,9 @@ public class ImageLoad implements ActionListener{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    } else if (protocol.equals("cloud")) {
+      AmazonHandler ah = new AmazonHandler("amazonImages");
+      return ah.readImage(file);
     }
     return null;
   }
