@@ -259,6 +259,7 @@ public class ConsoleCreator {
 	      System.out.println("... error in segmentation!");
 	      return false;
 	    } catch (Exception e) {
+	      e.printStackTrace();
 	      System.out.println("Error saving data!");
 	      return false;
 	    }
@@ -1050,6 +1051,6 @@ public class ConsoleCreator {
             "hr.restart.baza.Segmentacija", "hr.restart.baza.Kampanje",
             "hr.restart.baza.RobSheme", "hr.restart.baza.StRobSheme", "hr.restart.baza.Skripte",
             "hr.restart.baza.Intervencije", "hr.restart.baza.VezaKom", "hr.restart.baza.Gkrep",
-            "hr.restart.baza.Gkrepkonta"
+            "hr.restart.baza.Gkrepkonta", "hr.restart.baza.Kategorije", "hr.restart.baza.ArtKat"
       };
 }
