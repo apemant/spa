@@ -337,7 +337,7 @@ public class dlgGetKnjig extends JraDialog {
 
       KNJCORG = newCorg;
 
-      OrgStr.getOrgStr().fireKnjigChanged(oldKnjig,KNJCORG);
+      if (oldKnjig != null) OrgStr.getOrgStr().fireKnjigChanged(oldKnjig,KNJCORG);
 
     } else {
 
