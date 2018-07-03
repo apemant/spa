@@ -667,7 +667,7 @@ public class ColumnsBean extends JPanel {
   private String getTableName() {
     try {
       if (raJdbTable.getDataSet().getTableName() != null)
-        return raJdbTable.getDataSet().getTableName();
+        return raJdbTable.getDataSet().getTableName().toUpperCase();
       String q = ((QueryDataSet) raJdbTable.getDataSet()).getQuery().getQueryString();
       int from = q.toLowerCase().indexOf(" from ");
       int where = q.toLowerCase().indexOf(" where ", from);
