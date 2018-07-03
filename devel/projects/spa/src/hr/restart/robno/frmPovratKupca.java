@@ -17,7 +17,29 @@
 ****************************************************************************/
 package hr.restart.robno;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.sql.Timestamp;
+
+import javax.swing.JOptionPane;
+
+import hr.restart.sisfun.frmParam;
+import hr.restart.swing.raColors;
+import hr.restart.swing.raStatusColorModifier;
+import hr.restart.util.raImages;
+import hr.restart.util.raNavAction;
+
 public class frmPovratKupca extends raIzlazTemplate {
+  
+  raStatusColorModifier msc = new raStatusColorModifier("STATIRA", "N",
+      raColors.green, Color.green.darker().darker());
+  
+  raNavAction rnvMasterFlag = new raNavAction("Podvrda povratnice",
+      raImages.IMGPROPERTIES, java.awt.event.KeyEvent.VK_F8) {
+    public void actionPerformed(ActionEvent e) {
+      potvrda();
+    }
+  };
 
   public void initialiser(){
     what_kind_of_dokument = "POD" ;
@@ -98,12 +120,38 @@ public class frmPovratKupca extends raIzlazTemplate {
     DP.BindComp();
     
     raDetail.addOption(rnvKartica, 4, false);
+    
+    if (frmParam.getParam("robno", "verifyPOD", "N", "Verifikacija povratnica (D,N)?").equalsIgnoreCase("D")) {
+      raMaster.getJpTableView().addTableModifier(msc);
+      raMaster.addOption(rnvMasterFlag, 5, false);
+    }
 
   }
+  
+  void potvrda() {
+    if (getMasterSet().rowCount() == 0) return;
+    
+    if (isKnjigen()) {
+      JOptionPane.showMessageDialog(raMaster.getWindow(), 
+          "Dokument je veæ proknjižen!", "Greška", JOptionPane.WARNING_MESSAGE);
+      return;
+    }
+    
+    boolean unc = getMasterSet().getString("STATIRA").equalsIgnoreCase("N");
+    if (JOptionPane.showConfirmDialog(raMaster.getWindow(), "Želite li " +
+        (unc ? "potvrditi povratnicu" : "poništiti potvrdu povratnice") + "?",
+        "Potvrda povratnice", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
+      return;
+    
+    getMasterSet().setString("STATIRA", unc ? "P" : "N");
+    if (unc) getMasterSet().setTimestamp("DATDOKIZ", new Timestamp(System.currentTimeMillis()));
+    getMasterSet().saveChanges();
+    raMaster.getJpTableView().fireTableDataChanged();
+  }
 
-  public boolean ValidacijaStanje(){
+  /*public boolean ValidacijaStanje(){
     return true ;
-  }
+  }*/
 
 }
 //
