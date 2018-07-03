@@ -17,7 +17,10 @@
 ****************************************************************************/
 package hr.restart.util;
 
+import hr.restart.sisfun.frmParam;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +29,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
@@ -36,13 +42,14 @@ import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressEventType;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.rds.AmazonRDS;
-import com.amazonaws.services.rds.AmazonRDSClientBuilder;
-import com.amazonaws.services.rds.model.ModifyDBInstanceRequest;
+//import com.amazonaws.services.rds.AmazonRDS;
+//import com.amazonaws.services.rds.AmazonRDSClientBuilder;
+//import com.amazonaws.services.rds.model.ModifyDBInstanceRequest;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 
@@ -56,14 +63,36 @@ public class AmazonHandler {
   
   private static String secretKey = "+l5HmlW9VbcnDaGEyuCyLXlzEKcGxBnrjLLsWoUs";
   
-  public static String bucket = "restart-spa-backup";
+  private static String bucket = "restart-spa-backup";
   
-  public static String company = "restart";
+  private static String company = "restart";
+  
+  private String mAccessId, mSecretKey, mBucket, mFolder;
   
   ProgressListener track;
   AmazonS3 conn;
-  AmazonRDS db;
+  //AmazonRDS db;
+  
+  public AmazonHandler(String id, String key, String buck, String folder) {
+    init(id, key, buck, folder);
+  }
+  
+  public AmazonHandler(String paramPrefix) {
+    String aid = frmParam.getParam("sisfun", paramPrefix + "Id", "", "AccessId za Amazon S3");
+    if (aid == null || aid.length() == 0) aid = accessId;
+    
+    String skey = frmParam.getParam("sisfun", paramPrefix + "Key", "", "SecretKey za Amazon S3");
+    if (skey == null || skey.length() == 0) skey = secretKey;
+    
+    String buck = frmParam.getParam("sisfun", paramPrefix + "Bucket", "", "Bucket name za Amazon S3");
+    if (buck == null || buck.length() == 0) buck = bucket;
+    
+    String folder = frmParam.getParam("sisfun", paramPrefix + "Folder", "data", "Folder za Amazon S3");
+    if (folder == null || folder.length() == 0) folder = "data";
 
+    init(aid, skey, buck, folder);
+  }
+  
   public AmazonHandler() {
     String aid = IntParam.getTag("backup.id");
     if (aid == null || aid.length() == 0) aid = accessId;
@@ -79,10 +108,14 @@ public class AmazonHandler {
     
     IntParam.setTag("backup.company", comp);
     
-    accessId = aid;
-    secretKey = skey;
-    bucket = buck;
-    company = comp;
+    init(aid, skey, buck, comp);
+  }
+  
+  private void init(String id, String key, String buck, String folder) {
+    mAccessId = id;
+    mSecretKey = key;
+    mBucket = buck;
+    mFolder = folder;
     track = new ProgressListener() {
       long upload = 0, total = 0;
       public void progressChanged(ProgressEvent e) {
@@ -114,11 +147,11 @@ public class AmazonHandler {
     
     conn = get();
     
-    db = getDb();
+    //db = getDb();
   }
   
   public AmazonS3 get() {
-    AWSCredentials credentials = new BasicAWSCredentials(accessId, secretKey);
+    AWSCredentials credentials = new BasicAWSCredentials(mAccessId, mSecretKey);
 
     ClientConfiguration clientConfig = new ClientConfiguration();
     clientConfig.setProtocol(Protocol.HTTPS);
@@ -130,7 +163,7 @@ public class AmazonHandler {
                             .build();
   }
   
-  public AmazonRDS getDb() {
+  /*public AmazonRDS getDb() {
     AWSCredentials credentials = new BasicAWSCredentials(accessId, secretKey);
 
     ClientConfiguration clientConfig = new ClientConfiguration();
@@ -150,13 +183,44 @@ public class AmazonHandler {
     System.out.println("Setting instance class to: " + clazz);
     
     db.modifyDBInstance(req);
+  }*/
+  
+  public ImageIcon readImage(String name) {
+    S3ObjectInputStream stream = null;
+    try {
+      stream = conn.getObject(mBucket, mFolder + "/" + name).getObjectContent();
+      return new ImageIcon(ImageIO.read(stream));
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      if (stream != null) try {
+        stream.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    return null;
   }
   
   public boolean putFile(File f) {
+    return putFile(f, f.getName());
+  }
+  
+  public boolean putFile(File f, String name) {
     try {
-      PutObjectRequest req = new PutObjectRequest(bucket, company + "/" + f.getName(), f);
+      PutObjectRequest req = new PutObjectRequest(mBucket, mFolder + "/" + name, f);
       req.setGeneralProgressListener(track);
       conn.putObject(req);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
+  
+  public boolean deleteFile(String name) {
+    try {
+      conn.deleteObject(mBucket, mFolder + "/" + name);
+      
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -167,7 +231,7 @@ public class AmazonHandler {
     try {
       Set backs = new HashSet();
       
-      ObjectListing list = conn.listObjects(bucket, company + "/");
+      ObjectListing list = conn.listObjects(mBucket, mFolder + "/");
       do {
         List sums = list.getObjectSummaries();
         for (Iterator i = sums.iterator(); i.hasNext(); ) {
@@ -183,7 +247,7 @@ public class AmazonHandler {
       
       System.out.println("for deletion: " + backs);
       for (Iterator i = backs.iterator(); i.hasNext(); )
-        conn.deleteObject(bucket, ((Entry) i.next()).name);
+        conn.deleteObject(mBucket, ((Entry) i.next()).name);
       System.out.println("... over.");
       
     } catch (Exception e) {
@@ -197,7 +261,7 @@ public class AmazonHandler {
       
       ObjectListing list = null;
       do {
-        list = list == null ? conn.listObjects(bucket) : conn.listNextBatchOfObjects(list);
+        list = list == null ? conn.listObjects(mBucket) : conn.listNextBatchOfObjects(list);
         List sums = list.getObjectSummaries();
         for (Iterator i = sums.iterator(); i.hasNext(); ) {
           S3ObjectSummary os = (S3ObjectSummary) i.next();
@@ -216,7 +280,7 @@ public class AmazonHandler {
     List sub = new ArrayList();
     for (Iterator i = backs.iterator(); i.hasNext(); ) {
       Entry e = (Entry) i.next();
-      if (e.name.startsWith(company + "/raBackup-" + base))
+      if (e.name.startsWith(mFolder + "/raBackup-" + base))
         sub.add(e);
     }
     if (sub.size() <= 4) return new HashSet(sub);
