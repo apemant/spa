@@ -26,6 +26,7 @@ import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
+import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 import hr.restart.util.raGlob;
 import hr.restart.util.raLocalTransaction;
@@ -1167,7 +1168,7 @@ System.out.println("**** DEVIZNI ANLAGE");
         for (int i = 0; i < alVrdok.size(); i++) {
             vrdok = (String) alVrdok.get(i);
             if (TD.isDocStdoku(vrdok)) {
-                sqlQuery = "SELECT CAST(count(*) AS INT) as brojac from doku,stdoku "
+                sqlQuery = "SELECT count(*) from doku,stdoku "
                         + "WHERE " + rut.getDoc("doku", "stdoku")
                         + " AND doku.vrdok ='" + vrdok + "' "
                         + " AND doku.datdok " + getDatumDoSQL()
@@ -1175,12 +1176,12 @@ System.out.println("**** DEVIZNI ANLAGE");
                         + (TD.isDocOJ(vrdok) ? orgstruktura : skladista);
                 try {
                     brojacic = Util.getNewQueryDataSet(sqlQuery, true);
-                    count = count + brojacic.getInt("brojac");
+                    count = count + Valid.getValid().getSetCount(brojacic, 0);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             } else if (TD.isDocStdoki(vrdok)) {
-                sqlQuery = "SELECT CAST(count(*) AS INT) as brojac from doki,stdoki "
+                sqlQuery = "SELECT count(*) from doki,stdoki "
                         + "WHERE " + rut.getDoc("doki", "stdoki")
                         + " AND doki.vrdok ='" + vrdok + "' "
                         + " AND doki.datdok " + getDatumDoSQL()
@@ -1188,7 +1189,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                         + (TD.isDocOJ(vrdok) ? orgstruktura : skladista);
                 try {
                     brojacic = Util.getNewQueryDataSet(sqlQuery, true);
-                    count = count + brojacic.getInt("brojac");
+                    count = count + Valid.getValid().getSetCount(brojacic, 0);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1200,7 +1201,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                         || (vrdok.equalsIgnoreCase("MES") && (uis
                                 .equalsIgnoreCase("I") || uis
                                 .equalsIgnoreCase("S")))) {
-                    sqlQuery = "SELECT CAST(count(*) AS INT) as brojac from meskla,stmeskla "
+                    sqlQuery = "SELECT count(*) from meskla,stmeskla "
                             + "WHERE meskla.csklul = stmeskla.csklul "
                             + "AND meskla.cskliz = stmeskla.cskliz "
                             + "AND meskla.vrdok = stmeskla.vrdok "
@@ -1216,7 +1217,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                             + "MESKLA.CSKLIZ IN " + skladista;
                     try {
                         brojacic = Util.getNewQueryDataSet(sqlQuery, true);
-                        count = count + brojacic.getInt("brojac");
+                        count = count + Valid.getValid().getSetCount(brojacic, 0);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -1225,7 +1226,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                         || (vrdok.equalsIgnoreCase("MES") && (uis
                                 .equalsIgnoreCase("U") || uis
                                 .equalsIgnoreCase("S")))) {
-                    sqlQuery = "SELECT count(*) as brojac from meskla,stmeskla "
+                    sqlQuery = "SELECT count(*) from meskla,stmeskla "
                             + "WHERE meskla.csklul = stmeskla.csklul "
                             + "AND meskla.cskliz = stmeskla.cskliz "
                             + "AND meskla.vrdok = stmeskla.vrdok "
@@ -1241,7 +1242,7 @@ System.out.println("**** DEVIZNI ANLAGE");
                             + "MESKLA.CSKLUL IN " + skladista;
                     try {
                         brojacic = Util.getNewQueryDataSet(sqlQuery, true);
-                        count = count + brojacic.getInt("brojac");
+                        count = count + Valid.getValid().getSetCount(brojacic, 0);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
