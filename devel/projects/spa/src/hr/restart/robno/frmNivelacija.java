@@ -17,7 +17,6 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import hr.restart.baza.Artikli;
 import hr.restart.baza.Condition;
 import hr.restart.baza.Stanje;
 import hr.restart.baza.Stdoku;
@@ -497,7 +496,7 @@ public class frmNivelacija extends raMasterDetail {
     rpc.setTabela(this.getDetailSet());
     rpc.setMode("DOH");
     rpc.setMode("N");
-    rpc.setPreferredSize(new Dimension(645, 100));
+    //rpc.setPreferredSize(new Dimension(645, 100));
     rpc.setFocusCycleRoot(true);
     rpc.setBorder(BorderFactory.createEtchedBorder());
     rpc.setDefParam();
