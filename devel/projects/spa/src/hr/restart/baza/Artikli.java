@@ -17,6 +17,7 @@
 ****************************************************************************/
 package hr.restart.baza;
 
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.HashDataSet;
 
 import com.borland.dx.dataset.DataModule;
@@ -73,6 +74,11 @@ public class Artikli extends KreirDrop implements DataModule {
   
   public static ReadRow get() {
     return inst.aktivhash.get();
+  }
+  
+  protected String getAdditionalColumnsTable() {
+    return frmParam.getParam("robno", "dodArtCols", "N",
+        "Dodatni atributi na artiklu (D,N)?").equalsIgnoreCase("D") ? "_dodart" : null;
   }
   
   /*public void fixSort() {
