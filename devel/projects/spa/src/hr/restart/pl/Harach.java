@@ -8,6 +8,7 @@ import hr.restart.baza.Odbiciarh;
 import hr.restart.baza.Odbiciobr;
 import hr.restart.baza.Povjerioci;
 import hr.restart.baza.Vrsteodb;
+import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Util;
@@ -189,6 +190,8 @@ public class Harach {
     return new BigDecimal[] {osn, izn, cnt};
   }
   private static void setValues(ReadRow src, ReadWriteRow dest) {
+    dM.copyCommonColumns(src, dest);
+    /*
     String[] dcolNames = dest.getColumnNames(dest.getColumnCount());
     String[] scolNames = src.getColumnNames(src.getColumnCount());
     Variant v = new Variant();
@@ -197,7 +200,7 @@ public class Harach {
         src.getVariant(scolNames[i],v);
         dest.setVariant(scolNames[i],v);
       }
-    }
+    }*/
   }
   
   //hr.restart.pl.Harach.otmiHarachArhiva(2009,6,1,"01")
