@@ -87,9 +87,11 @@ public class raDataSet extends QueryDataSet {
   // flag za sprecavanje beskonacne rekurzije, vjerojatno nepotrebno, ali ne skodi. :)
   boolean inOpenMethod = false;
   
+  boolean preloading = false;
+  
   //boolean shouldLock = false;
   
-  Thread lockThread = null;
+  // Thread lockThread = null;
   
   /**
    * Iskljucuje odn. iskljucuje sinkronizaciju. Pozeljno iskljuciti prije
@@ -101,53 +103,46 @@ public class raDataSet extends QueryDataSet {
     dsync = !enab;
   }
   
-  public void preload() {
+  public synchronized void preload() {
+    if (isOpen()) return;
+    
     Database shadow = null;
+    preloading = true;
     try {
-      lockThread = Thread.currentThread();
       shadow = dM.getDataModule().getShadowDatabase();
-      //shouldLock = true;
+      // shouldLock = true;
       System.out.println("Preloading " + getOriginalQueryString());
-      synchronized (this) {
-        try {
-          Field db = getQuery().getClass().getDeclaredField("g");
-          db.setAccessible(true);
-          db.set(getQuery(), shadow);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-        
-        open();
-
-        try {
-          Field db = getQuery().getClass().getDeclaredField("g");
-          db.setAccessible(true);
-          db.set(getQuery(), dM.getDataModule().getDatabase1());
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-        
-        System.out.println("... done loading " + getOriginalQueryString());
+      try {
+        Field db = getQuery().getClass().getDeclaredField("g");
+        db.setAccessible(true);
+        db.set(getQuery(), shadow);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
+
+      open();
+
+      try {
+        Field db = getQuery().getClass().getDeclaredField("g");
+        db.setAccessible(true);
+        db.set(getQuery(), dM.getDataModule().getDatabase1());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+      System.out.println("... done loading " + getOriginalQueryString());
     } finally {
-      //shouldLock = false;
-      lockThread = null;
+      // shouldLock = false;
       if (shadow != null) shadow.closeConnection();
+      preloading = false;
     }
   }
   
   /*
    * Oveeridano za provjeru azurnosti dataseta.
    */
-  public boolean open() {
+  public synchronized boolean open() {
     if (inOpenMethod || dM.isMinimal()) return super.open();
-    if (lockThread != null && !Thread.currentThread().equals(lockThread)) {
-      System.out.println("waiting for preload... " + getOriginalQueryString());
-      synchronized (this) {
-        // no-op
-      }
-      System.out.println("... continuing after " + getOriginalQueryString());
-    }
     try {
       inOpenMethod = true;
     
@@ -184,15 +179,8 @@ public class raDataSet extends QueryDataSet {
     }
   }
   
-  public void refresh() {
+  public synchronized void refresh() {
     Refresher.postpone();
-    if (lockThread != null && !Thread.currentThread().equals(lockThread)) {
-      System.out.println("waiting for preload... " + getOriginalQueryString());
-      synchronized (this) {
-        // no-op
-      }
-      System.out.println("... continuing after " + getOriginalQueryString());
-    }
     enableSync(false);
     try {
       long start = System.currentTimeMillis();
@@ -211,7 +199,7 @@ public class raDataSet extends QueryDataSet {
     }
   }
 
-  public void saveChanges() {
+  public synchronized void saveChanges() {
     Refresher.postpone();
     enableSync(false);
     try {
