@@ -18,6 +18,7 @@
 package hr.restart.robno;
 
 import hr.restart.util.Aus;
+import hr.restart.util.Valid;
 import hr.restart.util.raTransaction;
 
 import java.math.BigDecimal;
@@ -207,15 +208,15 @@ public class frmPRI extends hr.restart.util.raMasterDetail {
 		}
 	}
 
-	public boolean isKalkulStavke() {
-		return hr.restart.util.Util.getNewQueryDataSet(
+	/*public boolean isKalkulStavke() {
+		return Valid.getValid().getSetCount(hr.restart.util.Util.getNewQueryDataSet(
 				"SELECT count(*) AS BROJAC FROM STDOKU WHERE " + "CSKL='"
 						+ getMasterSet().getString("CSKL") + "' AND "
 						+ "VRDOK='" + getMasterSet().getString("VRDOK")
 						+ "' AND " + "GOD='" + getMasterSet().getString("GOD")
 						+ "' AND " + "BRDOK=" + getMasterSet().getInt("BRDOK"),
-				true).getInt("BROJAC") != 0;
-	}
+				true), 0) != 0;
+	}*/
 
 	public boolean ValidacijaMaster(char mode) {
 		/*if (mode == 'N') {
