@@ -41,6 +41,7 @@ public class menuOp extends JMenu {
   JMenuItem jmPorezi = new JMenuItem();
   JMenuItem jmJedMj = new JMenuItem();
   JMenuItem jmGrupaArt = new JMenuItem();
+  JMenuItem jmKategorije = new JMenuItem();
   JMenuItem jmArtikli = new JMenuItem();
   JMenuItem jmShemeKonta = new JMenuItem();
   JMenuItem jmShemeKontaOJ = new JMenuItem();
@@ -98,6 +99,12 @@ public class menuOp extends JMenu {
     jmGrupaArt.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         jmGrupaArt_actionPerformed(e);
+      }
+    });
+    jmKategorije.setText("Kategorije");
+    jmKategorije.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jmKategorije_actionPerformed(e);
       }
     });
     jmArtikli.setText(res.getString("jmArtikli_text"));
@@ -214,6 +221,7 @@ public class menuOp extends JMenu {
     this.add(jmPorezi);
     this.add(jmJedMj);
     this.add(jmGrupaArt);
+    this.add(jmKategorije);
     this.add(jmArtikli);
     this.addSeparator();
     this.add(jmShemeKonta);
@@ -248,6 +256,9 @@ public class menuOp extends JMenu {
   }
   void jmGrupaArt_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmGrupArt",res.getString("frmGrupArt_title"));
+  }
+  void jmKategorije_actionPerformed(ActionEvent e) {
+    SF.showFrame("hr.restart.robno.frmKategorije", "Kategorije");
   }
   void jmArtikli_actionPerformed(ActionEvent e) {
     SF.showFrame("hr.restart.robno.frmArtikli", res.getString("frmArtikli_title"));
