@@ -180,6 +180,7 @@ public class raOTP extends raIzlazTemplate {
 		
 		raDetail.addOption(rnvKartica,4, false);
 		
+		DP.resizeDP();
 		MP.BindComp();
 		DP.BindComp();
 		DP.jraLOT.setDataSet(getDetailSet());

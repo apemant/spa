@@ -873,11 +873,11 @@ public class rajpIzlazDPTemplate extends JPanel {
 
 	public void addRestOTP() {
 
-		if (rpcart.isbPrikazKolicina()) {
+		/*if (rpcart.isbPrikazKolicina()) {
 			setPreferredSize(new Dimension(660, 180));
 		} else {
 			setPreferredSize(new Dimension(660, 140));
-		}
+		}*/
 		
 
 		jraZC.setColumnName("ZC");
@@ -904,11 +904,11 @@ public class rajpIzlazDPTemplate extends JPanel {
 	}
 	
 	public void addLOT() {
-		if (rpcart.isbPrikazKolicina()) {
+		/*if (rpcart.isbPrikazKolicina()) {
 			setPreferredSize(new Dimension(660, 290));
 		} else {
 			setPreferredSize(new Dimension(660, 250));
-		}
+		}*/
 		xYLayoutDC.setHeight(150);
 		jraLOT.setColumnName("LOT");
 		jraROK.setColumnName("ROKTRAJ");
