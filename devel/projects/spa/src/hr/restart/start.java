@@ -57,6 +57,7 @@ public class start {
   public static int FRAME_MODE=hr.restart.util.raFrame.FRAME;
   public static int MAIN_LEFT_MODE=2;
   public static boolean TOOLBAR=false;
+  public static boolean preloading = false;
   private static Dimension SCREENSIZE;
   private static start mystrt=null;
   private static raToolBar raTB;
@@ -137,17 +138,22 @@ public class start {
   
   void preloadTables() {
     System.out.println("Starting preload...");
+    preloading = true;
     Thread preload = new Thread(new Runnable() {
       public void run() {
-        dM dm = dM.getDataModule();
-        String[] preloads = new VarStr(IntParam.getTag("preload.modules")).splitTrimmed(",");
-        for (int i = 0; i < preloads.length; i++) {
-          QueryDataSet ds = dm.getDataByName(preloads[i]);
-          if (ds == null) System.out.println("No module by name '" + preloads[i] + "'");
-          else if (ds instanceof raDataSet) ((raDataSet) ds).preload();
-          else System.out.println("Can't preload '" + preloads[i] + "'");
+        try {
+          dM dm = dM.getDataModule();
+          String[] preloads = new VarStr(IntParam.getTag("preload.modules")).splitTrimmed(",");
+          for (int i = 0; i < preloads.length; i++) {
+            QueryDataSet ds = dm.getDataByName(preloads[i]);
+            if (ds == null) System.out.println("No module by name '" + preloads[i] + "'");
+            else if (ds instanceof raDataSet) ((raDataSet) ds).preload();
+            else System.out.println("Can't preload '" + preloads[i] + "'");
+          }
+          System.out.println("Finished preload.");
+        } finally {
+          preloading = false;
         }
-        System.out.println("Finished preload.");
       }
     });
     preload.setPriority(Thread.MIN_PRIORITY);
