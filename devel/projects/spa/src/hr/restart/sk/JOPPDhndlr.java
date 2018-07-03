@@ -134,7 +134,7 @@ public class JOPPDhndlr {
 
   //JOPPD 
   protected StorageDataSet strAset = null;
-  protected String oib = null;
+  //protected String oib = null;
   public StorageDataSet getStrAset() {
     if (strAset == null) {
       strAset = new StorageDataSet();
@@ -891,10 +891,11 @@ public class JOPPDhndlr {
     
     for (Iterator i = npor.keySet().iterator(); i.hasNext(); ) {
       String oib = (String) i.next();
-      if (lookupData.getlookupData().raLocate(strBset, new String[] {"OIB", "JOS", "JOP"},
+      if (findBestMatch(oib)) {
+      /*if (lookupData.getlookupData().raLocate(strBset, new String[] {"OIB", "JOS", "JOP"},
           new String[] {oib, "0001", "0001"}) ||
           (lookupData.getlookupData().raLocate(strBset, new String[] {"OIB", "JOS", "JOP"},
-              new String[] {oib, "0001", "0002"}))) {
+              new String[] {oib, "0001", "0002"}))) {*/
         Aus.sub(strBset, "POR", (BigDecimal) npor.get(oib));
         Aus.add(strBset, "NETOPK", (BigDecimal) npor.get(oib));
         if (nprir.containsKey(oib)) {
@@ -950,6 +951,20 @@ public class JOPPDhndlr {
     jbGet.setEnabled(true);
 //    jraPoctDat.setEnabled(true);
     raCommonClass.getraCommonClass().setLabelLaF(fPDV2.jraPoctDat, true);
+  }
+  
+  private boolean findBestMatch(String oib) {
+    int best = -1;
+    for (strBset.first(); strBset.inBounds(); strBset.next())
+      if (strBset.getString("OIB").equals("OIB") && !strBset.getString("JNI").equals("5")) {
+        if (best < 0) best = strBset.getRow();
+        if (strBset.getString("JOS").equals("0001") &&
+            (strBset.getString("JOP").equals("0001") ||
+            strBset.getString("JOP").equals("0002"))) return true;
+      }
+    if (best < 0) return false;
+    strBset.goToRow(best);
+    return true;
   }
   
   private void checkNodb(HashMap nodb) {
