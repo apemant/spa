@@ -54,16 +54,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -1201,6 +1192,7 @@ public class raPilot extends raFrame {
       timer = System.currentTimeMillis() - timer;
       System.out.println("Opened dataset in "+timer+" ms");
     } catch (Exception e) {
+      e.printStackTrace();
       process.close();
       JOptionPane.showMessageDialog(query, new raMultiLineMessage(
           "Query nije uspio! Greška:\n\n" + e.getLocalizedMessage(),
@@ -1277,6 +1269,8 @@ public class raPilot extends raFrame {
       vl.getDataAndClear();
     }
     if (!ds.isOpen()) return;
+    //System.out.println("raw ds: " + ds);
+    //System.out.println(Arrays.asList(ds.getColumns()));
     process.setProcessingThread(null);
     process.setInterruptable(true);
     process.setMessage("Punjenje tabli\u010Dnog prikaza...", false, 50);
