@@ -17,13 +17,7 @@
 ****************************************************************************/
 package hr.restart.robno;
 
-import hr.restart.baza.Artikli;
-import hr.restart.baza.Condition;
-import hr.restart.baza.VTCartPart;
-import hr.restart.baza.dM;
-import hr.restart.baza.norme;
-import hr.restart.baza.raDataSet;
-import hr.restart.baza.stdoki;
+import hr.restart.baza.*;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sisfun.raDataIntegrity;
@@ -31,45 +25,32 @@ import hr.restart.sk.frmKartica;
 import hr.restart.swing.AktivColorModifier;
 import hr.restart.swing.JraButton;
 import hr.restart.swing.JraCheckBox;
+import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.XYPanel;
 import hr.restart.swing.raInputDialog;
 import hr.restart.swing.raTextMask;
-import hr.restart.util.Aus;
-import hr.restart.util.DataTree;
-import hr.restart.util.JlrNavField;
-import hr.restart.util.Valid;
-import hr.restart.util.lookupData;
-import hr.restart.util.raComboBox;
-import hr.restart.util.raImages;
-import hr.restart.util.raMatPodaci;
-import hr.restart.util.raNavAction;
-import hr.restart.util.raPartialIncrementor;
-import hr.restart.util.raTransaction;
-import hr.restart.util.startFrame;
+import hr.restart.util.*;
 import hr.restart.zapod.FrmPartneriArtikli;
 import hr.restart.util.ImageLoad;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 
 import com.borland.dbswing.JdbLabel;
 import com.borland.dx.dataset.Column;
-import com.borland.dx.dataset.DataRow;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.NavigationEvent;
+import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.TableDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
@@ -277,7 +258,19 @@ public class frmArtikli extends raMatPodaci {
   JlrNavField jlrNAZPAR = new JlrNavField();
   JraButton jbCPAR = new JraButton();
   
+  JPanel jpKategorije = new JPanel();
+  XYLayout xYLayout7 = new XYLayout();
+  JPanel jpAtributi = new JPanel();
+  XYLayout xYLayout8 = new XYLayout();
+  
+  DefaultListModel kats = new DefaultListModel();
+  JList listKats = new JList(kats);
+  JraScrollPane scKat = new JraScrollPane(listKats, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+  JraButton katAdd = new JraButton();
+  JraButton katRemove = new JraButton();
+    
 //  JraComboBox jraInventura = new JraComboBox();
+  
 
   JraTextField postomanjka = new JraTextField();
   JraTextField postoprov = new JraTextField();
@@ -361,7 +354,13 @@ public class frmArtikli extends raMatPodaci {
   	};
   };
   
+  JraButton ebay = new JraButton();
+  ArteBayImporter aei = null;
+  
+  
   frmNormArt noa;
+  boolean needReload = true;
+  
   
   static frmArtikli inst;
   
@@ -671,6 +670,13 @@ public class frmArtikli extends raMatPodaci {
     xYLayout3.setHeight(230);
     xYLayout4.setWidth(600);
     xYLayout4.setHeight(230);
+    
+    xYLayout4.setHeight(230);
+    
+    xYLayout7.setWidth(600);
+    xYLayout7.setHeight(230);
+    xYLayout8.setWidth(600);
+    xYLayout8.setHeight(230);
 
     jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
     jLabel1.setText("Posto (%)");
@@ -859,7 +865,16 @@ public class frmArtikli extends raMatPodaci {
 //    jraTipKalkul.setDataSet(getRaQueryDataSet());
 //    jraTipKalkul.set
     
-    
+    if (frmParam.getParam("robno", "ebayImport", "N", "Opcija dohvata artikala s eBaya (D,N)?").equalsIgnoreCase("D")) {
+      aei = new ArteBayImporter();
+      ebay.setText("eBay");
+      ebay.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          aei.importTo(frmArtikli.this);
+        }
+      });
+      jpOsnovniPodaci.add(ebay, new XYConstraints(250, 20, 60, -1));
+    }
     
     
     QueryDataSet qds = new QueryDataSet();
@@ -890,12 +905,12 @@ public class frmArtikli extends raMatPodaci {
     jtpArtikli.add(jpOsnovniPodaci, res.getString("jpOsnovniPodaci_text"));
     jpOsnovniPodaci.add(jlCART, new XYConstraints(15, 20, -1, -1));
     jpOsnovniPodaci.add(jlCART1, new XYConstraints(15, 45, -1, -1));
-    jpOsnovniPodaci.add(jtfCART, new XYConstraints(150, 20, 100, -1));
+    jpOsnovniPodaci.add(jtfCART, new XYConstraints(150, 20, 90, -1));
     jpOsnovniPodaci.add(jcbAKTIV, new XYConstraints(415, 18, 100, -1));
-    jpOsnovniPodaci.add(jtfCART1, new XYConstraints(150, 45, 150, -1));
+    jpOsnovniPodaci.add(jtfCART1, new XYConstraints(150, 45, 160, -1));
     jpOsnovniPodaci.add(jdbCheckBox1, new XYConstraints(375, 193, 140, -1));
-    jpOsnovniPodaci.add(jlBC, new XYConstraints(315, 50, -1, -1));
-    jpOsnovniPodaci.add(jtfBC, new XYConstraints(395, 45, 120, -1));
+    jpOsnovniPodaci.add(jlBC, new XYConstraints(340, 50, -1, -1));
+    jpOsnovniPodaci.add(jtfBC, new XYConstraints(390, 45, 125, -1));
     jpOsnovniPodaci.add(jlNAZART, new XYConstraints(15, 70, -1, -1));
     jpOsnovniPodaci.add(jtfNAZART, new XYConstraints(150, 70, 365, -1));
     jpOsnovniPodaci.add(jlNAZPRI, new XYConstraints(15, 170, -1, -1));
@@ -921,7 +936,7 @@ public class frmArtikli extends raMatPodaci {
 //    jpOsnovniPodaci.add(jlOPIS, new XYConstraints(15, 195, -1, -1));
 //    jpOsnovniPodaci.add(jtfOPIS,  new XYConstraints(150, 195, 365, 45));
     jpCijene.add(jlNAZART2, new XYConstraints(15, 20, -1, -1));
-    jpCijene.add(jdblNAZART2, new XYConstraints(150, 20, -1, -1));
+    jpCijene.add(jdblNAZART2, new XYConstraints(150, 20, 365, -1));
     jpCijene.add(jlDC, new XYConstraints(15, 80, -1, -1));
     jpCijene.add(jlNC, new XYConstraints(15, 130, -1, -1));
     jpCijene.add(jtfDC, new XYConstraints(150, 80, 100, -1));
@@ -959,7 +974,7 @@ public class frmArtikli extends raMatPodaci {
 
     
     jpNarucivanje.add(jlNAZPROIZ, new XYConstraints(15, 70, -1, -1));
-    jpNarucivanje.add(jdblNAZART3, new XYConstraints(150, 20, -1, -1));
+    jpNarucivanje.add(jdblNAZART3, new XYConstraints(150, 20, 365, -1));
     jpNarucivanje.add(jtfSIFZANAR, new XYConstraints(150, 95, 150, -1));
     jpNarucivanje.add(jlNAZORIG, new XYConstraints(15, 120, -1, -1));
     jpNarucivanje.add(jlSIFZANAR, new XYConstraints(15, 95, -1, -1));
@@ -1091,7 +1106,7 @@ public class frmArtikli extends raMatPodaci {
     jpNarucivanje.add(jtfMINKOL, new XYConstraints(150, 195, 100, -1));
     jtpArtikli.add(jpPakiranje, res.getString("jpPakiranje_text"));
     jpPakiranje.add(jlNAZART4, new XYConstraints(15, 20, -1, -1));
-    jpPakiranje.add(jdblNAZART4, new XYConstraints(150, 20, -1, -1));
+    jpPakiranje.add(jdblNAZART4, new XYConstraints(150, 20, 365, -1));
 
     jpPakiranje.add(jPanel1,      new XYConstraints(15, 50, 525, 85));
     jPanel1.add(jlJMPAK, new XYConstraints(5, 5, -1, -1));
@@ -1111,9 +1126,62 @@ public class frmArtikli extends raMatPodaci {
     jPanel2.add(jlTEZKOL,   new XYConstraints(275, 30, -1, -1));
     jPanel2.add(jtfBRJEDKOL,  new XYConstraints(135, 30, -1, -1));
     jPanel2.add(jbJMKOL,   new XYConstraints(485, 5, 21, 21));
+    jtpArtikli.add(jpSubjekt, "Ostalo");
+    
+    
+    listKats.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    katAdd.setText("Dodaj");
+    katAdd.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        dodajKategoriju();
+      }
+    });
+    katRemove.setText("Izbaci");
+    katRemove.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        izbaciKategoriju();
+      }
+    });
+    jpKategorije.setLayout(xYLayout7);
+    System.out.println(listKats.getBackground());
+    System.out.println(scKat.getBackground());
+    listKats.setBackground(Color.white);
+    listKats.setOpaque(true);
+    scKat.getViewport().setBackground(Color.white);
+    scKat.getViewport().setOpaque(true);
+    jpKategorije.add(scKat, new XYConstraints(150, 20, 365, 190));
+    jpKategorije.add(katAdd, new XYConstraints(15, 20, 120, -1));
+    jpKategorije.add(katRemove, new XYConstraints(15, 45, 120, -1));
+    jtpArtikli.add(jpKategorije, "Kategorije");
+    
+    if (frmParam.getParam("robno", "dodArtCols", "N",
+        "Dodatni atributi na artiklu (D,N)?").equalsIgnoreCase("D")) {
+      
+      jpAtributi.setLayout(xYLayout8);
+      JPanel jpScroll = new JPanel(new XYLayout(570, 415)); 
+      int y = 20;
+      String[] cols = {"MODEL", "DIMENZIJE", "BOJA", "TEZINA", "SHTEZ", "MATERIJAL", "DUZINA", "SNAGA", 
+          "KOMADA", "LTEZ", "RUCKA", "KUGLEZ", "TRENJE", "ZOMJER", "LKAP"};
+      String[] labs = {"Model", "Dimenzije", "Boja", "Težina", "Ship. težina", "Materijal", "Dužina", "Rod power", 
+          "No. of pieces", "Line weight", "Hand retrieve", "Ball bearings", "Max drag", "Gear ratio", "Line capacity"};
+      for (int i = 0; i < cols.length; i++) {
+        JraTextField jtf = new JraTextField();
+        jtf.setDataSet(getRaQueryDataSet());
+        jtf.setColumnName(cols[i]);
+        jpScroll.add(new JLabel(labs[i]), new XYConstraints(15, y, -1, -1));
+        jpScroll.add(jtf, new XYConstraints(150, y, 250, -1));
+        y += 25;
+      }
+      Aus.recursiveUpdateSizes(jpScroll);
+      JraScrollPane sc = new JraScrollPane(jpScroll, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      sc.getVerticalScrollBar().setUnitIncrement(Aus.big(25));
+      sc.getVerticalScrollBar().setBlockIncrement(Aus.big(230));
+      jpAtributi.add(sc, new XYConstraints(0, 0, 600, 230));
+      jtpArtikli.add(jpAtributi, "Dodatno");
+    }
 //    jtpArtikli.add(jpOsnovniPodaci, "jpOsnovniPodaci");
 //    jp.add(jtpArtikli, BorderLayout.NORTH);
-    jtpArtikli.add(jpSubjekt, "Ostalo");
+    
     int size = Integer.parseInt(frmParam.getParam("robno","cartSize","0"));
     if (size > 0 ) {
       new raTextMask(jtfCART1,size,false,raTextMask.ALL | raTextMask.PLACEHOLDER).
@@ -1132,6 +1200,7 @@ public class frmArtikli extends raMatPodaci {
     di.addOtherTable("rnus", new String[] {"CARTNOR"});
 //    raDataIntegrity.installFor(this).setProtectedColumns(
 //        new String[] {"CART1","BC","TIPART","VRART"});
+    di.addIgnoreTable("artkat");
     
     installSelectionTracker("CART");
     
@@ -1151,18 +1220,96 @@ public class frmArtikli extends raMatPodaci {
 
   */
   
+  int delCart;
   String delKey;
   public boolean DeleteCheck() {
     delKey = raControlDocs.getKey(this.getRaQueryDataSet());
+    delCart = getRaQueryDataSet().getInt("CART");
     return true;
   }
 
-public boolean  doWithSave(char mode) {
+  void izbaciKategoriju() {
+    int[] sel = listKats.getSelectedIndices();
+    if (sel == null || sel.length == 0) return;
+    Kategorija[] ks = new Kategorija[sel.length];
+    for (int i = 0; i < sel.length; i++) ks[i] = (Kategorija) kats.getElementAt(sel[i]);
+    
+    for (int i = 0; i < sel.length; i++) kats.removeElement(ks[i]);
+  }
+  
+  void dodajKategoriju() {
+    String[] rez = lookupData.getlookupData().lookUp(this.getWindow(), dm.getKategorije(), new int[] {0,1,2});
+    if (rez != null && rez[0].length() > 0) {
+      Kategorija k = createCat(rez[2]);
+      if (k != null && !kats.contains(k)) kats.addElement(k);
+    }
+  }
+  
+  public void addExternalCategory(String bckat) {
+    if (lookupData.getlookupData().raLocate(dm.getKategorije(), "BCKAT", bckat)) {
+      System.out.println("našao kategoriju " + dm.getKategorije());
+      Kategorija k = createCat(dm.getKategorije().getString("CKAT"));
+      if (k != null && !kats.contains(k)) kats.addElement(k);
+    }
+  }
+  
+  Kategorija createCat(String key) {
+    if (!lookupData.getlookupData().raLocate(dm.getKategorije(), "CKAT", key)) return null;
+    
+    Kategorija ret = new Kategorija(key);
+    VarStr name = new VarStr(dm.getKategorije().getString("NAZKAT"));
+    while (!dm.getKategorije().getString("CKATPRIP").equals(key) &&
+        lookupData.getlookupData().raLocate(dm.getKategorije(), "CKAT", dm.getKategorije().getString("CKATPRIP"))) {
+      name.insert(0, dm.getKategorije().getString("NAZKAT").concat(" -> "));
+      key = dm.getKategorije().getString("CKAT");
+    }
+    name.insert(0, " ");
+    ret.setNaziv(name.toString());
+    return ret;
+  }
+  
+  private class Kategorija {
+    String key;
+    String naziv;
+    
+    public Kategorija(String key) {
+      this.key = key;
+    }
+    
+    public Kategorija(String key, String naziv) {
+      this.key = key;
+      this.naziv = " " + naziv;
+    }
+    
+    public void setNaziv(String naziv) {
+      this.naziv = naziv;
+    }
+    
+    public String toString() {
+      return naziv;
+    }
+    
+    public boolean equals(Object obj) {
+      if (obj instanceof Kategorija)
+        return key.equals(((Kategorija) obj).key);
+      return false;
+    }
+    
+    public int hashCode() {
+      return key.hashCode();
+    }
+  }
+  
+public boolean doWithSave(char mode) {
 //  raControlDocs rCD = new raControlDocs();
   if (mode=='B') {
     if (getrPVT().DeleteVTText(delKey))
       markChange("vttext");
     
+    Valid.getValid().runSQL("DELETE FROM artkat WHERE " + Condition.equal("CART", delCart));
+    
+    ImageLoad imgload= new ImageLoad();
+    imgload.deleteAll("artikli", delCart + "");
     /*dm.getVTText().open();
     if (hr.restart.util.lookupData.getlookupData().raLocate(dm.getVTText(),new String[] {"CKEY"},
                   new String[] {raControlDocs.getKey(this.getRaQueryDataSet())})){
@@ -1171,10 +1318,38 @@ public boolean  doWithSave(char mode) {
       markChange(dm.getVTText());
     }*/
   } else {
+    
+    if (kats.size() == 0)
+      Valid.getValid().runSQL("DELETE FROM artkat WHERE " + Condition.equal("CART", getRaQueryDataSet()));
+    else {
+      QueryDataSet ds = ArtKat.getDataModule().openTempSet(Condition.equal("CART", getRaQueryDataSet()));
+      for (ds.first(); ds.inBounds(); ds.next())
+        if (!kats.contains(new Kategorija(ds.getString("CKAT"))))
+          ds.deleteRow();
+      
+      for (int i = 0; i < kats.size(); i++)
+        if (!lookupData.getlookupData().raLocate(ds, "CKAT", ((Kategorija) kats.get(i)).key)) {
+          ds.insertRow(false);
+          ds.setInt("CART", getRaQueryDataSet().getInt("CART"));
+          ds.setString("CKAT", ((Kategorija) kats.get(i)).key);
+        }
+      
+      raTransaction.saveChanges(ds);
+    }
+    
+    
+    
     if (qdsDodTxt != null) {
 //      if (qdsDodTxt.getRowCount() !=0)
         raTransaction.saveChanges(qdsDodTxt);
         markChange("vttext");
+    }
+    
+    if (aei != null && aei.getImages() != null && aei.getImages().size() > 0) {
+      System.out.println("savam slike: " + aei.getImages());
+      ImageLoad imgload= new ImageLoad();
+      imgload.saveAll((File[]) aei.getImages().toArray(new File[aei.getImages().size()]), "artikli", getRaQueryDataSet().getInt("CART") + "");
+      aei.clearImages();
     }
   }
   return true;
@@ -1221,10 +1396,13 @@ public boolean  doWithSave(char mode) {
   public void SetFokus(char mode) {
     cMode=mode;
     qdsDodTxt = null;
+    
     if (tds.rowCount()==0) {
       tds.insertRow(true);
     }
+    if (aei != null) aei.clearImages();
     if (mode=='N') {
+      needReload = false;
       System.out.println("SetFokus |" + getRaQueryDataSet().getString("VRART") + "|");
       System.out.println("index " + rcbVRART.getSelectedIndex());
       //if (rcbVRART.getSelectedIndex() < 0) rcbVRART.setSelectedIndex(0);
@@ -1247,6 +1425,7 @@ public boolean  doWithSave(char mode) {
       jrfNAZJM.setText("");
     }
     else if (mode=='I') {
+      needReload = true;
       rcc.setLabelLaF(jtfCART, false);
       rcbVRART.this_itemStateChanged();
 
@@ -1260,7 +1439,7 @@ public boolean  doWithSave(char mode) {
 //      }
     }
     this.jtpArtikli.setSelectedIndex(0);
-  }
+  } 
 
 /*  public boolean DeleteCheck() {
     if (util.isDeleteable("STANJE", "CART", String.valueOf(getRaQueryDataSet().getInt("CART")), util.MOD_NUM)==false)
@@ -1346,7 +1525,19 @@ public boolean  doWithSave(char mode) {
     }
     else if (jtpArtikli.getSelectedIndex()==3) {
 //      this.jtfNAZPAK.requestFocus();
+    } else if (jtpArtikli.getSelectedIndex()==5) {
+      if (needReload) {
+        needReload = false;
+        DataSet ds = ArtKat.getDataModule().openTempSet(Condition.equal("CART", getRaQueryDataSet()));
+        ds.setSort(new SortDescriptor(new String[] {"CKAT"}));
+        kats.clear();
+        for (ds.first(); ds.inBounds(); ds.next()) {
+          Kategorija k = createCat(ds.getString("CKAT"));
+          if (k != null) kats.addElement(k);
+        }
+      }
     }
+    
   }
   /**
    * Ovo je da se na PG_UP/PG_DW kreche tabovima
@@ -1616,6 +1807,9 @@ public boolean  doWithSave(char mode) {
   			noa.getJpTableView().fireTableDataChanged();
   		}
   	}
+  	if (getMode() == 'B') {
+  	  needReload = true;
+  	}
   }
   
   void  rnvNorm_actionPerformed(ActionEvent e) {
@@ -1685,8 +1879,8 @@ public boolean  doWithSave(char mode) {
   
   void  rnvImgLoad_actionPerformed(ActionEvent e) {
 	    ImageLoad imgload= new ImageLoad();
-	    imgload.Img(this.getJframe(), "artikli", getRaQueryDataSet().getInt("cart")+"","Slika za artikl "+getRaQueryDataSet().getInt("CART")+" "
-	        +getRaQueryDataSet().getString("NAZART"));
+	    imgload.Img(this.getJframe(), "artikli", getRaQueryDataSet().getInt("cart")+"","Slike za artikl "+getRaQueryDataSet().getInt("CART")+" "
+	        +getRaQueryDataSet().getString("NAZART"), true);
 	   }
 
 }
