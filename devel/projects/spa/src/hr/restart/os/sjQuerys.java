@@ -117,12 +117,21 @@ public class sjQuerys {
     System.out.println("SQL: "+str);
     return str;
   }
+  public static String getMaxInvBroj(String corg, String table) {
+    return getMaxInvBroj(corg, table, false);
+  }
   public static String getMaxInvBroj(String corg) {
     return getMaxInvBroj(corg, false);
   }
   public static String getMaxInvBroj(String corg, boolean stringSearch) {
     String what = stringSearch?"max(invbroj)":"cast(max(cast(invbroj as numeric(10,0))) as char(10))";
     String str="select "+what+" from os_sredstvo where corg='"+corg+"'";//ISPROBAJ!!!
+    System.out.println("SQL: "+str);
+    return str;
+  }
+  public static String getMaxInvBroj(String corg, String table, boolean stringSearch) {
+    String what = stringSearch?"max(invbroj)":"cast(max(cast(invbroj as numeric(10,0))) as char(10))";
+    String str="select "+what+" from "+table+" where corg='"+corg+"'";//ISPROBAJ!!!
     System.out.println("SQL: "+str);
     return str;
   }

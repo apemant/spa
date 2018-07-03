@@ -168,6 +168,13 @@ public class frmSINovi extends osTemplate {
 //    }
     return super.ValidacijaDetail(mode);
   }
+  
+  public void SetFokusMaster(char mode) {
+    super.SetFokusMaster(mode);
+    if (mode == 'N') {
+      getMasterSet().setString("INVBROJ", osUtil.getUtil().getInvBroj("OS_SI"));
+    }
+  }
 
   public boolean DeleteCheckDetail() {
     oldOSN = hr.restart.os.osUtil.getUtil().getOldSIOSN(mod);
