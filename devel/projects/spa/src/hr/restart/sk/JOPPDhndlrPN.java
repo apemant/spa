@@ -77,7 +77,7 @@ public class JOPPDhndlrPN extends JOPPDhndlr {
         lookupData.getlookupData().raLocate(sh, cols, ds);
         String[] param = new VarStr(sh.getString("POLJE")).split();
         
-        if (!lookupData.getlookupData().raLocate(strBset, keys, new String[] {oib, param[0], param[1]})) {
+        if (!lookupData.getlookupData().raLocate(strBset, keys, new String[] {coib, param[0], param[1]})) {
           strBset.insertRow(false);
           strBset.setInt("RBR", ++rbr);
           strBset.setString("COPCINE", "0" + raIzvjestaji.convertCopcineToRS(cop));
