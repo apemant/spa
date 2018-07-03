@@ -30,6 +30,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.SortDescriptor;
 import com.borland.dx.dataset.StorageDataSet;
@@ -575,6 +576,41 @@ public class ArchiveConverter {
     return prim;
   }
   
+  void generateTable(DataSet ds, String tname, TextFile tf) {
+    
+    tf.out("CREATE TABLE " + tname + " (");
+    String next = ",";
+    for (int i = 0; i < ds.getColumnCount(); i++) {
+      if (i == ds.getColumnCount() - 1) next = "";
+      Column c = ds.getColumn(i);
+      switch (c.getDataType()) {
+        case Variant.INT:
+          tf.out("  " + c.getColumnName() + " integer" + next);
+          break;
+        case Variant.STRING:
+          tf.out("  " + c.getColumnName() + " character varying(" + c.getPrecision() + ")" + next);
+          break;
+        case Variant.BIGDECIMAL:
+          tf.out("  " + c.getColumnName() + " numeric(" + c.getPrecision() + "," + c.getScale() + ")" + next);
+          break;
+        case Variant.TIMESTAMP:
+          tf.out("  " + c.getColumnName() + " timestamp without time zone" + next);
+          break;
+        case Variant.LONG:
+          tf.out("  " + c.getColumnName() + " bigint" + next);
+          break;
+        case Variant.FLOAT:
+          tf.out("  " + c.getColumnName() + " real" + next);
+          break;
+        case Variant.DOUBLE:
+          tf.out("  " + c.getColumnName() + " double" + next);
+          break;
+      }
+    }
+    tf.out(") WITH (OIDS=FALSE);");
+    tf.out("ALTER TABLE " + tname + " OWNER TO postgres;");
+  }
+  
   void generateInserts(DataSet ds, String tname, TextFile tf) {
         
     tf.out("DELETE FROM "+tname+";");
@@ -675,6 +711,8 @@ public class ArchiveConverter {
   public static void generate(DataSet ds, String tname, String fname) {
     ArchiveConverter ac = new ArchiveConverter();
     TextFile out = TextFile.write(fname);
+    
+    ac.generateTable(ds, tname, out);
     
     ac.generateInserts(ds, tname, out);
     
