@@ -73,7 +73,7 @@ public class raRemoteBackup {
       any = name != null || url != null;
       if (all) {
         for (int i = 0; i < barr.length; i++)
-          if (url.indexOf(barr[i] + ".") > 0) {
+          if (extractName(url) != null) {
             baks.add(new raDbaseChooser.BaseDef(name, url, tip, user, pass, params, dbdialect));
             break;
           }
@@ -82,16 +82,10 @@ public class raRemoteBackup {
     List barrl = new ArrayList(keys);
     for (int i = 0; i < baks.size(); i++) {
       raDbaseChooser.BaseDef bd = (raDbaseChooser.BaseDef) baks.get(i);
-      int p = bd.url.lastIndexOf('/');
-      int wp = bd.url.lastIndexOf('\\');
-      if (wp > p) p = wp;
-      if (p < 0) continue;
+      String name = extractName(bd.url);
+      if (name == null) continue;
       
-      String name = bd.url.substring(p + 1);
-      name = name.substring(0, name.indexOf('.'));
-      System.out.println("backup: " + name);
       barrl.add(name);
-      
       dM.getDataModule().setMinimalParams(bd.url, bd.tip, bd.user, bd.pass);
       dM.getDataModule().reconnect();
       
@@ -99,6 +93,35 @@ public class raRemoteBackup {
       else dumpAndUpload(name);
     }
     new AmazonHandler().maintenance((String[]) barrl.toArray(new String[barrl.size()]));
+  }
+  
+  private String extractName(String url) {
+    if (url.startsWith("jdbc:firebirdsql")) {
+      int p =url.lastIndexOf('/');
+      int wp = url.lastIndexOf('\\');
+      if (wp > p) p = wp;
+      if (p < 0) return null;
+      
+      String name = url.substring(p + 1);
+      if (name.length() == 0) return null;
+      int q = name.indexOf('.');
+      if (q < 0) return null;
+      name = name.substring(0, q);
+      System.out.println("backup firebird: " + name);
+      return name;
+    } else if (url.startsWith("jdbc:postgresql")) {
+      int p = url.lastIndexOf('/');
+      if (p < 0) p = url.lastIndexOf(':');
+      if (p < 0) return null;
+      
+      String name = url.substring(p + 1);
+      if (name.length() == 0) return null;
+      int q = name.indexOf('?');
+      if (q > 0) name = name.substring(0, q);
+      System.out.println("backup postgres: " + name);
+      return name;
+    }
+    return null;
   }
   
   void dumpAndUploadCons(String name) {
