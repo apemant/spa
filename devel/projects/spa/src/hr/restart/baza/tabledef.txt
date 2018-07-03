@@ -759,6 +759,18 @@ POSTOINV;numeric;12,3;;0;Postotak otpisa
 TIPINV;char;1;;I;Naèin otpisa
 CAN;char;6;;;Dodatni opis
 
+$Kategorije
+LOKK;char;1;;N;LOKK;*
+AKTIV;char;1;;D;AKTIV;*
+CKAT;char;10;pkey;;Šifra;5
+CKATPRIP;char;10;;;Pripadnost;5
+NAZKAT;char;50;;;Naziv;30
+BCKAT;char;30;;;Vanjska šifra
+
+$ArtKat
+CART;int;6;pkey;;Artikl
+CKAT;char;10;pkey;;Kategorija
+
 $IzlazneCijene
 KNJIG;text;12;;;Knjigovodstvo
 VRDOK;text;3;;;Vrsta dokumenta
@@ -986,6 +998,23 @@ NAZLANG;char;75;;;Naziv na stranom jeziku;20
 PPK;numeric;15,2;;0;Posebni porez za kavu
 UIDX=cart1
 UIDX=bc
+
+$_dodart
+MODEL;char;50;;;Model;15
+DIMENZIJE;char;40;;;Dimenzije;15
+BOJA;char;20;;;Boja
+TEZINA;char;20;;;Težina
+SHTEZ;numeric;17,2;;0;Shipping težina
+MATERIJAL;char;30;;;Materijal
+DUZINA;char;20;;;Dužina štapa
+SNAGA;char;20;;;Snaga štapa
+KOMADA;int;6;;;Broj komada
+LTEZ;char;20;;;Težina linije
+RUCKA;char;20;;;Ruèka
+KUGLEZ;numeric;17,2;;0;Kuglièni ležaj
+TRENJE;numeric;17,2;;0;Trenje
+ZOMJER;char;20;;;Prijenos
+LKAP;char;20;;;Kapacitet
 
 $Kosobe
 CPAR;int;6;pkey;;Partner
