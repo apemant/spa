@@ -28,6 +28,7 @@ import hr.restart.swing.JraTextField;
 import hr.restart.swing.JraTextMultyKolField;
 import hr.restart.util.Aus;
 import hr.restart.util.Calc;
+import hr.restart.util.JlrNavField;
 import hr.restart.util.raImages;
 import hr.restart.util.raKeyAction;
 import hr.restart.zapod.Tecajevi;
@@ -168,6 +169,9 @@ public class jpUlazDetail extends JPanel {
   JLabel jlMAR = new JLabel();
   JLabel jlNC = new JLabel();
   JLabel jlDC = new JLabel();
+  JlrNavField jrfCPOR = new JlrNavField();
+  JlrNavField jrfNAZPOR = new JlrNavField();
+  JraButton jbPOR =  new JraButton();
   JraTextField jtfDC = new JraTextField() {
     public void valueChanged() {
       jtfDC_focusLost(null);
@@ -453,7 +457,7 @@ public class jpUlazDetail extends JPanel {
     jpDetailCenter.setLayout(xYLayout2);
     jpDetailCenter.setBorder(BorderFactory.createEtchedBorder());
     xYLayout2.setWidth(645);
-    xYLayout2.setHeight(315);
+    xYLayout2.setHeight(340);
     jLabel1.setText("Dobavlja\u010Deva cijena (valutna)");
     jtfDC_VAL.setColumnName("DC_VAL");
     jtfDC_VAL.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -473,6 +477,18 @@ public class jpUlazDetail extends JPanel {
         jtfIDOB_VAL_focusLost(e);
       }*/
     });
+    
+    jrfCPOR.setColumnName("CPOR");
+    jrfCPOR.setColNames(new String[] {"NAZPOR"});
+    jrfCPOR.setVisCols(new int[]{0,1});
+    jrfCPOR.setTextFields(new javax.swing.text.JTextComponent[] {jrfNAZPOR});
+    jrfCPOR.setRaDataSet(dm.getPorezi());
+    jrfCPOR.setNavButton(jbPOR);
+    
+    jrfNAZPOR.setColumnName("NAZPOR");
+    jrfNAZPOR.setSearchMode(1);
+    jrfNAZPOR.setNavProperties(jrfCPOR);
+    
     jpDetailCenter.add(jlKOL, new XYConstraints(360, 20, 130, -1));
     jpDetailCenter.add(jtfKOL, new XYConstraints(500, 20, 130, -1));
     jpDetailCenter.add(trans, new XYConstraints(470, 20, 21, 21));
@@ -518,6 +534,10 @@ public class jpUlazDetail extends JPanel {
     jpDetailCenter.add(jtfIBP, new XYConstraints(500, 225, 130, -1));
     jpDetailCenter.add(jtfDC_VAL, new XYConstraints(360, 75, 130, -1));
     jpDetailCenter.add(jtfIDOB_VAL, new XYConstraints(500, 75, 130, -1));
+    jpDetailCenter.add(new JLabel("Šifra ulaznog poreza"), new XYConstraints(15, 305, -1, -1));
+    jpDetailCenter.add(jrfCPOR, new XYConstraints(250, 305, 100, -1));
+    jpDetailCenter.add(jrfNAZPOR, new XYConstraints(360, 305, 240, -1));
+    jpDetailCenter.add(jbPOR, new XYConstraints(605, 305, 21, 21));
     
     if (edion && (frm.prSTAT == 'P' || frm instanceof frmPRK || frm.prSTAT == 'S' || frm instanceof frmPST)) addEdi();
     this.add(rpcart, BorderLayout.NORTH);
@@ -788,6 +808,15 @@ public class jpUlazDetail extends JPanel {
       rcc.setLabelLaF(jtfMAR, !novi);
       rcc.setLabelLaF(jtfVC, !novi);
       rcc.setLabelLaF(jtfMC, !novi);
+      rcc.setLabelLaF(jrfCPOR, !novi);
+      rcc.setLabelLaF(jrfNAZPOR, !novi);
+      rcc.setLabelLaF(jbPOR, !novi);
+      if (edion) {
+        rcc.setLabelLaF(jraLot, !novi);
+        rcc.setLabelLaF(jraReg, !novi);
+        rcc.setLabelLaF(jraDatPro, !novi);
+        rcc.setLabelLaF(jraRok, !novi);
+      }
     }
     else if (doc=='S') {
       rcc.setLabelLaF(jtfDC_VAL, false);
