@@ -871,9 +871,11 @@ public class frmUplIspl extends raMasterDetail {
     rcc.setLabelLaF(jpDetail.jlrCorg, !contains);
     rcc.setLabelLaF(jpDetail.jlrNaziv, !contains);
     rcc.setLabelLaF(jpDetail.jbSelCorg, !contains);
-    rcc.EnabDisabAll(jpDetail.advui, !contains);
-    jpDetail.advui.tsk.setLabelLafPar(!contains);
-    if (contains) jpDetail.advui.tsk.rebind(getDetailSet());
+    if (jpDetail.advui != null) {
+      rcc.EnabDisabAll(jpDetail.advui, !contains);
+      jpDetail.advui.tsk.setLabelLafPar(!contains);
+      if (contains) jpDetail.advui.tsk.rebind(getDetailSet());
+    }
   }
   
   public static String getFakeURABrojkonta() {
