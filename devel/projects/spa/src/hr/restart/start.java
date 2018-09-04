@@ -628,6 +628,7 @@ System.out.println("no port starting shell");
       System.exit(0);
     } else if (checkArgs("-dbackup")) {
       try {
+        if (!checkArgs("direct")) hr.restart.util.Util.redirectSystemOut();
         System.out.println("Starting backup...");
         new raRemoteBackup().perform(true);
       } catch (Exception e) {
