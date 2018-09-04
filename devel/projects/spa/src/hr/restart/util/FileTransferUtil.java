@@ -130,6 +130,7 @@ public class FileTransferUtil {
     try {
       ftp = getNetComponentsFTPClient();
       temp = File.createTempFile(name, "");
+      temp.deleteOnExit();
       OutputStream imo = new FileOutputStream(temp);
       try {
         ftp.retrieveFile(name, imo);
