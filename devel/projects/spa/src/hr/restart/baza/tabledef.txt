@@ -1165,6 +1165,7 @@ KOMISIJA;text;1;;N;Komisija
 CPARKOM;int;6;;;Komitent;15
 KOLKOM;numeric;15,3;;0;Komis. kolièina
 STAVKOM;char;50;;;Stavka ulaza komisije
+CPOR;char;6;;;Porez;5
 IDX=cart
 IDX=veza
 IDX=id_stavka
@@ -3531,7 +3532,7 @@ IDX=cpar3pp
 $Plizv
 LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
-CIZV;short;2;pkey;;Oznaka
+CIZV;short;5;pkey;;Oznaka
 OPIS;char;30;;;Opis;15
 PARAMETRI;char;20;;;Parametri;*
 
@@ -4543,6 +4544,8 @@ TOTAL;numeric;17,2;;0;Suma svih _FI;15
 $VTprijenos
 KEYSRC;char;60;pkey;;Kljuè izvornog dokumenta;15
 KEYDEST;char;60;pkey;;Kljuè ciljnog dokumenta;15
+idx=KEYSRC
+idx=KEYDEST
 
 $vtrabat
 LOKK;char;1;;N;LOKK;*
