@@ -16,6 +16,8 @@
 **
 ****************************************************************************/
 package hr.restart.robno;
+import hr.restart.baza.Condition;
+import hr.restart.util.Aus;
 import hr.restart.util.VarStr;
 import hr.restart.util.raTransaction;
 import hr.restart.util.reports.raStringCache;
@@ -24,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.StringTokenizer;
 
 import com.borland.dx.dataset.DataSet;
@@ -283,7 +286,7 @@ System.out.println("DeleteLink(String value) value="+value);
   }
   
   public static String getPrenosText(DataSet ds){
-    return getPrenosText(ds, null);
+    return getPrenosText(ds, (raStringCache) null);
   }
 
   public static String getPrenosText(DataSet ds, raStringCache cache){
@@ -368,16 +371,43 @@ System.out.println("DeleteLink(String value) value="+value);
 
     if (ds.hasColumn("CSKL")!= null && ds.hasColumn("VRDOK")!= null &&
         ds.hasColumn("BRDOK")!= null && ds.hasColumn("GOD")!= null){
+      String key = makeKey("doki",ds.getString("CSKL"),ds.getString("VRDOK"),ds.getString("GOD"),ds.getInt("BRDOK"));
       if (cache != null) {
         String cached = cache.getValue(ulaz ? "raPrenosVT-ULAZ" : "raPrenosVT-IZLAZ",
           ds.getString("CSKL") + ds.getString("VRDOK") + ds.getString("GOD") + ds.getInt("BRDOK"));
         if (cached != null) return cached;
       }
-      String ret = getPrenosText(makeKey("doki",ds.getString("CSKL"),ds.getString("VRDOK"),ds.getString("GOD"),ds.getInt("BRDOK")), ulaz);
+      String ret = getPrenosText(key, ulaz);
       return (cache == null ? ret : cache.returnValue(ret));
     }
     return "";
+  }
+  
+  public static String getPrenosText(DataSet ds, HashMap cache) {
+    if (ds.hasColumn("CSKL")!= null && ds.hasColumn("VRDOK")!= null &&
+        ds.hasColumn("BRDOK")!= null && ds.hasColumn("GOD")!= null){
+      String key = makeKey("doki",ds.getString("CSKL"),ds.getString("VRDOK"),ds.getString("GOD"),ds.getInt("BRDOK"));
+      VarStr val = (VarStr) cache.get(key);
+      if (val == null) return "";
+      return val.insert(0, '(').append(')').toString();
+    }
+    return "";
+  }
+  
+  public static void fillPrenosText(HashSet keys, HashMap cache) {
+    DataSet dest = Aus.q("SELECT * FROM VTprijenos WHERE " + Condition.in("KEYDEST", keys));
+    DataSet src = Aus.q("SELECT * FROM VTprijenos WHERE " + Condition.in("KEYSRC", keys));
     
+    fillCache(dest, "KEYDEST", "KEYSRC", cache);
+    fillCache(src, "KEYSRC", "KEYDEST", cache);
+  }
+  
+  private static void fillCache(DataSet ds, String key, String val, HashMap cache) {
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      VarStr old = (VarStr) cache.get(ds.getString(key));
+      if (old == null) cache.put(ds.getString(key), new VarStr(ds.getString(val)));
+      else old.append(',').append(formatforispis(ds.getString(val)));
+    }
   }
   
   public static String getPrenosText(String value, boolean ulaz){
