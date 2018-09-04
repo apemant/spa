@@ -42,6 +42,10 @@ public class repURAEU extends repURA {
     return re.getLogoSifdjel();
   }
   
+  public String getNAZIVE() {
+    return "\n" + getNAZIVKNJIGE().toUpperCase();
+  }
+  
   
   public BigDecimal getKOL6() {
     return raIspisUraIra.getKolona(ds,"6");
