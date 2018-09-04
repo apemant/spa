@@ -85,8 +85,8 @@ public class raComms {
   public void sendArts() {
     
     
-    StorageDataSet art = Artikli.getDataModule().getScopedSet("CART CART1 NAZART JM CPOR MC");
-    Util.getUtil().fillAsyncData(art, "SELECT cart, cart1, nazart, jm, cpor, mc FROM artikli");
+    StorageDataSet art = Artikli.getDataModule().getScopedSet("CART CART1 NAZART JM CPOR MC NAZLANG");
+    Util.getUtil().fillAsyncData(art, "SELECT cart, cart1, nazart, jm, cpor, mc, nazlang FROM artikli");
     
     StorageDataSet sta = Stanje.getDataModule().getScopedSet("CART KOL");
     Util.getUtil().fillAsyncData(sta, "SELECT cart, kol FROM stanje WHERE " + Condition.equal("GOD", Aut.getAut().getKnjigodRobno()));
@@ -98,7 +98,9 @@ public class raComms {
       JSONObject o = new JSONObject();
       o.put("id", Integer.valueOf(art.getInt("CART")));
       o.put("name", art.getString("NAZART"));
+      o.put("name_en", art.getString("NAZLANG"));
       o.put("unity", art.getString("JM"));
+      o.put("unit", art.getString("JM"));
       o.put("price", art.getBigDecimal("MC"));
       o.put("tax_id", art.getString("CPOR"));
       o.put("reference", art.getString("CART1"));
@@ -121,10 +123,13 @@ public class raComms {
       System.out.println(req);
       System.out.println(Arrays.toString(req.getAllHeaders()));
       System.out.println(entity);
+      System.out.println(arr);
       
       HttpResponse resp = client.execute(req);
       
       System.out.println(resp.toString());
+      System.out.println(resp.getEntity().toString());
+      System.out.println(IOUtils.toString(resp.getEntity().getContent()));
             
     } catch (URISyntaxException e) {
       // TODO Auto-generated catch block
@@ -147,14 +152,14 @@ public class raComms {
   }
   
   HttpGet getRequestGet(String path) throws URISyntaxException {
-    HttpGet req = new HttpGet(new URIBuilder().setScheme("http").setHost(host).setPath(path).setParameter("api_token", apikey).build()); 
+    HttpGet req = new HttpGet(new URIBuilder().setScheme("https").setHost(host).setPath(path).setParameter("api_token", apikey).build()); 
     req.addHeader("charset", "utf-8");
     
     return req;
   }
 
   HttpPost getRequest(String path) throws URISyntaxException {
-    HttpPost req = new HttpPost(new URIBuilder().setScheme("http").setHost(host).setPath(path).build()); 
+    HttpPost req = new HttpPost(new URIBuilder().setScheme("https").setHost(host).setPath(path).build()); 
     req.addHeader("charset", "utf-8");
     
     return req;
