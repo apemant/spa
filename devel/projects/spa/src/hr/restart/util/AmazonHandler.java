@@ -42,15 +42,25 @@ import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressEventType;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.glacier.AmazonGlacier;
+import com.amazonaws.services.glacier.AmazonGlacierClientBuilder;
+import com.amazonaws.services.glacier.model.UploadArchiveRequest;
+import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
+import com.amazonaws.services.glacier.transfer.ArchiveTransferManagerBuilder;
 //import com.amazonaws.services.rds.AmazonRDS;
 //import com.amazonaws.services.rds.AmazonRDSClientBuilder;
 //import com.amazonaws.services.rds.model.ModifyDBInstanceRequest;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 
 
 public class AmazonHandler {
@@ -71,6 +81,11 @@ public class AmazonHandler {
   
   ProgressListener track;
   AmazonS3 conn;
+  
+  AmazonGlacier glacier;
+  
+  AmazonSNS sns;
+  AmazonSQS sqs;
   //AmazonRDS db;
   
   public AmazonHandler(String id, String key, String buck, String folder) {
@@ -78,17 +93,27 @@ public class AmazonHandler {
   }
   
   public AmazonHandler(String paramPrefix) {
+    this(paramPrefix, false);
+  }
+  
+  public AmazonHandler(String paramPrefix, boolean backup) {
     String aid = frmParam.getParam("sisfun", paramPrefix + "Id", "", "AccessId za Amazon S3");
     if (aid == null || aid.length() == 0) aid = accessId;
     
     String skey = frmParam.getParam("sisfun", paramPrefix + "Key", "", "SecretKey za Amazon S3");
     if (skey == null || skey.length() == 0) skey = secretKey;
     
-    String buck = frmParam.getParam("sisfun", paramPrefix + "Bucket", "", "Bucket name za Amazon S3");
+    String buck = frmParam.getParam("sisfun", paramPrefix + (backup ? "BackBucket" : "Bucket"), "", "Bucket name za Amazon S3");
     if (buck == null || buck.length() == 0) buck = bucket;
     
     String folder = frmParam.getParam("sisfun", paramPrefix + "Folder", "data", "Folder za Amazon S3");
     if (folder == null || folder.length() == 0) folder = "data";
+    
+    System.out.println("Init from params prefix " + paramPrefix);
+    System.out.println("aid="+aid);
+    System.out.println("skey="+skey);
+    System.out.println("buck="+buck);
+    System.out.println("folder="+folder);
 
     init(aid, skey, buck, folder);
   }
@@ -110,6 +135,8 @@ public class AmazonHandler {
     
     init(aid, skey, buck, comp);
   }
+  
+  
   
   private void init(String id, String key, String buck, String folder) {
     mAccessId = id;
@@ -147,6 +174,10 @@ public class AmazonHandler {
     
     conn = get();
     
+    glacier = getGlacier();
+    
+    sns = getSNS();
+    sqs = getSQS();
     //db = getDb();
   }
   
@@ -157,6 +188,45 @@ public class AmazonHandler {
     clientConfig.setProtocol(Protocol.HTTPS);
     
     return AmazonS3ClientBuilder.standard()
+                            .withClientConfiguration(clientConfig)
+                            .withRegion(Regions.EU_CENTRAL_1)
+                            .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                            .build();
+  }
+  
+  public AmazonGlacier getGlacier() {
+    AWSCredentials credentials = new BasicAWSCredentials(mAccessId, mSecretKey);
+
+    ClientConfiguration clientConfig = new ClientConfiguration();
+    clientConfig.setProtocol(Protocol.HTTPS);
+    
+    return AmazonGlacierClientBuilder.standard()
+                            .withClientConfiguration(clientConfig)
+                            .withRegion(Regions.EU_CENTRAL_1)
+                            .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                            .build();
+  }
+  
+  public AmazonSNS getSNS() {
+    AWSCredentials credentials = new BasicAWSCredentials(mAccessId, mSecretKey);
+
+    ClientConfiguration clientConfig = new ClientConfiguration();
+    clientConfig.setProtocol(Protocol.HTTPS);
+    
+    return AmazonSNSClientBuilder.standard()
+                            .withClientConfiguration(clientConfig)
+                            .withRegion(Regions.EU_CENTRAL_1)
+                            .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                            .build();
+  }
+  
+  public AmazonSQS getSQS() {
+    AWSCredentials credentials = new BasicAWSCredentials(mAccessId, mSecretKey);
+
+    ClientConfiguration clientConfig = new ClientConfiguration();
+    clientConfig.setProtocol(Protocol.HTTPS);
+    
+    return AmazonSQSClientBuilder.standard()
                             .withClientConfiguration(clientConfig)
                             .withRegion(Regions.EU_CENTRAL_1)
                             .withCredentials(new AWSStaticCredentialsProvider(credentials))
@@ -185,6 +255,19 @@ public class AmazonHandler {
     db.modifyDBInstance(req);
   }*/
   
+  public File getFile(String name) {    
+    try {
+      File out = File.createTempFile("img", null);
+      out.deleteOnExit();
+      System.out.println("loading file '" +  mFolder + "/" + name + "' from bucket " + mBucket);
+      conn.getObject(new GetObjectRequest(mBucket, mFolder + "/" + name), out);
+      return out;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+  
   public ImageIcon readImage(String name) {
     S3ObjectInputStream stream = null;
     try {
@@ -204,6 +287,17 @@ public class AmazonHandler {
   
   public boolean putFile(File f) {
     return putFile(f, f.getName());
+  }
+  
+  public boolean storeToGlacier(File f) {
+    try {
+      ArchiveTransferManager atm = new ArchiveTransferManagerBuilder()
+        .withGlacierClient(glacier).withSnsClient(sns).withSqsClient(sqs).build();
+      System.out.println(atm.upload(mBucket, mFolder + "-" + f.getName(), f).getArchiveId());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
   }
   
   public boolean putFile(File f, String name) {
@@ -255,6 +349,37 @@ public class AmazonHandler {
     }
   }
   
+  public Set getFolder() {
+    Set backs = getFolder(mFolder + "/");
+    Set names = new HashSet();
+    for (Iterator i = backs.iterator(); i.hasNext(); ) {
+      Entry e = (Entry) i.next();
+      names.add(e.name.substring(mFolder.length() + 1));
+    }
+    return names;
+  }
+  
+  public Set getFolder(String folder) {
+    try {
+      Set backs = new HashSet();
+      
+      ObjectListing list = null;
+      do {
+        list = list == null ? conn.listObjects(mBucket, folder) : conn.listNextBatchOfObjects(list);
+        List sums = list.getObjectSummaries();
+        for (Iterator i = sums.iterator(); i.hasNext(); ) {
+          S3ObjectSummary os = (S3ObjectSummary) i.next();
+          backs.add(new Entry(os.getKey(), os.getLastModified()));
+        }
+      } while (list.isTruncated());
+      
+      return backs;      
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+  
   public Set getEverything() {
     try {
       Set backs = new HashSet();
@@ -280,7 +405,7 @@ public class AmazonHandler {
     List sub = new ArrayList();
     for (Iterator i = backs.iterator(); i.hasNext(); ) {
       Entry e = (Entry) i.next();
-      if (e.name.startsWith(mFolder + "/raBackup-" + base))
+      if (e.name.startsWith(mFolder + "/raBackup-" + base + "-"))
         sub.add(e);
     }
     if (sub.size() <= 4) return new HashSet(sub);
