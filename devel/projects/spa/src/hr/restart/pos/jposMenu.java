@@ -365,8 +365,15 @@ public class jposMenu extends JMenu {
       rzag.setString("CSKL", dM.getDataModule().getSklad().getString("CORG"));
     else rzag.setString("CSKL", OrgStr.getKNJCORG(false));
     
-    if (ld.raLocate(dM.getDataModule().getPartneri(), "CKUPAC", zag)) 
+    int dosp = 0;
+    if (ld.raLocate(dM.getDataModule().getPartneri(), "CKUPAC", zag)) { 
       rzag.setInt("CPAR", dM.getDataModule().getPartneri().getInt("CPAR"));
+      dosp = dM.getDataModule().getPartneri().getShort("DOSP");
+    }
+    
+    rzag.setTimestamp("DVO", zag.getTimestamp("DATDOK"));
+    rzag.setShort("DDOSP", (short) dosp);
+    rzag.setTimestamp("DATDOSP", hr.restart.util.Util.getUtil().addDays(zag.getTimestamp("DATDOK"), dosp));
     
     rzag.setString("VRDOK", "RAC");
     
