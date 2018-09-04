@@ -509,7 +509,7 @@ public class frmPDV2 extends raUpitFat {
     Timestamp psdat = ut.getYearBegin(Aus.getFreeYear());
     String psnal = "-" + Aus.getFreeYear() + "-00-";
     
-    setOPZ = Aus.createSet("Partneri.OIB .NAZPAR PS:1 Skstavke.BROJDOK .DATDOK .DATDOSP .SSALDO .SALDO PDV.2 {Status}OPIS:100");
+    setOPZ = Aus.createSet("{Tip}TIP Partneri.OIB .NAZPAR PS:1 Skstavke.BROJDOK .DATDOK .DATDOSP .SSALDO .SALDO PDV.2 {Status}OPIS:100");
     
     QueryDataSet sk = Skstavke.getDataModule().openTempSet("CPAR VRDOK BROJDOK DATUMKNJ DATDOK DATDOSP OPIS ID IP SSALDO SALDO CSKSTAVKE CGKSTAVKE OZNVAL TECAJ",
         //Aus.getKnjigCond().and(Condition.from("DATUMKNJ", Aus.getGkYear(nadan))).and(Condition.till("DATDOSP", nadan)).
@@ -609,6 +609,7 @@ public class frmPDV2 extends raUpitFat {
       else {
         setOPZ.setString("OIB", Partneri.get().getString("OIB"));
         setOPZ.setString("NAZPAR", Partneri.get().getString("NAZPAR"));
+        setOPZ.setInt("TIP", Util.checkOIB(setOPZ.getString("OIB")) ? 1 : 3);
       }
       
       setOPZ.setTimestamp("DATDOK", sk.getTimestamp("DATDOK"));
@@ -727,7 +728,7 @@ public class frmPDV2 extends raUpitFat {
     int rbr = 0;
     for (upitP.first(); upitP.inBounds(); upitP.next()) {
       if (!lookupData.getlookupData().raLocate(setPPO, new String[]{"CPAR","DATUMOD"}, 
-          new String[]{upitP.getInt("CPAR")+"",ut.getFirstDayOfMonth(upitP.getTimestamp("DATDOK")).toString()})) {//TU PO cpar i datumOD
+          new String[]{upitP.getInt("CPAR")+"",ut.getFirstDayOfMonth(upitP.getTimestamp("DATPRI")).toString()})) {//TU PO cpar i datumOD
         if (lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", upitP.getInt("CPAR")+"")) {
           String oib =  dm.getPartneri().getString("OIB");
           setPPO.insertRow(false);
@@ -735,8 +736,8 @@ public class frmPDV2 extends raUpitFat {
           setPPO.setInt("RBR", rbr);
           setPPO.setInt("CPAR", upitP.getInt("CPAR"));
           setPPO.setString("OIB", oib);
-          setPPO.setTimestamp("DATUMOD", ut.getFirstDayOfMonth(upitP.getTimestamp("DATDOK")));
-          setPPO.setTimestamp("DATUMDO", ut.getLastDayOfMonth(upitP.getTimestamp("DATDOK")));
+          setPPO.setTimestamp("DATUMOD", ut.getFirstDayOfMonth(upitP.getTimestamp("DATPRI")));
+          setPPO.setTimestamp("DATUMDO", ut.getLastDayOfMonth(upitP.getTimestamp("DATPRI")));
           setPPO.setBigDecimal("VRI", Aus.zero2);
           setPPO.setBigDecimal("POR", Aus.zero2);
         } else {
@@ -761,12 +762,12 @@ public class frmPDV2 extends raUpitFat {
   }
   
   private String getPPOQryCommon() {
-    return "SELECT skstavke.cpar, (uistavke.ID+uistavke.IP) as val, skstavke.datdok " +
+    return "SELECT skstavke.cpar, (uistavke.ID+uistavke.IP) as val, skstavke.datpri " +
         "FROM skstavke INNER JOIN uistavke ON uistavke.knjig = skstavke.knjig AND uistavke.cpar = skstavke.cpar " +
         "AND uistavke.vrdok = skstavke.vrdok AND uistavke.brojdok = skstavke.brojdok AND uistavke.cknjige = skstavke.cknjige " +
         "WHERE skstavke.knjig='"+dlgGetKnjig.getKNJCORG()+"' AND "+ 
-        Aus.getCurrGKDatumCond(frmPDV2.getInstance().getDatumDo()).
-        and(Condition.from("DATDOK", frmPDV2.getInstance().getDatumOd())).qualified("skstavke")+
+        Aus.getCurrGKDatumCond("DATUMKNJ", "DATPRI", frmPDV2.getInstance().getDatumDo()).
+        and(Condition.from("DATPRI", frmPDV2.getInstance().getDatumOd())).qualified("skstavke")+
         " AND ";
   }
 
@@ -1263,10 +1264,10 @@ System.out.println("stizvjqry :: " +stizvj.getQuery().getQueryString());
   
   private void updOPZ() {
     
-    XYPanel pan = new XYPanel(setOPZ).configWid(0, 0, 120, 120, 245, 0).configPos(15, 200);
+    XYPanel pan = new XYPanel(setOPZ).configWid(0, 50, 120, 120, 245, 350).configPos(15, 200);
     
     pan.label("Partner").nav("OIB NAZPAR", dm.getPartneri()).nl();
-    pan.label("Broj dokumenta").text("BROJDOK").nl();
+    pan.label("Broj dokumenta").text("BROJDOK").skip(150).label("Vrsta poreznog broja").skip(150).text("TIP").nl();
     pan.label("Datum / valuta").text("DATDOK").text("DATDOSP").nl();
     pan.label("Iznos / saldo").text("SSALDO").text("SALDO").nl();
     pan.label("Iznos poreza").text("PDV").nl().expand();
