@@ -442,6 +442,9 @@ public class JOPPDhndlr {
     String vpor = raOdbici.getInstance().getVrsteOdbKeysQuery("OPVR","S","2","4", false)[0];
     String vprir = raOdbici.getInstance().getVrsteOdbKeysQuery("OP","S","2","5", false)[0];
     
+    String mio1naq = raIzvjestaji.getOdbiciWhQueryIzv(raIzvjestaji.JOPPD_6);
+    String mio2naq = raIzvjestaji.getOdbiciWhQueryIzv(raIzvjestaji.JOPPD_7);
+    
   if (currOIB == null) {
     //strA
     getStrAset();
@@ -460,6 +463,14 @@ public class JOPPDhndlr {
         Aus.q("SELECT cradnik,cvrodb,sum(obriznos) as obriznos from odbiciobr where cvrodb in (" + vpor + "," + vprir + ") and rbr=1 group by cradnik,cvrodb") :
           Aus.q("SELECT cradnik,cvrodb,sum(obriznos) as obriznos from odbiciarh where cvrodb in (" + vpor + "," + vprir + 
               ") and rbr=1 and " + myrange.getQuery() + " group by cradnik,cvrodb");
+        
+    QueryDataSet mio1na = mio1naq == null || mio1naq.length() == 0 ? null : (myrange == null ?
+        Aus.q("SELECT cradnik,sum(obriznos) as obriznos from odbiciobr WHERE " + mio1naq + " GROUP BY cradnik") :
+          Aus.q("SELECT cradnik,sum(obriznos) as obriznos from odbiciarh WHERE " + mio1naq + " AND " + myrange.getQuery() + " GROUP BY cradnik"));
+        
+    QueryDataSet mio2na = mio2naq == null || mio2naq.length() == 0 ? null : (myrange == null ?
+        Aus.q("SELECT cradnik,sum(obriznos) as obriznos from odbiciobr WHERE " + mio2naq + " GROUP BY cradnik") :
+          Aus.q("SELECT cradnik,sum(obriznos) as obriznos from odbiciarh WHERE " + mio2naq + " AND " + myrange.getQuery() + " GROUP BY cradnik"));
     
     if (rpor != null && rprir != null) {
       if (myrange == null)
@@ -720,6 +731,18 @@ public class JOPPDhndlr {
           strBset.setBigDecimal("OSNDOP", getMinOsnDop("1"));
         strBset.setBigDecimal("MIO1", rs.getBigDecimal("MIO1").multiply(omjer).setScale(2, BigDecimal.ROUND_HALF_UP));
         strBset.setBigDecimal("MIO2", rs.getBigDecimal("MIO2").multiply(omjer).setScale(2, BigDecimal.ROUND_HALF_UP));
+        
+        // mio na placu hack
+        
+        if (lookupData.getlookupData().raLocate(mio1na, "CRADNIK", rs)) {
+          strBset.setBigDecimal("MIO1STAZ", mio1na.getBigDecimal("OBRIZNOS"));
+          strBset.setString("JOB", "1");
+        }
+        if (lookupData.getlookupData().raLocate(mio2na, "CRADNIK", rs)) {
+          strBset.setBigDecimal("MIO2STAZ", mio2na.getBigDecimal("OBRIZNOS"));
+          strBset.setString("JOB", "1");
+        }
+        
         //temp hack
         if (rs.getBigDecimal("ZO").signum() != 0) {
           zasnr = rs.getBigDecimal("PBTO").multiply(new BigDecimal("0.005")).setScale(2,BigDecimal.ROUND_HALF_UP);
@@ -799,11 +822,15 @@ public class JOPPDhndlr {
       if (strBset.getString("JOP").equals("0051")) {
         allZero(strBset, new String[] {"OSNDOP","MIO1","MIO2","ZDR","ZASNR","ZAP","ZAPOSINV"});
       }
-      if (strBset.getString("JOP").equals("0021")) {
+      if (strBset.getString("JOP").equals("0021") || strBset.getString("JOP").startsWith("4")) {
         Timestamp dan = new Timestamp(strBset.getTimestamp("ODJ").getTime());
         strBset.setTimestamp("ODJ", Util.getUtil().getFirstDayOfYear(dan));
         strBset.setTimestamp("DOJ", Util.getUtil().getLastDayOfYear(dan));
         strBset.setBigDecimal("BRUTOOBR", Aus.zero2);
+      }
+      if (strBset.getString("JOP").startsWith("4")) {
+        Aus.add(strBset, "ZDR", "ZASNR");
+        Aus.clear(strBset, "ZASNR");
       }
       
       String cradnik = rs.getString("CRADNIK");
@@ -1873,3 +1900,8 @@ System.err.println(
   }
 
 }
+
+
+/*
+
+*/
