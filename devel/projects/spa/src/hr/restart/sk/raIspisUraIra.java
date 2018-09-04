@@ -295,6 +295,8 @@ public class raIspisUraIra extends raFrame {
     if (jrbUraira1.isSelected()) {
       getRepRunner().addJasper("hr.restart.sk.repURAEU13", "hr.restart.sk.repURAEU",
           "uraeu2.jrxml", "Ispis knjige URA EU 13%");
+      getRepRunner().addJasper("hr.restart.sk.repURAEvident", "hr.restart.sk.repURAEU",
+          "evident.jrxml", "Ispis evidencije porezne obveze");
       getRepRunner().addJasper("hr.restart.sk.repURAEU10", "hr.restart.sk.repURAEU",
           "uraeu10.jrxml", "Ispis knjige URA EU 10%");
       getRepRunner().addJasper("hr.restart.sk.repURAEU", "hr.restart.sk.repURAEU",
@@ -479,7 +481,7 @@ public class raIspisUraIra extends raFrame {
     cols.add(dM.createStringColumn("MB", oib ? "OIB": "MB", 30));
     cols.add(dM.createStringColumn("SORTER", 16));
     tkol.open();
-    for (int i = 6; i <= (ui.equals("U") ? 18 : 23); i++) {
+    for (int i = 6; i <= (ui.equals("U") ? 19 : 23); i++) {
       cols.add(dM.createBigDecimalColumn("KOLONA" + i, Integer.toString(i)));
     }
     /*for (tkol.first(); tkol.inBounds(); tkol.next()) {
