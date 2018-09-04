@@ -362,7 +362,7 @@ public class frmKnjSKRac extends frmKnjizenje {
     } else {
       opis = new VarStr(opis_to_override);
     }
-    opis.truncate(100);
+    opis.truncate(200);
     if (uistavke.getInt("RBS") == 1) {
       stavka.setString("OPIS", opis.toString());
       stavka.setString("OZNVAL", skstavke.getString("OZNVAL"));
