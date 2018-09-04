@@ -154,6 +154,8 @@ public class SecondChooser extends JraDialog {
 	private boolean allowMinus = false;
 	
 	private boolean storno = false;
+	
+	private boolean recalcFinanc = false;
 
 	OKpanel okpanel = new OKpanel() {
 		public void jBOK_actionPerformed() {
@@ -176,6 +178,10 @@ public class SecondChooser extends JraDialog {
         storno = true;
       } else storno = false;
 	  selected = odabrano;*/
+	}
+	
+	public void setRecalcFinanc(boolean recalc) {
+	  recalcFinanc = recalc;
 	}
 
 	public void okSelect() {
@@ -1017,7 +1023,8 @@ System.out.println(StavkeSet.getInt("CARt"));
 
 			if (TD.isDocFinanc(rIT.what_kind_of_dokument)
 					&& TD.isDocFinanc(docDs.getString("VRDOK"))) {
-				copyFinancPart();
+				if (recalcFinanc) calcFinancPart(); 
+				else copyFinancPart();
 			} else if (TD.isDocFinanc(rIT.what_kind_of_dokument)
 					&& TD.isDocSklad(docDs.getString("VRDOK"))) {
 			  copySklad = copySkladParam;
