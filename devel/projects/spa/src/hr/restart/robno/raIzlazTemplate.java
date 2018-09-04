@@ -590,11 +590,11 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
     }
     
     void multiFisk() {
-      DataSet ms = getMasterSet();
-      Object[] brdoks = raMaster.getSelectionTracker().getSelection();
+      final DataSet ms = getMasterSet();
+      final Object[] brdoks = raMaster.getSelectionTracker().getSelection();
       Arrays.sort(brdoks);
       
-      String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
+      final String fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
       "Format fiskalnog broja izlaznog dokumenta na ispisu");
       
       String resetSysdat = frmParam.getParam("robno", "fiskDatum", "N",
@@ -612,25 +612,33 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
        	 if (response == JOptionPane.YES_OPTION) resetSysdat = "D";
         }
         
-         int count = 0;
-         for (int i = 0; i < brdoks.length; i++) {                      
-           if (!lD.raLocate(ms, "BRDOK", brdoks[i].toString())) continue;
-           
-           DataSet tms = doki.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey,  ms));
-           if (tms.getString("FOK").equals("D")) continue;
-           
-           String cOpis = presBlag.getSeqOpis(ms);
-           getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
-           getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
-           getMasterSet().setString("FOK", "D");
-           if (presBlag.isFiskOJ(ms)) getMasterSet().setInt("FNU", Integer.parseInt(ms.getString("CSKL")));
-           else getMasterSet().setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
-           getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
-           if (resetSysdat.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
-           getMasterSet().saveChanges();
-           boolean succ = fisk(ms);
-           if (succ) ++ count;
-         }
+        final String resetlocal = resetSysdat;
+        
+        raProcess.runChild(raMaster.getWindow(), new Runnable() {
+          public void run() {
+            int count = 0;
+            for (int i = 0; i < brdoks.length; i++) {                      
+              if (!lD.raLocate(ms, "BRDOK", brdoks[i].toString())) continue;
+              
+              DataSet tms = doki.getDataModule().openTempSet(Condition.whereAllEqual(Util.mkey,  ms));
+              if (tms.getString("FOK").equals("D")) continue;
+              
+              String cOpis = presBlag.getSeqOpis(ms);
+              getMasterSet().setInt("FBR", Valid.getValid().findSeqInt(cOpis, true, false));
+              getMasterSet().setString("FPP", presBlag.getFiskPP(ms));
+              getMasterSet().setString("FOK", "D");
+              if (presBlag.isFiskOJ(ms)) getMasterSet().setInt("FNU", Integer.parseInt(ms.getString("CSKL")));
+              else getMasterSet().setInt("FNU", presBlag.isFiskGot(ms) ? presBlag.getFiskNapG(ms) : presBlag.getFiskNap(ms));
+              getMasterSet().setString("PNBZ2", Aus.formatBroj(ms, fiskForm));
+              if (resetlocal.equalsIgnoreCase("D")) getMasterSet().setTimestamp("SYSDAT", Valid.getValid().getToday());
+              getMasterSet().saveChanges();
+              boolean succ = fisk(ms);
+              if (succ) ++ count;
+            }
+            raProcess.yield(Integer.valueOf(count));
+          }
+        });
+         int count = ((Integer) raProcess.getReturnValue()).intValue();
          raMaster.getJpTableView().fireTableDataChanged();
          JOptionPane.showMessageDialog(raMaster.getWindow(), "Fiskalizirano " + count + " raèuna.", "Greška", JOptionPane.INFORMATION_MESSAGE);
       } else if (what_kind_of_dokument.equalsIgnoreCase("ROT") || what_kind_of_dokument.equalsIgnoreCase("RAC") ||
@@ -3111,8 +3119,10 @@ ST.prn(radninal);
 
 		if (!isDetailExist())
 			return;
+		Stopwatch sw = Stopwatch.start("Funkcija ispisa");
 		reportsQuerysCollector.getRQCModule().ReSql(PrepSql(true, true),
 				what_kind_of_dokument);
+		sw.report("resql over");
 		reportsQuerysCollector.getRQCModule().caller = this;
 		// reportsQuerysCollector.getRQCModule().ReSql(PrepSql(true),what_kind_of_dokument);
 		// ST.prn(reportsQuerysCollector.getRQCModule().getQueryDataSet());
@@ -3122,6 +3132,7 @@ ST.prn(radninal);
 		}
 		if (!bprepRunReport)
 			prepRunReport();
+		sw.report("Calling super");
 		super.Funkcija_ispisa_master();
 	}
 
@@ -4174,6 +4185,9 @@ System.out.println("findCjenik::else :: "+sql);
     }
     
     sc.findStavke();
+    sc.setRecalcFinanc(frmParam.getParam("robno", "recalcFinanc", "N", 
+        "Rekalkulirati cijene kod kopiranja financijskih dokumenata (D,N)?").equalsIgnoreCase("D"));
+
 		if (sc.checkStavke()) {
 			raLocalTransaction rLT = new raLocalTransaction() {
 				public boolean transaction() {
