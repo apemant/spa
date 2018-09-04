@@ -479,6 +479,28 @@ public class ImageLoad implements ActionListener{
     String file = parsed[1];
     return loadImage(protocol, file);
 	}
+	public static File loadFile(String url) {
+	    String[] parsed = parseUrl(url);
+	    String protocol = parsed[0];
+	    String file = parsed[1];
+	    return loadFile(protocol, file);
+	}
+	public static File loadFile(String protocol, String file) {
+	  if (protocol.equals("ftp"))
+	    return new raImageUtil().loadFile(file);
+      if (protocol.equals("file"))
+        try {
+            return new File(getImgDir().getAbsolutePath(),file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+      if (protocol.equals("cloud")) {
+        AmazonHandler ah = new AmazonHandler("amazonImages");
+        return ah.getFile(file);
+      }
+      return null;
+	}
   public static ImageIcon loadImage(String protocol, String file) {
     if (protocol.equals("ftp")) {
         ImageIcon imi = new raImageUtil().loadImage(file);
@@ -487,7 +509,7 @@ public class ImageLoad implements ActionListener{
     } else if (protocol.equals("file")) {
         try {
             System.out.println(" Loadin' imidj :: "+file);
-            lastF = new File(getImgDir().getAbsolutePath()+File.separator+file);
+            lastF = new File(getImgDir().getAbsolutePath(),file);
             return new ImageIcon(
                 Toolkit.getDefaultToolkit().createImage(getImgDir().getAbsolutePath()+File.separator+file)
             );

@@ -41,6 +41,9 @@ public class raImageUtil {
   public static File getLastLoadedFile() {
     return FileTransferUtil.lastLoadedFile;
   }
+  public File loadFile(String name) {
+    return ftu.loadFile(name);
+  }
   public ImageIcon loadImage(String name) {
     File temp = ftu.loadFile(name);
     if (temp != null) {
