@@ -18,19 +18,25 @@
 package hr.restart.util;
 
 import hr.restart.baza.ConsoleCreator;
+import hr.restart.baza.Imageinfo;
 import hr.restart.baza.dM;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+
+import com.borland.dx.dataset.DataSet;
 
 
 public class raRemoteBackup {
 
   public raRemoteBackup() {
-    dM.setMinimalMode();
+    //dM.setMinimalMode();
   }
   
   public void perform(boolean console) {    
@@ -40,6 +46,9 @@ public class raRemoteBackup {
       List k = console ? zipAndUpload(true) : zipAndUpload();
       if (k != null) keys.addAll(k);
     }
+    String imgs = IntParam.getTag("backup.images");
+    if ("true".equals(imgs)) incrementalImageBackup();
+    
     String baze = IntParam.getTag("backup.baze");
     System.out.println("baze: " + baze);
     if (baze == null || baze.length() == 0) {
@@ -50,7 +59,8 @@ public class raRemoteBackup {
       return;
     }
     
-    String[] barr = new VarStr(baze).splitTrimmed(',');
+    //String[] barr = new VarStr(baze).splitTrimmed(',');
+    HashSet barr = new HashSet(Arrays.asList(new VarStr(baze).splitTrimmed(',')));
     
     Properties props = new Properties();
     FileHandler.loadProperties("base.properties", props);
@@ -71,13 +81,9 @@ public class raRemoteBackup {
       String dbdialect = props.getProperty("dbdialect" + bi,ddbdialect);
       all = name != null && url != null && tip != null && user != null && pass != null;
       any = name != null || url != null;
-      if (all) {
-        for (int i = 0; i < barr.length; i++)
-          if (extractName(url) != null) {
-            baks.add(new raDbaseChooser.BaseDef(name, url, tip, user, pass, params, dbdialect));
-            break;
-          }
-      }
+      String ename = extractName(url);
+      if (all && ename != null && barr.contains(ename))
+        baks.add(new raDbaseChooser.BaseDef(name, url, tip, user, pass, params, dbdialect));
     }
     List barrl = new ArrayList(keys);
     for (int i = 0; i < baks.size(); i++) {
@@ -92,10 +98,12 @@ public class raRemoteBackup {
       if (console) dumpAndUploadCons(name);
       else dumpAndUpload(name);
     }
+    
     new AmazonHandler().maintenance((String[]) barrl.toArray(new String[barrl.size()]));
   }
   
   private String extractName(String url) {
+    if (url == null) return null;
     if (url.startsWith("jdbc:firebirdsql")) {
       int p =url.lastIndexOf('/');
       int wp = url.lastIndexOf('\\');
@@ -124,11 +132,40 @@ public class raRemoteBackup {
     return null;
   }
   
+  private void incrementalImageBackup() {
+    AmazonHandler ah = new AmazonHandler("amazonImages", true);
+    Set old = ah.getFolder();
+    Set imgs = new HashSet();
+    DataSet ds = Imageinfo.getDataModule().openTempSet();
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      String img = ds.getString("IMGURL");
+      String name = img.substring(img.indexOf(':') + 1);
+      if (!old.remove(name)) imgs.add(img);
+    }
+
+    System.out.println("removing: " + old);
+    for (Iterator i = old.iterator(); i.hasNext(); ) {
+      String name = (String) i.next();
+      ah.deleteFile(name);
+    }
+    
+    System.out.println("adding: " + imgs);
+    for (Iterator i = imgs.iterator(); i.hasNext(); ) {
+      String img = (String) i.next();
+      File f = ImageLoad.loadFile(img);
+      if (f != null) ah.putFile(f, img.substring(img.indexOf(':') + 1));
+    }
+    System.out.println("All done.");
+  }
+  
   void dumpAndUploadCons(String name) {
     try {
       File f = ConsoleCreator.dumpCurrentDatabase(name);
-      if (f.exists())
-        new AmazonHandler().putFile(f);
+      if (f.exists()) {
+        AmazonHandler ah = new AmazonHandler();
+        ah.putFile(f);
+        ah.storeToGlacier(f);
+      }
       f.delete();
     } catch (Exception e) {
       e.printStackTrace();
@@ -177,7 +214,9 @@ public class raRemoteBackup {
       raProcess.setMessage("Arhiviranje datoteka za " + key, true);
     }
     FileHandler.makeZippedFile((File[]) files.toArray(new File[files.size()]), zfile);
-    new AmazonHandler().putFile(zfile);
+    AmazonHandler ah = new AmazonHandler();
+    ah.putFile(zfile);
+    ah.storeToGlacier(zfile);
     zfile.delete();
   }
 
@@ -222,7 +261,11 @@ public class raRemoteBackup {
       raProcess.runChild(new Runnable() {
         public void run() {
           raProcess.getDialog().setTitle("Upload " + name);
-          new AmazonHandler().putFile(upfile);
+          AmazonHandler ah = new AmazonHandler();
+          ah.putFile(upfile);
+          raProcess.getDialog().setTitle("Upload to glacier " + name);
+          ah.storeToGlacier(upfile);
+          
         }
       });
       upfile.delete();
