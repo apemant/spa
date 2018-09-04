@@ -42,6 +42,9 @@ import java.util.Set;
 
 import javax.swing.JTextArea;
 
+import org.postgresql.copy.CopyIn;
+import org.postgresql.copy.CopyManager;
+import org.postgresql.jdbc.PgConnection;
 import org.w3c.tools.codec.Base64Decoder;
 import org.w3c.tools.codec.Base64Encoder;
 import org.w3c.tools.codec.Base64FormatException;
@@ -60,6 +63,7 @@ import com.borland.jb.util.TriStateProperty;
 
 public abstract class KreirDrop {
   public static String ERROR_KEY = "$ERROR";
+  static final int DEFAULT_BUFFER_SIZE = 65536;
   
   dM dm = dM.getDataModule();
 
@@ -764,6 +768,92 @@ public abstract class KreirDrop {
             mc.getDataType() == Variant.LONG) 
           aincr = getMax(mc.getColumnName()) + 1;
       }
+      
+      if (dM.getDatabaseConnection() instanceof PgConnection) {
+        PgConnection pg = (PgConnection) dM.getDatabaseConnection();
+        int lnum = 0;
+        try {
+          CopyManager cm = new CopyManager(pg);
+          
+          CopyIn cin = cm.copyIn("COPY " + Naziv +"(" + VarStr.join(existingFields, ',') + ") FROM STDIN");
+          try {
+            byte[] buff = new byte[DEFAULT_BUFFER_SIZE];
+            int offset = 0;
+            String line;
+            VarStr lo = new VarStr();
+  
+            while ((line = dat.in()) != null) {
+              if (rowData != null) rowData.clear();
+              String[] parts = new VarStr(line).split(sep);
+              if (parts.length != existingCols.length
+                  && parts.length - 1 != existingCols.length)
+                throw new UnsupportedOperationException(
+                    "Incompatible dat<->def: " + line + " <-> " + fieldLine);
+              lo.clear();
+              for (int i = 0; i < existingCols.length; i++)
+                if (existingCols[i] != null) {
+                  Object o = decode(parts[i], existingCols[i], sep);
+                  if (rowData != null) rowData.put(existingNames[i], o.toString());
+                  lo.append(o).append('\t');
+                }
+              
+              for (Iterator i = missingKeyCols.iterator(); i.hasNext(); ) {
+                Column c = (Column) i.next();
+                switch (c.getDataType()) {
+                  case Variant.STRING:
+                    lo.append("!");
+                    break;
+                  case Variant.INT:
+                  case Variant.SHORT:
+                  case Variant.LONG:
+                    if (aincr >= 0) lo.append("" + aincr++);
+                    break;
+                  case Variant.DOUBLE:
+                  case Variant.FLOAT:
+                  case Variant.BIGDECIMAL:
+                    lo.append("-1");
+                    break;
+                  case Variant.TIMESTAMP:
+                    lo.append(new java.sql.Timestamp(0).toString());
+                    break;
+                  default:
+                    throw new UnsupportedOperationException("Invalid column type "+
+                        Variant.typeName(c.getDataType()));
+                }
+                lo.append('\t');
+              }
+              lo.chop().append('\n');
+  
+              byte[] raw = pg.encodeString(lo.toString());
+              if (raw.length + offset > DEFAULT_BUFFER_SIZE) {
+                cin.writeToCopy(buff, 0, offset);
+                offset = 0;
+              }
+              if (raw.length > DEFAULT_BUFFER_SIZE)
+                cin.writeToCopy(raw, 0, raw.length);
+              else {
+                System.arraycopy(raw, 0, buff, offset, raw.length);
+                offset += raw.length;
+              }
+  
+              if (++lnum % 1000 == 0) System.err.println(" ...imported " + lnum);
+              if (track != null)
+                track.rowTransfered(Naziv, track.ROW_INSERTED, lnum, rowData);
+            }
+            if (offset > 0) cin.writeToCopy(buff, 0, offset);
+            cin.endCopy();
+          } finally {
+            if (cin.isActive()) cin.cancelCopy();
+          }
+        } catch (SQLException e) {
+          throw new UnsupportedOperationException(e.getMessage(), e);
+        } finally {
+          dat.close();
+        }
+        if (track != null) track.rowTransfered(Naziv, track.INSERT_FINISHED, lnum, null);
+        TextFile.setEncoding(enc);
+        return lnum;
+      }
 
       raPreparedStatement ps = raPreparedStatement.createIndependentInsert(Naziv,
           (String[]) existingFields.toArray(new String[existingFields.size()]));
@@ -869,6 +959,40 @@ public abstract class KreirDrop {
     } finally {
       TextFile.setEncoding(enc);
     }
+  }
+  
+  private Object decode(String s, Column c, String sep) {
+    if (c.getDataType() == Variant.STRING)
+      return new VarStr(s).
+          replaceAll("\\n", "\n").replaceAll("</sep>", sep).
+          replaceAll("\\", "\\\\").replaceAll("\n", "\\n").
+          replaceAll("\r", "\\r").replaceAll("\t", "\\t");
+    if (s.trim().length() == 0) return "\\N";
+    if (c.getDataType() == Variant.TIMESTAMP)
+      try {
+        Variant v = new Variant();
+        v.setFromString(c.getDataType(), s);
+        return v.toString();
+      } catch (IllegalArgumentException ie) {
+        if (s.length()<11) return s.concat(" 00:00:00.0");
+        return s;
+      }
+    if (c.getDataType() == Variant.INPUTSTREAM) {
+      byte[] arr = decode(s);
+      VarStr ret = new VarStr();
+      for (int i = 0; i < arr.length; i++)
+        ret.append('\\').append(oct(arr[i]));
+      return ret;
+    }
+            
+    return s;
+  }
+  
+  char[] octs = {'0','1','2','3','4','5','6','7'};
+  private char[] oct(byte b) {
+    if (b < 8) return new char[] {octs[b]};
+    if (b < 64) return new char[] {octs[b >> 3] ,octs[b & 7]};
+    return new char[] {octs[b >> 6], octs[(b >> 3) & 7], octs[b & 7]}; 
   }
 
   public void loadTo(DataSet dest, File dir) throws FileNotFoundException {
