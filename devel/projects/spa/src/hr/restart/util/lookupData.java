@@ -152,6 +152,7 @@ sysoutTEST ST=new sysoutTEST(false);
   Variant shared2 = new Variant();
 
   public boolean raLookup(DataSet ds, DataRow result, String col, String value) {
+    if (isNull(ds)) return false;
     ds.open();
     DataRow find = new DataRow(ds, col);
     shared.setFromString(ds.getColumn(col).getDataType(), value);
@@ -160,6 +161,7 @@ sysoutTEST ST=new sysoutTEST(false);
   }
 
   public boolean raLookup(DataSet ds, DataRow result, String[] cols, String[] values) {
+    if (isNull(ds)) return false;
     ds.open();
     DataRow find = new DataRow(ds, cols);
     for (int i = 0; i < cols.length; i++) {
@@ -170,12 +172,14 @@ sysoutTEST ST=new sysoutTEST(false);
   }
 
   public DataRow raLookup(DataSet ds, String col, String value) {
+    if (isNull(ds)) return null;
     ds.open();
     DataRow result = new DataRow(ds);
     return raLookup(ds, result, col, value) ? result : null;    
   }
 
   public DataRow raLookup(DataSet ds, String[] cols, String[] values) {
+    if (isNull(ds)) return null;
     ds.open();
     DataRow result = new DataRow(ds);
     return raLookup(ds, result, cols, values) ? result : null;    
@@ -188,6 +192,7 @@ sysoutTEST ST=new sysoutTEST(false);
 
   public boolean raLookup(DataSet ds, DataRow result, String[] cols,
                           DataSet values, String[] keys, int row) {
+    if (isNull(ds)) return false;
     try {
       ds.open();
       DataRow find = new DataRow(ds, cols);
@@ -211,6 +216,7 @@ sysoutTEST ST=new sysoutTEST(false);
   }
 
   public DataRow raLookup(DataSet ds, String[] cols, DataSet values, String[] keys, int row) {
+    if (isNull(ds)) return null;
     ds.open();
     DataRow result = new DataRow(ds);
     return raLookup(ds, result, cols, values, keys, row) ? result : null;    
@@ -222,6 +228,7 @@ sysoutTEST ST=new sysoutTEST(false);
 
   public boolean raLookup(DataSet ds, DataRow result, String[] cols,
                           ReadRow values, String[] keys) {
+    if (isNull(ds)) return false;
     ds.open();
     DataRow find = new DataRow(ds, cols);
     for (int i = 0; i < cols.length; i++) {
@@ -236,12 +243,14 @@ sysoutTEST ST=new sysoutTEST(false);
   }
 
   public DataRow raLookup(DataSet ds, String[] cols, ReadRow values, String[] keys) {
+    if (isNull(ds)) return null;
     ds.open();
     DataRow result = new DataRow(ds);
     return raLookup(ds, result, cols, values, keys) ? result : null;
   }
 
   private boolean raLookup(DataSet ds, ReadRow find, DataRow result) {
+    if (isNull(ds)) return false;
     handleFilters(ds, null);
     return ds.lookup(find, result, Locate.CASE_INSENSITIVE | Locate.FIRST);
   }
@@ -261,6 +270,7 @@ sysoutTEST ST=new sysoutTEST(false);
       com.borland.dx.dataset.DataSet[] filterSets,
       String[] filterColNames,
       String[] searchColNames) {
+    if (isNull(setToLocate)) return false;
     try {
       //com.borland.dx.dataset.DataRow locRow = new com.borland.dx.dataset.DataRow(setToLocate,searchColNames);
       com.borland.dx.dataset.Variant[] filterVarValues = new com.borland.dx.dataset.Variant[filterColNames.length];
@@ -291,6 +301,7 @@ sysoutTEST ST=new sysoutTEST(false);
       com.borland.dx.dataset.DataSet setToLocate,
       String[] colNames,
       com.borland.dx.dataset.Variant[] colFilters) {
+    if (isNull(setToLocate)) return false;
     com.borland.dx.dataset.DataRow locRow = new com.borland.dx.dataset.DataRow(setToLocate,colNames);
     for (int i=0;i<colNames.length;i++) {
       try {
@@ -305,6 +316,7 @@ sysoutTEST ST=new sysoutTEST(false);
   }
 
   private boolean jbLocate(DataSet ds,ReadRow locrow,int opts) {
+    if (isNull(ds)) return false;
     try {
 //      System.out.println("defaultCollator = "+java.text.Collator.getInstance(java.util.Locale.getDefault()));
       handleFilters(ds, additionalFilter == null ? null : aditionalFilterListener);
@@ -369,6 +381,10 @@ sysoutTEST ST=new sysoutTEST(false);
       String[] colFilters) {
       return raLocate(setToLocate,colNames,colFilters,Locate.FIRST);
   }
+  
+  private boolean isNull(DataSet ds) {
+    return ds == null;
+  }
 /**
  * <pre>
  * Npr. Treba naci slog u datasetu ds1 u kojem je column cl1 = "666" i cl2='TEST" i
@@ -381,7 +397,8 @@ sysoutTEST ST=new sysoutTEST(false);
       com.borland.dx.dataset.DataSet setToLocate,
       String[] colNames,
       String[] colFilters, int locOptions) {
-//
+    if (isNull(setToLocate)) return false;
+
     setToLocate.open();
 
 // ???? BUG - kada ovo tu stavim javlja java.lang.NullPointerException
@@ -445,6 +462,7 @@ sysoutTEST ST=new sysoutTEST(false);
   
   VarStr vs = new VarStr();
   public boolean raLocate(DataSet ds, String cols, ReadRow vals) {
+    if (isNull(ds)) return false;
   	vs.clear().append(cols);
   	if (vs.indexOf(' ') > 0) return raLocate(ds, vs.split(), vals);
   	if (vs.indexOf(',') > 0) return raLocate(ds, vs.splitTrimmed(','), vals);
@@ -460,6 +478,7 @@ sysoutTEST ST=new sysoutTEST(false);
   }
   
   public boolean raLocate(DataSet ds, String[] cols, ReadRow vals, String[] keys) {
+    if (isNull(ds)) return false;
     ds.open();
   	DataRow dr = new DataRow(ds, cols);
   	for (int i = 0; i < cols.length; i++) {
