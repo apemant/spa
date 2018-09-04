@@ -22,6 +22,7 @@ import hr.restart.pos.presBlag;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.util.Aus;
+import hr.restart.util.Stopwatch;
 import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 import hr.restart.util.lookupData;
@@ -85,13 +86,18 @@ public class repIzlazni implements raReportData {
   
   private DataSet fiskDs;
   
+  private DataSet rateDs;
   
+  private HashMap precachev, precachen, precached, precacheo;
+  
+  Stopwatch sw;
   public repIzlazni() {
     this(true);
 //    System.out.println("repIzlazni <- triba li ovaj ispis na stdio kome??");
   }
 
   protected repIzlazni(boolean init) {
+    sw = Stopwatch.start("constructor");
     fiskForm = frmParam.getParam("robno", "fiskForm", "[FBR]-[FPP]-[FNU]",
         "Format fiskalnog broja izlaznog dokumenta na ispisu");
     fiskRed = frmParam.getParam("robno", "fiskRed", "Datum i vrijeme izrade: [DATE]  u [TIME]" +
@@ -110,10 +116,13 @@ public class repIzlazni implements raReportData {
       ru.setDataSet(ds);
       lastDok = getFormatBroj();
     }
+    precachev = precachen = precached = precacheo = null;
+    maybePrecache();
     checkSpecGroup();
   	setParams();
   	initDok();
     cache.clear();
+    sw.report("end constructor");
     //dm.getVTText().refresh();    
   }
   
@@ -136,6 +145,7 @@ public class repIzlazni implements raReportData {
             || descriptor.equals("hr.restart.robno.repTerecenjaV")
             || descriptor.equals("hr.restart.robno.repOdobrenjaPV")
             || descriptor.equals("hr.restart.robno.repInvoice")
+            || descriptor.equals("hr.restart.robno.repGrnInvoice")
             || descriptor.equals("hr.restart.robno.repOffer")
             || descriptor.equals("hr.restart.robno.repProformaInvoice")
             || descriptor.equals("hr.restart.robno.repPovratnicaOdobrenjeV")
@@ -190,20 +200,25 @@ public class repIzlazni implements raReportData {
   long tim;
   
   public raReportData getRow(int i) {
+    sw.report("getrow "+i);
     ds.goToRow(i);
     if (orig != null) orig.goToRow(i);
     String nowDok = getFormatBroj();
     if (lastDok != null && !nowDok.equals(lastDok)) {
       lastDok = nowDok;
       modParams();
+      sw.report("after modParams");
       initDok();
+      sw.report("after initDok");
       dokChanged();
+      sw.report("after dok changed");
     }
     dipor = dipor.add(ds.getBigDecimal("POR1")).add(ds.getBigDecimal("POR2")).add(ds.getBigDecimal("POR3"));
     dineto = dineto.add(ds.getBigDecimal("INETO"));
     diprodbp = diprodbp.add(ds.getBigDecimal("IPRODBP"));
     diprodsp = diprodsp.add(ds.getBigDecimal("IPRODSP"));
     checkNap();
+    sw.report("exit getRow");
     return this;
   }
   
@@ -220,6 +235,58 @@ public class repIzlazni implements raReportData {
       if (dm.getPartneri().getString("DI").equals("E")) pnaps = euNap;
       if (dm.getPartneri().getString("DI").equals("I")) pnaps = inoNap;
     }
+  }
+  
+  private void maybePrecache() {
+    sw.report("precaching");
+    
+    HashSet zkeys = new HashSet();
+    HashSet skeys = new HashSet();
+    HashSet fbs = new HashSet();
+    HashSet brdoks = new HashSet();
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      zkeys.add(rCD.getKey(ds,new String[]{"CSKL","VRDOK","GOD","BRDOK"},"doki"));
+      skeys.add(rCD.getKey(ds,new String[]{"CSKL","VRDOK","GOD","BRDOK","rbsid"},"stdoki"));
+      fbs.add(ru.getFormatBroj());
+      brdoks.add(Integer.valueOf(ds.getInt("BRDOK")));
+    }
+    if (zkeys.size() > 10) {
+      sw.report("caching vezanidokumenti");
+      raPrenosVT.fillPrenosText(zkeys, precachev = new HashMap());
+    }
+    if (skeys.size() > 10) {
+      sw.report("caching nazartext");
+      precachen = new HashMap();
+      DataSet vt = VTText.getDataModule().openTempSet(Condition.in("CKEY", skeys));
+      for (vt.first(); vt.inBounds(); vt.next())
+        precachen.put(vt.getString("CKEY"), vt.getString("TEXTFAK"));
+    }
+    if (fbs.size() > 10) {
+      sw.report("caching textdod");
+      precached = new HashMap();
+      DataSet dd = dokidod.getDataModule().openTempSet(Condition.in("BRRAC", fbs));      
+      dd.setSort(new SortDescriptor(new String[] {"BRRAC", "RBS"}));
+      String last = "";
+      for (dd.first(); dd.inBounds(); dd.next())
+        if (!dd.getString("BRRAC").equals(last))
+          precached.put(last = dd.getString("BRRAC"), new VarStr(dd.getString("VAL")));
+        else ((VarStr) precached.get(last)).append('\n').append(dd.getString("VAL"));
+    }
+    if (zkeys.size() > 10) {
+      sw.report("caching dodatniopis");
+      precacheo = new HashMap();
+      DataSet vt = VTText.getDataModule().openTempSet(Condition.in("CKEY", zkeys));
+      for (vt.first(); vt.inBounds(); vt.next())
+        precacheo.put(vt.getString("CKEY"), vt.getString("TEXTFAK"));
+    }
+    
+    rateDs = ut.getNewQueryDataSet(
+        "SELECT brdok, rbr, cnacpl, cbanka, datum, irata FROM rate WHERE "+
+            Condition.whereAllEqual("CSKL VRDOK GOD", ds).and(Condition.in("BRDOK", brdoks))
+              +" order by brdok, rbr");
+    
+    ds.first();
+    sw.report("end precaching");
   }
   
   protected void dokChanged() {
@@ -884,6 +951,11 @@ public class repIzlazni implements raReportData {
   }
   
   public String getTEXTDOD() {
+    if (precached != null) {
+      VarStr v = (VarStr) precached.get(ru.getFormatBroj());
+      return v == null ? "" : v.toString();
+    }
+    
     String cached = cache.getValue("TEXTDOD", ru.getFormatBroj());
     if (cached != null) return cached;
     
@@ -964,7 +1036,8 @@ public class repIzlazni implements raReportData {
   public String getNAZARText() {
     String ss = rCD.getKey(ds,new String[]{"CSKL","VRDOK","GOD","BRDOK","rbsid"},"stdoki");
 //System.out.println(ss);
-//    return ru.getSomething(new String[] {},dm.getOrgstruktura(),"NAZIV").getString();    
+//    return ru.getSomething(new String[] {},dm.getOrgstruktura(),"NAZIV").getString();
+    if (precachen != null) return (String) precachen.get(ss);
     
     DataSet vt = VTText.getDataModule().getTempSet(Condition.equal("CKEY", ss));
     vt.open();
@@ -1051,6 +1124,10 @@ public class repIzlazni implements raReportData {
   
   public double getFCV() {
     return orig == null ? getFC().doubleValue() : orig.getBigDecimal("FC").doubleValue() * fact().doubleValue();
+  }
+  
+  public double getFMCV() {
+    return orig == null ? getFMC().doubleValue() : orig.getBigDecimal("FMC").doubleValue() * fact().doubleValue();
   }
   
   public double getINETOV() {
@@ -1303,6 +1380,10 @@ public BigDecimal getIPRODSP() {
   public BigDecimal getZC() {
     return ds.getBigDecimal("ZC");
   }
+  
+  public BigDecimal getUPPOR() {
+    return ds.getBigDecimal("UPPOR");
+  }
 
   public double getIRAZ() {
     return ds.getBigDecimal("IRAZ").doubleValue();
@@ -1504,7 +1585,7 @@ public BigDecimal getIPRODSP() {
   }
   public String getSLOVIMA() { /** @todo razlika kod deviznog */
 //    if (ds.getString("OZNVAL").equals(""))
-    if (frmParam.getParam("robno", "slovimaVAL", "N", "Ispisati slovima sa valutom na raèunu usprkos svemu").equalsIgnoreCase("D")) {
+    if (slovimaVAL) {
       if (!ds.getString("OZNVAL").equals(""))
       return ut.numToLet(ds.getBigDecimal("UIRAC").doubleValue(),ds.getString("OZNVAL"));
     }
@@ -1615,8 +1696,7 @@ public BigDecimal getIPRODSP() {
   	POPNAZ=new VarStr();
   	POPIZNOS=new VarStr();
   	POPOSN=new VarStr();
-  	if (!frmParam.getParam("robno", "showPopust", "N",
-  		"Prikazati rekapitulaciju popusta na izlaznim raèunima (D,N)").equals("D")) return;
+  	if (!showPop) return;
 	
 		DataSet pops = vtrabat.getDataModule().getTempSet(Condition.whereAllEqual(Util.mkey, ds));
 		pops.open();
@@ -2080,29 +2160,31 @@ public BigDecimal getIPRODSP() {
     nacpl=new VarStr();
     irata=new VarStr();
     datnp=new VarStr();
+    
+    /*
     com.borland.dx.sql.dataset.QueryDataSet rate = ut.getNewQueryDataSet(
         "SELECT rbr, cnacpl, cbanka, datum, irata FROM rate "+
         "WHERE cskl='"+ds.getString("CSKL")+
         "' AND vrdok='"+ds.getString("VRDOK")+"' AND brdok=" + ds.getInt("BRDOK") +
-        " and god='"+ds.getString("GOD")+"' order by rbr");
-    if (rate.rowCount() == 0){
+        " and god='"+ds.getString("GOD")+"' order by rbr");*/
+    if (!lD.raLocate(rateDs, "BRDOK", ds)){
       nacpl.append("Gotovina");
       String jednaRata = sgQuerys.getSgQuerys().format(ds, "UIRAC");
       if (jednaRata.indexOf(',') <0)
         irata.append(jednaRata).append(",00");
     } else {
-      rate.first();
+      //rate.first();
       do {
         try {
-          if (lookupData.getlookupData().raLocate(dm.getNacpl(), "CNACPL", rate.getString("CNACPL"))){
+          if (lookupData.getlookupData().raLocate(dm.getNacpl(), "CNACPL", rateDs.getString("CNACPL"))){
             if(dm.getNacpl().getString("FL_KARTICA").equals("D")){
-              if (lookupData.getlookupData().raLocate(dm.getKartice(), "CBANKA", rate.getString("CBANKA"))){
+              if (lookupData.getlookupData().raLocate(dm.getKartice(), "CBANKA", rateDs.getString("CBANKA"))){
                 nacpl.append(dm.getNacpl().getString("NAZNACPL")).append(" - ").append(dm.getKartice().getString("NAZIV")).append("\n");
               } else {
                 nacpl.append(dm.getNacpl().getString("NAZNACPL")).append("\n");
               }
             } else if(dm.getNacpl().getString("FL_CEK").equals("D")){
-              if (lookupData.getlookupData().raLocate(dm.getBanke(), "CBANKA", rate.getString("CBANKA"))){
+              if (lookupData.getlookupData().raLocate(dm.getBanke(), "CBANKA", rateDs.getString("CBANKA"))){
                 nacpl.append(dm.getNacpl().getString("NAZNACPL")).append(" - ").append(dm.getBanke().getString("NAZIV")).append("\n");
               } else {
                 nacpl.append(dm.getNacpl().getString("NAZNACPL")).append("\n");
@@ -2115,14 +2197,14 @@ public BigDecimal getIPRODSP() {
         catch (Exception ex) {
           ex.printStackTrace();
         }
-        String jednaRata = sgQuerys.getSgQuerys().format(rate, "IRATA");
+        String jednaRata = Aus.formatBigDecimal(rateDs.getBigDecimal("IRATA")); //sgQuerys.getSgQuerys().format(rateDs, "IRATA");
         irata.append(jednaRata).append("\n");
         if (!dm.getNacpl().getString("FL_GOT").equals("D"))
-          datnp.append(rdu.dataFormatter(rate.getTimestamp("DATUM"), isReportForeign())).append("\n");
+          datnp.append(rdu.dataFormatter(rateDs.getTimestamp("DATUM"), isReportForeign())).append("\n");
         else
           datnp.append("\n");
 
-      } while (rate.next());
+      } while (rateDs.next() && rateDs.getInt("BRDOK") == ds.getInt("BRDOK"));
     }
   }
 
@@ -2158,17 +2240,16 @@ public BigDecimal getIPRODSP() {
       subjekt = dm.getRN_vrsub().getString("NAZVRSUBJ")+"\n";
       VarStr v = new VarStr();
       
-      String csub = frmParam.getParam("rn", "ispisCsub", "",
-          "Opis šifre subjekta (ostaviti prazno za neispisivanje šifre)");
+      /*String csub = frmParam.getParam("rn", "ispisCsub", "",
+          "Opis šifre subjekta (ostaviti prazno za neispisivanje šifre)");*/
       
-      if (csub != null && csub.trim().length() > 0) {
-        v.append(csub);
+      if (ispisCsub != null && ispisCsub.trim().length() > 0) {
+        v.append(ispisCsub);
         v.append(" - ");
         v.append(rn.getString("CSUBRN"));
         v.append(", ");
       }
-      if (frmParam.getParam("rn", "ispisBusBroj", "D",
-         "Ispis serijskog broja subjekta na raèunu (D,N)").equalsIgnoreCase("D")) {
+      if (ispisBusBroj) {
         v.append(dm.getRN_vrsub().getString("nazserbr")).append(" - ");
         v.append(sub.getString("BROJ")).append(", ");
       }
@@ -2396,7 +2477,8 @@ public BigDecimal getIPRODSP() {
     return brrac;
   }
   
-  public String getVEZANIDOKUMENTI(){    
+  public String getVEZANIDOKUMENTI(){
+    if (precachev != null) return raPrenosVT.getPrenosText(ds, precachev);
     return raPrenosVT.getPrenosText(ds, cache);
   }
   
@@ -2442,6 +2524,8 @@ public BigDecimal getIPRODSP() {
   }
   
   public String getDODATNIOPIS() {
+    if (precacheo != null) return (String) precacheo.get(rCD.getKey(ds,new String[]{"CSKL","VRDOK","GOD","BRDOK"},"doki"));
+    
     String dep = ds.getString("CSKL")+ds.getString("VRDOK")+ds.getString("GOD")+ds.getInt("BRDOK");
     String cached = cache.getValue("DODATNIOPIS", dep);
     if (cached != null) return cached;
@@ -2460,12 +2544,15 @@ public BigDecimal getIPRODSP() {
     }*/
   }
 
+  String ispisPJCPAR = "";
+  String defIspisPJ = "D";
   String ispisPJ = "D";
   String conVl = "N";
   String metroDob = "";
   String oib = "";
   String prefn = "";
   String labdod = "";
+  String ispisCsub = "";
   
   boolean gotpar = false;
   boolean hideKup = false;
@@ -2474,6 +2561,8 @@ public BigDecimal getIPRODSP() {
   boolean showPop = false;
   boolean ispTecaj = false;
   boolean prefv = false;
+  boolean slovimaVAL = false;
+  boolean ispisBusBroj = true;
   
   private void setParams() {
     modParams();
@@ -2506,6 +2595,15 @@ public BigDecimal getIPRODSP() {
         "Šifra napomene za raèune za inozemne partnere (PARTNAP)");
     euNap = frmParam.getParam("robno", "euNap", "",
         "Šifra napomene za raèune za partnere iz EU (PARTNAP)");
+    ispisCsub = frmParam.getParam("rn", "ispisCsub", "",
+        "Opis šifre subjekta (ostaviti prazno za neispisivanje šifre)");
+    slovimaVAL = frmParam.getParam("robno", "slovimaVAL", "N", "Ispisati slovima sa valutom na raèunu usprkos svemu").equalsIgnoreCase("D");
+    
+    defIspisPJ = frmParam.getParam("robno","ispisPJ","D","Ispis poslovne jedinice na ROT-u " +
+        "(D-u adresi, I-kao isporuka, O-na oba mjesta, N-bez P.J.)");
+    ispisPJCPAR = frmParam.getParam("robno", "ispisPJCPAR", "", "Vrijednost parametra ispisPJ u odnosu na partnera (cpar1:value,cpar2:value,cparN:value...");
+    ispisBusBroj = frmParam.getParam("rn", "ispisBusBroj", "D",
+        "Ispis serijskog broja subjekta na raèunu (D,N)").equalsIgnoreCase("D");
     
     altKol = frmParam.getParam("robno", "altKol", "N", "Preraèunati kolièine/cijene na izlazima (N,D,1,2)");
     
@@ -2541,10 +2639,10 @@ public BigDecimal getIPRODSP() {
   }
 
   private void modParams() {
-    ispisPJ = frmParam.getParam("robno","ispisPJ","D","Ispis poslovne jedinice na ROT-u " +
-    "(D-u adresi, I-kao isporuka, O-na oba mjesta, N-bez P.J.)");
-    String ispisPJCPAR = getIspisPJCPAR(getCPAR());
-    ispisPJ = (ispisPJCPAR.equals("")?ispisPJ:ispisPJCPAR);
+    /*ispisPJ = frmParam.getParam("robno","ispisPJ","D","Ispis poslovne jedinice na ROT-u " +
+    "(D-u adresi, I-kao isporuka, O-na oba mjesta, N-bez P.J.)");*/
+    String _ispisPJCPAR = getIspisPJCPAR(getCPAR());
+    ispisPJ = (_ispisPJCPAR.equals("")?defIspisPJ:_ispisPJCPAR);
     System.err.println("modParams: lastdok = "+lastDok+" cpar = "+getCPAR()+" ispisPJ = "+ispisPJ);
     
     String npref = frmParam.getParam("robno", "prefixPar" + getCSKL());
@@ -2553,8 +2651,8 @@ public BigDecimal getIPRODSP() {
       if (prefn.length() > 0) prefn = prefn + "\n";
     }
   }
-  public static String getIspisPJCPAR(int cpar) {
-    String ispisPJCPAR = frmParam.getParam("robno", "ispisPJCPAR", "", "Vrijednost parametra ispisPJ u odnosu na partnera (cpar1:value,cpar2:value,cparN:value...");
+  public String getIspisPJCPAR(int cpar) {
+//    String ispisPJCPAR = frmParam.getParam("robno", "ispisPJCPAR", "", "Vrijednost parametra ispisPJ u odnosu na partnera (cpar1:value,cpar2:value,cparN:value...");
     try {      
       String[] pars = new VarStr(ispisPJCPAR).split(',');
       for (int i = 0; i < pars.length; i++) {
