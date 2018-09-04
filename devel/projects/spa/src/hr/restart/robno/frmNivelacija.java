@@ -890,6 +890,7 @@ public class frmNivelacija extends raMasterDetail {
     String cart;
     raDetail.getJpTableView().enableEvents(false);
     dm.getStanje().refresh();
+    refilterDetailSet();
     // izra\u010Dunaj faktor kojim treba množiti cijene ( (promjena+100) / 100 )
     BigDecimal vcmul = (pa.getPromjena().add(new BigDecimal(100.))).divide(new BigDecimal(100.), 4, BigDecimal.ROUND_HALF_DOWN);
 
@@ -898,10 +899,11 @@ public class frmNivelacija extends raMasterDetail {
     vrzal = dm.getSklad().getString("VRZAL");
     oldpormar = oldporpor = oldporav = ma.nul;
     raProcess.setMessage("Kalkulacija cijena ...", false);
+    System.out.println("count: " + getDetailSet().rowCount());
     // listaj jedan po jedan artikl iz dataseta allArt i provjeri je li mu cijena ve\u0107 promijenjena
     for (allArt.first(); allArt.inBounds(); allArt.next()) {
       cart = String.valueOf(allArt.getInt("CART"));
-      if (!artNotUnique(cart)) {
+      if (getDetailSet().rowCount() == 0 || !artNotUnique(cart)) {
         // ako artikl pripada odabranoj grupi, promijeni mu cijenu
         if (ld.raLocate(dm.getStanje(),new String[]{"cskl","god","cart"},new String[]{
           getMasterSet().getString("CSKL"),getMasterSet().getString("GOD"), cart})) {
@@ -948,6 +950,17 @@ public class frmNivelacija extends raMasterDetail {
 
         // ubaci novi red u tablicu stdoku
       }
+      System.out.println("count: " + getDetailSet().rowCount());
+      if (getDetailSet().getRowCount() > 0) {
+        System.out.println("cskl: " + getDetailSet().getString("CSKL"));
+      }
+    }
+    
+    if (getDetailSet().getRowCount() > 0) {
+      getDetailSet().last();
+      System.out.println("cskl: " + getDetailSet().getString("CSKL"));
+      if (getDetailSet().isNull("CSKL"))
+        getDetailSet().emptyRow();
     }
 
     vl.RezSet = null;
