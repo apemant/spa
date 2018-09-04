@@ -25,11 +25,19 @@ import hr.restart.swing.raInputDialog;
 import hr.restart.util.JlrNavField;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
+import hr.restart.util.reports.JasperHook;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JOptionPane;
+
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JRTextField;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.DataSet;
 
@@ -40,6 +48,13 @@ public class raGRN extends raIzlazTemplate  {
       chgLot();
     }
   };
+  
+  JasperHook jhook = new JasperHook() {
+    public void adjustDesign(String reportName, JasperDesign design) {
+      adjust(design);
+    }
+  };
+  
 
   public void initialiser(){
     what_kind_of_dokument = "GRN";  // treba biti grn
@@ -139,9 +154,12 @@ public class raGRN extends raIzlazTemplate  {
     raMaster.getRepRunner().addReport("hr.restart.robno.repGrnRacPnPL",
         "hr.restart.robno.repRacuniPnP",
         "GrnRacSifKupPakLot","Raèun sa šifrom kupca i šaržom");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repGrnInvoice",
+        "hr.restart.robno.repIzlazni","ProformaInvoiceMP","Invoice");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxRacun","Matrièni ispis raèuna");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxRacunPop","Matrièni ispis raèuna s više popusta");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna POS printer");
+    raMaster.getRepRunner().addReport("hr.restart.robno.repGRNInvoice", "Matrièni ispis raèuna POS printer");
     
     if (repFISBIH.isFISBIH()) {
       if (getMasterSet().getInt("FBR")>0) {
@@ -149,6 +167,7 @@ public class raGRN extends raIzlazTemplate  {
         raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRekRN","REKLAMIRANJE FISKALNOG ra\u010Duna");
       } else raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
     }
+    raMaster.getRepRunner().addJasperHook("hr.restart.robno.repGrnInvoice", jhook);
   }
   public void ConfigViewOnTable(){
 //    this.setVisibleColsMaster(new int[] {4,5,6});
@@ -164,10 +183,35 @@ public class raGRN extends raIzlazTemplate  {
     raDetail.getRepRunner().addReport("hr.restart.robno.repGrnRacPnPL",
         "hr.restart.robno.repRacuniPnP",
         "GrnRacSifKupPakLot","Raèun sa šifrom kupca i šaržom");
+    raDetail.getRepRunner().addReport("hr.restart.robno.repGrnInvoice",
+        "hr.restart.robno.repIzlazni","ProformaInvoiceMP","Invoice");
     raDetail.getRepRunner().addReport("hr.restart.robno.repMxRacun","Matrièni ispis raèuna");
     raDetail.getRepRunner().addReport("hr.restart.robno.repMxRacunPop","Matrièni ispis raèuna s više popusta");
     raDetail.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna POS printer");
+    raDetail.getRepRunner().addJasperHook("hr.restart.robno.repGrnInvoice", jhook);
 //    if (repFISBIH.isFISBIH()) raDetail.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+  }
+  
+  void adjust(JasperDesign design) {
+    JRGroup[] grs = design.getGroups();
+    for (int i = 0; i < grs.length; i++) {
+      JRBand bn = grs[i].getGroupFooterSection().getBands()[0];
+      JRElement[] els = bn.getElements();
+      for (int j = 0; j < els.length; j++) 
+        if (els[j] instanceof JRTextField) {
+          JRDesignExpression ex = (JRDesignExpression) ((JRTextField) els[j]).getExpression();
+          if (ex.getText().indexOf("sum_Section0_") >= 0) {
+            if (ex.getText().indexOf("IPRODSPV") >= 0 || ex.getText().indexOf("UIRABV") >= 0) {
+              ex.setText("$P{cform}.format(" + ex.getText() + ")");
+              ex.setValueClassName("java.lang.String");
+            } else {
+              ex.setText("$F{PREFIX} + $P{cform}.format(" + ex.getText() + ")");
+              ex.setValueClassName("java.lang.String");
+            }
+          }
+        }
+
+    }
   }
 
   public boolean LocalValidacijaMaster(){
