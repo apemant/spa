@@ -29,6 +29,7 @@ import hr.restart.swing.JraScrollPane;
 import hr.restart.swing.JraTextField;
 import hr.restart.swing.XYPanel;
 import hr.restart.swing.raInputDialog;
+import hr.restart.swing.raTableColumnModifier;
 import hr.restart.swing.raTextMask;
 import hr.restart.util.*;
 import hr.restart.zapod.FrmPartneriArtikli;
@@ -1205,6 +1206,7 @@ public class frmArtikli extends raMatPodaci {
     installSelectionTracker("CART");
     
     getJpTableView().addTableModifier(new AktivColorModifier());
+    getJpTableView().addTableModifier(new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, dm.getPartneri()));
     
     jtpArtikli.setSelectedIndex(0);
     
