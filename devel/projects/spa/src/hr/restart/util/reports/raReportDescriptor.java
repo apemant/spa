@@ -515,6 +515,8 @@ public class raReportDescriptor {
       {"hr.restart.robno.repRacRnal", "RAC", "D", ""},
       {"hr.restart.robno.repRacGroup", "RAC", "D", ""},      
       {"hr.restart.robno.repInvoice", "IVO", "F", ""},
+      {"hr.restart.robno.repGrnInvoice", "IVO", "F", ""},
+      {"hr.restart.robno.repGotInvoice", "IVO", "F", ""},
       {"hr.restart.robno.repInvoiceNew", "IVO", "F", ""},
       {"hr.restart.robno.repMiniRacHr", "IVH", "F", ""},
       {"hr.restart.robno.repMiniRacEn", "IVE", "F", ""},
