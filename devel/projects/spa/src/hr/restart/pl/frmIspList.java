@@ -1385,6 +1385,7 @@ System.out.println("KreditInfo za "+ds);
       StDSradniciCorg.setBigDecimal("KREDITI", getModifiedBigDecimal(SQLradnicicorg,"KREDITI"));
       StDSradniciCorg.setBigDecimal("NARUKE", getModifiedBigDecimal(SQLradnicicorg,"NARUKE"));
     } while (SQLradnicicorg.next());
+    raOdbici.getInstance().setRadniciPL(null);
     findStrings(StDSradnici.getString("CRADNIK"), StDSradnici.getShort("RBROBR"), StDSradnici.getShort("MJOBR"), StDSradnici.getShort("GODOBR"));
   }
 
