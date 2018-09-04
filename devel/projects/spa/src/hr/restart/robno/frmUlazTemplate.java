@@ -101,6 +101,12 @@ public class frmUlazTemplate extends raMasterDetail {
 
 	java.math.BigDecimal oldPORAVMAR = main.nul;
 	
+	BigDecimal oldIRAC = Aus.zero0;
+	BigDecimal oldUIPRPOR = Aus.zero0;
+	BigDecimal oldUIPRPOR2 = Aus.zero0;
+	BigDecimal oldUIPRPOR3 = Aus.zero0;
+	
+	
 	int oldCPAR = -1;
 	int oldCART = -1;
 	String oldBRRAC = "";
@@ -645,6 +651,7 @@ public class frmUlazTemplate extends raMasterDetail {
 		oldMAR = getDetailSet().getBigDecimal("IMAR");
 		oldPOR = getDetailSet().getBigDecimal("IPOR");
 		oldNAB = getDetailSet().getBigDecimal("INAB");
+		oldIRAC = getDetailSet().getBigDecimal("IDOB").subtract(getDetailSet().getBigDecimal("IRAB"));
 		oldZAD = getDetailSet().getBigDecimal("IZAD");
 		oldPORAV = getDetailSet().getBigDecimal("PORAV");
 		oldPORAVMAR = getDetailSet().getBigDecimal("DIOPORMAR");
@@ -654,7 +661,7 @@ public class frmUlazTemplate extends raMasterDetail {
 		oldMC = getDetailSet().getBigDecimal("SMC");
 		oldCART = getDetailSet().getInt("CART");
 		
-		raDetail.calc.run("oldKOL = KOL;  oldMAR = IMAR;  oldPOR = IPOR;  oldNAB = INAB;  oldZAD = IZAD");
+		raDetail.calc.run("oldKOL = KOL;  oldMAR = IMAR;  oldPOR = IPOR;  oldNAB = INAB;  oldZAD = IZAD;  oldIRAC = IDOB - IRAB");
 		raDetail.calc.run("oldPORAV = PORAV;  oldPORAVMAR = DIOPORMAR;  oldPORAVPOR = DIOPORPOR;  oldVC = SVC;  oldMC = SMC");
 		
 		//		return isFind;
@@ -797,7 +804,11 @@ System.out.println("mode");
 		if (mode == 'I') {
 			oldCPAR = getMasterSet().getInt("CPAR");
 			oldBRRAC = getMasterSet().getString("BRRAC");
+			oldUIPRPOR = getMasterSet().getBigDecimal("UIPRPOR");
+			oldUIPRPOR2 = getMasterSet().getBigDecimal("UIPRPOR2");
+			oldUIPRPOR3 = getMasterSet().getBigDecimal("UIPRPOR3");
 		} else {
+		  oldUIPRPOR = oldUIPRPOR2 = oldUIPRPOR3 = Aus.zero0;
 			oldCPAR=-1;
 			oldBRRAC = "";
 		}
@@ -811,18 +822,20 @@ System.out.println("oldBRRAC "+oldBRRAC);
 			oldMAR = main.nul;
 			oldPOR = main.nul;
 			oldNAB = main.nul;
+			oldIRAC = main.nul;
 			oldZAD = main.nul;
 			oldPORAV = main.nul;
 			oldPORAVMAR = main.nul;
 			oldPORAVPOR = main.nul;
 			oldIZNKALK = main.nul;
 			
-			raDetail.calc.run("oldKOL = oldMAR = oldPOR = oldNAB = oldZAD = oldPORAV = oldPORAVMAR = oldPORAVPOR = oldIZNKALK = 0");
+			raDetail.calc.run("oldKOL = oldMAR = oldPOR = oldIRAC = oldNAB = oldZAD = oldPORAV = oldPORAVMAR = oldPORAVPOR = oldIZNKALK = 0");
 
 		} else if (mode == 'I') {
 			oldKOL = getDetailSet().getBigDecimal("KOL");
 			oldMAR = getDetailSet().getBigDecimal("IMAR");
 			oldPOR = getDetailSet().getBigDecimal("IPOR");
+			oldIRAC = getDetailSet().getBigDecimal("IDOB").subtract(getDetailSet().getBigDecimal("IRAB"));
 			oldNAB = getDetailSet().getBigDecimal("INAB");
 			oldZAD = getDetailSet().getBigDecimal("IZAD");
 			oldPORAV = getDetailSet().getBigDecimal("PORAV");
@@ -830,7 +843,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 			oldPORAVPOR = getDetailSet().getBigDecimal("DIOPORPOR");
 			oldIZNKALK = getDetailSet().getBigDecimal("INAB");
 			
-			raDetail.calc.run("oldKOL = KOL;  oldMAR = IMAR;  oldPOR = IPOR;  oldNAB = INAB;  oldZAD = IZAD");
+			raDetail.calc.run("oldKOL = KOL;  oldMAR = IMAR;  oldPOR = IPOR;  oldNAB = INAB;  oldZAD = IZAD;  oldIRAC = IDOB - IRAB");
 			raDetail.calc.run("oldPORAV = PORAV;  oldPORAVMAR = DIOPORMAR;  oldPORAVPOR = DIOPORPOR;  oldIZNKALK = INAB");
 		}
 	}
@@ -1000,6 +1013,16 @@ System.out.println("oldBRRAC "+oldBRRAC);
 	}
 
 	public boolean doBeforeSaveMaster(char mode) {
+	  if (mode != 'N') {
+	    Aus.sub(getMasterSet(), "UIRAC", oldUIPRPOR);
+        Aus.sub(getMasterSet(), "UIRAC", oldUIPRPOR2);
+        Aus.sub(getMasterSet(), "UIRAC", oldUIPRPOR3);
+	  }
+	  if (mode != 'B') {
+	    Aus.add(getMasterSet(), "UIRAC", "UIPRPOR");
+        Aus.add(getMasterSet(), "UIRAC", "UIPRPOR2");
+        Aus.add(getMasterSet(), "UIRAC", "UIPRPOR3");
+	  }
 		if (mode == 'N') {
 			util.getBrojDokumenta(getMasterSet());
 		}
@@ -1033,6 +1056,9 @@ System.out.println("oldBRRAC "+oldBRRAC);
             getMasterSet().setBigDecimal("UIKAL",
 					getMasterSet().getBigDecimal("UIKAL").add(
 							getDetailSet().getBigDecimal("INAB")));
+            
+            Aus.add(getMasterSet(), "UIRAC", getDetailSet(), "IDOB");
+            Aus.sub(getMasterSet(), "UIRAC", getDetailSet(), "IRAB");
 			
             raFLH.getInstance().ulazNoviFLH(getDetailSet());    /* FLH */
             
@@ -1042,6 +1068,7 @@ System.out.println("oldBRRAC "+oldBRRAC);
 			System.out.println("INAB  = " + oldNAB);
 			getMasterSet().setBigDecimal("UIKAL",
 					getMasterSet().getBigDecimal("UIKAL").subtract(oldNAB));
+			Aus.sub(getMasterSet(), "UIRAC", oldIRAC);
 			System.out.println("UIKAL (poslije) = "
 					+ getMasterSet().getBigDecimal("UIKAL"));
 		} else if (mode == 'I') {
@@ -1054,6 +1081,9 @@ System.out.println("oldBRRAC "+oldBRRAC);
 					getMasterSet().getBigDecimal("UIKAL").add(
 							getDetailSet().getBigDecimal("INAB")).subtract(
 							oldIZNKALK));
+			Aus.add(getMasterSet(), "UIRAC", getDetailSet(), "IDOB");
+            Aus.sub(getMasterSet(), "UIRAC", getDetailSet(), "IRAB");
+            Aus.sub(getMasterSet(), "UIRAC", oldIRAC);
 			System.out.println("UIKAL (poslije) = "
 					+ getMasterSet().getBigDecimal("UIKAL"));
 		}
