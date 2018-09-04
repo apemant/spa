@@ -136,6 +136,14 @@ public class repURA implements raReportData {
   public BigDecimal getKOL17() {
     return raIspisUraIra.getKolona(ds,"17");
   }
+  
+  public BigDecimal getKOL18() {
+    return raIspisUraIra.getKolona(ds,"18");
+  }
+  
+  public BigDecimal getKOL19() {
+    return raIspisUraIra.getKolona(ds,"19");
+  }
 
   public String getFirstLine(){
     return re.getFirstLine();
