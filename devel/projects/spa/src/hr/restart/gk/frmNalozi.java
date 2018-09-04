@@ -19,6 +19,7 @@ package hr.restart.gk;
 import hr.restart.baza.*;
 import hr.restart.robno.raRobno;
 import hr.restart.sisfun.frmParam;
+import hr.restart.sisfun.frmTableDataView;
 import hr.restart.sk.R2Handler;
 import hr.restart.sk.raSaldaKonti;
 import hr.restart.swing.JraCheckBox;
@@ -45,6 +46,7 @@ import hr.restart.util.reports.ReportMailDialog;
 import hr.restart.zapod.raKonta;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -58,6 +60,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
 import com.borland.dx.dataset.DataRow;
@@ -1441,6 +1444,8 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
     String strCNAL = getMasterSet().getString("CNALOGA");
     String msgObr = "";
     boolean isObrNalogaSucc = false;
+    boolean pok = false;
+    StorageDataSet psk = null;
     if (strSTATUS.equals("N")) {
       msgObr = "Nalog nije spreman za obradu!";
     } else if (strSRC.equalsIgnoreCase(raKnjizenje.RASK)) {
@@ -1531,11 +1536,16 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
       });
       DataSet sk = (DataSet) raProcess.getReturnValue();
       DataSet ui = UIstavke.getDataModule().getTempSet(Condition.in("CSKSTAVKE",  sk));
+      psk = Skstavke.getDataModule().getScopedSet("VRDOK BROJKONTA CPAR BROJDOK DATDOK SSALDO SALDO");
       
       if (!strSRC.equalsIgnoreCase(raKnjizenje.SK)) {
-      	boolean pok = false;
-      	for (sk.first(); sk.inBounds(); sk.next())
-      		if (sk.getBigDecimal("SALDO").compareTo(sk.getBigDecimal("SSALDO")) != 0) pok = true;
+      	for (sk.first(); sk.inBounds(); sk.next()) 
+      		if (sk.getBigDecimal("SALDO").compareTo(sk.getBigDecimal("SSALDO")) != 0) {
+      		  pok = true;
+      		  psk.insertRow(false);
+      		  dM.copyDestColumns(sk, psk);
+      		}
+      	
       	if (pok)
       		msgObr = "Nalog je nemoguæe rasknjižiti jer sadrži stavke salda konti koje su pokrivene!";
       }
@@ -1614,7 +1624,20 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
     if (batch) return isObrNalogaSucc;//preskoci ovo dolje ako je batch
     if (!msgObr.equals("")) {
       if (!(silent && isObrNalogaSucc)) {
-        JOptionPane.showMessageDialog(jpMaster.getTopLevelAncestor(),msgObr,"Obrada naloga",JOptionPane.INFORMATION_MESSAGE);
+        if (pok) {
+          String[] opt = {"OK", "Detalji"};
+          int ret = JOptionPane.showOptionDialog(jpMaster.getTopLevelAncestor(), msgObr,
+              "Obrada naloga", 0, JOptionPane.INFORMATION_MESSAGE, null, opt, opt[0]);
+          if (ret == 1) {
+            frmTableDataView view = new frmTableDataView();
+            view.setDataSet(psk);
+            view.jp.setPreferredSize(new Dimension(640, 400));
+            view.jp.getMpTable().setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+            view.setTitle("Pokrivene salda konti stavke");
+            view.pack();
+            view.show();
+          }
+        } else JOptionPane.showMessageDialog(jpMaster.getTopLevelAncestor(),msgObr,"Obrada naloga",JOptionPane.INFORMATION_MESSAGE);
         raMaster.getJpTableView().fireTableDataChanged();
         changeDetailViewStatus();
       }
