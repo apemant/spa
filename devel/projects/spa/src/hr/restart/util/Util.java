@@ -2168,6 +2168,33 @@ System.out.println("desetice "+inTxtVal.substring(9,11));
 //    String applcontents = hr.restart.start.
 
   }
+  
+  public static boolean checkOIB(String oib) {
+    if (oib.length() != 11)
+        return false;
+
+    try {
+        Long.parseLong(oib);
+    } catch (NumberFormatException e) {
+        return false;
+    }
+
+    int a = 10;
+    for (int i = 0; i < 10; i++) {
+        a = a + Character.getNumericValue(oib.charAt(i));
+        a = a % 10;
+        if (a == 0)
+            a = 10;
+        a *= 2;
+        a = a % 11;
+    }
+    int kontrolni = 11 - a;
+    if (kontrolni == 10)
+        kontrolni = 0;
+
+    return kontrolni == Character.getNumericValue(oib.charAt(10));
+  }
+  
   /**
    * Uzme uzme prvu rijec iz name i doda key u nastavku.
    * npr. obsfucateName("Stol 160x80 sa ladicarom", "007") = "Stol 007"
