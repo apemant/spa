@@ -60,7 +60,7 @@ public class repUtil {
   public Variant getSomething2(String[] colname,String[] colname_to_search,
                                 DataSet where_to_start,DataSet dst,String what){
 
-    where_to_start.open();
+    //where_to_start.open();
     dst.open();
     for (int i=0; i< colname.length; i++){
       where_to_start.getVariant(colname_to_search[i],filter[i]);
