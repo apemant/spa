@@ -198,6 +198,11 @@ public class raIzvjestaji {
    * zarade koje ulaze u iznos naknate na teret Centra za socijalnu skrb (kolona 8.3 na M4 obrascu)
    */
   public static short[] M4_3 = new short[] {10004,3};
+  
+  
+  public static short[] JOPPD_6 = new short[] {10005,6};
+  
+  public static short[] JOPPD_7 = new short[] {10005,7};
 
   protected raIzvjestaji() {
   }
