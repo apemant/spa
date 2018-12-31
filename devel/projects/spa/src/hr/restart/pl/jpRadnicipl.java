@@ -177,6 +177,7 @@ public class jpRadnicipl extends JPanel {
   };
   
   JraCheckBox jcbMinimalac = new JraCheckBox();
+  JraCheckBox jcbMaxdop = new JraCheckBox();
 //******************************************************
 //******** PANEL 1 **********************************
   JLabel jlBrobveze = new JLabel();
@@ -492,13 +493,21 @@ public class jpRadnicipl extends JPanel {
     jcbMinimalac.setText("Olakšica na doprinose za minimalnu plaæu");
     jcbMinimalac.setUnselectedDataValue("N");
     
+    jcbMaxdop.setColumnName("MAXDOP");
+    jcbMaxdop.setDataSet(fRadnicipl.getRaQueryDataSet());
+    jcbMaxdop.setHorizontalAlignment(SwingConstants.RIGHT);
+    jcbMaxdop.setHorizontalTextPosition(SwingConstants.LEADING);
+    jcbMaxdop.setSelectedDataValue("D");
+    jcbMaxdop.setText("Bruto veæi od maksimalne godišnje osnovice za doprinose");
+    jcbMaxdop.setUnselectedDataValue("N");
+    
 
     //jpDetail1.setMinimumSize(new Dimension(605, 315));
     //jpDetail1.setPreferredSize(new Dimension(605, 315));
     xYLayout3.setWidth(605);
-    xYLayout3.setHeight(435);
+    xYLayout3.setHeight(460);
     xYLayout4.setWidth(595);
-    xYLayout4.setHeight(450);
+    xYLayout4.setHeight(475);
     jPanel1.setBorder(titledBorder3);
     jPanel1.setLayout(xYLayout1);
     jPanel2.setBorder(titledBorder4);
@@ -592,6 +601,7 @@ public class jpRadnicipl extends JPanel {
     jpDetail1.add(jlOluk,  new XYConstraints(290, 380, -1, -1));
     jpDetail1.add(jlOlos,   new XYConstraints(15, 380, -1, -1));
     jpDetail1.add(jcbMinimalac,  new XYConstraints(150, 410, 405, -1));
+    jpDetail1.add(jcbMaxdop,  new XYConstraints(150, 435, 405, -1));
     jpDetail1.add(jraKoefzar,  new XYConstraints(455, 355, 100, -1));
     jpDetail1.add(jlCradnik,    new XYConstraints(150, 27, -1, -1));
     jpDetail1.add(jlrRadNaziv,   new XYConstraints(385, 50, 170, -1));
@@ -759,7 +769,7 @@ public class jpRadnicipl extends JPanel {
   JraScrollPane getCustomScroll() {
     JraScrollPane jsp = new JraScrollPane(getCustomPanel());
     jsp.setBorder(null);
-    jsp.setPreferredSize(new Dimension(605, 450));
+    jsp.setPreferredSize(new Dimension(605, 475));
     return jsp;
   }
   jpCustomAttribDoh jpCAD;

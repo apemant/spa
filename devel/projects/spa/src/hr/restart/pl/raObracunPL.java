@@ -83,6 +83,7 @@ sysoutTEST ST = new sysoutTEST(false);
   private BigDecimal osnovicaZaKredit = nula.setScale(8);
   private BigDecimal osnovicaZaHarach = nula.setScale(8);
   private BigDecimal halfDopBruto = Aus.zero2;
+  private BigDecimal razPorNeto = Aus.zero2;
   /**
    * vrijednosti ranije isplacenih placa u mjesecu isplate ovog obracuna
    * mjVals[0] = porosn; mjVals[1] = iskneop
@@ -480,13 +481,16 @@ sysoutTEST ST = new sysoutTEST(false);
             System.out.println("OVDJE! raèunam primanja");
             System.out.println(kumulrad);
             System.out.println(primanja);
-            System.out.println(raddopr);
+            System.out.println("total = " + raddopr);
+            BigDecimal adjust = raddopr.add(razPorNeto);
+            System.out.println("adjusted = " + adjust);
+            
             primanja.setBigDecimal("NETO",primanja.getBigDecimal("BRUTO"));
             BigDecimal propkoef;
-            if (raddopr.signum() == 0) {
+            if (adjust.signum() == 0) {
               propkoef = nula;
             } else {
-              propkoef = ut.setScale(primanja.getBigDecimal("BRUTO"),10).divide(raddopr,8,BigDecimal.ROUND_HALF_UP);
+              propkoef = ut.setScale(primanja.getBigDecimal("BRUTO"),10).divide(adjust,8,BigDecimal.ROUND_HALF_UP);
             }
             System.out.println(propkoef);
             BigDecimal bruto = radbruto.multiply(propkoef);//pr.bruto = radbruto*(pr.bruto(=neto2)/rad.neto2)
@@ -515,7 +519,10 @@ sysoutTEST ST = new sysoutTEST(false);
     //doprinosi
     QueryDataSet doprinosi = odbici.getDoprinosiRadnik(radnici.getString("CRADNIK"),raOdbici.DEF);
     addBigDec_kumulrad("NETO",kumulrad.getBigDecimal("BRUTO"));//dodaje zato sto postoji mogucnost zarada kojima se ne racunaju doprinosi
+    boolean olduse = uselimitsDOP;
+    if (!radnici.getString("MAXDOP").equalsIgnoreCase("D")) uselimitsDOP = false;
     BigDecimal[] sumStopaIznos = calcOdbiciRadnik(doprinosi,"NETO",true);
+    uselimitsDOP = olduse;
     //napunim kumulrad.doprinosi
     kumulrad.setBigDecimal("DOPRINOSI",sumStopaIznos[1]); // = bruto - neto
     
@@ -714,7 +721,13 @@ sysoutTEST ST = new sysoutTEST(false);
     BigDecimal neto1 = getBrutoIzNeta(neto2, _cradnik);
     ukstdop = null;    
     getUkStDop(_cradnik);//da napravi stopedop i maxosndop
-    BigDecimal bruto = raCalcPorez.neto1ToBruto(neto1, stopedop, maxosndop);
+    BigDecimal[] maxo = maxosndop;
+    if (narav && !radnici.getString("MAXDOP").equalsIgnoreCase("D")) {
+      maxo = new BigDecimal[maxo.length];
+      for (int i = 0; i < maxo.length; i++) maxo[i] = Aus.zero0;
+    }
+
+    BigDecimal bruto = raCalcPorez.neto1ToBruto(neto1, stopedop, maxo);
 /*
     BigDecimal stdopdiv = new BigDecimal("1.00").add(getUkStDop(_cradnik).negate()).setScale(8);
     BigDecimal bruto = neto1.setScale(8,BigDecimal.ROUND_HALF_UP).divide(stdopdiv,BigDecimal.ROUND_HALF_UP);
@@ -1011,6 +1024,8 @@ sysoutTEST ST = new sysoutTEST(false);
     //kumulorg
     addBigDec_kumulorg("PRIR",kumulrad.getBigDecimal("PRIR"));
     addBigDec_kumulorg("PORIPRIR",kumulrad.getBigDecimal("PORIPRIR"));
+    
+    razPorNeto = Aus.zero0;
   }
   
   private void addOdbitakPorez(QueryDataSet _qodbici,BigDecimal _porez, BigDecimal _osnovica) {
@@ -1399,8 +1414,10 @@ sysoutTEST ST = new sysoutTEST(false);
   }
   private void calcRazPor() {
     if (calcrazpor) {
+        razPorNeto = kumulrad.getBigDecimal("PORIPRIR");
 	    calcRazPorOrPrir(false);
 	    calcRazPorOrPrir(true);
+	    razPorNeto = kumulrad.getBigDecimal("PORIPRIR").subtract(razPorNeto);
     }
   }
   /**
