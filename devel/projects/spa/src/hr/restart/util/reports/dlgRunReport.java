@@ -1608,6 +1608,7 @@ public class dlgRunReport {
             jdes.setName(jdes.getName().substring(jdes.getName().lastIndexOf('.') + 1));
             jdes.addParameter(dpar);
             data.setUsedGetter("PREFIX");
+            data.setUsedGetter("DPREFIX");
             rd.adjustJasperDesign(jdes);
             fixMargins(rd.getName(), jdes);
             checkDynamicBold(rd.getName(), jdes, data);
