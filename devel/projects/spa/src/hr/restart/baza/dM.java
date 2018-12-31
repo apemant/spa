@@ -487,14 +487,26 @@ public class dM implements DataModule {
 //    } catch (Exception e) {}
 //  }
   
-  public Database getShadowDatabase() {
-    Database shadow = new Database();
+  Database shadow = null;
+  
+  public Database getNewShadowDatabase() {
+    if (shadow != null) shadow.closeConnection();
+    shadow = new Database();
     shadow.setConnection(new ConnectionDescriptor(conURL,conUSER,conPASS,false,
         conTIP, Dialect.getConnectionProperties()));
     
     shadow.setTransactionIsolation(java.sql.Connection.TRANSACTION_REPEATABLE_READ);
     shadow.openConnection();
+    System.out.println(database1.getConnection());
+    System.out.println(shadow.getConnection());
+    System.out.println(database1.getJdbcConnection());
+    System.out.println(shadow.getJdbcConnection());
     return shadow;
+  }
+  
+  public Database getShadowDatabase() {
+    if (shadow != null) return shadow;
+    return getNewShadowDatabase();
   }
 
   private void setDatabaseDialect() {
