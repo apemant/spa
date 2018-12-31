@@ -133,18 +133,21 @@ public class JasperElixirData implements JRDataSource {
     return getters.containsKey(name);
   }
 
+  HashMap times = new HashMap();
+  
   public void buildTable() {
+    times.clear();
     List table = new ArrayList();
-    
     for (int i = 0; i < rdata.getRowCount(); i++) {
       buildValueMap(rdata.getRow(i));
       table.add(new HashMap(rowValues));
     }
-    
+    dumpTimes();
     sortedTable = (HashMap[]) table.toArray(new HashMap[table.size()]);
   }
   
   public void buildTable(IModel template) {
+    times.clear();
     List sortFields = new ArrayList();
     IModel sects = template.getModel(ep.SECTIONS);
     for (int i = 0; i < sects.getModelCount(); i++) {
@@ -161,6 +164,7 @@ public class JasperElixirData implements JRDataSource {
       buildValueMap(data.nextElement());
       table.add(new HashMap(rowValues));
     }
+    dumpTimes();
     sortedTable = (HashMap[]) table.toArray(new HashMap[table.size()]);
   }
   
@@ -184,6 +188,7 @@ public class JasperElixirData implements JRDataSource {
     rowValues.clear();
     for (Iterator i = getters.entrySet().iterator(); i.hasNext(); ) {
       Map.Entry me = (Map.Entry) i.next();
+      long now = System.currentTimeMillis();
       try {
         if (me.getValue() == null) rowValues.put(me.getKey(), null);
         else rowValues.put(me.getKey(), ((Method) me.getValue()).
@@ -193,7 +198,25 @@ public class JasperElixirData implements JRDataSource {
         rowValues.put(me.getKey(), null);
         me.setValue(null);
       }
+      if (!times.containsKey(me.getKey())) times.put(me.getKey(), Long.valueOf(System.currentTimeMillis() - now));
+      else times.put(me.getKey(), Long.valueOf(System.currentTimeMillis() - now + ((Long) times.get(me.getKey())).longValue()));
     }
+  }
+  
+  private void dumpTimes() {
+    long total = 0;
+    List keys = new ArrayList(times.keySet());
+    keys.sort(new Comparator() {
+      public int compare(Object o1, Object o2) {
+        return ((Long) times.get(o2)).compareTo((Long) times.get(o1));
+      }
+    });
+    for (int i = 0; i < keys.size(); i++) {
+      Long dur = (Long) times.get(keys.get(i));
+      System.out.println(keys.get(i) + " = " + dur);
+      total += dur.longValue();
+    }
+    System.out.println("TOTAL: " + total);
   }
   
   public boolean next() throws JRException {
