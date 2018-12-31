@@ -134,7 +134,7 @@ public class Aus {
   }
   
   public static void recursiveUpdateSizes(JPanel pan) {
-    if (!isBig() || pan instanceof OKpanel) return;
+    if (pan == null || !isBig() || pan instanceof OKpanel) return;
     boolean xy = pan.getLayout() instanceof XYLayout;
     if (xy && !updateLayout(pan)) return;
     for (int i = 0; i < pan.getComponentCount(); i++) {
