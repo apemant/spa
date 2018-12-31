@@ -159,7 +159,6 @@ public class raGRN extends raIzlazTemplate  {
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxRacun","Matrièni ispis raèuna");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxRacunPop","Matrièni ispis raèuna s više popusta");
     raMaster.getRepRunner().addReport("hr.restart.robno.repMxGRN", "Matrièni ispis raèuna POS printer");
-    raMaster.getRepRunner().addReport("hr.restart.robno.repGRNInvoice", "Matrièni ispis raèuna POS printer");
     
     if (repFISBIH.isFISBIH()) {
       if (getMasterSet().getInt("FBR")>0) {
@@ -202,7 +201,7 @@ public class raGRN extends raIzlazTemplate  {
           JRDesignExpression ex = (JRDesignExpression) ((JRTextField) els[j]).getExpression();
           if (ex.getText().indexOf("sum_Section0_") >= 0) {
             if (ex.getText().indexOf("IPRODSPV") >= 0 || ex.getText().indexOf("UIRABV") >= 0) {
-              ex.setText("$P{cform}.format(" + ex.getText() + ")");
+              ex.setText("$F{DPREFIX} + $P{cform}.format(" + ex.getText() + ")");
               ex.setValueClassName("java.lang.String");
             } else {
               ex.setText("$F{PREFIX} + $P{cform}.format(" + ex.getText() + ")");

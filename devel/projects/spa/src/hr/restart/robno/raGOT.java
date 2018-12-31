@@ -167,7 +167,7 @@ public class raGOT extends raIzlazTemplate  {
           JRDesignExpression ex = (JRDesignExpression) ((JRTextField) els[j]).getExpression();
           if (ex.getText().indexOf("sum_Section0_") >= 0) {
             if (ex.getText().indexOf("IPRODSPV") >= 0 || ex.getText().indexOf("UIRABV") >= 0) {
-              ex.setText("$P{cform}.format(" + ex.getText() + ")");
+              ex.setText("$F{DPREFIX} + $P{cform}.format(" + ex.getText() + ")");
               ex.setValueClassName("java.lang.String");
             } else {
               ex.setText("$F{PREFIX} + $P{cform}.format(" + ex.getText() + ")");
