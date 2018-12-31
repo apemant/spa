@@ -19,6 +19,7 @@ package hr.restart.swing;
 import hr.restart.baza.raDataSet;
 import hr.restart.util.Aus;
 import hr.restart.util.HashDataSet;
+import hr.restart.util.Valid;
 import hr.restart.util.VarStr;
 
 import java.util.ArrayList;
@@ -80,18 +81,21 @@ public class raTableColumnModifier extends raTableModifier {
     //dsColsKeyS = keyColumnsSearch;
   }
   
-  private HashDataSet getScopedSet(DataSet orig, String[] keys, String[] replaces) {
-    if (orig instanceof QueryDataSet && ((QueryDataSet) orig).getOriginalQueryString() != null && orig.getTableName() != null) {
+  private HashDataSet getScopedSet(DataSet orig, String[] keys, String[] replaces) {    
+    if (orig instanceof QueryDataSet && ((QueryDataSet) orig).getOriginalQueryString() != null) {
       String oq = ((QueryDataSet) orig).getOriginalQueryString();
       int wp = oq.toLowerCase().indexOf(" from ");
       if (wp > 0) {
+        String tname = orig.getTableName();
+        if (tname == null) tname = Valid.getTableName(oq.toLowerCase());
+        
         ArrayList cols = new ArrayList(Arrays.asList(keys));
         HashSet others = new HashSet(Arrays.asList(replaces));
         others.removeAll(cols);
         cols.addAll(others);
         ArrayList dkey = new ArrayList(cols);
         Collections.sort(dkey);
-        dkey.add(0, orig.getTableName());
+        dkey.add(0, tname.toUpperCase());
         System.out.println("MOD KEY: " + dkey);
         if (datasets.containsKey(dkey))
           return (HashDataSet) datasets.get(dkey);
