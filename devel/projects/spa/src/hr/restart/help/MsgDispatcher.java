@@ -4,9 +4,18 @@ import hr.restart.baza.Condition;
 import hr.restart.baza.dM;
 import hr.restart.sisfun.frmParam;
 import hr.restart.sisfun.raUser;
+import hr.restart.swing.JraButton;
+import hr.restart.swing.JraDialog;
+import hr.restart.swing.raMultiLineMessage;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
+import hr.restart.util.startFrame;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -15,8 +24,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import javax.swing.Timer;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.plaf.OptionPaneUI;
+import javax.swing.plaf.basic.BasicOptionPaneUI;
+
+//import javax.swing.Timer;
+
 
 
 public class MsgDispatcher implements ActionListener {
@@ -26,6 +49,12 @@ public class MsgDispatcher implements ActionListener {
   Connection con;
   Statement last;
   PreparedStatement check;
+  
+  JraDialog noConn = null;
+  //JOptionPane noConn = null;
+  
+  long ticker = 0;
+  
   
   int unread = 0;
   
@@ -43,16 +72,117 @@ public class MsgDispatcher implements ActionListener {
     try {
       String mt = frmParam.getParam("sisfun", "msgTimer", "2000",
           "Interval provjera poruka u milisekundama", true);
-      int it = Aus.getNumber(mt);
+      final int it = Aus.getNumber(mt);
       if (it <= 0) return;
+      
+      Timer tim = new Timer(true);
+      tim.schedule(new TimerTask() {
+        Timer timeout = new Timer(true);
+        public void run() {
+          TimerTask warn = new TimerTask() {
+            long oldTicker = ticker;
+            public void run() {
+              if (oldTicker == ticker) showWarning();
+            }
+          }; 
+          timeout.schedule(warn, it * 5);
+          actionPerformed(null);
+          cancelWarning(warn);
+        }
+      }, 10000, it);
 
-      Timer tim = new Timer(it, this);
+/*      Timer tim = new Timer(it, this);
       tim.setInitialDelay(10000);
       tim.setRepeats(true);
-      tim.start();
+      tim.start();*/
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+  
+  void showWarning() {
+    if (noConn != null) noConn.dispose();
+    
+    JPanel content = new JPanel();
+    content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+    
+    content.add(new raMultiLineMessage(
+        "Došlo je do prekida u komunikaciji sa centralnom bazom (provjerite vašu internet vezu i lokalnu mrežu). Nakon toga:\n" +
+            "   a) probajte prièekati nekoliko sekundi, ovaj prozor æe se sam ugasiti ukoliko se komunikacija sama ponovo uspostavi\n" +
+            "   b) izaðite iz programa i pokrenite ga ponovo.", JLabel.LEADING, 160));
+    content.add(Box.createVerticalStrut(30));
+    JraButton exit = new JraButton();
+    exit.setText(" Izlaz iz programa ");
+    exit.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        System.exit(0);
+      }
+    });
+    content.add(exit);
+    
+    noConn = new JraDialog((Frame) null, "Greška", true);
+    noConn.getContentPane().setLayout(new BorderLayout());
+    ((JPanel) noConn.getContentPane()).setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+    noConn.getContentPane().add(content);
+    noConn.pack();
+    noConn.setResizable(false);
+    noConn.setLocationRelativeTo(null);
+    noConn.show();
+    
+    
+    /*if (noConn != null) ((JraDialog) noConn.getTopLevelAncestor()).dispose();
+    
+    
+    String[] opts = {" Izlaz iz programa "};
+    noConn = new JOptionPane(new raMultiLineMessage(
+        "Došlo je do prekida u komunikaciji sa centralnom bazom (provjerite vašu internet vezu i lokalnu mrežu). Nakon toga:\n" +
+            "   a) probajte prièekati nekoliko sekundi, ovaj prozor æe se sam ugasiti ukoliko se komunikacija sama ponovo uspostavi\n" +
+            "   b) izaðite iz programa i pokrenite ga ponovo.", JLabel.LEADING, 160),
+            JOptionPane.ERROR_MESSAGE, 0, null, opts, opts[0]);
+    noConn.setInitialValue(opts[0]);
+    
+    JraDialog dialog = new JraDialog((Frame) null, "Greška", true);
+    dialog.getContentPane().setLayout(new BorderLayout());
+    dialog.getContentPane().add(noConn);
+    
+    dialog.pack();
+    dialog.setLocationRelativeTo(null);
+    //dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+    dialog.show();
+
+    if (noConn.getValue() != JOptionPane.UNINITIALIZED_VALUE) {
+      System.exit(0);
+    }*/
+    /*
+    noConn = new JraDialog((Frame) null, "Greška", true);
+    noConn.setLayout(new BoxLayout(target, axis))
+    
+    JLabel msg = new JLabel("Prekinuta je veza sa bazom. Provjerite mrežne postavke ili Internet vezu.");
+    noConn.getContentPane().setLayout(new BorderLayout());
+    noConn.getContentPane().add(msg, BorderLayout.NORTH);
+    JraButton exit = new JraButton();
+    exit.setText("Izlaz iz programa");
+    noConn.getContentPane().add(exit, BorderLayout.SOUTH);
+    exit.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        System.exit(0);
+      }
+    });
+    
+    noConn.getContentPane().setPreferredSize(new Dimension(500, 200));
+    noConn.pack();
+    
+    noConn.setResizable(false);
+    noConn.setDefaultCloseOperation(noConn.DO_NOTHING_ON_CLOSE);
+    Dimension size = noConn.getPreferredSize();
+    Dimension scr = Toolkit.getDefaultToolkit().getScreenSize();
+    noConn.setLocation((scr.width - size.width) / 2, (scr.height - size.height) / 2);
+    noConn.show();*/
+  }
+  
+  void cancelWarning(TimerTask warn) {
+    warn.cancel();
+    if (noConn != null) noConn.dispose();
   }
   
   void createStatements() {
@@ -75,6 +205,7 @@ public class MsgDispatcher implements ActionListener {
       ResultSet rs = check.executeQuery();
       boolean have = rs.next();
       rs.close();
+      ++ticker;
       if (have) checkMsg();
     } catch (SQLException e) {
       e.printStackTrace();
