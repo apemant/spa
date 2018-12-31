@@ -189,7 +189,7 @@ public class CalcRazPor {
     orgosn.setColumns(new Column[] {dM.createShortColumn("GODOBR"), dM.createShortColumn("MJOBR"),
         dM.createBigDecimalColumn("OSNPOR1"),dM.createBigDecimalColumn("OSNPOR2"),dM.createBigDecimalColumn("OSNPOR3"),dM.createBigDecimalColumn("OSNPOR4"),dM.createBigDecimalColumn("OSNPOR5")});
     Util.fillReadonlyData(orgosn,"SELECT godobr, mjobr, max(osnpor1) as osnpor1, max(osnpor2) as osnpor2, max(osnpor3) as osnpor3, max(osnpor4) as osnpor4, max(osnpor5)  as osnpor5 " +
-    		"from kumulorgarh where "+Condition.equal("CORG",corg)+" AND "+inqrange+" and " + rbrq + " group by godobr, mjobr");
+    		"from kumulorgarh where "+Condition.equal("CORG",corg)+" AND "+inqrange+" and " + rbrq + " group by godobr, mjobr order by godobr, mjobr");
     BigDecimal[] osn; 
     BigDecimal[] stpo;
     switch (_godina) {
@@ -269,20 +269,20 @@ public class CalcRazPor {
     
     // osnpor1
 //    BigDecimal parporos1 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR1").multiply(new BigDecimal(12));
-    BigDecimal parporos1 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR1").add(getSum(orgosn, "OSNPOR1"));
+    BigDecimal parporos1 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR1").add(getSum11(orgosn, "OSNPOR1"));
     if (poros.compareTo(parporos1)>=0) {
       ret[0] = parporos1;
       //osnpor2
 //      BigDecimal parporos2 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR2").multiply(new BigDecimal(12))
 //      .add(parporos1.negate());
-      BigDecimal parporos2 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR2").add(getSum(orgosn, "OSNPOR2"))
+      BigDecimal parporos2 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR2").add(getSum11(orgosn, "OSNPOR2"))
       .add(parporos1.negate());
       if (poros.add(parporos1.negate()).compareTo(parporos2) >= 0) {
         ret[1] = parporos2;
         //osnpor3 
 //        BigDecimal parporos3 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR3").multiply(new BigDecimal(12))
 //    	  .add(parporos1.negate()).add(parporos2.negate());
-        BigDecimal parporos3 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR3").add(getSum(orgosn, "OSNPOR3"))
+        BigDecimal parporos3 = Parametripl.getDataModule().getQueryDataSet().getBigDecimal("OSNPOR3").add(getSum11(orgosn, "OSNPOR3"))
         .add(parporos1.negate()).add(parporos2.negate());
         if (poros.add(parporos1.negate()).add(parporos2.negate()).compareTo(parporos3) >= 0) {
           ret[2] = parporos3;
@@ -461,6 +461,10 @@ System.out.println("******"+_crad+"******"+qprirez);
   private BigDecimal getGodTotalNeop(String cradnik, StorageDataSet orgdata) {
     //orgdata godobr, mjobr, rbrobr, datumispl, MINPL FROM kumulorgarh
     String olakqry = hr.restart.pl.raOdbici.getInstance().getOdbiciWhereQuery("RA","K","1","4",cradnik, null , "odbiciarh"); //npr."CVRODB in (6) and CKEY='cradnik')
+    String otherol = null;
+    if (cradnik.contains("@")) {//hackchuga samo takva za oj4
+      otherol = hr.restart.pl.raOdbici.getInstance().getOdbiciWhereQuery("RA","K","1","4",cradnik.substring(0,cradnik.indexOf("@")), null , "odbiciarh");
+    }
     //osnovni odbitak iz fonda sati
     QueryDataSet fondsati = FondSati.getDataModule().getTempSet(Condition.equal("KNJIG", dlgGetKnjig.getKNJCORG()).and(Condition.equal("GODINA", (short)_godina)));
     //trenutni osobni odbitak
@@ -521,8 +525,19 @@ System.out.println(orgdata);
              + " AND "+olakqry + " AND RBR=0");
 System.out.println(_q);
         lastkoef = getSum(odbicimj, "OBRSTOPA"); 
+        
+        if (otherol != null) {
+          QueryDataSet odbicimjo = Util.getNewQueryDataSet(_q = "SELECT odbiciarh.obrstopa FROM odbiciarh WHERE " +
+              Condition.whereAllEqual(new String[] {"GODOBR","MJOBR","RBROBR"}, orgdata)
+               + " AND "+otherol + " AND RBR=0");
+          System.out.println(_q);
+          BigDecimal lastkoefol = getSum(odbicimjo, "OBRSTOPA");
+          if (lastkoefol.compareTo(lastkoef) > 0) lastkoef = lastkoefol;
+        }
+        
       } else {
         //ako nema uzmi MINPL iz fondsati i lastkoef
+        lastkoef = currkoef;
       }
       // 2500 umjesto lastminpl
 System.out.println("Za "+mji+":: godtotalneop = godtotalneop + "+lastminpl+" + "+osnovica+"*"+lastkoef+" = "+godtotalneop+" + "+lastminpl.add(lastminpl.multiply(lastkoef)));
@@ -721,6 +736,18 @@ System.out.println("Za "+mji+":: godtotalneop = "+godtotalneop);
       sum = sum.add(ds.getBigDecimal(col));
     }
     return sum;
+  }
+  
+  private BigDecimal getSum11(DataSet ds, String col) {
+    ds.open();
+    BigDecimal sum = Aus.zero2;
+    int mjs = 0;
+    for (ds.first(); ds.inBounds(); ds.next()) {
+      sum = sum.add(ds.getBigDecimal(col));
+      if (++mjs >= 11) break;
+    }
+    return sum;
+    
   }
   
   /**
