@@ -28,7 +28,7 @@ public class RN_vrsub extends KreirDrop implements DataModule {
   QueryDataSet rnvsubunos = new raDataSet();
 
   {
-    createFilteredDataSet(rnvsubunos, "1=0");
+    createFilteredDataSet(rnvsubunos, "");
   }
 
   public static RN_vrsub getDataModule() {
