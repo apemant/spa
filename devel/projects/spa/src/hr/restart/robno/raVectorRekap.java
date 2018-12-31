@@ -36,6 +36,8 @@ public class raVectorRekap {
 
     Column bjesansam1 = (Column) dm.getPorezi().getColumn("NAZPOR").clone();
     bjesansam1.setColumnName("CPOR");
+    Column sb = dm.getPorezi().getColumn("NAZPOR").cloneColumn();
+    sb.setColumnName("SCPOR");
 
     qds.close();
     qds.setColumns(new Column [] {
@@ -44,7 +46,7 @@ public class raVectorRekap {
         (Column) dm.getStdoki().getColumn("GOD").clone(),
         (Column) dm.getStdoki().getColumn("BRDOK").clone(),
     //    (Column) dm.getPorezi().getColumn("CPOR").clone(),
-        bjesansam1 ,
+        bjesansam1 , sb,
         (Column) dm.getPorezi().getColumn("NAZPOR").clone(),
         (Column) dm.getPorezi().getColumn("UKUPOR").clone(),
         (Column) dm.getStdoki().getColumn("IPRODBP").clone(),
@@ -57,7 +59,7 @@ public class raVectorRekap {
         (Column) dm.getStdoki().getColumn("GOD").clone(),
         (Column) dm.getStdoki().getColumn("BRDOK").clone(),
 //        (Column) dm.getPorezi().getColumn("CPOR").clone(),
-        (Column) bjesansam1.clone() ,
+        (Column) bjesansam1.clone() , sb.cloneColumn(),
         (Column) dm.getPorezi().getColumn("NAZPOR").clone(),
         (Column) dm.getPorezi().getColumn("UKUPOR").clone(),
         (Column) dm.getStdoki().getColumn("IPRODBP").clone(),
@@ -101,6 +103,7 @@ public class raVectorRekap {
             qds.setString("GOD",ds.getString("GOD"));
             qds.setInt("BRDOK",ds.getInt("BRDOK"));
             qds.setString("CPOR",dm.getPorezi().getString("NAZPOR"+String.valueOf(i)));
+            qds.setString("SCPOR",dm.getPorezi().getString("SNAZPOR"+String.valueOf(i)));
             qds.setString("NAZPOR",dm.getPorezi().getString("NAZPOR"));
 //            qds.setBigDecimal("UKUPOR",dm.getPorezi().getBigDecimal("POR"+String.valueOf(i)));
 
@@ -145,6 +148,7 @@ public class raVectorRekap {
         qds_tmp.setString("GOD",qds.getString("GOD"));
         qds_tmp.setInt("BRDOK",qds.getInt("BRDOK"));
         qds_tmp.setString("CPOR",qds.getString("CPOR"));
+        qds_tmp.setString("SCPOR",qds.getString("SCPOR"));
         qds_tmp.setString("NAZPOR",qds.getString("NAZPOR"));
         qds_tmp.setBigDecimal("UKUPOR",qds.getBigDecimal("UKUPOR"));
         qds_tmp.setBigDecimal("IPRODBP",qds.getBigDecimal("IPRODBP"));
