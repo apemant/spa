@@ -55,6 +55,8 @@ public class repOpomenaTemplate extends repRobnoMiniSaldakCparOrigTemplate {
       raReportElement TextBrojTela;
       /*{"Pošiljalac izvatka", "", "6880", "8940", "3480", "340", "", "", "", "", "", "", "Lucida Bright", "", "", "", "", "Center"}*/
       String[] TextBrojTelaProperties = new String[] {"KONTAKTTEL", "", "", "", "", "", "", "", 
+          
+          
           "6880", "10220", "3480", "340", "", "", "", "", "", "", "Lucida Bright", "", "", "", "", "Left", ""};
       TextBrojTela = sh0.addModel(ep.TEXT, TextBrojTelaProperties);
 
