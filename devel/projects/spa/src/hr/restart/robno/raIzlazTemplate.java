@@ -5130,6 +5130,8 @@ System.out.println("findCjenik::else :: "+sql);
       if (prep == null) {
         System.out.println("prep je null");
         prepareQuery(odabrano);
+        if (qDS.hasColumn("DATDOK") != null)
+          qDS.setSort(new SortDescriptor(new String[] {"DATDOK"}));
       } else {
         System.out.println("prep nijje null, wtf");
       }
