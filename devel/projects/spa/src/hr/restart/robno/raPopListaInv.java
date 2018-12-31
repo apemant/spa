@@ -106,6 +106,7 @@ public class raPopListaInv extends raUpitLite {
 
   public raPopListaInv() {
     try {
+      rapli = this;
       jbInit();
       setCsklFields();
       setPanels();
