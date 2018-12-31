@@ -1240,7 +1240,7 @@ public class frmMasterBlagajna extends raMasterDetail {
             showRequirementsMaster();
           }
         },4,false);
-        //raMaster.addOption(navPon, 5);
+        raMaster.addOption(navPon, 5);
         raMaster.addOption(navStorno, 6);
       }
     }
