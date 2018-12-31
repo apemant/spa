@@ -64,10 +64,10 @@ public class repER1novi implements raReportData {
     return frer1.getKnjNaziv();
   }
   public String getPREFIKSOB(){
-    return Aus.ljust(ds.getString("BROBVEZE").substring(0, 3), 3);
+    return Aus.ljust(ds.getString("BROBVEZE"), 12).substring(0, 3);
   }
   public String getBROBVEZE(){
-    return Aus.ljust(ds.getString("BROBVEZE").substring(4), 8);
+    return Aus.ljust(ds.getString("BROBVEZE"), 12).substring(4);
   }
 
   public String getIME(){
@@ -84,10 +84,10 @@ public class repER1novi implements raReportData {
     return Aus.ljust(ds.getString("OIB"), 11);
  }
   public String getPREFIKSRAD(){
-    return Aus.ljust(ds.getString("BROSIGZO").substring(0, 3), 3);
+    return Aus.ljust(ds.getString("BROSIGZO"), 12).substring(0, 3);
   }
   public String getBROSIGZO(){
-     return Aus.ljust(ds.getString("BROSIGZO").substring(4), 8);
+     return Aus.ljust(ds.getString("BROSIGZO"), 12).substring(4);
   }
   
   public String getDATROD(){
