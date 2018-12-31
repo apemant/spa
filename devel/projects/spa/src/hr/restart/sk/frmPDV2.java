@@ -807,13 +807,13 @@ public class frmPDV2 extends raUpitFat {
     QueryDataSet upitP = Aus.q(qrycommon + orovi);
     dm.getPartneri().open();
     int rbr = 0;
+    if (setP.rowCount() > 0) rbr = setP.getInt("RBR");
     for (upitP.first(); upitP.inBounds(); upitP.next()) {
       if (!lookupData.getlookupData().raLocate(setP, "CPAR", upitP.getInt("CPAR")+"")) {
         if (lookupData.getlookupData().raLocate(dm.getPartneri(), "CPAR", upitP.getInt("CPAR")+"")) {
           String oib =  dm.getPartneri().getString("OIB");
           setP.insertRow(false);
-          rbr++;
-          setP.setInt("RBR", rbr);
+          setP.setInt("RBR", ++rbr);
           setP.setInt("CPAR", upitP.getInt("CPAR"));
           setP.setString("KODDRZ", oib.substring(0, 2));
           setP.setString("PDVID", oib.substring(2));
