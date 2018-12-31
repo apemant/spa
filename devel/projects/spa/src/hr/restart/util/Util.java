@@ -61,6 +61,7 @@ import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.ReadRow;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
+import com.borland.dx.sql.dataset.QueryResolver;
 
 
 
@@ -1516,6 +1517,33 @@ System.out.println("desetice "+inTxtVal.substring(9,11));
     
     Refresher.postpone();
 
+    if (toOpen) retSet.open();
+
+    return retSet;
+
+  }
+  
+  public static com.borland.dx.sql.dataset.QueryDataSet getShadowDataSet(String qS) {
+
+    return getShadowDataSet(qS,true);
+
+  }
+  
+  public static com.borland.dx.sql.dataset.QueryDataSet getShadowDataSet(String qS, boolean toOpen) {
+
+    com.borland.dx.sql.dataset.QueryDataSet retSet = new com.borland.dx.sql.dataset.QueryDataSet();
+
+    retSet.setLocale(Aus.hr);
+    
+    retSet.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(hr.restart.baza.dM.getDataModule().getShadowDatabase(),qS));
+    
+    QueryResolver ret = new QueryResolver();
+    ret.setDatabase(dM.getDataModule().getShadowDatabase());
+    ret.setResolverQueryTimeout(30);
+    ret.setUpdateMode(com.borland.dx.dataset.UpdateMode.KEY_COLUMNS);
+
+    retSet.setResolver(ret);
+    
     if (toOpen) retSet.open();
 
     return retSet;
