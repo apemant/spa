@@ -37,6 +37,7 @@ import hr.restart.util.lookupData;
 import hr.restart.util.raImages;
 import hr.restart.util.raNavAction;
 import hr.restart.util.raTransaction;
+import hr.restart.util.reports.JasperHook;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -47,6 +48,13 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JRTextField;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSet;
@@ -97,6 +105,12 @@ public class raROT extends raIzlazTemplate  {
       raImages.IMGPROPERTIES, java.awt.event.KeyEvent.VK_F8) {
     public void actionPerformed(ActionEvent e) {
       checkMasterObr();
+    }
+  };
+  
+  JasperHook jhook = new JasperHook() {
+    public void adjustDesign(String reportName, JasperDesign design) {
+      adjust(design);
     }
   };
   
@@ -310,7 +324,10 @@ public class raROT extends raIzlazTemplate  {
      if (hr.restart.sisfun.frmParam.getParam("robno","IspisGetroROTs","N","Stavke ispisa sadržavaju i ispis za Getro",true).equals("D")){
        raMaster.getRepRunner().addReport("hr.restart.robno.repRacuniGetro","hr.restart.robno.repRacuniPnP","RacGetro","Raèun za Getro");
      }
-     raMaster.getRepRunner().addReport("hr.restart.robno.repInvoiceNew","hr.restart.robno.repIzlazni","InvoiceNew","Invoice");
+     raMaster.getRepRunner().addReport("hr.restart.robno.repInvoice",
+         "hr.restart.robno.repIzlazni","ProformaInvoiceROT","Invoice");
+ 
+ //    raMaster.getRepRunner().addReport("hr.restart.robno.repInvoiceNew","hr.restart.robno.repIzlazni","InvoiceNew","Invoice");
      raMaster.getRepRunner().addReport("hr.restart.robno.repMxROT","Matri\u010Dni ispis ra\u010Duna");
      raMaster.getRepRunner().addReport("hr.restart.robno.repMxROTPop","Matri\u010Dni ispis ra\u010Duna s više popusta");
      
@@ -325,6 +342,8 @@ System.err.println("getMasterSet().getInt(FBR) = "+getMasterSet().getInt("FBR"))
          raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRekRN","REKLAMIRANJE FISKALNOG ra\u010Duna");
        } else raMaster.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
      }
+     
+     raMaster.getRepRunner().addJasperHook("hr.restart.robno.repInvoice", jhook);
  }
 
  public void MyaddIspisDetail(){
@@ -378,10 +397,38 @@ System.err.println("getMasterSet().getInt(FBR) = "+getMasterSet().getInt("FBR"))
      if (hr.restart.sisfun.frmParam.getParam("robno","IspisGetroROTs","N","Stavke ispisa sadržavaju i ispis za Getro",true).equals("D")){
        raDetail.getRepRunner().addReport("hr.restart.robno.repRacuniGetro","hr.restart.robno.repRacuniPnP","RacGetro","Raèun za Getro");
      }
-     raDetail.getRepRunner().addReport("hr.restart.robno.repInvoiceNew","hr.restart.robno.repIzlazni","InvoiceNew","Invoice");
+     
+     raDetail.getRepRunner().addReport("hr.restart.robno.repInvoice",
+         "hr.restart.robno.repIzlazni","ProformaInvoice","Invoice");
+ 
+ //    raDetail.getRepRunner().addReport("hr.restart.robno.repInvoiceNew","hr.restart.robno.repIzlazni","InvoiceNew","Invoice");
      raDetail.getRepRunner().addReport("hr.restart.robno.repMxROT","Matri\u010Dni ispis ra\u010Duna");
      raDetail.getRepRunner().addReport("hr.restart.robno.repMxROTPop","Matri\u010Dni ispis ra\u010Duna s više popusta");
 //     if (repFISBIH.isFISBIH()) raDetail.getRepRunner().addReport("hr.restart.robno.repFISBIHRN","FISKALNI ispis ra\u010Duna");
+     
+     raMaster.getRepRunner().addJasperHook("hr.restart.robno.repInvoice", jhook);
+ }
+ 
+ void adjust(JasperDesign design) {
+   JRGroup[] grs = design.getGroups();
+   for (int i = 0; i < grs.length; i++) {
+     JRBand bn = grs[i].getGroupFooterSection().getBands()[0];
+     JRElement[] els = bn.getElements();
+     for (int j = 0; j < els.length; j++) 
+       if (els[j] instanceof JRTextField) {
+         JRDesignExpression ex = (JRDesignExpression) ((JRTextField) els[j]).getExpression();
+         if (ex.getText().indexOf("sum_Section0_") >= 0) {
+           if (ex.getText().indexOf("IPRODBPV") >= 0 || ex.getText().indexOf("POR1V") >= 0) {
+             ex.setText("$F{DPREFIX} + $P{cform}.format(" + ex.getText() + ")");
+             ex.setValueClassName("java.lang.String");
+           } else {
+             ex.setText("$F{PREFIX} + $P{cform}.format(" + ex.getText() + ")");
+             ex.setValueClassName("java.lang.String");
+           }
+         }
+       }
+
+   }
  }
  
  String tranzitVeza;

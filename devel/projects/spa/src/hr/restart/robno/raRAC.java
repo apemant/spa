@@ -270,6 +270,10 @@ final public class raRAC extends raIzlazTemplate {
         raMaster.getRepRunner().addReport("hr.restart.robno.repRacGroup",
             "hr.restart.robno.repGroupIzlazni", "RacGroup",
             ReportValuteTester.titleRAC1R + " po grupama artikala");
+        
+        raMaster.getRepRunner().addReport("hr.restart.robno.repRacGroupV",
+            "hr.restart.robno.repGroupIzlazni", "RacGroupV",
+            "Invoice po grupama artikala");
 
         raMaster.getRepRunner().addReport("hr.restart.robno.repOdobrenja", "hr.restart.robno.repIzlazni", "Odobrenja", "Ispis odobrenja");
         
@@ -338,7 +342,7 @@ final public class raRAC extends raIzlazTemplate {
             JRDesignExpression ex = (JRDesignExpression) ((JRTextField) els[j]).getExpression();
             if (ex.getText().indexOf("sum_Section0_") >= 0) {
               if (ex.getText().indexOf("IPRODBPV") >= 0 || ex.getText().indexOf("POR1V") >= 0) {
-                ex.setText("$P{cform}.format(" + ex.getText() + ")");
+                ex.setText("$F{DPREFIX} + $P{cform}.format(" + ex.getText() + ")");
                 ex.setValueClassName("java.lang.String");
               } else {
                 ex.setText("$F{PREFIX} + $P{cform}.format(" + ex.getText() + ")");
@@ -500,6 +504,10 @@ final public class raRAC extends raIzlazTemplate {
         raDetail.getRepRunner().addReport("hr.restart.robno.repRacGroup",
             "hr.restart.robno.repGroupIzlazni", "RacGroup",
             ReportValuteTester.titleRAC1R + " po grupama artikala");
+        
+        raDetail.getRepRunner().addReport("hr.restart.robno.repRacGroupV",
+            "hr.restart.robno.repGroupIzlazni", "RacGroupV",
+            "Invoice po grupama artikala");
         
         raDetail.getRepRunner().addReport("hr.restart.robno.repOdobrenja", "hr.restart.robno.repIzlazni", "Odobrenja", "Ispis odobrenja");
         
