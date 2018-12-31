@@ -1631,11 +1631,12 @@ System.out.println(nalID+"   "+nalIP+"   "+oldID+"   "+oldIP+"   "+newNalID+"   
           if (ret == 1) {
             frmTableDataView view = new frmTableDataView();
             view.setDataSet(psk);
-            view.jp.setPreferredSize(new Dimension(640, 400));
             view.jp.getMpTable().setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-            view.setTitle("Pokrivene salda konti stavke");
-            view.pack();
+            view.setTitle("Pokrivene salda konti stavke naloga "+getMasterSet().getString("CNALOGA"));
+            view.setSaveName("rask-pok");
+            view.jp.addTableModifier(new raTableColumnModifier("CPAR", new String[] {"CPAR", "NAZPAR"}, dm.getPartneri()));
             view.show();
+            view.resizeLater();
           }
         } else JOptionPane.showMessageDialog(jpMaster.getTopLevelAncestor(),msgObr,"Obrada naloga",JOptionPane.INFORMATION_MESSAGE);
         raMaster.getJpTableView().fireTableDataChanged();
