@@ -436,6 +436,9 @@ class rajpIzlazMPTemplate extends JPanel {
 			panelBasicExt.jlrCNAMJ.forceFocLost();
 			panelBasicExt.jlrCNACPL.forceFocLost();
 			panelBasicExt.jlrCNAC.forceFocLost();
+		} else if (TypeDoc.getTypeDoc().numberPanel(fDI.what_kind_of_dokument) == 6) {
+		  panelBasicExt.jlrFRANKA.forceFocLost();
+		  panelBasicExt.jlrCNAC.forceFocLost();
 		}
 	}
 
@@ -784,7 +787,7 @@ SwingUtilities.invokeLater(new Runnable(){
 				add(jdohvatDokumenta, new XYConstraints(612, 65, 21, 21));
 				add(jlDDOSP, new XYConstraints(15, 65, -1, -1));
 				add(jtfDDOSP, new XYConstraints(150, 65, 50, -1));
-				add(jpgetval, new XYConstraints(0, 85, -1, -1));
+				add(jpgetval, new XYConstraints(0, 90, -1, -1));
 			} else if (version == 1) {
 				xYLayout.setHeight(120);
 				jlDVO.setText("Mjesto troška");
@@ -817,7 +820,7 @@ SwingUtilities.invokeLater(new Runnable(){
 				add(jlDATDOK, new XYConstraints(15, 115, -1, -1));
 				add(jtfDATDOK, new XYConstraints(150, 115, 100, -1));
 				add(jdohvatDokumenta, new XYConstraints(255, 115, 21, 21));
-				add(jpgetval, new XYConstraints(0, 135, -1, -1));
+				add(jpgetval, new XYConstraints(0, 140, -1, -1));
 			} else if (version == 5 || version == 8) {
 				if (fDI.bPonudaZaKupca) {
 					add(rpku, new XYConstraints(0, 0, -1, -1));
@@ -830,7 +833,7 @@ SwingUtilities.invokeLater(new Runnable(){
 							115, -1, -1));
 					add(jtfDATDOSP, new XYConstraints(540, 115, 100, -1));
 					//          add(chbock,new XYConstraints(435, 135, 150, -1));
-					add(jpgetval, new XYConstraints(0, 160, -1, -1));
+					add(jpgetval, new XYConstraints(0, 150, -1, -1));
 				} else {
 					add(jlCPAR, new XYConstraints(15, 15, -1, -1));
 					add(jrfCPAR, new XYConstraints(150, 15, 100, -1));
@@ -847,7 +850,7 @@ SwingUtilities.invokeLater(new Runnable(){
 					add(jdohvatDokumenta, new XYConstraints(612, 65, 21, 21));
 					add(jtfDDOSP, new XYConstraints(150, 65, 50, -1));
 					//          add(chbock,new XYConstraints(400, 85, 150, -1));
-					add(jpgetval, new XYConstraints(0, 110, -1, -1));
+					add(jpgetval, new XYConstraints(0, 100, -1, -1));
 				}
 			} else if (version == 9) {
 			  add(jlCPAR, new XYConstraints(15, 15, -1, -1));
@@ -857,7 +860,7 @@ SwingUtilities.invokeLater(new Runnable(){
               add(jbCPARCHECK, new XYConstraints(100, 15, 45, 21));
               add(jlDATDOK, new XYConstraints(15, 40, -1, -1));
               add(jtfDATDOK, new XYConstraints(150, 40, 100, -1));
-              add(jpgetval, new XYConstraints(0, 110, -1, -1));
+              add(jpgetval, new XYConstraints(0, 100, -1, -1));
 			} else if (version == 6 || (version == 2 || gotpar)) {
 				setupRadio();
 				add(jrbPartner, new XYConstraints(15, 15, -1, -1));
@@ -870,8 +873,9 @@ SwingUtilities.invokeLater(new Runnable(){
 				add(rpku, new XYConstraints(3, 90, -1, -1));
 				add(jlDATDOK, new XYConstraints(15, 203, -1, -1));
 				add(jtfDATDOK, new XYConstraints(150, 203, 100, -1));
-				add(jdohvatDokumenta, new XYConstraints(255, 203, 21, 21));				
-				xYLayout.setHeight(240);
+				add(jdohvatDokumenta, new XYConstraints(255, 203, 21, 21));
+				add(jpgetval, new XYConstraints(0, 230, -1, -1));
+				xYLayout.setHeight(280);
 			}
 		}
 
@@ -1021,7 +1025,7 @@ SwingUtilities.invokeLater(new Runnable(){
 			jbPJ.setText("...");
 			jrfPJ.setNavButton(jbPJ);
             
-            if (ver != 6) {
+            
     			jlrFRANKA.setColumnName("CFRA");
     			jlrFRANKA.setVisCols(new int[] { 0, 1 });
     			jlrFRANKA.setColNames(new String[] { "NAZFRA" });
@@ -1050,6 +1054,8 @@ SwingUtilities.invokeLater(new Runnable(){
     
     			jbCNAC.setText("...");
     			jlrCNAC.setNavButton(jbCNAC);
+    			
+    		if (ver != 6) {
     			jlrCNACPL.setColumnName("CNACPL");
     			jlrCNACPL.setVisCols(new int[] { 0, 1 });
     			jlrCNACPL.setColNames(new String[] { "NAZNACPL" });
@@ -1125,6 +1131,15 @@ SwingUtilities.invokeLater(new Runnable(){
 				add(jrfNAZPJ, new XYConstraints(255, 15, 350, -1));
 				add(jbPJ, new XYConstraints(612, 15, 21, 21));
 				add(jtfPJOPIS, new XYConstraints(150, 40, 455, -1));
+				
+				add(jlFRANK, new XYConstraints(15, 80, -1, -1));
+                add(jlrFRANKA, new XYConstraints(150, 80, 30, -1));
+                add(jlrNAZFRA, new XYConstraints(185, 80, 130, -1));
+                add(jbCFRA, new XYConstraints(321, 80, 21, 21));
+                add(jlNACOTP, new XYConstraints(366, 80, -1, -1));
+                add(jlrCNAC, new XYConstraints(440, 80, 30, -1));
+                add(jlrNAZNAC, new XYConstraints(475, 80, 130, -1));
+                add(jbCNAC, new XYConstraints(612, 80, 21, 21));
 			}
 		}
 
@@ -1899,13 +1914,13 @@ SwingUtilities.invokeLater(new Runnable(){
         panDodatniExt() {
           setLayout(lay);
           lay.setWidth(640);
-          lay.setHeight(panelDodatni.xYLayoutNeki.getHeight() + 70);
+          lay.setHeight(panelDodatni.xYLayoutNeki.getHeight() + 110);
           setBorder(BorderFactory.createEtchedBorder());
-          panelBasicExt.xYLayout.setHeight(70);
+          panelBasicExt.xYLayout.setHeight(110);
           panelBasicExt.xYLayout.setWidth(640);
           panelDodatni.setBorder(null);
           add(panelBasicExt, new XYConstraints(0, 0, -1, -1));
-          add(panelDodatni, new XYConstraints(0, 70, -1, -1));
+          add(panelDodatni, new XYConstraints(0, 110, -1, -1));
         }
     }
     
