@@ -116,6 +116,20 @@ public class raVirPlMnWorker extends hr.restart.util.raMnemWorker {
         return frmParam.getParam("pl", "vrPrim" + rbr, "100", "Šifra vrste primanja za rbr obraèuna " + rbr);
       }
     });
+    
+    addVar(new raMnemVar("$svrhaprim","Tekst svrhe primanja") {
+      public String getText() {
+        if (ld.raLocate(dm.getOdbiciobr(), new String[]{"CVRODB", "CRADNIK", "RBRODB"}, new String[]{strVrOdb, strRad, strRbrOdb})) {
+          short cvrp = dm.getOdbiciobr().getShort("CVRP");
+          if (cvrp > 0)
+            return frmParam.getParam("pl", "textPrimEx" + cvrp, "Plaæa za $mo/$godo", "Tekst vrste primanja za primanje " + cvrp);
+        }
+// 4817 622
+        ld.raLocate(dm.getOrgpl(),new String[] {"CORG"},new String[] {hr.restart.zapod.OrgStr.getKNJCORG()});
+        short rbr = dm.getOrgpl().getShort("RBROBR");
+        return frmParam.getParam("pl", "textPrim" + rbr, "Plaæa za $mo/$godo", "Tekst vrste primanja za rbr obraèuna " + rbr);
+      }
+    });
 
     addVar(new raMnemVar("$mo","Mjesec obrade") {
       public String getText() {
