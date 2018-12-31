@@ -44,7 +44,6 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.glacier.AmazonGlacier;
 import com.amazonaws.services.glacier.AmazonGlacierClientBuilder;
-import com.amazonaws.services.glacier.model.UploadArchiveRequest;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManagerBuilder;
 //import com.amazonaws.services.rds.AmazonRDS;
@@ -69,9 +68,10 @@ public class AmazonHandler {
   private static String secretKey = "/Srlsrz7WooLu1FmBuGpUtntU04sIdTytvr8OYs4";
   
   public static String bucket = "spa-backup-eu-central-1-917935665604";*/
-  private static String accessId = "AKIAIVVPKTWMFRYM7ZXQ";
+  private static String accessId = "AKIAJJYPAQDOWNL2MBIQ";
   
-  private static String secretKey = "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";
+  private static String secretKey = "369JnNMxpojGkDXCUnjQr+TYFV3tu4CxEwVze/B7";
+  
   
   private static String bucket = "restart-spa-backup";
   
@@ -305,6 +305,7 @@ public class AmazonHandler {
       PutObjectRequest req = new PutObjectRequest(mBucket, mFolder + "/" + name, f);
       req.setGeneralProgressListener(track);
       conn.putObject(req);
+      return true;
     } catch (Exception e) {
       e.printStackTrace();
     }
