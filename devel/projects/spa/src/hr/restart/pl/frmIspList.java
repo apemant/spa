@@ -289,7 +289,9 @@ public class frmIspList extends frmIzvjestajiPL {
 
   protected void addReports() {
     addJasper("hr.restart.pl.repIP1", "hr.restart.pl.repIspList", "IP1.jrxml", "Obrazac IP1");
-    addJasper("hr.restart.pl.repNP1", "hr.restart.pl.repIspList", "NP1.jrxml", "Obrazac NP1");
+    addJasper("hr.restart.pl.repNP1", "hr.restart.pl.repIspList", "NPn1.jrxml", "Obrazac NP1");
+    addJasper("hr.restart.pl.repNP1_4", "hr.restart.pl.repIspList", "NPn1_4.jrxml", "Obrazac NP1 (èetiri obustave)");
+    addJasper("hr.restart.pl.repNO1", "hr.restart.pl.repIspList", "NO1.jrxml", "Obrazac NO1");
     this.addReport("hr.restart.pl.repIspList", "hr.restart.pl.repIspList", "IspList", "Ispis isplatnih listi\u0107a po abecedi");
     this.addReport("hr.restart.pl.repIspListCorg", "hr.restart.pl.repIspListCorg", "IspList", "Ispis isplatnih listiæa po org. jedinicama");
     addJasper("hr.restart.pl.repIspListNa", "hr.restart.pl.repIspList", "ispListNa.jrxml", "Isplatni listiæ sa svim doprinosima");
@@ -326,7 +328,8 @@ public class frmIspList extends frmIzvjestajiPL {
     };
     getRepRunner().addJasperHook("hr.restart.pl.repIP1", jhook);
     getRepRunner().addJasperHook("hr.restart.pl.repNP1", jhook);
-    
+    getRepRunner().addJasperHook("hr.restart.pl.repNP1_4", jhook);
+    getRepRunner().addJasperHook("hr.restart.pl.repNO1", jhook);
   }
   
   
@@ -413,13 +416,14 @@ public class frmIspList extends frmIzvjestajiPL {
 
     vrprim = hr.restart.util.Util.getNewQueryDataSet("SELECT cvrp, naziv, parametri FROM vrsteprim");
     vrodb = hr.restart.util.Util.getNewQueryDataSet("SELECT cvrodb, opisvrodb, cpov, parametri, stopa FROM vrsteodb");
-    radpl = hr.restart.util.Util.getNewQueryDataSet("SELECT cradnik, cradmj, brojtek, cisplmj, cvro, jmbg, adresa, copcine, oib, BRUTOSN FROM radnicipl");
+    radpl = hr.restart.util.Util.getNewQueryDataSet("SELECT cradnik, cradmj, brojtek, cisplmj, cvro, jmbg, adresa, copcine, oib, BRUTOSN, godstaz FROM radnicipl");
     radmj = hr.restart.util.Util.getNewQueryDataSet("SELECT cradmj, nazivrm FROM radmj");
     mainPanel.add(jpr, BorderLayout.CENTER);
     jPanel2.add(jrcbPrikaz, new XYConstraints(475, 25, 100, -1));
     
-    npdat = Aus.createSet("MIO1PRIM:50 MIO1IBAN:30 MIO1PNBZ:30 MIO2PRIM:50 MIO2IBAN:30 MIO2PNBZ:30 "+
-        "PORPRIM:50 PORIBAN:30 PORPNBZ:30 ODBPRIM:50 ODBIBAN:30 ODBPNBZ:30");
+    npdat = Aus.createSet("MIO1PRIM:50 MIO1IBAN:30 MIO1PNBZ:30 MIO2PRIM:50 MIO2IBAN:30 MIO2PNBZ:30 ODBICI1.2 ODBICI2.2 ODBICI3.2 ODBICI4.2 "+
+        "PORPRIM:50 PORIBAN:30 PORPNBZ:30 ODBNAZ1:50 ODBPRIM1:50 ODBIBAN1:30 ODBPNBZ1:30 ODBNAZ2:50 ODBPRIM2:50 ODBIBAN2:30 ODBPNBZ2:30 "+
+        "ODBNAZ3:50 ODBPRIM3:50 ODBIBAN3:30 ODBPNBZ3:30 ODBNAZ4:50 ODBPRIM4:50 ODBIBAN4:30 ODBPNBZ4:30");
   }
 
   public void aft_lookCorg() {
@@ -547,6 +551,7 @@ public class frmIspList extends frmIzvjestajiPL {
   }
   BigDecimal totalStopa, totalStopaNa, totalIznosNa, totalMIO1, totalMIO2, zastIznos, nedop;
   String nazivPrim, sati, koef, neto, bruto, nazivDop, osnovicaDop, stopa, iznos, nazivDopNa, osnovicaDopNa, stopaNa, iznosNa;
+  String nazivDopNaCap, nazivDopNaTotCap;
   String nazivNak, satiNaknada, iznosNak, nazivKred, iznosKred;
   String cradmj, nazradmj, stopepor;
   String brojtek, nazbanke, brojzas, brojzasn, nazbankzas, tipIsplate, nazvro, copcine, oib, adresa, fondsati, iban, ibann;
@@ -586,9 +591,23 @@ public class frmIspList extends frmIzvjestajiPL {
   }
   
   private void fillKred(DataSet ds) {
-    if (npdat.getString("ODBIBAN").length() > 0) return;
-    
-    fillFromPov("ODBPRIM", "ODBIBAN", "ODBPNBZ");
+    if (npdat.getString("ODBIBAN1").length() == 0) {
+      fillFromPov("ODBPRIM1", "ODBIBAN1", "ODBPNBZ1");
+      npdat.setString("ODBNAZ1", "3.1. " + getVrodb().getString("OPISVRODB"));
+      npdat.setBigDecimal("ODBICI1", ds.getBigDecimal("OBRIZNOS"));
+    } else if (npdat.getString("ODBIBAN2").length() == 0) {
+      fillFromPov("ODBPRIM2", "ODBIBAN2", "ODBPNBZ2");
+      npdat.setString("ODBNAZ2",  "3.2. " + getVrodb().getString("OPISVRODB"));
+      npdat.setBigDecimal("ODBICI2", ds.getBigDecimal("OBRIZNOS"));
+    } else if (npdat.getString("ODBIBAN3").length() == 0) {
+      fillFromPov("ODBPRIM3", "ODBIBAN3", "ODBPNBZ3");
+      npdat.setString("ODBNAZ3",  "3.3. " + getVrodb().getString("OPISVRODB"));
+      npdat.setBigDecimal("ODBICI3", ds.getBigDecimal("OBRIZNOS"));
+    } else if (npdat.getString("ODBIBAN4").length() == 0) {
+      fillFromPov("ODBPRIM4", "ODBIBAN4", "ODBPNBZ4");
+      npdat.setString("ODBNAZ4",  "3.4. " + getVrodb().getString("OPISVRODB"));
+      npdat.setBigDecimal("ODBICI4", ds.getBigDecimal("OBRIZNOS"));
+    }
   }
   
   private void fillMIO1(DataSet ds) {
@@ -633,6 +652,8 @@ public class frmIspList extends frmIzvjestajiPL {
     stopepor = "";
     npdat.deleteAllRows();
     npdat.insertRow(false);
+    npdat.setAssignedNull("ODBICI1");
+    npdat.setAssignedNull("ODBICI2");
     worker.povDS = dm.getPovjerioci();
     createCachept(StDSradnici);
 
@@ -745,6 +766,7 @@ public class frmIspList extends frmIzvjestajiPL {
         else totalMIO2 = totalMIO2.add(ds.getBigDecimal("OBRIZNOS"));
       }
     }
+    if (totalMIO2 == null) totalMIO2 = Aus.zero2;
     
     Object[] doprinosi = makeDoprStringBuffers(ds, rbrObr, mjObr, godObr);
 
@@ -763,6 +785,9 @@ public class frmIspList extends frmIzvjestajiPL {
     iznosNa = doprinosiNa[3].toString();
     totalStopaNa = (BigDecimal)doprinosiNa[4];
     totalIznosNa = (BigDecimal)doprinosiNa[5];
+    
+    nazivDopNaCap = frmParam.getParam("pl", "doprinosiTitle", "DOPRINOSI NA PLAÆU", "Tekst za doprinose na plaæu");
+    nazivDopNaTotCap = frmParam.getParam("pl", "doprinosiSum", "Ukupno doprinosi na plaæu", "Tekst za doprinose na plaæu ukupno");
     
     nazivKred = _nazivK.toString();
     iznosKred = _iznosK.toString();
@@ -970,6 +995,14 @@ System.out.println("KreditInfo za "+ds);
   
   public String getDoprinosiNa() {
     return nazivDopNa;
+  }
+  
+  public String getDoprinosiNaCap() {
+    return nazivDopNaCap;
+  }
+  
+  public String getDoprinosiNaTotCap() {
+    return nazivDopNaTotCap;
   }
 
   public String getOsnovicaDoprinosaNa(){
