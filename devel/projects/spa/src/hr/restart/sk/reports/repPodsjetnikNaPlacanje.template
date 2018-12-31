@@ -22,8 +22,8 @@
      <Property Name="Grid X">5</Property>
      <Property Name="Grid Y">5</Property>
      <Property Name="Version">1.50</Property>
-     <Property Name="Last Modified">Wed Feb 14 09:42:19 CET 2007</Property>
-     <HiddenProperty Name="Template Path">/home/abf/projekti/devel/projects/spa/src/hr/restart/sk/reports/</HiddenProperty>
+     <Property Name="Last Modified">Wed Oct 10 14:09:05 CEST 2018</Property>
+     <HiddenProperty Name="Template Path">/home/ante/projekti/devel/projects/spa/src/hr/restart/sk/reports/</HiddenProperty>
      <HiddenProperty Name="Text_Count">83</HiddenProperty>
      <HiddenProperty Name="Label_Count">48</HiddenProperty>
      <HiddenProperty Name="Image_Count">0</HiddenProperty>
@@ -382,8 +382,7 @@ Podsjetnik za plaćanje</Property>
           <Model Name="Text65">
                <Property Name="Model Name">Text</Property>
                <Property Name="Name">Text65</Property>
-               <Property Name="Control Source">=(string-append &quot;
-&quot; [NAZPAR])</Property>
+               <Property Name="Control Source">NAZPAR</Property>
                <Property Name="Running Sum">No</Property>
                <Property Name="Locale">Template Locale</Property>
                <Property Name="Format">None</Property>
@@ -542,7 +541,7 @@ Podsjetnik za plaćanje</Property>
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
                <Property Name="Left">5880</Property>
-               <Property Name="Top">4220</Property>
+               <Property Name="Top">4000</Property>
                <Property Name="Width">4360</Property>
                <Property Name="Height">240</Property>
                <Property Name="Back Style">Transparent</Property>
@@ -596,8 +595,8 @@ Podsjetnik za plaćanje</Property>
                <Property Name="Can Shrink">Yes</Property>
                <Property Name="Left">5880</Property>
                <Property Name="Top">2780</Property>
-               <Property Name="Width">4360</Property>
-               <Property Name="Height">840</Property>
+               <Property Name="Width">4340</Property>
+               <Property Name="Height">500</Property>
                <Property Name="Back Style">Transparent</Property>
                <Property Name="Back Color">White</Property>
                <Property Name="Border Style">Transparent</Property>
@@ -625,7 +624,7 @@ Podsjetnik za plaćanje</Property>
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
                <Property Name="Left">5880</Property>
-               <Property Name="Top">3700</Property>
+               <Property Name="Top">3480</Property>
                <Property Name="Width">4360</Property>
                <Property Name="Height">240</Property>
                <Property Name="Back Style">Transparent</Property>
@@ -655,7 +654,7 @@ Podsjetnik za plaćanje</Property>
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
                <Property Name="Left">5880</Property>
-               <Property Name="Top">3960</Property>
+               <Property Name="Top">3740</Property>
                <Property Name="Width">4360</Property>
                <Property Name="Height">240</Property>
                <Property Name="Back Style">Transparent</Property>
@@ -708,7 +707,7 @@ Podsjetnik za plaćanje</Property>
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
                <Property Name="Left">5880</Property>
-               <Property Name="Top">4480</Property>
+               <Property Name="Top">4260</Property>
                <Property Name="Width">4360</Property>
                <Property Name="Height">240</Property>
                <Property Name="Back Style">Transparent</Property>
@@ -738,7 +737,7 @@ Podsjetnik za plaćanje</Property>
                <Property Name="Can Grow">No</Property>
                <Property Name="Can Shrink">No</Property>
                <Property Name="Left">5880</Property>
-               <Property Name="Top">4740</Property>
+               <Property Name="Top">4520</Property>
                <Property Name="Width">4360</Property>
                <Property Name="Height">240</Property>
                <Property Name="Back Style">Transparent</Property>
