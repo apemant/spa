@@ -58,6 +58,7 @@ import com.borland.dx.dataset.NavigationEvent;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
+import com.borland.jbcl.layout.constraintsGetter;
 
 
 public class frmSubjekti extends raMatPodaci {
@@ -184,13 +185,22 @@ public class frmSubjekti extends raMatPodaci {
     sif = dm.getRN_vrsub().getString("NAZSIF");
     if (sif == null || sif.length() == 0) sif = "Šifra";
 //    System.out.println("cvrsubj "+cvrsubj);
+    
+    constraintsGetter.unmark(xYLayout2);
     jpPodaci.setFields(cvrsubj);
-    xYLayout2.setWidth(Math.max(500, jpPodaci.getLayWidth()));
-//    System.out.println(jpPodaci.getLayHeight());
-    xYLayout2.setHeight(emptyHeight + jpPodaci.getLayHeight() +
-                        (jpPodaci.getLayHeight() > 0 ? 10 : 0));
+    jpDetail.add(jlSubjekt, new XYConstraints(15, 40, -1, -1));
     adjustFixedFields(jpPodaci.getLabelWidth(), jpPodaci.getTextWidth());
-//    System.out.println(xYLayout2.getWidth() + "  " + xYLayout2.getHeight());
+    jpDetail.add(jpPodaci, new XYConstraints(0, 70, -1, -1));
+    Aus.recursiveUpdateSizes(jpPodaci);
+    
+    xYLayout2.setWidth(Math.max(500, jpPodaci.getLayWidth()));
+//  System.out.println(jpPodaci.getLayHeight());
+    xYLayout2.setHeight(emptyHeight + jpPodaci.getLayHeight() +
+                      (jpPodaci.getLayHeight() > 0 ? 10 : 0));
+    
+
+
+    //    System.out.println(xYLayout2.getWidth() + "  " + xYLayout2.getHeight());
 //    SetList();
     canNavigate = true;
     return true;
