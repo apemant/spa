@@ -72,7 +72,13 @@ public class repGroupIzlazni extends repIzlazni {
       if (!lD.raLocate(dm.getGrupart(), "CGRART", gr = dm.getGrupart().getString("CGRARTPRIP")))
         return "";
     
-    return dm.getGrupart().getString("NAZGRART");
+    if (!isReportForeign())
+      return dm.getGrupart().getString("NAZGRART");
+    
+    if (dm.getGrupart().getString("SNAZGRART").length() == 0)
+      return dm.getGrupart().getString("NAZGRART");
+    
+    return dm.getGrupart().getString("SNAZGRART");
   }
   
   public String RBRDUMMY() {
