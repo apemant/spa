@@ -171,6 +171,14 @@ public class repIspListCorg implements raReportData {//implements sg.com.elixir.
   public String getDoprinosiNa() {
     return fil.getDoprinosiNa();
   }
+  
+  public String getDoprinosiNaCap() {
+    return fil.getDoprinosiNaCap();
+  }
+  
+  public String getDoprinosiNaTotCap() {
+    return fil.getDoprinosiNaTotCap();
+  }
 
   public String getOsnovicaDopNa() {
     return fil.getOsnovicaDoprinosaNa();

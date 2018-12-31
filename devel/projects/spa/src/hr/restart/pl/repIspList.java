@@ -19,10 +19,12 @@ package hr.restart.pl;
 
 import hr.restart.robno.raDateUtil;
 import hr.restart.robno.repMemo;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Valid;
 import hr.restart.util.lookupData;
 import hr.restart.util.reports.raReportData;
+import hr.restart.zapod.OrgStr;
 import hr.restart.zapod.frmVirmani;
 
 import java.math.BigDecimal;
@@ -178,6 +180,14 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
   
   public String getDoprinosiNa() {
     return fil.getDoprinosiNa();
+  }
+  
+  public String getDoprinosiNaCap() {
+    return fil.getDoprinosiNaCap();
+  }
+  
+  public String getDoprinosiNaTotCap() {
+    return fil.getDoprinosiNaTotCap();
   }
 
   public String getOsnovicaDopNa() {
@@ -479,6 +489,14 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
     return fil.getBANKAZAS();
   }
   
+  public int getIP_GODOD() {
+    return radnici.getShort("GODOBR") - fil.getRadnicipl().getShort("GODSTAZ") + 1;
+  }
+  
+  public int getIP_GODDO() {
+    return radnici.getShort("GODOBR");
+  }
+  
   public int getIP_GOD() {
     return radnici.getShort("GODOBR");
   }
@@ -580,12 +598,16 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
     return getNeoporezivo();
   }
   
+  public BigDecimal getIP_DOPR() {
+    return getIP_MIO1().add(getIP_MIO2()).add(getIP_PORPRIR());
+  }
+  
   public BigDecimal getIP_OSNPOR() {
     return getPorezOsnovica();
   }
   
   public BigDecimal getIP_PORPRIR() {
-    return getTotalPorezPrirez();
+    return getTotalPorezPrirez().max(Aus.zero2);
   }
   
   public BigDecimal getIP_NETOPK() {
@@ -609,8 +631,16 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
     return radnici.getBigDecimal("NARUKE");
   }
   
+  public BigDecimal getIP_NARUKE() {
+    return radnici.getBigDecimal("NARUKE");
+  }
+  
   public String getIP_STOPEPOR() {
     return fil.getStopePor();
+  }
+  
+  public String getIP_MJESTODAT() {
+    return getLogoMjesto() + ", " + rdu.dataFormatter(radnici.getTimestamp("DATISP"));
   }
   
   public String getIP_DATPLA() {
@@ -692,16 +722,91 @@ public class repIspList implements raReportData {// implements sg.com.elixir.rep
     return fil.getNPdat().getString("PORPNBZ");
   }
   
-  public String getIP_ODBPRIM() {
-    return fil.getNPdat().getString("ODBPRIM");
+  public BigDecimal getIP_ODBICI1() {
+    if (fil.getNPdat().isNull("ODBICI1") || fil.getNPdat().getBigDecimal("ODBICI1").signum() == 0) return null; 
+    return fil.getNPdat().getBigDecimal("ODBICI1");
   }
   
-  public String getIP_ODBIBAN() {
-    return fil.getNPdat().getString("ODBIBAN");
+  public BigDecimal getIP_ODBICI2() {
+    if (fil.getNPdat().isNull("ODBICI2") || fil.getNPdat().getBigDecimal("ODBICI2").signum() == 0) return null; 
+    return fil.getNPdat().getBigDecimal("ODBICI2");
   }
   
-  public String getODBPNBZ() {
-    return fil.getNPdat().getString("ODBPNBZ");
+  public BigDecimal getIP_ODBICI3() {
+    if (fil.getNPdat().isNull("ODBICI3") || fil.getNPdat().getBigDecimal("ODBICI3").signum() == 0) return null; 
+    return fil.getNPdat().getBigDecimal("ODBICI3");
   }
-
+  
+  public BigDecimal getIP_ODBICI4() {
+    if (fil.getNPdat().isNull("ODBICI4") || fil.getNPdat().getBigDecimal("ODBICI4").signum() == 0) return null; 
+    return fil.getNPdat().getBigDecimal("ODBICI4");
+  }
+  
+  public String getIP_ODBNAZ1() {
+    return fil.getNPdat().getString("ODBNAZ1");
+  }
+  
+  public String getIP_ODBPRIM1() {
+    return fil.getNPdat().getString("ODBPRIM1");
+  }
+  
+  public String getIP_ODBIBAN1() {
+    return fil.getNPdat().getString("ODBIBAN1");
+  }
+  
+  public String getIP_ODBPNBZ1() {
+    return fil.getNPdat().getString("ODBPNBZ1");
+  }
+  
+  public String getIP_ODBNAZ2() {
+    return fil.getNPdat().getString("ODBNAZ2");
+  }
+  
+  public String getIP_ODBPRIM2() {
+    return fil.getNPdat().getString("ODBPRIM2");
+  }
+  
+  public String getIP_ODBIBAN2() {
+    return fil.getNPdat().getString("ODBIBAN2");
+  }
+  
+  public String getIP_ODBPNBZ2() {
+    return fil.getNPdat().getString("ODBPNBZ2");
+  }
+  
+  public String getIP_ODBNAZ3() {
+    return fil.getNPdat().getString("ODBNAZ3");
+  }
+  
+  public String getIP_ODBPRIM3() {
+    return fil.getNPdat().getString("ODBPRIM3");
+  }
+  
+  public String getIP_ODBIBAN3() {
+    return fil.getNPdat().getString("ODBIBAN3");
+  }
+  
+  public String getIP_ODBPNBZ3() {
+    return fil.getNPdat().getString("ODBPNBZ3");
+  }
+  
+  public String getIP_ODBNAZ4() {
+    return fil.getNPdat().getString("ODBNAZ4");
+  }
+  
+  public String getIP_ODBPRIM4() {
+    return fil.getNPdat().getString("ODBPRIM4");
+  }
+  
+  public String getIP_ODBIBAN4() {
+    return fil.getNPdat().getString("ODBIBAN4");
+  }
+  
+  public String getIP_ODBPNBZ4() {
+    return fil.getNPdat().getString("ODBPNBZ4");
+  }
+  public String getIP_OOSOBA() {
+    String corg = OrgStr.getKNJCORG(false);
+    return frmParam.getParam("pl", "oosoba" + corg, "", "Ovlaštena osoba za plaæe corg " + corg);
+  }
 }
