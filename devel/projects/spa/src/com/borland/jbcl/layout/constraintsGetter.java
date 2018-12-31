@@ -7,6 +7,10 @@ public class constraintsGetter {
     lay.info.put("resized", new Object());
   }
   
+  public static void unmark(XYLayout lay) {
+    lay.info.remove("resized");
+  }
+  
   public static boolean isMarked(XYLayout lay) {
     return lay.info.containsKey("resized");
   }
