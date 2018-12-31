@@ -19,6 +19,7 @@ package hr.restart.baza;
 
 import hr.restart.db.raPreparedStatement;
 import hr.restart.sisfun.TextFile;
+import hr.restart.sisfun.frmParam;
 import hr.restart.util.Aus;
 import hr.restart.util.Int2;
 import hr.restart.util.Util;
@@ -42,9 +43,6 @@ import java.util.Set;
 
 import javax.swing.JTextArea;
 
-import org.postgresql.copy.CopyIn;
-import org.postgresql.copy.CopyManager;
-import org.postgresql.jdbc.PgConnection;
 import org.w3c.tools.codec.Base64Decoder;
 import org.w3c.tools.codec.Base64Encoder;
 import org.w3c.tools.codec.Base64FormatException;
@@ -58,6 +56,7 @@ import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
+import com.borland.dx.sql.dataset.QueryResolver;
 import com.borland.jb.util.TriStateProperty;
 
 
@@ -136,6 +135,45 @@ public abstract class KreirDrop {
 
   public Column[] getColumns() {
     return origColumns;
+  }
+  
+  public int estimatedMemory() {
+    return getRowCount() * estimatedMemoryPerRow();
+  }
+  
+  public int estimatedMemoryPerRow() {
+    int mem = 0;
+    
+    for (int i = 0; i < origColumns.length; i++)
+      switch (origColumns[i].getDataType()) {
+        case Variant.INT:
+        case Variant.FLOAT:
+          mem += 4;
+          break;
+        case Variant.LONG:
+        case Variant.BIGDECIMAL:
+        case Variant.DOUBLE:
+          mem += 8;
+          break;
+        case Variant.STRING:
+          if (origColumns[i].getPrecision() <= 12)
+            mem += origColumns[i].getPrecision() * 4;
+          else mem += 48 + origColumns[i].getPrecision() / 2;
+          break;
+        case Variant.TIMESTAMP:
+          mem += 32;
+          break;
+        case Variant.SHORT:
+          mem += 2;
+          break;
+        case Variant.INPUTSTREAM:
+          mem += 10000;
+          break;
+        default:
+          mem += 10;
+      }
+
+    return mem;
   }
 
   public Column getColumn(String name) {
@@ -248,7 +286,11 @@ public abstract class KreirDrop {
           String val = new VarStr(parts[i]).trim().replaceAll("\\n", "\n").
                  replaceAll("</sep>", sep).toString();
           if (val.length() > 0) {
-            v.setFromString(dc[i].getDataType(), val);
+            if (dc[i].getDataType() == Variant.BIGDECIMAL)
+              v.setBigDecimal(Aus.getDecNumber(val));
+            else if (dc[i].getDataType() == Variant.INT)
+              v.setInt(Aus.getAnyNumber(val));
+            else v.setFromString(dc[i].getDataType(), val);
             dest.setVariant(cnames[i], v);
           }
         }
@@ -289,12 +331,30 @@ public abstract class KreirDrop {
     return Valid.getValid().getSetCount(Util.getNewQueryDataSet(q.toString()), 0);
   }
   
+  public int getShadowRowCount(String where) {
+    VarStr q = new VarStr(getQueryDataSet().getOriginalQueryString());
+    int wh = q.indexOfIgnoreCase(" where");
+    if (wh >= 0) q.truncate(wh);
+    if (where != null && where.length() > 0)
+      q.append(" WHERE ").append(where);
+    q.replaceFirst("*"," COUNT(*) ");
+    return Valid.getValid().getSetCount(Util.getShadowDataSet(q.toString()), 0);
+  }
+  
   public int getMax(String col) {
     VarStr q = new VarStr(getQueryDataSet().getOriginalQueryString());
     int wh = q.indexOfIgnoreCase(" where");
     if (wh >= 0) q.truncate(wh);
     q.replaceFirst("*"," MAX(" + col +") ");
     return Valid.getValid().getSetCount(Util.getNewQueryDataSet(q.toString()), 0);
+  }
+  
+  public int getShadowMax(String col) {
+    VarStr q = new VarStr(getQueryDataSet().getOriginalQueryString());
+    int wh = q.indexOfIgnoreCase(" where");
+    if (wh >= 0) q.truncate(wh);
+    q.replaceFirst("*"," MAX(" + col +") ");
+    return Valid.getValid().getSetCount(Util.getShadowDataSet(q.toString()), 0);
   }
 
   /**
@@ -304,6 +364,10 @@ public abstract class KreirDrop {
    */
   public int getRowCount(Condition filter) {
     return getRowCount(filter.toString());
+  }
+  
+  public int getShadowRowCount(Condition filter) {
+    return getShadowRowCount(filter.toString());
   }
   
   public StorageDataSet getReadonlySet() {
@@ -439,6 +503,49 @@ public abstract class KreirDrop {
     filtered.open();
     return filtered;
   }
+  
+  
+  public QueryDataSet openShadowSet() {
+    return openShadowSet("1=0");
+  }
+  
+  public QueryDataSet openShadowSet(Condition cond) {
+    return openShadowSet(cond.toString());
+  }
+  
+  public QueryDataSet openShadowSet(String cols, Condition cond) {
+    return openShadowSet(cols, cond.toString());
+  }
+  
+  public QueryDataSet openShadowSet(String[] cols, Condition cond) {
+    return openShadowSet(cols, cond.toString());
+  }
+  
+  
+  public QueryDataSet openShadowSet(String filter) {
+    QueryDataSet filtered = new QueryDataSet();
+    createShadowFilteredDataSet(filtered, null, filter);
+    filtered.open();
+    return filtered;
+  }
+  
+  public QueryDataSet openShadowSet(String cols, String filter) {
+    QueryDataSet filtered = new QueryDataSet();
+    String[] cols2; 
+    if (cols.indexOf(',') >= 0) cols2 = new VarStr(cols).splitTrimmed(',');
+    else cols2 = new VarStr(cols).split();
+    createShadowFilteredDataSet(filtered, cols2, filter);
+    filtered.open();
+    return filtered;
+  }
+  
+  public QueryDataSet openShadowSet(String[] cols, String filter) {
+    QueryDataSet filtered = new QueryDataSet();
+    createShadowFilteredDataSet(filtered, cols, filter);
+    filtered.open();
+    return filtered;
+  }
+  
   
   /**
    * Vraca NOVI QueryDataSet za ovu tablicu, bez WHERE filtera.
@@ -640,6 +747,33 @@ public abstract class KreirDrop {
     }
     Refresher.postpone();
   }
+  
+  protected void createShadowFilteredDataSet(QueryDataSet filtered, String[] cols, String where) {
+    String qs = "SELECT "+ (cols == null ? "*" : VarStr.join(cols, ',').toString()) + 
+       " FROM "+Naziv+(where == null || where.equals("") ? "" : " WHERE " + where);
+//    hr.restart.util.
+//    if (orig.toLowerCase().indexOf("where"))
+    filtered.close();
+    RowFilterListener filt = filtered.getRowFilterListener();
+    if (filt != null) filtered.removeRowFilterListener(filt);
+    if (filtered.getLocale() == null) filtered.setLocale(Aus.hr);
+    filtered.setQuery(new QueryDescriptor(dm.getShadowDatabase(), qs, null, true, Load.ALL));
+//    filtered.setQuery(new QueryDescriptor(dM.getDataModule().getDatabase1(), getQueryDataSet().getOriginalQueryString()+wh, null, true, Load.ALL));
+    if (filtered != getQueryDataSet() && filtered.getResolver() == null) {
+      QueryResolver ret = new QueryResolver();
+      ret.setDatabase(dm.getShadowDatabase());
+      ret.setResolverQueryTimeout(30);
+      ret.setUpdateMode(com.borland.dx.dataset.UpdateMode.KEY_COLUMNS);
+      filtered.setResolver(ret);
+      if (cols == null) filtered.setColumns(getQueryDataSet().cloneColumns());
+      else {
+        Column[] scope = new Column[cols.length];
+        for (int i = 0; i < cols.length; i++)
+          scope[i] = (Column) getQueryDataSet().getColumn(cols[i]).clone();
+        filtered.setColumns(scope);
+      }
+    }
+  }
 
   /**
    * Vraca defaultni QueryDataSet za ovaj modul (za neke module,
@@ -769,13 +903,21 @@ public abstract class KreirDrop {
           aincr = getMax(mc.getColumnName()) + 1;
       }
       
-      if (dM.getDatabaseConnection() instanceof PgConnection) {
-        PgConnection pg = (PgConnection) dM.getDatabaseConnection();
+      
+      boolean fastPostgre = false;
+      try {
+        fastPostgre = dM.getDatabaseConnection() instanceof org.postgresql.jdbc.PgConnection;
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      
+      if (fastPostgre) {
+        org.postgresql.jdbc.PgConnection pg = (org.postgresql.jdbc.PgConnection) dM.getDatabaseConnection();
         int lnum = 0;
         try {
-          CopyManager cm = new CopyManager(pg);
+          org.postgresql.copy.CopyManager cm = new org.postgresql.copy.CopyManager(pg);
           
-          CopyIn cin = cm.copyIn("COPY " + Naziv +"(" + VarStr.join(existingFields, ',') + ") FROM STDIN");
+          org.postgresql.copy.CopyIn cin = cm.copyIn("COPY " + Naziv +"(" + VarStr.join(existingFields, ',') + ") FROM STDIN");
           try {
             byte[] buff = new byte[DEFAULT_BUFFER_SIZE];
             int offset = 0;
@@ -891,13 +1033,17 @@ public abstract class KreirDrop {
                         val = val.trim().concat(" 00:00:00.0");
                       }
                       ps.setTimestamp(existingNames[i], java.sql.Timestamp.valueOf(val), false);
-                    }                    
-                  if (existingCols[i].getDataType() == Variant.INPUTSTREAM) {
+                    }
+                  else if (existingCols[i].getDataType() == Variant.INPUTSTREAM) {
                     byte[] arr = decode(val);
                     ps.setBinaryStream(ps.getParameterIndex(existingNames[i], 
                         false), new ByteArrayInputStream(arr), arr.length);
                   } else {
-                    v.setFromString(existingCols[i].getDataType(), val);
+                    if (existingCols[i].getDataType() == Variant.BIGDECIMAL)
+                      v.setBigDecimal(Aus.getDecNumber(val));
+                    else if (existingCols[i].getDataType() == Variant.INT)
+                      v.setInt(Aus.getAnyNumber(val));
+                    else v.setFromString(existingCols[i].getDataType(), val);
                     ps.setValue(existingNames[i], v.getAsObject(), false);
                   } 
                 } else ps.setNull(ps.getParameterIndex(existingNames[i], false),
@@ -971,7 +1117,11 @@ public abstract class KreirDrop {
     if (c.getDataType() == Variant.TIMESTAMP)
       try {
         Variant v = new Variant();
-        v.setFromString(c.getDataType(), s);
+        if (c.getDataType() == Variant.BIGDECIMAL)
+          v.setBigDecimal(Aus.getDecNumber(s));
+        else if (c.getDataType() == Variant.INT)
+          v.setInt(Aus.getAnyNumber(s));
+        else v.setFromString(c.getDataType(), s);
         return v.toString();
       } catch (IllegalArgumentException ie) {
         if (s.length()<11) return s.concat(" 00:00:00.0");
@@ -1062,7 +1212,11 @@ public abstract class KreirDrop {
               String val = new VarStr(parts[i]).trim().replaceAll("\\n", "\n").
                        replaceAll("</sep>", sep).toString();
               if (val.length() > 0) {
-                v.setFromString(existingCols[i].getDataType(), val);
+                if (existingCols[i].getDataType() == Variant.BIGDECIMAL)
+                  v.setBigDecimal(Aus.getDecNumber(val));
+                else if (existingCols[i].getDataType() == Variant.INT)
+                  v.setInt(Aus.getAnyNumber(val));
+                else v.setFromString(existingCols[i].getDataType(), val);
                 ds.setVariant(existingCols[i].getColumnName(), v);
               }
             }
@@ -1607,6 +1761,21 @@ public abstract class KreirDrop {
     }
   }
   
+  protected void modifyNazColumn(Column c) {
+    if ((c.getColumnName().equalsIgnoreCase("NAZART") &&
+        ("|artikli|vtcartpart|stugovor|stpos|stdoki|stdoku|stdokitmp|stmeskla|cjenik|inventura|rabshema|" +
+        "rnser|rnus|dob_art|kup_art|norme|skupart|").indexOf(Naziv.toLowerCase()) > 0) ||
+        (c.getColumnName().equalsIgnoreCase("PNAZART") && Naziv.equalsIgnoreCase("vtcartpart")) ||
+        (Naziv.equalsIgnoreCase("artikli") && (c.getColumnName().equalsIgnoreCase("NAZPRI")) ||
+            c.getColumnName().equalsIgnoreCase("NAZLANG"))) {
+      int nazprec = Aus.getNumber(frmParam.getParam("robno", "nazartLen", 
+          "125", "Broj znakova za naziv artikala (50-250)").trim());
+      if (nazprec < 50) nazprec = 50;
+      if (nazprec > 250) nazprec = 250;
+      c.setPrecision(nazprec);
+    }
+  }
+  
   protected void modifyColumn(Column c) {
     
   }
@@ -1653,7 +1822,7 @@ public abstract class KreirDrop {
     Column c = dM.createColumn(parts[0].toUpperCase(), parts[5], parts[4].trim(), 
         dtype, Dialect.getSqlType(dtype, prec), prec, scale);
     
-    
+    if (!dM.isMinimal()) modifyNazColumn(c);
     if (!dM.isMinimal()) modifyColumn(c);
 
     if (parts[3].equalsIgnoreCase("pkey") || parts[3].equalsIgnoreCase("key"))
