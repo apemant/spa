@@ -189,6 +189,12 @@
 	<field name="DoprinosiNa" class="java.lang.String">
 		<fieldDescription><![CDATA[Doprinosi]]></fieldDescription>
 	</field>
+	<field name="DoprinosiNaCap" class="java.lang.String">
+		<fieldDescription><![CDATA[Doprinosi]]></fieldDescription>
+	</field>
+	<field name="DoprinosiNaTotCap" class="java.lang.String">
+		<fieldDescription><![CDATA[Doprinosi]]></fieldDescription>
+	</field>
 	<field name="OsnovicaDopNa" class="java.lang.String">
 		<fieldDescription><![CDATA[OsnovicaDop]]></fieldDescription>
 	</field>
@@ -1189,22 +1195,22 @@
 					</textElement>
 					<text><![CDATA[OSNOVICA]]></text>
 				</staticText>
-				<staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="6" y="536" width="174" height="13" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[Ukupno doprinosi na plaću]]></text>
-				</staticText>
-				<staticText>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{DoprinosiNaTotCap}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="6" y="510" width="174" height="13" forecolor="#000000"/>
 					<box topPadding="1" leftPadding="2"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="Arial" size="10" isBold="false" pdfEncoding="Cp1250"/>
 					</textElement>
-					<text><![CDATA[DOPRINOSI NA PLAĆU]]></text>
-				</staticText>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{DoprinosiNaCap}]]></textFieldExpression>
+				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="194" y="522" width="80" height="13" forecolor="#000000"/>
 					<box topPadding="1" rightPadding="2"/>
