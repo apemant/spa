@@ -213,8 +213,7 @@ public class frmVirmaniPl extends frmVirmani{
 
     naTerDS.first();
     sume.open();
-    sume.first();
-    while(sume.inBounds()) {
+    for (sume.first(); sume.inBounds(); sume.next()) if (sume.getBigDecimal("OBRIZNOS").signum() > 0) {
       worker.strVrOdb = sume.getShort("CVRODB")+"";
       worker.strPov = worker.povDS.getInt("CPOV")+"";
       worker.strRad = sume.getString("CRADNIK");
@@ -229,7 +228,7 @@ public class frmVirmaniPl extends frmVirmani{
       String mjT = handleEmptyStr(naTerDS.getString("MJESTO"),0);
       String pbrT = handleEmptyStr(naTerDS.getString("HPBROJ") ,0);
       mainDS.setString("NATERET", nazT + "\n"+adrT+pbrT+mjT);
-      mainDS.setString("SVRHA", replaceVars(worker.povDS.getString("SVRHA")));
+      mainDS.setString("SVRHA", replaceVars(replaceVars(worker.povDS.getString("SVRHA"))));
       mainDS.setString("RID", replaceVars(worker.povDS.getString("RID")));
       mainDS.setString("PNBZ1", worker.povDS.getString("PNBZ1"));
       mainDS.setString("PNBZ2", replaceVars(worker.povDS.getString("PNBZ2")));
@@ -266,7 +265,6 @@ public class frmVirmaniPl extends frmVirmani{
       mainDS.setTimestamp("DATUMPR", Valid.getValid().getToday());
       mainDS.setString("PARAM", worker.povDS.getString("NACISP"));
       mainDS.post();
-      sume.next();
     }
   }
 
