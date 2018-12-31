@@ -486,9 +486,9 @@ CPAR;int;6;pkey;;Partner
 CART;int;6;pkey;;Šifra
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
-NAZART;char;75;;;Naziv;30
+NAZART;char;125;;;Naziv;30
 CCPAR;char;20;;;Šifra artikla kupca;15
-PNAZART;char;75;;;Naziv artikla kupca;30
+PNAZART;char;125;;;Naziv artikla kupca;30
 BCPAR;char;20;;;EAN kod;15
 IDX=cpar
 IDX=cart
@@ -606,7 +606,7 @@ RBSID;int;6;pkey;;ID_stavke;*
 CART;int;6;;;Šifra;8
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
-NAZART;char;75;;;Naziv;30
+NAZART;char;125;;;Naziv;30
 OZNVAL;char;3;;;Valuta
 TECAJ;numeric;17,6;;0;Iznos teèaja;15
 JM;char;3;;;Jm;5
@@ -706,7 +706,7 @@ RBR;short;2;pkey;;Rbr;4
 CART;int;6;;;Šifra;4
 CART1;char;20;;;Oznaka;13
 BC;char;20;;;Bc;12
-NAZART;char;75;;;Naziv;36
+NAZART;char;125;;;Naziv;36
 JM;char;3;;;Jm;4
 KOL;numeric;15,3;;0;Kolièina
 MC;numeric;15,2;;0;Cijena
@@ -758,6 +758,7 @@ SSORT;int;6;;;Sortno polje;*
 POSTOINV;numeric;12,3;;0;Postotak otpisa
 TIPINV;char;1;;I;Naèin otpisa
 CAN;char;6;;;Dodatni opis
+SNAZGRART;char;50;;;Strani Naziv;30
 
 $Kategorije
 LOKK;char;1;;N;LOKK;*
@@ -874,7 +875,7 @@ RBR;short;2;pkey;;Rbr;4
 CART;int;6;;;Šifra;7
 CART1;char;20;;;Oznaka;12
 BC;char;20;;;Barcode;21
-NAZART;char;75;;;Naziv;25
+NAZART;char;125;;;Naziv;25
 JM;char;3;;;JM;4
 CRADNAL;char;30;;;Radni nalog;15
 KOL;numeric;15,3;;0;Kolièina;10
@@ -945,15 +946,15 @@ AKTIV;char;1;;D;AKTIV;*
 CART;int;6;pkey;;Šifra;4
 CART1;char;20;;;Oznaka;11
 BC;char;20;;;Barcode;10
-NAZART;char;75;;;Naziv;20
+NAZART;char;125;;;Naziv;20
 JM;char;3;;;Jm
 CPOR;char;5;;;Porez
 CGRART;char;10;;;Grupa
 TIPART;char;1;;;Tip
 VRART;char;1;;;Vrsta
-NAZPROIZ;char;50;;;Proizvoðaè;15
+NAZPROIZ;char;125;;;Proizvoðaè;15
 SIFZANAR;char;20;;;Šifra za naruèivanje;15
-NAZORIG;char;50;;;Originalni naziv;15
+NAZORIG;char;125;;;Originalni naziv;15
 CPAR;int;6;;;Dobavljaè;15
 KOLZANAR;numeric;15,3;;0;Koli\u10dina za naruèivanje
 SIGKOL;numeric;15,3;;0;Signalna kolièina
@@ -985,7 +986,7 @@ POSTOINV;numeric;15,3;;0;Postotak otpisa
 TIPINV;char;1;;I;Naèin kalk. dopuš. manjka
 CVRSUBJ;short;2;;;Vrsta subjekta
 CSUBRN;char;20;;;Subjekt;15
-NAZPRI;char;75;;;Naziv za prikaz;20
+NAZPRI;char;125;;;Naziv za prikaz;20
 CAN;char;6;;;Dodatni opis
 KASA;char;1;;D;Artikl za kasu
 POV;char;1;;N;Povratna naknada
@@ -994,7 +995,7 @@ BCPAK;char;20;;;Barcode pakiranja;10
 BCKOL;char;20;;;Barcode kolete;10
 SORTKOL;int;6;;;Sortiranje
 POSTOPROV;numeric;15,3;;0;Postotak provizije
-NAZLANG;char;75;;;Naziv na stranom jeziku;20
+NAZLANG;char;125;;;Naziv na stranom jeziku;20
 PPK;numeric;15,2;;0;Posebni porez za kavu
 UIDX=cart1
 UIDX=bc
@@ -1116,7 +1117,7 @@ RBR;short;2;pkey;;Rbr;5
 CART;int;6;;;Šifra;7
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
-NAZART;char;75;;;Naziv;25
+NAZART;char;125;;;Naziv;25
 JM;char;3;;;Jm;5
 KOL;numeric;15,3;;0;Kolièina;10
 DC;numeric;15,2;;0;Dobavljaèeva cijena;12
@@ -1182,7 +1183,7 @@ RBR;short;2;pkey;;Rbr;4
 CART;int;6;;;Šifra;7
 CART1;char;20;;;Oznaka;12
 BC;char;20;;;Barcode;21
-NAZART;char;75;;;Naziv;25
+NAZART;char;125;;;Naziv;25
 JM;char;3;;;JM;4
 CRADNAL;char;30;;;Radni nalog;15
 KOL;numeric;15,3;;0;Kolièina;10
@@ -1303,6 +1304,7 @@ PARAMETRI;char;20;;;Parametri;*
 OIB;char;20;;;OIB
 DRUGITEK;char;30;;;Drugi raèun
 MINIMALAC;char;1;;N;Na minimalnoj plaæi
+MAXDOP;char;1;;N;Bruto veæi od max doprinosa u godini
 
 $Stmeskla
 LOKK;char;1;;N;LOKK;*
@@ -1316,7 +1318,7 @@ RBR;short;2;pkey;;Rbr;4
 CART;int;6;;;Šifra;4
 CART1;char;20;;;Oznaka;13
 BC;char;20;;;Barcode;12
-NAZART;char;75;;;Naziv;25
+NAZART;char;125;;;Naziv;25
 JM;char;3;;;Jm;4
 KOL;numeric;15,3;;0;Kolièina
 NC;numeric;15,2;;0;Nabavna cijena
@@ -1490,8 +1492,9 @@ BROJKONTA;char;8;;;Konto
 VRDOK;char;3;;;Vrsta dokumenta
 VCINC;numeric;10,2;;0;Poveæanje;8
 VCDEC;numeric;10,2;;0;Uèešæe;8
-SNAZNACPL;char;30;;;Strani naziv
+SNAZNACPL;char;60;;;Strani naziv
 UBLCODE;int;6;;;UBL kod plaæanja
+BKEY;char;20;;;Strani kljuè
 
 $Cjenik
 LOKK;char;1;;N;Status zauzetosti;*
@@ -1502,7 +1505,7 @@ CPAR;int;6;pkey;;Partner
 CART;int;6;pkey;;Šifra
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
-NAZART;char;75;;;Naziv;15
+NAZART;char;125;;;Naziv;15
 JM;char;3;;;Jm
 POSTO;numeric;6,2;;0;Posto popusta
 VCKALDOM;numeric;15,2;;0;Cijena domicijalna;15
@@ -1518,7 +1521,7 @@ CSKL;char;12;pkey;;Skladište
 CART;int;6;pkey;;Šifra;7
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
-NAZART;char;75;;;Naziv;25
+NAZART;char;125;;;Naziv;25
 JM;char;3;;;Jm
 KOLKNJ;numeric;15,3;;0;Kolièina;10
 KOLINV;numeric;15,3;;0;Inventurna kolièina;10
@@ -1632,6 +1635,7 @@ NIZJED;char;30;;;Niža jedinica;15
 REFVAL;char;1;;N;Referentna valuta
 CHV;char;10;;;Prefiks
 ISOCODE;char;3;;;ISO oznaka
+BKEY;char;20;;;Strani kljuè
 
 $dokidod
 BRRAC;char;32;pkey;;Dokument
@@ -1664,7 +1668,7 @@ DATDO;timestamp;;;;Datum do
 CART;int;6;pkey;;Šifra
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
-NAZART;char;75;;;Naziv;15
+NAZART;char;125;;;Naziv;15
 JM;char;3;;;Jm
 VC;numeric;17,2;;0;Cijena bez poreza;15
 MC;numeric;17,2;;0;Cijena s porezom;15
@@ -1683,7 +1687,7 @@ RBR;short;2;pkey;;Rbr
 CART;int;6;;;Šifra
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
-NAZART;char;75;;;Naziv;20
+NAZART;char;125;;;Naziv;20
 JM;char;3;;;Jm
 KOL;numeric;17,3;;0;Kolièina;15
 ZC;numeric;15,2;;0;Cijena
@@ -1694,7 +1698,7 @@ CARTNOR;int;6;pkey;;Šifra normativa
 CART;int;6;pkey;;Šifra
 CART1;char;20;;;Oznaka;15
 BC;char;20;;;Barcode;15
-NAZART;char;75;;;Naziv;20
+NAZART;char;125;;;Naziv;20
 JM;char;3;;;Jm
 KOEFKOL;numeric;17,3;;0;Koeficijent kolièine
 KOEFZC;numeric;17,3;;0;Koeficijent cijene
@@ -2086,7 +2090,7 @@ STOPA1;numeric;17,3;;0;Stopa;15
 CART;int;6;;;Šifra;8
 CART1;char;20;;;Kataloški broj;15
 BC;char;20;;;Barcode;15
-NAZART;char;50;;;Naziv;30
+NAZART;char;120;;;Naziv;30
 JM;char;3;;;Jm
 CSIFDRV;char;3;;;Porijeklo
 PREF;char;10;;;Preferencijal
@@ -2232,7 +2236,7 @@ CTG;char;10;;;Tarifni broj
 CART;int;6;;;Šifra;8
 CART1;char;20;;;Kataloški broj;15
 BC;char;20;;;Barcode;15
-NAZART;char;50;;;Naziv;30
+NAZART;char;125;;;Naziv;30
 JM;char;3;;;Jm
 CSIFDRV;char;3;;;Porijeklo
 PREF;char;10;;;Preferencijal
@@ -2311,7 +2315,7 @@ CPAR;int;6;pkey;;Šifra partnera;5
 CART;int;6;pkey;;Šifra;6
 CART1;char;20;;;Oznaka;11
 BC;char;20;;;Barcode;10
-NAZART;char;75;;;Naziv;30
+NAZART;char;125;;;Naziv;30
 DC;numeric;12,2;;0;Dobavljaèeva cijena
 PRAB;numeric;8,2;;0;Posto rabata
 NAZPAK;char;10;;;Naziv pakiranja
@@ -2660,7 +2664,7 @@ CPAR;int;6;pkey;;Partner;15
 CART;int;6;pkey;;Šifra;15
 CART1;char;20;;;Oznaka;11
 BC;char;20;;;Barcode;10
-NAZART;char;75;;;Naziv;20
+NAZART;char;125;;;Naziv;20
 CDOB;int;6;;;Dobavljaè;15
 CGRART;char;10;;;Grupa artikla
 CSHRAB;char;3;;;Shema rabata
@@ -2853,7 +2857,7 @@ CARTNOR;int;6;pkey;;Normativ;5
 CART;int;6;pkey;;Šifra;5
 CART1;char;20;;;Oznaka;11
 BC;char;20;;;Barcode;12
-NAZART;char;75;;;Naziv;30
+NAZART;char;125;;;Naziv;30
 JM;char;3;;;JM
 KOL;numeric;15,6;;0;Kolièina;10
 IDX=cart
@@ -3577,6 +3581,9 @@ UBLNAME;char;20;;;Naziv za UBL
 UBLCODE;char;10;;;Kod za UBL
 UBLSCN;char;20;;;Naziv sheme UBL
 UBLSCC;char;50;;;Kod sheme UBL
+SNAZPOR1;char;50;;;Strani naziv prvog poreza;15
+SNAZPOR2;char;50;;;Strani nrvog poreza;15
+SNAZPOR3;char;50;;;Strani nrvog poreza;15
 
 $Povjerioci
 LOKK;char;1;;N;Status zauzetosti;*
@@ -4169,7 +4176,7 @@ NAZSKUPART;char;50;;;Naziv;30
 CART;int;6;pkey;;Artikl
 CART1;char;20;;;Oznaka;11
 BC;char;20;;;Barcode;10
-NAZART;char;75;;;Naziv artikla;20
+NAZART;char;125;;;Naziv artikla;20
 JM;char;3;;;Jedinica mjere
 KOL;numeric;15,3;;0;Kolièina
 IDX=cskupart
@@ -4451,7 +4458,7 @@ $Vrsteodb
 LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
 CVRODB;short;2;pkey;;Oznaka
-OPISVRODB;char;30;;;Opis;15
+OPISVRODB;char;75;;;Opis;15
 NIVOODB;char;4;;RA;Nivo odbitka
 TIPODB;char;1;;S;Tip odbitka
 VRSTAOSN;char;1;;3;Vrsta osnovice
@@ -4466,7 +4473,7 @@ $Vrsteprim
 LOKK;char;1;;N;Status zauzetosti;*
 AKTIV;char;1;;D;Aktivan - neaktivan;*
 CVRP;short;2;pkey;;Oznaka
-NAZIV;char;50;;;Naziv;15
+NAZIV;char;75;;;Naziv;15
 COBR;short;2;;;Naèin obraèuna
 COSN;short;2;;;Oznaka osnovice iz koje se raèuna zarada
 RSOO;char;5;;;Osnova osiguranja
