@@ -87,6 +87,12 @@ public class start {
     hr.restart.zapod.dlgGetKnjig.changeKnjig(getFlaggedArg("knjig:"),true);
     raSplashAWT.splashMSG("Prièekajte ...");
     MsgDispatcher.install(true);
+    
+    //hack
+    String wd = IntParam.getTag("webshop.delay");
+    if (wd != null && Aus.isNumber(wd)) {
+      new raComms().install(Aus.getNumber(wd));
+    }
   }
 
   public static hr.restart.sisfun.frmPassword getFrmPassword() {
