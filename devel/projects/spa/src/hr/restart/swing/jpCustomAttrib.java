@@ -46,6 +46,7 @@ import com.borland.dx.dataset.Variant;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.jbcl.layout.XYConstraints;
 import com.borland.jbcl.layout.XYLayout;
+import com.borland.jbcl.layout.constraintsGetter;
 
 
 /**
@@ -428,6 +429,7 @@ public class jpCustomAttrib extends JPanel {
 
     cvrsubj = _cvrs;
     this.removeAll();
+    constraintsGetter.unmark(xy);
 
     csubrn = "";
     znac = getAttributeSet(_cvrs);
