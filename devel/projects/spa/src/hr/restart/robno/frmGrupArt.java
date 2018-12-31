@@ -74,6 +74,7 @@ public class frmGrupArt extends raMatPodaci {
   JLabel jlCGRART = new JLabel();
   JPanel jpCGRARTPRIP = new JPanel();
   JraTextField jtfNAZGRART = new JraTextField();
+  JraTextField jtfSNAZGRART = new JraTextField();
   JrCheckBox jcbCGRARTPRIP = new JrCheckBox();
   JraCheckBox jcbAKTIV = new JraCheckBox();
   JraTextField jtfCGRART = new JraTextField();
@@ -187,6 +188,9 @@ public class frmGrupArt extends raMatPodaci {
 
     jtfNAZGRART.setColumnName("NAZGRART");
     jtfNAZGRART.setDataSet(getRaQueryDataSet());
+    
+    jtfSNAZGRART.setColumnName("SNAZGRART");
+    jtfSNAZGRART.setDataSet(getRaQueryDataSet());
     /*jtfNAZGRART.addFocusListener(new java.awt.event.FocusAdapter() {
       public void focusLost(FocusEvent e) {
         jtfNAZGRART_focusLost(e);
@@ -245,7 +249,7 @@ public class frmGrupArt extends raMatPodaci {
     jlNaziv1.setText("Naziv");
     jlSifra1.setText("Šifra");
     xYLayout1.setWidth(570);
-    xYLayout1.setHeight(265);
+    xYLayout1.setHeight(290);
     
     jtfPPOP.setColumnName("PPOP");
     jtfPPOP.setDataSet(getRaQueryDataSet());
@@ -275,40 +279,40 @@ public class frmGrupArt extends raMatPodaci {
     
     jLabel1.setText("Popust na POS-u (%)");
     jp.add(jlCGRART, new XYConstraints(15, 38, -1, -1));
-    jp.add(jpCGRARTPRIP, new XYConstraints(15, 190, 525, 65));
+    jp.add(jpCGRARTPRIP, new XYConstraints(15, 215, 525, 65));
     jpCGRARTPRIP.add(jlCGRARTPRIP, new XYConstraints(15, 5, -1, -1));
     jpCGRARTPRIP.add(jrfCGRARTPRIPNAZ, new XYConstraints(240, 5, 245, -1));
     jpCGRARTPRIP.add(jrfCGRART, new XYConstraints(130, 5, 100, -1));
     jpCGRARTPRIP.add(jbCGRARTPRIP, new XYConstraints(489, 5, 21, 21));
     jp.add(jtfNAZGRART, new XYConstraints(260, 38, 280, -1));
+    jp.add(new JLabel("Strani naziv"), new XYConstraints(15, 63, -1, -1));
+    jp.add(jtfSNAZGRART, new XYConstraints(260, 63, 280, -1));
     
     
     jp.add(jcbAKTIV, new XYConstraints(440, 15, 100, -1));
     jp.add(jtfCGRART, new XYConstraints(150, 38, 100, -1));
     jp.add(jlSifra1, new XYConstraints(150, 15, -1, -1));
     jp.add(jlNaziv1, new XYConstraints(260, 15, -1, -1));
-    jp.add(jLabel1, new XYConstraints(15, 90, -1, -1));
-    jp.add(jtfPPOP, new XYConstraints(150, 88, 100, -1));
+    jp.add(jLabel1, new XYConstraints(15, 115, -1, -1));
+    jp.add(jtfPPOP, new XYConstraints(150, 113, 100, -1));
 
-    jp.add(new JLabel("Postotak dopuštenog otpisa"), 
-        new XYConstraints(275, 90, 164, -1));
-    jp.add(jtfOTR, new XYConstraints(440, 88, 100, -1));
-    jp.add(new JLabel("Naèin raèunanja otpisa"), 
-        new XYConstraints(275, 115, 164, -1));
-    jp.add(jraTipKalkul, new XYConstraints(440, 113, 100, -1));
+    jp.add(new JLabel("Postotak dopuštenog otpisa"), new XYConstraints(275, 115, 164, -1));
+    jp.add(jtfOTR, new XYConstraints(440, 113, 100, -1));
+    jp.add(new JLabel("Naèin raèunanja otpisa"), new XYConstraints(275, 140, 164, -1));
+    jp.add(jraTipKalkul, new XYConstraints(440, 138, 100, -1));
     
-    jp.add(new JLabel("Carina"), new XYConstraints(15, 65, 100, -1));
-    jp.add(jtfCAR, new XYConstraints(150, 63, 100, -1));
-    jp.add(new JLabel("Trošarina"), new XYConstraints(275, 65, 100, -1));
-    jp.add(jtfTRO, new XYConstraints(440, 63, 100, -1));
-    jp.add(new JLabel("Komadna prodaja"), new XYConstraints(15, 115, 100, -1));
-    jp.add(rcmbKOMADNO, new XYConstraints(150, 113, 100, -1));
-    jp.add(JlNap, new XYConstraints(15, 140, -1, -1));
-    jp.add(jlrCAN, new XYConstraints(150, 140, 100, -1));
-    jp.add(jlrNAZAN, new XYConstraints(260, 140, 280, -1));
-    jp.add(jbNap, new XYConstraints(545, 140, 21, 21));
+    jp.add(new JLabel("Carina"), new XYConstraints(15, 90, 100, -1));
+    jp.add(jtfCAR, new XYConstraints(150, 88, 100, -1));
+    jp.add(new JLabel("Trošarina"), new XYConstraints(275, 90, 100, -1));
+    jp.add(jtfTRO, new XYConstraints(440, 88, 100, -1));
+    jp.add(new JLabel("Komadna prodaja"), new XYConstraints(15, 1405, 100, -1));
+    jp.add(rcmbKOMADNO, new XYConstraints(150, 138, 100, -1));
+    jp.add(JlNap, new XYConstraints(15, 165, -1, -1));
+    jp.add(jlrCAN, new XYConstraints(150, 165, 100, -1));
+    jp.add(jlrNAZAN, new XYConstraints(260, 165, 280, -1));
+    jp.add(jbNap, new XYConstraints(545, 165, 21, 21));
     
-    jp.add(jcbCGRARTPRIP, new XYConstraints(15, 165, -1, -1));
+    jp.add(jcbCGRARTPRIP, new XYConstraints(15, 190, -1, -1));
     
     raLoader.load("hr.restart.robno.frmDodTextUnos");
     
