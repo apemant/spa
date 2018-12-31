@@ -312,7 +312,9 @@ public class raIspisKartica {
 
   public String getNazivPartnera(int cpar) {
     ld.raLocate(dm.getPartneri(), "CPAR", String.valueOf(cpar));
-    return dm.getPartneri().getString("NAZPAR");
+    String npref = frmParam.getParam("sk", "prefixPar", "", "Prefiks partnera za SK");
+    if (npref.length() > 0) npref = npref + "\n";
+    return npref + dm.getPartneri().getString("NAZPAR");
   }
 
   public void insertEmptyTotal(int cpar) {
