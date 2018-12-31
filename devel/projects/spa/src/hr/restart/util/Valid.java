@@ -902,7 +902,7 @@ public class Valid {
    * @return vraca tekucu godinu
    */
   public String findYear () {
-    return findYear(new java.sql.Timestamp(System.currentTimeMillis()));
+    return findYear(getToday());
   }
 /**
  * Timestamp datod = jdatOD.getDataSet().getTimestamp(jdatOD.getColumnName());
