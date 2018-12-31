@@ -146,10 +146,12 @@ public class repIzlazni implements raReportData {
             || descriptor.equals("hr.restart.robno.repOdobrenjaPV")
             || descriptor.equals("hr.restart.robno.repInvoice")
             || descriptor.equals("hr.restart.robno.repGrnInvoice")
+            || descriptor.equals("hr.restart.robno.repGotInvoice")
             || descriptor.equals("hr.restart.robno.repOffer")
             || descriptor.equals("hr.restart.robno.repProformaInvoice")
             || descriptor.equals("hr.restart.robno.repPovratnicaOdobrenjeV")
             || descriptor.equals("hr.restart.robno.repInvoiceNew")
+            || descriptor.equals("hr.restart.robno.repRacGroupV")
             );
 
   }
@@ -187,6 +189,7 @@ public class repIzlazni implements raReportData {
   }
   
   protected void setCurrentDataset(){
+    System.out.println("set data: " + isReportValute());
     if (isReportValute())
       ds = reportsQuerysCollector.getRQCModule().getValuteQueryDataSet();
     else ds = reportsQuerysCollector.getRQCModule().getQueryDataSet();
@@ -195,6 +198,9 @@ public class repIzlazni implements raReportData {
       orig = reportsQuerysCollector.getRQCModule().getQueryDataSet();
       orig.setSort(new SortDescriptor(new String[] {"BRDOK", "RBR"}));
     } else orig = null;
+    
+    System.out.println(ds);
+    System.out.println(orig);
   }
 
   long tim;
@@ -1030,7 +1036,8 @@ public class repIzlazni implements raReportData {
       dm.getArtikli().getString("NAZLANG").length() == 0)
       return ds.getString("NAZART");
     
-    return dm.getArtikli().getString("NAZLANG");
+    return !bilang ? dm.getArtikli().getString("NAZLANG") :
+        dm.getArtikli().getString("NAZART") + " (" + dm.getArtikli().getString("NAZLANG") + ")";
   }
 
   public String getNAZARText() {
@@ -1303,11 +1310,12 @@ public BigDecimal getPOR3() {
   }
   
   public String getUIUlabel() {
-    return "Plaæeno/uèešæe";
+    
+    return isReportForeign() ? "Advance payment" : "Plaæeno/uèešæe";
   }
   
   public String getUIUlabel2() {
-    return "Za platiti";
+    return isReportForeign() ? "Amount due" : "Za platiti";
   }
 
   public BigDecimal getFMC() {
@@ -1626,7 +1634,7 @@ public BigDecimal getIPRODSP() {
     lookupData.getlookupData().raLocate(dm.getOrgstruktura(),new String[] {"CORG"}, new String[] {corg});
 //    System.out.println("dm.getOrgstruktura().getString(\"MJESTO\") " + dm.getOrgstruktura().getString("MJESTO"));
     String forreturn = dm.getOrgstruktura().getString("MJESTO");
-    if (!forreturn.equalsIgnoreCase("")) forreturn = forreturn +",";
+    //if (!forreturn.equalsIgnoreCase("")) forreturn = forreturn +",";
     return cache.returnValue(forreturn);
   }
   
@@ -1775,7 +1783,7 @@ public BigDecimal getIPRODSP() {
     if(!qds_porez.isOpen()) qds_porez.open();
     qds_porez.first();
     do {
-      CPOR.append(qds_porez.getString("CPOR")).append("\n");
+      CPOR.append(qds_porez.getString(isReportForeign() ? "SCPOR" : "CPOR")).append("\n");
       UKUPOR.append(sgQuerys.getSgQuerys().format(qds_porez, "UKUPOR")).append("\n");
       IPRODBP.append(sgQuerys.getSgQuerys().format(qds_porez, "IPRODBP")).append("\n");
       POR1.append(sgQuerys.getSgQuerys().format(qds_porez, "POR1")).append("\n");
@@ -1934,10 +1942,21 @@ public BigDecimal getIPRODSP() {
         (ispTecaj ? "\n" + Aus.formatBigDecimal(getTECAJ()) : "");
   }
   
+  public String getDPREFIX() {
+    String val = Tecajevi.getDomOZNVAL();
+    if (val.equals("kn")) val = "HRK";
+    
+    return getPrefix(val);
+  }
+  
   public String getPREFIX() {
     String val = getOZNVAL();
     if (raSaldaKonti.isDomVal(ds)) val = Tecajevi.getDomOZNVAL();
     
+    return getPrefix(val);
+  }
+  
+  private String getPrefix(String val) {
     String pref = "(" + val + ") ";
     if (lD.raLocate(dm.getValute(), "OZNVAL", val))
       if (dm.getValute().getString("CHV").length() > 0)
@@ -2563,6 +2582,7 @@ public BigDecimal getIPRODSP() {
   boolean prefv = false;
   boolean slovimaVAL = false;
   boolean ispisBusBroj = true;
+  boolean bilang = true;
   
   private void setParams() {
     modParams();
@@ -2606,6 +2626,8 @@ public BigDecimal getIPRODSP() {
         "Ispis serijskog broja subjekta na raèunu (D,N)").equalsIgnoreCase("D");
     
     altKol = frmParam.getParam("robno", "altKol", "N", "Preraèunati kolièine/cijene na izlazima (N,D,1,2)");
+    
+    bilang = frmParam.getParam("robno", "bilang", "N", "Dvojezièni artikli na stranim ispisima (D.N)").equalsIgnoreCase("D");
     
     if (inoNap.length() > 0 && lD.raLocate(dm.getNapomene(), "CNAP", inoNap))
       inoNap = dm.getNapomene().getString("NAZNAP");
