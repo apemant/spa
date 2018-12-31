@@ -1339,8 +1339,6 @@ public boolean doWithSave(char mode) {
       raTransaction.saveChanges(ds);
     }
     
-    
-    
     if (qdsDodTxt != null) {
 //      if (qdsDodTxt.getRowCount() !=0)
         raTransaction.saveChanges(qdsDodTxt);
