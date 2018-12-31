@@ -1,5 +1,6 @@
 package hr.restart.util;
 
+import hr.restart.baza.Condition;
 import hr.restart.baza.Imageinfo;
 import hr.restart.db.raVariant;
 import hr.restart.sisfun.frmParam;
@@ -154,7 +155,12 @@ public class ImageLoad implements ActionListener{
       });
       f.getContentPane().add(content);
       startFrame.getStartFrame().centerFrame(f, 0 , f.getTitle());
-      loadMulti();
+      raProcess.runChild(new Runnable() {
+        public void run() {
+          loadMulti();          
+        }
+      });
+      
       AWTKeyboard.registerKeyStroke(f, AWTKeyboard.ESC, new KeyAction() {
         public boolean actionPerformed() {
           f.setVisible(false);
@@ -275,19 +281,23 @@ public class ImageLoad implements ActionListener{
   
   void delete() {
     set.goToRow(active - 1);
-    String[] parsed = parseUrl(set.getString("IMGURL"));
-    String protocol = parsed[0];
-    String file = parsed[1];
-    if (protocol.equals("file")) {
-      File img = new File(getImgDir(), file);
-      if (img.exists() && img.canWrite())
-        img.delete();
-    } else if (protocol.equals("ftp")) {
-      raImageUtil u = new raImageUtil();
-      u.deleteImage(file);
-    } else if (protocol.equals("cloud")) {
-      AmazonHandler ah = new AmazonHandler("amazonImages");
-      ah.deleteFile(file);
+    
+    if (Imageinfo.getDataModule().getRowCount(Condition.equal("IMGURL", set)) == 1) {
+      System.out.println("Only 1 image, deleting...");
+      String[] parsed = parseUrl(set.getString("IMGURL"));
+      String protocol = parsed[0];
+      String file = parsed[1];
+      if (protocol.equals("file")) {
+        File img = new File(getImgDir(), file);
+        if (img.exists() && img.canWrite())
+          img.delete();
+      } else if (protocol.equals("ftp")) {
+        raImageUtil u = new raImageUtil();
+        u.deleteImage(file);
+      } else if (protocol.equals("cloud")) {
+        AmazonHandler ah = new AmazonHandler("amazonImages");
+        ah.deleteFile(file);
+      }
     }
     set.deleteRow();
     set.saveChanges();
@@ -297,7 +307,7 @@ public class ImageLoad implements ActionListener{
     }
   }
   
-  public void saveAll(File[] imgs, String _table, String _key) {
+  public QueryDataSet saveAll(File[] imgs, String _table, String _key) {
     setTable(_table);
     setKey(_key);
     set = Imageinfo.getDataModule().openTempSet("tablica = '"+getTable()+"' AND ckey = '"+getKey()+"'");
@@ -307,6 +317,7 @@ public class ImageLoad implements ActionListener{
       selectedFile = imgs[i];
       save();
     }
+    return set;
   }
   
 	private void save() {
@@ -396,7 +407,7 @@ public class ImageLoad implements ActionListener{
 	
 	int active = 1;
 	List images = new ArrayList();
-	private void loadMulti() {
+	void loadMulti() {
 	  set = Imageinfo.getDataModule().openTempSet("tablica = '"+getTable()+"' AND ckey = '"+getKey()+"'");
 	  images.clear();
 	  
