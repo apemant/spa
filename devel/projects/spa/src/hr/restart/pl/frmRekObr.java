@@ -35,6 +35,7 @@ import javax.swing.JTextField;
 
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.SortDescriptor;
+import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
 import com.borland.jbcl.layout.XYConstraints;
@@ -80,8 +81,8 @@ public class frmRekObr extends frmIzvjestajiPL{
 
 
   raOdbici raOdb = raOdbici.getInstance();
-  private QueryDataSet doprinosDS = new QueryDataSet();
-  private QueryDataSet doprinosRDS = new QueryDataSet();
+  private StorageDataSet doprinosDS = new QueryDataSet();
+  private StorageDataSet doprinosRDS = new QueryDataSet();
 
 
   private static QueryDataSet qdsDoprinosNaZN = new QueryDataSet();
@@ -209,10 +210,10 @@ public class frmRekObr extends frmIzvjestajiPL{
       qdsPOJ.close();
 
     if(!doprinosDS.isOpen()) doprinosDS.open();
-    doprinosDS.deleteAllRows();
+    doprinosDS.empty();
 
     if(!doprinosRDS.isOpen()) doprinosRDS.open();
-    doprinosRDS.deleteAllRows();
+    doprinosRDS.empty();
 
 
 
@@ -229,6 +230,7 @@ public class frmRekObr extends frmIzvjestajiPL{
     qdsPOJ.setQuery(new QueryDescriptor(dm.getDatabase1(), qStrPOJ));
 
     System.out.println("qStrZN: " + qStrZN);
+    System.out.println("qStrPOJ: " + qStrPOJ);
     setDoprinosiBasic();
     setDoprinosiRBasic();
     qdsDoprinosNaZN = setDoprinosiGrouped(0);
@@ -292,12 +294,13 @@ public class frmRekObr extends frmIzvjestajiPL{
   {
     String tabRad=getKumRadTableName();
     String tabRadArh=isArhMode()?tabRad:"radnici";
-    String qStr = "select distinct count (*) from radnici,radnicipl,"+tabRad+" where radnici.cradnik ="+tabRad+".cradnik and radnici.cradnik = radnicipl.cradnik " +
+    String qStr = "select count (distinct radnici.cradnik) from radnici,radnicipl,"+tabRad+" where radnici.cradnik ="+tabRad+".cradnik and radnici.cradnik = radnicipl.cradnik " +
             "and radnicipl.cradnik = "+tabRad+".cradnik"+
                   " and "+this.getWhereQuery(isArhMode()?tabRad:"radnici")+" and "+(isArhMode()?tabRad:"radnicipl")+".cvro='"+cvro+"'";
 
     if(!cOrg.equals(""))
       qStr += " and "+tabRadArh+".corg='"+cOrg+"'";
+    System.out.println(qStr);
     QueryDataSet rQDS = new QueryDataSet();
     rQDS.setQuery(new QueryDescriptor(dm.getDatabase1(), qStr));
     return Valid.getValid().getSetCount(rQDS,0);
@@ -390,7 +393,6 @@ public class frmRekObr extends frmIzvjestajiPL{
       menageDoprinosiRNP(qdsPOJ.getString("CORG"), qdsPOJ.getString("CVRO"));
       qdsPOJ.next();
     }
-
   }
 
   private QueryDataSet addOlaksice(QueryDataSet qds, int cas)
@@ -506,16 +508,16 @@ System.out.println("OVRHA = "+OVRHA);
     String obrrange = _araq[1];
     switch (cs) {
       case 0:
-        uvjet = "select cradnik as cradnik from "+radnicipl+obrrange;
+        uvjet = "select distinct cradnik as cradnik from "+radnicipl+obrrange;
         break;
       case 1:
-        uvjet = "select cradnik as cradnik from "+radnicipl+" where cvro='"+cVro+"'"+obrrange;
+        uvjet = "select distinct cradnik as cradnik from "+radnicipl+" where cvro='"+cVro+"'"+obrrange;
         break;
       case 2:
-        uvjet = "select cradnik as cradnik from "+radnicipl+" where corg='"+cOrg+"'"+obrrange;
+        uvjet = "select distinct cradnik as cradnik from "+radnicipl+" where corg='"+cOrg+"'"+obrrange;
         break;
       case 3:
-        uvjet = "select cradnik as cradnik from "+radnicipl+" where corg='"+cOrg+"' and cvro='"+cVro+"'"+obrrange;
+        uvjet = "select distinct cradnik as cradnik from "+radnicipl+" where corg='"+cOrg+"' and cvro='"+cVro+"'"+obrrange;
         break;
     }
     System.out.println("getCRadnik "+uvjet);
@@ -552,7 +554,7 @@ System.out.println("OVRHA = "+OVRHA);
     String radnicipl = _araq[0];
     String obrrange = _araq[1];
 
-    String uvjet = "select cradnik as cradnik from "+radnicipl+" where corg='"+cOrg+"' and cvro='"+cVro+"'"+obrrange;
+    String uvjet = "select distinct cradnik as cradnik from "+radnicipl+" where corg='"+cOrg+"' and cvro='"+cVro+"'"+obrrange;
     
     tmp = Util.getNewQueryDataSet(uvjet, true);
     tmp.first();
@@ -605,7 +607,7 @@ System.out.println("OVRHA = "+OVRHA);
     String radnicipl = _araq[0];
     String obrrange = _araq[1];
 
-    String uvjet = "select cradnik as cradnik from "+radnicipl+" where corg='"+cOrg+"' and cvro='"+cVro+"'"+obrrange;
+    String uvjet = "select distinct cradnik as cradnik from "+radnicipl+" where corg='"+cOrg+"' and cvro='"+cVro+"'"+obrrange;
     tmp = Util.getNewQueryDataSet(uvjet, true);
     tmp.first();
     al.clear();
@@ -615,7 +617,7 @@ System.out.println("OVRHA = "+OVRHA);
       tmp.next();
     }
 
-    BigDecimal t = Aus.zero2;
+    //BigDecimal t = Aus.zero2;
     if(!doprinosRDS.isOpen()) doprinosRDS.open();
 
     for(int i = 0; i < al.size();i++)
@@ -630,6 +632,7 @@ System.out.println("OVRHA = "+OVRHA);
       else if (this.getRepMode()=='O')
         temp = raOdb.getDoprinosiRadnik(al.get(i).toString(), raOdb.OBR);
       if(!temp.isOpen()) temp.open();
+      System.out.println(temp.getOriginalQueryString());
       QueryDataSet rad_corg_vro_set = getRad_corg_vro_set();
       temp.first();
       while (temp.inBounds())
@@ -640,11 +643,13 @@ System.out.println("OVRHA = "+OVRHA);
         doprinosRDS.setString("CVRO", rad_corg_vro_set.getString("CVRO"));
         doprinosRDS.setShort("CVRODB", temp.getShort("CVRODB"));
         doprinosRDS.setBigDecimal("IZNOS", temp.getBigDecimal("OBRIZNOS"));
-        t = t.add(temp.getBigDecimal("OBRIZNOS"));
+        doprinosRDS.post(); 
+        //t = t.add(temp.getBigDecimal("OBRIZNOS"));
         temp.next();
       }
     }
-    doprinosRDS.post(); 
+    
+    //doprinosRDS.post(); 
 
   }
   private QueryDataSet getRad_corg_vro_set() {
