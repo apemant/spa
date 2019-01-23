@@ -425,6 +425,7 @@ public class dlgRunReport {
     }
     if (runner.getExportFile() != null && !rjpnc.isAncestorOf(rnvSend)) {
       rjpnc.removeAll();
+      rjpnc.addOption(rnvPreview);
       rjpnc.addOption(rnvSend);
       rjpnc.addOption(rnvExit);
     }
