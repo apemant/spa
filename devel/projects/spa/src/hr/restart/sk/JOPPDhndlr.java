@@ -1834,6 +1834,11 @@ System.err.println(
         neispl();
       }
     }));
+    jp.add(new JButton(new AbstractAction("Storno ispravak") {
+      public void actionPerformed(ActionEvent e) {
+        storno();
+      }
+    }));
     dlgAl.setContentPane(jp);
     dlgAl.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     startFrame.getStartFrame().centerFrame(dlgAl, 0, "Alati");
@@ -1930,11 +1935,56 @@ System.err.println(
       ((raExtendedTable) fPDV2.getJPTV().getMpTable()).resetSortColumns();
       try {
         fPDV2.getJPTV().enableEvents(false);
-        int rbr=1;
+        int rbr=-1;
         for (strBset.first(); strBset.inBounds(); strBset.next()) {
+          if (rbr < 0) rbr = strBset.getInt("RBR");
           strBset.setInt("RBR", rbr++);
           strBset.post();
         }
+      } finally {
+        fPDV2.getJPTV().enableEvents(true);
+      }
+      fPDV2.getJPTV().fireTableDataChanged();
+    }
+  }
+  
+  private void storno() {
+    int answ = JOptionPane.showConfirmDialog(fPDV2.getWindow(), "Stornirati sve redove za ispravak JOPPD-a?");
+    if (answ == JOptionPane.OK_OPTION) {
+      strBset.setSort(null);
+      ((raExtendedTable) fPDV2.getJPTV().getMpTable()).resetSortColumns();
+      try {
+        fPDV2.getJPTV().enableEvents(false);
+        for (strBset.first(); strBset.inBounds(); strBset.next()) {
+          strBset.setInt("SATI", 0);
+          strBset.setInt("NSATI", 0);
+          strBset.setBigDecimal("BRUTO", Aus.zero2);
+          strBset.setBigDecimal("OSNDOP", Aus.zero2);
+          strBset.setBigDecimal("MIO1", Aus.zero2);
+          strBset.setBigDecimal("MIO2", Aus.zero2);
+          strBset.setBigDecimal("ZDR", Aus.zero2);
+          strBset.setBigDecimal("ZASNR", Aus.zero2);
+          strBset.setBigDecimal("ZAP", Aus.zero2);
+          strBset.setBigDecimal("MIO1STAZ", Aus.zero2);
+          strBset.setBigDecimal("MIO2STAZ", Aus.zero2);
+          strBset.setBigDecimal("ZDRINO", Aus.zero2);
+          strBset.setBigDecimal("ZAPOSINV", Aus.zero2);          
+          strBset.setBigDecimal("IZDATAK", Aus.zero2);
+          strBset.setBigDecimal("IZDATAKMIO", Aus.zero2);
+          strBset.setBigDecimal("DOHODAK", Aus.zero2);
+          strBset.setBigDecimal("ISKNEOP", Aus.zero2);
+          strBset.setBigDecimal("POROSN", Aus.zero2);
+          strBset.setBigDecimal("POR", Aus.zero2);
+          strBset.setBigDecimal("PRIR", Aus.zero2);
+          strBset.setBigDecimal("NEOP", Aus.zero2);
+          strBset.setBigDecimal("NETOPK", Aus.zero2);
+          strBset.setString("JNP", "0");
+          strBset.setString("JNI", "0");
+          strBset.setBigDecimal("BRUTOOBR", Aus.zero2);
+          strBset.post();
+        }
+        sumStrA();
+        strAset.setInt("VRSTAIZV", 2);
       } finally {
         fPDV2.getJPTV().enableEvents(true);
       }
@@ -1949,7 +1999,17 @@ System.err.println(
       ((raExtendedTable) fPDV2.getJPTV().getMpTable()).resetSortColumns();
       try {
         fPDV2.getJPTV().enableEvents(false);
-        for (strBset.first(); strBset.inBounds(); strBset.next()) {
+        for (strBset.first(); strBset.inBounds(); strBset.next()) 
+          if (!strBset.getString("JOP").equals("0000")) {
+          strBset.setString("JOP", "0041");
+          /*strBset.setBigDecimal("BRUTO", Aus.zero2);
+          strBset.setBigDecimal("IZDATAK", Aus.zero2);
+          strBset.setBigDecimal("IZDATAKMIO", Aus.zero2);
+          strBset.setBigDecimal("DOHODAK", Aus.zero2);
+          strBset.setBigDecimal("ISKNEOP", Aus.zero2);
+          strBset.setBigDecimal("POROSN", Aus.zero2);
+          strBset.setBigDecimal("POR", Aus.zero2);
+          strBset.setBigDecimal("PRIR", Aus.zero2);*/
           strBset.setBigDecimal("IZDATAK", Aus.zero2);
           strBset.setBigDecimal("NEOP", Aus.zero2);
           strBset.setBigDecimal("NETOPK", Aus.zero2);
