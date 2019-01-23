@@ -39,8 +39,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -445,6 +448,30 @@ public class FileHandler {
   public static boolean makeZippedFile(File fileToZip, File zippedFile) {
     return makeZippedFile(new File[] {fileToZip}, zippedFile);
   }
+  
+/*  public static boolean zipDir(File dir, File zip) {
+    try {
+      if (!dir.exists() || !dir.isDirectory()) return false;
+      
+      java.util.zip.ZipOutputStream zout = new java.util.zip.ZipOutputStream(
+        new FileOutputStream(zip));
+      zout.setLevel(java.util.zip.Deflater.BEST_SPEED);
+      byte[] buffer = new byte[BUFFER_SIZE];
+      
+      dir.getp
+      
+      List files = new ArrayList(Arrays.asList(dir.listFiles()));
+      for (int i = 0; i < files.size(); i++) {
+        File f = (File) files.get(i);
+        
+      }
+      
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }*/
   
   /**
    * Zips filesToZip into one zippedFile
