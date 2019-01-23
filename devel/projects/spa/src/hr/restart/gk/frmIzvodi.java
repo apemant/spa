@@ -1124,7 +1124,7 @@ public class frmIzvodi extends raMasterDetail {
   /**
    * @return
    */
-  private boolean isPartnerOnFinKonta() {
+  boolean isPartnerOnFinKonta() {
     return frmParam.getParam("gk","cpar-fkonta","N","Da li se unosi partner na financijska konta kod izvoda (D/N)?").equals("D");
   }
 
@@ -1411,7 +1411,7 @@ public class frmIzvodi extends raMasterDetail {
           Variant v = new Variant();
 
           public boolean doModify() {
-            if (oldstatus.equals("K"))
+            if (oldstatus.equals("K") || isPartnerOnFinKonta())
               return false;
             if (!((JraTable2) getTable()).getDataSetColumn(getColumn())
                 .getColumnName().equals("CPAR"))
