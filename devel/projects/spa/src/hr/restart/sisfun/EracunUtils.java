@@ -144,6 +144,7 @@ public class EracunUtils {
   oasis.names.specification.ubl.schema.xsd.signaturebasiccomponents_2.ObjectFactory sbof = new oasis.names.specification.ubl.schema.xsd.signaturebasiccomponents_2.ObjectFactory();*/
   
   DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+  DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   
   
   DatatypeFactory dafact;
@@ -1030,6 +1031,7 @@ public class EracunUtils {
       obj.put("File", rac);
       
       String str = getResponse(client, req, obj);
+      System.out.println("RESPONSE: " + str);
       if (str == null || str.length() == 0 || !str.startsWith("{"))
         throw new EracException("Greška kod slanja e-Raèuna!");
       
@@ -1191,8 +1193,8 @@ public class EracunUtils {
         File pdir = new File(dir, sender);
         if (god != null) pdir = new File(pdir, god);
         pdir.mkdirs();
-        File pdf = new File(pdir, handler.pdfName);
-        FileUtils.writeStringToFile(new File(pdir, handler.invoice + ".xml"), str, "utf-8");
+        File pdf = new File(pdir, convertPdf(handler.pdfName));
+        FileUtils.writeStringToFile(new File(pdir, convertInvoice(handler.invoice) + ".xml"), str, "utf-8");
         FileUtils.writeByteArrayToFile(pdf, Base64.decodeBase64(handler.pdfData));
         
         if (unread) {
@@ -1221,6 +1223,17 @@ public class EracunUtils {
     throw new EracException("Greška kod dohvata e-Raèuna!");
   }
   
+  private String convertInvoice(String invoice) {
+    return new VarStr(invoice).replaceAll('/', '-').replaceAll('\\', '-').toString();
+  }
+  
+  private String convertPdf(String pdf) {
+    int bs = Math.max(pdf.lastIndexOf('\\'), pdf.lastIndexOf('/'));
+    if (bs < 0 || bs >= pdf.length()) return pdf;
+    
+    return pdf.substring(bs + 1);
+  }
+  
   public DataSet checkInbox(boolean all, Timestamp dfrom, Timestamp dto) {
     HttpClient client = getClient();
     try {
@@ -1241,7 +1254,11 @@ public class EracunUtils {
         JSONObject o = (JSONObject) arr.get(i);
         ds.insertRow(false);
         ds.setInt("EID", o.getInt("ElectronicId"));
-        ds.setTimestamp("DATUM", new Timestamp(df.parse(o.getString("Sent")).getTime()));
+        try {
+          ds.setTimestamp("DATUM", new Timestamp(df2.parse(o.getString("Sent")).getTime()));
+        } catch (ParseException e) {
+          ds.setTimestamp("DATUM", new Timestamp(df.parse(o.getString("Sent")).getTime()));
+        }
         ds.setString("NAZPAR", o.getString("SenderBusinessName"));
         ds.setString("OIB", o.getString("SenderBusinessNumber"));
         if (ld.raLocate(dm.getPartneri(), "OIB", ds))
@@ -1251,7 +1268,12 @@ public class EracunUtils {
         ds.setInt("STATUS", o.getInt("StatusId"));
         String deliver = o.getString("Delivered");
         if (deliver != null && deliver.length() > 0 && !deliver.equals("null"))
-          ds.setTimestamp("DATP", new Timestamp(df.parse(deliver).getTime()));
+          try {
+            ds.setTimestamp("DATP", new Timestamp(df2.parse(deliver).getTime()));
+          } catch (ParseException e) {
+            ds.setTimestamp("DATP", new Timestamp(df.parse(deliver).getTime()));
+          }
+
         ds.post();
       }
       ds.setSort(new SortDescriptor(new String[] {"DATUM"}, false, true, null));
@@ -1292,8 +1314,13 @@ public class EracunUtils {
         ds.insertRow(false);
         ds.setInt("EID", o.getInt("ElectronicId"));
         String sent = o.getString("Sent");
-        if (sent != null && sent.length() > 0 && !sent.equals("null"))
-          ds.setTimestamp("DATUM", new Timestamp(df.parse(o.getString("Sent")).getTime()));
+        if (sent != null && sent.length() > 0 && !sent.equals("null")) {
+          try {
+            ds.setTimestamp("DATUM", new Timestamp(df2.parse(o.getString("Sent")).getTime()));
+          } catch (ParseException e) {
+            ds.setTimestamp("DATUM", new Timestamp(df.parse(o.getString("Sent")).getTime()));
+          }
+        }
         ds.setString("NAZPAR", o.getString("RecipientBusinessName"));
         ds.setString("OIB", o.getString("RecipientBusinessNumber"));
         if (ld.raLocate(dm.getPartneri(), "OIB", ds))
@@ -1303,7 +1330,11 @@ public class EracunUtils {
         ds.setInt("STATUS", o.getInt("StatusId"));
         String deliver = o.getString("Delivered");
         if (deliver != null && deliver.length() > 0 && !deliver.equals("null"))
-          ds.setTimestamp("DATP", new Timestamp(df.parse(deliver).getTime()));
+          try {
+            ds.setTimestamp("DATP", new Timestamp(df2.parse(deliver).getTime()));
+          } catch (ParseException e) {
+            ds.setTimestamp("DATP", new Timestamp(df.parse(deliver).getTime()));
+          }
         ds.post();
       }
       ds.setSort(new SortDescriptor(new String[] {"DATUM"}, false, true, null));
