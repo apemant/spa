@@ -688,7 +688,7 @@ abstract public class raIzlazTemplate extends hr.restart.util.raMasterDetail {
         return;
       }
       
-      final File out = new File(ms.getString("PNBZ2") + ".pdf"); 
+      final File out = new File(new VarStr(ms.getString("PNBZ2")).replace('/',  '-').replace('\\', '-').append(".pdF").toString());
       
       try {
         String rac = EracunUtils.getInstance().createRacun(ms, out, new Runnable() {
