@@ -164,7 +164,7 @@ public class raResultSetMetaData implements ResultSetMetaData,java.io.Serializab
     suportCheck("getColumnClassName");
     return mtdCols[column-1].getColumnClassName;
   }
-
+  
   class mtdColumn {
     public boolean isAutoIncrement;
     public boolean isCaseSensitive;
