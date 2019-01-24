@@ -165,6 +165,16 @@ public class raResultSetMetaData implements ResultSetMetaData,java.io.Serializab
     return mtdCols[column-1].getColumnClassName;
   }
   
+  public Object unwrap(Class iface) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+  
+  public boolean isWrapperFor(Class iface) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+  
   class mtdColumn {
     public boolean isAutoIncrement;
     public boolean isCaseSensitive;
